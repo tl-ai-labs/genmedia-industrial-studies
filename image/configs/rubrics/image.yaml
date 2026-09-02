@@ -1,0 +1,46 @@
+# Base image rubric — plan §12. Weights must sum to 1.0 (the loader rejects
+# the file otherwise; it never silently normalises).
+# judged_by: judge    -> the blind AI judge scores it (reasoning before score)
+# judged_by: measured -> code measures it; the judge is told the result and
+#                        never re-scores it.
+# The sha256 of this file is stamped into every judge and score record.
+version: 1
+modality: image
+
+criteria:
+  - name: prompt_adherence
+    weight: 0.35
+    judged_by: judge
+    description: >-
+      Every named subject, attribute and relationship from the brief is
+      present. 10 = nothing missing or wrong; each missing or wrong element
+      costs about 2 points.
+
+  - name: visual_quality
+    weight: 0.20
+    judged_by: judge
+    description: >-
+      Sharpness, lighting, absence of artefacts — mangled hands or limbs,
+      smearing, duplicated objects all lose points.
+
+  - name: composition
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Framing, subject placement, balance, depth; nothing important cropped.
+
+  - name: realism_style
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Matches the requested register — photoreal, illustration, 3D render —
+      consistently across the whole image.
+
+  - name: text_accuracy
+    weight: 0.15
+    judged_by: measured          # OCR fuzzy match vs must_read_text
+    description: >-
+      Measured by OCR against the scenario's must_read_text. Match 1.0 maps
+      to 10; below 0.6 maps to 0; linear in between. Scenarios with no
+      on-image text drop this criterion and redistribute its weight
+      proportionally (recorded in the run manifest).

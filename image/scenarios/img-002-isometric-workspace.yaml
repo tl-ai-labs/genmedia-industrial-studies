@@ -1,0 +1,29 @@
+id: img-002
+modality: image
+task: text_to_image
+title: "Isometric illustration — no on-image text"
+
+prompt: |
+  An isometric illustration of a cosy home office: a wooden desk with a laptop,
+  a steaming mug, a small monstera plant, and a sleeping ginger cat on a rug.
+  Flat pastel colour palette, soft shadows, clean vector style, no text anywhere.
+
+params:
+  size: "1024x1024"
+  aspect_ratio: "1:1"
+  seed: 7
+
+expected: |
+  A clean isometric vector-style illustration containing exactly the four named
+  objects (laptop, mug, plant, cat) on a desk scene, pastel palette, consistent
+  perspective, no text or lettering anywhere in the image.
+
+checks:
+  min_width: 1024
+  min_height: 1024
+  formats: [png, jpeg]
+  not_blank: true
+  # no must_read_text -> text_accuracy is dropped and its weight is
+  # redistributed proportionally by the loader (recorded in the manifest)
+
+tags: [illustration, no-text]

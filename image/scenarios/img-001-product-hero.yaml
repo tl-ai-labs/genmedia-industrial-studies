@@ -1,0 +1,31 @@
+id: img-001
+modality: image
+task: text_to_image
+title: "Product hero shot with on-image text"
+
+prompt: |
+  A matte black stainless steel water bottle standing on a wet river stone,
+  soft morning light, shallow depth of field, muted green forest bokeh behind.
+  The words "TRAILHEAD 750" printed in clean sans-serif on the bottle.
+
+params:
+  size: "1024x1024"
+  aspect_ratio: "1:1"
+  seed: 7
+
+expected: |
+  A photorealistic product photo. Bottle sharp and centred, background softly blurred,
+  legible "TRAILHEAD 750" text on the bottle, no extra objects, no visible text errors.
+
+checks:
+  min_width: 1024
+  min_height: 1024
+  formats: [png, jpeg]
+  not_blank: true
+  must_read_text: "TRAILHEAD 750"
+
+criteria: [prompt_adherence, visual_quality, composition, realism_style, text_accuracy]
+weights:  {prompt_adherence: 0.35, visual_quality: 0.20, composition: 0.15,
+           realism_style: 0.15, text_accuracy: 0.15}
+
+tags: [ecommerce, text-in-image]

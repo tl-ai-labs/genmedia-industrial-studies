@@ -1,0 +1,45 @@
+# Per-task rubric override for image_edit (plan §5): prompt adherence splits
+# into edit_fidelity + preservation. Weights sum to 1.0; scenarios re-weight
+# per family. The sha256 of base + this file is stamped into every record.
+criteria:
+  - name: edit_fidelity
+    weight: 0.35
+    judged_by: judge
+    description: >-
+      Did the edit do exactly what was asked — every clause of the
+      instruction — and nothing more? For reference-conditioned tasks this
+      includes fidelity to the reference (product, character identity,
+      style) as the instruction defines it.
+
+  - name: preservation
+    weight: 0.25
+    judged_by: measured          # global pHash bound, or SSIM outside a
+    description: >-              # declared mask/bbox — never auto-segmented
+      Everything the instruction said to keep is measurably unchanged.
+      Measured by code: global pHash distance vs the source (or SSIM outside
+      the declared region); the mapping to 0-10 is fixed in scoring.py. When
+      a scenario declares no preservation bound (whole-image transforms),
+      this criterion is omitted and its weight redistributed.
+
+  - name: visual_quality
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Sharpness, lighting, absence of artefacts — seams, smearing, mangled
+      structures, halos around the edited region.
+
+  - name: realism_style
+    weight: 0.10
+    judged_by: judge
+    description: >-
+      The result stays in the source's register (or the explicitly requested
+      one) — lighting direction, grain, perspective and materials remain
+      coherent with the untouched parts.
+
+  - name: text_accuracy
+    weight: 0.15
+    judged_by: measured          # OCR vs must_read_text (per-string)
+    description: >-
+      Measured by OCR against the scenario's must_read_text. Match 1.0 maps
+      to 10; below 0.6 maps to 0; linear between. Dropped and redistributed
+      when the scenario checks no text.

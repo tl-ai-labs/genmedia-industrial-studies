@@ -1,0 +1,309 @@
+{% macro banners(ctx) %}
+{% if ctx.manifest.state == 'aborted' %}
+<div class="banner"><b>Partial run.</b> The budget cap was hit mid-run; only completed cells
+are shown. Nothing here pretends to be complete.</div>
+{% endif %}
+{% if ctx.estimates %}
+<div class="banner"><b>Some costs are estimates</b> (no usage returned by the API):
+{{ ctx.estimates|join(', ') }}.</div>
+{% endif %}
+{% endmacro %}
+
+{% macro duel_strip(ctx, title=None) %}
+{% if ctx.duel %}
+<div class="duel rev">
+  {% if title %}<div class="dt">{{ title }}</div>{% endif %}
+  <div class="heads">
+    <span class="h a">◆ {{ ctx.duel.a|disp }}</span>
+    <span class="h b">{{ ctx.duel.b|disp }} ◆</span>
+  </div>
+  {% for m in ctx.duel.metrics %}
+  <div class="m">
+    <div class="lab">{{ m.label }}</div>
+    <div class="pair">
+      <span class="val">{{ m.a }}{% if m.win == 'a' %} ✦{% endif %}</span>
+      <span class="track a {{ 'win' if m.win == 'a' }}"><span class="fill" style="width: {{ m.aw }}%"></span></span>
+      <span class="track b {{ 'win' if m.win == 'b' }}"><span class="fill" style="width: {{ m.bw }}%"></span></span>
+      <span class="val r">{% if m.win == 'b' %}✦ {% endif %}{{ m.b }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro task_tables(ctx) %}
+{% for task, t in ctx.agg.tasks.items() %}
+<h2>Task: <code>{{ task }}</code></h2>
+<div class="tw"><table>
+<thead><tr>
+  <th>Model</th><th class="num">Quality (mean)</th><th class="num">W–T–L</th>
+  <th class="num">Judged</th><th class="num">Worst</th><th class="num">&lt;5</th>
+  <th class="num">Gen cost/scen</th><th class="num">Judge cost/scen</th>
+  <th class="num">Latency p50 / max</th><th class="num">Success</th><th class="num">Attempts</th>
+</tr></thead>
+<tbody>
+{% for mid, m in t.models.items()|sort %}
+<tr>
+  <td>{{ mid|disp }}{% if m.skipped %} <span class="pill">n/a ×{{ m.skipped }}</span>{% endif %}</td>
+  <td class="num">{% if m.mean is not none %}<b>{{ '%.2f'|format(m.mean) }}</b>{% else %}<span class="dash">—</span>{% endif %}</td>
+  <td class="num">{{ m.wtl }}</td>
+  <td class="num">{{ m.judged_n }}/{{ m.eligible }}</td>
+  <td class="num">{% if m.worst is not none %}{{ '%.1f'|format(m.worst) }}{% else %}<span class="dash">—</span>{% endif %}</td>
+  <td class="num">{{ m.below_5 }}</td>
+  <td class="num">{{ (m.gen_cost_per_scenario_usd * 1000000)|round|int|usd }}{% if m.cost_estimated %} <span class="pill est">est</span>{% endif %}</td>
+  <td class="num">{{ (m.judge_cost_per_scenario_usd * 1000000)|round|int|usd }}</td>
+  <td class="num">{{ m.latency_p50_ms|s }} / {{ m.latency_max_ms|s }}</td>
+  <td class="num">{% if m.success_rate is not none %}{{ '%.0f%%'|format(m.success_rate * 100) }}{% else %}<span class="dash">—</span>{% endif %}</td>
+  <td class="num">{{ m.mean_attempts if m.mean_attempts is not none else '—' }}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+
+{% for p in t.pairs %}{{ verdict_box(p) }}{% endfor %}
+{% endfor %}
+{% endmacro %}
+
+{% macro verdict_box(p) %}
+<div class="verdict">
+  <b>{{ p.a|disp }} vs {{ p.b|disp }}:</b>
+  {% if p.winner %}<b class="win">{{ p.winner|disp }} wins</b> — {{ p.door }}{% if p.sign_test_p is not none %}
+    (sign test p ≈ {{ p.sign_test_p }}){% endif %}.
+  {% else %}{{ p.note }}{% endif %}
+  <div class="sub">means {{ p.mean_a }} vs {{ p.mean_b }} · paired {{ p.wins_a }}–{{ p.ties }}–{{ p.wins_b }}
+  over {{ p.n_common }} common scenario(s), {{ p.decided }} decided
+  {% if p.sign_test_p is none and p.decided > 0 %} · sign test not quoted (n &lt; 10 decided){% endif %}</div>
+</div>
+{% endmacro %}
+
+{% macro verdicts_only(ctx) %}
+{% for task, t in ctx.agg.tasks.items() %}{% for p in t.pairs %}{{ verdict_box(p) }}{% endfor %}{% endfor %}
+{% endmacro %}
+
+{% macro families_table(ctx) %}
+{% if ctx.families and ctx.families|length > 1 %}
+<h2>By use-case family</h2>
+<div class="tw"><table>
+<thead><tr><th>Family</th><th class="num">Scenarios</th>
+{% for mid in ctx.family_models %}<th class="num">{{ mid|disp }}<br>mean · wins</th>{% endfor %}
+</tr></thead>
+<tbody>
+{% for fam, f in ctx.families.items()|sort %}
+<tr><td>{{ fam }}</td><td class="num">{{ f.n }}</td>
+{% for mid in ctx.family_models %}
+  {% set m = f.models.get(mid) %}
+  <td class="num">{% if m %}{{ '%.2f'|format(m.mean) }} · {{ m.wins }}W{% else %}<span class="dash">—</span>{% endif %}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody></table></div>
+<p style="font-size:12.5px;color:var(--muted)">“Wins” = scenarios where the model beat every
+other by more than the 0.5 tie band.</p>
+{% endif %}
+{% endmacro %}
+
+{% macro industries_table(ctx) %}
+{% if ctx.industries %}
+<h2>By target industry</h2>
+<div class="tw"><table>
+<thead><tr><th>Industry (primary)</th><th class="num">Scenarios</th>
+{% for mid in ctx.family_models %}<th class="num">{{ mid|disp }}<br>mean · wins</th>{% endfor %}
+</tr></thead>
+<tbody>
+{% for ind, f in ctx.industries.items()|sort %}
+<tr><td>{{ ind }}</td><td class="num">{{ f.n }}</td>
+{% for mid in ctx.family_models %}
+  {% set m = f.models.get(mid) %}
+  <td class="num">{% if m %}{{ '%.2f'|format(m.mean) }} · {{ m.wins }}W{% else %}<span class="dash">—</span>{% endif %}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody></table></div>
+<p style="font-size:12.5px;color:var(--muted)">Industries come from the sheet's own
+“Industry mapping” tab (primary industry per scenario; many scenarios are also relevant
+to further industries, per its “also” column).{% if ctx.hidden_industries %}
+Not shown here: {{ ctx.hidden_industries|join(', ') }} — those scenarios are filed under
+their next industry from the mapping.{% endif %}{% if ctx.merged_note %}
+{{ ctx.merged_note }}{% endif %}</p>
+{% endif %}
+{% endmacro %}
+
+{% macro evidence_section(ctx, uid, gallery=True) %}
+<h2>Per-scenario evidence</h2>
+{% if gallery %}
+<div class="gallery">
+  {% for s in ctx.evidence %}{% set first_thumb = (s.cards | selectattr('mini') | list | first) %}
+  {% if first_thumb %}
+  <div class="g" data-target="{{ uid }}scn-{{ s.id }}">
+    <img src="{{ first_thumb.mini }}" alt="{{ s.id }}" loading="lazy">
+    <div class="gid"><span class="dot {{ 'w' if s.winner }}"></span>{{ s.id }}</div>
+  </div>
+  {% endif %}{% endfor %}
+</div>
+{% endif %}
+<div class="chips">
+  {% if ctx.industries %}
+  <span class="chip on" data-dim="ind" data-val="__all">All industries</span>
+  {% for ind in ctx.industries.keys()|sort %}<span class="chip" data-dim="ind" data-val="{{ ind }}">{{ ind }} <span class="n">({{ ctx.industries[ind].n }})</span></span>{% endfor %}
+  {% endif %}
+  <span style="flex:1"></span>
+  <button class="ctl" data-act="expand" type="button">Expand all</button>
+  <button class="ctl" data-act="collapse" type="button">Collapse all</button>
+</div>
+<div class="chips">
+  <span class="chip on" data-dim="win" data-val="__all">All results</span>
+  {% for mid in ctx.family_models %}
+    {% set wn = ctx.evidence | selectattr('winner', 'equalto', mid) | list | length %}
+    {% if wn %}<span class="chip" data-dim="win" data-val="{{ mid }}">{{ mid|disp }} wins <span class="n">({{ wn }})</span></span>{% endif %}
+  {% endfor %}
+  {% set tn = ctx.evidence | rejectattr('winner') | list | length %}
+  {% if tn %}<span class="chip" data-dim="win" data-val="tie">Ties <span class="n">({{ tn }})</span></span>{% endif %}
+</div>
+{% if ctx.families and ctx.families|length > 1 %}
+<div class="chips">
+  <span class="chip on" data-dim="fam" data-val="__all">All families</span>
+  {% for fam in ctx.families.keys()|sort %}<span class="chip" data-dim="fam" data-val="{{ fam }}">{{ fam }} <span class="n">({{ ctx.families[fam].n }})</span></span>{% endfor %}
+</div>
+{% endif %}
+<p style="font-size:12.5px;color:var(--muted)">Click a scenario to expand; click an image to
+zoom, then flip between models (and the original, for edits) with ←/→.</p>
+
+{% for s in ctx.evidence %}
+<details class="scn rev" id="{{ uid }}scn-{{ s.id }}" data-fam="{{ s.family }}"
+         data-ind="{{ s.industry }}" data-win="{{ s.winner or 'tie' }}"
+         data-task="{{ s.task }}"{% if loop.first %} open{% endif %}>
+  <summary>
+    <span class="sid">{{ s.id }}</span>
+    <span class="stitle">{{ s.title }}</span>
+    {% if s.industry %}<span class="pill" title="also relevant to: {{ s.industry_also|join(', ') or '—' }}">{{ s.industry }}</span>{% endif %}
+    {% if s.winner %}<span class="pill ok">winner: {{ s.winner|disp }} (+{{ s.margin }})</span>
+    {% elif s.margin is not none %}<span class="pill">tie · Δ {{ s.margin }}</span>{% endif %}
+    <span class="scores">
+      {% for c in s.cards %}{% if c.score is not none %}{{ '%.1f'|format(c.score) }}{% if not loop.last %} · {% endif %}{% endif %}{% endfor %}
+    </span>
+    <span class="thumbs">
+      {% for src in s.sources %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% endif %}{% endfor %}
+      {% for c in s.cards %}{% if c.mini %}<img src="{{ c.mini }}" alt="">{% endif %}{% endfor %}
+    </span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> {{ s.prompt|trim }}</div>
+      <div class="brief"><b>Expected:</b> {{ s.expected|trim }}</div>
+    </div>
+
+    <div class="media">
+      {% for src in s.sources %}{% if src.thumb %}
+      <figure class="shot src">
+        <div class="frame">
+          <img class="out" src="{{ src.thumb }}" alt="original {{ src.role }}"
+               data-sid="{{ s.id }}" data-mid="ORIGINAL ({{ src.role }})"
+               data-cap="{{ s.id }} · original input ({{ src.role }}) · sha256 {{ src.sha256[:16] }}…">
+        </div>
+        <figcaption>
+          <span class="who accent">original · {{ src.role }}</span>
+          <span class="subcap" title="{{ src.path }}">sha {{ src.sha256[:10] }}…</span>
+        </figcaption>
+      </figure>
+      {% endif %}{% endfor %}
+      {% for c in s.cards %}
+      <figure class="shot">
+        <div class="frame">
+          {% if c.thumb %}<img class="out" src="{{ c.thumb }}" alt="{{ c.model_id|disp }} output"
+               data-sid="{{ s.id }}" data-mid="{{ c.model_id|disp }}"
+               data-cap="{{ s.id }} · {{ c.model_id|disp }}">{% endif %}
+          {% if c.score is not none %}
+            <span class="badge {{ 'win' if s.winner == c.model_id }}">{{ '%.1f'|format(c.score) }}</span>
+          {% elif c.state == 'skipped' %}<span class="badge">n/a</span>
+          {% else %}<span class="badge bad">{{ c.status }}</span>{% endif %}
+        </div>
+        <figcaption>
+          <span class="who">{{ c.model_id|disp }}</span>
+          <span class="subcap">{% if c.blind_label %}blind {{ c.blind_label }}{% endif %}{% if c.gen_cost_micro is not none %} · {{ c.gen_cost_micro|usd }}{% if c.cost_estimated %} est{% endif %}{% endif %}{% if c.latency_ms is not none %} · {{ c.latency_ms|s }}{% endif %}</span>
+        </figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+    {% if s.sources %}<p style="font-size:12px;color:var(--faint);margin:2px 4px 0">Click any
+    image, then flip with the chips or ←/→ — original ↔ edited in place.</p>{% endif %}
+
+    <div class="dgrid">
+    {% for c in s.cards %}
+      <div class="dcol">
+        <div class="mid">{{ c.model_id|disp }}
+          {% if c.status == 'invalid' %}<span class="pill bad">invalid — earned 0</span>{% endif %}
+        </div>
+        {% if c.gates %}
+          {% set failed = c.gates | rejectattr('passed') | list %}
+          {% if failed %}{% for g in failed %}<span class="pill bad">✗ {{ g.gate }}{% if g.detail %} · {{ g.detail }}{% endif %}</span>{% endfor %}
+          {% else %}<span class="pill ok">✓ all gates</span>{% endif %}
+          {% if c.measures and c.measures.width %}<span class="pill">{{ c.measures.width }}×{{ c.measures.height }}</span>{% endif %}
+          {% if c.measures and c.measures.preservation_phash_distance is defined %}
+            <span class="pill {{ 'ok' if c.measures.preservation_phash_distance <= c.measures.preservation_phash_max else 'bad' }}">pHash {{ c.measures.preservation_phash_distance }}/{{ c.measures.preservation_phash_max }}</span>{% endif %}
+          {% if c.measures and c.measures.ocr_match is defined %}
+            <span class="pill {{ 'ok' if c.measures.ocr_match >= 0.85 else 'est' }}">OCR {{ '%.2f'|format(c.measures.ocr_match) }}</span>{% endif %}
+        {% endif %}
+        {% if c.reason %}<div class="crit r">{{ c.reason }}</div>{% endif %}
+        {% if c.criteria %}
+        <div class="crit" style="border-top:0;padding-top:2px">
+          {% for name, cs in c.criteria.items() %}
+            <div class="row">
+              <span class="nm" title="{{ cs.source }}{% if c.weights and c.weights[name] is defined %} · weight {{ '%.2f'|format(c.weights[name]) }}{% endif %}">{{ name }}</span>
+              <span class="track"><span class="bar {{ 'lo' if cs.score < 5 else ('md' if cs.score < 7.5 else '') }}"
+                    style="width: {{ (cs.score * 10)|round(1) }}%"></span></span>
+              <span class="v">{{ '%.1f'|format(cs.score) }}</span>
+            </div>
+          {% endfor %}
+          {% if c.unmeasured %}<div class="r"><span class="pill est">unmeasured: {{ c.unmeasured|join(', ') }}</span> weight redistributed</div>{% endif %}
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          {% for name, cs in c.criteria.items() %}{% if cs.reasoning %}
+            <div class="r"><b>{{ name }}</b> <span class="src">{{ cs.source }}{% if c.weights and c.weights[name] is defined %} · w {{ '%.2f'|format(c.weights[name]) }}{% endif %}</span><br>“{{ cs.reasoning }}”</div>
+          {% endif %}{% endfor %}
+          {% if c.measures and c.measures.ocr_match_per_item is defined %}
+            <div class="r"><span class="src">ocr per string</span> —
+              {% for item, v in c.measures.ocr_match_per_item.items() %}
+                <span class="pill {{ 'ok' if v >= 0.85 else 'bad' }}">{{ item }} {{ '%.2f'|format(v) }}</span>
+              {% endfor %}</div>{% endif %}
+          {% if c.overall_note %}<div class="r"><b>Judge note:</b> “{{ c.overall_note }}”</div>{% endif %}
+          </div>
+        </details>
+        {% endif %}
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          {% for g in c.gates or [] %}<span class="pill {{ 'ok' if g.passed else 'bad' }}">{{ g.gate }}{% if g.detail %} · {{ g.detail }}{% endif %}</span>{% endfor %}
+          {% if c.artifact %}<div class="crit r" style="border-top:0">artefact:
+            <code>{{ c.artifact }}</code> · rows keyed <code>{{ s.id }} × {{ c.model_id }}</code>
+            in this run folder's JSONL files</div>{% endif %}
+          </div>
+        </details>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+</details>
+{% endfor %}
+{% endmacro %}
+
+{% macro footnotes(ctx) %}
+<div class="foot">
+  <b>Footnotes — what was assumed ({{ ctx.manifest.run_id }}).</b><br>
+  Totals: generation {{ ctx.totals.gen_micro|usd }} · judging {{ ctx.totals.judge_micro|usd }}
+  (kept separate; add them yourself if you must).<br>
+  {% if ctx.judge_meta %}Judge: {{ ctx.judge_meta.provider_model }}
+  (temperature {{ ctx.judge_meta.temperature }}{% if ctx.judge_version %}, version {{ ctx.judge_version }}{% endif %})
+  — same judge, same rubric, blind shuffled labels for every output.<br>{% endif %}
+  Rubric hashes: {% for task, h in ctx.manifest.rubric_hashes.items() %}{{ task }}={{ h[:12] }} {% endfor %}<br>
+  {% if ctx.params_unsupported %}Parameters not honoured:
+  {{ ctx.params_unsupported|join(' · ') }}.<br>{% endif %}
+  {% if ctx.voice_maps %}Voice ids per provider (voices are NOT identical across providers):
+  {{ ctx.voice_maps }}.<br>{% endif %}
+  {% if ctx.estimates %}Estimated cost figures: {{ ctx.estimates|join(', ') }} — usage not
+  returned by the API; assumption recorded in the telemetry row.<br>{% endif %}
+  Effective per-scenario weights (incl. redistributed ones) are in manifest.json; every
+  number traces to a JSONL row in the run folder. Outputs are immutable — a correction is
+  a new run.
+</div>
+{% endmacro %}
