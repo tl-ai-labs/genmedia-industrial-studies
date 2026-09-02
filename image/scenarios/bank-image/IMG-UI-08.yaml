@@ -1,0 +1,37 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-UI-08 — prompt verbatim; weights follow the
+# sheet's family guidance for 'UI mockups & layout'
+id: IMG-UI-08
+modality: image
+task: text_to_image
+title: Consistent icon set
+prompt: 'Design six line icons in a single consistent style: home, search, settings,
+  profile, notifications, logout. Uniform stroke weight, uniform size, same visual
+  language.'
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+expected: 'Consistent icon set. Capability under test: Style consistency across a
+  set. Adherence clauses, check each: 1) Six icons, all recognisable as the named
+  concepts  2) Uniform stroke weight  3) Uniform bounding size  4) Consistent corner
+  and terminal treatment'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.357142
+  visual_quality: 0.214286
+  composition: 0.357143
+  realism_style: 0.071429
+tags:
+- ui-mockups-&-layout
+- scenario-bank

@@ -1,0 +1,43 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-UI-02 — prompt verbatim; weights follow the
+# sheet's family guidance for 'UI mockups & layout'
+id: IMG-UI-02
+modality: image
+task: text_to_image
+title: Dashboard with named widgets
+prompt: 'Design a desktop analytics dashboard with four widgets titled exactly: Active
+  Users, Revenue, Churn Rate, Top Regions. Two-by-two grid, left sidebar navigation,
+  light theme.'
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+expected: 'Dashboard with named widgets. Capability under test: Multi-region layout
+  control. Adherence clauses, check each: 1) Four widgets with exact titles  2) Two-by-two
+  grid  3) Sidebar present on the left  4) Light theme'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - Active Users
+  - Revenue
+  - Churn Rate
+  - Top Regions
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.15
+  composition: 0.25
+  realism_style: 0.05
+  text_accuracy: 0.3
+tags:
+- ui-mockups-&-layout
+- scenario-bank

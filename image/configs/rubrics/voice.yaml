@@ -1,0 +1,42 @@
+# Base voice rubric — plan §13. Used by the Phase 2 voice lane; defined now
+# because rubrics are data, not code. Weights must sum to 1.0.
+version: 1
+modality: voice
+
+criteria:
+  - name: text_accuracy
+    weight: 0.30
+    judged_by: measured          # ASR -> normalized WER (jiwer + num2words)
+    description: >-
+      Word error rate against the script, both sides normalized first
+      (lowercase, strip punctuation, expand numbers, collapse whitespace).
+      WER 0 maps to 10; WER 0.10 maps to 5; WER >= 0.20 maps to 0.
+
+  - name: pronunciation
+    weight: 0.20
+    judged_by: judge
+    description: >-
+      Names, acronyms, digit strings, and any language-specific sounds the
+      scenario targets.
+
+  - name: naturalness
+    weight: 0.20
+    judged_by: judge
+    description: >-
+      Prosody, pacing, pauses, emotional register matching the requested
+      style. Robotic and over-acted both lose points.
+
+  - name: clarity
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Intelligibility at normal volume; no mumbling, slurring or swallowed
+      word endings.
+
+  - name: audio_quality
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Artefacts, glitches, abrupt cuts only — the objective MOS score,
+      clipping and noise-floor checks are measured by code and injected as
+      established facts.

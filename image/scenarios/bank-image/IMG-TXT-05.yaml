@@ -1,0 +1,39 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-TXT-05 — prompt verbatim; weights follow the
+# sheet's family guidance for 'Text, typography, infographics'
+id: IMG-TXT-05
+modality: image
+task: text_to_image
+title: Bilingual signage
+prompt: 'Create a station wayfinding sign. English text: PLATFORM 3 - EXIT. Directly
+  beneath, the Devanagari equivalent. Equal visual weight, high contrast.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'Bilingual signage. Capability under test: Non-Latin script rendering. Adherence
+  clauses, check each: 1) English string exact  2) Devanagari present and well-formed  3)
+  Both lines equal weight  4) Sign-like layout'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - PLATFORM 3 - EXIT
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- text-typography-infographics
+- scenario-bank

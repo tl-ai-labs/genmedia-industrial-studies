@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMedia comparison — {{ manifest.run_id }}</title>
+{% import "_assets.j2" as assets %}
+{% import "_sections.j2" as sec %}
+{{ assets.css() }}
+</head>
+<body>
+
+<div class="topbar"><div class="in">
+  <span class="t">GenMedia comparison</span>
+  <span class="m">{{ manifest.run_id }}</span>
+  <nav>
+    <a href="#summary">Summary</a>
+    <a href="#evidence">Scenarios</a>
+    <a href="#footnotes">Footnotes</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+<header class="hero" id="summary">
+  <p class="kicker">quality · cost · latency · reliability — four columns, never one number</p>
+  <h1>{{ evidence|length }} scenario{{ 's' if evidence|length != 1 }} ·
+      {{ agg.tasks.values()|map(attribute='models')|map('length')|max }} models · blind-judged</h1>
+  <div class="meta">
+    <span>state <b>{{ manifest.state }}</b></span>
+    <span>created <b>{{ manifest.created }}</b></span>
+    {% if manifest.git_sha %}<span>runner <b>{{ manifest.git_sha[:10] }}</b></span>{% endif %}
+    <span>scenario set <b>{{ manifest.scenario_set_hash[:12] }}</b></span>
+    {% if manifest.budget_usd %}<span>budget <b>${{ manifest.budget_usd }}</b></span>{% endif %}
+  </div>
+  <div class="tiles">
+    <div class="tile"><div class="lab">Generation cost</div>
+      <div class="val">{{ totals.gen_micro|usd }}</div>
+      <div class="sub">billed from returned usage</div></div>
+    <div class="tile"><div class="lab">Judging cost</div>
+      <div class="val">{{ totals.judge_micro|usd }}</div>
+      <div class="sub">kept separate, always</div></div>
+    <div class="tile"><div class="lab">Scenarios completed</div>
+      <div class="val">{{ completion.get('completed', 0) }}/{{ completion.total }}</div>
+      <div class="sub">complete = every required model scored</div></div>
+    {% for task, t in agg.tasks.items() %}{% for mid, m in t.models.items()|sort %}
+    <div class="tile"><div class="lab">{{ mid|disp }}</div>
+      <div class="val">{% if m.mean is not none %}{{ '%.2f'|format(m.mean) }}{% else %}—{% endif %}</div>
+      <div class="sub">mean · {{ m.wtl }} W-T-L · judged {{ m.judged_n }}/{{ m.eligible }}</div></div>
+    {% endfor %}{% endfor %}
+  </div>
+</header>
+
+{{ sec.duel_strip({'duel': duel}) }}
+{{ sec.banners({'manifest': manifest, 'estimates': estimates}) }}
+{{ sec.task_tables({'agg': agg}) }}
+{{ sec.families_table({'families': families, 'family_models': family_models}) }}
+{{ sec.industries_table({'industries': industries, 'family_models': family_models}) }}
+<div id="evidence"></div>
+{{ sec.evidence_section({'evidence': evidence, 'families': families,
+                         'industries': industries}, '') }}
+<div id="footnotes"></div>
+{{ sec.footnotes({'manifest': manifest, 'totals': totals, 'judge_meta': judge_meta,
+                  'judge_version': judge_version, 'params_unsupported': params_unsupported,
+                  'voice_maps': voice_maps, 'estimates': estimates}) }}
+</div>
+
+<div id="lb"><div class="sw"></div><img alt=""><div class="cap"></div></div>
+{{ assets.js() }}
+</body>
+</html>

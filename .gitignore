@@ -1,0 +1,19 @@
+# runs are dated, immutable artefacts — never committed, in any module
+**/runs/*
+!**/runs/.gitkeep
+
+# secrets — never committed, at any level
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# repair backups of run files an editor reformatted
+*.reformatted.bak
+
+# macOS
+.DS_Store

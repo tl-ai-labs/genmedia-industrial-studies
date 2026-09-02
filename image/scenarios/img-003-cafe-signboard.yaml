@@ -1,0 +1,33 @@
+id: img-003
+modality: image
+task: text_to_image
+title: "Street scene with legible signage"
+
+prompt: |
+  A narrow European street at golden hour, cobblestones glistening after rain.
+  In the foreground, a chalkboard cafe sign reading "FRESH FILTER COFFEE" in
+  neat hand-drawn capitals. Warm window light, a bicycle leaning on the wall,
+  photorealistic, 35mm depth of field.
+
+params:
+  size: "1024x1024"
+  aspect_ratio: "1:1"
+  seed: 7
+
+expected: |
+  Photorealistic street photograph at golden hour. The chalkboard sign is in the
+  foreground with the exact words "FRESH FILTER COFFEE" clearly legible, a bicycle
+  is present, wet cobblestones reflect warm light, no distorted lettering.
+
+checks:
+  min_width: 1024
+  min_height: 1024
+  formats: [png, jpeg]
+  not_blank: true
+  must_read_text: "FRESH FILTER COFFEE"
+
+criteria: [prompt_adherence, visual_quality, composition, realism_style, text_accuracy]
+weights:  {prompt_adherence: 0.35, visual_quality: 0.20, composition: 0.15,
+           realism_style: 0.15, text_accuracy: 0.15}
+
+tags: [photoreal, text-in-image, scene]

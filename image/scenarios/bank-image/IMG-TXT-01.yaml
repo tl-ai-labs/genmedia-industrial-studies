@@ -1,0 +1,41 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-TXT-01 — prompt verbatim; weights follow the
+# sheet's family guidance for 'Text, typography, infographics'
+id: IMG-TXT-01
+modality: image
+task: text_to_image
+title: Exact headline poster
+prompt: 'Design an event poster. The headline must read exactly: RIVERSIDE JAZZ FESTIVAL.
+  Beneath it, exactly: 14 MARCH 2027 - PIER SIX. Modern sans-serif, high contrast,
+  portrait orientation.'
+params:
+  size: 1024x1536
+  aspect_ratio: '2:3'
+expected: 'Exact headline poster. Capability under test: Verbatim string rendering.
+  Adherence clauses, check each: 1) Headline string exact  2) Date line string exact  3)
+  Portrait orientation  4) Sans-serif, legible hierarchy'
+checks:
+  min_width: 700
+  min_height: 900
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - RIVERSIDE JAZZ FESTIVAL
+  - 14 MARCH 2027 - PIER SIX
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- text-typography-infographics
+- scenario-bank
