@@ -54,9 +54,12 @@ class GeminiTtsAdapter(BaseAdapter):
         # be silently compared across two different APIs.
         project = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
         if project:
-            self.gateway = "vertex-adc"
+            from ..gcp_auth import gateway_label, vertex_credentials
+
+            self.gateway = gateway_label()
             self._client = genai.Client(
-                vertexai=True, project=project, location=spec.region or "us-central1"
+                vertexai=True, project=project, location=spec.region or "us-central1",
+                credentials=vertex_credentials(),
             )
         else:
             self.gateway = "ai-studio-key"
