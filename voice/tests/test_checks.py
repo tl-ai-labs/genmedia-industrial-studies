@@ -284,3 +284,162 @@ def test_collapsing_turns_the_fabricated_wer_back_into_a_real_one():
     # one boundary token survives. That is a rounding error next to a
     # fabricated 1.02, and it stays comfortably inside any sane gate.
     assert repaired < 0.05
+
+
+# --------------------------------------------------------------------------
+# Trimmed duration, delivery rate and the mastering spec. Added 2026-09-03
+# for the real-use-case bank: exact-duration ad spots, dubbing fitted to a
+# shot, fast compliance copy, and ACX audiobook submission.
+# --------------------------------------------------------------------------
+
+def padded(speech_s: float, lead_s: float, trail_s: float, quiet_amp: float = 0.0):
+    """Speech with silence (or low-level room tone) either side."""
+    def flat(seconds: float) -> np.ndarray:
+        n = int(seconds * RATE)
+        if not quiet_amp or n == 0:
+            return np.zeros(n)
+        t = np.linspace(0, seconds, n, endpoint=False)
+        return quiet_amp * np.sin(2 * np.pi * 60 * t)
+
+    return np.concatenate([flat(lead_s), speechlike(speech_s), flat(trail_s)])
+
+
+def test_trimmed_duration_excludes_the_silence_either_side(tmp_path):
+    p = write(tmp_path, "pad.wav", padded(3.0, lead_s=1.0, trail_s=2.0))
+    facts = decode(p)
+    assert 5.9 < facts.duration_s < 6.1
+    assert 2.9 < facts.trimmed_duration_s < 3.1
+
+
+def test_padding_with_silence_cannot_buy_a_duration_pass(tmp_path, predictor):
+    """
+    The whole reason the slot gate is on the TRIMMED length. A 3s read padded
+    to 15s is a 3s read; an ad slot it fits only on paper.
+    """
+    p = write(tmp_path, "short-read.wav", padded(3.0, lead_s=6.0, trail_s=6.0))
+    scenario = FakeScenario(checks={"trimmed_duration_s": {"min": 14.9, "max": 15.1}})
+    report = run_checks(scenario, "m1", p, None, None, predictor)
+    assert "trimmed_duration_in_range" in report.failed_gates
+    # The raw file IS 15 seconds - which is exactly what would have passed.
+    assert 14.9 <= report.measurements["duration_s"] <= 15.1
+
+
+def test_a_read_that_fits_the_slot_passes(tmp_path, predictor):
+    p = write(tmp_path, "spot.wav", padded(15.0, lead_s=0.1, trail_s=0.3))
+    scenario = FakeScenario(checks={"trimmed_duration_s": {"min": 14.9, "max": 15.1}})
+    report = run_checks(scenario, "m1", p, None, None, predictor)
+    assert "trimmed_duration_in_range" not in report.failed_gates
+
+
+def test_speech_rate_is_measured_from_script_words_over_the_trimmed_length(tmp_path, predictor):
+    from runner.normalize import normalize
+
+    script = "the annual percentage rate is variable and subject to change without notice"
+    p = write(tmp_path, "rate.wav", padded(6.0, lead_s=0.5, trail_s=0.5))
+    report = run_checks(FakeScenario(text=script), "m1", p, None, None, predictor)
+    words = len(normalize(script).split())
+    assert report.measurements["script_words"] == words
+    # 6 seconds of speech -> words per minute is ten times the word count.
+    assert report.measurements["speech_rate_wpm"] == pytest.approx(words * 10, rel=0.05)
+
+
+def test_a_disclaimer_read_too_slowly_fails_the_rate_gate(tmp_path, predictor):
+    script = " ".join(["word"] * 40)
+    slow = write(tmp_path, "slow.wav", speechlike(30.0))   # 80 wpm
+    fast = write(tmp_path, "fast.wav", speechlike(11.0))   # ~218 wpm
+    checks = {"speech_rate_wpm": {"min": 200, "max": 240}}
+    assert "speech_rate_in_range" in run_checks(
+        FakeScenario(text=script, checks=checks), "m1", slow, None, None, predictor
+    ).failed_gates
+    assert "speech_rate_in_range" not in run_checks(
+        FakeScenario(text=script, checks=checks), "m1", fast, None, None, predictor
+    ).failed_gates
+
+
+def test_noise_floor_is_measured_in_the_lead_and_trail(tmp_path):
+    silent = decode(write(tmp_path, "clean.wav", padded(2.0, 0.5, 0.5)))
+    assert silent.noise_floor_dbfs is not None and silent.noise_floor_dbfs < -100
+
+    # Room tone quiet enough to still count as silence, loud enough to fail
+    # a -60 dBFS spec.
+    noisy = decode(write(tmp_path, "tone.wav", padded(2.0, 0.5, 0.5, quiet_amp=0.004)))
+    assert noisy.noise_floor_dbfs is not None
+    assert -60 < noisy.noise_floor_dbfs < -40
+
+
+def test_acx_thresholds_gate_on_published_numbers(tmp_path, predictor):
+    acx = {"rms_dbfs": {"min": -23.0, "max": -18.0}, "peak_dbfs_max": -3.0,
+           "noise_floor_dbfs_max": -60.0}
+    # amp 0.25 lands around -21 dBFS RMS with peak near -8 dBFS.
+    ok = write(tmp_path, "acx-ok.wav", padded(3.0, 0.4, 0.4, quiet_amp=0.0))
+    report = run_checks(FakeScenario(checks=acx), "m1", ok, None, None, predictor)
+    assert report.passed, report.failed_gates
+
+    quiet = write(tmp_path, "acx-quiet.wav", padded(3.0, 0.4, 0.4) * 0.05)
+    assert "rms_in_range" in run_checks(
+        FakeScenario(checks=acx), "m1", quiet, None, None, predictor
+    ).failed_gates
+
+    hot = write(tmp_path, "acx-hot.wav", np.clip(padded(3.0, 0.4, 0.4) * 3.5, -0.999, 0.999))
+    assert "peak_below_max" in run_checks(
+        FakeScenario(checks=acx), "m1", hot, None, None, predictor
+    ).failed_gates
+
+
+def test_an_unmeasurable_noise_floor_is_not_a_pass_and_says_so(tmp_path, predictor):
+    """
+    A clip that starts on the first syllable has no room tone. That is
+    absent evidence, not a good result - the same third state the ASR path
+    uses. The detail line has to say which one it is.
+    """
+    p = write(tmp_path, "nogap.wav", speechlike(3.0))
+    report = run_checks(
+        FakeScenario(checks={"noise_floor_dbfs_max": -60.0}), "m1", p, None, None, predictor
+    )
+    assert report.measurements["noise_floor_unmeasured"] is True
+    assert "noise_floor_dbfs" not in report.measurements
+    gate = next(g for g in report.gates if g.name == "noise_floor_below_max")
+    assert "unmeasured" in gate.detail and "not passing" in gate.detail
+
+
+def test_must_not_say_catches_the_wrong_convention(tmp_path, predictor):
+    """
+    The check must_say cannot express. Both transcripts state a true amount;
+    only one states it the way an Indian customer hears it.
+    """
+    p = write(tmp_path, "amt.wav", speechlike(4.0))
+    scenario = FakeScenario(
+        text="Your refund of Rs 2,50,000 has been approved.",
+        checks={
+            "must_say": ["two lakh fifty thousand rupees"],
+            "must_not_say": ["two hundred fifty thousand", "two hundred and fifty thousand"],
+        },
+    )
+    good = run_checks(scenario, "m1", p, "Your refund of 2,50,000 rupees has been approved.",
+                      None, predictor)
+    assert good.passed, good.failed_gates
+
+    wrong = run_checks(scenario, "m1", p,
+                       "Your refund of two hundred fifty thousand rupees has been approved.",
+                       None, predictor)
+    assert not wrong.passed
+    assert any(g.startswith("must_not_say") for g in wrong.failed_gates)
+
+
+def test_must_say_any_accepts_a_legitimate_transcription_variant(tmp_path, predictor):
+    """
+    From the first real run of vr-game-02. Both models read the invented team
+    name "Ironhaus" correctly; the ASR wrote "Ironhouse" for one and "Iron
+    House" for the other, and a literal must_say failed BOTH for being right.
+    """
+    p = write(tmp_path, "npc.wav", speechlike(4.0))
+    scenario = FakeScenario(
+        text="and Ironhaus take it",
+        checks={"must_say_any": [["Ironhaus", "Iron House", "Ironhouse"]]},
+    )
+    for heard in ("and Ironhouse take it", "and Iron House take it", "and Ironhaus take it"):
+        r = run_checks(scenario, "m1", p, heard, None, predictor)
+        assert r.passed, (heard, r.failed_gates)
+
+    wrong = run_checks(scenario, "m1", p, "and Redline take it", None, predictor)
+    assert any(g.startswith("must_say_any") for g in wrong.failed_gates)

@@ -105,6 +105,11 @@ CLIP_RUN_SAMPLES = 24
 # Silence threshold relative to the clip's own peak.
 SILENCE_REL = 0.02
 SILENCE_FRAME_S = 0.02
+# Room tone needs somewhere to be measured. Below this much combined lead and
+# trail silence the noise floor is UNMEASURED rather than assumed good - a
+# clip that starts on the first syllable has no room tone to assess, and
+# scoring that as a pass would invent evidence.
+MIN_NOISE_WINDOW_S = 0.20
 
 
 @dataclass(frozen=True)
@@ -179,6 +184,19 @@ class AudioFacts:
     clip_ratio: float
     sustained_clipping: bool
     channels: int
+    # RMS of the lead and trail silence - the room tone a mastering spec
+    # measures. None when there is not enough silence to measure it.
+    noise_floor_dbfs: float | None
+
+    @property
+    def trimmed_duration_s(self) -> float:
+        """
+        Duration with leading and trailing silence removed - what an editor
+        gets after topping and tailing. This, not the raw file length, is
+        what has to fit a 15-second slot or a shot, because nobody ships the
+        silence. Gating raw duration would let a model pass by padding.
+        """
+        return max(0.0, self.duration_s - self.lead_silence_s - self.trail_silence_s)
 
 
 def _dbfs(v: float) -> float:
@@ -214,6 +232,16 @@ def decode(path: Path) -> AudioFacts:
         gaps = np.diff(idx) - 1
         longest_gap = float(int(gaps.max()) * frame / rate) if gaps.size else 0.0
 
+    # Room tone: the RMS of what sits before the first word and after the
+    # last. Only meaningful when there IS speech (an all-silent clip has no
+    # signal to be a floor UNDER) and enough of it to average.
+    noise_floor: float | None = None
+    if idx.size:
+        lead_n, trail_n = int(lead * rate), int(trail * rate)
+        quiet = np.concatenate([x[:lead_n], x[x.size - trail_n :] if trail_n else x[:0]])
+        if quiet.size >= int(MIN_NOISE_WINDOW_S * rate):
+            noise_floor = _dbfs(float(np.sqrt(np.mean(quiet**2))))
+
     clipped = np.abs(x) >= CLIP_LEVEL
     clip_ratio = float(np.mean(clipped))
     sustained = False
@@ -237,6 +265,7 @@ def decode(path: Path) -> AudioFacts:
         clip_ratio=clip_ratio,
         sustained_clipping=sustained,
         channels=channels,
+        noise_floor_dbfs=noise_floor,
     )
 
 
@@ -268,9 +297,11 @@ def run_checks(
     report.measurements.update(
         {
             "duration_s": round(facts.duration_s, 3),
+            "trimmed_duration_s": round(facts.trimmed_duration_s, 3),
             "sample_rate": facts.sample_rate,
             "channels": facts.channels,
             "peak": round(facts.peak, 5),
+            "peak_dbfs": round(_dbfs(facts.peak), 2),
             "rms_dbfs": round(facts.rms_dbfs, 2),
             "lead_silence_s": round(facts.lead_silence_s, 3),
             "trail_silence_s": round(facts.trail_silence_s, 3),
@@ -278,6 +309,20 @@ def run_checks(
             "clip_ratio": round(facts.clip_ratio, 6),
         }
     )
+    if facts.noise_floor_dbfs is not None:
+        report.measurements["noise_floor_dbfs"] = round(facts.noise_floor_dbfs, 2)
+    else:
+        report.measurements["noise_floor_unmeasured"] = True
+
+    # Delivery rate, from the SCRIPT's word count over the trimmed length.
+    # The script rather than the transcript on purpose: the production
+    # question is "do my 44 words fit the slot", and a model that drops words
+    # would otherwise look faster rather than worse. WER catches the dropping.
+    script_words = len(normalize(scenario.text).split())
+    if facts.trimmed_duration_s > 0.05 and script_words:
+        wpm = script_words / (facts.trimmed_duration_s / 60.0)
+        report.measurements["speech_rate_wpm"] = round(wpm, 1)
+        report.measurements["script_words"] = script_words
 
     checks = scenario.checks or {}
 
@@ -287,6 +332,41 @@ def run_checks(
         lo, hi = float(dur.get("min", 0)), float(dur.get("max", 1e9))
         ok = lo <= facts.duration_s <= hi
         report.add("duration_in_range", ok, f"{facts.duration_s:.2f}s vs [{lo}, {hi}]")
+
+    # Gate 2b - TRIMMED duration, for anything that has to fit a fixed slot:
+    # a 15-second spot, a shot in an edit. Separate from gate 2 because they
+    # ask different questions - gate 2 asks "is this file sane", this asks
+    # "does the read fit". A model cannot pass this one by padding with
+    # silence, which is exactly why the gate is on the trimmed length.
+    tdur = checks.get("trimmed_duration_s")
+    if isinstance(tdur, dict):
+        lo, hi = float(tdur.get("min", 0)), float(tdur.get("max", 1e9))
+        got = facts.trimmed_duration_s
+        report.add(
+            "trimmed_duration_in_range",
+            lo <= got <= hi,
+            f"{got:.3f}s trimmed vs [{lo}, {hi}] "
+            f"(raw {facts.duration_s:.3f}s, lead {facts.lead_silence_s:.2f} "
+            f"trail {facts.trail_silence_s:.2f})",
+        )
+
+    # Gate 2c - delivery rate. Fast legal copy has to BE fast; a disclaimer
+    # read at a comfortable 150 wpm has not done the job even if every word
+    # is intelligible.
+    rate_spec = checks.get("speech_rate_wpm")
+    if isinstance(rate_spec, dict):
+        got = report.measurements.get("speech_rate_wpm")
+        if got is None:
+            report.add("speech_rate_in_range", False, "clip too short to measure a rate")
+        else:
+            lo, hi = float(rate_spec.get("min", 0)), float(rate_spec.get("max", 1e9))
+            report.add(
+                "speech_rate_in_range",
+                lo <= got <= hi,
+                f"{got:.1f} wpm vs [{lo}, {hi}] "
+                f"({report.measurements['script_words']} script words in "
+                f"{facts.trimmed_duration_s:.2f}s)",
+            )
 
     # Gate 3 - not silent overall.
     not_silent = facts.peak > 1e-4 and facts.rms_dbfs > -70.0
@@ -322,6 +402,49 @@ def run_checks(
         RMS_DBFS_MIN <= facts.rms_dbfs <= RMS_DBFS_MAX,
         f"rms={facts.rms_dbfs:.1f} dBFS vs [{RMS_DBFS_MIN}, {RMS_DBFS_MAX}]",
     )
+
+    # Gate 6b - the mastering spec, when a scenario declares one. ACX (the
+    # Audible/Amazon submission standard) is RMS between -23 and -18 dBFS,
+    # peak no higher than -3 dBFS, noise floor no higher than -60 dBFS. These
+    # are PUBLISHED THRESHOLDS, not taste, which is what makes them worth
+    # gating: the output either lands inside the spec or the production
+    # pipeline has to master it first.
+    rms_spec = checks.get("rms_dbfs")
+    if isinstance(rms_spec, dict):
+        lo, hi = float(rms_spec.get("min", -1e9)), float(rms_spec.get("max", 1e9))
+        report.add(
+            "rms_in_range",
+            lo <= facts.rms_dbfs <= hi,
+            f"rms {facts.rms_dbfs:.2f} dBFS vs [{lo}, {hi}]",
+        )
+
+    peak_max = checks.get("peak_dbfs_max")
+    if peak_max is not None:
+        got = _dbfs(facts.peak)
+        report.add(
+            "peak_below_max",
+            got <= float(peak_max),
+            f"peak {got:.2f} dBFS vs max {peak_max} dBFS",
+        )
+
+    floor_max = checks.get("noise_floor_dbfs_max")
+    if floor_max is not None:
+        if facts.noise_floor_dbfs is None:
+            # No room tone to measure. UNMEASURED, not failed - the same rule
+            # the ASR path follows. Absent evidence is a third state.
+            report.add(
+                "noise_floor_below_max",
+                True,
+                f"not evaluated - under {MIN_NOISE_WINDOW_S}s of lead/trail "
+                f"silence to measure room tone in; noise floor is unmeasured, "
+                f"not passing",
+            )
+        else:
+            report.add(
+                "noise_floor_below_max",
+                facts.noise_floor_dbfs <= float(floor_max),
+                f"noise floor {facts.noise_floor_dbfs:.2f} dBFS vs max {floor_max} dBFS",
+            )
 
     # Measurement - objective audio quality. Free, local, deterministic.
     try:
@@ -396,12 +519,43 @@ def run_checks(
         # Gate 10 - required phrases, normalized on both sides. Covers the
         # amount-and-unit case ("4250.75 with the correct currency") without
         # needing a parser per value type.
+        heard_norm = normalize(transcript)
         for phrase in checks.get("must_say") or []:
             need = normalize(str(phrase))
             report.add(
                 f"must_say[{str(phrase)[:28]}]",
-                need in normalize(transcript),
+                need in heard_norm,
                 f"looked for {need!r}",
+            )
+
+        # Gate 10b - alternation. An invented proper noun has no spelling a
+        # transcriber can be expected to reproduce: "Ironhaus", read correctly,
+        # came back as "Ironhouse" from one model and "Iron House" from the
+        # other, and a must_say for the literal spelling failed BOTH for
+        # pronouncing it right. Any one of the listed forms satisfies the gate,
+        # so the check tests the READING rather than the transcriber's spelling.
+        for group in checks.get("must_say_any") or []:
+            options = [str(g) for g in (group if isinstance(group, (list, tuple)) else [group])]
+            label = "|".join(options)[:26]
+            report.add(
+                f"must_say_any[{label}]",
+                any(normalize(o) in heard_norm for o in options),
+                f"any of {[normalize(o) for o in options]}",
+            )
+
+        # Gate 11 - phrases that must NOT appear. The positive check cannot
+        # express "read this the local way": a model that says "two hundred
+        # fifty thousand rupees" where the numeral was 2,50,000 has said
+        # something true, in the wrong convention, and only a negative
+        # assertion catches it. Also the right shape for a disclosure rule -
+        # "never speak the full account number" - where the failure is a
+        # phrase being PRESENT.
+        for phrase in checks.get("must_not_say") or []:
+            avoid = normalize(str(phrase))
+            report.add(
+                f"must_not_say[{str(phrase)[:24]}]",
+                avoid not in heard_norm,
+                f"must not contain {avoid!r}",
             )
 
     return report

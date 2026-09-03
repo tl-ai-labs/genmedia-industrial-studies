@@ -22,6 +22,19 @@ exists because a real clip failed on it:
   currency         "£7,654.32" vs "7654.32 pounds"  (voi-nar-02)
   thousands sep.   "3,050,003.50" split into three numbers  (voi-nar-02)
   spelling variant "catalogued" vs "cataloged"  (measured, same probe)
+  Indian grouping "Rs 2,50,000" read as lakh, not "two fifty thousand"
+
+THE INDIAN NUMBERING RULE deserves its own note, because it was a WRONG
+ANSWER rather than a missing one. `2,50,000` is grouped 2-2-3, so the
+international thousands pattern did not match it whole - it matched the TAIL
+`50,000` and produced "two fifty thousand", and `1,00,000` came out as
+"one zero". A refund scenario built on that would have failed both models
+identically, which is the signature of an instrument fault, not a model one.
+The grouping itself is the signal: two digits, then twos, then a three, is
+unambiguously Indian - `250,000` cannot match it - so nothing guesses a
+locale. Rupee amounts read in the Indian system for the same reason - that
+is how the amount is said aloud - and both sides are expanded by this one
+function.
 
 THE SYMMETRY ARGUMENT, which is what makes these safe. Every rule here is
 applied identically to both sides. So even a rule that expands something
@@ -84,6 +97,8 @@ SPELLING_VARIANTS = {
     "colours": "colors", "coloured": "colored", "favour": "favor",
     "favourite": "favorite", "honour": "honor", "labour": "labor",
     "neighbour": "neighbor", "behaviour": "behavior", "flavour": "flavor",
+    "harbour": "harbor", "harbours": "harbors", "rumour": "rumor",
+    "armour": "armor", "vapour": "vapor", "endeavour": "endeavor",
     "organise": "organize", "organised": "organized", "recognise": "recognize",
     "realise": "realize", "realised": "realized", "analyse": "analyze",
     "apologise": "apologize", "centre": "center", "theatre": "theater",
@@ -91,6 +106,8 @@ SPELLING_VARIANTS = {
     "licence": "license", "practise": "practice", "traveller": "traveler",
     "cancelled": "canceled", "grey": "gray", "aeroplane": "airplane",
     "programme": "program", "dialogue": "dialog", "judgement": "judgment",
+    # An ASR writes "2 lakhs" where the script says "2 lakh"; same amount.
+    "lakhs": "lakh", "crores": "crore",
 }
 
 _ROMAN_RE = re.compile(r"^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$")
@@ -105,6 +122,24 @@ _ROMAN_WORDS = {"MIX", "DIM", "MID", "DID", "ILL", "LID", "MILD", "CIVIL", "I", 
 _ALNUM_LD = re.compile(r"(?<=[A-Za-z])(?=\d)")
 _ALNUM_DL = re.compile(r"(?<=\d)(?=[A-Za-z])")
 
+# Indian digit grouping: last three digits, then twos. "2,50,000" and
+# "1,50,00,000" match; "250,000" and "3,050,003.50" cannot, so this never
+# has to guess which convention a number was written in.
+_INDIAN_GROUPED = re.compile(r"\b\d{1,2}(?:,\d{2})+,\d{3}(?:\.\d+)?\b")
+# "Rs 4,99,999" / "Rs. 4,99,999" / "INR 4,99,999" are the rupee symbol
+# spelled out. Rewritten to the symbol so ONE currency path handles them all.
+_RUPEE_WORD = re.compile(r"\b(?:rs\.?|inr)\s*(?=\d)", re.IGNORECASE)
+# "%" is a WORD a speaker says. Stripped as punctuation it vanished, so a
+# script saying "thirty percent" and an ASR writing "30%" shared nothing -
+# the same shape of fault as "sixteen gigabytes" versus "16 GB". "per cent"
+# folds to one spelling for the same reason.
+_PERCENT = re.compile(r"\s*%")
+_PER_CENT = re.compile(r"\bper\s+cent\b")
+# "14th" -> "fourteenth". The script spells an ordinal out and the ASR writes
+# the digit form, so without this a correct date read fails on notation. Note
+# _split_alnum already protects "14th" from becoming "14 th"; this turns the
+# protected token into the word a speaker actually says.
+_DIGIT_ORDINAL = re.compile(r"\b(\d+)(st|nd|rd|th)\b", re.IGNORECASE)
 _THOUSANDS = re.compile(r"\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b")
 _DECIMAL = re.compile(r"\b\d+\.\d+\b")
 _MERIDIEM = re.compile(r"\b([ap])\.\s?m\.", re.IGNORECASE)
@@ -163,8 +198,14 @@ def _split_alnum(text: str) -> str:
     return " ".join(out)
 
 
-def _words_int(n: int) -> str:
-    return num2words(n, lang="en")
+def _words_int(n: int, indian: bool = False) -> str:
+    """
+    `indian` selects the lakh/crore system. num2words ships it as the
+    "en_IN" locale (note the underscore - "en-IN" silently falls back to
+    international, which is the kind of typo that produces a plausible wrong
+    answer rather than an error).
+    """
+    return num2words(n, lang="en_IN" if indian else "en")
 
 
 def _decimal_words(whole: str, frac: str) -> str:
@@ -190,21 +231,25 @@ def _money_words(whole: str, frac: str, unit: str) -> str:
     """
     minor = {"dollars": "cents", "pounds": "pence", "euros": "cents",
              "rupees": "paise", "yen": "", "cents": ""}.get(unit, "")
-    head = f" {_words_int(int(whole or 0))} {unit} "
+    # A rupee amount is read in the Indian system - "two lakh fifty thousand
+    # rupees", not "two hundred fifty thousand rupees". Both sides go through
+    # here, so this decides how the amount is COMPARED, not who is right.
+    indian = unit in ("rupees", "paise")
+    head = f" {_words_int(int(whole or 0), indian)} {unit} "
     if not frac or not minor:
         return head
     value = int(frac.ljust(2, "0")[:2])
     return head if value == 0 else f"{head}and {_words_int(value)} {minor} "
 
 
-def _cardinal(value: str) -> str:
+def _cardinal(value: str, indian: bool = False) -> str:
     """A number written with separators is a QUANTITY, not an identifier."""
     plain = value.replace(",", "")
     if "." in plain:
         whole, _, frac = plain.partition(".")
         return _decimal_words(whole, frac)
     try:
-        return f" {_words_int(int(plain))} "
+        return f" {_words_int(int(plain), indian)} "
     except ValueError:
         return value
 
@@ -237,6 +282,11 @@ def normalize(text: str) -> str:
     # 2. "3:47 a.m." -> "3:47 am"; the bare dots would otherwise become "a m".
     text = _MERIDIEM.sub(lambda m: f"{m.group(1)}m", text)
 
+    # 2b. "Rs"/"Rs."/"INR" before a number IS the rupee symbol. Rewriting it
+    #     here means the currency pass below handles rupees exactly like every
+    #     other currency, including the major/minor split.
+    text = _RUPEE_WORD.sub("\u20b9", text)
+
     # 3. Currency. ONE pass over symbol-plus-amount, so the amount is spoken
     #    the way a reader says it - major and minor units, not "point five".
     def _money(m: re.Match) -> str:
@@ -254,9 +304,13 @@ def normalize(text: str) -> str:
     _UNITS = "pounds|pence|euros|yen|dollars|cents|rupees|paise"
     text = re.sub(
         rf"\b(\d[\d,]*(?:\.\d+)?)\s+({_UNITS})\b",
-        lambda m: f"{_cardinal(m.group(1))}{m.group(2)} ",
+        lambda m: f"{_cardinal(m.group(1), m.group(2) in ('rupees', 'paise'))}{m.group(2)} ",
         text,
     )
+
+    # 3c. Percent, before the strip turns "%" into nothing.
+    text = _PERCENT.sub(" percent", text)
+    text = _PER_CENT.sub("percent", text)
 
     # 3b. Joined alphanumerics, then unit abbreviations. Both run BEFORE the
     #     number pass so "512GB" becomes "512 gigabyte" and not "512gb".
@@ -273,8 +327,16 @@ def normalize(text: str) -> str:
 
     text = _ABBREV.sub(_ab, text)
 
+    # 4b. Digit ordinals, before the bare-digit pass would see "14" alone.
+    text = _DIGIT_ORDINAL.sub(
+        lambda m: f" {num2words(int(m.group(1)), lang='en', to='ordinal')} ", text
+    )
+
     # 5. Numbers carrying separators or a decimal point are quantities and
     #    must survive punctuation stripping as ONE number, not three.
+    #    Indian grouping FIRST: `_THOUSANDS` would otherwise match the tail of
+    #    "2,50,000" and read it as "fifty thousand".
+    text = _INDIAN_GROUPED.sub(lambda m: _cardinal(m.group(0), True), text)
     text = _THOUSANDS.sub(lambda m: _cardinal(m.group(0)), text)
     text = _DECIMAL.sub(lambda m: _cardinal(m.group(0)), text)
 

@@ -263,3 +263,126 @@ def test_splitting_does_not_disturb_plain_numbers_or_digit_strings():
     assert normalize("482916") == "four eight two nine one six"
     assert normalize("007") == "zero zero seven"
     assert normalize("press 3") == "press three"
+
+
+# --------------------------------------------------------------------------
+# Indian numbering. Added 2026-09-03 while building the real-use-case bank.
+# This was a WRONG ANSWER, not a gap: "2,50,000" is grouped 2-2-3, the
+# international pattern matched only its TAIL, and the numbers came out
+# mangled. A refund scenario built on it would have failed both models
+# identically - an instrument fault wearing a model fault's clothes.
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "written,spoken",
+    [
+        ("Rs 2,50,000", "two lakh fifty thousand rupees"),
+        ("Rs. 2,50,000", "two lakh fifty thousand rupees"),
+        ("INR 2,50,000", "two lakh fifty thousand rupees"),
+        ("₹2,50,000", "two lakh fifty thousand rupees"),
+        ("2,50,000 rupees", "two lakh fifty thousand rupees"),
+        ("Rs 4,99,999", "four lakh ninety nine thousand nine hundred and ninety nine rupees"),
+        ("Rs 1,00,000", "one lakh rupees"),
+        ("1,50,00,000", "one crore fifty lakh"),
+    ],
+)
+def test_indian_grouped_amounts_read_as_lakh_and_crore(written, spoken):
+    assert normalize(written) == normalize(spoken)
+
+
+def test_the_international_reading_of_an_indian_numeral_does_not_converge():
+    """
+    The property the must_not_say gate depends on. A model that reads
+    2,50,000 as "two hundred fifty thousand" has said something TRUE in the
+    wrong convention - if normalization folded the two together, no check
+    could ever see the difference and the scenario would measure nothing.
+    """
+    indian = normalize("Rs 2,50,000")
+    for wrong in ("two hundred fifty thousand rupees",
+                  "two hundred and fifty thousand rupees",
+                  "250 thousand rupees"):
+        assert normalize(wrong) != indian
+
+
+def test_one_lakh_written_in_digits_no_longer_collapses():
+    """Regression: "1,00,000" normalized to "one zero" before this rule."""
+    out = normalize("1,00,000")
+    assert out == "one lakh"
+
+
+def test_international_grouping_is_untouched_by_the_indian_rule():
+    # 250,000 cannot match the Indian pattern, so nothing has to guess.
+    assert normalize("250,000") == "two hundred and fifty thousand"
+    assert normalize("3,050,003.50").startswith("three million")
+    assert "lakh" not in normalize("$250,000")
+
+
+def test_lakh_and_crore_plurals_fold_to_one_form():
+    assert normalize("5 lakhs") == normalize("5 lakh")
+    assert normalize("2 crores") == normalize("2 crore")
+
+
+def test_a_rupee_amount_keeps_its_paise():
+    out = normalize("₹2,50,000.75")
+    assert "paise" in out and "point" not in out
+
+
+# --------------------------------------------------------------------------
+# Percent. Added 2026-09-03: "%" was stripped as punctuation, so a script
+# saying "thirty percent" and an ASR writing "30%" shared nothing and two
+# correct ad reads would have failed their must_say gates.
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "written,spoken",
+    [
+        ("30%", "thirty percent"),
+        ("24.9%", "twenty-four point nine percent"),
+        ("up to 30% off", "up to thirty percent off"),
+        ("24.9 per cent", "24.9 percent"),
+        ("100%", "one hundred percent"),
+    ],
+)
+def test_percent_is_a_spoken_word_not_punctuation(written, spoken):
+    assert normalize(written) == normalize(spoken)
+
+
+def test_percent_does_not_glue_itself_to_the_number():
+    assert normalize("30%") == "thirty percent"
+    assert "30" not in normalize("30%")
+
+
+# --------------------------------------------------------------------------
+# Gaps found by the first full bank run, 2026-09-03. Both failed CORRECT
+# reads on notation alone, on both models identically.
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "written,spoken",
+    [
+        ("Thursday the 14th", "Thursday the fourteenth"),
+        ("the 23rd of March", "the twenty-third of March"),
+        ("the 1st and 2nd", "the first and second"),
+        ("21st century", "twenty-first century"),
+    ],
+)
+def test_digit_ordinals_read_as_the_word_a_speaker_says(written, spoken):
+    assert normalize(written) == normalize(spoken)
+
+
+def test_an_ordinal_is_not_split_into_a_number_and_a_suffix():
+    """Regression on the older rule: "14th" must not become "14 th"."""
+    out = normalize("the 14th")
+    assert "th" not in out.split() and "14" not in out.split()
+
+
+def test_harbour_folds_like_its_siblings():
+    # colour/favour/honour were folded; harbour was simply missing, and cost
+    # a correct narration one WER error.
+    assert normalize("the harbour") == normalize("the harbor")
+    assert normalize("armour and vapour") == normalize("armor and vapor")
+
+
+def test_plain_digit_strings_are_untouched_by_the_ordinal_rule():
+    assert normalize("482916") == "four eight two nine one six"
+    assert normalize("press 3") == "press three"
