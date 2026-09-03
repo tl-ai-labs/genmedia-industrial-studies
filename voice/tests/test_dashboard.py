@@ -19,7 +19,7 @@ import pytest
 from runner.dashboard import load_runs, render_dashboard, rollup_models
 
 
-def _write_run(root: Path, run_id: str, cells: list[dict]) -> None:
+def _write_run(root: Path, run_id: str, cells: list[dict], scenario_hash: str = "h-orig") -> None:
     """Build a minimal but structurally real run folder."""
     d = root / run_id
     (d / "outputs" / "voice" / "s1").mkdir(parents=True)
@@ -31,6 +31,8 @@ def _write_run(root: Path, run_id: str, cells: list[dict]) -> None:
                 "modality": "voice",
                 "started_at": "2026-09-01T10:00:00+0530",
                 "scenario_count": 1,
+                "scenarios": [{"id": "s1", "task": "text_to_speech", "hash": scenario_hash,
+                               "source": "scenarios/s1.yaml", "source_format": "yaml"}],
                 "git_sha": "abc1234",
                 "models": [{"id": m, "voice_map": {"female_mid_warm": f"{m}-voice"}} for m in models],
                 "judge": {"provider_model": "test-judge"},
@@ -112,16 +114,61 @@ def test_unjudged_cells_are_excluded_from_the_mean_not_zeroed(tmp_path):
     assert models["alpha"].mean_score == pytest.approx(9.0)
 
 
-def test_invalid_cell_counts_as_an_earned_zero(tmp_path):
+def test_an_invalid_cell_is_counted_but_not_averaged_into_quality(tmp_path):
+    """
+    CHANGED 2026-09-03, deliberately. This test previously asserted that an
+    invalid cell's 0.0 stayed in the quality mean. The principle behind that
+    was right - a model must not hide a failure by having it discarded - but
+    the implementation made the headline number unreadable: ten of sixteen
+    cells were gated on TIMING, and the board showed 2.4/10 for two models
+    that had tied at ~9.8 on the one scenario they both cleared. A clean read
+    that is 2.5s too long for an ad slot is the wrong LENGTH, not bad audio.
+
+    One number was being asked two questions. Now quality is meaned over
+    scored cells, the failure is carried in `invalid` and `gate_pass_rate`,
+    and ranking is gate-first - so failing more can never look like scoring
+    higher. Nothing is discarded; it is reported in the field that means it.
+    """
     root = tmp_path / "runs"; root.mkdir()
-    _write_run(root, "2026-09-01_100000_voice-r1", [
-        {"model": "alpha", "status": "scored", "score": 9.0},
-        {"model": "alpha", "status": "invalid", "score": 0.0, "passed": False, "wer": 0.9},
-    ])
+    _write_run(root, "2026-09-01_100000_voice-a", [
+        {"model": "alpha", "status": "scored", "score": 9.0}])
+    _write_run(root, "2026-09-01_110000_voice-b", [
+        {"model": "alpha", "status": "invalid", "score": 0.0, "passed": False, "wer": 0.9}])
+
     m = rollup_models(load_runs(root, "voice"))[0]
-    # Both rows share a key, so the loader keeps one - what matters is that a
-    # 0.0 from an invalid cell is a real score and is NOT discarded.
-    assert m.scores and all(s is not None for s in m.scores)
+    assert m.mean_score == pytest.approx(9.0)   # not 4.5
+    assert m.scored_n == 1 and m.evaluated_n == 2   # the denominator travels with it
+    assert m.invalid == 1                       # the failure is still counted
+    assert m.gate_pass_rate == pytest.approx(0.5)
+
+
+def test_failing_more_can_never_outrank_delivering_more(tmp_path):
+    """
+    The trap the gate-first ranking exists to close. `flaky` scores higher on
+    the one cell it did not fail; `solid` cleared every cell. Ranking on
+    quality alone would put the failing model first.
+    """
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-a", [
+        {"model": "solid", "status": "scored", "score": 9.0},
+        {"model": "flaky", "status": "scored", "score": 9.9}])
+    _write_run(root, "2026-09-01_110000_voice-b", [
+        {"model": "solid", "status": "scored", "score": 9.0},
+        {"model": "flaky", "status": "invalid", "score": 0.0, "passed": False, "wer": 0.9}])
+
+    order = [m.model_id for m in rollup_models(load_runs(root, "voice"))]
+    assert order == ["solid", "flaky"], order
+
+
+def test_the_rendered_mean_always_carries_its_denominator(tmp_path):
+    """9.7 over one cell and 9.7 over eight are not the same claim."""
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-a", [
+        {"model": "alpha", "status": "scored", "score": 9.0}])
+    _write_run(root, "2026-09-01_110000_voice-b", [
+        {"model": "alpha", "status": "invalid", "score": 0.0, "passed": False, "wer": 0.9}])
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    assert "(1 of 2)" in html
 
 
 def test_a_close_result_renders_as_a_declared_tie(runs_root):
@@ -267,3 +314,55 @@ def test_total_spread_and_repeat_spread_measure_different_things():
     assert m.score_spread == 3.5      # looks wildly inconsistent
     assert m.repeat_spread == 0.0     # but repeats perfectly
     assert m.scenario_spread == 3.5   # the variation is between scenarios
+
+
+# --------------------------------------------------------------------------
+# A repeat is the same SCRIPT, not the same id. Added 2026-09-03 after
+# vr-game-02 was run, found to carry a gate no correct reading could pass,
+# fixed, and re-run under its own id. Keyed on the id alone those two runs
+# look like a repeat, and the size of OUR EDIT would be published as this
+# machine's noise floor - the number every "is this gap real" verdict is
+# divided by.
+# --------------------------------------------------------------------------
+
+def test_an_edited_scenario_is_not_a_repeat_of_its_earlier_self(tmp_path):
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-a", [
+        {"model": "alpha", "status": "scored", "score": 9.0}], scenario_hash="h-before")
+    _write_run(root, "2026-09-01_110000_voice-b", [
+        {"model": "alpha", "status": "scored", "score": 6.0}], scenario_hash="h-after")
+
+    m = {x.model_id: x for x in rollup_models(load_runs(root, "voice"))}["alpha"]
+    # Same id, two definitions -> not a repeat, so no noise floor is claimed.
+    assert m.repeat_spread is None
+    assert m.repeated_scenarios == 0
+    # The 3.0 difference is still visible as total spread; it is simply not
+    # allowed to masquerade as run-to-run noise.
+    assert m.score_spread == pytest.approx(3.0)
+
+
+def test_two_runs_of_the_identical_scenario_are_a_repeat(tmp_path):
+    root = tmp_path / "runs"; root.mkdir()
+    for rid, score in (("2026-09-01_100000_voice-a", 9.0), ("2026-09-01_110000_voice-b", 8.8)):
+        _write_run(root, rid, [{"model": "alpha", "status": "scored", "score": score}],
+                   scenario_hash="h-same")
+    m = {x.model_id: x for x in rollup_models(load_runs(root, "voice"))}["alpha"]
+    assert m.repeated_scenarios == 1
+    assert m.repeat_spread == pytest.approx(0.2)
+
+
+def test_the_repeats_tab_excludes_a_stale_definition_and_says_so(tmp_path):
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-old", [
+        {"model": "alpha", "status": "scored", "score": 9.0},
+        {"model": "beta", "status": "scored", "score": 8.0}], scenario_hash="h-before")
+    for rid, a, b in (("2026-09-01_110000_voice-n1", 7.0, 6.9),
+                      ("2026-09-01_120000_voice-n2", 7.1, 6.8)):
+        _write_run(root, rid, [{"model": "alpha", "status": "scored", "score": a},
+                               {"model": "beta", "status": "scored", "score": b}],
+                   scenario_hash="h-after")
+
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    assert "different version" in html
+    # The excluded run's score must not appear as a repeat column.
+    assert "9.000" not in html.split('id="p-repeats"')[1].split("</section>")[0]
