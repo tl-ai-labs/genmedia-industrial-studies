@@ -68,6 +68,9 @@ class Cell:
     calibration_trusted: bool
     criterion_scores: dict[str, float] = field(default_factory=dict)
     audio_rel: str | None = None
+    # sha256 of the scenario INPUT as this run froze it. Two cells are
+    # repeats of each other only if this matches - see rollup_models().
+    scenario_hash: str = ""
 
     @property
     def total_micro(self) -> int:
@@ -151,6 +154,10 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
         partial = incomplete_scenarios(RunPaths(Path(runs_root), d.name))
 
         voices = {m["id"]: m.get("voice_map", {}) for m in man.get("models", [])}
+        # The manifest freezes a hash per scenario. It is what makes "the same
+        # scenario, run twice" a checkable claim rather than a naming
+        # convention: an id is reused across edits, a hash is not.
+        scen_hash = {sc.get("id"): (sc.get("hash") or "") for sc in (man.get("scenarios") or [])}
         for key, crec in checks.items():
             sid, mid = key.split("|", 1)
             srec = scores.get(key, {})
@@ -176,6 +183,7 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
                     cost_micro=int(gcfg.get("micro_usd", 0)),
                     asr_micro=asr_cost.get(key, 0),
                     judge_micro=int((jrec.get("cost") or {}).get("micro_usd", 0)),
+                    scenario_hash=scen_hash.get(sid, ""),
                     audio_q=meas.get("audio_quality_1_5"),
                     audio_q_is_mos=bool(meas.get("audio_quality_is_mos")),
                     gates_passed=sum(1 for g in gates if g.get("passed")),
@@ -208,9 +216,25 @@ class ModelRollup:
     attempts: list[int]
     unjudged: int
     invalid: int
-    # scenario_id -> every score that scenario produced, one per run. This is
-    # what separates the two kinds of spread below.
-    by_scenario: dict[str, list[float]] = field(default_factory=dict)
+    # How many cells the mean is actually over, against how many were
+    # EVALUATED. A cell from a run that died partway (status "incomplete")
+    # is not a model outcome - the credential outage on 2026-09-03 left one
+    # arm with two such cells and the other with none, and counting them made
+    # the two models' denominators differ for a reason neither model caused.
+    scored_n: int = 0
+    evaluated_n: int = 0
+    # (scenario_id, scenario_hash) -> every score that exact scenario
+    # produced, one per run. This is what separates the two kinds of spread
+    # below.
+    #
+    # THE HASH IS PART OF THE KEY ON PURPOSE. A scenario id is reused across
+    # edits - vr-game-02 was run, found to carry an unpassable gate, fixed,
+    # and run again under the same id. Keyed on the id alone those two runs
+    # look like a repeat, and their difference would be reported as this
+    # machine's NOISE FLOOR when it is really the size of an edit we made.
+    # That number is the one every "is this gap real" verdict divides by, so
+    # poisoning it would quietly corrupt every comparison on the board.
+    by_scenario: dict[tuple[str, str], list[float]] = field(default_factory=dict)
 
     def _stat(self, xs: list[float]):
         if not xs:
@@ -223,7 +247,21 @@ class ModelRollup:
 
     @property
     def mean_score(self):
+        """Quality over the cells that were actually scored. Never read this
+        without `scored_n`/`n` beside it - see the note in rollup_models."""
         return statistics.mean(self.scores) if self.scores else None
+
+    @property
+    def gate_pass_rate(self):
+        """How often this model produced a clip that cleared its gates.
+
+        The other half of the answer. Quality says how good the output is
+        when it works; this says how often it works, and a model is ranked
+        on this first so that failing more can never look like scoring
+        higher.
+        """
+        base = self.evaluated_n or self.n
+        return (base - self.invalid) / base if base else 0.0
 
     @property
     def score_spread(self):
@@ -247,6 +285,9 @@ class ModelRollup:
         two models means anything. Returns None when no scenario has been run
         twice, because with a single sample there is no noise to measure and
         reporting 0.0 would claim perfect consistency we have not observed.
+
+        "The same script" means byte-identical INPUT, enforced by the frozen
+        hash in the key - not merely the same scenario id.
         """
         repeats = [max(v) - min(v) for v in self.by_scenario.values() if len(v) > 1]
         return max(repeats) if repeats else None
@@ -294,10 +335,24 @@ def rollup_models(runs: list[RunSummary]) -> list[ModelRollup]:
             by.setdefault(c.model_id, []).append(c)
     out: list[ModelRollup] = []
     for i, (mid, cells) in enumerate(sorted(by.items())):
-        counted = [c for c in cells if c.score is not None]
-        per_scenario: dict[str, list[float]] = {}
+        # A cell that failed its gates carries score 0.0 and status "invalid".
+        # Averaging those into the quality mean answers no question anyone
+        # asks: on 2026-09-03 ten of sixteen cells were gated on TIMING, and
+        # the board read 2.4/10 for two models that had tied at ~9.8 on the
+        # one scenario they both cleared. Worse, the zeros came from fitness
+        # gates - a perfectly clean read that was 2.5s too long for an ad slot
+        # is not a quality failure, it is the wrong length.
+        #
+        # So: quality is meaned over cells that were SCORED, and the count of
+        # invalid cells is carried beside it, never folded into it. This is
+        # the same rule `unjudged` already follows - unmeasured is not zero.
+        # The denominator travels with the number everywhere it is rendered,
+        # because a 9.7 over one cell and a 9.7 over eight are not the same
+        # claim, and a model must not look better for having failed more.
+        counted = [c for c in cells if c.score is not None and c.status != "invalid"]
+        per_scenario: dict[tuple[str, str], list[float]] = {}
         for c in counted:
-            per_scenario.setdefault(c.scenario_id, []).append(c.score)
+            per_scenario.setdefault((c.scenario_id, c.scenario_hash), []).append(c.score)
         out.append(
             ModelRollup(
                 model_id=mid,
@@ -313,10 +368,17 @@ def rollup_models(runs: list[RunSummary]) -> list[ModelRollup]:
                 attempts=[c.attempts for c in cells if c.attempts],
                 unjudged=sum(1 for c in cells if c.status == "unjudged"),
                 invalid=sum(1 for c in cells if c.status == "invalid"),
+                scored_n=len(counted),
+                evaluated_n=sum(1 for c in cells if c.status != "incomplete"),
                 by_scenario=per_scenario,
             )
         )
-    out.sort(key=lambda m: (m.mean_score is None, -(m.mean_score or 0)))
+    # Rank on the GATE first, quality only within the set that cleared it.
+    # Meaning quality over scored cells alone would otherwise reward failing:
+    # a model that produced one usable clip out of eight, scoring 9.9, would
+    # outrank one that produced eight at 9.5. Same rule the study console
+    # applies to runs - cheapest is never best unless it verified.
+    out.sort(key=lambda m: (-m.gate_pass_rate, m.mean_score is None, -(m.mean_score or 0)))
     return out
 
 
@@ -395,6 +457,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
             "<tr>"
             f'<td class="mono"><i class="dot" style="background:{m.accent}"></i>{_e(m.model_id)}</td>'
             f'<td class="n">{_num(m.mean_score, "{:.3f}")}'
+            + f' <span class="dim">({m.scored_n} of {m.evaluated_n or m.n})</span>'
             + (' <span class="pill pill-warning">unc</span>' if uncalibrated else "")
             + "</td>"
             f'<td class="n">±{m.score_spread:.3f}</td>'
@@ -522,7 +585,22 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
     # no answer, and the tab says so rather than implying stability.
     rep_blocks: list[str] = []
     for sid in scenarios:
-        sruns = [r for r in runs if any(c.scenario_id == sid and c.score is not None for c in r.cells)]
+        cand = [r for r in runs if any(c.scenario_id == sid and c.score is not None for c in r.cells)]
+
+        # A repeat is the same SCRIPT and the same GATES, asked twice - not
+        # the same id twice. vr-game-02 was run, found to carry a gate no
+        # correct reading could pass, fixed, and run again under its own id;
+        # comparing across that edit would report the size of our change as
+        # the machine's noise floor. Runs are newest-last, so the current
+        # definition wins and earlier ones are excluded and counted.
+        def _defhash(r, _sid=sid):
+            return next((c.scenario_hash for c in r.cells
+                         if c.scenario_id == _sid and c.score is not None), "")
+
+        newest = _defhash(cand[-1]) if cand else ""
+        sruns = [r for r in cand if _defhash(r) == newest]
+        stale = len(cand) - len(sruns)
+
         by_model: dict[str, dict[str, float]] = {}
         for r in sruns:
             for c in r.cells:
@@ -594,6 +672,12 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
         elif n < 2:
             warn = ('<p class="lead">Run this scenario again to measure how much its scores move '
                     'on their own.</p>')
+        if stale:
+            warn += (f'<p class="lead">{stale} earlier run{"s" if stale != 1 else ""} of this '
+                     f'scenario used a <strong>different version</strong> of it and '
+                     f'{"are" if stale != 1 else "is"} excluded from the spread above. A repeat '
+                     f'has to be the same script and the same gates, or what it measures is our '
+                     f'edit rather than the model.</p>')
 
         rep_blocks.append(
             f'<h3 class="mono">{_e(sid)} <span class="dim">· {n} run{"s" if n != 1 else ""}</span></h3>'
