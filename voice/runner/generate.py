@@ -30,6 +30,8 @@ WHAT THIS FILE ENFORCES, and why each rule is here:
 
 from __future__ import annotations
 
+import json
+
 import random
 import threading
 import time
@@ -442,7 +444,14 @@ def measure_cell(
             label = f"asr {scenario.id} x {model.id}"
 
             def _do_asr():
-                return asr.transcribe(outcome.output_path, duration, scenario.language)
+                return asr.transcribe(
+                    outcome.output_path, duration, scenario.language,
+                    # Names the recogniser has no reason to know. Biasing does
+                    # not make a wrong reading right - it removes the
+                    # transcriber's ignorance as a confound, leaving the
+                    # model's pronunciation as the thing measured.
+                    hotwords=list((scenario.checks or {}).get("asr_hotwords") or []),
+                )
 
             def _guarded():
                 return call_with_deadline(_do_asr, 180.0 + DEADLINE_GRACE_S, label)
@@ -612,4 +621,148 @@ def run_generation(
     if aborted:
         tel.write("telemetry", {"step": "run", "status": "aborted", "reason": "budget cap reached"})
 
+    try:
+        run_group_checks(outcomes, tel, log=log)
+    except Exception as exc:  # noqa: BLE001
+        # This stage runs AFTER every clip has been generated and paid for. A
+        # group gate is worth having and never worth losing a finished run
+        # over, so it is recorded as a failed measurement, not raised.
+        log(f"  group    ERROR {type(exc).__name__}: {exc} - per-clip results are unaffected")
+        tel.write("telemetry", {"step": "group_checks", "status": "error",
+                                "error": f"{type(exc).__name__}: {exc}"})
+
     return sorted(outcomes, key=lambda o: (o.cell.scenario.id, o.cell.model.id))
+
+
+def run_group_checks(outcomes: list[CellOutcome], tel: Telemetry, log=print) -> None:
+    """
+    Gates that read a SET of clips, not one clip.
+
+    Six scenarios in the bank ask whether several clips are the same voice, or
+    whether they are different voices. No per-clip check can answer that - the
+    evidence lives between the files - so this runs once, after generation,
+    with every outcome in hand.
+
+    It groups by (variant_of, model): the comparison is always WITHIN one
+    model. Asking whether ElevenLabs sounds like Gemini is not the question;
+    asking whether ElevenLabs sounds like itself across six NPCs, or across
+    three languages, is.
+
+    Writes its own records and never touches checks.jsonl - a per-clip gate
+    belongs to its clip, and a group verdict belongs to the group.
+    """
+    from . import voiceprint
+
+    groups: dict[tuple[str, str], list[CellOutcome]] = {}
+    for o in outcomes:
+        sc = o.cell.scenario
+        if not getattr(sc, "group_checks", None) or o.status != "ok" or o.output_path is None:
+            continue
+        groups.setdefault((getattr(sc, "variant_of", "") or sc.id, o.cell.model.id), []).append(o)
+
+    for (group_id, model_id), members in sorted(groups.items()):
+        spec = members[0].cell.scenario.group_checks
+        clips = {
+            (getattr(o.cell.scenario, "variant_id", "") or o.cell.scenario.id): o.output_path
+            for o in members
+        }
+        expected = _expected_group_size(outcomes, group_id, model_id)
+        verdicts = []
+        if "speaker_consistency" in spec:
+            verdicts.append(voiceprint.holds_identity(
+                clips, float(spec["speaker_consistency"].get("min_cosine", 0.90))))
+        if "speaker_distinct" in spec:
+            verdicts.append(voiceprint.voices_are_distinct(
+                clips, float(spec["speaker_distinct"].get("max_cosine", 0.80))))
+
+        # Cross-RUN identity: is this the same voice as the last time we asked?
+        if "speaker_consistency_across_runs" in spec:
+            verdicts.append(_identity_across_runs(
+                members, tel.paths, float(
+                    (spec["speaker_consistency_across_runs"] or {}).get("min_cosine", 0.90)
+                    if isinstance(spec["speaker_consistency_across_runs"], dict) else 0.90)))
+
+        for v in verdicts:
+            rec = {
+                "step": "group_check", "group_id": group_id, "model_id": model_id,
+                "clips_compared": len(clips), "clips_expected": expected,
+                **v.as_record,
+            }
+            # A group that lost a member is not comparable at full strength,
+            # and must say so rather than quietly grading the survivors.
+            if expected and len(clips) < expected:
+                rec["incomplete"] = True
+                rec["detail"] += (f" - INCOMPLETE: {len(clips)} of {expected} clips "
+                                  f"generated, so this verdict covers a subset")
+            tel.write("group_checks", rec)
+            state = "ok  " if v.passed else "FAIL"
+            if not v.measured:
+                state = "n/a "
+            log(f"  group    {group_id:14} {model_id:26} {state} {v.gate} - {v.detail}")
+
+
+def _identity_across_runs(members, paths, min_cosine: float):
+    """
+    "The same voice in episode fifty as in episode one" (vr-drama-01).
+
+    Compares this run's clip against the newest EARLIER run of the same
+    scenario. Two rules make the comparison honest, and both were learned on
+    this project's own dashboard:
+
+      - The earlier run must have frozen the SAME scenario hash. An edited
+        script is a different input, and comparing across an edit reports the
+        size of our change as the model's drift.
+      - No earlier run is UNMEASURED, not a pass. The first run of a scenario
+        establishes a baseline; it cannot also be evidence of holding one.
+    """
+    from . import voiceprint
+
+    o = members[0]
+    sc, model_id = o.cell.scenario, o.cell.model.id
+    want_hash = sc.scenario_hash
+    root, this_run = Path(paths.root), paths.run_id
+
+    prior = None
+    for d in sorted((x for x in root.iterdir() if x.is_dir() and x.name < this_run),
+                    key=lambda x: x.name, reverse=True):
+        man = d / "manifest.json"
+        if not man.exists():
+            continue
+        try:
+            doc = json.loads(man.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        if not any(e.get("id") == sc.id and e.get("hash") == want_hash
+                   for e in doc.get("scenarios", [])):
+            continue
+        wav = d / "outputs" / sc.modality / sc.id / f"{model_id}.wav"
+        if wav.exists():
+            prior = (d.name, wav)
+            break
+
+    if prior is None:
+        return voiceprint.IdentityVerdict(
+            "speaker_consistency_across_runs", True, False,
+            f"not evaluated - no earlier run of '{sc.id}' at this exact scenario "
+            f"hash produced a {model_id} clip. This run is the baseline; holding a "
+            f"voice cannot be shown by the first time we ask for it.",
+        )
+
+    label, wav = prior
+    verdict = voiceprint.holds_identity(
+        {f"earlier ({label.split('_')[-1]})": wav, "this run": o.output_path},
+        min_cosine,
+    )
+    # Same comparison, named for the gate that asked for it.
+    verdict.gate = "speaker_consistency_across_runs"
+    verdict.detail = f"vs run {label} - {verdict.detail}"
+    return verdict
+
+
+def _expected_group_size(outcomes: list[CellOutcome], group_id: str, model_id: str) -> int:
+    """How many clips this group SHOULD have had, including ones that failed."""
+    return sum(
+        1 for o in outcomes
+        if o.cell.model.id == model_id
+        and (getattr(o.cell.scenario, "variant_of", "") or o.cell.scenario.id) == group_id
+    )

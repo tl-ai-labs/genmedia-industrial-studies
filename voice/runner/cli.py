@@ -33,7 +33,7 @@ from .models import load_registry, preflight
 from .mos import build_predictor
 from .report import render
 from .rubrics import load_rubric
-from .scenarios import load_scenarios
+from .scenarios import load_scenarios, repeat_scenarios
 from .summary import write_summary
 from .telemetry import (
     RunPaths,
@@ -99,7 +99,10 @@ def _resolve_run(runs_root: Path, run_id: str | None, modality: str | None) -> R
 
 def _run_per_scenario(args: argparse.Namespace) -> int:
     """Re-enter cmd_run once per scenario, each pass minting its own run."""
-    scenarios = load_scenarios(Path(args.scenarios), args.modality)
+    scenarios = repeat_scenarios(
+        load_scenarios(Path(args.scenarios), args.modality),
+        int(getattr(args, "repeat", 1) or 1),
+    )
     if not scenarios:
         raise SystemExit(f"no {args.modality} scenarios under {args.scenarios}")
 
@@ -200,7 +203,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     runs_root = Path(args.runs)
     registry = load_registry(configs)
 
-    scenarios = load_scenarios(Path(args.scenarios), args.modality)
+    scenarios = repeat_scenarios(
+        load_scenarios(Path(args.scenarios), args.modality),
+        int(getattr(args, "repeat", 1) or 1),
+    )
     if not scenarios:
         raise SystemExit(f"no {args.modality} scenarios under {args.scenarios}")
 
@@ -610,6 +616,10 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--timeout", type=float, default=180.0)
     r.add_argument("--run", help="reuse an existing run id (resume)")
     r.add_argument("--label", help="suffix for the generated run id")
+    r.add_argument("--repeat", type=int, default=1,
+                   help="issue each scenario N times in ONE run - a batch, for the "
+                        "throughput scenarios. Not the same as running twice on "
+                        "different days, which measures run-to-run noise.")
     r.add_argument("--yes", action="store_true", help="skip the pre-flight confirmation")
     r.add_argument("--bundle", action="store_true",
                    help="put every scenario in ONE run folder (default: one run per scenario)")
@@ -638,6 +648,8 @@ def main(argv: list[str] | None = None) -> int:
     al.add_argument("--timeout", type=float, default=180.0)
     al.add_argument("--run", help="reuse an existing run id (resume)")
     al.add_argument("--label", help="suffix for the generated run id")
+    al.add_argument("--repeat", type=int, default=1,
+                    help="issue each scenario N times in ONE run (batch throughput)")
     al.add_argument("--yes", action="store_true", help="skip the pre-flight confirmation")
     al.add_argument("--open", action="store_true", help="open the report and dashboard when done")
     al.add_argument("--bundle", action="store_true",

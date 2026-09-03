@@ -1,0 +1,34 @@
+# VR-ADS-01 - Voice-over for UA creative at volume
+# BLOCKED BY: batch throughput reporting AND speaker cosine across the batch.
+#   The measurement is 50 variants in one pass, reporting speaker-cosine
+#   SPREAD across the batch plus wall-clock, cost and failure rate. Two
+#   missing pieces at once: the batch runner and the embedding.
+# NEEDS: batch mode + speaker cosine (both verified feasible, neither built).
+#
+# REAL APPLICATION. Top gaming advertisers ship 2,400-2,600 creative variants
+# per quarter, up 25-30% year on year, and one title peaked above 3,000
+# creatives per day. Creative lifespan in mature markets has fallen under
+# five days.
+#   Source: AppsFlyer 2026 State of Gaming for Marketers; Segwise, June 2026.
+# CLAIM IF IT PASSES: "Fifty voiced variants in one pass, all in the same
+#   brand voice, so creative testing isn't bottlenecked on audio."
+id: vr-ads-01
+modality: voice
+task: styled_tts
+title: "UA creative variant, one of fifty - Ads"
+input:
+  script: |
+    Three moves left. One shot at the crown. Can you finish it before the timer does? Play free today.
+  language: en-US
+  style: "high-energy mobile game UA read, brand voice held constant"
+params: {voice: male_mid_neutral, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) One variant of fifty, in a brand voice identical across the batch
+  2) Energy sustained without distortion
+  3) The call to action lands cleanly at the end
+checks:
+  duration_s: {min: 3.0, max: 16.0}
+  max_silence_s: 1.0
+  no_clipping: true
+  max_wer: 0.06
+tags: [ads, ua, batch, voice-consistency, blocked, vr-ads-01]

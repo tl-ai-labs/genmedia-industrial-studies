@@ -281,6 +281,107 @@ tr.gaprow td:first-child{font-size:12px}
 </style>
 {% endmacro %}
 
+{% macro filter_css() %}
+<style>
+/* ── Voice lane surface treatment ──────────────────────────────────────
+   The image lane's tokens, unchanged - teal accent, same warn and bad. What
+   is added here is SEPARATION. In dark mode --paper (#101617) and --card
+   (#171f21) sit ten points apart, which reads as one flat sheet once a page
+   is mostly cards; these rules lift the card, deepen the ground behind it,
+   and let each model carry its own accent so two columns are tellable apart
+   at a glance rather than by reading the label. */
+:root, :root[data-theme="dark"]{
+  color-scheme: light;
+  /* LIGHT ONLY, deliberately. This board is read in daylight, screen-shared
+     and pasted into decks, and a dark surface inverts badly in all three.
+     Re-declaring the base tokens here rather than editing the shared asset
+     keeps the image lane's own file untouched - source order does the work,
+     since this macro is emitted after css(). */
+  --paper:#f6f8f8; --card:#ffffff; --ink:#171d20; --muted:#5a686d; --faint:#8a979c;
+  --rule:#e1e8e8; --accent:#0c7d6a; --accent-soft:#e3f2ee; --accent-ink:#0a5f51;
+  --warn:#96590f; --warn-soft:#fbf0dd; --bad:#b3352a; --bad-soft:#f9e9e7;
+  --shadow:0 1px 2px rgba(20,30,30,.05),0 4px 16px rgba(20,30,30,.06);
+  --lift:#ffffff;
+  --ground:#eef2f2;
+  --edge:rgba(12,125,106,.14);
+  --glow:0 0 0 1px rgba(12,125,106,.10);
+}
+body{background:var(--ground);color:var(--ink)}
+
+/* ── filters ───────────────────────────────────────────────────────── */
+.filters{display:flex;flex-wrap:wrap;gap:10px 26px;margin:22px 0 6px;
+  padding:14px 16px;border-radius:12px;background:var(--lift);
+  border:1px solid var(--rule);box-shadow:var(--shadow)}
+.fgroup{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.flab{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+  margin-right:4px;font-family:var(--mono)}
+.chip{font:inherit;font-size:12.5px;padding:5px 12px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--rule);background:transparent;color:var(--muted);
+  transition:background .15s,border-color .15s,color .15s}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;
+  box-shadow:0 1px 6px rgba(12,125,106,.28)}
+.chip .cnt{opacity:.66;margin-left:6px;font-size:11px;font-variant-numeric:tabular-nums}
+
+/* ── scenario cards ────────────────────────────────────────────────── */
+.scard{border:1px solid var(--rule);border-radius:14px;background:var(--lift);
+  padding:18px 20px 16px;margin:16px 0;box-shadow:var(--shadow);
+  transition:border-color .15s,transform .15s}
+.scard:hover{border-color:var(--edge);transform:translateY(-1px)}
+.shead{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.ind{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-ink);
+  background:var(--accent-soft);padding:4px 10px;border-radius:999px;font-weight:700}
+.sid{font-family:var(--mono);font-size:13.5px;font-weight:600;margin-left:10px;color:var(--ink)}
+.wbadge{font-size:12px;font-weight:700;padding:5px 13px;border-radius:999px;white-space:nowrap;
+  letter-spacing:.01em}
+.wbadge.gemini,.wbadge.other{background:var(--accent);color:#fff;
+  box-shadow:0 1px 8px rgba(12,125,106,.3)}
+.wbadge.tie,.wbadge.split{background:var(--warn-soft);color:var(--warn);
+  border:1px solid rgba(150,89,15,.24)}
+.wbadge.none{background:transparent;color:var(--faint);border:1px dashed var(--rule)}
+
+.prompt{margin:14px 0 2px}
+.prompt summary{cursor:pointer;font-size:11.5px;color:var(--faint);font-family:var(--mono);
+  letter-spacing:.04em;text-transform:uppercase}
+.prompt summary:hover{color:var(--accent)}
+.prompt .script{font-size:13.5px;line-height:1.68;color:var(--ink);background:var(--ground);
+  border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 10px 10px 0;
+  margin:10px 0 0}
+
+/* ── side by side ──────────────────────────────────────────────────── */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0 8px}
+@media (max-width:760px){.vs{grid-template-columns:1fr}}
+.col{position:relative;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;
+  background:var(--ground);overflow:hidden}
+.col::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;
+  background:var(--mac,var(--accent));opacity:.85}
+.col.won{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--glow)}
+.cm{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink);
+  display:flex;align-items:center;gap:6px}
+.col.won .cm{color:var(--accent-ink)}
+.cq{font-size:30px;font-weight:680;letter-spacing:-.025em;margin:6px 0 2px;
+  font-variant-numeric:tabular-nums;line-height:1.05}
+.cq .dash{font-size:14px;font-weight:400}
+.cs{font-size:11.5px;color:var(--faint)}
+.col audio{width:100%;height:32px;margin-top:10px;filter:saturate(.85)}
+.tick{color:var(--accent);font-size:13px}
+.sverdict{font-size:13px;color:var(--muted);margin:12px 0 0;line-height:1.6;
+  padding-top:12px;border-top:1px solid var(--rule)}
+.sverdict b{color:var(--ink)}
+
+.howto{border:1px solid var(--rule);border-radius:12px;background:var(--lift);
+  padding:14px 18px;margin:6px 0 18px;box-shadow:var(--shadow)}
+.howto summary{cursor:pointer;font-weight:650;font-size:13.5px;color:var(--accent-ink)}
+.howto summary:hover{color:var(--accent)}
+.hbody{font-size:13.5px;line-height:1.65;color:var(--muted);margin-top:10px}
+.hbody b{color:var(--ink)}
+.hbody ol{padding-left:20px;margin:10px 0}
+.hbody li{margin:7px 0}
+.hbody em{font-style:normal;font-family:var(--mono);font-size:12.5px;color:var(--warn)}
+</style>
+{% endmacro %}
+
 {% macro js() %}
 <script>
 (function () {
@@ -324,6 +425,31 @@ tr.gaprow td:first-child{font-size:12px}
       if (a !== e.target) { a.pause(); }
     });
   }, true);
+
+  // Filters. Two independent axes - industry and result - ANDed, so
+  // "Gaming" + "Gemini wins" answers the question a seller actually asks.
+  var state = {ind: 'all', res: 'all'};
+  function applyFilters() {
+    var shown = 0;
+    document.querySelectorAll('.scard').forEach(function (c) {
+      var ok = (state.ind === 'all' || c.dataset.ind === state.ind) &&
+               (state.res === 'all' || c.dataset.res === state.res);
+      c.hidden = !ok;
+      if (ok) shown++;
+    });
+    var empty = document.querySelector('.nomatch');
+    if (empty) empty.hidden = shown > 0;
+  }
+  document.querySelectorAll('.filters .chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var axis = b.dataset.ind !== undefined ? 'ind' : 'res';
+      var attr = axis === 'ind' ? 'ind' : 'res';
+      b.parentElement.querySelectorAll('.chip').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      state[axis] = b.dataset[attr];
+      applyFilters();
+    });
+  });
 
   var want = (location.hash || '').replace('#', '');
   if (want) {

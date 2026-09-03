@@ -1,0 +1,35 @@
+# VR-ADS-07 - Empathetic category tone
+# BLOCKED BY: a blind human listener panel.
+#   The measurement is whether listeners can tell an empathetic read from an
+#   authoritative one WITHOUT being told which is which, and mislabelling
+#   fails. In a regulated category that judgement is compliance-adjacent, and
+#   an LLM judge's opinion is not the one that matters - the approving
+#   client's is.
+# NEEDS: a listener panel + prosody distance between the two reads.
+#
+# REAL APPLICATION. Healthcare and financial advertising require sincerity
+# rather than sales energy; tone here is a compliance-adjacent judgement.
+#   Source: standard category practice in regulated advertising.
+# CLAIM IF IT PASSES: "Our model distinguishes sincere from salesy, which is
+#   the difference that gets healthcare copy approved."
+id: vr-ads-07
+modality: voice
+task: styled_tts
+title: "Patient information, empathetic register - Ads"
+input:
+  script: |
+    If you have been putting off the conversation, you are not alone. Talk to your doctor about whether screening is right for you. It takes fifteen minutes, and it is free at any participating clinic.
+  language: en-GB
+  style: "empathetic - sincere, unhurried, no sales lift at the end"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Sincere rather than promotional - no upward sales inflection
+  2) Clearly distinguishable from the same copy read authoritatively
+  3) The practical details still land clearly at the close
+checks:
+  duration_s: {min: 8.0, max: 26.0}
+  max_silence_s: 1.5
+  no_clipping: true
+  max_wer: 0.06
+  must_say: ["fifteen minutes"]
+tags: [ads, healthcare, tone, compliance, listener-panel, blocked, vr-ads-07]

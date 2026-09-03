@@ -48,6 +48,18 @@ voice:
       # the way sample rates are (section 07 voice caveat).
       female_mid_warm: "Aoede"
       male_mid_neutral: "Charon"
+      # --- the NPC cast, added 2026-09-03 for vr-game-04 ---------------
+      # Six logical roles, each pinned to a DIFFERENT catalogue voice on this
+      # provider. The scenario asks whether a studio can ship six mutually
+      # distinguishable NPCs; six style directives over one voice id cannot
+      # answer that, because a style directive changes delivery and not
+      # identity. Verified against the live catalogue on 2026-09-03.
+      npc_quartermaster: "Charon"    # informative, steady
+      npc_scout: "Leda"              # youthful
+      npc_handler: "Kore"            # firm
+      npc_medic: "Aoede"             # breezy, warm
+      npc_engineer: "Puck"           # upbeat, dry
+      npc_trader: "Fenrir"           # excitable
     params: {format: wav, sample_rate: 24000}
     price:
       unit: tokens
@@ -77,6 +89,18 @@ voice:
     voice_map:
       female_mid_warm: "Aoede"
       male_mid_neutral: "Charon"
+      # --- the NPC cast, added 2026-09-03 for vr-game-04 ---------------
+      # Six logical roles, each pinned to a DIFFERENT catalogue voice on this
+      # provider. The scenario asks whether a studio can ship six mutually
+      # distinguishable NPCs; six style directives over one voice id cannot
+      # answer that, because a style directive changes delivery and not
+      # identity. Verified against the live catalogue on 2026-09-03.
+      npc_quartermaster: "Charon"    # informative, steady
+      npc_scout: "Leda"              # youthful
+      npc_handler: "Kore"            # firm
+      npc_medic: "Aoede"             # breezy, warm
+      npc_engineer: "Puck"           # upbeat, dry
+      npc_trader: "Fenrir"           # excitable
     params: {format: wav, sample_rate: 24000}
     price:
       unit: tokens
@@ -106,6 +130,18 @@ voice:
     voice_map:
       female_mid_warm: "Aoede"
       male_mid_neutral: "Charon"
+      # --- the NPC cast, added 2026-09-03 for vr-game-04 ---------------
+      # Six logical roles, each pinned to a DIFFERENT catalogue voice on this
+      # provider. The scenario asks whether a studio can ship six mutually
+      # distinguishable NPCs; six style directives over one voice id cannot
+      # answer that, because a style directive changes delivery and not
+      # identity. Verified against the live catalogue on 2026-09-03.
+      npc_quartermaster: "Charon"    # informative, steady
+      npc_scout: "Leda"              # youthful
+      npc_handler: "Kore"            # firm
+      npc_medic: "Aoede"             # breezy, warm
+      npc_engineer: "Puck"           # upbeat, dry
+      npc_trader: "Fenrir"           # excitable
     params: {format: wav, sample_rate: 24000}
     price:
       unit: tokens
@@ -147,6 +183,18 @@ voice:
       # is exactly the added colour this scenario's brief rules out.
       female_mid_warm: "XrExE9yKIg1WjnnlVkGX"   # Matilda - female, middle-aged, American, informative_educational
       male_mid_neutral: "cjVigY5qzO86Huf0OWal"  # Eric    - male,   middle-aged, American, closest to neutral
+      # --- the NPC cast, added 2026-09-03 for vr-game-04 ---------------
+      # Six logical roles, each pinned to a DIFFERENT catalogue voice on this
+      # provider. The scenario asks whether a studio can ship six mutually
+      # distinguishable NPCs; six style directives over one voice id cannot
+      # answer that, because a style directive changes delivery and not
+      # identity. Verified against the live catalogue on 2026-09-03.
+      npc_quartermaster: "pqHfZKP75CvOlQylNhV4"  # Bill - male, old, wise
+      npc_scout: "FGY2WhTYpPnrIDTdsKH5"          # Laura - female, young, sassy
+      npc_handler: "pNInz6obpgDQGcFmaJgB"        # Adam - male, dominant, firm
+      npc_medic: "EXAVITQu4vr4xnSDxMaL"          # Sarah - female, reassuring
+      npc_engineer: "SAz9YHcvj6GT2YYXdXww"       # River - neutral, calm
+      npc_trader: "cgSgspJ2msm6clMCkdW9"         # Jessica - female, bright
     params: {format: wav, sample_rate: 24000}
     price:
       unit: per_1k_chars
@@ -223,6 +271,18 @@ voice:
     voice_map:
       female_mid_warm: "XrExE9yKIg1WjnnlVkGX"   # Matilda - see the multilingual-v2 block
       male_mid_neutral: "cjVigY5qzO86Huf0OWal"  # Eric
+      # --- the NPC cast, added 2026-09-03 for vr-game-04 ---------------
+      # Six logical roles, each pinned to a DIFFERENT catalogue voice on this
+      # provider. The scenario asks whether a studio can ship six mutually
+      # distinguishable NPCs; six style directives over one voice id cannot
+      # answer that, because a style directive changes delivery and not
+      # identity. Verified against the live catalogue on 2026-09-03.
+      npc_quartermaster: "pqHfZKP75CvOlQylNhV4"  # Bill - male, old, wise
+      npc_scout: "FGY2WhTYpPnrIDTdsKH5"          # Laura - female, young, sassy
+      npc_handler: "pNInz6obpgDQGcFmaJgB"        # Adam - male, dominant, firm
+      npc_medic: "EXAVITQu4vr4xnSDxMaL"          # Sarah - female, reassuring
+      npc_engineer: "SAz9YHcvj6GT2YYXdXww"       # River - neutral, calm
+      npc_trader: "cgSgspJ2msm6clMCkdW9"         # Jessica - female, bright
     params: {format: wav, sample_rate: 24000}
     price:
       unit: per_1k_chars
@@ -273,7 +333,13 @@ judge:
 asr:
   adapter: local_whisper
   provider: local
-  provider_model: "small.en"
+  # MEDIUM, and multilingual - not small.en. Most of this bank is en-IN, and
+  # the English-only model wrote "ARIES" for "rupees" and "Ragavan" for
+  # "Raghavan", inventing failures on exactly the India-specific scenarios
+  # that target the capability under test. Vendor-neutrality was the reason
+  # to leave Google; language coverage is a second instrument fault and
+  # trading one for the other would have been no gain.
+  provider_model: "medium"
   price:
     unit: per_minute
     usd: 0.0

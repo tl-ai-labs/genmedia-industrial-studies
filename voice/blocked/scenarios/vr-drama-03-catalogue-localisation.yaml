@@ -1,0 +1,33 @@
+# VR-DRAMA-03 - One character, three languages
+# BLOCKED BY: speaker-embedding cosine ACROSS languages (>0.90 required), and
+#   native review per language. Cosine is feasible (see vr-drama-01); the
+#   native reviewer is not something code supplies.
+# NEEDS: speaker cosine + a multilingual ASR + native reviewers for hi and es.
+#
+# REAL APPLICATION. Pocket FM has taken titles into Spanish ("Salvando A
+# Nora", "Imperio Instantaneo") as part of international expansion. For
+# episodic platforms, localisation is how a proven title earns twice.
+#   Source: Pocket FM app store listing announcing Spanish titles.
+# CLAIM IF IT PASSES: "Your lead character keeps the same voice in every
+#   market, so listeners don't feel the actor changed."
+id: vr-drama-03
+modality: voice
+task: styled_tts
+title: "One character across three languages - Micro-drama"
+input:
+  script: |
+    I told you once that I would wait. I did not tell you how long I was willing to wait, because I did not know. Now I do, and the answer is not forever.
+  language: en-GB
+  style: "restrained hurt, a character deciding something"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) A single recognisable character identity, preserved when the same
+     monologue is delivered in Hindi and Spanish
+  2) Emotional range preserved inside each language, not flattened
+  3) A native listener accepts each version as performed, not dubbed
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.0
+  no_clipping: true
+  max_wer: 0.06
+tags: [micro-drama, localisation, voice-consistency, blocked, vr-drama-03]

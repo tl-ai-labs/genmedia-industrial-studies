@@ -1,0 +1,31 @@
+# VR-GAME-06 - Localising an NPC cast
+# BLOCKED BY: speaker cosine across languages (>0.90) + native review per
+#   language. Same blocker as vr-drama-03, in a games context.
+# NEEDS: speaker cosine + multilingual ASR + native reviewers (ja, hi).
+#
+# REAL APPLICATION. Game localisation uses multilingual TTS for placeholder
+# VO and large-scale NPC barks under human direction with native review,
+# while hero characters keep human actors.
+#   Source: GlobalAnnotate game localisation guide, June 2026.
+# CLAIM IF IT PASSES: "Your NPC keeps their character in every language, so
+#   localisation doesn't mean recasting."
+id: vr-game-06
+modality: voice
+task: styled_tts
+title: "One NPC across three languages - Gaming"
+input:
+  script: |
+    The bridge is out. Go around by the mill and watch the treeline.
+  language: en-GB
+  style: "village guard, plain and practical, emotion held constant"
+params: {voice: male_mid_neutral, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) One character identity preserved in English, Hindi and Japanese
+  2) Emotion held constant across all three, so voice is the only variable
+  3) No accent bleed from the source language into the targets
+checks:
+  duration_s: {min: 2.0, max: 14.0}
+  max_silence_s: 1.2
+  no_clipping: true
+  max_wer: 0.06
+tags: [gaming, localisation, voice-consistency, blocked, vr-game-06]

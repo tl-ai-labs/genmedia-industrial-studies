@@ -17,6 +17,7 @@ model the ASR choked on to be the worst.
 
 from __future__ import annotations
 
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,6 +39,58 @@ ASR_MAX_ATTEMPTS = 3  # the first call plus the plan's two retries
 # half of a transcript restates the front half, the tail is the artefact.
 REPEAT_MIN_WORDS = 24          # below this, a genuine refrain is more likely
 REPEAT_MATCH_RATIO = 0.90      # how alike the halves must be to call it a repeat
+
+
+# WHISPER'S OWN FABRICATIONS, and why a list is the honest fix.
+#
+# Whisper was trained on subtitle tracks, so at the end of a clip - especially
+# over trailing silence - it emits the boilerplate those tracks end with. On
+# 2026-09-03 three runs of ONE unchanged passage produced WERs of 0.099, 0.211
+# and 0.479; the audio was identical to within a second, and the difference
+# was a "For more information, go to www.fema.gov" in one and a repeated
+# middle section in another. Read at face value that is a model degrading
+# catastrophically on long-form narration. It is the recogniser talking.
+#
+# `condition_on_previous_text=False` and VAD filtering (set in the backend
+# below) remove the repetition loops. They do NOT remove the boilerplate -
+# they make it consistent, which is worse, because a uniform +0.13 WER looks
+# like a real measurement.
+#
+# So: strip these phrases when they appear at the TAIL, and record that it
+# happened. Never mid-transcript, where a scenario could legitimately contain
+# the words, and never silently. tests/test_scenario_bank.py asserts no script
+# in the bank ends with one, so this can never remove real content.
+TAIL_HALLUCINATIONS = (
+    "thanks for watching", "thank you for watching", "thanks for listening",
+    "thank you for listening", "please subscribe", "subscribe to my channel",
+    "like and subscribe", "for more information go to www fema gov",
+    "for more information visit www fema gov", "www mooji org",
+    "transcription by castingwords", "subtitles by the amara org community",
+    "the end", "bye", "you",
+)
+
+
+def strip_tail_hallucination(text: str) -> tuple[str, list[str]]:
+    """
+    Return (transcript, phrases_removed).
+
+    Only trailing sentences, only exact boilerplate, repeatedly - Whisper
+    sometimes stacks two of them.
+    """
+    removed: list[str] = []
+    body = text.rstrip()
+    for _ in range(4):
+        parts = [p for p in re.split(r"(?<=[.!?])\s+", body) if p.strip()]
+        if len(parts) < 2:
+            break
+        last = re.sub(r"[^a-z0-9 ]+", " ", parts[-1].lower())
+        last = re.sub(r"\s+", " ", last).strip()
+        if last in TAIL_HALLUCINATIONS:
+            removed.append(parts[-1].strip())
+            body = " ".join(parts[:-1]).rstrip()
+            continue
+        break
+    return body, removed
 
 
 def _strip(word: str) -> str:
@@ -83,6 +136,9 @@ class AsrResult:
     # True when a hallucinated repeat was detected and removed. Carried into
     # telemetry and the check record so the repair is visible, never silent.
     repeat_collapsed: bool = False
+    # Subtitle boilerplate removed from the tail, verbatim. Same rule: a
+    # repaired measurement that does not say it was repaired is a lie.
+    tail_stripped: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -212,13 +268,18 @@ class Asr:
         self._backend = build_backend(spec)
 
     def transcribe(
-        self, audio_path: Path, duration_s: float, language: str | None = None
+        self, audio_path: Path, duration_s: float, language: str | None = None,
+        hotwords: list[str] | None = None,
     ) -> AsrResult | AsrFailure:
         last = "unknown failure"
         started = time.perf_counter()
         for attempt in range(1, ASR_MAX_ATTEMPTS + 1):
             try:
-                text = self._backend.transcribe(Path(audio_path), language)
+                try:
+                    text = self._backend.transcribe(Path(audio_path), language, hotwords)
+                except TypeError:
+                    # Backends that predate biasing keep working unchanged.
+                    text = self._backend.transcribe(Path(audio_path), language)
             except Exception as exc:  # noqa: BLE001 - any ASR failure is the same state
                 last = f"{type(exc).__name__}: {exc}"
                 if attempt < ASR_MAX_ATTEMPTS:
@@ -240,6 +301,7 @@ class Asr:
                 else Usage(reported=False, audio_seconds=duration_s)
             )
             cleaned, collapsed = collapse_repeated_transcript(text.strip())
+            cleaned, stripped = strip_tail_hallucination(cleaned)
             return AsrResult(
                 text=cleaned,
                 provider_model=self.spec.provider_model,
@@ -247,6 +309,7 @@ class Asr:
                 cost=compute_cost(usage, self.spec.price, label=f"asr:{self.spec.provider_model}"),
                 attempts=attempt,
                 repeat_collapsed=collapsed,
+                tail_stripped=tuple(stripped),
             )
         return AsrFailure(error=last, attempts=ASR_MAX_ATTEMPTS, provider_model=self.spec.provider_model)
 
@@ -284,13 +347,33 @@ class LocalWhisperBackend:
         )
         self.last_usage: Usage | None = None
 
-    def transcribe(self, audio_path: Path, language: str | None) -> str:
+    def transcribe(self, audio_path: Path, language: str | None,
+                   hotwords: list[str] | None = None) -> str:
         kwargs: dict = {"beam_size": 5}
+        if hotwords:
+            # Bias the recogniser toward names it has no reason to know. A
+            # coined brand or place name is not in its vocabulary, so a
+            # CORRECT reading comes back mis-spelled and fails a phrase gate
+            # that no model could have passed - which is how "Bhiwandi"
+            # became "Bawande" and "Nykaa" became four different words.
+            # Biasing does not make a wrong reading right: it removes the
+            # transcriber's ignorance as a confound, leaving the model's
+            # pronunciation as what is measured.
+            kwargs["hotwords"] = " ".join(dict.fromkeys(hotwords))
         if language:
             code = language.split("-")[0]
             # An English-only model rejects a language argument entirely.
             if not (self.spec.provider_model or "").endswith(".en"):
                 kwargs["language"] = code
+        # Whisper loops and invents over silence. condition_on_previous_text
+        # is the repetition driver; VAD removes the silence the boilerplate
+        # spawns in. Measured 2026-09-03: WER variance across three runs of
+        # one unchanged passage fell from 0.099-0.479 to 0.127-0.141.
+        kwargs.update(
+            condition_on_previous_text=False,
+            vad_filter=True,
+            hallucination_silence_threshold=2.0,
+        )
         segments, _info = self._model.transcribe(str(Path(audio_path)), **kwargs)
         return " ".join(s.text for s in segments).strip()
 

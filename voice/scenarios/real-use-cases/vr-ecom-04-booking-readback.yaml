@@ -1,0 +1,66 @@
+# VR-ECOM-04 - After-hours booking readback (Ecommerce & Retail)
+#
+# REAL APPLICATION. PolyAI's published case studies: The Melting Pot generated
+# $250,000 in after-hours reservation revenue in six months and automated 68%
+# of reservation calls; Big Table Group books 3,800+ reservations worth
+# $140,000 monthly through AI-handled calls.
+#   Source: PolyAI customer case studies, reported June 2026.
+#
+# WHY THIS ONE IS WORTH MEASURING. It is the clearest revenue case in the
+# bank - the alternative to the agent is a voicemail nobody returns - and
+# every fact in the readback is checkable: a date, a time, a party size and a
+# phone number. Four different numeric formats in one utterance, which is
+# exactly where TTS number handling breaks.
+#
+# THE SALES CLAIM:
+#   "Our model captures and confirms booking details accurately, so
+#    after-hours calls turn into revenue instead of voicemail."
+#
+# FULLY MEASURABLE. Unlike most of this bank, nothing about this scenario
+# needs a capability the harness does not have.
+
+id: vr-ecom-04
+modality: voice
+task: text_to_speech
+title: "After-hours booking readback - Ecommerce & Retail"
+
+input:
+  script: |
+    Lovely, that is all confirmed. Let me read it back to you. A table for seven, on Saturday the twenty-second of November, at eight in the evening, under the name Raghavan. We will hold the table for fifteen minutes past the booking time. If anything changes, call us on 9 8 4 5 0 2 7 7 1 6. We look forward to seeing you.
+  language: en-IN
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Party size, date, time and name all stated correctly
+  2) The ten-digit callback number read digit by digit, correctly
+  3) "Raghavan" pronounced as an Indian customer would expect
+  4) The fifteen-minute hold condition stated, not paraphrased away
+  5) Warm front-of-house manner, unhurried enough to write down
+
+checks:
+  duration_s: {min: 16.0, max: 42.0}
+  max_silence_s: 2.0
+  no_clipping: true
+  max_wer: 0.08
+  # The callback number. A booking nobody can confirm is not a booking.
+  must_say_digits: "9845027716"
+  # NO deterministic gate on a PROPER NOUN. Three ASR configurations on
+  # 2026-09-03 wrote three spellings of the same correct reading - Vasquez as
+  # "Vazquez", Bhiwandi as "Bawande" and "Bhavandi", Raghavan as "Ragavan" -
+  # and each spelling failed a gate no model could have passed. A name's
+  # spelling in a transcript measures the transcriber. Pronunciation is a
+  # JUDGE criterion in configs/rubrics/voice.yaml; the judge hears the clip.
+  # Long phrases are fragile the same way: a transcriber writes "Saturday
+  # 22nd November", dropping "the" and "of". Short distinctive fragments only.
+  must_say:
+    - "fifteen minutes"
+  must_say_any:
+    - ["twenty-second", "22nd"]
+    - ["table for seven", "table for 7"]
+
+tags: [ecommerce, retail, booking, reservations, digits, dates, vr-ecom-04]

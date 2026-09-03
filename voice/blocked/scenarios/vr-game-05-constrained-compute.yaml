@@ -1,0 +1,33 @@
+# VR-GAME-05 - On-device autonomous characters
+# BLOCKED BY: not applicable to a cloud TTS comparison, and unmeasurable here.
+#   The measurement is quality and latency AT REDUCED COMPUTE, simulating an
+#   on-device inference budget. Neither arm exposes a compute knob: both are
+#   hosted APIs, and there is nothing to constrain. Answering this honestly
+#   needs locally-run models, which is a different comparison with different
+#   arms - not a harness feature.
+# NEEDS: locally-hosted TTS arms. Out of scope for this bank as constituted.
+#
+# REAL APPLICATION. Krafton's inZOI ships "Smart Zoi" characters running an
+# on-device small model built with NVIDIA ACE, and sold over a million copies
+# in its first week; the approach is extending to PUBG.
+#   Source: NVIDIA ACE announcements; Cinevva AI NPC review, July 2026.
+# CLAIM IF IT PASSES: "Our model degrades gracefully when you constrain
+#   compute, which is what shipping on a player's machine requires."
+id: vr-game-05
+modality: voice
+task: text_to_speech
+title: "Quality and latency at constrained compute - Gaming"
+input:
+  script: |
+    I am heading to the market and then home. Do not wait up for me.
+  language: en-US
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Acceptable quality at a constrained inference budget
+  2) Latency within an on-device interaction budget
+  3) A stated, measured delta against the unconstrained result
+checks:
+  duration_s: {min: 1.5, max: 12.0}
+  no_clipping: true
+  max_wer: 0.06
+tags: [gaming, on-device, not-applicable, blocked, vr-game-05]

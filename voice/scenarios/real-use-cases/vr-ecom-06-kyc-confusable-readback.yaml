@@ -1,0 +1,79 @@
+# VR-ECOM-06 - KYC verification readback, confusable characters (Ecommerce)
+#
+# REAL APPLICATION. In BFSI and fintech, phone agents automate onboarding,
+# verification and anti-fraud checks, cutting turnaround from days to minutes.
+#   Source: CallMissed 2026 report on deployed AI phone agents.
+#
+# THE SALES CLAIM:
+#   "Our model distinguishes B from 8 and Q from O when reading verification
+#    codes, so customers don't have to call back."
+#
+# WHY IT IS TWO VARIANTS, and this is the point of the scenario. A competent
+# verification agent does not read a confusable reference bare - it clarifies
+# with the NATO alphabet, precisely so the listener cannot hear B as 8. So the
+# scenario asks BOTH questions in one comparison:
+#
+#   bare  - the hard case. Every character carries its own confusion risk and
+#           nothing rescues a mispronounced one.
+#   nato  - the mitigation a real agent applies. If a model fails bare and
+#           passes nato, the finding is not "this model cannot read codes" but
+#           "read codes with clarifiers on this model", which is an
+#           instruction a buyer can act on.
+#
+# HOW IT IS MEASURED. Character-exact, not WER: a reference with one wrong
+# character is a failed call however good the clip sounds, and WER forgives
+# one character in eight. Every divergence is reported BY CONFUSABLE CLASS -
+# "turned B into 8" rather than "wrong at position 3" - because the class is
+# what tells a buyer whether the fix is a clarifier or a different model.
+#
+# WHAT THIS DOES NOT COVER. The source scenario also runs the readback over a
+# telephony codec. That degradation is built (runner/degrade.py, Phase 4) and
+# verified not to destroy digit recovery, but it is not applied here: this
+# clip is measured clean, so the result is a ceiling.
+
+id: vr-ecom-06
+modality: voice
+task: text_to_speech
+title: "KYC readback, confusable characters - Ecommerce & Retail"
+
+expected: |
+  1) Every confusable pair distinguishable by ear - B/8, Q/O, Z/2, G/6
+  2) The card last-four correct, and no longer digit run produced
+  3) Unhurried verification pace - a caller is writing this down
+  4) Each character given its own space; no run-together
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+checks:
+  duration_s: {min: 4.0, max: 40.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  # Tell the recogniser the NATO alphabet exists. It is not told the words
+  # were said. Without this it wrote "QUABEQ" for a correctly spoken
+  # "Quebec", and one unmappable token shifts every character after it -
+  # turning a perfect readback into 2 of 8.
+  asr_hotwords: ["Bravo", "Quebec", "Oscar", "Zulu", "Golf", "Alpha", "Charlie",
+                 "Delta", "Echo", "Foxtrot", "Hotel", "India", "Juliet", "Kilo",
+                 "Lima", "Mike", "November", "Papa", "Romeo", "Sierra", "Tango",
+                 "Uniform", "Victor", "Whiskey", "X-ray", "Yankee"]
+  # Character-exact. The gate the scenario exists for.
+  must_say_alnum: "B8QOZ2G6"
+  # The card last-four, and the disclosure rule that goes with it.
+  must_say_digits: "4419"
+  max_digit_run: 8
+
+variants:
+  - id: bare
+    title: "bare readback, no clarifiers"
+    script: |
+      Your verification reference is B 8 Q O Z 2 G 6. Please also confirm the card ending 4 4 1 9.
+  - id: nato
+    title: "with NATO clarifiers"
+    script: |
+      Your verification reference is Bravo, eight, Quebec, Oscar, Zulu, two, Golf, six. Please also confirm the card ending 4 4 1 9.
+
+tags: [ecommerce, bfsi, kyc, confusables, alphanumeric, vr-ecom-06]

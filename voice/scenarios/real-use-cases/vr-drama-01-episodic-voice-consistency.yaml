@@ -1,0 +1,77 @@
+# VR-DRAMA-01 - Episodic narration, voice held across sessions (Micro-drama)
+#
+# REAL APPLICATION. Pocket FM runs 100,000+ hours of original audio fiction
+# for 200M+ listeners, with individual titles reaching 2,296 episodes, and is
+# explicitly using AI in production to release faster. Kuku FM has 122M+ app
+# downloads at roughly 100 minutes of daily listening per user.
+#   Source: Pocket FM app listings and Pocket Xtra blog, Apr 2026.
+#
+# WHY THIS ONE IS WORTH MEASURING. A 2,000-episode title is not one recording
+# session, it is hundreds. If the narrator's voice drifts between them the
+# listener notices before they can name it, and the title is unlistenable
+# long before anyone re-reads the script. This is the scenario where a model
+# that sounds excellent once can still be unusable.
+#
+# THE SALES CLAIM:
+#   "For serialised audio, our model holds the same voice from minute one to
+#    minute ten and from episode one to episode fifty."
+#
+# HOW IT IS MEASURED, and what makes the number honest. The gate compares
+# THIS run's clip against the newest EARLIER run of this scenario, under two
+# rules:
+#
+#   The earlier run must have frozen the SAME scenario hash. An edited script
+#     is a different input; comparing across an edit would report the size of
+#     our own change as the model's drift.
+#   No earlier run is UNMEASURED, never a pass. The first run establishes the
+#     baseline and cannot also be evidence of holding one - so this scenario
+#     reports nothing useful until it has been run twice, by design.
+#
+# THE THRESHOLD IS CALIBRATED, NOT ASSUMED. Measured on this project's own
+# clips 2026-09-03: a model against itself across scenarios scores 0.976
+# (ElevenLabs) and 0.859 (Gemini); two genuinely different models score
+# 0.64-0.78. The scale is compressed, so 0.90 sits well above the
+# different-voice floor while still being a real bar - and one arm already
+# fails it on cross-scenario data.
+#
+# WHAT THIS DOES NOT COVER. The source scenario also asks for a MOS scored
+# separately at minute one and minute ten of a continuous ten-minute segment.
+# This clip is a single passage; long-form intra-clip drift needs a
+# segment-wise scoring stage the harness does not have, and is not claimed.
+
+id: vr-drama-01
+modality: voice
+# styled_tts, not long_form: `long_form` is a RESERVED task name in
+# runner/scenarios.py with no rubric override and no model declaring support,
+# so a scenario using it builds an empty matrix and is refused before any
+# spend. This clip carries a style directive, which is what styled_tts means.
+task: styled_tts
+title: "Episodic narration, voice held across sessions - Micro-drama"
+
+input:
+  script: |
+    The lamps along the causeway came on one at a time, the way they always did, and Sarala counted them without meaning to. Eleven, twelve, thirteen. By the fourteenth she had reached the turning, and by the fifteenth she had decided. She would not go back to the house tonight. She would walk until the road ran out, and then she would see what the sea had to say about it.
+  language: en-GB
+  style: "warm serialised storytelling, one consistent narrator"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) One narrator identity, unchanged from the first line to the last
+  2) The same identity when this scenario is run again in a later session
+  3) Storytelling warmth sustained rather than decaying into list-reading
+  4) The counted numbers read as narration, not as a list
+
+checks:
+  duration_s: {min: 18.0, max: 60.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  max_wer: 0.06
+  # The gate. Compares against the newest earlier run at this same hash.
+  speaker_consistency_across_runs: {min_cosine: 0.90}
+
+tags: [micro-drama, serialised, voice-consistency, cross-run, vr-drama-01]

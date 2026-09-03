@@ -1,0 +1,35 @@
+# VR-ADS-03 - One campaign across Indian markets
+# BLOCKED BY: multilingual ASR + native review + speaker cosine across
+#   languages. Three blockers at once. The INDIAN NUMBERING half of this is
+#   already measurable and is covered by vr-ecom-03, which runs today.
+# NEEDS: multilingual ASR, native reviewers (hi, ta), speaker cosine.
+#
+# REAL APPLICATION. Indian campaigns run across language markets with the
+# brand name held constant; regional-language capability is a stated
+# differentiator among Indian voice vendors.
+#   Source: SquadStack and Indian voice-agent market comparisons, 2026.
+# CLAIM IF IT PASSES: "One brand voice across every Indian market, with local
+#   numbering and your brand name intact."
+id: vr-ads-03
+modality: voice
+task: styled_tts
+title: "One campaign line across Indian markets - Ads"
+input:
+  script: |
+    This Diwali, bring home a Voltas Beko refrigerator for just Rs 4,99,999 across all Croma stores. Voltas Beko. Croma. Offer ends Sunday.
+  language: en-IN
+  style: "festive retail campaign read, warm and celebratory"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Rs 4,99,999 in the Indian system - four lakh ninety nine thousand
+  2) "Voltas Beko" and "Croma" intact and unchanged in every language
+  3) The same brand voice identity in Hindi, Tamil and English
+  4) A native listener in each market accepts it as locally produced
+checks:
+  duration_s: {min: 6.0, max: 26.0}
+  max_silence_s: 1.0
+  no_clipping: true
+  max_wer: 0.10
+  must_say: ["lakh"]
+  must_not_say: ["four hundred ninety nine thousand", "four hundred and ninety nine thousand"]
+tags: [ads, india, multilingual, indian-numbering, blocked, vr-ads-03]

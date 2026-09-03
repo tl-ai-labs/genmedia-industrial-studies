@@ -77,9 +77,11 @@ checks:
   must_say_digits: "4419"
   must_say:
     - "lakh"              # the convention marker - either Indian reading passes
-    - "rupees"
     - "903762"
     - "seven working days"
+    # NOT "rupees": a transcriber wrote "$2,50,000" for a correct rupee
+    # reading. The GROUPING now decides the convention regardless of symbol
+    # (see runner/normalize.py), so the claim survives without the gate.
   # The decisive gate. Every one of these is a TRUE statement of the amount
   # in the wrong convention, which is precisely what a positive check cannot
   # catch. Normalization deliberately does NOT fold these together with the

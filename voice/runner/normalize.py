@@ -227,7 +227,7 @@ def _decimal_words(whole: str, frac: str) -> str:
     return f" {_words_int(int(whole or 0))} point {tail} "
 
 
-def _money_words(whole: str, frac: str, unit: str) -> str:
+def _money_words(whole: str, frac: str, unit: str, force_indian: bool = False) -> str:
     """
     "$137.50" -> "one hundred and thirty seven dollars and fifty cents".
 
@@ -241,7 +241,7 @@ def _money_words(whole: str, frac: str, unit: str) -> str:
     # A rupee amount is read in the Indian system - "two lakh fifty thousand
     # rupees", not "two hundred fifty thousand rupees". Both sides go through
     # here, so this decides how the amount is COMPARED, not who is right.
-    indian = unit in ("rupees", "paise")
+    indian = force_indian or unit in ("rupees", "paise")
     head = f" {_words_int(int(whole or 0), indian)} {unit} "
     if not frac or not minor:
         return head
@@ -298,8 +298,16 @@ def normalize(text: str) -> str:
     #    the way a reader says it - major and minor units, not "point five".
     def _money(m: re.Match) -> str:
         unit = CURRENCY[m.group(1)]
-        whole, _, frac = m.group(2).replace(",", "").partition(".")
-        return _money_words(whole, frac, unit)
+        amount = m.group(2)
+        whole, _, frac = amount.replace(",", "").partition(".")
+        # THE GROUPING BEATS THE SYMBOL. "2,50,000" is grouped 2-2-3, which
+        # is Indian whatever precedes it. A transcriber that heard rupees and
+        # wrote "$2,50,000" - observed 2026-09-03 - otherwise flipped the
+        # amount to "two hundred and fifty thousand dollars" and fired the
+        # very must_not_say gate that exists to catch that reading. The
+        # written form is the evidence; the symbol is the guess.
+        return _money_words(whole, frac, unit,
+                            force_indian=bool(_INDIAN_GROUPED.fullmatch(amount)))
 
     text = re.sub(rf"([{''.join(CURRENCY)}])\s?(\d[\d,]*(?:\.\d+)?)", _money, text)
 
@@ -354,6 +362,21 @@ def normalize(text: str) -> str:
     #    A space, not nothing: "4-8" must become "4 8", never "48".
     text = _UNDERSCORE.sub(" ", text)
     text = _PUNCT.sub(" ", text)
+
+    # 6b. Adjacent bare-digit tokens are ONE identifier. A transcriber writes
+    #     a twelve-digit reference as "481 902 773 154" or "903-762" (the
+    #     hyphen is a space by now), and expanding each group as its own
+    #     cardinal destroyed it: "481 902 773 154" yielded the digits 192731,
+    #     so a perfect readback failed its own gate. Joined only when the
+    #     result is a real identifier - four digits or more - so "two and
+    #     four" and other short adjacent numbers are untouched.
+    _joined: list[str] = []
+    for tok in text.split():
+        if tok.isdigit() and _joined and _joined[-1].isdigit() and len(_joined[-1] + tok) >= DIGIT_STRING_MIN_LEN:
+            _joined[-1] += tok
+        else:
+            _joined.append(tok)
+    text = " ".join(_joined)
 
     # 7. Remaining bare digit runs.
     text = " ".join(_expand_numeric_token(t) for t in text.split())

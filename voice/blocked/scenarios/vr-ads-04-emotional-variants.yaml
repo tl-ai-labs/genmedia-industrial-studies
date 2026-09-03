@@ -1,0 +1,34 @@
+# VR-ADS-04 - Emotional variants for creative testing
+# BLOCKED BY: a blind human listener panel.
+#   The measurement is listener labelling accuracy on ADJACENT pairs - warm
+#   vs sincere, urgent vs pushy. Same blocker as vr-drama-07: an LLM judge
+#   could label them, but "a model recognises the difference" is not "an
+#   audience does", and the audience is the whole point of creative testing.
+# NEEDS: a listener panel + prosody-distance measurement.
+#
+# REAL APPLICATION. UA teams iterate on proven winners with different hooks,
+# CTAs and pacing rather than generating unrelated variants - many reads of
+# the same copy, not many scripts.
+#   Source: Segwise 2026 UA playbook; Sett and Layer AI positioning.
+# CLAIM IF IT PASSES: "Eight usable reads of one script in the same voice,
+#   distinct enough that your creative tests measure something real."
+id: vr-ads-04
+modality: voice
+task: styled_tts
+title: "Same script, eight emotional reads - Ads"
+input:
+  script: |
+    You have been meaning to start for a while now. Today is a good day for it.
+  language: en-US
+  style: "warm - encouraging without pressure, a friend not a coach"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) The requested register unmistakable, and distinct from its neighbour
+  2) The same voice identity across all eight variants
+  3) Distinct enough that an A/B test measures the read, not noise
+checks:
+  duration_s: {min: 2.0, max: 14.0}
+  max_silence_s: 1.0
+  no_clipping: true
+  max_wer: 0.06
+tags: [ads, emotion, creative-testing, listener-panel, blocked, vr-ads-04]

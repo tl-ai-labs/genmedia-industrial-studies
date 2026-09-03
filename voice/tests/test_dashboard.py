@@ -205,7 +205,7 @@ def test_a_clear_result_names_a_winner(tmp_path):
 
 def test_every_tab_panel_is_populated(runs_root):
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panels = ("t-models", "t-repeats", "t-runs", "t-evidence")
+    panels = ("t-scenarios", "t-models", "t-repeats", "t-runs", "t-evidence")
     for pid in panels:
         assert f'data-tab="{pid}"' in html
     assert html.count("<audio") >= 1
@@ -410,3 +410,32 @@ def test_two_runs_sharing_a_label_are_not_collapsed_into_one_column(tmp_path):
     row = block["rows"][0]
     assert row["pass_scores"] == [9.0, 7.0]      # not [9.0, 9.0]
     assert row["spread"] == pytest.approx(2.0)   # not 0.0
+
+
+def test_a_tie_is_never_dressed_as_a_win(tmp_path):
+    """
+    The filter and the badge both key on `result_class`, so a gap inside the
+    noise floor must classify as `tie` and be reachable only under "No
+    winner" - never counted in the "Gemini wins" chip.
+    """
+    root = tmp_path / "runs"; root.mkdir()
+    for rid, a, b in (("2026-09-01_100000_voice-a", 9.00, 8.99),
+                      ("2026-09-01_110000_voice-b", 8.50, 9.40)):
+        _write_run(root, rid, [{"model": "gemini-x", "status": "scored", "score": a},
+                               {"model": "other-y", "status": "scored", "score": b}],
+                   scenario_hash="h")
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    # Scoped to the CARDS - the filter chips carry data-res too, and matching
+    # those would make this assertion pass no matter how a scenario ended.
+    cards = re.findall(r'<article class="scard" data-ind="[^"]*" data-res="(\w+)"', html)
+    # gap 0.445 against a floor of 0.5 - inside the noise, so no winner.
+    assert cards == ["tie"], cards
+    assert "wins</span>" not in html.split('class="wbadge')[1][:90]
+
+
+def test_every_scenario_card_carries_its_industry_and_prompt(runs_root):
+    html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
+    assert 'class="scard"' in html
+    assert 'data-ind=' in html and 'data-res=' in html
+    # The filter bar offers both axes.
+    assert 'data-ind="all"' in html and 'data-res="gemini"' in html

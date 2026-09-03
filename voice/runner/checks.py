@@ -22,6 +22,7 @@ key and no network.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -90,6 +91,118 @@ def _digit_runs(text: str) -> list[str]:
             )
         i = j
     return runs
+
+
+# NATO word -> the letter it clarifies. A verification agent says "Bravo"
+# precisely so the listener does not hear "eight", which is the confusion this
+# scenario exists to measure.
+_NATO = {
+    "alpha": "a", "alfa": "a", "bravo": "b", "charlie": "c", "delta": "d",
+    "echo": "e", "foxtrot": "f", "golf": "g", "hotel": "h", "india": "i",
+    "juliet": "j", "juliett": "j", "kilo": "k", "lima": "l", "mike": "m",
+    "november": "n", "oscar": "o", "papa": "p", "quebec": "q", "romeo": "r",
+    "sierra": "s", "tango": "t", "uniform": "u", "victor": "v", "whiskey": "w",
+    "whisky": "w", "xray": "x", "x-ray": "x", "yankee": "y", "zulu": "z",
+    # Spellings a recogniser produces for the same spoken word. "QUABEQ" for
+    # Quebec cost an eight-character reference six characters on 2026-09-03,
+    # because one unmappable token shifts every character after it.
+    "quabeq": "q", "quebeq": "q", "kebec": "q", "juliette": "j",
+    "alfa": "a", "papa": "p", "poppa": "p", "oskar": "o", "victa": "v",
+}
+
+# Which characters are confusable with which, BY EAR. The pairs a KYC agent
+# is trained to clarify, and the ones a confusion matrix has to report
+# separately - "one character wrong" is not a useful finding if you cannot
+# say whether the model turned B into 8 or into P.
+CONFUSABLE_CLASSES = {
+    "b8": set("b8"), "qo": set("qo0"), "z2": set("z2"), "g6": set("g6"),
+    "mn": set("mn"), "sf": set("sf"), "d3": set("d3"), "5s": set("5s"),
+}
+
+
+def extract_alnum_sequence(text: str) -> str:
+    """
+    The alphanumeric identifier a transcript spelled out, as characters.
+
+    The letter half of extract_digit_sequence, and it exists for the same
+    reason: a verification reference with one wrong character is a failed
+    call however good the clip sounds, and WER forgives one character in
+    eight. Accepts every way a transcriber writes a spelled-out reference -
+    "B 8 Q O", "b8qo", "Bravo eight Quebec Oscar" - because all three are the
+    same utterance.
+
+    Tokens that map to nothing (filler, "as in", punctuation) simply do not
+    contribute; the run continues across them, because "B as in Bravo" is one
+    character spoken with a clarifier, not two characters with a word between.
+    """
+    # A transcriber may write a spelled reference COMPACTLY - "B8QOZ2G6".
+    # normalize() splits letters from digits, leaving "qoz" as one token that
+    # maps to nothing and is silently dropped, so the eight-character
+    # reference came out as five. Spread such a token before normalising:
+    # alphanumeric, four or more characters, containing BOTH a letter and a
+    # digit is an identifier, not a word.
+    spread: list[str] = []
+    for raw in re.split(r"\s+", text.strip()):
+        core = raw.strip(".,;:!?\"'()[]")
+        # A transcriber punctuates a spelled reference however it likes:
+        # "B8QOZ2G6", "B8Q-OZ2G6", "B.8.Q.O". Separators INSIDE a candidate
+        # identifier are notation, not content - strip them before deciding
+        # whether this is an identifier. Observed 2026-09-03: a single
+        # inserted hyphen left "oz" as an unmappable two-letter token and
+        # silently cost two characters of an eight-character reference.
+        compact = re.sub(r"[-.\u2010-\u2015_/]", "", core)
+        if (len(compact) >= 4 and compact.isalnum()
+                and any(c.isalpha() for c in compact) and any(c.isdigit() for c in compact)):
+            spread.append(" ".join(compact))
+        else:
+            spread.append(raw)
+    text = " ".join(spread)
+
+    out: list[str] = []
+    prev_nato_for: str | None = None
+    for tok in normalize(text).split():
+        ch = None
+        if len(tok) == 1 and tok.isalnum():
+            ch = tok
+        elif tok in _DIGIT_WORDS:
+            ch = _DIGIT_WORDS[tok]
+        elif tok in _NATO:
+            ch = _NATO[tok]
+            # "B as in Bravo" is ONE character. Collapse the clarifier onto
+            # the letter it clarifies rather than counting it twice.
+            if out and out[-1] == ch and prev_nato_for != ch:
+                prev_nato_for = ch
+                continue
+        elif tok.isalnum() and len(tok) > 1 and tok.isdigit():
+            ch = tok  # a joined digit run, already handled by normalize
+        if ch is not None:
+            out.append(ch)
+            prev_nato_for = None
+    return "".join(out)
+
+
+def alnum_confusions(expected: str, heard: str) -> dict[str, Any]:
+    """
+    Where the characters diverged, and whether the confusion was a KNOWN
+    confusable pair. "Wrong at position 3" is a bug report; "turned B into 8"
+    is the finding the scenario was written to produce.
+    """
+    exp, got = expected.lower(), heard.lower()
+    pairs: list[dict[str, str]] = []
+    for i, e in enumerate(exp):
+        g = got[i] if i < len(got) else ""
+        if g == e:
+            continue
+        cls = next((k for k, v in CONFUSABLE_CLASSES.items() if e in v and g in v), None)
+        pairs.append({"position": i, "expected": e, "heard": g or "(missing)",
+                      "confusable_class": cls or "unrelated"})
+    return {
+        "characters_expected": len(exp),
+        "characters_correct": sum(1 for i, e in enumerate(exp) if i < len(got) and got[i] == e),
+        "errors": pairs,
+        "all_errors_are_known_confusables": bool(pairs) and all(
+            p["confusable_class"] != "unrelated" for p in pairs),
+    }
 
 
 def extract_digit_sequence(text: str) -> str:
@@ -515,6 +628,29 @@ def run_checks(
                 "digits_exact",
                 expected in heard,
                 f"expected {expected!r}, transcript yielded {heard!r}",
+            )
+
+        # Gate 8b - character-exact ALPHANUMERIC readback, with the confusion
+        # reported by class. A verification reference with one wrong character
+        # is a failed call however good the clip sounds, and WER forgives one
+        # character in eight. "Wrong at position 3" is a bug report; "turned
+        # B into 8" is the finding this scenario was written to produce.
+        want_alnum = checks.get("must_say_alnum")
+        if want_alnum is not None:
+            expected = "".join(ch for ch in str(want_alnum) if ch.isalnum()).lower()
+            heard = extract_alnum_sequence(transcript)
+            conf = alnum_confusions(expected, heard)
+            report.measurements["alnum_expected"] = expected
+            report.measurements["alnum_heard"] = heard
+            report.measurements["alnum_confusions"] = conf
+            report.add(
+                "alnum_exact",
+                expected in heard,
+                f"expected {expected!r}, transcript yielded {heard!r} - "
+                f"{conf['characters_correct']}/{conf['characters_expected']} characters"
+                + (f", errors: " + ", ".join(
+                    f"{e['expected']}->{e['heard']} ({e['confusable_class']})"
+                    for e in conf["errors"][:4]) if conf["errors"] else ""),
             )
 
         # Gate 9 - the security assertion from VOI-TEL-09. A model asked to
