@@ -71,6 +71,9 @@ class Cell:
     # sha256 of the scenario INPUT as this run froze it. Two cells are
     # repeats of each other only if this matches - see rollup_models().
     scenario_hash: str = ""
+    # What the Evidence tab needs to show the clip beside what it produced.
+    gates: list[dict[str, Any]] = field(default_factory=list)
+    transcript: str | None = None
 
     @property
     def total_micro(self) -> int:
@@ -184,6 +187,8 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
                     asr_micro=asr_cost.get(key, 0),
                     judge_micro=int((jrec.get("cost") or {}).get("micro_usd", 0)),
                     scenario_hash=scen_hash.get(sid, ""),
+                    gates=gates,
+                    transcript=crec.get("transcript_raw"),
                     audio_q=meas.get("audio_quality_1_5"),
                     audio_q_is_mos=bool(meas.get("audio_quality_is_mos")),
                     gates_passed=sum(1 for g in gates if g.get("passed")),
@@ -390,579 +395,330 @@ def _num(v, fmt="{:.2f}", dash="—"):
     return dash if v is None else fmt.format(v)
 
 
-def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
-    """Write runs/index.html - the cross-run dashboard."""
-    runs = load_runs(runs_root, modality)
-    if not runs:
-        raise SystemExit(f"no {modality} runs under {runs_root}")
-    models = rollup_models(runs)
-    all_cells = [c for r in runs for c in r.cells]
-    scenarios = sorted({c.scenario_id for c in all_cells})
 
-    total = sum(r.total_micro for r in runs)
-    judged = [c for c in all_cells if c.score is not None]
-    uncalibrated = any(not r.calibration_passed for r in runs)
 
-    # Paired head-to-head across every run, for the top two models.
-    pair_rows: list[str] = []
-    verdict_line = "Fewer than two models — nothing to compare."
-    if len(models) >= 2:
-        a, b = models[0].model_id, models[1].model_id
-        w = t = l = 0
-        for sid in scenarios:
-            for r in runs:
-                ca = next((c for c in r.cells if c.scenario_id == sid and c.model_id == a and c.score is not None), None)
-                cb = next((c for c in r.cells if c.scenario_id == sid and c.model_id == b and c.score is not None), None)
-                if not ca or not cb:
-                    continue
-                d = ca.score - cb.score
-                res = "tie" if abs(d) <= 0.5 else ("win" if d > 0 else "loss")
-                t += res == "tie"; w += res == "win"; l += res == "loss"
-                pair_rows.append(
-                    f'<tr><td class="mono">{_e(sid)}</td><td class="mono">{_e(r.label)}</td>'
-                    f'<td class="n">{ca.score:.4f}</td><td class="n">{cb.score:.4f}</td>'
-                    f'<td class="n">{d:+.4f}</td>'
-                    f'<td><span class="pill pill-{"neutral" if res=="tie" else "success"}">{res}</span></td></tr>'
-                )
-        decided = w + l
-        gap = (models[0].mean_score or 0) - (models[1].mean_score or 0)
-        rate = (w / decided) if decided else None
-        if gap >= 0.5 or (rate is not None and rate >= 0.70):
-            verdict_line = (
-                f"<strong>{_e(a)}</strong> beats {_e(b)} — mean gap {gap:.3f}, "
-                f"{w} wins of {decided} decided."
-            )
+# ---------------------------------------------------------------------------
+# Rendering. The data above is the whole truth; this half only arranges it.
+#
+# The markup follows the image lane's report (image/runner/templates) so the
+# two modalities read as one product - same tokens, same tiles, same duel
+# strip, same "four columns, never one number" framing. What differs is what
+# a voice lane actually has to say: a REPEATS tab, because a spoken clip is
+# not reproducible the way a rendered image is, and evidence you LISTEN to
+# rather than look at.
+# ---------------------------------------------------------------------------
+
+def _fmt_usd(micro: int | float | None) -> str:
+    if not micro:
+        return "$0.00"
+    d = float(micro) / 1e6
+    return f"${d:,.4f}" if d < 0.01 else f"${d:,.2f}"
+
+
+def _fmt_s(ms: float | None) -> str:
+    return "—" if not ms else f"{float(ms) / 1000:.1f}s"
+
+
+def _bar_widths(a: float | None, b: float | None, lower_is_better: bool):
+    """Two bars sharing a scale, and which side won. None means no bar."""
+    if a is None or b is None:
+        return 0, 0, None
+    top = max(abs(a), abs(b)) or 1.0
+    aw, bw = abs(a) / top * 100, abs(b) / top * 100
+    if a == b:
+        win = None
+    elif lower_is_better:
+        win = "a" if a < b else "b"
+    else:
+        win = "a" if a > b else "b"
+    return aw, bw, win
+
+
+def _duel(models: list[ModelRollup]) -> dict[str, Any] | None:
+    """Head to head, but only between the top two - three-way bars lie."""
+    if len(models) < 2:
+        return None
+    a, b = models[0], models[1]
+    spec = [
+        ("Quality (scored cells)", a.mean_score, b.mean_score, False, "{:.3f}"),
+        ("Gates passed", a.gate_pass_rate * 100, b.gate_pass_rate * 100, False, "{:.0f}%"),
+        ("Run-to-run spread", a.repeat_spread, b.repeat_spread, True, "±{:.3f}"),
+        ("Worst WER", a.worst_wer, b.worst_wer, True, "{:.4f}"),
+        ("Cost per clip", a.mean_cost, b.mean_cost, True, None),
+        ("Latency (mean)", a.mean_latency, b.mean_latency, True, None),
+    ]
+    metrics = []
+    for label, av, bv, lower, fmt in spec:
+        aw, bw, win = _bar_widths(av, bv, lower)
+        if fmt is None:
+            fa = _fmt_usd(av) if "Cost" in label else _fmt_s(av)
+            fb = _fmt_usd(bv) if "Cost" in label else _fmt_s(bv)
         else:
-            rate_txt = f"{rate:.0%}" if rate is not None else "n/a"
-            verdict_line = (
-                f"<strong>Tie.</strong> Mean gap {gap:.3f} is inside the 0.5 band, and "
-                f"{_e(a)} won {w} of {decided} decided ({rate_txt}) — below the 70% door. "
-                f"Decide on cost, latency, reliability and worst case."
-            )
+            fa = fmt.format(av) if av is not None else "—"
+            fb = fmt.format(bv) if bv is not None else "—"
+        metrics.append({"label": label, "a": fa, "b": fb, "aw": aw, "bw": bw, "win": win})
+    return {"a": a.model_id, "b": b.model_id, "metrics": metrics,
+            "basis": f"{a.scored_n + b.scored_n} scored cells"}
 
-    # ---- model rollup rows + spread bars ---------------------------------
-    lo = min((min(m.scores) for m in models if m.scores), default=0)
-    hi = max((max(m.scores) for m in models if m.scores), default=10)
-    pad = max(0.05, (hi - lo) * 0.25)
-    axis_lo, axis_hi = lo - pad, hi + pad
-    span = axis_hi - axis_lo or 1
 
-    model_rows, spread_rows, legend = [], [], []
-    for m in models:
-        legend.append(
-            f'<span class="lg"><i style="background:{m.accent}"></i>'
-            f'<span class="mono">{_e(m.model_id)}</span></span>'
-        )
-        model_rows.append(
-            "<tr>"
-            f'<td class="mono"><i class="dot" style="background:{m.accent}"></i>{_e(m.model_id)}</td>'
-            f'<td class="n">{_num(m.mean_score, "{:.3f}")}'
-            + f' <span class="dim">({m.scored_n} of {m.evaluated_n or m.n})</span>'
-            + (' <span class="pill pill-warning">unc</span>' if uncalibrated else "")
-            + "</td>"
-            f'<td class="n">±{m.score_spread:.3f}</td>'
-            + (f'<td class="n">±{m.repeat_spread:.3f}</td>'
-               if m.repeat_spread is not None
-               else '<td class="n dim">n/a</td>')
-            + f'<td class="n">{_num(m.worst_wer, "{:.4f}")}</td>'
-            f'<td class="n">{fmt_usd(int(m.mean_cost))}'
-            + ("" if all(c.cost_exact for r in runs for c in r.cells if c.model_id == m.model_id)
-               else ' <span class="pill pill-warning">est</span>')
-            + "</td>"
-            f'<td class="n">{_num(m.mean_latency/1000 if m.mean_latency else None, "{:.1f}s")}</td>'
-            f'<td class="n">{_num(m.mean_audio_q, "{:.2f}")}</td>'
-            f'<td class="n">{m.success_rate:.0%}</td>'
-            f'<td class="n">{_num(m.mean_attempts, "{:.2f}")}</td>'
-            f'<td class="n">{len(m.scores)}/{m.n}</td>'
-            "</tr>"
-        )
-        if m.scores:
-            left = (min(m.scores) - axis_lo) / span * 100
-            width = max(0.6, (max(m.scores) - min(m.scores)) / span * 100)
-            mean_pos = ((m.mean_score or 0) - axis_lo) / span * 100
-            spread_rows.append(
-                f'<div class="srow"><span class="mono sname">{_e(m.model_id)}</span>'
-                f'<span class="strack"><span class="sbar" style="left:{left:.2f}%;width:{width:.2f}%;'
-                f'background:{m.accent}"></span>'
-                f'<span class="smean" style="left:{mean_pos:.2f}%"></span></span>'
-                f'<span class="mono sval">{min(m.scores):.3f} – {max(m.scores):.3f}</span></div>'
-            )
+def _scenario_blocks(runs: list[RunSummary], duel: dict | None) -> list[dict[str, Any]]:
+    """
+    One block per scenario: every pass side by side, each model's own spread,
+    and the verdict that spread licenses.
 
-    # ---- runs tab ---------------------------------------------------------
-    run_rows = []
-    for r in reversed(runs):
-        cal_pill = (
-            '<span class="pill pill-success">calibrated</span>'
-            if r.calibration_passed
-            else '<span class="pill pill-warning">uncalibrated</span>'
-        )
-        gates_ok = all(c.gates_passed == c.gates_total for c in r.cells)
-        run_rows.append(
-            "<tr>"
-            f'<td class="mono"><a href="{_e(r.run_id)}/report.html">{_e(r.label)}</a></td>'
-            f'<td class="mono dim">{_e(r.started_at[:16].replace("T", " "))}</td>'
-            f'<td class="n">{len(r.cells)}</td>'
-            f'<td class="n">{sum(1 for c in r.cells if c.status == "scored")}</td>'
-            f'<td>{"".join(f"<span class=chip>{_e(m)}</span>" for m in r.model_ids)}</td>'
-            f'<td>{"<span class=\"pill pill-success\">all pass</span>" if gates_ok else "<span class=\"pill pill-danger\">gate failure</span>"}</td>'
-            f'<td>{cal_pill}</td>'
-            f'<td class="n">{fmt_usd(r.total_micro)}</td>'
-            f'<td class="mono dim">{_e(r.git_sha)}</td>'
-            "</tr>"
-        )
+    A repeat is the same SCRIPT and the same GATES. Runs of an edited scenario
+    are excluded and counted, because their difference is the size of an edit
+    rather than the machine's noise - and that number is what every verdict
+    here divides by.
+    """
+    out: list[dict[str, Any]] = []
+    sids = sorted({c.scenario_id for r in runs for c in r.cells})
+    for sid in sids:
+        # SCORED means scored. A gated cell carries 0.0, and letting it in
+        # here made vr-ads-06 read "+9.650, larger than noise" - one model's
+        # real score minus the other's failure. Same rule as rollup_models.
+        def _scored(c, _sid=sid):
+            return c.scenario_id == _sid and c.score is not None and c.status != "invalid"
 
-    # ---- evidence tab -----------------------------------------------------
-    #
-    # ONE representative clip per model up front, the rest behind a toggle.
-    # Three near-identical cards per model read as noise and bury the thing
-    # worth looking at; hiding them would lose the repeat evidence entirely.
-    # A toggle keeps both.
-    #
-    # The representative is the MEDIAN run, not the best. A best-of-N clip is
-    # a flattering sample and would quietly disagree with the mean shown one
-    # tab over - median is the honest answer to "what does this usually
-    # sound like", which is what someone opening this tab is asking.
-    def _median_cell(cells: list[Cell]) -> Cell:
-        scored = sorted([c for c in cells if c.score is not None], key=lambda c: c.score)
-        return scored[len(scored) // 2] if scored else cells[0]
+        def _here(c, _sid=sid):
+            return c.scenario_id == _sid
 
-    def _card(c: Cell, representative: bool) -> str:
-        acc = next((m.accent for m in models if m.model_id == c.model_id), "#666")
-        crit = "".join(
-            f'<tr><td class="mono dim">{_e(k)}</td><td class="n">{v:.2f}</td></tr>'
-            for k, v in sorted(c.criterion_scores.items())
-        )
-        tag = ' <span class="pill pill-neutral">median run</span>' if representative else ""
-        return (
-            f'<div class="ecard"><div class="ehead">'
-            f'<span class="mono"><i class="dot" style="background:{acc}"></i>{_e(c.model_id)}</span>'
-            f'<span class="mono dim">run {_e(c.run_label)}{tag}'
-            + (f' · blind “{_e(c.blind_label)}”' if c.blind_label else "")
-            + "</span></div>"
-            f'<audio controls preload="none" src="{_e(c.audio_rel)}"></audio>'
-            f'<div class="emeta mono">'
-            f'score <strong>{_num(c.score, "{:.3f}")}</strong> · '
-            f'WER {_num(c.wer, "{:.4f}")} · {_num(c.duration_s, "{:.1f}s")} · '
-            f'{fmt_usd(c.total_micro)} · gates {c.gates_passed}/{c.gates_total}'
-            + ("" if c.audio_q is None else
-               f' · audio {c.audio_q:.2f}/5'
-               + ("" if c.audio_q_is_mos else ' <span class="pill pill-warning">not a MOS</span>'))
-            + (f' · voice {_e(c.voice)}' if c.voice else "")
-            + "</div>"
-            f'<details><summary>criterion scores</summary><table class="tbl mini">{crit}</table></details>'
-            "</div>"
-        )
+        # PASSES counts how often the scenario was RUN, not how often it
+        # scored. A scenario run twice that was gated both times is not
+        # "0 passes" - it ran twice and produced nothing, which is a
+        # different and more useful thing to say.
+        cand = [r for r in runs if any(_here(c) for c in r.cells)]
 
-    ev = []
-    for sid in scenarios:
-        by_model: dict[str, list[Cell]] = {}
-        for r in runs:
-            for c in (x for x in r.cells if x.scenario_id == sid):
-                by_model.setdefault(c.model_id, []).append(c)
-
-        lead, rest = [], []
-        for mid in sorted(by_model):
-            cells = by_model[mid]
-            rep = _median_cell(cells)
-            lead.append(_card(rep, representative=len(cells) > 1))
-            rest.extend(_card(c, representative=False) for c in cells if c is not rep)
-
-        block = f'<h3 class="mono">{_e(sid)}</h3><div class="egrid">{"".join(lead)}</div>'
-        if rest:
-            block += (
-                f'<details class="more"><summary>{len(rest)} more clip'
-                f'{"s" if len(rest) != 1 else ""} from the other runs — the repeat evidence '
-                f'behind the spread figure</summary>'
-                f'<div class="egrid">{"".join(rest)}</div></details>'
-            )
-        ev.append(block)
-
-    # ---- repeats tab ------------------------------------------------------
-    #
-    # The question this tab exists to answer: is the gap between two models
-    # bigger than the gap a single model shows against ITSELF when asked the
-    # same thing twice? Until a scenario has been run more than once there is
-    # no answer, and the tab says so rather than implying stability.
-    rep_blocks: list[str] = []
-    for sid in scenarios:
-        cand = [r for r in runs if any(c.scenario_id == sid and c.score is not None for c in r.cells)]
-
-        # A repeat is the same SCRIPT and the same GATES, asked twice - not
-        # the same id twice. vr-game-02 was run, found to carry a gate no
-        # correct reading could pass, fixed, and run again under its own id;
-        # comparing across that edit would report the size of our change as
-        # the machine's noise floor. Runs are newest-last, so the current
-        # definition wins and earlier ones are excluded and counted.
         def _defhash(r, _sid=sid):
-            return next((c.scenario_hash for c in r.cells
-                         if c.scenario_id == _sid and c.score is not None), "")
+            return next((c.scenario_hash for c in r.cells if _here(c)), "")
 
         newest = _defhash(cand[-1]) if cand else ""
         sruns = [r for r in cand if _defhash(r) == newest]
         stale = len(cand) - len(sruns)
 
+        # KEYED ON run_id, NOT label. A label is run_id.split("_")[-1], so two
+        # runs of one scenario share it - "voice-vr-game-02" names four
+        # different runs here. Keyed on the label they collapsed into one
+        # entry and the same score rendered in two columns, which looked like
+        # a model reproducing itself perfectly when it had been asked once.
         by_model: dict[str, dict[str, float]] = {}
         for r in sruns:
             for c in r.cells:
-                if c.scenario_id == sid and c.score is not None:
-                    by_model.setdefault(c.model_id, {})[r.label] = c.score
-        if not by_model:
-            continue
-        labels = [r.label for r in sruns]
-        n = len(labels)
+                if _scored(c):
+                    by_model.setdefault(c.model_id, {})[r.run_id] = c.score
 
-        # Column headers name the RUN, and the scenario is already the heading
-        # above the table - so "voice-retfix-voi-ret-01" says "voi-ret-01"
-        # twice and buries the one word that distinguishes the columns.
-        def _short(label: str) -> str:
-            out = label.removeprefix(f"{modality}-").removesuffix(f"-{sid}")
-            return out or label
-
-        head = "".join(f'<th class="n" title="{_e(l)}">{_e(_short(l))}</th>' for l in labels)
-        body = ""
-        own: dict[str, float | None] = {}
+        keys = [r.run_id for r in sruns]
+        short = [(r.started_at or r.run_id)[5:16].replace("T", " ") for r in sruns]
+        rows, own = [], {}
         for mid in sorted(by_model):
             vals = by_model[mid]
-            got = [vals[l] for l in labels if l in vals]
+            got = [vals[k] for k in keys if k in vals]
             own[mid] = (max(got) - min(got)) if len(got) > 1 else None
-            cells_html = "".join(
-                f'<td class="n">{vals[l]:.3f}</td>' if l in vals else '<td class="n dim">—</td>'
-                for l in labels
-            )
-            spread = f"±{own[mid]:.3f}" if own[mid] is not None else '<span class="dim">n/a</span>'
-            body += f'<tr><td class="mono">{_e(mid)}</td>{cells_html}<td class="n">{spread}</td></tr>'
+            rows.append({"model_id": mid,
+                         # NOT "values": Jinja resolves dict.values to the
+                         # method, not the key, and the template silently
+                         # iterates a bound method instead of the scores.
+                         "pass_scores": [vals.get(k) for k in keys],
+                         "spread": own[mid]})
 
-        foot = ""
-        verdict = ""
+        gap = floor = None
+        gaps: list[float | None] = []
+        if not by_model:
+            verdict = "No score"
+            detail = (f"Ran {len(keys)} time{'' if len(keys) == 1 else 's'}; every cell failed "
+                      f"its gates, so there is nothing to compare. The failures are in Evidence.")
+        else:
+            verdict, detail = "Not measured", "No scored cell on this scenario yet."
         ids = sorted(by_model)
-        if len(ids) >= 2:
-            a, b = ids[0], ids[1]
-            gaps = [by_model[a][l] - by_model[b][l] for l in labels
-                    if l in by_model[a] and l in by_model[b]]
-            gcells = "".join(f'<td class="n">{g:+.3f}</td>' for g in gaps)
-            gcells += '<td class="n dim">—</td>' * (n - len(gaps))
-            # The noise floor is the LARGER of the two models' own spreads:
-            # a gap has to clear the noisier of the pair to mean anything.
-            floors = [v for v in own.values() if v is not None]
-            floor = max(floors) if floors else None
-            fl = f"±{floor:.3f}" if floor is not None else "not measured"
-            foot = (f'<tr class="gaprow"><td class="mono">Δ {_e(a)} − {_e(b)}</td>{gcells}'
-                    f'<td class="n">noise {fl}</td></tr>')
-            if gaps and floor is not None:
-                worst = max(abs(g) for g in gaps)
-                if worst <= floor:
-                    verdict = (f'<strong>Inside the noise.</strong> The largest gap between these '
-                               f'models ({worst:.3f}) is no bigger than the spread one model shows '
-                               f'against itself ({fl}). This scenario does not separate them.')
-                elif worst <= 2 * floor:
-                    verdict = (f'<strong>Marginal.</strong> The largest gap ({worst:.3f}) clears the '
-                               f'noise floor ({fl}) but not by much. More repeats before quoting it.')
-                else:
-                    verdict = (f'<strong>Larger than noise.</strong> The gap ({worst:.3f}) is over '
-                               f'twice the noise floor ({fl}), so it is unlikely to be run-to-run '
-                               f'variation alone.')
-            elif gaps:
-                verdict = ('<strong>Single run.</strong> One measurement per model, so there is no '
-                           'noise floor to compare the gap against. Run it again.')
+        if len(ids) >= 2 and duel:
+            a, b = duel["a"], duel["b"]
+            if a in by_model and b in by_model:
+                gaps = [(by_model[a][k] - by_model[b][k])
+                        if k in by_model[a] and k in by_model[b] else None for k in keys]
+                real = [g for g in gaps if g is not None]
+                gap = statistics.mean(real) if real else None
+                floors = [v for v in own.values() if v is not None]
+                floor = max(floors) if floors else None
+                if gap is not None and floor is not None:
+                    if abs(gap) <= floor:
+                        verdict = "Inside the noise"
+                        detail = (f"The gap ({gap:+.3f}) is no bigger than the spread one model "
+                                  f"shows against itself (±{floor:.3f}). This scenario does not "
+                                  f"separate them.")
+                    elif abs(gap) <= 2 * floor:
+                        verdict = "Marginal"
+                        detail = (f"The gap ({gap:+.3f}) clears the noise floor (±{floor:.3f}) "
+                                  f"but not by much. More repeats before quoting it.")
+                    else:
+                        verdict = "Larger than noise"
+                        detail = (f"The gap ({gap:+.3f}) is over twice the noise floor "
+                                  f"(±{floor:.3f}), so it is unlikely to be run-to-run variation.")
+                elif gap is not None:
+                    verdict = "Single pass"
+                    detail = ("One measurement per model, so there is no noise floor to compare "
+                              "the gap against. Run it again.")
+        elif len(ids) == 1:
+            verdict, detail = "One arm only", "Only one model produced a scored cell here."
 
-        warn = ""
-        if n == 2:
-            warn = ('<p class="lead">Two runs is the fewest that yields a spread at all — read it '
-                    'as an order of magnitude, not a confidence interval.</p>')
-        elif n < 2:
-            warn = ('<p class="lead">Run this scenario again to measure how much its scores move '
-                    'on their own.</p>')
-        if stale:
-            warn += (f'<p class="lead">{stale} earlier run{"s" if stale != 1 else ""} of this '
-                     f'scenario used a <strong>different version</strong> of it and '
-                     f'{"are" if stale != 1 else "is"} excluded from the spread above. A repeat '
-                     f'has to be the same script and the same gates, or what it measures is our '
-                     f'edit rather than the model.</p>')
-
-        rep_blocks.append(
-            f'<h3 class="mono">{_e(sid)} <span class="dim">· {n} run{"s" if n != 1 else ""}</span></h3>'
-            f'<div class="scroll"><table class="tbl">'
-            f'<thead><tr><th>Model</th>{head}<th class="n">Own spread</th></tr></thead>'
-            f"<tbody>{body}{foot}</tbody></table></div>"
-            + (f'<div class="callout">{verdict}</div>' if verdict else "")
-            + warn
-        )
-
-    ctx = dict(
-        repeats="".join(rep_blocks),
-        runs=runs, models=models, all_cells=all_cells, total=total, judged=judged,
-        uncalibrated=uncalibrated, model_rows="".join(model_rows),
-        spread_rows="".join(spread_rows), legend="".join(legend),
-        run_rows="".join(run_rows), pair_rows="".join(pair_rows),
-        verdict_line=verdict_line, evidence="".join(ev),
-        axis_lo=axis_lo, axis_hi=axis_hi,
-    )
-    out = Path(runs_root) / "index.html"
-    out.write_text(_page(ctx), encoding="utf-8")
+        out.append({"id": sid, "n_passes": len(keys), "labels": short, "rows": rows,
+                    "gaps": gaps, "gap": gap, "floor": floor, "verdict": verdict,
+                    "detail": detail, "stale": stale})
     return out
 
 
-def _page(c: dict[str, Any]) -> str:
-    runs, models = c["runs"], c["models"]
-    judge_models = sorted({r.judge_model for r in runs})
-    predictors = sorted({r.mos_predictor for r in runs})
-    scen = sorted({x.scenario_id for x in c["all_cells"]})
-    wers = [x.wer for x in c["all_cells"] if x.wer is not None]
-    return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GenMedia runs</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<style>
-:root{{
-  --ink:#0A0A0A; --body:#1F1F1F; --muted:#6B6B6B;
-  --canvas:#FFFFFF; --surface:#F5F5F5; --line:#E5E5E5;
-  --brand:#E00917;
-  --ok:#047857; --ok-bg:#ECFDF5; --warn:#92400E; --warn-bg:#FFFBEB;
-  --danger:#BE123C; --danger-bg:#FFF1F2; --info:#1D4ED8; --info-bg:#EFF6FF;
-  --display:"Space Grotesk",system-ui,sans-serif;
-  --sans:"IBM Plex Sans",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{
-  --ink:#F5F5F5; --body:#D8D8D8; --muted:#8E8E8E;
-  --canvas:#0B0B0C; --surface:#151517; --line:#26262A;
-  --brand:#FF4D57;
-  --ok:#34D399; --ok-bg:#052E23; --warn:#FBBF24; --warn-bg:#2E2205;
-  --danger:#FB7185; --danger-bg:#340C15; --info:#93C5FD; --info-bg:#0B1F3D;
-}}}}
-:root[data-theme="dark"]{{
-  --ink:#F5F5F5; --body:#D8D8D8; --muted:#8E8E8E;
-  --canvas:#0B0B0C; --surface:#151517; --line:#26262A;
-  --brand:#FF4D57;
-  --ok:#34D399; --ok-bg:#052E23; --warn:#FBBF24; --warn-bg:#2E2205;
-  --danger:#FB7185; --danger-bg:#340C15; --info:#93C5FD; --info-bg:#0B1F3D;
-}}
-*{{box-sizing:border-box}}
-body{{margin:0;background:var(--canvas);color:var(--body);
-  font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}}
-.wrap{{max-width:1180px;margin:0 auto;padding:0 24px}}
-a{{color:var(--brand);text-decoration:none}} a:hover{{text-decoration:underline}}
+def _clip(c: Cell, lead: bool = False) -> dict[str, Any]:
+    return {"model_id": c.model_id, "run_label": c.run_label, "score": c.score,
+            "status": c.status, "wer": c.wer, "duration_s": c.duration_s,
+            "audio_rel": c.audio_rel, "transcript": c.transcript,
+            "gates": c.gates, "lead": lead}
 
-.eyebrow{{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin:0 0 14px}}
-.eyebrow::before{{content:"";width:6px;height:6px;border-radius:50%;background:var(--brand)}}
-h1{{font-family:var(--display);font-weight:600;font-size:clamp(28px,3.4vw,36px);
-  letter-spacing:-.025em;line-height:1.10;color:var(--ink);margin:0 0 10px}}
-h2{{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.02em;
-  line-height:1.2;color:var(--ink);margin:0 0 4px}}
-h3{{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.015em;
-  color:var(--ink);margin:28px 0 10px}}
-p{{margin:0 0 14px;max-width:78ch}}
-.lead{{color:var(--muted)}}
-.label{{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);line-height:1.4}}
-.mono{{font-family:var(--mono);font-size:12.5px}}
-.dim{{color:var(--muted)}}
 
-header.top{{border-bottom:1px solid var(--line);padding:44px 0 0}}
-.statband{{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
-  gap:1px;background:var(--line);border:1px solid var(--line);border-bottom:0;margin-top:26px}}
-.sc{{background:var(--canvas);padding:16px 18px}}
-.sc .v{{font-family:var(--display);font-weight:600;font-size:28px;letter-spacing:-.02em;
-  color:var(--ink);line-height:1.1;font-variant-numeric:tabular-nums lining-nums}}
-.sc .k{{margin-top:2px}}
+def _median_cell(cells: list[Cell]) -> Cell:
+    """
+    The clip that LEADS is the median one, never the best.
 
-nav.tabs{{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-top:0;overflow-x:auto}}
-nav.tabs button{{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
-  font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--muted);
-  padding:13px 16px;cursor:pointer;white-space:nowrap}}
-nav.tabs button:hover{{color:var(--ink)}}
-nav.tabs button[aria-selected="true"]{{color:var(--ink);border-bottom-color:var(--brand)}}
-nav.tabs button:focus-visible{{outline:2px solid var(--brand);outline-offset:-2px}}
+    A best-of-N sample flatters the model and quietly disagrees with the mean
+    shown one tab over - the reader hears the good take and reads the average
+    of all of them. Ranking puts unscored cells last so a gated clip is never
+    chosen to represent a model that also produced usable ones.
+    """
+    ranked = sorted(cells, key=lambda c: (c.score is None, c.score or 0.0))
+    return ranked[len(ranked) // 2]
 
-section.panel{{padding:30px 0 60px}}
-section.panel[hidden]{{display:none}}
 
-.scroll{{overflow-x:auto;border:1px solid var(--line);border-radius:4px;margin:14px 0}}
-.gaprow td{{border-top:2px solid var(--line);font-weight:600}}
-.gaprow td:first-child{{font-size:12px}}
-table.tbl{{width:100%;border-collapse:collapse;font-size:14px;background:var(--canvas)}}
-.tbl th{{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);text-align:left;background:var(--surface);
-  padding:10px 12px;white-space:nowrap;border-bottom:1px solid var(--line)}}
-.tbl th.n,.tbl td.n{{text-align:right;font-variant-numeric:tabular-nums lining-nums}}
-.tbl td{{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--body)}}
-.tbl tbody tr:last-child td{{border-bottom:0}}
-.tbl.mini td{{padding:5px 10px;font-size:13px}}
-.dot{{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}}
-.chip{{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--body);
-  background:var(--surface);border:1px solid var(--line);border-radius:3px;
-  padding:1px 6px;margin-right:5px}}
+def _evidence(runs: list[RunSummary]) -> list[dict[str, Any]]:
+    """
+    Grouped by scenario. One representative clip per model leads; the rest
+    stay on the page behind a toggle, because they are the evidence the
+    spread figure rests on and hiding them entirely would make that number
+    unfalsifiable.
+    """
+    by_sid: dict[str, dict[str, list[Cell]]] = {}
+    for r in runs:
+        for c in r.cells:
+            by_sid.setdefault(c.scenario_id, {}).setdefault(c.model_id, []).append(c)
 
-.pill{{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:500;
-  letter-spacing:.06em;padding:2px 7px;border-radius:3px;white-space:nowrap}}
-.pill-success{{background:var(--ok-bg);color:var(--ok)}}
-.pill-warning{{background:var(--warn-bg);color:var(--warn)}}
-.pill-danger{{background:var(--danger-bg);color:var(--danger)}}
-.pill-neutral{{background:var(--surface);color:var(--muted)}}
-.pill-info{{background:var(--info-bg);color:var(--info)}}
+    blocks = []
+    for sid in sorted(by_sid):
+        leads, more = [], []
+        for mid in sorted(by_sid[sid]):
+            cells = by_sid[sid][mid]
+            rep = _median_cell(cells)
+            leads.append(_clip(rep, lead=True))
+            more.extend(_clip(c) for c in cells if c is not rep)
+        blocks.append({"scenario_id": sid, "title": f"{len(leads) + len(more)} clips",
+                       "leads": leads, "more": more, "n_more": len(more)})
+    return blocks
 
-.callout{{border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:4px;
-  background:var(--surface);padding:16px 18px;margin:16px 0}}
-.callout.warn{{border-left-color:var(--warn)}}
-.callout p:last-child{{margin:0}}
 
-.spread{{border:1px solid var(--line);border-radius:4px;padding:20px 22px;margin:14px 0}}
-.srow{{display:grid;grid-template-columns:220px 1fr 150px;gap:14px;align-items:center;margin-bottom:11px}}
-.srow:last-child{{margin-bottom:0}}
-.strack{{position:relative;height:22px;background:var(--surface);border-radius:3px}}
-.sbar{{position:absolute;top:7px;height:8px;border-radius:2px;min-width:3px}}
-.smean{{position:absolute;top:3px;width:2px;height:16px;background:var(--ink);opacity:.55}}
-.sval{{text-align:right;color:var(--muted)}}
-.saxis{{display:grid;grid-template-columns:220px 1fr 150px;gap:14px;margin-top:8px}}
-.saxis .ax{{display:flex;justify-content:space-between;font-family:var(--mono);
-  font-size:10.5px;color:var(--muted)}}
-.legend{{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px}}
-.lg{{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}}
-.lg i{{width:9px;height:9px;border-radius:50%;display:inline-block}}
+def _overall(models: list[ModelRollup]) -> dict[str, Any]:
+    """
+    Whether the top two are separated AT ALL, judged against measured noise.
 
-.egrid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}}
-.ecard{{border:1px solid var(--line);border-radius:4px;padding:14px 16px;background:var(--canvas)}}
-.ehead{{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-  flex-wrap:wrap;margin-bottom:8px}}
-audio{{width:100%;margin:6px 0 8px}}
-.emeta{{color:var(--muted);line-height:1.8}}
-.emeta strong{{color:var(--ink)}}
-details{{margin-top:8px}} summary{{cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--brand)}}
-details.more{{margin:16px 0 0;border-top:1px solid var(--line);padding-top:14px}}
-details.more>summary{{font-size:12.5px;margin-bottom:12px}}
-details.more[open]>summary{{margin-bottom:14px}}
+    This replaces a fixed 0.5-point band that was a rule of thumb chosen
+    before any run - it named winners on gaps nothing had shown to be real.
+    The floor here is the larger of the two models' own run-to-run spreads,
+    and no winner is named until a gap clears twice it.
+    """
+    if len(models) < 2:
+        return {"verdict": "Single model", "detail": "Nothing to compare.", "winner": None}
+    a, b = models[0], models[1]
+    if a.mean_score is None or b.mean_score is None:
+        return {"verdict": "Not comparable",
+                "detail": "One model has no scored cell, so there is no quality to compare.",
+                "winner": None}
+    gap = a.mean_score - b.mean_score
+    floors = [f for f in (a.repeat_spread, b.repeat_spread) if f is not None]
+    floor = max(floors) if floors else None
+    if floor is None:
+        return {"verdict": "Not measured",
+                "detail": (f"{a.model_id} leads by {abs(gap):.3f}, but no scenario has been run "
+                           f"twice, so nothing here says whether that gap survives a re-run."),
+                "winner": None}
+    if abs(gap) <= floor:
+        return {"verdict": "Tie",
+                "detail": (f"The {abs(gap):.3f} gap is inside the noise floor (±{floor:.3f}) - "
+                           f"the spread a model shows against itself. No winner can be named."),
+                "winner": None}
+    if abs(gap) <= 2 * floor:
+        return {"verdict": "Marginal",
+                "detail": (f"The {abs(gap):.3f} gap clears the noise floor (±{floor:.3f}) but not "
+                           f"by twice it. Not yet a result worth quoting."),
+                "winner": None}
+    return {"verdict": f"{a.model_id} leads",
+            "detail": (f"The {abs(gap):.3f} gap is over twice the noise floor (±{floor:.3f}), so "
+                       f"it is unlikely to be run-to-run variation alone."),
+            "winner": a.model_id}
 
-footer{{border-top:1px solid var(--line);padding:22px 0 60px;color:var(--muted);
-  font-family:var(--mono);font-size:12px;line-height:1.8}}
-footer p{{max-width:88ch;margin:0 0 7px}}
-</style></head><body>
 
-<header class="top"><div class="wrap">
-  <p class="eyebrow">GenMedia runs · {c['runs'][0].modality}</p>
-  <h1>Text-to-speech model comparison</h1>
-  <p class="lead">{len(runs)} run{'s' if len(runs)!=1 else ''} ·
-     {len(scen)} scenario{'s' if len(scen)!=1 else ''} ·
-     {len(models)} models · {len(c['all_cells'])} clips.
-     Quality, cost, latency and reliability are reported side by side and never blended.</p>
-  <div class="statband">
-    <div class="sc"><div class="v">{len(c['all_cells'])}</div><div class="k label">clips</div></div>
-    <div class="sc"><div class="v">{max(wers) if wers else 0:.4f}</div><div class="k label">worst wer</div></div>
-    <div class="sc"><div class="v">{fmt_usd(c['total'])}</div><div class="k label">spend</div></div>
-    <div class="sc"><div class="v">{len(c['judged'])}/{len(c['all_cells'])}</div><div class="k label">scored</div></div>
-    <div class="sc"><div class="v">{'no' if c['uncalibrated'] else 'yes'}</div><div class="k label">calibrated</div></div>
-  </div>
-</div></header>
+def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
+    """Write runs/index.html - the cross-run dashboard."""
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-<div class="wrap">
-<nav class="tabs" role="tablist">
-  <button role="tab" aria-selected="true"  data-p="models">Models</button>
-  <button role="tab" aria-selected="false" data-p="runs">Runs</button>
-  <button role="tab" aria-selected="false" data-p="paired">Head to head</button>
-  <button role="tab" aria-selected="false" data-p="repeats">Repeats</button>
-  <button role="tab" aria-selected="false" data-p="evidence">Evidence</button>
-</nav>
+    runs = load_runs(runs_root, modality)
+    if not runs:
+        raise SystemExit(f"no {modality} runs under {runs_root}")
+    models = rollup_models(runs)
+    all_cells = [c for r in runs for c in r.cells]
+    duel = _duel(models)
+    scenarios = _scenario_blocks(runs, duel)
 
-<section class="panel" id="p-models">
-  <h2>Model rollup</h2>
-  <p class="lead"><strong>Spread</strong> is best-to-worst across everything a model
-     scored, so it mixes two different things. <strong>Repeat</strong> is the part that
-     is actually noise — the same scenario asked more than once — and it is the number
-     that says whether a gap between models means anything. It reads n/a until a
-     scenario has been run twice. See the Repeats tab.</p>
-  <div class="callout {'warn' if c['uncalibrated'] else ''}">
-    <p><strong>Verdict.</strong> {c['verdict_line']}</p>
-  </div>
-  <div class="scroll"><table class="tbl">
-    <thead><tr><th>Model</th><th class="n">Quality</th><th class="n">Spread</th><th class="n">Repeat</th>
-      <th class="n">Worst WER</th><th class="n">Cost / clip</th><th class="n">Latency</th>
-      <th class="n">Audio q.</th><th class="n">Success</th><th class="n">Attempts</th>
-      <th class="n">Scored</th></tr></thead>
-    <tbody>{c['model_rows']}</tbody>
-  </table></div>
+    env = Environment(
+        loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
+        autoescape=select_autoescape(["html", "j2"]),
+    )
+    env.filters["usd"] = _fmt_usd
+    env.filters["s"] = _fmt_s
 
-  <h3>Score spread, drawn to scale</h3>
-  <div class="spread">
-    {c['spread_rows']}
-    <div class="saxis"><span></span><span class="ax"><span>{c['axis_lo']:.2f}</span>
-      <span>{c['axis_hi']:.2f}</span></span><span></span></div>
-    <div class="legend">{c['legend']}</div>
-  </div>
-  <p class="lead">The tick marks the mean; the bar spans best to worst across runs.
-     Where the bars overlap, the models are not separated by this evidence.</p>
-</section>
+    run_rows = [{
+        "label": r.label, "started": (r.started_at or "")[:16].replace("T", " "),
+        "scenario": ", ".join(sorted({c.scenario_id for c in r.cells})) or "—",
+        "cells": len(r.cells),
+        "passed": sum(1 for c in r.cells if c.status == "scored"),
+        "cost": sum(c.total_micro for c in r.cells),
+        "judge": r.judge_model, "predictor": r.mos_predictor,
+    } for r in reversed(runs)]
 
-<section class="panel" id="p-runs" hidden>
-  <h2>Runs</h2>
-  <p class="lead">Every run is a self-contained folder — click a run id for its own
-     report with players, transcript diffs and judge reasoning.</p>
-  <div class="scroll"><table class="tbl">
-    <thead><tr><th>Run</th><th>Started</th><th class="n">Clips</th><th class="n">Scored</th>
-      <th>Models</th><th>Gates</th><th>Calibration</th><th class="n">Spend</th>
-      <th>Commit</th></tr></thead>
-    <tbody>{c['run_rows']}</tbody>
-  </table></div>
-</section>
+    uncalibrated = any(not r.calibration_passed for r in runs)
+    footnotes = [
+        "<b>Quality is meaned over scored cells only</b>, and always carries its denominator. "
+        "A gated cell is counted in <em>Invalid</em> and in the gate rate, never averaged into "
+        "quality - a clean read that is too long for an ad slot is the wrong length, not bad audio.",
+        "<b>Models are ranked on the gate first</b>, quality second, so failing more can never "
+        "look like scoring higher.",
+        "<b>A repeat is the same script and the same gates.</b> Runs of an edited scenario are "
+        "excluded from every spread on this page.",
+        "<b>The objective audio number is a signal metric, not a MOS.</b> It measures SNR, "
+        "spectral flatness, clipping and bandwidth - it is labelled as such wherever it appears "
+        "and must not be quoted as a mean opinion score.",
+        "<b>Cost is what the run believed it paid</b>, at the rates frozen in its own manifest.",
+    ]
+    if uncalibrated:
+        footnotes.insert(0, "<b>The judge is uncalibrated.</b> The 2-humans x 5-clips gate has "
+                            "never been run, so <code>naturalness</code> and <code>clarity</code> "
+                            "carry no evidence of agreement with a human ear.")
 
-<section class="panel" id="p-paired" hidden>
-  <h2>Head to head</h2>
-  <p class="lead">Both models answered the identical scenario in the same run, so this
-     comparison is paired. A gap of 0.5 or less is a declared tie. That 0.5 is a fixed
-     rule of thumb set before any run, NOT a measured threshold — the Repeats tab
-     carries the noise actually observed, which is the number to trust.</p>
-  <div class="scroll"><table class="tbl">
-    <thead><tr><th>Scenario</th><th>Run</th>
-      <th class="n">{_e(models[0].model_id) if models else 'A'}</th>
-      <th class="n">{_e(models[1].model_id) if len(models)>1 else 'B'}</th>
-      <th class="n">Δ</th><th>Result</th></tr></thead>
-    <tbody>{c['pair_rows'] or '<tr><td colspan=6 class=dim>No paired cells.</td></tr>'}</tbody>
-  </table></div>
-</section>
-
-<section class="panel" id="p-repeats" hidden>
-  <h2>Repeats</h2>
-  <p class="lead">The same scenario, asked more than once. A model scored against itself
-     is the only honest yardstick for a gap between two models — if one model moves by
-     0.2 between two runs of the same script, a 0.2 gap against a rival is not a finding.</p>
-  {c['repeats'] or '<p class="dim">No scenarios yet.</p>'}
-</section>
-
-<section class="panel" id="p-evidence" hidden>
-  <h2>Evidence</h2>
-  <p class="lead">Every clip, playable, with its measured facts. Audio streams from the
-     run folder beside this page — open this file from disk, not from a copy.</p>
-  {c['evidence']}
-</section>
-</div>
-
-<footer><div class="wrap">
-  <p><strong>Judge.</strong> {' · '.join(_e(j) for j in judge_models)}, temperature 0, one clip
-     per call, labels shuffled per scenario, audio re-encoded so no provider metadata reaches it.
-     Judge failure is recorded as unjudged and excluded from the mean — never scored 0.</p>
-  <p><strong>Audio quality.</strong> Predictor: {' · '.join(_e(p) for p in predictors)}. A signal
-     metric is a real measurement of the file but is <em>not</em> a perceptual MOS, and is badged
-     as such wherever it appears.</p>
-  <p><strong>Calibration.</strong> {_e(runs[-1].calibration_reason)}</p>
-  <p><strong>Declared differences.</strong> Voices are not comparable across providers; one
-     deliberate voice is pinned per provider and recorded in each run manifest. A parameter a
-     provider cannot honour is recorded in params_unsupported and footnoted in that run's report.</p>
-  <p>These models are non-deterministic and providers update them silently. Two runs a week apart
-     will differ — which is why the winner threshold is 0.5 and why spread is on the same screen
-     as the mean.</p>
-</div></footer>
-
-<script>
-const tabs=[...document.querySelectorAll('nav.tabs button')];
-function show(name){{
-  tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.p===name)));
-  document.querySelectorAll('section.panel').forEach(s=>{{s.hidden=(s.id!=='p-'+name);}});
-  history.replaceState(null,'','#'+name);
-}}
-tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.p)));
-const initial=(location.hash||'#models').slice(1);
-if(tabs.some(t=>t.dataset.p===initial)) show(initial);
-</script>
-</body></html>"""
+    html = env.get_template("dashboard.html.j2").render(
+        models=[{
+            "model_id": m.model_id, "accent": m.accent, "mean": m.mean_score,
+            "scored_n": m.scored_n, "evaluated_n": m.evaluated_n or m.n,
+            "gate_pass_rate": m.gate_pass_rate, "repeat_spread": m.repeat_spread,
+            "worst_wer": m.worst_wer, "mean_cost": m.mean_cost,
+            "p50_latency": m.mean_latency, "invalid": m.invalid,
+        } for m in models],
+        runs=runs, run_rows=run_rows, scenarios=scenarios, duel=duel,
+        evidence=_evidence(runs), overall=_overall(models),
+        n_scenarios=len({c.scenario_id for c in all_cells}),
+        n_clips=len(all_cells),
+        max_passes=max((s["n_passes"] for s in scenarios), default=0),
+        repeated_n=sum(1 for s in scenarios if s["n_passes"] > 1),
+        gen_micro=sum(c.cost_micro for c in all_cells),
+        asr_micro=sum(c.asr_micro for c in all_cells),
+        judge_micro=sum(c.judge_micro for c in all_cells),
+        judge_model=runs[-1].judge_model,
+        uncalibrated=uncalibrated,
+        footnotes=footnotes,
+    )
+    out = Path(runs_root) / "index.html"
+    out.write_text(html, encoding="utf-8")
+    return out
