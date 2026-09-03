@@ -18,6 +18,37 @@ If the tests pass, the machine works. **The whole suite runs with no API key
 and no network** — so a broken checkout is always distinguishable from a
 broken credential.
 
+### The ASR must not share a vendor with an arm
+
+Measured 2026-09-03 over 40 clips. The same audio scored differently
+depending on whose recogniser listened to it:
+
+| | median WER, Google ASR | median WER, neutral ASR |
+|---|---|---|
+| `elevenlabs-multilingual-v2` | 0.0246 | 0.0167 |
+| `gemini-3-1-flash-tts` | 0.0143 | 0.0166 |
+| **gap (elevenlabs − gemini)** | **+0.0103** | **+0.0001** |
+
+ElevenLabs got **better** and Gemini slightly **worse** once a neutral
+recogniser listened — each engine flatters its own family's synthesis. The
+apparent Google lead in word accuracy was the instrument, not the model.
+
+That matters more than it looks: `text_accuracy` is 30% of the weighted
+score, and every deterministic gate (`must_say`, `must_say_digits`,
+`must_not_say`) reads the same transcript.
+
+So the shipped ASR is **local Whisper** — OpenAI-trained, and neither arm is
+OpenAI, so it is neutral for *this* comparison. It runs on CPU with no key
+and no network. Peak accuracy matters less here than accuracy that favours
+neither side. `asr_disabled_gemini` in `configs/models.yaml` keeps the old
+one, for a comparison in which no arm is Google.
+
+**The judge has the same exposure and is NOT yet fixed.** It is
+`gemini-2.5-flash` listening to audio while one arm is Gemini. Blinding
+(A/B/C, shuffled per scenario) hides the name, not the acoustic fingerprint.
+A non-Google *audio* judge needs credentials this project does not have.
+Treat every judge-derived score as carrying that caveat.
+
 ### Credentials
 
 Put them in `voice/.env` — copy `voice/.env.example`, which lists every one

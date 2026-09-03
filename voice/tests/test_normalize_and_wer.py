@@ -386,3 +386,17 @@ def test_harbour_folds_like_its_siblings():
 def test_plain_digit_strings_are_untouched_by_the_ordinal_rule():
     assert normalize("482916") == "four eight two nine one six"
     assert normalize("press 3") == "press three"
+
+
+def test_on_the_hour_clock_times_read_as_the_hour():
+    """
+    From vr-ecom-01's first run: the script said "between two and four", the
+    ASR wrote "between 2:00 and 4:00", and the bare-digit rule read the zeros
+    aloud - four tokens inserted into every model's WER equally.
+    """
+    assert normalize("between two and four") == normalize("between 2:00 and 4:00")
+    assert normalize("at 9:00 sharp") == normalize("at nine sharp")
+    # Minutes still read as minutes.
+    assert normalize("3:30") == normalize("three thirty")
+    # A plain number is not a time and must be untouched.
+    assert normalize("200") == "two hundred"

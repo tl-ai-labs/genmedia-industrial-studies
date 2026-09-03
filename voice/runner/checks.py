@@ -41,6 +41,21 @@ _DIGIT_WORDS = {
 }
 
 
+def says(haystack_norm: str, phrase: str) -> bool:
+    """
+    Is `phrase` present as WHOLE WORDS in an already-normalized transcript?
+
+    Substring matching found "lakh" inside "lakhsmi" and would have passed a
+    convention gate on a temple name. Phrases are matched as a contiguous run
+    of tokens, which is what "the model said this" actually means.
+    """
+    need = normalize(str(phrase)).split()
+    if not need:
+        return False
+    hay = haystack_norm.split()
+    return any(hay[i:i + len(need)] == need for i in range(len(hay) - len(need) + 1))
+
+
 def _digit_runs(text: str) -> list[str]:
     """
     Consecutive digit-ish tokens, grouped into runs.
@@ -524,8 +539,8 @@ def run_checks(
             need = normalize(str(phrase))
             report.add(
                 f"must_say[{str(phrase)[:28]}]",
-                need in heard_norm,
-                f"looked for {need!r}",
+                says(heard_norm, phrase),
+                f"looked for {need!r} as whole words",
             )
 
         # Gate 10b - alternation. An invented proper noun has no spelling a
@@ -539,7 +554,7 @@ def run_checks(
             label = "|".join(options)[:26]
             report.add(
                 f"must_say_any[{label}]",
-                any(normalize(o) in heard_norm for o in options),
+                any(says(heard_norm, o) for o in options),
                 f"any of {[normalize(o) for o in options]}",
             )
 
@@ -554,7 +569,7 @@ def run_checks(
             avoid = normalize(str(phrase))
             report.add(
                 f"must_not_say[{str(phrase)[:24]}]",
-                avoid not in heard_norm,
+                not says(heard_norm, phrase),
                 f"must not contain {avoid!r}",
             )
 

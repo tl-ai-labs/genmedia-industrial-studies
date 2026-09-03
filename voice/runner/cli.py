@@ -105,6 +105,21 @@ def _run_per_scenario(args: argparse.Namespace) -> int:
 
     minted: list[str] = []
     worst = 0
+
+    # --run names ONE existing run, so it cannot serve a fan-out over several
+    # scenarios. It used to be dropped SILENTLY here, which is worse than
+    # refusing it: on 2026-09-03 two runs were resumed with --run, the flag
+    # was discarded, fresh runs were minted, and 741 characters of a metered
+    # ElevenLabs quota were spent re-generating clips that were already on
+    # disk. A flag that costs money must never be ignored without saying so.
+    if getattr(args, "run", None) and len(scenarios) > 1:
+        raise SystemExit(
+            f"--run {args.run} names one existing run, but --scenarios matched "
+            f"{len(scenarios)} scenarios and this mode mints one run each. "
+            f"Point --scenarios at a single file to resume that run, or drop "
+            f"--run to start fresh ones."
+        )
+
     print(f"\nPER-SCENARIO MODE  {len(scenarios)} scenario(s) -> {len(scenarios)} run(s)")
     print("  one run per scenario; use --bundle for a single folder covering all of them")
 
@@ -137,7 +152,9 @@ def _run_per_scenario(args: argparse.Namespace) -> int:
         # Point this pass at exactly one scenario file.
         sub.scenarios = s.source_path.split(":")[0]
         sub.label = f"{args.label}-{s.id}" if args.label else s.id
-        sub.run = None
+        # Exactly one scenario: --run is unambiguous and resumes that run,
+        # reusing the clips already paid for. Guarded above for the fan-out.
+        sub.run = getattr(args, "run", None) if len(scenarios) == 1 else None
         rc = cmd_run(sub)
         worst = max(worst, rc)
         if getattr(sub, "minted_run_id", None):
