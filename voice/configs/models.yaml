@@ -1,0 +1,276 @@
+# The only file you edit to add or remove a model (plan v1.2 section 07).
+#
+# Adding a TTS provider is: one block here + one adapter class in
+# runner/adapters/. Nothing in checks.py, judge.py, scoring.py, cost.py or
+# report.py knows a provider exists.
+#
+# ENABLED vs DISABLED. A model with `enabled: true` whose `auth_env` is not
+# set on the box is a HARD STOP at preflight, before any spend (section 08).
+# Models whose credentials this project does not have ship disabled, with the
+# reason recorded, rather than deleted - the block IS the documentation of
+# how to turn them on.
+#
+# WHICH ARMS ARE LIVE HERE, AND WHY (2026-09-01). The matrix for VOI-NAR-01
+# is deliberately two arms:
+#
+#     gemini-3-1-flash-tts        LIVE  - the chosen Google arm
+#     elevenlabs-multilingual-v2  off   - waiting on ELEVENLABS_API_KEY
+#
+# Everything else is reachable-and-configured but out of this matrix on
+# purpose, each with its reason recorded rather than deleted. The 2.5 Flash
+# and 2.5 Pro blocks are the cost and quality tiers if you want the curve
+# instead of a single point; the OpenAI blocks are blocked on account credits.
+#
+# A model with `enabled: true` and no credential is a HARD STOP at preflight,
+# which is why ElevenLabs stays off until the key exists - an enabled arm with
+# no key would refuse the whole run rather than quietly skip that column.
+version: 1
+
+voice:
+  # ---------------------------------------------------------------------
+  # Gemini 2.5 Flash TTS - TOKEN billed, and it reports its own usage, so
+  # every cost on this arm is api_reported rather than estimated.
+  # ---------------------------------------------------------------------
+  - id: gemini-2-5-flash-tts
+    enabled: false
+    disabled_reason: "not in the VOI-NAR-01 matrix - 3.1 Flash is the chosen Google arm. Reachable; flip to true to add the cost tier back"
+    adapter: gemini_tts
+    provider: google                 # semaphore/lane key - quota is per vendor
+    provider_model: "gemini-2.5-flash-tts"
+    auth_env: GOOGLE_APPLICATION_CREDENTIALS
+    region: us-central1
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 10}
+    voice_map:
+      # ONE deliberate, human-chosen voice per provider that matches the
+      # scenario's intent. Recorded in the manifest, footnoted in the report
+      # as a DECLARED difference - voices are not comparable across providers
+      # the way sample rates are (section 07 voice caveat).
+      female_mid_warm: "Aoede"
+      male_mid_neutral: "Charon"
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: tokens
+      usd_in_per_1m: 0.50
+      usd_audio_out_per_1m: 10.00
+      # Fallback only - Gemini reports usage, so these should never fire.
+      est_chars_per_input_token: 4.0
+      est_audio_tokens_per_second: 25.0
+      source: https://ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-01
+
+  # ---------------------------------------------------------------------
+  # Gemini 2.5 Pro TTS - the same adapter, the same doorway, exactly 2x the
+  # rate on both sides. The second arm of the comparison.
+  # ---------------------------------------------------------------------
+  - id: gemini-2-5-pro-tts
+    enabled: false
+    disabled_reason: "not in the VOI-NAR-01 matrix - 3.1 Flash is the chosen Google arm. Reachable; flip to true to add the quality tier back"
+    # disabled_reason: "not in the VOI-NAR-01 matrix - 3.1 Flash is the chosen Google arm. Reachable; flip to true to add the quality tier back"
+    adapter: gemini_tts
+    provider: google
+    provider_model: "gemini-2.5-pro-tts"
+    auth_env: GOOGLE_APPLICATION_CREDENTIALS
+    region: us-central1
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 10}
+    voice_map:
+      female_mid_warm: "Aoede"
+      male_mid_neutral: "Charon"
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: tokens
+      usd_in_per_1m: 1.00
+      usd_audio_out_per_1m: 20.00
+      est_chars_per_input_token: 4.0
+      est_audio_tokens_per_second: 25.0
+      source: https://ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-01
+
+  # ---------------------------------------------------------------------
+  # Gemini 3.1 Flash TTS (preview) - Google's newest TTS tier. Verified
+  # reachable on this project 2026-09-01. NOTE it tokenises audio output
+  # roughly 2x more densely than the 2.5 models (~50 audio tokens/sec vs ~25
+  # measured on an identical 5s probe), so at the same headline rate as Pro it
+  # is NOT the same cost per second. Worth knowing before reading the numbers.
+  # ---------------------------------------------------------------------
+  - id: gemini-3-1-flash-tts
+    enabled: true
+    adapter: gemini_tts
+    provider: google
+    provider_model: "gemini-3.1-flash-tts-preview"
+    auth_env: GOOGLE_APPLICATION_CREDENTIALS
+    region: us-central1
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 10}
+    voice_map:
+      female_mid_warm: "Aoede"
+      male_mid_neutral: "Charon"
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: tokens
+      usd_in_per_1m: 1.00
+      usd_audio_out_per_1m: 20.00
+      est_chars_per_input_token: 4.0
+      est_audio_tokens_per_second: 50.0
+      source: https://ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-01
+
+  # ---------------------------------------------------------------------
+  # ElevenLabs Multilingual v2 - the QUALITY tier, and the right competitor
+  # for an audiobook/narration scenario. Billed per 1k CHARACTERS SENT, not
+  # per minute produced, which is why a 985-character passage costs the same
+  # here whether the model reads it in 60s or 90s.
+  # ---------------------------------------------------------------------
+  - id: elevenlabs-multilingual-v2
+    enabled: true
+    adapter: elevenlabs_tts
+    provider: elevenlabs
+    provider_model: "eleven_multilingual_v2"
+    auth_env: ELEVENLABS_API_KEY
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 20}
+    voice_map:
+      # Chosen against THIS account's voice list on 2026-09-01. The plan's
+      # example pins (Rachel / Josh) are not in this account and would have
+      # 404'd on the first call.
+      #
+      # AMERICAN, deliberately. Gemini's prebuilt voices offer no accent
+      # selection, so pinning a British voice here would have put a British
+      # read against an American one on the same brief - and the judge would
+      # have scored the accent, not the reading. Matching the accent removes
+      # that confound so the comparison measures read quality alone. It also
+      # means ElevenLabs' accent-matching capability is NOT exercised here;
+      # that is a separate question, and would need its own declared arm.
+      #
+      # Matilda over Bella ("Professional, Bright, Warm") because "bright"
+      # is exactly the added colour this scenario's brief rules out.
+      female_mid_warm: "XrExE9yKIg1WjnnlVkGX"   # Matilda - female, middle-aged, American, informative_educational
+      male_mid_neutral: "cjVigY5qzO86Huf0OWal"  # Eric    - male,   middle-aged, American, closest to neutral
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: per_1k_chars
+      usd: 0.10
+      source: https://elevenlabs.io/pricing/api
+      as_of: 2026-08-31
+
+  # ---------------------------------------------------------------------
+  # OpenAI gpt-4o-mini-tts - TOKEN billed. /v1/audio/speech returns no usage
+  # object, so its cost comes from the declared estimation assumptions below
+  # and is badged "est" everywhere it appears.
+  # ---------------------------------------------------------------------
+  - id: openai-gpt-4o-mini-tts
+    enabled: false
+    disabled_reason: "OpenAI account reports 'no credits remaining' (HTTP 429 insufficient_quota) - add credits and flip enabled: true"
+    adapter: openai_tts
+    provider: openai
+    provider_model: "gpt-4o-mini-tts"
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 30}
+    voice_map:
+      female_mid_warm: "nova"
+      male_mid_neutral: "onyx"
+    params: {format: wav, sample_rate: 24000, speed: 1.0}
+    price:
+      unit: tokens
+      usd_in_per_1m: 0.60
+      usd_audio_out_per_1m: 12.00
+      # Declared here, in the open, rather than hidden in cost.py - and every
+      # cost computed from them is stamped usage_exact:false. They are
+      # replaced automatically the day the endpoint reports usage.
+      est_chars_per_input_token: 4.0
+      est_audio_tokens_per_second: 25.0
+      source: https://developers.openai.com/api/docs/pricing
+      as_of: 2026-08-31
+
+  # ---------------------------------------------------------------------
+  # OpenAI tts-1 - CHARACTER billed. A different billing dimension from
+  # every other arm here, which is why it is worth keeping configured: the
+  # cost path has to handle each unit honestly, not assume one shape.
+  # ---------------------------------------------------------------------
+  - id: openai-tts-1
+    enabled: false
+    disabled_reason: "OpenAI account reports 'no credits remaining' (HTTP 429 insufficient_quota) - add credits and flip enabled: true"
+    adapter: openai_tts
+    provider: openai
+    provider_model: "tts-1"
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_speech]        # tts-1 takes no style directive
+    limits: {max_concurrency: 2, rpm: 30}
+    voice_map:
+      female_mid_warm: "nova"
+      male_mid_neutral: "onyx"
+    params: {format: wav, sample_rate: 24000, speed: 1.0}
+    price:
+      unit: per_1m_chars
+      usd_per_1m: 15.00
+      source: https://developers.openai.com/api/docs/pricing
+      as_of: 2026-08-31
+
+  # ---------------------------------------------------------------------
+  # ElevenLabs - per 1k CHARACTERS SENT, not per minute produced.
+  # ---------------------------------------------------------------------
+  - id: elevenlabs-flash-v2-5
+    enabled: false
+    disabled_reason: "key IS provisioned now; this is the cheaper Flash tier, out of the VOI-NAR-01 matrix by choice. Flip to true to add it"
+    adapter: elevenlabs_tts
+    provider: elevenlabs
+    provider_model: "eleven_flash_v2_5"
+    auth_env: ELEVENLABS_API_KEY
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 20}
+    voice_map:
+      female_mid_warm: "XrExE9yKIg1WjnnlVkGX"   # Matilda - see the multilingual-v2 block
+      male_mid_neutral: "cjVigY5qzO86Huf0OWal"  # Eric
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: per_1k_chars
+      usd: 0.05
+      source: https://elevenlabs.io/pricing/api
+      as_of: 2026-08-31
+
+# The blind judge. Scores ONLY what code cannot measure (section 13).
+judge:
+  voice:
+    adapter: gemini_audio
+    provider: google
+    provider_model: "gemini-2.5-flash"
+    auth_env: GOOGLE_APPLICATION_CREDENTIALS
+    region: us-central1
+    temperature: 0
+    price:
+      unit: tokens
+      usd_in_per_1m: 0.30
+      usd_audio_in_per_1m: 1.00
+      usd_out_per_1m: 2.50
+      source: https://ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-01
+
+# Deterministic word-accuracy check. Gemini transcribes natively and reports
+# its tokens, so the ASR cost is api_reported like the rest of the Google
+# stack. Swapping to gpt-4o-mini-transcribe at $0.003/minute is a two-line
+# edit here plus nothing else.
+asr:
+  adapter: gemini_transcribe
+  provider: google
+  provider_model: "gemini-2.5-flash"
+  auth_env: GOOGLE_APPLICATION_CREDENTIALS
+  region: us-central1
+  price:
+    unit: tokens
+    usd_in_per_1m: 0.30
+    usd_audio_in_per_1m: 1.00
+    usd_out_per_1m: 2.50
+    source: https://ai.google.dev/gemini-api/docs/pricing
+    as_of: 2026-09-01
+
+# Objective audio quality. Free, local, CPU, deterministic - no API.
+#   dnsmos  -> a real DNSMOS/NISQA ONNX model at `model_path`; reports mos_raw
+#              on the 1..5 MOS scale.
+#   signal  -> signal metrics only (SNR, spectral flatness, clipping, DC,
+#              bandwidth). NOT a MOS. Labelled as such everywhere it appears.
+# The report always names which predictor produced the number.
+mos:
+  predictor: signal
+  model_path: models/dnsmos_p808.onnx

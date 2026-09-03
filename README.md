@@ -19,7 +19,7 @@ from each other.
 |----------|---------------|-------|
 | `image/` | **complete**  | 60 scenarios (text-to-image + image editing), Gemini 3 Pro vs GPT Image 2, blind-judged |
 | `video/` | in progress   | text-to-video first (cinematic + physics families from the bank) |
-| `voice/` | planned       | TTS / styled speech (Phase 2 of the plan) |
+| `voice/` | **built**, bank partial | TTS / styled speech: ElevenLabs Multilingual v2 vs Gemini 3.1 Flash TTS — deterministic audio gates, ASR-verified WER, blind-judged. 8 scenarios of the bank so far |
 
 Shared across modules:
 
@@ -34,7 +34,10 @@ Shared across modules:
 
 ## Quick start
 
-Each module documents itself — start with [image/README.md](image/README.md).
+Each module documents itself — start with [image/README.md](image/README.md) or
+[voice/README.md](voice/README.md). The voice lane also carries a
+[HANDOFF.md](voice/HANDOFF.md): how to run it, add a model, add a scenario, and
+what is measured versus what is still assumed.
 
 ```bash
 cd image

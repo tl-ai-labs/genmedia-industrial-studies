@@ -1,0 +1,43 @@
+id: voi-900
+modality: voice
+task: text_to_speech
+title: "NEGATIVE CONTROL - deliberately wrong script"
+
+# This scenario is a test of the GATE, not of the models.
+#
+# The model is asked to speak the shipping line below. The WER check is then
+# run against a DIFFERENT reference (`checks.wer_reference`) - a plausible
+# near-miss with the wrong order number, the wrong courier and the wrong day.
+# A correctly-working gate must FAIL this cell on normalized WER even though
+# the audio itself is clean, decodes, and is the right length.
+#
+# Without a cell like this, a green run proves only that nothing blew up. It
+# does not prove the check that matters can still say no.
+input:
+  script: |
+    Your parcel left our warehouse this morning and is with the courier.
+    Tracking number 5-5-1-2-0-8. Expected delivery is Friday before six.
+  language: en-US
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  Not applicable - this cell exists to be failed by the WER gate.
+
+checks:
+  duration_s: {min: 4, max: 30}
+  max_silence_s: 2.0
+  no_clipping: true
+  max_wer: 0.10
+  # Negative-control affordance: the text WER is measured against, when it
+  # must deliberately differ from the spoken script. Defaults to the script,
+  # so every ordinary scenario is unaffected by this field existing.
+  wer_reference: |
+    Your parcel left our depot last night and is with the postal service.
+    Tracking number 9-9-4-3-7-1. Expected delivery is Tuesday before noon.
+
+tags: [negative-control, gate-proof]

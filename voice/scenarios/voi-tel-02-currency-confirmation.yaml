@@ -1,0 +1,51 @@
+# VOI-TEL-02 - Currency confirmation (Transactional / telephony)
+#
+# Capability under test: Amount and unit accuracy
+#
+# SCRIPT ADAPTED FROM THE BANK, deliberately. The bank's prompt column is
+# an instruction to a conversational agent:
+#     "Confirm the amount: four thousand two hundred and fifty rupees and
+#      seventy-five paise."
+# A TTS engine has no agent to instruct - what you send is what it says.
+# Sent verbatim on 2026-09-01, ElevenLabs read the preamble aloud while
+# Gemini spoke only the digits, and the WER gate punished Gemini for the
+# more sensible behaviour. The script below is the UTTERANCE a telephony
+# agent would actually speak. Digit accuracy - the capability under test
+# - is unchanged; both models got every digit right even when the framing
+# differed.
+#
+# Bank's automated check: Parse the ASR transcript to a numeric value: must
+#   equal 4250.75 with the correct currency. Exact match required
+id: voi-tel-02
+modality: voice
+task: text_to_speech
+title: "Currency confirmation - Transactional / telephony"
+
+input:
+  script: |
+    The amount is four thousand two hundred and fifty rupees and seventy-five paise.
+  language: en-IN
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Whole amount correct  2) Fractional amount correct  3) Currency unit
+  stated correctly  4) Natural verbalisation Delivered at an unhurried
+  telephony pace, every digit distinct.
+
+checks:
+  duration_s: {min: 2.0, max: 20.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  max_wer: 0.10
+  # Spelled as SPOKEN. '4250.75 rupees' normalizes to a decimal reading
+  # and would not match a major+minor utterance - that failed two correct
+  # clips on 2026-09-01.
+  must_say:
+    - "four thousand two hundred and fifty rupees and seventy-five paise"
+
+tags: [telephony, transactional, digits, voi-tel-02]

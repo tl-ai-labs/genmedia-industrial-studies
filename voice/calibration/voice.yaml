@@ -1,0 +1,28 @@
+# Voice calibration gate (plan v1.2 section 13).
+#
+# TWO people listen to the five clips below and score each one 0-10 on overall
+# voice quality, using the same rubric the judge used. Do not look at the
+# judge's scores first. Fill in every clip for both reviewers, then re-run
+# `genmedia report` - the gate is evaluated automatically and the
+# "judge uncalibrated" badge disappears if it passes.
+#
+# Clips are from run 2026-09-01_101739_voice-r1. Play them from:
+#   runs/2026-09-01_101739_voice-r1/outputs/voice/<scenario>/<model>.wav
+#
+# This file is only valid for the rubric hash and judge below. Edit a weight
+# in configs/rubrics/voice.yaml and the gate reverts to uncalibrated.
+rubric_hash: c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c
+judge_model: gemini-2.5-flash
+run_id: 2026-09-01_101739_voice-r1
+
+reviewers:
+  - name: reviewer-1
+    scores:
+      "voi-nar-01|gemini-3-1-flash-tts": null
+      "voi-nar-01|elevenlabs-multilingual-v2": null
+
+  - name: reviewer-2
+    scores:
+      "voi-nar-01|gemini-3-1-flash-tts": null
+      "voi-nar-01|elevenlabs-multilingual-v2": null
+

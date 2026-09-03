@@ -1,0 +1,30 @@
+id: voi-003
+modality: voice
+task: styled_tts
+title: "Support callback - apologetic, with a reference number"
+
+input:
+  script: |
+    Hi Priya, this is a callback from Trailhead support about order 4-8-2-9-1-6.
+    I'm sorry about the delay with your delivery. We've reissued the shipment today,
+    and it should reach you by Thursday.
+  language: en-IN
+  style: "warm, apologetic, unhurried; natural pauses at sentence ends"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  Every word of the script spoken accurately, the order number read digit by
+  digit, apologetic but not theatrical, no clipped or rushed endings.
+
+checks:
+  duration_s: {min: 8, max: 35}
+  max_silence_s: 2.0
+  no_clipping: true
+  max_wer: 0.10
+
+tags: [support, indian-english, numbers]

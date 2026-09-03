@@ -1,0 +1,129 @@
+# VOI-NAR-02 - Narration & audiobook - five-minute stability.
+#
+# Purpose: quality drift over duration. VOI-NAR-01 asked whether a model can
+# read a page. This asks whether it can still be the same reader five minutes
+# later - does the tone hold, does pacing collapse, does the timbre wander.
+#
+# SOURCE. "The Phonetic Cartographer", supplied by the team. NOTE the spec
+# sheet lists the source as Project Gutenberg (public domain); the text
+# actually supplied is bespoke, not a Gutenberg work. Recording that here
+# because provenance is what makes a run reproducible, and the two should
+# not silently disagree.
+#
+# THE TEXT IS A DELIBERATE PHONETIC TORTURE TEST and is stored verbatim -
+# diacritics, IPA symbols, currency signs, the Roman numeral, the en dash and
+# the curly quotes all intact. Every one of those is part of the test:
+# normalising them away would quietly turn a hard scenario into an easy one.
+#
+# WHAT THIS SCENARIO CANNOT YET MEASURE. The spec asks for naturalness scored
+# on minute 1 and minute 5 separately, and a speaker-embedding cosine > 0.95
+# between them. Neither is implemented: the runner scores a clip as a whole
+# and has no speaker-embedding model. Those are the two additions that would
+# make this scenario measure what it is actually for. Until then it tests the
+# hard-pronunciation and long-form-survival half of the brief, which is
+# already far more discriminating than VOI-NAR-01.
+id: voi-nar-02
+modality: voice
+task: styled_tts
+title: "Narration & audiobook - five-minute stability"
+
+input:
+  script: |
+    The Phonetic Cartographer
+
+    At 3:47 a.m., beneath the phosphorescent glow of a malfunctioning château clock, Dr. Xanthippe Quenell examined an extraordinarily idiosyncratic manuscript whose provenance was, at best, questionable. Its title—The Æsthetic Psychophysiology of Quixotic Whizzing—was embossed in diminutive copperplate lettering, beneath which appeared an even more perplexing epigraph: “Sphinx of black quartz, judge my vow; syzygy, sesquipedalianism, and Worcestershire.”
+
+    The document purported to describe a hypothetical archipelago situated somewhere between the Îles-de-la-Madeleine and the Šumava highlands, although neither geography nor cartography could substantiate such a location. According to the manuscript, the islands were inhabited by multilingual philologists who communicated through a bewildering amalgamation of Welsh, Czech, French, Māori, Arabic, and archaic English. Their principal occupation was the meticulous classification of words whose pronunciation diverged spectacularly from their orthography.
+
+    One particularly obstreperous chapter concerned heteronyms. The author observed that lead could signify either a metallic element or the act of guiding; wind could describe moving air or the act of twisting; tear could emerge from an eye or result from ripping fabric; and bass might refer either to a low musical register or to a particular species of fish. The chapter concluded, somewhat smugly, that “context is the tyrant of pronunciation.”
+
+    Dr. Quenell continued reading.
+
+    A footnote described an eccentric linguist named Œnone de Ghyll, whose surname was allegedly pronounced “Gill,” despite containing enough orthographic complexity to intimidate an entire typographical department. Another referenced the Welsh village of Llanfairpwllgwyngyll, followed by the Czech tongue-twister strč prst skrz krk. A third mentioned the French phrase faux pas, the German Donaudampfschifffahrtsgesellschaftskapitän, and the Māori expression whakapapa. The juxtaposition was so phonetically dissonant that Quenell suspected the manuscript had been composed specifically to torment speech-recognition engines.
+
+    Then came the numerals.
+
+    “Observe,” the manuscript instructed, “the distinction among 0.00305, 30.305, 305.003, and 3,050,003.50. Recite 1,001, 10,010, 101,101, and 1,000,001 without collapsing their syllabic boundaries. Subsequently pronounce £7,654.32, €98,765.43, ¥123,456, and $0.07.”
+
+    Quenell paused.
+
+    The next paragraph was worse.
+
+    “On Wednesday, 2 September 2026, at precisely 11:11:11 p.m., Professor Szczęsny Vrzal announced that the sixth, eighth, twelfth, and twenty-seventh hypotheses were simultaneously plausible, implausible, and statistically insignificant. Nevertheless, the committee voted 7–3 in favor of hypothesis number XLIV.”
+
+    A marginal annotation added: “Do not confuse forty with fourty.”
+
+    Quenell laughed nervously.
+
+    The manuscript then transitioned into a pseudo-scientific discussion of otorhinolaryngology, electroencephalography, psychoneuroimmunology, pharmacokinetics, and spectrophotometrically calibrated microfluidics. It proposed a “quasi-crystallographic, hyperdimensional, neurophonetic transducer” capable of distinguishing /ʃ/, /ʒ/, /θ/, /ð/, /tʃ/, /dʒ/, /ŋ/, and the notoriously troublesome English rhotic approximant.
+
+    Its inventor, allegedly Professor Eustace Wriothesley, insisted that the machine could detect minuscule distinctions between ship, sheep, sip, cheap, jeep, chip, and shear. Yet the prototype reportedly malfunctioned whenever confronted with the sentence:
+
+    “Six sleek swans swiftly swished through thick, thorny thickets while thirty-three enthusiastic thespians rhythmically whispered, ‘The sixth sick sheikh’s sixth sheep’s sick.’”
+
+    The manuscript's final experiment was even more absurd.
+
+    A speaker was instructed to pronounce the following sentence twice—first deliberately, then at maximum speed:
+
+    “Rarely rural jurors rigorously reassured the weary warrior that the brewery’s brewery-bred brewer had correctly catalogued the iridescent, irascible, irrepressible, and irreproducible characteristics of the Worcestershire-born archaeologist’s turquoise rhinoceros.”
+
+    The second attempt allegedly produced an acoustic waveform resembling “a distressed accordion falling down a spiral staircase.”
+
+    At the bottom of the final page, Quenell discovered a handwritten warning:
+
+    “Beware the deceptively simple sentence.”
+
+    Beneath it appeared:
+
+    “Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo.”
+
+    Quenell stared at it for several seconds.
+
+    Then, with theatrical solemnity, she whispered, “I refuse.”
+
+    The château clock struck four.
+
+    Somewhere beyond the rain-slicked courtyard, a pheasant coughed, a church bell chimed, and an antiquated typewriter began typing by itself:
+
+    “Pronunciation is not merely the articulation of language; it is an intricate negotiation among phonology, morphology, prosody, orthography, memory, expectation, acoustics, and context.”
+
+    Quenell slowly closed the manuscript.
+
+    The final word had been underlined three times:
+
+    onomatopoeia.
+  language: en-US
+  style: >-
+    Consistent narrative tone, held from first word to last. Measured
+    audiobook pace. Do not accelerate as the passage goes on, and do not let
+    the delivery flatten or drift once the difficult vocabulary begins.
+
+params:
+  voice: female_mid_warm      # pinned per provider in models.yaml voice_map
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  The full passage read continuously, nothing skipped and nothing added. The
+  narrative register at the last paragraph is the same as at the first - no
+  fatigue, no acceleration, no drift into a flatter or brighter voice. Hard
+  vocabulary, foreign names and number strings attempted properly rather than
+  swallowed or skipped. No audible artefacts, clicks or abrupt cuts.
+
+checks:
+  # ~645 words. At the 116-152 wpm this project has measured, that is roughly
+  # 4.2 to 5.6 minutes; the band allows a slow read without passing a clip
+  # that has genuinely stalled or run away.
+  duration_s: {min: 210.0, max: 420.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  # The spec's gate. EXPECT THIS TO BE CONTESTED: the passage is engineered to
+  # break transcription conventions - IPA symbols, currency signs, Roman
+  # numerals, "3,050,003.50", diacritics, a vowel-less Czech phrase. Our
+  # normalizer handles digit strings but not currency, Roman numerals or
+  # abbreviations, so a failure here needs reading as "which side broke" before
+  # it is read as a model fault.
+  max_wer: 0.04
+
+tags: [narration, audiobook, stability, long-form, hard-pronunciation, en-us]

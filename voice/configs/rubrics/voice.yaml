@@ -1,0 +1,76 @@
+# Voice base rubric — plan v1.2 §13.
+#
+# `scored_by` is the load-bearing field. It is what stops the judge scoring
+# things code already measured:
+#   measurement  the score is COMPUTED from a measurement. The judge is told
+#                the measured fact and is explicitly forbidden to score it.
+#   judge        the judge scores it. Code has no opinion.
+#   hybrid       both contribute, blended at the declared ratio.
+#
+# runner/judge.py builds its criteria list from `scored_by in (judge, hybrid)`
+# ONLY, and injects every measurement as an established fact. Change a
+# criterion to `measurement` here and the judge stops seeing it — no code edit.
+modality: voice
+version: 1
+
+criteria:
+  - key: text_accuracy
+    label: Text accuracy
+    weight: 0.30
+    scored_by: measurement
+    measurement: normalized_wer
+    # WER 0 → 10; WER 0.10 → 5; WER >= 0.20 → 0. Piecewise linear between
+    # the anchors, clamped at both ends.
+    scale:
+      kind: piecewise_linear
+      lower_is_better: true
+      points: [[0.0, 10.0], [0.10, 5.0], [0.20, 0.0]]
+    description: >-
+      Word error rate of the ASR transcript against the script, both sides
+      passed through runner.normalize.normalize() first. Measured, never judged.
+
+  - key: pronunciation
+    label: Pronunciation
+    weight: 0.20
+    scored_by: judge
+    description: >-
+      Names, acronyms, digit strings, and any language-specific sounds the
+      scenario targets. 10 = every targeted item pronounced as a competent
+      native speaker would; each mispronounced item costs 2.
+
+  - key: naturalness
+    label: Naturalness
+    weight: 0.20
+    scored_by: judge
+    calibration_gated: true
+    description: >-
+      Prosody, pacing, pauses, emotional register matching the requested
+      style. Robotic and over-acted both lose points.
+
+  - key: clarity
+    label: Clarity
+    weight: 0.15
+    scored_by: judge
+    calibration_gated: true
+    description: >-
+      Intelligibility at normal volume; no mumbling, slurring or swallowed
+      word endings.
+
+  - key: audio_quality
+    label: Audio quality
+    weight: 0.15
+    scored_by: hybrid
+    measurement: mos
+    # The plan pins the two contributors (code MOS + judge artefacts) but not
+    # the ratio between them. 50/50 is this project's choice, declared here so
+    # it is a config decision rather than a number buried in scoring.py.
+    blend: {measurement: 0.5, judge: 0.5}
+    scale:
+      kind: linear_map
+      # DNSMOS-style predictors report 1..5; map onto 0..10.
+      from: [1.0, 5.0]
+      to: [0.0, 10.0]
+    description: >-
+      Code half: the configured objective predictor, plus clipping and
+      noise-floor checks. Judge half: artefacts, glitches, abrupt cuts ONLY —
+      the judge is told the objective number and does not restate it.
