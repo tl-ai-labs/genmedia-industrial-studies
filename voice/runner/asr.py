@@ -249,3 +249,50 @@ class Asr:
                 repeat_collapsed=collapsed,
             )
         return AsrFailure(error=last, attempts=ASR_MAX_ATTEMPTS, provider_model=self.spec.provider_model)
+
+
+class LocalWhisperBackend:
+    """
+    Whisper, run locally. NO network, NO key, NO vendor overlap with either
+    model under test.
+
+    WHY THIS EXISTS, and it is the most important thing in this file. The ASR
+    produces the transcript that every WER number and every must_say gate is
+    measured against - `text_accuracy` alone is 30% of the weighted score. Up
+    to 2026-09-03 that ASR was gemini-2.5-flash while one of the two models
+    under test was gemini-3.1-flash-tts, and the Google arm won on every
+    ASR-mediated metric (median WER 0.0143 vs 0.0246; 6 phrase-gate failures
+    vs 10). Nothing in that data can distinguish "Gemini speaks more clearly"
+    from "Google's recogniser understands Google's synthesiser better", and a
+    comparison that cannot separate those two is not a comparison.
+
+    Whisper is OpenAI-trained, and neither model under test is OpenAI - so it
+    is neutral with respect to THIS comparison, which is the property that
+    matters. It is not necessarily the most accurate recogniser available;
+    accuracy that favours one arm is worth less here than accuracy that
+    favours neither.
+    """
+
+    def __init__(self, spec: ServiceSpec) -> None:
+        from faster_whisper import WhisperModel
+
+        self.spec = spec
+        # provider_model names the Whisper size ("small.en", "medium", ...).
+        # int8 on CPU keeps a 40-clip pass to a few minutes with no GPU.
+        self._model = WhisperModel(
+            spec.provider_model or "small.en", device="cpu", compute_type="int8"
+        )
+        self.last_usage: Usage | None = None
+
+    def transcribe(self, audio_path: Path, language: str | None) -> str:
+        kwargs: dict = {"beam_size": 5}
+        if language:
+            code = language.split("-")[0]
+            # An English-only model rejects a language argument entirely.
+            if not (self.spec.provider_model or "").endswith(".en"):
+                kwargs["language"] = code
+        segments, _info = self._model.transcribe(str(Path(audio_path)), **kwargs)
+        return " ".join(s.text for s in segments).strip()
+
+
+_BACKENDS["local_whisper"] = LocalWhisperBackend

@@ -135,6 +135,13 @@ _RUPEE_WORD = re.compile(r"\b(?:rs\.?|inr)\s*(?=\d)", re.IGNORECASE)
 # folds to one spelling for the same reason.
 _PERCENT = re.compile(r"\s*%")
 _PER_CENT = re.compile(r"\bper\s+cent\b")
+# "2:00" -> "two". A speaker saying "between two and four" is transcribed
+# "between 2:00 and 4:00", and the bare digit rule then read the zeros aloud
+# - "two zero zero and four zero zero" - inserting four tokens into every
+# model's WER equally. An on-the-hour time carries no more information than
+# its hour. Minutes are left to the H:MM rule below, which already reads
+# "3:30" as "three thirty".
+_CLOCK_HOUR = re.compile(r"\b([01]?\d|2[0-3]):00\b")
 # "14th" -> "fourteenth". The script spells an ordinal out and the ASR writes
 # the digit form, so without this a correct date read fails on notation. Note
 # _split_alnum already protects "14th" from becoming "14 th"; this turns the
@@ -326,6 +333,9 @@ def normalize(text: str) -> str:
         return f" {rep} " if rep else m.group(0)
 
     text = _ABBREV.sub(_ab, text)
+
+    # 4a. On-the-hour clock times, before the bare-digit pass reads the zeros.
+    text = _CLOCK_HOUR.sub(lambda m: f" {m.group(1)} ", text)
 
     # 4b. Digit ordinals, before the bare-digit pass would see "14" alone.
     text = _DIGIT_ORDINAL.sub(

@@ -182,8 +182,25 @@ def test_preflight_passes_when_the_enabled_arms_have_their_credentials(monkeypat
     reg = load_registry(CONFIGS)
     for m in reg.for_modality("voice"):
         monkeypatch.setenv(m.auth_env, "present")
-    monkeypatch.setenv(reg.asr.auth_env, "present")
+    if reg.asr.auth_env:
+        monkeypatch.setenv(reg.asr.auth_env, "present")
     assert preflight(reg, "voice", [reg.asr]).ok
+
+
+def test_a_local_service_needs_no_credential_and_preflight_knows_it(monkeypatch):
+    """
+    The ASR runs locally now, so it declares no auth_env. "Needs no
+    credential" must not be read as "credential missing" - that would
+    hard-stop every run for a key that never existed, and the only
+    vendor-neutral instrument we have would be unconfigurable.
+    """
+    reg = load_registry(CONFIGS)
+    assert reg.asr.auth_env == "", "the shipped ASR should be local and keyless"
+    assert reg.asr.has_credential is True
+    for m in reg.for_modality("voice"):
+        monkeypatch.setenv(m.auth_env, "present")
+    pf = preflight(reg, "voice", [reg.asr])
+    assert pf.ok and not pf.missing_credentials
 
 
 # --------------------------------------------------------------------------

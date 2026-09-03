@@ -77,6 +77,11 @@ class ModelSpec:
 
     @property
     def has_credential(self) -> bool:
+        # A LOCAL service declares no auth_env. "Needs no credential" is a
+        # different state from "credential missing", and preflight must not
+        # hard-stop a run for a key that was never required.
+        if not self.auth_env:
+            return True
         return bool(os.environ.get(self.auth_env))
 
     def resolve_voice(self, logical_voice: str | None) -> tuple[str | None, str | None]:
@@ -117,6 +122,11 @@ class ServiceSpec:
 
     @property
     def has_credential(self) -> bool:
+        # A LOCAL service declares no auth_env. "Needs no credential" is a
+        # different state from "credential missing", and preflight must not
+        # hard-stop a run for a key that was never required.
+        if not self.auth_env:
+            return True
         return bool(os.environ.get(self.auth_env))
 
 
@@ -219,15 +229,21 @@ def _model(raw: dict, modality: str, path: Path) -> ModelSpec:
 
 def _service(raw: dict, role: str, path: Path) -> ServiceSpec:
     where = f"{path} [{role}]"
-    for required in ("adapter", "provider_model", "auth_env"):
+    for required in ("adapter", "provider_model"):
         if not raw.get(required):
             raise ConfigError(f"{where}: missing required field `{required}`")
+    # `auth_env` is OPTIONAL, and its absence is a claim: this service runs
+    # locally and needs no credential. A local ASR has no key to name, and
+    # demanding one would make the only vendor-neutral instrument we have
+    # unconfigurable. Anything reached over a network still declares it -
+    # preflight hard-stops on a NAMED variable that is unset, which is the
+    # case this check exists for.
     return ServiceSpec(
         role=role,
         adapter=str(raw["adapter"]),
         provider=str(raw.get("provider") or raw["adapter"]),
         provider_model=str(raw["provider_model"]),
-        auth_env=str(raw["auth_env"]),
+        auth_env=str(raw.get("auth_env") or ""),
         price=_price(raw.get("price"), where),
         temperature=float(raw.get("temperature", 0.0)),
         region=raw.get("region"),

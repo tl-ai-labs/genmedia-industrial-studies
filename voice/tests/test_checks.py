@@ -443,3 +443,27 @@ def test_must_say_any_accepts_a_legitimate_transcription_variant(tmp_path, predi
 
     wrong = run_checks(scenario, "m1", p, "and Redline take it", None, predictor)
     assert any(g.startswith("must_say_any") for g in wrong.failed_gates)
+
+
+def test_phrases_are_matched_as_whole_words_not_substrings():
+    """
+    `must_say: ["lakh"]` was a substring test, so it passed on "Lakhsmi" - a
+    temple name satisfying a currency-convention gate.
+    """
+    from runner.checks import says
+    from runner.normalize import normalize
+
+    assert not says(normalize("the Lakhsmi temple"), "lakh")
+    assert says(normalize("two lakh fifty thousand rupees"), "lakh")
+    # Multi-word phrases must match contiguously, not scattered.
+    assert says(normalize("fourteen Bengaluru branches"), "fourteen Bengaluru")
+    assert not says(normalize("fourteen big Bengaluru branches"), "fourteen Bengaluru")
+
+
+def test_must_not_say_also_matches_whole_words(tmp_path, predictor):
+    """The negative gate must not fire on a word that merely contains it."""
+    p = write(tmp_path, "w.wav", speechlike(3.0))
+    scenario = FakeScenario(text="the Lakhsmi temple opens at nine",
+                            checks={"must_not_say": ["lakh"]})
+    r = run_checks(scenario, "m1", p, "the Lakhsmi temple opens at nine", None, predictor)
+    assert r.passed, r.failed_gates

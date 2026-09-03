@@ -159,6 +159,25 @@ def _from_yaml(path: Path) -> Scenario:
     weights = doc.get("weights")
     _validate_weights(sid, weights)
 
+    # PARSED, VALIDATED, THEN IGNORED - until 2026-09-03, when a scenario
+    # could declare `weights`, have the loader reject anything not summing to
+    # 1.0, and then have them silently not applied because nothing downstream
+    # reads them. Validation theatre is worse than no validation: it tells an
+    # author their re-weighting is correct while scoring something else.
+    #
+    # Rejecting is the honest state until the scoring path reads them. The
+    # plan does specify the feature (v1.2 s13, "a scenario may re-weight,
+    # never invent, criteria"), so this is a NOT-YET, not a refusal - and the
+    # message says so rather than pretending the field is unknown.
+    if doc.get("criteria") or weights:
+        raise ScenarioError(
+            f"{path}: scenario '{sid}' declares per-scenario `criteria`/`weights`. "
+            f"The scoring path does not read them yet, so they would be silently "
+            f"ignored and the run would be scored on the task rubric instead. "
+            f"Remove them, or override at the task level in "
+            f"configs/rubrics/tasks/<task>.yaml, which IS applied."
+        )
+
     return Scenario(
         id=sid,
         modality=modality,

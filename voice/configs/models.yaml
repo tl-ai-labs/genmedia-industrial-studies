@@ -251,7 +251,38 @@ judge:
 # its tokens, so the ASR cost is api_reported like the rest of the Google
 # stack. Swapping to gpt-4o-mini-transcribe at $0.003/minute is a two-line
 # edit here plus nothing else.
+# THE ASR IS THE INSTRUMENT, AND IT MUST NOT SHARE A VENDOR WITH AN ARM.
+# Until 2026-09-03 this was gemini-2.5-flash while gemini-3.1-flash-tts was
+# under test. Measured over 40 clips, the same audio scored differently
+# depending on whose recogniser listened:
+#
+#                          median WER by Google ASR    by neutral ASR
+#   elevenlabs-multilingual-v2        0.0246              0.0167
+#   gemini-3-1-flash-tts              0.0143              0.0166
+#   gap (elevenlabs - gemini)        +0.0103             +0.0001
+#
+# ElevenLabs got BETTER and Gemini got slightly WORSE when a neutral
+# recogniser listened - each engine flatters its own family's synthesis. The
+# apparent Google lead in word accuracy was the instrument, not the model,
+# and text_accuracy is 30% of the weighted score plus the basis of every
+# deterministic gate.
+#
+# Whisper is OpenAI-trained and neither arm is OpenAI, so it is neutral for
+# THIS comparison - the property that matters more than peak accuracy. It
+# runs locally: no key, no network, no per-call cost.
 asr:
+  adapter: local_whisper
+  provider: local
+  provider_model: "small.en"
+  price:
+    unit: per_minute
+    usd: 0.0
+    source: "local model, no API - faster-whisper on CPU"
+    as_of: 2026-09-03
+
+# The previous ASR, kept configured with its reason rather than deleted.
+# Swap it back only for a comparison in which NEITHER arm is Google.
+asr_disabled_gemini:
   adapter: gemini_transcribe
   provider: google
   provider_model: "gemini-2.5-flash"

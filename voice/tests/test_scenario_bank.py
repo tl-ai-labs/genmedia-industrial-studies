@@ -194,3 +194,26 @@ def test_a_declared_speech_rate_agrees_with_the_duration_window(s):
 def test_every_scenario_says_what_good_looks_like(s):
     assert s.expected.strip(), f"{s.id}: empty `expected` - the judge has no brief"
     assert s.text.strip(), f"{s.id}: empty script"
+
+
+def test_a_scenario_cannot_silently_declare_ignored_weights(tmp_path):
+    """
+    `weights` was validated (must sum to 1.0) and then never read - an author
+    could be told their re-weighting was correct while the run was scored on
+    something else. It refuses until the scoring path reads it.
+    """
+    from runner.scenarios import ScenarioError, load_scenarios
+
+    f = tmp_path / "s.yaml"
+    f.write_text(
+        "id: x\n"
+        "modality: voice\n"
+        "task: text_to_speech\n"
+        "input:\n"
+        "  script: hello there\n"
+        "expected: says hello\n"
+        "weights: {text_accuracy: 0.5, pronunciation: 0.5}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ScenarioError, match="does not read them yet"):
+        load_scenarios(f)

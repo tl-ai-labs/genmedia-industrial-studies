@@ -10,6 +10,12 @@ dependencies = [
   "soundfile>=0.12",
   "jiwer>=3.0",
   "num2words>=0.5",
+  # The default ASR. A CORE dependency, not an extra, because the transcript
+  # it produces is what every WER number and every phrase gate is measured
+  # against - a fresh clone that cannot transcribe cannot measure anything.
+  # It is heavier than the rest combined; the offline test suite never
+  # imports it (the backend loads the model lazily), so `pytest` stays fast.
+  "faster-whisper>=1.0",
 ]
 
 [project.optional-dependencies]
