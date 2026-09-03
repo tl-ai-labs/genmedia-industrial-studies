@@ -1,0 +1,47 @@
+# VOI-TEL-06 - Phone number readback (Transactional / telephony)
+#
+# Capability under test: Grouped numeric with regional convention
+#
+# SCRIPT ADAPTED FROM THE BANK, deliberately. The bank's prompt column is
+# an instruction to a conversational agent:
+#     "Read back this number in Indian format: 98450 12345."
+# A TTS engine has no agent to instruct - what you send is what it says.
+# Sent verbatim on 2026-09-01, ElevenLabs read the preamble aloud while
+# Gemini spoke only the digits, and the WER gate punished Gemini for the
+# more sensible behaviour. The script below is the UTTERANCE a telephony
+# agent would actually speak. Digit accuracy - the capability under test
+# - is unchanged; both models got every digit right even when the framing
+# differed.
+#
+# Bank's automated check: ASR digit extraction: exact match required
+id: voi-tel-06
+modality: voice
+task: text_to_speech
+title: "Phone number readback - Transactional / telephony"
+
+input:
+  script: |
+    Your number is 98450 12345.
+  language: en-IN
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) All ten digits correct  2) Grouped 5 and 5  3) No digits transposed  4)
+  Clear at telephony bandwidth Delivered at an unhurried telephony pace,
+  every digit distinct.
+
+checks:
+  duration_s: {min: 2.0, max: 20.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  max_wer: 0.10
+  # The bank's check: digit-exact, not WER. One wrong digit is a total
+  # failure however good the clip sounds.
+  must_say_digits: "9845012345"
+
+tags: [telephony, transactional, digits, voi-tel-06]

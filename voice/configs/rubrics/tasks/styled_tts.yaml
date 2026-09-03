@@ -1,0 +1,32 @@
+# Per-task override for styled_tts (plan v1.2 §05: "+ style adherence").
+#
+# An override file states ONLY what differs. The loader merges it onto
+# voice.yaml, re-validates that weights sum to 1.0, and hashes the MERGED
+# rubric — so a score stamped with this hash is traceable to the exact
+# effective weights, not to the base file.
+extends: voice
+task: styled_tts
+
+# Adding a sixth criterion means the other five must give weight back. Stated
+# in full rather than as deltas: a reader should be able to check the sum by
+# eye without holding the base file in their head.
+criteria:
+  - key: text_accuracy
+    weight: 0.25
+  - key: style_adherence
+    label: Style adherence
+    weight: 0.15
+    scored_by: judge
+    calibration_gated: true
+    description: >-
+      How closely the delivery matches the scenario's style directive
+      (emotion, energy, pacing). Scored against `input.style` verbatim, not
+      against a general notion of good delivery.
+  - key: pronunciation
+    weight: 0.20
+  - key: naturalness
+    weight: 0.15
+  - key: clarity
+    weight: 0.10
+  - key: audio_quality
+    weight: 0.15
