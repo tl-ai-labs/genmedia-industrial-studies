@@ -171,13 +171,22 @@ def test_the_rendered_mean_always_carries_its_denominator(tmp_path):
     assert "(1 of 2)" in html
 
 
-def test_a_close_result_renders_as_a_declared_tie(runs_root):
-    out = render_dashboard(runs_root, "voice")
-    html = out.read_text(encoding="utf-8")
-    # alpha leads by 0.35 - inside the 0.5 band, so no winner may be named.
-    assert "Tie." in html
-    assert "inside the 0.5 band" in html
-    assert "beats" not in html
+def test_a_result_that_does_not_clear_the_noise_names_no_winner(runs_root):
+    """
+    CONTRACT UNCHANGED, INSTRUMENT CHANGED (2026-09-03). This used to be
+    judged against a fixed 0.5-point band - a rule of thumb picked before any
+    run had happened, which named winners on gaps nothing had shown to be
+    real. It is now judged against the MEASURED noise floor: the larger of
+    the two models' own run-to-run spreads.
+
+    alpha means 9.05 (9.0, 9.1 -> +/-0.1); beta means 8.70 (8.8, 8.6 ->
+    +/-0.2). The 0.35 gap clears the 0.2 floor but not twice it, so it is
+    marginal and NO winner may be named.
+    """
+    html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
+    assert "Marginal." in html
+    assert "noise floor" in html
+    assert "leads</b>" not in html
 
 
 def test_a_clear_result_names_a_winner(tmp_path):
@@ -188,25 +197,24 @@ def test_a_clear_result_names_a_winner(tmp_path):
             {"model": "beta", "status": "scored", "score": 7.0},
         ])
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
-    assert "beats" in html
-    assert "alpha" in html
+    # Both models are perfectly consistent (+/-0.0), so any real gap clears
+    # the floor and the winner is named outright.
+    assert "alpha leads" in html
+    assert "over twice the noise floor" in html
 
 
 def test_every_tab_panel_is_populated(runs_root):
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panels = ("p-models", "p-runs", "p-paired", "p-repeats", "p-evidence")
+    panels = ("t-models", "t-repeats", "t-runs", "t-evidence")
     for pid in panels:
-        assert f'id="{pid}"' in html
+        assert f'data-tab="{pid}"' in html
     assert html.count("<audio") >= 1
-    # Every panel has a nav button and exactly one is visible on load.
-    assert html.count('class="panel"') == len(panels)
-    assert html.count('role="tab"') == len(panels)
-    # Exactly one tab selected and exactly one panel visible on load. Counted
-    # on the button tags themselves - a bare count also matches the CSS rule
-    # `nav.tabs button[aria-selected="true"]`, which is not a tab.
-    buttons = re.findall(r'<button role="tab" aria-selected="(\w+)"', html)
-    assert buttons.count("true") == 1 and len(buttons) == len(panels)
-    assert len(re.findall(r'<section class="panel" id="p-\w+" hidden>', html)) == len(panels) - 1
+    assert html.count('class="runpanel') == len(panels)
+    # Exactly one tab selected and exactly one panel visible on load.
+    selected = re.findall(r'role="tab" aria-selected="(\w+)"', html)
+    assert selected.count("true") == 1 and len(selected) == len(panels)
+    # Exactly one panel visible on load; the rest carry `hidden`.
+    assert len(re.findall(r'<section class="runpanel" data-tab="[\w-]+" hidden>', html)) == len(panels) - 1
 
 
 def test_audio_paths_are_relative_to_the_runs_root(runs_root):
@@ -240,7 +248,7 @@ def test_evidence_leads_with_one_clip_per_model_and_hides_the_repeats(runs_root)
     import re
 
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panel = re.search(r'id="p-evidence" hidden>(.*?)</section>', html, re.S).group(1)
+    panel = re.search(r'data-tab="t-evidence" hidden>(.*?)</section>', html, re.S).group(1)
     lead = panel.split('<details class="more"')[0]
     assert lead.count("<audio") == 2, "one lead clip per model"
     assert panel.count("<audio") == 4, "every clip is still on the page"
@@ -255,11 +263,11 @@ def test_the_representative_clip_is_the_median_not_the_best(runs_root):
     import re
 
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panel = re.search(r'id="p-evidence" hidden>(.*?)</section>', html, re.S).group(1)
+    panel = re.search(r'data-tab="t-evidence" hidden>(.*?)</section>', html, re.S).group(1)
     lead = panel.split('<details class="more"')[0]
     # alpha scored 9.0 (r1) and 9.1 (r2); the median of two takes the upper
     # index, so r2 leads - but the point is it is chosen by rank, not by max,
-    # and it carries a label saying which run it came from.
+    # and it carries a label saying so.
     assert "median run" in lead
     assert lead.count("median run") == 2
 
@@ -270,14 +278,25 @@ def test_the_representative_clip_is_the_median_not_the_best(runs_root):
 # whether a gap between two models is real.
 # --------------------------------------------------------------------------
 
-def test_a_scenario_run_once_reports_no_noise_floor_rather_than_zero(runs_root):
+def test_a_scenario_run_once_reports_no_noise_floor_rather_than_zero(tmp_path):
     """
     A single measurement has no spread. Rendering 0.000 would claim perfect
     consistency from evidence that cannot show any.
+
+    FIXTURE CORRECTED 2026-09-03: this used the two-run `runs_root`, where
+    every scenario HAS a spread - so it could never exercise the case it
+    describes, and passed on an "n/a" coming from somewhere else on the page.
     """
-    html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    assert "noise not measured" in html or "n/a" in html
-    assert "noise ±0.000" not in html
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-only", [
+        {"model": "alpha", "status": "scored", "score": 9.0},
+        {"model": "beta", "status": "scored", "score": 8.6}])
+
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    assert "not measured" in html
+    assert "±0.000" not in html
+    m = {x.model_id: x for x in rollup_models(load_runs(root, "voice"))}
+    assert m["alpha"].repeat_spread is None
 
 
 def test_repeat_spread_is_none_until_a_scenario_is_run_twice():
@@ -365,4 +384,29 @@ def test_the_repeats_tab_excludes_a_stale_definition_and_says_so(tmp_path):
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
     assert "different version" in html
     # The excluded run's score must not appear as a repeat column.
-    assert "9.000" not in html.split('id="p-repeats"')[1].split("</section>")[0]
+    panel = html.split('data-tab="t-repeats"')[1].split("</section>")[0]
+    assert "9.000" not in panel
+
+
+def test_two_runs_sharing_a_label_are_not_collapsed_into_one_column(tmp_path):
+    """
+    A run's label is run_id.split("_")[-1], so every run of one scenario
+    shares it - "voice-vr-game-02" named four different runs. Keyed on the
+    label they collapsed into a single entry and the SAME score rendered in
+    two columns, which reads as a model reproducing itself exactly when it
+    had only been asked once. Columns are keyed on run_id.
+    """
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-same", [
+        {"model": "alpha", "status": "scored", "score": 9.0}])
+    _write_run(root, "2026-09-01_110000_voice-same", [
+        {"model": "alpha", "status": "scored", "score": 7.0}])
+    assert len({r.label for r in load_runs(root, "voice")}) == 1, "fixture must share a label"
+
+    from runner.dashboard import _duel, _scenario_blocks
+    runs = load_runs(root, "voice")
+    block = _scenario_blocks(runs, _duel(rollup_models(runs)))[0]
+    assert block["n_passes"] == 2
+    row = block["rows"][0]
+    assert row["pass_scores"] == [9.0, 7.0]      # not [9.0, 9.0]
+    assert row["spread"] == pytest.approx(2.0)   # not 0.0

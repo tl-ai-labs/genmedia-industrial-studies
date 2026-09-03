@@ -1,0 +1,237 @@
+{% macro clip_card(c) %}
+  <div class="clip">
+    <div class="top">
+      <span class="who">{{ c.model_id }}</span>
+      <span class="dash">{{ c.run_label }}</span>
+      {% if c.lead %}<span class="pill">median run</span>{% endif %}
+      {% if c.score is not none %}<span class="pill">{{ '%.3f'|format(c.score) }}</span>
+      {% elif c.status == 'invalid' %}<span class="pill est">gated</span>
+      {% elif c.status == 'unjudged' %}<span class="pill est">unjudged</span>{% endif %}
+      {% if c.wer is not none %}<span class="dash">WER {{ '%.4f'|format(c.wer) }}</span>{% endif %}
+      {% if c.duration_s %}<span class="dash">{{ '%.1f'|format(c.duration_s) }}s</span>{% endif %}
+    </div>
+    <audio controls preload="none" src="{{ c.audio_rel }}"></audio>
+    <div class="gates">
+      {% for g in c.gates %}<span class="gate {{ 'ok' if g.passed else 'no' }}">{{ g.gate }}</span>{% endfor %}
+    </div>
+    {% if c.transcript %}<div class="tx">{{ c.transcript }}</div>{% endif %}
+  </div>
+{% endmacro %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMedia voice comparison — {{ n_scenarios }} scenarios</title>
+{% import "_assets.j2" as assets %}
+{{ assets.css() }}
+{{ assets.extra_css() }}
+</head>
+<body>
+
+<div class="topbar"><div class="in">
+  <span class="t">GenMedia voice comparison</span>
+  <span class="m">{{ n_scenarios }} scenarios · {{ n_clips }} clips · {{ runs|length }} runs</span>
+  <nav><a href="#overview">Overview</a></nav>
+</div></div>
+
+<div class="wrap">
+<header class="hero" id="overview">
+  <p class="kicker">quality · cost · latency · reliability — four columns, never one number</p>
+  <h1>{{ models|map(attribute='model_id')|join(' vs ') }}</h1>
+  <div class="meta">
+    <span>scenarios <b>{{ n_scenarios }}</b></span>
+    <span>passes <b>{{ max_passes }}</b></span>
+    <span>judge <b>{{ judge_model }}</b></span>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><div class="lab">Scenarios</div>
+      <div class="val">{{ n_scenarios }}</div>
+      <div class="sub">{{ repeated_n }} run more than once</div></div>
+    <div class="tile"><div class="lab">Generation cost</div>
+      <div class="val">{{ gen_micro|usd }}</div>
+      <div class="sub">{{ asr_micro|usd }} of it transcription</div></div>
+    <div class="tile"><div class="lab">Judging cost</div>
+      <div class="val">{{ judge_micro|usd }}</div>
+      <div class="sub">kept separate, always</div></div>
+  </div>
+
+  <div class="banner"><b>{{ overall.verdict }}.</b> {{ overall.detail }}</div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Scenario</th><th class="num">Passes</th>
+      <th class="num">Gap</th><th class="num">Noise floor</th>
+      <th>Verdict</th><th>How decided</th></tr></thead>
+    <tbody>
+    {% for s in scenarios %}
+    <tr>
+      <td><code>{{ s.id }}</code></td>
+      <td class="num">{{ s.n_passes }}</td>
+      <td class="num">{% if s.gap is not none %}{{ '%+.3f'|format(s.gap) }}{% else %}<span class="dash">—</span>{% endif %}</td>
+      <td class="num">{% if s.floor is not none %}±{{ '%.3f'|format(s.floor) }}{% else %}<span class="dash">not measured</span>{% endif %}</td>
+      <td><b>{{ s.verdict }}</b></td>
+      <td style="font-size:13px">{{ s.detail }}</td>
+    </tr>
+    {% endfor %}
+    </tbody></table></div>
+
+  <div class="banner"><b>Read every gap against the noise floor beside it.</b> The floor is the
+  larger of the two models' own run-to-run spreads on that scenario — a gap has to clear the
+  noisier of the pair to mean anything. A scenario run once has no floor, and its gap is not
+  evidence of anything yet.</div>
+
+  {% if uncalibrated %}
+  <div class="banner"><b>The judge is uncalibrated.</b> The 2-humans × 5-clips gate has never
+  been run, so <code>naturalness</code> and <code>clarity</code> carry no evidence that this
+  judge agrees with a human. Every score below is stamped <span class="pill pill-warning">unc</span>.</div>
+  {% endif %}
+</header>
+
+<div class="tabbar" role="tablist">
+  <button class="tabbtn on" type="button" role="tab" aria-selected="true" data-tab="t-models">Models<span class="cnt">{{ models|length }}</span></button>
+  <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-repeats">Repeats<span class="cnt">{{ repeated_n }} repeated</span></button>
+  <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-runs">Runs<span class="cnt">{{ runs|length }}</span></button>
+  <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-evidence">Evidence<span class="cnt">{{ n_clips }} clips</span></button>
+</div>
+
+<!-- ────────────────────────────── MODELS ────────────────────────────── -->
+<section class="runpanel on" data-tab="t-models">
+  {% if duel %}
+  <div class="duel rev">
+    <div class="dt">head to head · {{ duel.basis }}</div>
+    <div class="heads">
+      <span class="h a">◆ {{ duel.a }}</span>
+      <span class="h b">{{ duel.b }} ◆</span>
+    </div>
+    {% for m in duel.metrics %}
+    <div class="m">
+      <div class="lab">{{ m.label }}</div>
+      <div class="pair">
+        <span class="val">{{ m.a }}{% if m.win == 'a' %} ✦{% endif %}</span>
+        <span class="track a {{ 'win' if m.win == 'a' }}"><span class="fill" style="width: {{ m.aw }}%"></span></span>
+        <span class="track b {{ 'win' if m.win == 'b' }}"><span class="fill" style="width: {{ m.bw }}%"></span></span>
+        <span class="val r">{% if m.win == 'b' %}✦ {% endif %}{{ m.b }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h2>Per model</h2>
+  <div class="tw"><table>
+  <thead><tr>
+    <th>Model</th><th class="num">Quality</th><th class="num">Gates passed</th>
+    <th class="num">Repeat spread</th><th class="num">Worst WER</th>
+    <th class="num">Cost / clip</th><th class="num">Latency p50</th><th class="num">Invalid</th>
+  </tr></thead>
+  <tbody>
+  {% for m in models %}
+  <tr>
+    <td><span class="dot" style="background:{{ m.accent }}"></span> {{ m.model_id }}</td>
+    <td class="num">{% if m.mean is not none %}<b>{{ '%.3f'|format(m.mean) }}</b>
+        <span class="dash">({{ m.scored_n }} of {{ m.evaluated_n }})</span>
+        {% if uncalibrated %} <span class="pill pill-warning">unc</span>{% endif %}
+        {% else %}<span class="dash">—</span>{% endif %}</td>
+    <td class="num">{{ '%.0f%%'|format(m.gate_pass_rate * 100) }}</td>
+    <td class="num">{% if m.repeat_spread is not none %}±{{ '%.3f'|format(m.repeat_spread) }}
+        {% else %}<span class="dash">n/a</span>{% endif %}</td>
+    <td class="num">{% if m.worst_wer is not none %}{{ '%.4f'|format(m.worst_wer) }}{% else %}<span class="dash">—</span>{% endif %}</td>
+    <td class="num">{{ m.mean_cost|usd }}</td>
+    <td class="num">{{ m.p50_latency|s }}</td>
+    <td class="num">{{ m.invalid }}</td>
+  </tr>
+  {% endfor %}
+  </tbody></table></div>
+
+  <p class="note"><b>Ranked on the gate first, quality second.</b> Quality is meaned over the
+  cells that were actually scored — the count beside it is the denominator, because 9.7 over one
+  clip and 9.7 over eight are not the same claim. A cell that failed its gates is carried in
+  <em>Invalid</em> and in the gate rate, never averaged into quality: ten of sixteen cells here
+  were gated on <em>timing</em>, and a clean read two seconds too long for an ad slot is the
+  wrong length, not bad audio.</p>
+</section>
+
+<!-- ───────────────────────────── REPEATS ───────────────────────────── -->
+<section class="runpanel" data-tab="t-repeats" hidden>
+  <h2>The same script, asked more than once</h2>
+  <p class="note">This is the only tab that can tell you whether a gap means anything. A repeat
+  is the same <em>script</em> and the same <em>gates</em> — runs of an edited scenario are
+  excluded and counted below, because their difference is the size of an edit, not the machine's
+  noise.</p>
+
+  {% for s in scenarios %}
+  <h3><code>{{ s.id }}</code> <span class="dash">· {{ s.n_passes }} pass{{ '' if s.n_passes == 1 else 'es' }}</span></h3>
+  {% if s.rows %}
+  <div class="tw"><table>
+    <thead><tr><th>Model</th>{% for l in s.labels %}<th class="num">{{ l }}</th>{% endfor %}<th class="num">Own spread</th></tr></thead>
+    <tbody>
+    {% for r in s.rows %}
+    <tr><td>{{ r.model_id }}</td>
+      {% for v in r.pass_scores %}<td class="num">{% if v is not none %}{{ '%.3f'|format(v) }}{% else %}<span class="dash">—</span>{% endif %}</td>{% endfor %}
+      <td class="num">{% if r.spread is not none %}±{{ '%.3f'|format(r.spread) }}{% else %}<span class="dash">n/a</span>{% endif %}</td></tr>
+    {% endfor %}
+    {% if s.gap is not none %}
+    <tr class="gaprow"><td>Δ {{ duel.a }} − {{ duel.b }}</td>
+      {% for g in s.gaps %}<td class="num">{% if g is not none %}{{ '%+.3f'|format(g) }}{% else %}<span class="dash">—</span>{% endif %}</td>{% endfor %}
+      <td class="num">{% if s.floor is not none %}noise ±{{ '%.3f'|format(s.floor) }}{% else %}<span class="dash">not measured</span>{% endif %}</td></tr>
+    {% endif %}
+    </tbody></table></div>
+  <div class="banner"><b>{{ s.verdict }}.</b> {{ s.detail }}</div>
+  {% else %}
+  <p class="note">No scored cell yet — every cell failed its gates, so there is nothing to
+  compare. The failures are in the Evidence tab.</p>
+  {% endif %}
+  {% if s.stale %}
+  <p class="note">{{ s.stale }} earlier run{{ '' if s.stale == 1 else 's' }} of this scenario used
+  a <b>different version</b> of it and {{ 'is' if s.stale == 1 else 'are' }} excluded above. A
+  repeat has to be the same script and the same gates, or what it measures is our edit rather
+  than the model.</p>
+  {% endif %}
+  {% endfor %}
+</section>
+
+<!-- ────────────────────────────── RUNS ─────────────────────────────── -->
+<section class="runpanel" data-tab="t-runs" hidden>
+  <h2>Every run</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Run</th><th>Started</th><th>Scenario</th><th class="num">Cells</th>
+      <th class="num">Passed</th><th class="num">Cost</th><th>Judge</th><th>Predictor</th></tr></thead>
+    <tbody>
+    {% for r in run_rows %}
+    <tr><td><code>{{ r.label }}</code></td><td style="font-size:12px">{{ r.started }}</td>
+      <td><code>{{ r.scenario }}</code></td><td class="num">{{ r.cells }}</td>
+      <td class="num">{{ r.passed }}</td><td class="num">{{ r.cost|usd }}</td>
+      <td style="font-size:12px">{{ r.judge }}</td><td style="font-size:12px">{{ r.predictor }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+</section>
+
+<!-- ──────────────────────────── EVIDENCE ───────────────────────────── -->
+<section class="runpanel" data-tab="t-evidence" hidden>
+  <h2>Listen to it</h2>
+  <p class="note">Every clip this comparison produced, with the transcript the WER check was
+  measured against and the gates it cleared. Playing one pauses the others — two models talking
+  over each other is useless for comparison, which is the point of the page.</p>
+
+  {% for s in evidence %}
+  <h3><code>{{ s.scenario_id }}</code> <span class="dash">· {{ s.title }}</span></h3>
+  {% for c in s.leads %}{{ clip_card(c) }}{% endfor %}
+  {% if s.more %}
+  <details class="more"><summary>{{ s.n_more }} more clip{{ '' if s.n_more == 1 else 's' }} —
+    the repeats the spread figure rests on</summary>
+    {% for c in s.more %}{{ clip_card(c) }}{% endfor %}
+  </details>
+  {% endif %}
+  {% endfor %}
+</section>
+
+<h2>Footnotes</h2>
+<ul class="notes">
+  {% for f in footnotes %}<li>{{ f|safe }}</li>{% endfor %}
+</ul>
+
+</div>
+{{ assets.js() }}
+</body>
+</html>
