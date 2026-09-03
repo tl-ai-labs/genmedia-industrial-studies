@@ -261,11 +261,14 @@ class GeminiAudioJudge:
         self._types = _types
         project = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
         if project:
+            from .gcp_auth import vertex_credentials
+
             self._client = genai.Client(
                 vertexai=True,
                 project=project,
                 location=getattr(spec, "region", None) or "us-central1",
                 http_options=_types.HttpOptions(timeout=120_000),
+                credentials=vertex_credentials(),
             )
         else:
             self._client = genai.Client(api_key=os.environ[spec.auth_env])
