@@ -1,0 +1,73 @@
+# VR-ADS-06 - Compliance disclaimer at broadcast pace (Ads)
+#
+# REAL APPLICATION. Regulated categories - financial services, healthcare -
+# require fast legal copy that stays intelligible. It is the part of a spot
+# clients most often get complaints about, and the part a regulator reads
+# back to you.
+#   Source: standard regulatory practice in financial services and
+#   healthcare advertising.
+#
+# WHY THIS ONE IS WORTH MEASURING. It is the only scenario in the bank where
+# two requirements pull directly against each other: the copy must be FAST
+# (it is buying the least possible airtime) and it must be INTELLIGIBLE (or
+# it has not been disclosed). Most quality metrics cannot see that trade-off
+# at all. Two gates, pulling opposite ways, can.
+#
+# THE SALES CLAIM:
+#   "Fast legal copy that stays intelligible, so the disclaimer doesn't
+#    become the complaint."
+#
+# THE WER THRESHOLD IS THE SOURCE SCENARIO'S: above 0.06 at target speed is
+# a fail. It is measured on the ASR transcript, so it is the same instrument
+# used everywhere else in this bank rather than a special case.
+#
+# EXPECT THE RATE GATE TO BE THE HARD ONE. Default TTS delivery sits around
+# 150-170 wpm and a disclaimer read is 190 wpm and up. Neither live arm
+# exposes rate control here (only the OpenAI adapter honours params.speed),
+# so if both fail the finding is "no model delivers broadcast-pace legal copy
+# at default rate" - which tells a seller not to pitch this use case, and
+# tells the harness to add rate control before it can be pitched. Both are
+# more useful than a scenario nobody can fail.
+
+id: vr-ads-06
+modality: voice
+task: styled_tts
+title: "Compliance disclaimer at broadcast pace - Ads"
+
+input:
+  script: |
+    Credit is subject to status and affordability checks. Representative APR twenty-four point nine percent variable. Minimum repayment two thousand five hundred rupees per month over thirty-six months. Missing payments may affect your credit rating. Terms, conditions and eligibility criteria apply. Kalyani Finance is a registered non-banking financial company.
+  language: en-IN
+  style: "fast statutory disclaimer read, flat and even, fully articulated"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Delivered at disclaimer pace, not conversational pace
+  2) Every numeric condition - APR, repayment, term - fully intelligible
+  3) "non-banking financial company" articulated, not slurred into one word
+  4) Flat and even: no sales inflection on legal copy
+  5) Word endings preserved at speed - the first thing lost when a model
+     is pushed and the first thing a regulator notices
+
+checks:
+  duration_s: {min: 10.0, max: 32.0}
+  max_silence_s: 1.0
+  no_clipping: true
+  # The source scenario's threshold: intelligibility is the whole point, and
+  # this is measured at whatever pace the model actually delivers.
+  max_wer: 0.06
+  # Disclaimer pace. Measured from the script's word count over the trimmed
+  # read, so a model cannot look fast by dropping words - WER catches that
+  # separately.
+  speech_rate_wpm: {min: 190.0, max: 280.0}
+  must_say:
+    - "twenty-four point nine percent"
+    - "thirty-six months"
+    - "non-banking financial company"
+
+tags: [ads, compliance, disclaimer, speech-rate, regulated, vr-ads-06]

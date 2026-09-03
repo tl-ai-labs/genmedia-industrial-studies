@@ -1,0 +1,72 @@
+# VR-ECOM-01 - "Where is my order" status readback (Ecommerce & Retail)
+#
+# REAL APPLICATION. The single most automated retail voice task. Retailers
+# and logistics providers now handle over 60% of incoming "where is my
+# package" inquiries with AI agents; 38% of all retail and ecommerce phone
+# inquiries are resolved without a human, and in India over 60% of routine
+# tier-1 support calls are AI-handled.
+#   Source: CallMissed 2026 industry report; Bland AI retail guide. Every
+#   major voice-agent vendor publishes a WISMO workflow.
+#
+# WHY THIS ONE IS WORTH MEASURING. It is the highest-volume call type in the
+# category, so a per-call quality difference multiplies by everything. And
+# the failure is binary rather than aesthetic: a reference number is right
+# or it is wrong, and a wrong one costs a second call.
+#
+# THE SALES CLAIM, written narrowly on purpose:
+#   "For your highest-volume call type, our model reads long order
+#    references back correctly first time."
+# It is a claim about ONE job. Nothing here supports "our model is best",
+# and the digit gate below is just as capable of failing Google as anyone.
+#
+# WHAT THIS SCENARIO DOES NOT COVER. The source scenario specifies an 8kHz
+# telephony codec with call-centre background noise. This harness has no
+# codec simulation, so the clip is measured clean. Read the result as
+# "readback accuracy under ideal conditions" - a ceiling, not a field
+# measurement. See ../README.md for what codec support would take.
+
+id: vr-ecom-01
+modality: voice
+task: text_to_speech
+title: "WISMO order status readback - Ecommerce & Retail"
+
+input:
+  script: |
+    Thank you for holding. I have found your order. The reference is 4 8 1 9 0 2 7 7 3 1 5 4. Your parcel left our Bhiwandi facility this morning and is with Blue Dart. Delivery is scheduled for Thursday the fourteenth, between two and four in the afternoon. Shall I send the confirmation to your registered mobile ending 6 3 0 2?
+  language: en-IN
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Every one of the twelve reference digits spoken correctly and in order
+  2) Digits delivered at a pace a caller could write down
+  3) "Bhiwandi" and "Blue Dart" pronounced as an Indian customer would expect
+  4) Date and time window unambiguous
+  5) Partial mobile number correct, and no other long digit run invented
+  6) Unhurried service pace throughout; no rushing of the reference
+
+checks:
+  duration_s: {min: 20.0, max: 48.0}
+  max_silence_s: 2.0
+  no_clipping: true
+  # Tighter than a prose scenario. This is a readback: the words are few and
+  # the accuracy bar is what the use case is about.
+  # Raised from 0.06 after the first run, for ONE declared reason: the ASR
+  # renders the spoken time window "between two and four" as "2:00 and 4:00",
+  # inserting four tokens into every model's transcript equally. That is the
+  # transcriber's notation, not a model error, and it alone costs ~0.04.
+  max_wer: 0.10
+  # The gate that decides this scenario. WER forgives one wrong digit in
+  # twelve; a customer holding a pen does not.
+  must_say_digits: "481902773154"
+  must_say:
+    - "Bhiwandi"
+    - "Blue Dart"
+    - "Thursday the fourteenth"
+    - "6302"
+
+tags: [ecommerce, retail, wismo, order-status, digits, telephony, vr-ecom-01]

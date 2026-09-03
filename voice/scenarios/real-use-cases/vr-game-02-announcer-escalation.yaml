@@ -1,0 +1,102 @@
+# VR-GAME-02 - Announcer escalation across energy beats (Gaming)
+#
+# REAL APPLICATION. THE FINALS (Embark, 2023) used AI TTS for its in-game
+# announcer and commentators. Embark's stated reason was producing voice
+# lines in hours rather than months, letting them add a line as soon as an
+# idea came up.
+#   Source: Embark Studios public statements; GameSpot retrospective,
+#   Nov 2025.
+#
+# WHY THIS ONE IS WORTH MEASURING. Commentary is the case where flat delivery
+# is an outright product defect rather than a matter of taste - the announcer
+# exists to tell the player that something is happening. It also stresses
+# ASR: excited, fast, rising-pitch speech is measurably harder to transcribe,
+# so the WER gate here is doing real work.
+#
+# THE SALES CLAIM:
+#   "Our model gives you announcer lines the same day the feature ships,
+#    in one consistent voice."
+# As with VR-GAME-01, the "one consistent voice" half needs speaker cosine
+# across a batch and is NOT measured here. Claim the turnaround, not the
+# consistency, from this scenario.
+#
+# HOW THE ESCALATION IS ASSESSED. The deterministic gates below cover the
+# facts - names, score, pace, no dead air. The escalation itself goes to the
+# blind judge through `expected`, because prosody has no deterministic test
+# in this harness. That split is deliberate: code measures what has a right
+# answer, the judge scores only what code cannot. A judge failure renders as
+# unjudged, never as a zero.
+#
+# SCORES ARE CHECKED AS PHRASES, NOT DIGITS. See the note on the checks
+# block - the digit extractor cannot see a two-digit number, so asserting
+# one would have failed a correct reading.
+#
+# WHAT THE FIRST RUN (2026-09-03) CHANGED, AND WHAT IT DID NOT. Two edits,
+# both removing INSTRUMENT artifacts that hit every model equally rather
+# than loosening a bar:
+#   "cashbox" -> "cash box"  - every ASR writes the compound as two words,
+#                              costing one error on both models for nothing
+#   must_say "Ironhaus"      -> must_say_any with its faithful readings
+# max_wer stays at 0.09. It is NOT raised to admit a model that missed it:
+# on that run Gemini scored 0.0952, and of its six errors two were the
+# artifacts above and one was a REAL deviation - it said "gonna" where the
+# script said "going to". That deviation is a finding worth keeping visible
+# (excellent for commentary, disqualifying for compliance copy), so the gate
+# it is measured against does not move.
+
+id: vr-game-02
+modality: voice
+task: styled_tts
+title: "Announcer escalation across five energy beats - Gaming"
+
+input:
+  script: |
+    We're level at 14 to 14, ninety seconds on the clock. Vasquez has the cash box and she's moving. Kowalski is cutting the angle, he's going to catch her at the bridge. Oh, she jukes! She's through! Vasquez is through and the platform is lighting up! That is the steal of the tournament, and Ironhaus take it, 18 to 14!
+  language: en-US
+  style: "esports commentator, escalating from level call to climax"
+
+params:
+  voice: male_mid_neutral
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Energy escalates across the five beats - level call, build, near-miss,
+     break, climax - and is audibly different at the end from the start
+  2) "Vasquez", "Kowalski" and "Ironhaus" correct and consistent
+  3) Both scores stated correctly, final score 18 to 14
+  4) No dead air; commentary keeps pace with the described action
+  5) Excitement carried by pace and pitch rather than distortion - the
+     climax must not clip
+
+checks:
+  duration_s: {min: 14.0, max: 34.0}
+  # Commentary with a 1.2s hole in it has stopped commentating.
+  max_silence_s: 1.2
+  # A shouted climax is exactly where a model blows the ceiling.
+  no_clipping: true
+  # Looser than the readback scenarios on purpose: excited speech is harder
+  # to transcribe, and this gate must not punish energy as if it were error.
+  max_wer: 0.09
+  # NOT must_say_digits. A sports score is spoken "fourteen", and the digit
+  # extractor only recovers digit-by-digit readings - it reconstructs a
+  # twelve-digit reference and cannot see a two-digit number at all. The
+  # first draft of this scenario asserted "1814" and would have FAILED a
+  # perfectly correct reading, because the script wrote "1 8 to 1 4" and no
+  # announcer or ASR renders it that way. Phrase checks are the right
+  # instrument below four digits; tests/test_scenario_bank.py now pins this.
+  must_say:
+    - "14 to 14"
+    - "18 to 14"
+    - "Vasquez"
+    - "Kowalski"
+    - "steal of the tournament"
+  # The team name is INVENTED, so no transcriber has a canonical spelling for
+  # it. First run, 2026-09-03: both models read it correctly and the ASR wrote
+  # "Ironhouse" for one and "Iron House" for the other - a literal must_say
+  # failed BOTH for being right. Any faithful reading satisfies this.
+  must_say_any:
+    - ["Ironhaus", "Iron House", "Ironhouse", "Ironhaus's"]
+
+tags: [gaming, announcer, commentary, prosody, energy, vr-game-02]

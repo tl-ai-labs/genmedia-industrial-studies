@@ -1,0 +1,93 @@
+# VR-ECOM-03 - Refund confirmation in Indian numbering (Ecommerce & Retail)
+#
+# REAL APPLICATION. Returns and refunds are the second most automated retail
+# voice workflow after order status, shipped as a packaged flow by CloudTalk,
+# Gorgias, Retell and Bland.
+#   Source: vendor workflow pages, Aug 2026.
+#
+# WHY THIS ONE IS WORTH MEASURING, AND WHY IT IS DESIGNED THE WAY IT IS.
+# The script sends the NUMERAL, not the words. That is the entire point. A
+# TTS engine says what you send it, so writing "two lakh fifty thousand" in
+# the script would prove nothing - every model would read it correctly. Sent
+# as Rs 2,50,000 the model has to decide how the amount is SAID, and a
+# Western-trained model says "two hundred fifty thousand", which is true,
+# foreign, and wrong for the customer on the line.
+#
+# THE SALES CLAIM:
+#   "Our model speaks Indian numbering natively, so refund amounts don't
+#    sound foreign to your customers."
+# This targets a stated Google strength - local language handling. It is
+# therefore a TEST of that claim, not a demonstration of it. If Google reads
+# it internationally the gate fails Google, and that is the result.
+#
+# BOTH READINGS OF THE AMOUNT ARE ACCEPTED as Indian: "two lakh fifty
+# thousand" and the idiomatic "two point five lakh" both pass the convention
+# gate, because both are what a customer in Bengaluru actually hears. Only
+# the international rendering fails. The must_not_say list is the decisive
+# check; requiring the exact words "two lakh fifty thousand" would have
+# failed a model for being idiomatically correct.
+#
+# A LIMIT OF THE INSTRUMENT, STATED BECAUSE IT CUTS AGAINST THE SCENARIO.
+# The convention gate is measured on the ASR TRANSCRIPT, and the ASR is free
+# to write back what it heard in either format. If a model says "two hundred
+# fifty thousand rupees" and the transcriber renders that as "Rs 2,50,000",
+# the failure is invisible to must_not_say and must_say "lakh" passes
+# spuriously. This cannot be closed deterministically here. Two things
+# mitigate it and neither is automatic: the raw transcript is kept beside
+# the audio as evidence (<model>.txt), and the blind judge hears the CLIP
+# rather than the transcript. Before quoting this scenario's result, listen
+# to the two clips. If the models split on it, that is when it matters most
+# and when the transcript is least trustworthy.
+#
+# NOTE ON THE INSTRUMENT. runner/normalize.py could not read Indian digit
+# grouping until 2026-09-03 - "2,50,000" came out as "two fifty thousand"
+# and "1,00,000" as "one zero". This scenario is only measurable because
+# that was fixed; see the tests in tests/test_normalize_and_wer.py.
+
+id: vr-ecom-03
+modality: voice
+task: text_to_speech
+title: "Refund confirmation in Indian numbering - Ecommerce & Retail"
+
+input:
+  script: |
+    Your refund has been approved. The full amount of Rs 2,50,000 will be credited to the UPI account ending 4 4 1 9 within seven working days. Your reference number for this refund is 9 0 3 7 6 2. If the amount has not appeared after seven working days, please call us back and quote that reference.
+  language: en-IN
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Rs 2,50,000 spoken in the Indian system - lakh, not hundred-thousand
+  2) The currency named as rupees
+  3) UPI account last-four correct, and no longer digit run invented
+  4) Reference number 903762 correct and separable from the account digits
+  5) Policy window stated exactly as written, not paraphrased
+  6) Calm, factual refund-desk delivery
+
+checks:
+  duration_s: {min: 16.0, max: 40.0}
+  max_silence_s: 2.0
+  no_clipping: true
+  max_wer: 0.08
+  # The account last-four. A refund confirmation must not read out more.
+  must_say_digits: "4419"
+  must_say:
+    - "lakh"              # the convention marker - either Indian reading passes
+    - "rupees"
+    - "903762"
+    - "seven working days"
+  # The decisive gate. Every one of these is a TRUE statement of the amount
+  # in the wrong convention, which is precisely what a positive check cannot
+  # catch. Normalization deliberately does NOT fold these together with the
+  # Indian reading - tests/test_normalize_and_wer.py pins that property,
+  # because the day it folds them this scenario silently measures nothing.
+  must_not_say:
+    - "two hundred fifty thousand"
+    - "two hundred and fifty thousand"
+    - "250 thousand"
+
+tags: [ecommerce, retail, refunds, indian-numbering, localisation, vr-ecom-03]

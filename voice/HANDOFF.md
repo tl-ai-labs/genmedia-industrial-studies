@@ -11,7 +11,7 @@ here is wrong, the code is right and this file is stale — say so.
 cd voice
 uv venv --python 3.12 .venv
 VIRTUAL_ENV=$PWD/.venv uv pip install -e '.[google,dev]'
-.venv/bin/python -m pytest tests/ -q          # 161 tests, offline, no key needed
+.venv/bin/python -m pytest tests/ -q          # 258 tests, offline, no key needed
 ```
 
 If the tests pass, the machine works. **The whole suite runs with no API key
@@ -199,8 +199,31 @@ checks:                       # deterministic. Code decides these; judge never s
   wer_reference: |            # optional: negative control — measure against
     deliberately different text                # something other than the script
 
+  # --- added 2026-09-03 for the real-use-case bank ---
+  must_not_say:               # optional: phrases that must be ABSENT. The
+    - "two hundred fifty thousand"   # check must_say cannot express — a true
+                              # statement in the wrong convention, or a
+                              # disclosure whose failure is a phrase PRESENT
+  trimmed_duration_s:         # optional: length with lead/trail silence
+    {min: 14.9, max: 15.1}    # removed — an ad slot, a shot. Gating the RAW
+                              # length would let a model pass by padding
+  speech_rate_wpm:            # optional: delivery pace, from the SCRIPT's
+    {min: 190.0, max: 280.0}  # word count over the trimmed read
+  rms_dbfs: {min: -23.0, max: -18.0}   # optional: mastering spec (ACX)
+  peak_dbfs_max: -3.0                  # optional: mastering spec (ACX)
+  noise_floor_dbfs_max: -60.0          # optional: room tone (ACX). UNMEASURED,
+                              # never a pass, when there is under 0.2s of
+                              # lead/trail silence to measure it in
+
 tags: [telephony, digits]
 ```
+
+**`must_say_digits` only works at four digits or more.** Below that a number
+normalizes to a cardinal — "fourteen", not "one four" — and the extractor
+cannot see it. Use `must_say` with a phrase instead. This is enforced:
+`tests/test_scenario_bank.py` replays every digit gate against the script
+rewritten the way an ASR writes numbers, which is how a real scenario was
+caught asserting a score no correct reading could have satisfied.
 
 CSV works too, for bulk entry by non-developers — `id, task, script, style,
 language, expected, max_wer`, one row per scenario. Same object comes out.
