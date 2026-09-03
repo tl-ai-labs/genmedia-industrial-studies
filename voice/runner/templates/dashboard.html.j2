@@ -26,6 +26,7 @@
 {% import "_assets.j2" as assets %}
 {{ assets.css() }}
 {{ assets.extra_css() }}
+{{ assets.filter_css() }}
 </head>
 <body>
 
@@ -59,22 +60,22 @@
 
   <div class="banner"><b>{{ overall.verdict }}.</b> {{ overall.detail }}</div>
 
-  <div class="tw"><table>
-    <thead><tr><th>Scenario</th><th class="num">Passes</th>
-      <th class="num">Gap</th><th class="num">Noise floor</th>
-      <th>Verdict</th><th>How decided</th></tr></thead>
-    <tbody>
-    {% for s in scenarios %}
-    <tr>
-      <td><code>{{ s.id }}</code></td>
-      <td class="num">{{ s.n_passes }}</td>
-      <td class="num">{% if s.gap is not none %}{{ '%+.3f'|format(s.gap) }}{% else %}<span class="dash">—</span>{% endif %}</td>
-      <td class="num">{% if s.floor is not none %}±{{ '%.3f'|format(s.floor) }}{% else %}<span class="dash">not measured</span>{% endif %}</td>
-      <td><b>{{ s.verdict }}</b></td>
-      <td style="font-size:13px">{{ s.detail }}</td>
-    </tr>
-    {% endfor %}
-    </tbody></table></div>
+  <div class="filters">
+    <div class="fgroup">
+      <span class="flab">Industry</span>
+      <button class="chip on" data-ind="all">All <span class="cnt">{{ scenarios|length }}</span></button>
+      {% for ind, n in industries %}
+      <button class="chip" data-ind="{{ ind }}">{{ ind }} <span class="cnt">{{ n }}</span></button>
+      {% endfor %}
+    </div>
+    <div class="fgroup">
+      <span class="flab">Result</span>
+      <button class="chip on" data-res="all">All</button>
+      <button class="chip" data-res="gemini">Gemini wins <span class="cnt">{{ gemini_wins }}</span></button>
+      <button class="chip" data-res="other">Other model wins <span class="cnt">{{ other_wins }}</span></button>
+      <button class="chip" data-res="tie">No winner <span class="cnt">{{ scenarios|length - gemini_wins - other_wins }}</span></button>
+    </div>
+  </div>
 
   <div class="banner"><b>Read every gap against the noise floor beside it.</b> The floor is the
   larger of the two models' own run-to-run spreads on that scenario — a gap has to clear the
@@ -89,14 +90,105 @@
 </header>
 
 <div class="tabbar" role="tablist">
-  <button class="tabbtn on" type="button" role="tab" aria-selected="true" data-tab="t-models">Models<span class="cnt">{{ models|length }}</span></button>
+  <button class="tabbtn on" type="button" role="tab" aria-selected="true" data-tab="t-scenarios">Scenarios<span class="cnt">{{ scenarios|length }}</span></button>
+  <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-models">Models<span class="cnt">{{ models|length }}</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-repeats">Repeats<span class="cnt">{{ repeated_n }} repeated</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-runs">Runs<span class="cnt">{{ runs|length }}</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-evidence">Evidence<span class="cnt">{{ n_clips }} clips</span></button>
 </div>
 
+<!-- ──────────────────────────── SCENARIOS ──────────────────────────── -->
+<section class="runpanel on" data-tab="t-scenarios">
+  <details class="howto"><summary>How a winner is decided</summary>
+  <div class="hbody">
+    <p><b>Four conditions, all required.</b> Any one failing means no winner is
+    named — the card says which one, rather than showing a number that will not
+    survive a re-run.</p>
+    <ol>
+      <li><b>Both models produced a score.</b> A clip that fails a gate is
+      <em>invalid</em>, scored nothing, and never reaches the judge. If either
+      side has no score the card reads <em>No score</em> or <em>One arm only</em>.</li>
+      <li><b>The gap clears the noise floor.</b> The floor is the larger of the
+      two models' own run-to-run spreads on that scenario — a gap has to beat
+      the noisier of the pair. Inside it, the card reads <em>Inside the noise</em>.</li>
+      <li><b>Both models ran at least twice.</b> A single measurement has no
+      spread, so a floor built from one model alone is not a floor. Otherwise:
+      <em>Not comparable</em>.</li>
+      <li><b>The winner's gate record is no worse.</b> A model cannot win on
+      quality while clearing fewer gates — that is winning the average by
+      skipping the harder half. Otherwise: <em>Split</em>.</li>
+    </ol>
+
+    <p><b>What the score is made of</b> — gates first, and only what survives
+    them is scored:</p>
+    <div class="tw"><table>
+      <thead><tr><th>Criterion</th><th class="num">Weight</th><th>Scored by</th></tr></thead>
+      <tbody>
+        <tr><td>Text accuracy</td><td class="num">30%</td><td>measured — word error rate against the transcript</td></tr>
+        <tr><td>Pronunciation</td><td class="num">20%</td><td>blind judge</td></tr>
+        <tr><td>Naturalness</td><td class="num">20%</td><td>blind judge <span class="pill pill-warning">unc</span></td></tr>
+        <tr><td>Clarity</td><td class="num">15%</td><td>blind judge <span class="pill pill-warning">unc</span></td></tr>
+        <tr><td>Audio quality</td><td class="num">15%</td><td>half signal metric, half judge</td></tr>
+      </tbody></table></div>
+    <p class="note">Styled scenarios add <code>style_adherence</code> at 15% and
+    re-weight the rest. <span class="pill pill-warning">unc</span> marks criteria
+    whose judge has never been calibrated against human listeners.</p>
+
+    <p><b>The gates that run first</b>, and any one of which invalidates a clip:
+    decodes · duration in range · trimmed duration (fits the slot, so silence
+    cannot pad it) · no long internal silence · no sustained clipping · loudness
+    sane · RMS / peak / noise floor against a mastering spec · word error rate
+    under the scenario's maximum · digit-exact readback · no over-long digit run
+    · required phrases present · forbidden phrases absent · delivery rate in
+    range.</p>
+
+    <p class="note"><b>Models are ranked gate-first</b> on the Models tab —
+    quality is only compared inside the set that cleared, so failing more can
+    never look like scoring higher.</p>
+  </div></details>
+
+  {% for s in scenarios %}
+  <article class="scard" data-ind="{{ s.industry }}" data-res="{{ s.result_class }}">
+    <div class="shead">
+      <div>
+        <span class="ind">{{ s.industry }}</span>
+        <code class="sid">{{ s.id }}</code>
+        <span class="dash">· {{ s.n_passes }} passes</span>
+      </div>
+      <span class="wbadge {{ s.result_class }}">
+        {% if s.winner %}{{ s.winner }} wins{% else %}{{ s.verdict }}{% endif %}
+      </span>
+    </div>
+
+    <details class="prompt"><summary>The prompt sent to both models</summary>
+      <p class="script">{{ s.script }}</p></details>
+
+    <div class="vs">
+      {% for m in s.side %}
+      <div class="col {{ 'won' if m.is_winner }}" style="--mac:{{ m.accent }}">
+        <div class="cm">{{ m.model_id }}{% if m.is_winner %} <span class="tick">✦</span>{% endif %}</div>
+        <div class="cq">{% if m.mean is not none %}{{ '%.3f'|format(m.mean) }}
+            <span class="dash">/10</span>{% else %}<span class="dash">no score</span>{% endif %}</div>
+        <div class="cs">
+          <span class="dash">{{ m.n_scored }} of {{ m.n_cells }} scored</span>
+          {% if m.worst_wer is not none %}<span class="dash">· worst WER {{ '%.4f'|format(m.worst_wer) }}</span>{% endif %}
+        </div>
+        <div class="gates">
+          {% for g in m.failed %}<span class="gate no">{{ g }}</span>{% else %}<span class="gate ok">all gates passed</span>{% endfor %}
+        </div>
+        {% for a in m.audio %}<audio controls preload="none" src="{{ a }}"></audio>{% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <p class="sverdict"><b>{{ s.verdict }}.</b> {{ s.detail }}</p>
+  </article>
+  {% endfor %}
+  <p class="note nomatch" hidden>No scenario matches those filters.</p>
+</section>
+
 <!-- ────────────────────────────── MODELS ────────────────────────────── -->
-<section class="runpanel on" data-tab="t-models">
+<section class="runpanel" data-tab="t-models" hidden>
   {% if duel %}
   <div class="duel rev">
     <div class="dt">head to head · {{ duel.basis }}</div>

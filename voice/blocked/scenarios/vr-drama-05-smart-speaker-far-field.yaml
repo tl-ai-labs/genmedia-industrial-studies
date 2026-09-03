@@ -1,0 +1,33 @@
+# VR-DRAMA-05 - Voice-assistant distribution, far-field listening
+# BLOCKED BY: far-field acoustic simulation.
+#   The measurement is intelligibility ACROSS A ROOM on a smart speaker -
+#   band-limited, reverberant, at distance. Measuring a clean studio file
+#   answers a different question. The simulation itself is tractable with
+#   numpy/scipy (band-limit + room impulse + distance attenuation); it simply
+#   is not built.
+# NEEDS: a far-field degradation stage before checks, and WER measured after it.
+#
+# REAL APPLICATION. Pocket FM integrated with Amazon Alexa in January 2026,
+# India first, so listeners resume episodes by voice on Echo devices.
+#   Source: Pocket FM Alexa integration announcement, Jan 2026.
+# CLAIM IF IT PASSES: "Our narration stays intelligible on a smart speaker
+#   across the room, not just in headphones."
+id: vr-drama-05
+modality: voice
+task: text_to_speech
+title: "Episode recap for far-field smart-speaker playback - Micro-drama"
+input:
+  script: |
+    Last time on Salvaging Nora: the harbour master refused the paperwork, Nora found the second ledger, and the Kerensa sailed without her. You stopped seventeen minutes into episode forty. Shall I pick up from there?
+  language: en-GB
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Every plot noun intelligible at far-field distance and bandwidth
+  2) The resume prompt clearly a question
+  3) Recap pace brisk but not clipped - it is heard, not read
+checks:
+  duration_s: {min: 8.0, max: 30.0}
+  max_silence_s: 1.5
+  no_clipping: true
+  max_wer: 0.06
+tags: [micro-drama, smart-speaker, far-field, blocked, vr-drama-05]

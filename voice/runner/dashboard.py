@@ -93,6 +93,11 @@ class RunSummary:
     calibration_reason: str
     mos_predictor: str
     git_sha: str
+    # Which recogniser produced the transcripts. Named on the page beside the
+    # judge, so a reader can see whether either shares a vendor with an arm.
+    asr_model: str = "—"
+    # Where this run lives, so the board can read its OWN frozen scenario.
+    runs_root: str = ""
     cells: list[Cell] = field(default_factory=list)
 
     @property
@@ -146,6 +151,8 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
             scenario_count=int(man.get("scenario_count", 0)),
             model_ids=[m["id"] for m in man.get("models", [])],
             judge_model=(man.get("judge") or {}).get("provider_model", "—"),
+            asr_model=(man.get("asr") or {}).get("provider_model", "—"),
+            runs_root=str(runs_root),
             calibration_passed=bool(cal.get("passed")),
             calibration_reason=str(cal.get("reason", "not evaluated")),
             mos_predictor=(man.get("mos") or {}).get("predictor", "—"),
@@ -461,7 +468,48 @@ def _duel(models: list[ModelRollup]) -> dict[str, Any] | None:
             "basis": f"{a.scored_n + b.scored_n} scored cells"}
 
 
-def _scenario_blocks(runs: list[RunSummary], duel: dict | None) -> list[dict[str, Any]]:
+# The workbook groups its scenarios by industry, and a seller reads the board
+# that way - "what do I say to a retail customer" - so the id prefix carries
+# it rather than a field somebody has to remember to set.
+INDUSTRY = {
+    "vr-ecom": "Ecommerce & Retail",
+    "vr-drama": "Micro-drama & entertainment",
+    "vr-game": "Gaming",
+    "vr-ads": "Ads",
+}
+
+
+def _industry(scenario_id: str) -> str:
+    for prefix, name in INDUSTRY.items():
+        if scenario_id.startswith(prefix):
+            return name
+    return "Other"
+
+
+def _frozen_script(runs: list[RunSummary], sid: str) -> str:
+    """
+    The exact words sent to every model, read from the run's OWN frozen copy
+    rather than from the working tree - the board must show what was actually
+    spoken, not what the file says today.
+    """
+    import yaml
+
+    for r in reversed(runs):
+        if not any(c.scenario_id == sid for c in r.cells):
+            continue
+        d = Path(r.runs_root) / r.run_id / "scenarios"
+        for f in sorted(d.glob("*.yaml")) if d.exists() else []:
+            try:
+                doc = yaml.safe_load(f.read_text(encoding="utf-8")) or {}
+            except Exception:  # noqa: BLE001 - a bad file is not a board failure
+                continue
+            if doc.get("id") == sid:
+                return str((doc.get("input") or {}).get("script") or "").strip()
+    return ""
+
+
+def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
+                     accents: dict[str, str] | None = None) -> list[dict[str, Any]]:
     """
     One block per scenario: every pass side by side, each model's own spread,
     and the verdict that spread licenses.
@@ -560,9 +608,72 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None) -> list[dict[str
         elif len(ids) == 1:
             verdict, detail = "One arm only", "Only one model produced a scored cell here."
 
+        # WHO WON, and only when the evidence licenses an answer. A gap
+        # inside the noise floor has no winner - naming one there is the
+        # single easiest way to publish a result that does not survive a
+        # re-run, which this bank has already done to us four times.
+        winner = None
+        if gap is not None and floor is not None and abs(gap) > floor and duel:
+            cand = duel["a"] if gap > 0 else duel["b"]
+            rival = duel["b"] if gap > 0 else duel["a"]
+            # TWO conditions beyond clearing the floor, both learned the hard
+            # way on this board:
+            #
+            # 1. BOTH models need a repeat. A one-sample mean has no spread,
+            #    so the "floor" would be the other model's alone - vr-ecom-04
+            #    compared a single ElevenLabs score against a two-pass Gemini
+            #    mean and called a 0.403 gap decisive on a +/-0.021 floor
+            #    that one arm had never been measured against.
+            # 2. The winner's GATE record cannot be worse. On that same card
+            #    ElevenLabs led on quality while failing digits_exact on a
+            #    pass Gemini passed clean - winning the average by skipping
+            #    the harder half. Same rule the model ranking already uses:
+            #    quality is only comparable inside the set that cleared.
+            n = {r["model_id"]: sum(1 for v in r["pass_scores"] if v is not None)
+                 for r in rows}
+            both_repeated = n.get(cand, 0) > 1 and n.get(rival, 0) > 1
+            gates_not_worse = n.get(cand, 0) >= n.get(rival, 0)
+            if both_repeated and gates_not_worse:
+                winner = cand
+            elif not both_repeated:
+                verdict = "Not comparable"
+                detail = (f"{cand} leads by {abs(gap):.3f}, but one model has only a single "
+                          f"scored pass here - there is no spread for it, so the floor beside "
+                          f"this gap was measured on the other model alone.")
+            else:
+                verdict = "Split"
+                detail = (f"{cand} scores {abs(gap):.3f} higher, but cleared its gates on "
+                          f"{n.get(cand, 0)} of {len(keys)} passes against {rival}'s "
+                          f"{n.get(rival, 0)}. Better on quality, worse on delivery - not a win.")
+
+        # Side by side: one column per model, whatever state it reached.
+        side = []
+        for mid in sorted({c.model_id for r in sruns for c in r.cells if c.scenario_id == sid}):
+            cells = [c for r in sruns for c in r.cells
+                     if c.scenario_id == sid and c.model_id == mid]
+            scored = [c.score for c in cells if c.score is not None and c.status != "invalid"]
+            failed: list[str] = []
+            for c in cells:
+                for g in c.gates:
+                    if not g.get("passed") and g.get("gate") not in failed:
+                        failed.append(g.get("gate"))
+            wers = [c.wer for c in cells if c.wer is not None]
+            side.append({
+                "model_id": mid,
+                "accent": (accents or {}).get(mid, "var(--accent)"),
+                "mean": (sum(scored) / len(scored)) if scored else None,
+                "n_scored": len(scored), "n_cells": len(cells),
+                "failed": failed,
+                "worst_wer": max(wers) if wers else None,
+                "is_winner": mid == winner,
+                "audio": [c.audio_rel for c in cells if c.audio_rel][:2],
+            })
+
         out.append({"id": sid, "n_passes": len(keys), "labels": short, "rows": rows,
                     "gaps": gaps, "gap": gap, "floor": floor, "verdict": verdict,
-                    "detail": detail, "stale": stale})
+                    "detail": detail, "stale": stale,
+                    "industry": _industry(sid), "script": _frozen_script(runs, sid),
+                    "winner": winner, "side": side})
     return out
 
 
@@ -661,7 +772,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
     models = rollup_models(runs)
     all_cells = [c for r in runs for c in r.cells]
     duel = _duel(models)
-    scenarios = _scenario_blocks(runs, duel)
+    scenarios = _scenario_blocks(runs, duel, {m.model_id: m.accent for m in models})
 
     env = Environment(
         loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
@@ -693,12 +804,56 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
         "and must not be quoted as a mean opinion score.",
         "<b>Cost is what the run believed it paid</b>, at the rates frozen in its own manifest.",
     ]
+    # PROVENANCE, stated once and factually. The judge and the ASR are named
+    # so a reader can see for themselves whether either shares a vendor with
+    # an arm - which is a thing that has already changed an answer here once,
+    # when the ASR did. Whether that exposure is acceptable is a decision for
+    # whoever runs the study; whether it is DISCLOSED is not.
+    arms = {m.model_id.split("-")[0] for m in models}
+    judge_vendor = (runs[-1].judge_model or "").split("-")[0]
+    shared = judge_vendor in arms
+    footnotes.append(
+        f"<b>Judged by <code>{runs[-1].judge_model}</code>, listening to the audio</b>, blinded "
+        f"A/B/C per scenario and told the measured facts as established truth. "
+        + (f"It shares a vendor with one arm under test - blinding hides the label, not the "
+           f"acoustic fingerprint, so treat judge-derived criteria "
+           f"(<code>pronunciation</code>, <code>naturalness</code>, <code>clarity</code>, "
+           f"<code>style_adherence</code>, and half of <code>audio_quality</code>) as carrying "
+           f"that exposure. Accepted deliberately for this study."
+           if shared else
+           "It shares a vendor with neither arm.")
+    )
+    footnotes.append(
+        f"<b>Transcribed by <code>{runs[-1].asr_model}</code></b>, run locally. The transcript is "
+        f"the basis of every WER number and every phrase gate. It shares a vendor with neither "
+        f"arm - a Google recogniser measurably favoured the Google arm and was retired on "
+        f"2026-09-03."
+    )
     if uncalibrated:
         footnotes.insert(0, "<b>The judge is uncalibrated.</b> The 2-humans x 5-clips gate has "
                             "never been run, so <code>naturalness</code> and <code>clarity</code> "
                             "carry no evidence of agreement with a human ear.")
 
+    # Result class drives both the badge colour and the filter. "gemini" and
+    # "other" only when a gap actually cleared its noise floor - a tie is
+    # never dressed as a win.
+    gemini_wins = other_wins = 0
+    for b in scenarios:
+        if b["winner"] and "gemini" in b["winner"].lower():
+            b["result_class"] = "gemini"; gemini_wins += 1
+        elif b["winner"]:
+            b["result_class"] = "other"; other_wins += 1
+        elif b["verdict"] == "Split":
+            b["result_class"] = "split"
+        elif b["gap"] is not None:
+            b["result_class"] = "tie"
+        else:
+            b["result_class"] = "none"
+    industries = sorted({(b["industry"]) for b in scenarios})
+    industries = [(i, sum(1 for b in scenarios if b["industry"] == i)) for i in industries]
+
     html = env.get_template("dashboard.html.j2").render(
+        industries=industries, gemini_wins=gemini_wins, other_wins=other_wins,
         models=[{
             "model_id": m.model_id, "accent": m.accent, "mean": m.mean_score,
             "scored_n": m.scored_n, "evaluated_n": m.evaluated_n or m.n,

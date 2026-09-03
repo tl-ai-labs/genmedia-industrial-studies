@@ -467,3 +467,156 @@ def test_must_not_say_also_matches_whole_words(tmp_path, predictor):
                             checks={"must_not_say": ["lakh"]})
     r = run_checks(scenario, "m1", p, "the Lakhsmi temple opens at nine", None, predictor)
     assert r.passed, r.failed_gates
+
+
+# --------------------------------------------------------------------------
+# Whisper's own fabrications. Added 2026-09-03 after three runs of ONE
+# unchanged passage produced WERs of 0.099, 0.211 and 0.479 - the audio was
+# identical to within a second, and the difference was a FEMA public-service
+# tagline in one transcript and a repeated middle section in another. Read at
+# face value that is a model collapsing on long-form narration. It was the
+# recogniser talking.
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "tail",
+    ["Thanks for watching!", "Thank you for watching.", "Please subscribe.",
+     "For more information, go to www.fema.gov.", "Subtitles by the Amara.org community"],
+)
+def test_subtitle_boilerplate_is_stripped_from_the_tail(tail):
+    from runner.asr import strip_tail_hallucination
+
+    real = "She would see what the sea had to say about it."
+    body, removed = strip_tail_hallucination(f"{real} {tail}")
+    assert body == real
+    assert removed and tail.rstrip() in removed[0]
+
+
+def test_stacked_boilerplate_is_all_removed():
+    from runner.asr import strip_tail_hallucination
+
+    real = "She would walk until the road ran out."
+    body, removed = strip_tail_hallucination(f"{real} Thanks for watching. Please subscribe.")
+    assert body == real and len(removed) == 2
+
+
+def test_a_clean_transcript_is_untouched():
+    from runner.asr import strip_tail_hallucination
+
+    real = "The lamps along the causeway came on one at a time. Sarala counted them."
+    body, removed = strip_tail_hallucination(real)
+    assert body == real and removed == []
+
+
+def test_boilerplate_words_mid_transcript_survive():
+    """
+    Only the TAIL is stripped. A scenario could legitimately say "thanks for
+    watching" in the middle of a line, and removing it would be the harness
+    editing evidence.
+    """
+    from runner.asr import strip_tail_hallucination
+
+    real = "Thanks for watching the shop while I was away. I owe you one."
+    body, removed = strip_tail_hallucination(real)
+    assert body == real and removed == []
+
+
+def test_the_repair_is_recorded_not_silent():
+    """
+    A repaired measurement that does not say it was repaired is a lie - the
+    same rule the repeat-collapse guard follows.
+    """
+    from runner.asr import AsrResult
+    from runner.cost import Cost
+
+    cost = Cost(micro_usd=0, basis="local", price_as_of="2026-09-03",
+                price_source="local model, no API", usage_source="estimated",
+                usage_exact=True)
+    r = AsrResult(text="x", provider_model="m", latency_ms=1, cost=cost, attempts=1,
+                  tail_stripped=("Thanks for watching!",))
+    assert r.tail_stripped == ("Thanks for watching!",)
+    # and the default is empty, so a clean transcript claims no repair
+    clean = AsrResult(text="x", provider_model="m", latency_ms=1, cost=cost, attempts=1)
+    assert clean.tail_stripped == ()
+
+
+# --------------------------------------------------------------------------
+# Character-exact alphanumeric readback. Added 2026-09-03 for the KYC
+# scenario: a verification reference with one wrong character is a failed
+# call however good the clip sounds, and WER forgives one character in eight.
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "written",
+    ["B 8 Q O Z 2 G 6", "b8qoz2g6", "B8QOZ2G6",
+     "Bravo, eight, Quebec, Oscar, Zulu, two, Golf, six",
+     "B as in Bravo, 8, Q as in Quebec, O as in Oscar, Z as in Zulu, 2, G as in Golf, 6"],
+)
+def test_every_way_a_reference_is_spelled_out_converges(written):
+    from runner.checks import extract_alnum_sequence
+
+    assert extract_alnum_sequence(written) == "b8qoz2g6"
+
+
+def test_ordinary_prose_is_not_read_as_an_identifier():
+    from runner.checks import extract_alnum_sequence
+
+    # A product name is not a spelled reference; a long digit run still is.
+    assert extract_alnum_sequence("order 481902773154") == "481902773154"
+    assert "vivobook" not in extract_alnum_sequence("the ASUS Vivobook has 16 GB")
+
+
+def test_confusions_are_reported_by_class_not_just_position():
+    """
+    "Wrong at position 3" is a bug report. "Turned B into 8" is the finding
+    this scenario was written to produce.
+    """
+    from runner.checks import alnum_confusions
+
+    r = alnum_confusions("b8qoz2g6", "88qo22g6")
+    assert [(e["expected"], e["heard"], e["confusable_class"]) for e in r["errors"]] == [
+        ("b", "8", "b8"), ("z", "2", "z2")]
+    assert r["all_errors_are_known_confusables"] is True
+
+    unrelated = alnum_confusions("b8qoz2g6", "p8qoz2g6")
+    assert unrelated["errors"][0]["confusable_class"] == "unrelated"
+    assert unrelated["all_errors_are_known_confusables"] is False
+
+
+def test_a_wrong_character_fails_the_gate(tmp_path, predictor):
+    p = write(tmp_path, "kyc.wav", speechlike(4.0))
+    scenario = FakeScenario(text="B 8 Q O Z 2 G 6", checks={"must_say_alnum": "B8QOZ2G6"})
+    ok = run_checks(scenario, "m1", p, "B 8 Q O Z 2 G 6", None, predictor)
+    assert ok.passed, ok.failed_gates
+    bad = run_checks(scenario, "m1", p, "8 8 Q O Z 2 G 6", None, predictor)
+    assert "alnum_exact" in bad.failed_gates
+    assert bad.measurements["alnum_confusions"]["errors"][0]["confusable_class"] == "b8"
+
+
+@pytest.mark.parametrize(
+    "transcript",
+    [
+        # Real p1 transcripts, 2026-09-03. Both were CORRECT readings that the
+        # extractor scored 3/8 and 2/8.
+        "Your verification reference is B8Q-OZ2G6. Please confirm the card ending 4419.",
+        "Your verification reference is BRAVO 8 QUABEQ OSCAR ZULU 2 GOLF 6. Card ending 4419.",
+        "Your verification reference is B.8.Q.O.Z.2.G.6",
+    ],
+)
+def test_a_correct_readback_survives_the_transcriber_s_punctuation(transcript):
+    """
+    A single inserted hyphen left "oz" as an unmappable two-letter token and
+    cost two characters; "QUABEQ" for Quebec shifted every character after
+    it. Both were the recogniser's notation, not the model's reading.
+    """
+    from runner.checks import extract_alnum_sequence
+
+    assert "b8qoz2g6" in extract_alnum_sequence(transcript)
+
+
+def test_a_genuine_misreading_still_fails_after_those_fixes():
+    """The repairs must not make the gate unfailable."""
+    from runner.checks import extract_alnum_sequence
+
+    assert "b8qoz2g6" not in extract_alnum_sequence("reference is B8P-OZ2G6")
+    assert "b8qoz2g6" not in extract_alnum_sequence("BRAVO 8 PAPA OSCAR ZULU 2 GOLF 6")

@@ -400,3 +400,46 @@ def test_on_the_hour_clock_times_read_as_the_hour():
     assert normalize("3:30") == normalize("three thirty")
     # A plain number is not a time and must be untouched.
     assert normalize("200") == "two hundred"
+
+
+# --------------------------------------------------------------------------
+# Transcriber notation. Added 2026-09-03 after three ASR configurations gave
+# three different verdicts on the same audio - the gates were measuring
+# notation, not models.
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "written",
+    ["481902773154", "481 902 773 154", "4 8 1 9 0 2 7 7 3 1 5 4", "481-902-773-154"],
+)
+def test_every_way_a_transcriber_writes_an_identifier_converges(written):
+    """
+    A twelve-digit reference read perfectly came back as "481 902 773 154"
+    and the digit extractor yielded 192731 - each group had been expanded as
+    its own cardinal before it was ever seen as digits.
+    """
+    from runner.checks import extract_digit_sequence
+
+    assert extract_digit_sequence(written) == "481902773154"
+
+
+def test_short_adjacent_numbers_are_not_glued_together():
+    """The join must not turn "between 2 and 4" or a 14-14 scoreline into
+    one number - it fires only at identifier length."""
+    assert normalize("between 2 and 4") == "between two and four"
+    assert normalize("14 to 14") == "fourteen to fourteen"
+    assert normalize("chapter 3 page 7") == normalize("chapter three page seven")
+
+
+def test_indian_grouping_beats_a_wrong_currency_symbol():
+    """
+    Whisper heard rupees and wrote "$2,50,000". The currency path read it
+    internationally - "two hundred and fifty thousand dollars" - and fired
+    the must_not_say gate that exists to catch exactly that reading. The
+    grouping is 2-2-3, which is Indian whatever symbol precedes it.
+    """
+    assert "lakh" in normalize("$2,50,000")
+    assert "hundred" not in normalize("$2,50,000")
+    # International grouping still reads internationally, symbol or not.
+    assert "lakh" not in normalize("$250,000")
+    assert normalize("$137.50") == "one hundred and thirty seven dollars and fifty cents"

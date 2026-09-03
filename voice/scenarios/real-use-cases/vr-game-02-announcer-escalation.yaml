@@ -86,17 +86,20 @@ checks:
   # perfectly correct reading, because the script wrote "1 8 to 1 4" and no
   # announcer or ASR renders it that way. Phrase checks are the right
   # instrument below four digits; tests/test_scenario_bank.py now pins this.
+  # NO deterministic gate on a PROPER NOUN. Three ASR configurations on
+  # 2026-09-03 wrote three spellings of the same correct reading - Vasquez as
+  # "Vazquez", Bhiwandi as "Bawande" and "Bhavandi", Raghavan as "Ragavan" -
+  # and each spelling failed a gate no model could have passed. A name's
+  # spelling in a transcript measures the transcriber. Pronunciation is a
+  # JUDGE criterion in configs/rubrics/voice.yaml; the judge hears the clip.
   must_say:
     - "14 to 14"
     - "18 to 14"
-    - "Vasquez"
-    - "Kowalski"
     - "steal of the tournament"
   # The team name is INVENTED, so no transcriber has a canonical spelling for
   # it. First run, 2026-09-03: both models read it correctly and the ASR wrote
   # "Ironhouse" for one and "Iron House" for the other - a literal must_say
   # failed BOTH for being right. Any faithful reading satisfies this.
-  must_say_any:
-    - ["Ironhaus", "Iron House", "Ironhouse", "Ironhaus's"]
+
 
 tags: [gaming, announcer, commentary, prosody, energy, vr-game-02]

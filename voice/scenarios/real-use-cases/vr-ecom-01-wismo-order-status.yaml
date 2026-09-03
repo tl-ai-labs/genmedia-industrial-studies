@@ -63,10 +63,15 @@ checks:
   # The gate that decides this scenario. WER forgives one wrong digit in
   # twelve; a customer holding a pen does not.
   must_say_digits: "481902773154"
+  # NO deterministic gate on a PROPER NOUN. Three ASR configurations on
+  # 2026-09-03 wrote three spellings of the same correct reading - Vasquez as
+  # "Vazquez", Bhiwandi as "Bawande" and "Bhavandi", Raghavan as "Ragavan" -
+  # and each spelling failed a gate no model could have passed. A name's
+  # spelling in a transcript measures the transcriber. Pronunciation is a
+  # JUDGE criterion in configs/rubrics/voice.yaml; the judge hears the clip.
   must_say:
-    - "Bhiwandi"
-    - "Blue Dart"
-    - "Thursday the fourteenth"
     - "6302"
+  must_say_any:
+    - ["Blue Dart", "Bluedart", "BlueDart"]
 
 tags: [ecommerce, retail, wismo, order-status, digits, telephony, vr-ecom-01]

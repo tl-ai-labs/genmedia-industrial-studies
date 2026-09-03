@@ -43,6 +43,42 @@ def _stats(values: list[float]) -> dict[str, Any] | None:
     }
 
 
+def _throughput(gen_rows: list[dict], check_rows: list[dict], cost_micro: int) -> dict[str, Any]:
+    """
+    Rates, with the sample size attached to every one of them.
+
+    `n_clips` is not decoration. The workbook asks for 500 support turns and
+    200 placeholder lines; a rate estimated from thirty is the same rate with
+    wider error bars, and is honest ONLY while the denominator travels with
+    it. Quoting "cost per finished minute" without saying over how many clips
+    invites it to be read as a measured total.
+    """
+    seconds = [float(c["measurements"]["duration_s"]) for c in check_rows
+               if c.get("measurements", {}).get("duration_s")]
+    latencies = [float(g["latency_ms"]) / 1000.0 for g in gen_rows if g.get("latency_ms")]
+    audio_s = sum(seconds)
+    gen_s = sum(latencies)
+    if not seconds:
+        return {"n_clips": 0, "measured": False,
+                "note": "no clip produced a duration - nothing to divide"}
+    return {
+        "n_clips": len(seconds),
+        "measured": True,
+        "audio_seconds": round(audio_s, 2),
+        "audio_minutes": round(audio_s / 60.0, 4),
+        # The headline a buyer compares across vendors.
+        "cost_micro_usd_per_audio_minute": round(cost_micro / (audio_s / 60.0)) if audio_s else None,
+        # Generation wall-clock is the SUM of per-call latency, not elapsed
+        # time: the runner works several provider lanes concurrently, so
+        # elapsed would measure our concurrency rather than the provider's
+        # speed. Named so nobody reads it as "how long the batch took".
+        "generation_seconds_serial": round(gen_s, 2),
+        "realtime_factor": round(audio_s / gen_s, 3) if gen_s else None,
+        "clips_per_generation_minute": round(len(seconds) / (gen_s / 60.0), 2) if gen_s else None,
+        "audio_seconds_per_clip": _stats(seconds),
+    }
+
+
 def build_summary(paths: RunPaths) -> dict[str, Any]:
     manifest = read_manifest(paths)
     modality = manifest.get("modality", "voice")
@@ -164,6 +200,14 @@ def build_summary(paths: RunPaths) -> dict[str, Any]:
                     (g.get("cost") or {}).get("usage_exact") is not False for g in mine_gen
                 ),
             },
+
+            # THROUGHPUT - the question a buyer asks at volume, and the one
+            # per-scenario cost cannot answer. A model that is cheaper per
+            # CALL can be dearer per finished minute if it speaks faster, and
+            # a studio ordering 200 placeholder lines is buying wall-clock,
+            # not calls. Every input here was already recorded; nothing new is
+            # measured, it is only divided.
+            "throughput": _throughput(mine_gen, mine_checks, gen_cost + a_cost),
 
             "reliability": {
                 "cells_ok": len(mine_gen),

@@ -25,12 +25,17 @@ import pytest
 
 from runner.checks import extract_digit_sequence, longest_digit_run
 from runner.normalize import normalize
-from runner.scenarios import load_scenarios
+from runner.scenarios import ScenarioError, load_scenarios
 
 ROOT = Path(__file__).resolve().parent.parent
 # Every directory that holds real scenarios - the default run path, the
 # held-back demo set, and the real-use-case bank under it.
-SCENARIO_ROOTS = [ROOT / "scenarios", ROOT / "demo" / "scenarios"]
+# `blocked/` is OUT of the default run path on purpose - those scenarios
+# cannot be measured yet and must not quietly generate cells that look
+# scored. They are still validated here, so they are correct the day the
+# capability they wait on lands.
+SCENARIO_ROOTS = [ROOT / "scenarios", ROOT / "demo" / "scenarios",
+                  ROOT / "blocked" / "scenarios"]
 
 # A human read sits inside this band. Copy whose length and duration target
 # imply something outside it is testing the copywriting, not the model.
@@ -217,3 +222,114 @@ def test_a_scenario_cannot_silently_declare_ignored_weights(tmp_path):
     )
     with pytest.raises(ScenarioError, match="does not read them yet"):
         load_scenarios(f)
+
+
+# --------------------------------------------------------------------------
+# Variants and group gates. Added 2026-09-03: six NPC voices, or one character
+# in three languages, is ONE comparison in the workbook but six or three
+# separate generations. A scenario declaring `variants:` expands at load time
+# into one Scenario per variant so matrix, paths, telemetry and the dashboard
+# keep working on distinct ids.
+# --------------------------------------------------------------------------
+
+VARIANT_YAML = """
+id: t-cast
+modality: voice
+task: styled_tts
+title: "Cast"
+expected: "Distinguishable characters."
+params: {voice: male_mid_neutral}
+checks:
+  duration_s: {min: 1.0, max: 20.0}
+  speaker_distinct: {max_cosine: 0.80}
+variants:
+  - id: alpha
+    script: "Supplies are short and the gate closes at dusk."
+  - id: beta
+    script: "Movement on the ridge, two of them."
+    params: {voice: female_mid_warm}
+"""
+
+
+def _load_yaml(tmp_path, text):
+    f = tmp_path / "s.yaml"
+    f.write_text(text, encoding="utf-8")
+    return load_scenarios(f, modality="voice")
+
+
+def test_a_variant_scenario_expands_into_one_scenario_per_variant(tmp_path):
+    out = _load_yaml(tmp_path, VARIANT_YAML)
+    assert [s.id for s in out] == ["t-cast#alpha", "t-cast#beta"]
+    assert all(s.variant_of == "t-cast" for s in out)
+    # A per-variant params override wins over the shared block.
+    assert out[0].params["voice"] == "male_mid_neutral"
+    assert out[1].params["voice"] == "female_mid_warm"
+
+
+def test_variants_do_not_share_a_hash(tmp_path):
+    """
+    Two variants are different INPUTS. Sharing a hash would make the dashboard
+    treat them as repeats of each other and report the difference between two
+    characters as this machine's noise floor.
+    """
+    a, b = _load_yaml(tmp_path, VARIANT_YAML)
+    assert a.scenario_hash != b.scenario_hash
+
+
+def test_a_group_gate_is_lifted_out_of_the_per_clip_checks(tmp_path):
+    """
+    `speaker_distinct` describes the SET. Left in `checks` it would reach
+    run_checks, which gates one file and cannot see a property that only
+    several files together have.
+    """
+    a, _ = _load_yaml(tmp_path, VARIANT_YAML)
+    assert "speaker_distinct" not in a.checks
+    assert a.group_checks == {"speaker_distinct": {"max_cosine": 0.80}}
+    assert "duration_s" in a.checks
+
+
+def test_a_group_gate_with_one_variant_is_refused(tmp_path):
+    """One clip cannot disagree with itself, so the scenario is a mistake."""
+    bad = VARIANT_YAML.split("  - id: beta")[0]
+    with pytest.raises(ScenarioError, match="at least two"):
+        _load_yaml(tmp_path, bad)
+
+
+def test_a_variant_without_an_id_is_refused(tmp_path):
+    text = VARIANT_YAML.replace("  - id: alpha\n", "  - \n")
+    with pytest.raises(ScenarioError, match="no `id`"):
+        _load_yaml(tmp_path, text)
+
+
+def test_duplicate_variant_ids_are_refused(tmp_path):
+    text = VARIANT_YAML.replace("  - id: beta", "  - id: alpha")
+    with pytest.raises(ScenarioError, match="duplicate variant id"):
+        _load_yaml(tmp_path, text)
+
+
+def test_a_plain_scenario_still_needs_a_script(tmp_path):
+    text = VARIANT_YAML.split("variants:")[0].replace(
+        "  speaker_distinct: {max_cosine: 0.80}\n", "")
+    with pytest.raises(ScenarioError, match="input.script"):
+        _load_yaml(tmp_path, text)
+
+
+@pytest.mark.parametrize("s", SCENARIOS, ids=IDS)
+def test_no_script_ends_with_whisper_boilerplate(s):
+    """
+    The tail-hallucination guard strips subtitle boilerplate from the end of a
+    transcript. That is only safe while no scenario legitimately ENDS with one
+    of those phrases - otherwise the harness would quietly edit real evidence
+    out of a correct reading.
+    """
+    from runner.asr import TAIL_HALLUCINATIONS
+
+    import re as _re
+    last = [p for p in _re.split(r"(?<=[.!?])\s+", normalize(s.text)) if p.strip()]
+    if not last:
+        pytest.skip("no sentences")
+    tail = _re.sub(r"\s+", " ", last[-1]).strip()
+    assert tail not in TAIL_HALLUCINATIONS, (
+        f"{s.id} ends with {tail!r}, which the ASR guard strips as boilerplate - "
+        f"the harness would delete a real line from a correct reading"
+    )

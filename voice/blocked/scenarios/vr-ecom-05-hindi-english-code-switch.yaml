@@ -1,0 +1,38 @@
+# VR-ECOM-05 - Hindi-English code-switch support call (Ecommerce & Retail)
+# BLOCKED BY: per-language segment WER + native-speaker review.
+#   The shipped ASR is Whisper small.en - English only, so a Hindi segment
+#   comes back as noise or as invented English. A multilingual model
+#   (whisper "small") would give a whole-clip WER, but the source scenario
+#   measures WER PER LANGUAGE SEGMENT and requires a native reviewer at each
+#   of the four switch points, neither of which exists here.
+# NEEDS: multilingual ASR + forced segment alignment + a native reviewer.
+#
+# REAL APPLICATION. Indian voice-agent vendors compete explicitly on regional
+# language ability; buyer guides list it as a core selection factor, and one
+# comparison notes a rival platform lacks certain Indian dialects entirely.
+#   Source: SquadStack and Vellum 2026 platform comparisons.
+# CLAIM IF IT PASSES: "Our model handles the way your customers actually
+#   speak - switching between Hindi and English mid-sentence without breaking
+#   accent." This targets a stated Google strength and is therefore a TEST of
+#   it, not a demonstration.
+id: vr-ecom-05
+modality: voice
+task: styled_tts
+title: "Hindi-English code-switch support call - Ecommerce & Retail"
+input:
+  script: |
+    Aapka order ready hai, please collect from counter two before 6 baje. Agar aap late ho jaate hain, no problem - hum ise kal tak hold kar lenge. Aapko SMS bhi mil jayega with the pickup code.
+  language: hi-IN
+  style: "natural Hinglish customer-service delivery, neither language forced"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Hindi read as Hindi and English as English, with no accent break at
+     any of the four switch points
+  2) "counter two" and "6 baje" both intelligible
+  3) Natural Hinglish rhythm - not two languages spliced together
+  4) A native Hindi speaker would accept this as a service call
+checks:
+  duration_s: {min: 8.0, max: 34.0}
+  max_silence_s: 1.5
+  no_clipping: true
+tags: [ecommerce, india, code-switch, hinglish, blocked, vr-ecom-05]
