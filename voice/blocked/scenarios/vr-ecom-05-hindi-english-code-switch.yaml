@@ -1,11 +1,33 @@
 # VR-ECOM-05 - Hindi-English code-switch support call (Ecommerce & Retail)
-# BLOCKED BY: per-language segment WER + native-speaker review.
-#   The shipped ASR is Whisper small.en - English only, so a Hindi segment
-#   comes back as noise or as invented English. A multilingual model
-#   (whisper "small") would give a whole-clip WER, but the source scenario
-#   measures WER PER LANGUAGE SEGMENT and requires a native reviewer at each
-#   of the four switch points, neither of which exists here.
-# NEEDS: multilingual ASR + forced segment alignment + a native reviewer.
+# BLOCKED - AND NOW EVIDENCED, not assumed (probed 2026-09-03).
+#   The blocker is NOT "we need a multilingual ASR". We have one, it is
+#   multilingual, and it still cannot measure this. Both arms generated this
+#   script and the shipped recogniser was run over the audio three ways:
+#
+#     language="hi"   transliterated EVERYTHING into Devanagari, including
+#                     the English -  "please collect from counter two" came
+#                     back as "प्लीस कलेक्ट फरम काूंटर टू".
+#     language="en"   TRANSLATED rather than transcribed - "Aapka order ready
+#                     hai" became "Your order is ready."
+#     auto-detect     detected Hindi, same as the first.
+#
+#   The reference is romanized Hinglish. Devanagari scores ~100% WER against
+#   it however well the model spoke, and a translation is not a transcript.
+#   There is no configuration that preserves the code-switch, so per-segment
+#   WER cannot be computed - and a whole-clip WER here would measure the
+#   recogniser's script choice, not either model.
+#
+# NEEDS: a recogniser that transcribes code-switched speech VERBATIM, in the
+#   script it was written in, without transliterating or translating. Google's
+#   USM/Chirp does this - but it is Google, and this comparison has a Google
+#   arm, which is the vendor overlap that already changed one answer here.
+#   A neutral code-switch ASR, or native-speaker transcription, is the
+#   honest unblock. Native review was always part of this scenario anyway.
+#
+# WORTH KNOWING, though it is not a measurement: under the translating mode
+#   Gemini rendered "6 baje" as "6 pm" and ElevenLabs as "7 o'clock" - one of
+#   them changed the number. That is a real difference and it is NOT reported
+#   as a result, because it arrived through an instrument that was translating.
 #
 # REAL APPLICATION. Indian voice-agent vendors compete explicitly on regional
 # language ability; buyer guides list it as a core selection factor, and one
