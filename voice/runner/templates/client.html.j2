@@ -1,0 +1,358 @@
+{#- Formats a metric value under the unit its row declares. One macro, so a
+    row and its difference cell can never be formatted two different ways. -#}
+{% macro val(v, fmt) -%}
+{%- if v is none -%}—
+{%- elif fmt == 'pct' -%}{{ '%.1f'|format(v * 10) }}%
+{%- elif fmt == 'rate' -%}{{ '%.1f'|format(v * 100) }}%
+{%- elif fmt == 'usd' -%}${{ '%.4f'|format(v / 1000000) }}
+{%- elif fmt == 'ms' -%}{{ '%.2f'|format(v / 1000) }}s
+{%- else -%}{{ v }}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro clip(c) %}
+<div class="clip">
+  <div class="head">
+    {% if c.variant %}<span class="vt">{{ c.variant }}</span>{% endif %}
+    <span class="rl">{{ c.run_label }}</span>
+    {% if c.score_pct is not none %}
+      <span class="sc-pill">{{ '%.1f'|format(c.score_pct) }}%</span>
+    {% elif c.status == 'invalid' %}<span class="sc-pill none">gate failed</span>
+    {% else %}<span class="sc-pill none">not scored</span>{% endif %}
+  </div>
+  {% if c.audio %}<audio controls preload="none" src="{{ c.audio }}"></audio>{% endif %}
+  <div class="meta">
+    {% if c.latency_ms %}<span class="lat">generated in <b>{{ '%.2f'|format(c.latency_ms / 1000) }}s</b></span>{% endif %}
+    {% if c.ttfa_ms %}<span class="lat">first audio <b>{{ c.ttfa_ms }} ms</b></span>{% endif %}
+    {% if c.duration_s %}<span>length <b>{{ '%.1f'|format(c.duration_s) }}s</b></span>{% endif %}
+    {% if c.wer_pct is not none %}<span>word errors <b>{{ '%.1f'|format(c.wer_pct) }}%</b></span>{% endif %}
+  </div>
+</div>
+{% endmacro %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice model comparison — {{ gemini }} vs {{ other }}</title>
+{#- Webfonts are progressive: this file is opened from a desktop, often with
+    no network, so every family has a real system stack behind it. -#}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+{% import "_client_assets.j2" as a %}
+{{ a.css() }}
+</head>
+<body>
+
+<div class="masthead"><div class="in">
+  <span class="t">Voice model comparison</span>
+  <span class="s">{{ n_scenarios }} scenarios · {{ n_clips }} clips · {{ n_runs }} runs</span>
+</div></div>
+
+<div class="wrap">
+<header class="hero">
+  <p class="eyebrow">Tilicho Labs · GenMedia evaluation</p>
+  <h1>{{ gemini }} vs {{ other }}</h1>
+  <p class="lede">{{ n_scenarios }} industry scenarios, each run under both models at least
+  twice and judged blind against a written rubric. Every clip produced is on this page with
+  its score, the time it took to generate, and the transcript accuracy it was measured at.</p>
+
+  {% if judge_is_google or uncalibrated %}
+  <p class="one flag"><b>Judge:</b> <code>{{ judge }}</code> —
+    {% if judge_is_google %}a Google model scoring a comparison with a Google arm in it{% endif %}
+    {%- if judge_is_google and uncalibrated %}, and{% endif %}
+    {% if uncalibrated %}never calibrated against human listeners{% endif %}. Detail in the notes.</p>
+  {% endif %}
+  <p class="one lead"><b>Overall:</b> {{ overall_verdict }} — {{ overall_detail }}</p>
+  <p class="one warn"><b>A model wins a scenario</b> when the gap clears
+    {{ '%.1f'|format(win_gap * 10) }}pp and it cleared no fewer gates —
+    {{ inside_noise }} of the {{ n_win }} decided gaps are smaller than that model's own
+    run-to-run spread.</p>
+</header>
+
+<h2>Head to head</h2>
+<div class="duel">
+  <div class="heads">
+    <span class="h gem">◆ {{ gemini }}{% if gem_vendor %} · {{ gem_vendor }}{% endif %}</span>
+    <span class="h oth">{{ other }}{% if oth_vendor %} · {{ oth_vendor }}{% endif %} ◆</span>
+  </div>
+  {% for r in strip %}
+  <div class="drow">
+    <div class="dlab">{{ r.label }}</div>
+    <div class="dpair">
+      <span class="dval{{ ' win' if r.gem_win }}">{{ val(r.gem, r.fmt) }}{% if r.gem_win %} ✦{% endif %}</span>
+      <span class="dtrack gem"><i style="width:{{ '%.1f'|format(r.gem_w) }}%"></i></span>
+      <span class="dtrack oth"><i style="width:{{ '%.1f'|format(r.oth_w) }}%"></i></span>
+      <span class="dval r{{ ' win' if r.oth_win }}">{% if r.oth_win %}✦ {% endif %}{{ val(r.oth, r.fmt) }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<p class="one dim">Bars share a scale per row; ✦ marks the better side. Quality follows the
+{{ '%.1f'|format(win_gap * 10) }}pp band — no star inside it.</p>
+
+<h2>Every metric, both models</h2>
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr>
+    <th>Metric</th>
+    <th class="n gemcol">{{ gemini }}</th>
+    <th class="n othcol">{{ other }}</th>
+    <th class="n">Difference</th>
+  </tr></thead>
+  <tbody>
+  {% for m in metrics %}
+  <tr>
+    <td class="metric">{{ m.label }}{% if m.note %}<small>{{ m.note }}</small>{% endif %}</td>
+    <td class="n">{{ val(m.gem, m.fmt) }}</td>
+    <td class="n">{{ val(m.oth, m.fmt) }}</td>
+    <td class="n delta {% if m.delta is none %}neutral{% elif (m.delta > 0) == m.higher_better %}better{% else %}worse{% endif %}">
+      {%- if m.delta is not none and m.delta > 0 %}+{% endif %}{{ val(m.delta, m.fmt) }}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+<p class="one dim">Difference is <b>{{ gemini }} minus {{ other }}</b>; green is the better
+direction for that row.</p>
+
+<h2>Scenario by scenario</h2>
+<div class="controls">
+  <div class="crow">
+    <span class="clab">Sort by</span>
+    <select id="sort">
+      <option value="gap-desc">Difference (A−B) — high to low</option>
+      <option value="gap-asc">Difference (A−B) — low to high</option>
+      <option value="gem-desc">Gemini rating — high to low</option>
+      <option value="gem-asc">Gemini rating — low to high</option>
+      <option value="oth-desc">{{ other }} — high to low</option>
+      <option value="oth-asc">{{ other }} — low to high</option>
+    </select>
+    <button class="btn" id="expand" type="button">Expand all</button>
+    <button class="btn" id="collapse" type="button">Collapse all</button>
+  </div>
+  <div class="crow">
+    <span class="clab">Industry</span>
+    <button class="chip on" data-ind="all">All<span class="c">{{ n_scenarios }}</span></button>
+    {% for i in industries %}
+    <button class="chip" data-ind="{{ i }}">{{ i }}<span class="c">{{ scenarios|selectattr('industry','equalto',i)|list|length }}</span></button>
+    {% endfor %}
+  </div>
+  <div class="crow">
+    <span class="clab">Result</span>
+    <button class="chip on" data-res="all">All</button>
+    <button class="chip" data-res="gem">Gemini wins<span class="c">{{ gemini_wins }}</span></button>
+    <button class="chip" data-res="oth">{{ other }} wins<span class="c">{{ other_wins }}</span></button>
+    <button class="chip" data-res="tie">No winner<span class="c">{{ n_scenarios - n_win }}</span></button>
+  </div>
+</div>
+
+<div id="cards">
+{% for s in scenarios %}
+<article class="sc" data-ind="{{ s.industry }}"
+  data-res="{% if s.winner_is_gemini %}gem{% elif s.winner %}oth{% else %}tie{% endif %}"
+  data-gem="{{ s.sort_gem if s.sort_gem is not none else '' }}"
+  data-oth="{{ s.sort_oth if s.sort_oth is not none else '' }}"
+  data-gap="{{ s.sort_gap if s.sort_gap is not none else '' }}">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">{{ s.industry }}</span>
+      <h3><code>{{ s.id }}</code>{{ s.title }}</h3>
+      <span class="dim" style="font-size:12.5px">{{ s.passes }} pass{{ '' if s.passes == 1 else 'es' }}</span>
+    </div>
+    <span class="badge {% if s.winner_is_gemini %}gem{% elif s.winner %}oth{% elif s.gap is not none %}tie{% else %}none{% endif %}">
+      {% if s.winner %}{{ s.winner }} wins{% else %}{{ s.verdict }}{% endif %}
+    </span>
+  </div>
+
+  {% if s.scripts %}
+  <details><summary>The script sent to both models{% if s.scripts|length > 1 %} — {{ s.scripts|length }} variants{% endif %}</summary>
+    {% for sc in s.scripts %}
+      {% if sc.label %}<div class="vlab"><code>{{ sc.label }}</code>{% if sc.title %} <span class="dim">{{ sc.title }}</span>{% endif %}</div>{% endif %}
+      <p class="script">{{ sc.text }}</p>
+    {% endfor %}
+  </details>
+  {% endif %}
+
+  <div class="vs">
+    {% for c in s.cols %}
+    <div class="col {{ 'gemini' if c.is_gemini else 'rival' }}{{ ' won' if c.is_winner }}">
+      <div class="cm"><span class="dot"></span>{{ c.model }}
+        {% if c.is_winner %}<span class="tick">winner</span>{% endif %}</div>
+      {% if c.mean_pct is not none %}
+      <div class="cq">{{ '%.1f'|format(c.mean_pct) }}%</div>
+      {% else %}<div class="cq none">no score</div>{% endif %}
+      <div class="cs">{{ c.n_scored }} of {{ c.n_cells }} clips scored{% if c.worst_wer_pct is not none %}
+        · worst word errors {{ '%.1f'|format(c.worst_wer_pct) }}%{% endif %}</div>
+      <div class="gates">
+        {% for g in c.failed %}<span class="g no">{{ g }}</span>
+        {% else %}<span class="g ok">all gates passed</span>{% endfor %}
+      </div>
+      {% if c.clips %}
+      <details><summary>{{ c.clips|length }} clip{{ '' if c.clips|length == 1 else 's' }} — listen</summary>
+        {% for cl in c.clips %}{{ clip(cl) }}{% endfor %}
+      </details>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if s.rows and s.labels %}
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th>{% for l in s.labels %}<th class="n">{{ l }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for r in s.rows %}
+    <tr><td>{{ r.model_id }}</td>
+      {% for v in r.pass_scores %}<td class="n">{% if v is not none %}{{ '%.1f'|format(v * 10) }}%{% else %}—{% endif %}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div></div>
+  {% endif %}
+
+  {% if s.group or s.ttfa or s.throughput %}
+  <div class="xtra">
+    {% if s.group %}
+    <div><span class="xl">Set verdict</span>
+      {% for g in s.group %}
+      <div class="xr"><span class="g {{ 'ok' if g.passed else 'no' }}">{{ 'pass' if g.passed else ('n/a' if not g.measured else 'fail') }}</span>
+        <code>{{ g.model_id }}</code><span class="dim">{{ g.gate }}</span></div>
+      <div class="xd">{{ g.detail }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if s.ttfa %}
+    <div><span class="xl">Time to first audio</span>
+      {% for t in s.ttfa %}
+      <div class="xr"><code>{{ t.model_id }}</code><span class="dim">n={{ t.n }}</span>
+        <b>median {{ t.p50 }} ms</b><span class="dim">95th {{ t.p95 }} · range {{ t.min }}–{{ t.max }}</span></div>
+      {% endfor %}
+      <div class="xd">Streaming latency, not whole-call time.</div>
+    </div>
+    {% endif %}
+    {% if s.throughput %}
+    <div><span class="xl">Throughput</span>
+      {% for t in s.throughput %}
+      <div class="xr"><code>{{ t.model_id }}</code>
+        <span class="dim">{{ t.n }} clips · {{ t.audio_minutes }} min of audio</span>
+        <b>${{ '%.4f'|format(t.cost_per_audio_minute / 1000000) }} per audio minute</b></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if s.gap is not none %}
+  <div class="gapbar">
+    {%- set g = s.gap_pct|abs -%}
+    {%- set fl = (s.floor_pct if s.floor_pct is not none else 0) -%}
+    {%- set door = win_gap * 10 -%}
+    {%- set span = ([g, fl, door]|max) * 1.35 -%}
+    <div class="gbar">
+      {% if s.floor_pct is not none %}<span class="band" style="width:{{ [fl / span * 100, 100]|min }}%"></span>{% endif %}
+      <span class="door" style="left:{{ [door / span * 100, 99.5]|min }}%"></span>
+      <span class="mark{{ ' risk' if s.inside_noise }}" style="left:{{ [g / span * 100, 99.5]|min }}%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at {{ '%.1f'|format(door) }}pp</span>
+      {% if s.floor_pct is not none %}<span>this model's own spread ±{{ '%.1f'|format(fl) }}pp</span>{% endif %}
+      <span>measured gap {{ '%.1f'|format(g) }}pp</span>
+    </div>
+    {% if s.inside_noise %}
+    <div class="gwarn">Gap is smaller than this model's own spread — a re-run can move it.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <p class="sv">{{ s.short }}
+  {% if s.stale %}<span class="dim">{{ s.stale }} earlier run{{ '' if s.stale == 1 else 's' }}
+    on an older version of this scenario excluded.</span>{% endif %}</p>
+</article>
+{% endfor %}
+</div>
+<p class="nomatch" hidden>No scenario matches those filters.</p>
+
+<footer>
+<h2 style="margin-top:0">What this page does and does not claim</h2>
+<ul class="notes">
+  <li><b>All {{ n_clips }} clips are here</b>, encoded to MP3; 24 kHz WAV originals on request.</li>
+  <li><b>A percentage is a rubric score, not an accuracy rate</b> — 95% means 9.5 out of 10.</li>
+  <li><b>Quality is averaged over scored clips only</b>; a gate failure counts against the gate rate.</li>
+  <li><b>Ranked on gates first, quality second</b>, so failing more can never look like scoring higher.</li>
+  <li><b>Transcribed locally by <code>{{ asr }}</code></b>, which shares a vendor with neither model.</li>
+  <li><b>Absent measurements show as “—”</b>, never as zero; three batch runs carry timing but no score.</li>
+  <li><b>The judge is <code>{{ judge }}</code></b>{% if judge_is_google %}, a Google model — blinding hides
+  the label, not the acoustic fingerprint, so the judged criteria carry that exposure{% endif %}
+  {%- if uncalibrated %}, and it has never been checked against human listeners{% endif %}. The measured
+  figures — word errors, timing, cost, gate rate — do not depend on it.</li>
+</ul>
+</footer>
+</div>
+
+<script>
+(function () {
+  var cards = document.getElementById('cards');
+  var all = Array.prototype.slice.call(cards.querySelectorAll('.sc'));
+  var state = { ind: 'all', res: 'all' };
+
+  function num(el, key) {
+    var v = el.getAttribute('data-' + key);
+    return v === '' || v === null ? null : parseFloat(v);
+  }
+  function sortBy(mode) {
+    var parts = mode.split('-'), key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
+    all.slice().sort(function (x, y) {
+      var a = num(x, key), b = num(y, key);
+      // A scenario nobody scored is not a zero - it has no place on this
+      // scale at all, so it sits at the end whichever way the sort runs.
+      if (a === null && b === null) return 0;
+      if (a === null) return 1;
+      if (b === null) return -1;
+      return (a - b) * dir;
+    }).forEach(function (c) { cards.appendChild(c); });
+  }
+  var sortEl = document.getElementById('sort');
+  sortEl.addEventListener('change', function () { sortBy(this.value); });
+  // Apply the selected option on load. The biggest separations lead, which
+  // is the order a reader of a comparison actually wants.
+  sortBy(sortEl.value);
+
+  function applyFilters() {
+    var shown = 0;
+    all.forEach(function (c) {
+      var ok = (state.ind === 'all' || c.dataset.ind === state.ind) &&
+               (state.res === 'all' || c.dataset.res === state.res);
+      c.hidden = !ok;
+      if (ok) shown++;
+    });
+    document.querySelector('.nomatch').hidden = shown > 0;
+  }
+  document.querySelectorAll('.chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var axis = b.dataset.ind !== undefined ? 'ind' : 'res';
+      b.parentElement.querySelectorAll('.chip').forEach(function (x) {
+        x.classList.remove('on');
+      });
+      b.classList.add('on');
+      state[axis] = b.dataset[axis];
+      applyFilters();
+    });
+  });
+
+  function setAll(open) {
+    document.querySelectorAll('details').forEach(function (d) { d.open = open; });
+  }
+  document.getElementById('expand').addEventListener('click', function () { setAll(true); });
+  document.getElementById('collapse').addEventListener('click', function () { setAll(false); });
+
+  // One clip audible at a time. Two models talking over each other is
+  // useless for comparison, which is the point of the page.
+  document.addEventListener('play', function (e) {
+    if (e.target.tagName !== 'AUDIO') return;
+    document.querySelectorAll('audio').forEach(function (a) {
+      if (a !== e.target) a.pause();
+    });
+  }, true);
+})();
+</script>
+</body>
+</html>

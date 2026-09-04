@@ -268,7 +268,7 @@
   <thead><tr>
     <th>Model</th><th class="num">Quality</th><th class="num">Gates passed</th>
     <th class="num">Repeat spread</th><th class="num">Worst WER</th>
-    <th class="num">Cost / clip</th><th class="num">Latency p50</th><th class="num">Invalid</th>
+    <th class="num">Cost / clip</th><th class="num">Latency p50 / p95</th><th class="num">Invalid</th>
   </tr></thead>
   <tbody>
   {% for m in models %}
@@ -283,7 +283,7 @@
         {% else %}<span class="dash">n/a</span>{% endif %}</td>
     <td class="num">{% if m.worst_wer is not none %}{{ '%.4f'|format(m.worst_wer) }}{% else %}<span class="dash">—</span>{% endif %}</td>
     <td class="num">{{ m.mean_cost|usd }}</td>
-    <td class="num">{{ m.p50_latency|s }}</td>
+    <td class="num">{{ m.p50_latency|s }} <span class="dash">/ {{ m.p95_latency|s }}</span></td>
     <td class="num">{{ m.invalid }}</td>
   </tr>
   {% endfor %}

@@ -468,6 +468,23 @@ def cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_client_report(args: argparse.Namespace) -> int:
+    """
+    The shareable single file. Pure arithmetic over stored records - no spend.
+
+    Deliberately NOT folded into `dashboard`: the two surfaces have different
+    audiences and the internal one must stay cheap to regenerate, while this
+    one re-encodes every clip and takes a minute.
+    """
+    from .client_report import render_client_report
+
+    out = render_client_report(Path(args.runs), args.modality, args.audio_quality,
+                               inline=getattr(args, "inline", False))
+    if args.open:
+        subprocess.run(["open", str(out)], check=False)
+    return 0
+
+
 def cmd_dashboard(args: argparse.Namespace) -> int:
     """The cross-run view. Pure arithmetic over stored records - no spend."""
     out = render_dashboard(Path(args.runs), args.modality)
@@ -529,6 +546,9 @@ def cmd_all(args: argparse.Namespace) -> int:
     print("\n" + "=" * 62 + "\n  STEP 4/4  cross-run dashboard\n" + "=" * 62)
     rc = cmd_dashboard(args)
     steps.append(("dashboard", rc))
+    if getattr(args, "client", False):
+        rc = cmd_client_report(args)
+        steps.append(("client-report", rc))
 
     print("\n" + "=" * 62)
     print("  PIPELINE COMPLETE  " + " · ".join(f"{n} ok" for n, c in steps if c == 0))
@@ -639,6 +659,19 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--open", action="store_true")
     d.set_defaults(fn=cmd_dashboard)
 
+    cr = sub.add_parser("client-report",
+                        help="one self-contained .html to share outside the team")
+    cr.add_argument("--open", action="store_true")
+    cr.add_argument("--audio-quality", type=float, default=None, dest="audio_quality",
+                    help="libsndfile MP3 compression level, 0.0 (best, ~95 kbps) to "
+                         "0.8 (~40 kbps). Default is libsndfile's own, about 61 kbps. "
+                         "HIGHER IS SMALLER.")
+    cr.add_argument("--inline", action="store_true",
+                    help="one self-contained .html with every clip embedded (~22 MB, slow "
+                         "to open). Default writes client-report/ with the clips beside "
+                         "the page, which opens instantly.")
+    cr.set_defaults(fn=cmd_client_report)
+
     al = sub.add_parser("all", help="run + judge + report + dashboard, in one command")
     al.add_argument("--budget", type=float, default=5.0, help="hard cap for GENERATION, in USD")
     al.add_argument("--judge-budget", type=float, default=2.0, dest="judge_budget",
@@ -648,6 +681,10 @@ def main(argv: list[str] | None = None) -> int:
     al.add_argument("--timeout", type=float, default=180.0)
     al.add_argument("--run", help="reuse an existing run id (resume)")
     al.add_argument("--label", help="suffix for the generated run id")
+    al.add_argument("--client", action="store_true",
+                    help="also write the shareable client-report.html")
+    al.add_argument("--audio-quality", type=float, default=None, dest="audio_quality",
+                    help="MP3 compression level for --client (higher is smaller)")
     al.add_argument("--repeat", type=int, default=1,
                     help="issue each scenario N times in ONE run (batch throughput)")
     al.add_argument("--yes", action="store_true", help="skip the pre-flight confirmation")
