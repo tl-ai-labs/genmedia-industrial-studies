@@ -62,9 +62,17 @@ video:
 
   - id: omni-flash-vertex
     display: Omni Flash
-    enabled: true                    # enabled 2026-09-03 by user decision (Omni-vs-Seedance
-                                     # scope); ~$0.81 per 8s clip; 20 scenarios ~ $16.
-                                     # Proven: 4s/720p probe clip in 27.8s for $0.41
+    enabled: false                   # PAUSED 2026-09-04 by user request. The whole video
+                                     # lane is on hold after the 2026-09-04 Google review
+                                     # re-scoped it to video edits + ads (see
+                                     # docs/2026-09-04-google-review.md) — the 14-scenario
+                                     # cinematic+physics pilot is out of scope, and the
+                                     # newly in-scope work needs image_to_video/video_edit
+                                     # adapters that do not exist yet. With this off, NO
+                                     # video arm is enabled and no run can bill anything.
+                                     # Was: enabled 2026-09-03 for the Omni-vs-Seedance
+                                     # pilot; ~$0.81 per 8s clip. Proven working: 4s/720p
+                                     # probe clip in 27.8s for $0.41
     adapter: omni_video              # -> runner/video/omni_video.py (Interactions API)
     provider: google-vertex          # Google — Gemini family; same ADC billing as Veo
     provider_model: "gemini-omni-1.1-flash-preview"   # verified 2026-09-03 against this
