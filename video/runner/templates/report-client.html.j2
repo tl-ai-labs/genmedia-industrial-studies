@@ -22,7 +22,7 @@
 
 <div class="wrap">
 <header class="hero" id="summary">
-  <p class="kicker">quality · cost · latency · reliability — four columns, never one number</p>
+  <p class="kicker">quality · latency · reliability — blind-judged, one run per scenario</p>
   <h1>{{ evidence|length }} scenario{{ 's' if evidence|length != 1 }} ·
       {{ agg.tasks.values()|map(attribute='models')|map('length')|max }} models · blind-judged</h1>
   <div class="meta">
@@ -31,23 +31,6 @@
     {% if manifest.git_sha %}<span>runner <b>{{ manifest.git_sha[:10] }}</b></span>{% endif %}
     <span>scenario set <b>{{ manifest.scenario_set_hash[:12] }}</b></span>
     {% if manifest.budget_usd and not CLIENT %}<span>budget <b>${{ manifest.budget_usd }}</b></span>{% endif %}
-  </div>
-  <div class="tiles">
-    <div class="tile"><div class="lab">Generation cost</div>
-      <div class="val">{{ totals.gen_micro|usd }}</div>
-      <div class="sub">billed from returned usage</div></div>
-    <div class="tile"><div class="lab">Judging cost</div>
-      <div class="val">{{ totals.judge_micro|usd }}</div>
-      <div class="sub">kept separate, always</div></div>
-    <div class="tile"><div class="lab">Scenarios completed</div>
-      <div class="val">{{ completion.get('completed', 0) }}/{{ completion.total }}</div>
-      <div class="sub">complete = every required model scored</div></div>
-    {% for task, t in agg.tasks.items() %}{% for mid in model_order if mid in t.models %}
-    {% set m = t.models[mid] %}
-    <div class="tile"><div class="lab">{{ mid|disp }}{% if vendors.get(mid) %} · {{ vendors[mid] }}{% endif %}</div>
-      <div class="val">{{ m.mean|q }}</div>
-      <div class="sub">mean · {{ m.wtl }} W-T-L · judged {{ m.judged_n }}/{{ m.eligible }}</div></div>
-    {% endfor %}{% endfor %}
   </div>
 </header>
 
@@ -59,7 +42,9 @@
                          'hidden_industries': hidden_industries}) }}
 <div id="evidence"></div>
 {{ sec.evidence_section({'evidence': evidence, 'families': families, 'family_models': family_models,
-                         'model_order': model_order, 'industries': industries}, '') }}
+                         'model_order': model_order, 'industries': industries,
+                         'has_videos': has_videos, 'videos_inline': videos_inline,
+                         'videos_transcoded': videos_transcoded}, '') }}
 <div id="footnotes"></div>
 {{ sec.footnotes({'manifest': manifest, 'totals': totals, 'judge_meta': judge_meta,
                   'judge_version': judge_version, 'params_unsupported': params_unsupported,

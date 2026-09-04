@@ -95,6 +95,9 @@ def cmd_report(args) -> int:
     if len(dirs) == 1:
         out = build_report(PROJECT_ROOT, dirs[0], open_browser=args.open,
                            hide_industries=hide)
+        print(f"report: {out}")
+        print(f"client: {out.with_name('report-client.html')}")
+        return 0
     else:
         from datetime import datetime
         out_path = Path(args.out) if args.out else (
@@ -209,7 +212,8 @@ def main(argv=None) -> int:
     p.add_argument("--run", required=True)
     p.set_defaults(fn=cmd_score)
 
-    p = sub.add_parser("report", help="build report.html for a run; pass --run "
+    p = sub.add_parser("report", help="build report.html (internal) and "
+                                      "report-client.html for a run; pass --run "
                                       "twice for a combined tabbed report")
     p.add_argument("--run", required=True, action="append",
                    help="run id (repeat to combine runs into one dashboard)")

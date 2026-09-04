@@ -3,7 +3,7 @@
 <div class="banner"><b>Partial run.</b> The budget cap was hit mid-run; only completed cells
 are shown. Nothing here pretends to be complete.</div>
 {% endif %}
-{% if ctx.estimates %}
+{% if ctx.estimates and not CLIENT %}
 <div class="banner"><b>Some costs are estimates</b> (no usage returned by the API):
 {{ ctx.estimates|join(', ') }}.</div>
 {% endif %}
@@ -17,14 +17,14 @@ are shown. Nothing here pretends to be complete.</div>
     <span class="h a">◆ {{ ctx.duel.a|disp }}{% if ctx.vendors and ctx.vendors.get(ctx.duel.a) %} · {{ ctx.vendors[ctx.duel.a] }}{% endif %}</span>
     <span class="h b">{{ ctx.duel.b|disp }}{% if ctx.vendors and ctx.vendors.get(ctx.duel.b) %} · {{ ctx.vendors[ctx.duel.b] }}{% endif %} ◆</span>
   </div>
-  {% for m in ctx.duel.metrics %}
+  {% for m in ctx.duel.metrics if not (CLIENT and m.internal_only) %}
   <div class="m">
-    <div class="lab">{{ m.label }}</div>
+    <div class="lab">{{ m.client_label if CLIENT else m.label }}</div>
     <div class="pair">
-      <span class="val">{{ m.a }}{% if m.win == 'a' %} ✦{% endif %}</span>
+      <span class="val">{{ (m.a_pct if CLIENT and m.key in ('mean', 'worst') else m.a) }}{% if m.win == 'a' %} ✦{% endif %}</span>
       <span class="track a {{ 'win' if m.win == 'a' }}"><span class="fill" style="width: {{ m.aw }}%"></span></span>
       <span class="track b {{ 'win' if m.win == 'b' }}"><span class="fill" style="width: {{ m.bw }}%"></span></span>
-      <span class="val r">{% if m.win == 'b' %}✦ {% endif %}{{ m.b }}</span>
+      <span class="val r">{% if m.win == 'b' %}✦ {% endif %}{{ (m.b_pct if CLIENT and m.key in ('mean', 'worst') else m.b) }}</span>
     </div>
   </div>
   {% endfor %}
@@ -32,33 +32,48 @@ are shown. Nothing here pretends to be complete.</div>
 {% endif %}
 {% endmacro %}
 
+{# one metric value, rendered in its own unit #}
+{% macro mcell(v, unit) %}{% if v is none %}<span class="dash">—</span>
+{%- elif unit == 'score' %}{{ v|q }}
+{%- elif unit == 'ms' %}{{ v|s }}
+{%- elif unit == 'usd_micro' %}{{ v|usd }}
+{%- elif unit == 'ratio' %}{{ '%.0f%%'|format(v * 100) }}
+{%- else %}{{ v }}{% endif %}{% endmacro %}
+
+{# the Gemini-minus-rival difference, always as a percentage:
+   score rows in percentage points, everything else relative to the rival #}
+{% macro dcell(r) %}{% if r.delta is none %}<span class="dash">—</span>
+{%- elif r.unit == 'score' %}{{ r.delta|qd }}
+{%- elif r.delta_rel is not none %}{{ '%+.0f%%'|format(r.delta_rel) }}
+{%- else %}<span class="dash">—</span>{% endif %}{% endmacro %}
+
 {% macro task_tables(ctx) %}
 {% for task, t in ctx.agg.tasks.items() %}
-<h2>Task: <code>{{ task }}</code></h2>
-<div class="tw"><table>
-<thead><tr>
-  <th>Model</th><th class="num">Quality (mean)</th><th class="num">W–T–L</th>
-  <th class="num">Judged</th><th class="num">Worst</th><th class="num">&lt;5</th>
-  <th class="num">Gen cost/scen</th><th class="num">Judge cost/scen</th>
-  <th class="num">Latency p50 / max</th><th class="num">Success</th><th class="num">Attempts</th>
+{% set cols = [] %}
+{% for mid in (ctx.model_order or t.models.keys()|list|sort) %}
+  {% if mid in t.models %}{% set _ = cols.append(mid) %}{% endif %}
+{% endfor %}
+<h2>{{ task|tasktitle }}{% if not CLIENT %} <span class="tid">{{ task }}</span>{% endif %}</h2>
+<div class="tw"><table class="mx">
+<thead><tr><th>Metric</th>
+{% for mid in cols %}<th class="num{{ ' g' if loop.first }}">{{ mid|disp }}
+  {%- if ctx.vendors and ctx.vendors.get(mid) %}<br><span class="vd">{{ ctx.vendors[mid] }}</span>{% endif %}
+  {%- if t.models[mid].skipped %}<br><span class="pill">n/a ×{{ t.models[mid].skipped }}</span>{% endif %}</th>{% endfor %}
+{% if CLIENT and cols|length == 2 %}<th class="num d">Difference</th>{% endif %}
 </tr></thead>
 <tbody>
-{% for mid, m in t.models.items()|sort %}
-<tr>
-  <td>{{ mid|disp }}{% if m.skipped %} <span class="pill">n/a ×{{ m.skipped }}</span>{% endif %}</td>
-  <td class="num">{% if m.mean is not none %}<b>{{ '%.2f'|format(m.mean) }}</b>{% else %}<span class="dash">—</span>{% endif %}</td>
-  <td class="num">{{ m.wtl }}</td>
-  <td class="num">{{ m.judged_n }}/{{ m.eligible }}</td>
-  <td class="num">{% if m.worst is not none %}{{ '%.1f'|format(m.worst) }}{% else %}<span class="dash">—</span>{% endif %}</td>
-  <td class="num">{{ m.below_5 }}</td>
-  <td class="num">{{ (m.gen_cost_per_scenario_usd * 1000000)|round|int|usd }}{% if m.cost_estimated %} <span class="pill est">est</span>{% endif %}</td>
-  <td class="num">{{ (m.judge_cost_per_scenario_usd * 1000000)|round|int|usd }}</td>
-  <td class="num">{{ m.latency_p50_ms|s }} / {{ m.latency_max_ms|s }}</td>
-  <td class="num">{% if m.success_rate is not none %}{{ '%.0f%%'|format(m.success_rate * 100) }}{% else %}<span class="dash">—</span>{% endif %}</td>
-  <td class="num">{{ m.mean_attempts if m.mean_attempts is not none else '—' }}</td>
+{% for r in t.metric_rows if not (CLIENT and r.internal_only) %}
+<tr data-row="{{ r.key }}" class="mrow{{ ' hi' if r.hi }}">
+  <td>{{ r.label }}{% if r.better %} <span class="pill">{{ 'higher is better' if r.better == 'higher' else 'lower is better' }}</span>{% endif %}</td>
+  {% for c in r.cells %}<td class="num">{{ mcell(c.v, r.unit) }}</td>{% endfor %}
+  {% if CLIENT and cols|length == 2 %}
+  <td class="num d {{ r.delta_class }}"><span class="dv">{{ dcell(r) }}</span></td>{% endif %}
 </tr>
 {% endfor %}
 </tbody></table></div>
+{% if CLIENT and cols|length == 2 %}<p class="tnote">“Difference” is {{ cols[0]|disp }}
+compared with {{ cols[1]|disp }}. Green means {{ cols[0]|disp }} is ahead on that row, red
+means behind. Ratings differ by percentage points; speed is shown as a relative percentage.</p>{% endif %}
 
 {% for p in t.pairs %}{{ verdict_box(p) }}{% endfor %}
 {% endfor %}
@@ -67,10 +82,10 @@ are shown. Nothing here pretends to be complete.</div>
 {% macro verdict_box(p) %}
 <div class="verdict">
   <b>{{ p.a|disp }} vs {{ p.b|disp }}:</b>
-  {% if p.winner %}<b class="win">{{ p.winner|disp }} wins</b> — {{ p.door }}{% if p.sign_test_p is not none %}
+  {% if p.winner %}<b class="win">{{ p.winner|disp }} wins</b> — {{ p.door_client if CLIENT else p.door }}{% if p.sign_test_p is not none and not CLIENT %}
     (sign test p ≈ {{ p.sign_test_p }}){% endif %}.
-  {% else %}{{ p.note }}{% endif %}
-  <div class="sub">means {{ p.mean_a }} vs {{ p.mean_b }} · paired {{ p.wins_a }}–{{ p.ties }}–{{ p.wins_b }}
+  {% else %}{{ p.note_client if CLIENT else p.note }}{% endif %}
+  <div class="sub">means {{ p.mean_a|q }} vs {{ p.mean_b|q }} · paired {{ p.wins_a }}–{{ p.ties }}–{{ p.wins_b }}
   over {{ p.n_common }} common scenario(s), {{ p.decided }} decided
   {% if p.sign_test_p is none and p.decided > 0 %} · sign test not quoted (n &lt; 10 decided){% endif %}</div>
 </div>
@@ -92,13 +107,15 @@ are shown. Nothing here pretends to be complete.</div>
 <tr><td>{{ fam }}</td><td class="num">{{ f.n }}</td>
 {% for mid in ctx.family_models %}
   {% set m = f.models.get(mid) %}
-  <td class="num">{% if m %}{{ '%.2f'|format(m.mean) }} · {{ m.wins }}W{% else %}<span class="dash">—</span>{% endif %}</td>
+  <td class="num">{% if m %}{{ m.mean|q }} · {{ m.wins }}W{% else %}<span class="dash">—</span>{% endif %}</td>
 {% endfor %}
 </tr>
 {% endfor %}
 </tbody></table></div>
 <p style="font-size:12.5px;color:var(--muted)">“Wins” = scenarios where the model beat every
-other by more than the 0.5 tie band.</p>
+other by more than {{ TIE_BAND_PP }}% ({{ TIE_BAND_FRAC }} of the rubric scale{% if not CLIENT %},
+{{ TIE_BAND }} of the 10 points{% endif %}) — the same threshold as the W–T–L column and the
+filter chips.</p>
 {% endif %}
 {% endmacro %}
 
@@ -114,7 +131,7 @@ other by more than the 0.5 tie band.</p>
 <tr><td>{{ ind }}</td><td class="num">{{ f.n }}</td>
 {% for mid in ctx.family_models %}
   {% set m = f.models.get(mid) %}
-  <td class="num">{% if m %}{{ '%.2f'|format(m.mean) }} · {{ m.wins }}W{% else %}<span class="dash">—</span>{% endif %}</td>
+  <td class="num">{% if m %}{{ m.mean|q }} · {{ m.wins }}W{% else %}<span class="dash">—</span>{% endif %}</td>
 {% endfor %}
 </tr>
 {% endfor %}
@@ -147,6 +164,20 @@ their next industry from the mapping.{% endif %}{% if ctx.merged_note %}
   {% for ind in ctx.industries.keys()|sort %}<span class="chip" data-dim="ind" data-val="{{ ind }}">{{ ind }} <span class="n">({{ ctx.industries[ind].n }})</span></span>{% endfor %}
   {% endif %}
   <span style="flex:1"></span>
+  {% set ord = ctx.model_order or ctx.family_models or [] %}
+  {% if ord|length >= 2 %}
+  <label class="srt">Sort by
+    <select data-sort aria-label="Sort scenarios">
+      <option value="id">Scenario ID</option>
+      <option value="g-desc">{{ ord[0]|disp }} rating — high to low</option>
+      <option value="g-asc">{{ ord[0]|disp }} rating — low to high</option>
+      <option value="c-desc">{{ ord[1]|disp }} rating — high to low</option>
+      <option value="c-asc">{{ ord[1]|disp }} rating — low to high</option>
+      <option value="d-desc">Gap, {{ ord[0]|disp }} − {{ ord[1]|disp }} — high to low</option>
+      <option value="d-asc">Gap, {{ ord[0]|disp }} − {{ ord[1]|disp }} — low to high</option>
+    </select>
+  </label>
+  {% endif %}
   <button class="ctl" data-act="expand" type="button">Expand all</button>
   <button class="ctl" data-act="collapse" type="button">Collapse all</button>
 </div>
@@ -166,20 +197,30 @@ their next industry from the mapping.{% endif %}{% if ctx.merged_note %}
 </div>
 {% endif %}
 <p style="font-size:12.5px;color:var(--muted)">Click a scenario to expand; click an image to
-zoom, then flip between models (and the original, for edits) with ←/→.</p>
+zoom, then flip between models (and the original, for edits) with ←/→.
+A scenario counts as won only when the gap is more than
+{{ TIE_BAND_PP }}% — a difference of {{ TIE_BAND_FRAC }} of the rubric scale{% if not CLIENT %},
+i.e. {{ TIE_BAND }} of the 10 points{% endif %}. Anything closer is recorded as a tie, and every
+win count on this page uses that same threshold.</p>
 
+{# the list is wrapped so the sort control can reorder nodes without pushing
+   scenarios past the footnotes that follow them #}
+<div class="scnlist">
 {% for s in ctx.evidence %}
 <details class="scn rev" id="{{ uid }}scn-{{ s.id }}" data-fam="{{ s.family }}"
          data-ind="{{ s.industry }}" data-win="{{ s.winner or 'tie' }}"
-         data-task="{{ s.task }}"{% if loop.first %} open{% endif %}>
+         data-task="{{ s.task }}" data-i="{{ loop.index0 }}"
+         data-g="{{ s.g_score if s.g_score is not none }}"
+         data-c="{{ s.c_score if s.c_score is not none }}"
+         data-d="{{ s.gap if s.gap is not none }}"{% if loop.first %} open{% endif %}>
   <summary>
     <span class="sid">{{ s.id }}</span>
     <span class="stitle">{{ s.title }}</span>
     {% if s.industry %}<span class="pill" title="also relevant to: {{ s.industry_also|join(', ') or '—' }}">{{ s.industry }}</span>{% endif %}
-    {% if s.winner %}<span class="pill ok">winner: {{ s.winner|disp }} (+{{ s.margin }})</span>
-    {% elif s.margin is not none %}<span class="pill">tie · Δ {{ s.margin }}</span>{% endif %}
+    {% if s.winner %}<span class="pill ok">winner: {{ s.winner|disp }} ({{ s.margin|qd }})</span>
+    {% elif s.margin is not none %}<span class="pill" title="inside the {{ TIE_BAND_PP }}% tie band ({{ TIE_BAND_FRAC }} of the scale)">tie · Δ {{ s.margin|qd }}</span>{% endif %}
     <span class="scores">
-      {% for c in s.cards %}{% if c.score is not none %}{{ '%.1f'|format(c.score) }}{% if not loop.last %} · {% endif %}{% endif %}{% endfor %}
+      {% for c in s.cards %}{% if c.score is not none %}<b class="sc{{ ' win' if s.winner == c.model_id }}" title="{{ c.model_id|disp }}">{{ c.score|q(true) }}</b>{% if not loop.last %} <span class="vs">vs</span> {% endif %}{% endif %}{% endfor %}
     </span>
     <span class="thumbs">
       {% for src in s.sources %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% endif %}{% endfor %}
@@ -216,13 +257,14 @@ zoom, then flip between models (and the original, for edits) with ←/→.</p>
                data-sid="{{ s.id }}" data-mid="{{ c.model_id|disp }}"
                data-cap="{{ s.id }} · {{ c.model_id|disp }}">{% endif %}
           {% if c.score is not none %}
-            <span class="badge {{ 'win' if s.winner == c.model_id }}">{{ '%.1f'|format(c.score) }}</span>
+            <span class="badge {{ 'win' if s.winner == c.model_id }}">{{ c.score|q(true) }}</span>
           {% elif c.state == 'skipped' %}<span class="badge">n/a</span>
           {% else %}<span class="badge bad">{{ c.status }}</span>{% endif %}
         </div>
         <figcaption>
           <span class="who">{{ c.model_id|disp }}</span>
-          <span class="subcap">{% if c.blind_label %}blind {{ c.blind_label }}{% endif %}{% if c.gen_cost_micro is not none %} · {{ c.gen_cost_micro|usd }}{% if c.cost_estimated %} est{% endif %}{% endif %}{% if c.latency_ms is not none %} · {{ c.latency_ms|s }}{% endif %}</span>
+          <span class="subcap">{% if c.blind_label and not CLIENT %}blind {{ c.blind_label }}{% endif %}{% if c.gen_cost_micro is not none and not CLIENT %} · {{ c.gen_cost_micro|usd }}{% if c.cost_estimated %} est{% endif %}{% endif %}</span>
+          {% if c.latency_ms is not none %}<span class="lat" title="time to generate this clip">{{ c.latency_ms|s }}</span>{% endif %}
         </figcaption>
       </figure>
       {% endfor %}
@@ -232,6 +274,10 @@ zoom, then flip between models (and the original, for edits) with ←/→.</p>
     {% if ctx.has_videos and not ctx.videos_inline %}<p style="font-size:12px;color:var(--faint);margin:2px 4px 0">
     Clips are referenced by path to keep this file small — open report.html from inside the
     run folder to play them (the mp4s live under outputs/video/).</p>{% endif %}
+    {% if ctx.videos_transcoded %}<p style="font-size:12px;color:var(--faint);margin:2px 4px 0">
+    Clips play from inside this file so it can be shared on its own. They are re-encoded
+    previews at the original resolution, frame rate and duration — smaller files, slightly
+    softer detail. The untouched originals stay in the run folder.</p>{% endif %}
 
     <div class="dgrid">
     {% for c in s.cards %}
@@ -257,10 +303,10 @@ zoom, then flip between models (and the original, for edits) with ←/→.</p>
               <span class="nm" title="{{ cs.source }}{% if c.weights and c.weights[name] is defined %} · weight {{ '%.2f'|format(c.weights[name]) }}{% endif %}">{{ name }}</span>
               <span class="track"><span class="bar {{ 'lo' if cs.score < 5 else ('md' if cs.score < 7.5 else '') }}"
                     style="width: {{ (cs.score * 10)|round(1) }}%"></span></span>
-              <span class="v">{{ '%.1f'|format(cs.score) }}</span>
+              <span class="v">{{ cs.score|q(true) }}</span>
             </div>
           {% endfor %}
-          {% if c.unmeasured %}<div class="r"><span class="pill est">unmeasured: {{ c.unmeasured|join(', ') }}</span> weight redistributed</div>{% endif %}
+          {% if c.unmeasured and not CLIENT %}<div class="r"><span class="pill est">unmeasured: {{ c.unmeasured|join(', ') }}</span> weight redistributed</div>{% endif %}
         </div>
         <details class="disc"><summary>Judge reasoning — why these scores</summary>
           <div class="inner crit" style="border-top:0">
@@ -276,6 +322,7 @@ zoom, then flip between models (and the original, for edits) with ←/→.</p>
           </div>
         </details>
         {% endif %}
+        {% if not CLIENT %}
         <details class="disc"><summary>Checks &amp; provenance</summary>
           <div class="inner">
           {% for g in c.gates or [] %}<span class="pill {{ 'ok' if g.passed else 'bad' }}">{{ g.gate }}{% if g.detail %} · {{ g.detail }}{% endif %}</span>{% endfor %}
@@ -284,23 +331,30 @@ zoom, then flip between models (and the original, for edits) with ←/→.</p>
             in this run folder's JSONL files</div>{% endif %}
           </div>
         </details>
+        {% endif %}
       </div>
     {% endfor %}
     </div>
   </div>
 </details>
 {% endfor %}
+</div>
 {% endmacro %}
 
 {% macro footnotes(ctx) %}
 <div class="foot">
   <b>Footnotes — what was assumed ({{ ctx.manifest.run_id }}).</b><br>
-  Totals: generation {{ ctx.totals.gen_micro|usd }} · judging {{ ctx.totals.judge_micro|usd }}
-  (kept separate; add them yourself if you must).<br>
+  {% if not CLIENT %}Totals: generation {{ ctx.totals.gen_micro|usd }} · judging {{ ctx.totals.judge_micro|usd }}
+  (kept separate; add them yourself if you must).<br>{% endif %}
+  {% if CLIENT %}Ratings are a percentage of the 10-point rubric — 100% is a perfect score
+  on every weighted criterion. Latency is wall-clock time to generate one output, and cost is
+  the provider's own billed generation cost for one clip at the settings used here — list
+  price at the time of the run, exclusive of tax.<br>{% endif %}
   {% if ctx.vendor_lines %}Models: {{ ctx.vendor_lines|join(' · ') }}.<br>{% endif %}
   {% if ctx.judge_meta %}Judge: {{ ctx.judge_meta.provider_model }}
-  (temperature {{ ctx.judge_meta.temperature }}{% if ctx.judge_version %}, version {{ ctx.judge_version }}{% endif %})
+  (temperature {{ ctx.judge_meta.temperature }}{% if ctx.judge_version and not CLIENT %}, version {{ ctx.judge_version }}{% endif %})
   — same judge, same rubric, blind shuffled labels for every output.<br>{% endif %}
+  {% if not CLIENT %}
   Rubric hashes: {% for task, h in ctx.manifest.rubric_hashes.items() %}{{ task }}={{ h[:12] }} {% endfor %}<br>
   {% if ctx.params_unsupported %}Parameters not honoured:
   {{ ctx.params_unsupported|join(' · ') }}.<br>{% endif %}
@@ -311,5 +365,10 @@ zoom, then flip between models (and the original, for edits) with ←/→.</p>
   Effective per-scenario weights (incl. redistributed ones) are in manifest.json; every
   number traces to a JSONL row in the run folder. Outputs are immutable — a correction is
   a new run.
+  {% else %}
+  Every output was generated once, scored blind by the same judge against the same rubric,
+  and is shown above exactly as the model returned it. Outputs are immutable — a correction
+  is a new run.
+  {% endif %}
 </div>
 {% endmacro %}

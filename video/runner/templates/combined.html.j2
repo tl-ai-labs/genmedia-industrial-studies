@@ -43,7 +43,7 @@
       <th>Verdict</th><th>How decided</th></tr></thead>
     <tbody>
     {% for r in overview.rows %}
-    <tr><td><code>{{ r.task }}</code></td><td class="num">{{ r.n }}</td>
+    <tr><td>{{ r.task|tasktitle }}</td><td class="num">{{ r.n }}</td>
       <td class="num">{{ r.completed }}/{{ r.n }}</td>
       <td style="font-family:var(--mono);font-size:12px">{{ r.models|join('<br>')|safe }}</td>
       <td><b>{{ r.verdict }}</b></td><td style="font-size:13px">{{ r.detail }}</td></tr>

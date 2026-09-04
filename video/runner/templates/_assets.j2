@@ -5,6 +5,10 @@
   --paper:#f6f8f8; --card:#ffffff; --ink:#171d20; --muted:#5a686d; --faint:#8a979c;
   --rule:#e1e8e8; --accent:#0c7d6a; --accent-soft:#e3f2ee; --accent-ink:#0a5f51;
   --warn:#96590f; --warn-soft:#fbf0dd; --bad:#b3352a; --bad-soft:#f9e9e7;
+  /* the rival arm's colour. Deliberately NOT --warn: amber is this report's
+     warning ink, and once the b-slot is always the competitor, amber would
+     read as a thumb on the scale in a document whose value is impartiality. */
+  --rival:#4a5b8c;
   --shadow:0 1px 2px rgba(20,30,30,.05),0 4px 16px rgba(20,30,30,.06);
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -14,6 +18,7 @@
     --paper:#101617; --card:#171f21; --ink:#e5ecec; --muted:#9fb0b3; --faint:#6f8085;
     --rule:#263235; --accent:#43c0a8; --accent-soft:#12312b; --accent-ink:#67d6c0;
     --warn:#dfa856; --warn-soft:#2c2214; --bad:#e58d82; --bad-soft:#301d1a;
+    --rival:#93a4d6;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 18px rgba(0,0,0,.25);
   }
 }
@@ -74,7 +79,7 @@ h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin
 .duel .heads{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}
 .duel .heads .h{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.02em}
 .duel .heads .h.a{color:var(--accent-ink)}
-.duel .heads .h.b{color:var(--warn)}
+.duel .heads .h.b{color:var(--rival)}
 .duel .dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
 .duel .m{margin:12px 0}
@@ -86,7 +91,7 @@ h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin
 .duel .track{height:8px;border-radius:5px;background:var(--rule);overflow:hidden;position:relative}
 .duel .track .fill{position:absolute;top:0;bottom:0;border-radius:5px}
 .duel .track.a .fill{right:0;background:var(--accent);opacity:.35}
-.duel .track.b .fill{left:0;background:var(--warn);opacity:.35}
+.duel .track.b .fill{left:0;background:var(--rival);opacity:.35}
 .duel .track.win .fill{opacity:1}
 /* bars are statically filled; the grow-in is a JS-gated enhancement so any
    viewer without scripts or attribute-selector support still shows values */
@@ -119,6 +124,12 @@ h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin
 .ctl{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--rule);
   background:var(--card);color:var(--muted);cursor:pointer;transition:border-color .15s}
 .ctl:hover{border-color:var(--accent);color:var(--accent-ink)}
+.srt{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.srt select{font-family:var(--sans);font-size:12px;padding:5px 10px;border-radius:20px;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink);cursor:pointer;
+  transition:border-color .15s}
+.srt select:hover{border-color:var(--accent)}
+.scnlist{display:block}
 
 h2{font-size:20px;margin:46px 0 12px;letter-spacing:-.015em;scroll-margin-top:70px}
 .tw{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:var(--card);
@@ -131,6 +142,20 @@ tr:last-child td{border-bottom:0}
 td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;
   font-variant-numeric:tabular-nums;white-space:nowrap}
 .dash{color:var(--faint)}
+/* metrics-as-rows comparison table: read DOWN a model's column */
+table.mx td:first-child{font-weight:600}
+table.mx th.g{color:var(--accent-ink)}
+table.mx .vd{font-family:var(--sans);font-size:9.5px;font-weight:400;
+  text-transform:none;letter-spacing:0;color:var(--faint)}
+table.mx .mrow.hi td{background:color-mix(in srgb,var(--accent-soft) 45%,transparent)}
+table.mx td.d{border-left:1px solid var(--rule)}
+table.mx td.d .dv{font-weight:700}
+table.mx td.d.up .dv{color:var(--accent-ink)}
+table.mx td.d.down .dv{color:var(--bad)}
+.tnote{font-size:12.5px;color:var(--muted);margin:8px 2px 0}
+/* the raw task key, kept beside the heading in the internal report only */
+h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint);
+  letter-spacing:0;vertical-align:middle;margin-left:8px}
 
 .pill{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.04em;
   padding:2px 8px;border-radius:20px;background:color-mix(in srgb,var(--paper) 70%,var(--card));
@@ -170,7 +195,20 @@ details.scn>summary::-webkit-details-marker{display:none}
 .scn .thumbs img{width:52px;height:52px;object-fit:cover;border-radius:8px;
   border:1px solid var(--rule)}
 .scn .thumbs img.srcth{border:2px solid var(--accent)}
-.scn .scores{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+/* per-scenario run scores: the left number is always the Gemini arm */
+.scn .scores{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;
+  display:inline-flex;align-items:baseline;gap:5px}
+.scn .scores .sc{font-size:14px;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.scn .scores .sc:first-child{color:var(--accent-ink)}
+.scn .scores .sc.win{color:var(--accent-ink)}
+.scn .scores .vs{font-size:10px;letter-spacing:.06em;color:var(--faint);
+  text-transform:uppercase}
+/* generation time, called out rather than buried in the caption. Neutral by
+   design: it is a fact, not a verdict — the table's delta column says who is
+   faster, and a green chip on the slower model would quietly imply otherwise. */
+.shot .lat{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink);
+  background:var(--rule);border-radius:20px;padding:2px 8px;white-space:nowrap}
 .scn .chev{width:22px;height:22px;flex:none;color:var(--faint);transition:transform .25s ease}
 details[open].scn .chev{transform:rotate(180deg)}
 .scn .body{padding:4px 18px 20px;border-top:1px dashed var(--rule)}
@@ -381,6 +419,47 @@ a{color:var(--accent-ink)}
       });
     }
   });
+
+  // Sort by: reorders the scenario nodes. Filtering only toggles
+  // display, so the two compose — neither reads the other's state.
+  function applySort(sel) {
+    var scope = sel.closest('.runpanel') || document;
+    var list = scope.querySelector('.scnlist');
+    if (!list) return;
+    var parts = String(sel.value).split('-');
+    var key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
+    var items = Array.prototype.slice.call(list.children).filter(function (n) {
+      return n.classList && n.classList.contains('scn');
+    });
+    items.sort(function (x, y) {
+      var xi = +x.dataset.i, yi = +y.dataset.i;
+      if (key === 'id') return xi - yi;
+      var a = parseFloat(x.dataset[key]), b = parseFloat(y.dataset[key]);
+      var an = isNaN(a), bn = isNaN(b);
+      if (an && bn) return xi - yi;        // unscored keep their id order …
+      if (an) return 1;                    // … and always sink to the bottom
+      if (bn) return -1;
+      if (a === b) return xi - yi;         // stable: equal scores never shuffle
+      return (a < b ? -1 : 1) * dir;
+    });
+    items.forEach(function (d) { list.appendChild(d); });
+    // keep the gallery strip in step with the list it indexes
+    var gal = scope.querySelector('.gallery');
+    if (gal) {
+      var pos = {};
+      items.forEach(function (d, i) { pos[d.id] = i; });
+      Array.prototype.slice.call(gal.querySelectorAll('.g')).sort(function (x, y) {
+        var px = pos[x.dataset.target], py = pos[y.dataset.target];
+        return (px === undefined ? 1e9 : px) - (py === undefined ? 1e9 : py);
+      }).forEach(function (g) { gal.appendChild(g); });
+    }
+  }
+
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest && e.target.closest('[data-sort]');
+    if (sel) applySort(sel);
+  });
+
   document.addEventListener('keydown', function (e) {
     if (!lb.classList.contains('show')) return;
     if (e.key === 'Escape') lb.classList.remove('show');
