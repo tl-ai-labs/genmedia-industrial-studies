@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any
 
 from .cost import fmt_usd
-from .telemetry import RunPaths, incomplete_scenarios
+from .telemetry import RunPaths, artefact_url, incomplete_scenarios
 
 # Per-model accent, assigned in load order. Used ONLY inside spread bars and
 # the model legend, where the colour identifies a model. Never on card chrome.
@@ -71,6 +71,8 @@ class Cell:
     # sha256 of the scenario INPUT as this run froze it. Two cells are
     # repeats of each other only if this matches - see rollup_models().
     scenario_hash: str = ""
+    # First-chunk time when the call was streamed. Never latency_ms.
+    ttfa_ms: int | None = None
     # What the Evidence tab needs to show the clip beside what it produced.
     gates: list[dict[str, Any]] = field(default_factory=list)
     transcript: str | None = None
@@ -194,6 +196,7 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
                     asr_micro=asr_cost.get(key, 0),
                     judge_micro=int((jrec.get("cost") or {}).get("micro_usd", 0)),
                     scenario_hash=scen_hash.get(sid, ""),
+                    ttfa_ms=(grow.get("output") or {}).get("ttfa_ms"),
                     gates=gates,
                     transcript=crec.get("transcript_raw"),
                     audio_q=meas.get("audio_quality_1_5"),
@@ -206,7 +209,11 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
                     blind_label=jrec.get("blind_label"),
                     calibration_trusted=bool(srec.get("calibration_trusted", True)),
                     criterion_scores=srec.get("criterion_scores", {}),
-                    audio_rel=f"{run.run_id}/outputs/{run.modality}/{sid}/{mid}.{ext}",
+                    # URL, not a path: a variant scenario's directory carries
+                    # a `#`, which a browser reads as a fragment. See
+                    # telemetry.artefact_url.
+                    audio_rel=artefact_url(
+                        f"{run.run_id}/outputs/{run.modality}/{sid}/{mid}.{ext}"),
                 )
             )
         out.append(run)
@@ -479,6 +486,11 @@ INDUSTRY = {
 }
 
 
+def _parent_id(scenario_id: str) -> str:
+    """`vr-game-04#scout` and `vr-ecom-07#r17` both belong to one scenario."""
+    return scenario_id.split("#", 1)[0]
+
+
 def _industry(scenario_id: str) -> str:
     for prefix, name in INDUSTRY.items():
         if scenario_id.startswith(prefix):
@@ -486,16 +498,23 @@ def _industry(scenario_id: str) -> str:
     return "Other"
 
 
-def _frozen_script(runs: list[RunSummary], sid: str) -> str:
+def _frozen_scripts(runs: list[RunSummary], sid: str) -> list[dict[str, str]]:
     """
     The exact words sent to every model, read from the run's OWN frozen copy
     rather than from the working tree - the board must show what was actually
     spoken, not what the file says today.
+
+    RETURNS A LIST because a scenario with `variants:` sends a DIFFERENT script
+    per variant, and the card is one card per parent scenario. Reading only
+    `input.script` there found nothing and rendered an empty prompt box: six
+    of the bank's scenarios are written that way, and vr-ecom-06 asks its whole
+    question through the difference between its two scripts - a bare readback
+    against a NATO-clarified one. Showing neither hid what the comparison was.
     """
     import yaml
 
     for r in reversed(runs):
-        if not any(c.scenario_id == sid for c in r.cells):
+        if not any(_parent_id(c.scenario_id) == sid for c in r.cells):
             continue
         d = Path(r.runs_root) / r.run_id / "scenarios"
         for f in sorted(d.glob("*.yaml")) if d.exists() else []:
@@ -503,9 +522,17 @@ def _frozen_script(runs: list[RunSummary], sid: str) -> str:
                 doc = yaml.safe_load(f.read_text(encoding="utf-8")) or {}
             except Exception:  # noqa: BLE001 - a bad file is not a board failure
                 continue
-            if doc.get("id") == sid:
-                return str((doc.get("input") or {}).get("script") or "").strip()
-    return ""
+            if doc.get("id") != sid:
+                continue
+            variants = doc.get("variants") or []
+            if variants:
+                return [{"label": str(v.get("id") or ""),
+                         "title": str(v.get("title") or ""),
+                         "text": str(v.get("script") or "").strip()}
+                        for v in variants if str(v.get("script") or "").strip()]
+            text = str((doc.get("input") or {}).get("script") or "").strip()
+            return [{"label": "", "title": "", "text": text}] if text else []
+    return []
 
 
 def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
@@ -520,16 +547,22 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
     here divides by.
     """
     out: list[dict[str, Any]] = []
-    sids = sorted({c.scenario_id for r in runs for c in r.cells})
+    # ONE CARD PER PARENT SCENARIO. Variants and repeats are how a scenario is
+    # MEASURED, not separate scenarios: a thirty-clip throughput batch rendered
+    # as thirty cards saying "No score", and a six-voice cast as six cards none
+    # of which carried the distinctness verdict that is the whole point. The
+    # workbook has one scenario; the board shows one card.
+    sids = sorted({_parent_id(c.scenario_id) for r in runs for c in r.cells})
     for sid in sids:
         # SCORED means scored. A gated cell carries 0.0, and letting it in
         # here made vr-ads-06 read "+9.650, larger than noise" - one model's
         # real score minus the other's failure. Same rule as rollup_models.
         def _scored(c, _sid=sid):
-            return c.scenario_id == _sid and c.score is not None and c.status != "invalid"
+            return (_parent_id(c.scenario_id) == _sid
+                    and c.score is not None and c.status != "invalid")
 
         def _here(c, _sid=sid):
-            return c.scenario_id == _sid
+            return _parent_id(c.scenario_id) == _sid
 
         # PASSES counts how often the scenario was RUN, not how often it
         # scored. A scenario run twice that was gated both times is not
@@ -549,11 +582,18 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
         # different runs here. Keyed on the label they collapsed into one
         # entry and the same score rendered in two columns, which looked like
         # a model reproducing itself perfectly when it had been asked once.
-        by_model: dict[str, dict[str, float]] = {}
+        # A model may answer a scenario several times in ONE run - six NPC
+        # variants, thirty batch repeats. Its score for that run is the mean
+        # over them; keeping only the last silently threw away 29 of 30.
+        gathered: dict[str, dict[str, list[float]]] = {}
         for r in sruns:
             for c in r.cells:
                 if _scored(c):
-                    by_model.setdefault(c.model_id, {})[r.run_id] = c.score
+                    gathered.setdefault(c.model_id, {}).setdefault(r.run_id, []).append(c.score)
+        by_model: dict[str, dict[str, float]] = {
+            mid: {rid: sum(v) / len(v) for rid, v in per.items()}
+            for mid, per in gathered.items()
+        }
 
         keys = [r.run_id for r in sruns]
         short = [(r.started_at or r.run_id)[5:16].replace("T", " ") for r in sruns]
@@ -574,7 +614,8 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
         if not by_model:
             verdict = "No score"
             detail = (f"Ran {len(keys)} time{'' if len(keys) == 1 else 's'}; every cell failed "
-                      f"its gates, so there is nothing to compare. The failures are in Evidence.")
+                      f"its gates, so there is nothing to compare. The failed clips and the "
+                      f"gates they missed are in the two columns above.")
         else:
             verdict, detail = "Not measured", "No scored cell on this scenario yet."
         ids = sorted(by_model)
@@ -646,11 +687,23 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
                           f"{n.get(cand, 0)} of {len(keys)} passes against {rival}'s "
                           f"{n.get(rival, 0)}. Better on quality, worse on delivery - not a win.")
 
-        # Side by side: one column per model, whatever state it reached.
+        # Side by side: one column per model, whatever state it reached, with
+        # THE CLIPS THEMSELVES underneath it.
+        #
+        # MATCHED ON THE PARENT, not on the raw id. `c.scenario_id == sid` was
+        # correct while a card was one scenario id, and silently wrong the day
+        # a card became one PARENT: every variant and batch cell is named
+        # `parent#variant`, so this matched nothing and six cards rendered the
+        # verdict with an empty space where the two columns belong. That is
+        # the blank the board was showing under vr-ecom-06.
+        #
+        # The clips used to live in an Evidence tab of their own, which meant
+        # hearing what a verdict was about took a tab switch and a hunt for
+        # the same id. They belong in the two columns the verdict compares.
         side = []
-        for mid in sorted({c.model_id for r in sruns for c in r.cells if c.scenario_id == sid}):
+        for mid in sorted({c.model_id for r in sruns for c in r.cells if _here(c)}):
             cells = [c for r in sruns for c in r.cells
-                     if c.scenario_id == sid and c.model_id == mid]
+                     if _here(c) and c.model_id == mid]
             scored = [c.score for c in cells if c.score is not None and c.status != "invalid"]
             failed: list[str] = []
             for c in cells:
@@ -658,6 +711,9 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
                     if not g.get("passed") and g.get("gate") not in failed:
                         failed.append(g.get("gate"))
             wers = [c.wer for c in cells if c.wer is not None]
+            rep = _median_cell(cells) if cells else None
+            clips = [_clip(c, lead=(c is rep)) for c in
+                     sorted(cells, key=lambda c: (c is not rep, c.scenario_id, c.run_id))]
             side.append({
                 "model_id": mid,
                 "accent": (accents or {}).get(mid, "var(--accent)"),
@@ -666,21 +722,75 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
                 "failed": failed,
                 "worst_wer": max(wers) if wers else None,
                 "is_winner": mid == winner,
-                "audio": [c.audio_rel for c in cells if c.audio_rel][:2],
+                "clips": clips,
+                "n_more": max(len(clips) - 1, 0),
             })
 
-        out.append({"id": sid, "n_passes": len(keys), "labels": short, "rows": rows,
+        # ---- the three measurements the card could not previously show ----
+        here = [c for r in sruns for c in r.cells if _here(c)]
+
+        # Group verdicts live in their own stream, because a per-clip gate
+        # belongs to its clip and a set verdict belongs to the set.
+        group: list[dict[str, Any]] = []
+        for r in sruns:
+            f = Path(r.runs_root) / r.run_id / "group_checks.jsonl"
+            if not f.exists():
+                continue
+            for line in f.read_text(encoding="utf-8").splitlines():
+                try:
+                    rec = json.loads(line)
+                except Exception:  # noqa: BLE001
+                    continue
+                if rec.get("group_id") == sid:
+                    group.append({"model_id": rec["model_id"], "gate": rec.get("gate"),
+                                  "passed": rec.get("passed"), "measured": rec.get("measured"),
+                                  "detail": rec.get("detail", "")})
+
+        # TTFA, reported as percentiles because one sample is worthless: the
+        # same model returned 775 ms and 2616 ms on the same line.
+        ttfa: list[dict[str, Any]] = []
+        for mid in sorted({c.model_id for c in here if c.ttfa_ms is not None}):
+            v = sorted(c.ttfa_ms for c in here if c.model_id == mid and c.ttfa_ms is not None)
+            def _p(pc, _v=v):
+                k = (len(_v) - 1) * pc / 100
+                lo = int(k)
+                return _v[lo] + (_v[min(lo + 1, len(_v) - 1)] - _v[lo]) * (k - lo)
+            ttfa.append({"model_id": mid, "n": len(v), "p50": round(_p(50)),
+                         "p95": round(_p(95)), "min": v[0], "max": v[-1]})
+
+        # Throughput, for the batch scenarios. Nothing new measured, divided.
+        # BATCHES ONLY. A rate divided out of two clips is not throughput, it
+        # is one clip's cost with a minute sign on it - and putting it on
+        # every card invites exactly the over-reading the n_clips denominator
+        # exists to prevent. Eight per model is the floor for showing it.
+        thru: list[dict[str, Any]] = []
+        for mid in sorted({c.model_id for c in here}):
+            mine = [c for c in here if c.model_id == mid]
+            secs = sum(c.duration_s or 0 for c in mine)
+            cost = sum(c.total_micro for c in mine)
+            if len(mine) >= 8 and secs > 0:
+                thru.append({"model_id": mid, "n": len(mine),
+                             "audio_minutes": round(secs / 60.0, 2),
+                             "cost_per_audio_minute": round(cost / (secs / 60.0))})
+
+        out.append({"group": group, "ttfa": ttfa, "throughput": thru,
+                    "id": sid, "n_passes": len(keys), "labels": short, "rows": rows,
                     "gaps": gaps, "gap": gap, "floor": floor, "verdict": verdict,
                     "detail": detail, "stale": stale,
-                    "industry": _industry(sid), "script": _frozen_script(runs, sid),
+                    "industry": _industry(sid), "scripts": _frozen_scripts(runs, sid),
                     "winner": winner, "side": side})
     return out
 
 
 def _clip(c: Cell, lead: bool = False) -> dict[str, Any]:
+    # `variant` is what distinguishes two clips of one scenario from each
+    # other - "bare" against "nato", "scout" against "trader". Without it a
+    # column of six reads as six unlabelled takes of the same thing.
+    parts = c.scenario_id.split("#", 1)
     return {"model_id": c.model_id, "run_label": c.run_label, "score": c.score,
             "status": c.status, "wer": c.wer, "duration_s": c.duration_s,
             "audio_rel": c.audio_rel, "transcript": c.transcript,
+            "variant": parts[1] if len(parts) > 1 else "",
             "gates": c.gates, "lead": lead}
 
 
@@ -695,31 +805,6 @@ def _median_cell(cells: list[Cell]) -> Cell:
     """
     ranked = sorted(cells, key=lambda c: (c.score is None, c.score or 0.0))
     return ranked[len(ranked) // 2]
-
-
-def _evidence(runs: list[RunSummary]) -> list[dict[str, Any]]:
-    """
-    Grouped by scenario. One representative clip per model leads; the rest
-    stay on the page behind a toggle, because they are the evidence the
-    spread figure rests on and hiding them entirely would make that number
-    unfalsifiable.
-    """
-    by_sid: dict[str, dict[str, list[Cell]]] = {}
-    for r in runs:
-        for c in r.cells:
-            by_sid.setdefault(c.scenario_id, {}).setdefault(c.model_id, []).append(c)
-
-    blocks = []
-    for sid in sorted(by_sid):
-        leads, more = [], []
-        for mid in sorted(by_sid[sid]):
-            cells = by_sid[sid][mid]
-            rep = _median_cell(cells)
-            leads.append(_clip(rep, lead=True))
-            more.extend(_clip(c) for c in cells if c is not rep)
-        blocks.append({"scenario_id": sid, "title": f"{len(leads) + len(more)} clips",
-                       "leads": leads, "more": more, "n_more": len(more)})
-    return blocks
 
 
 def _overall(models: list[ModelRollup]) -> dict[str, Any]:
@@ -783,7 +868,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
 
     run_rows = [{
         "label": r.label, "started": (r.started_at or "")[:16].replace("T", " "),
-        "scenario": ", ".join(sorted({c.scenario_id for c in r.cells})) or "—",
+        "scenario": ", ".join(sorted({_parent_id(c.scenario_id) for c in r.cells})) or "—",
         "cells": len(r.cells),
         "passed": sum(1 for c in r.cells if c.status == "scored"),
         "cost": sum(c.total_micro for c in r.cells),
@@ -804,6 +889,16 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
         "and must not be quoted as a mean opinion score.",
         "<b>Cost is what the run believed it paid</b>, at the rates frozen in its own manifest.",
     ]
+    n_excluded = len(all_cells) - sum(len(m["clips"]) for b in scenarios for m in b["side"])
+    if n_excluded:
+        stale = ", ".join(f"<code>{b['id']}</code>" for b in scenarios if b["stale"])
+        footnotes.append(
+            f"<b>{n_excluded} clips are not on this page.</b> They were produced by earlier runs "
+            f"of {stale} against a <em>different version</em> of the scenario - the script or the "
+            f"gates changed afterwards. Comparing them with the clips beside them would measure "
+            f"our edit rather than the model, so they are excluded from every card and every "
+            f"spread here. They remain in their own run folders, unaltered."
+        )
     # PROVENANCE, stated once and factually. The judge and the ASR are named
     # so a reader can see for themselves whether either shares a vendor with
     # an arm - which is a thing that has already changed an answer here once,
@@ -862,9 +957,22 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
             "p50_latency": m.mean_latency, "invalid": m.invalid,
         } for m in models],
         runs=runs, run_rows=run_rows, scenarios=scenarios, duel=duel,
-        evidence=_evidence(runs), overall=_overall(models),
-        n_scenarios=len({c.scenario_id for c in all_cells}),
-        n_clips=len(all_cells),
+        overall=_overall(models),
+        # PARENTS, not cells. Counting raw ids called this a 102-scenario
+        # study: `vr-ecom-07#r01`..`#r30` is one scenario measured thirty
+        # times, not thirty scenarios, and the figure contradicted both the
+        # Scenarios tab and the workbook it is drawn from.
+        n_scenarios=len({_parent_id(c.scenario_id) for c in all_cells}),
+        # CLIPS THE PAGE ACTUALLY CARRIES. A run of a since-edited scenario
+        # is excluded from its card, because its difference is the size of
+        # our edit rather than the model's. While those clips sat in an
+        # Evidence tab they were still on the page and the total was honest;
+        # with the clips folded into the cards they are not, so the header
+        # counts what is reachable and the excluded ones are declared below
+        # rather than quietly dropped.
+        n_clips=sum(len(m["clips"]) for b in scenarios for m in b["side"]),
+        n_excluded=len(all_cells) - sum(len(m["clips"]) for b in scenarios for m in b["side"]),
+        stale_ids=sorted({b["id"] for b in scenarios if b["stale"]}),
         max_passes=max((s["n_passes"] for s in scenarios), default=0),
         repeated_n=sum(1 for s in scenarios if s["n_passes"] > 1),
         gen_micro=sum(c.cost_micro for c in all_cells),

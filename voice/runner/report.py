@@ -26,7 +26,7 @@ from .cost import fmt_usd
 from .normalize import normalize
 from .rubrics import Rubric
 from .scoring import ScoredCell, ModelSummary, paired_wtl, score_cell, summarise, verdict
-from .telemetry import (RunPaths, incomplete_scenarios, read_manifest, read_stream,
+from .telemetry import (RunPaths, artefact_url, incomplete_scenarios, read_manifest, read_stream,
                         write_manifest)
 
 
@@ -290,12 +290,17 @@ def render(
             transcript = crec.get("transcript_raw")
             spec = spec_by_id.get(mid)
             ext = "wav"
+            # The path is what `exists()` needs; the URL is what the <audio>
+            # tag needs, and for a variant scenario they differ - see
+            # telemetry.artefact_url. Keeping one string for both is what
+            # broke the dashboard's players.
             audio_rel = f"outputs/{scenario.modality}/{scenario.id}/{mid}.{ext}"
             entries.append(
                 {
                     "model": mid,
                     "cell": cell,
-                    "audio": audio_rel if (paths.dir / audio_rel).exists() else None,
+                    "audio": (artefact_url(audio_rel)
+                              if (paths.dir / audio_rel).exists() else None),
                     "transcript": transcript,
                     "diff": word_diff(str(scenario.checks.get("wer_reference") or scenario.text), transcript)
                     if transcript

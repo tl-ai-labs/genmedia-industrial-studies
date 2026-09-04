@@ -25,6 +25,28 @@ from pathlib import Path
 from typing import Any, Iterator
 
 
+def artefact_url(rel_path: str) -> str:
+    """
+    A run-relative artefact path, in the form a BROWSER can actually fetch.
+
+    THE BUG THIS EXISTS TO PREVENT. A variant scenario writes its clips under
+    a directory named `parent#variant` - `vr-ecom-06#bare`. In a URL `#` opens
+    the FRAGMENT, so `<audio src=".../vr-ecom-06#bare/eleven.wav">` asks the
+    server for `.../vr-ecom-06`, gets a 404, and renders a player that looks
+    perfectly normal and does nothing when pressed. 192 of the dashboard's 242
+    players were dead this way, and nothing on the page or in the console said
+    so - a broken <audio> element is silent in both senses.
+
+    Encode the path, never the separators: `safe="/"` keeps the directory
+    structure and escapes `#` to `%23`, which is what the file is really
+    called on disk. Applies to every surface that points at a run artefact,
+    so the per-run report and the cross-run dashboard cannot diverge.
+    """
+    from urllib.parse import quote
+
+    return quote(rel_path, safe="/")
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 

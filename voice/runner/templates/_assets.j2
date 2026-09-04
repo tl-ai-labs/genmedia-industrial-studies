@@ -370,6 +370,27 @@ body{background:var(--ground);color:var(--ink)}
   padding-top:12px;border-top:1px solid var(--rule)}
 .sverdict b{color:var(--ink)}
 
+/* ── the clips, now inside the column they belong to ───────────────── */
+.col .clip{background:var(--card);border:1px solid var(--rule);border-radius:9px;
+  padding:9px 11px;margin:9px 0 0;box-shadow:none}
+.col .clip .top{gap:7px;margin-bottom:5px}
+.col .clip .who{font-size:11.5px;color:var(--accent-ink);background:var(--accent-soft);
+  padding:1px 7px;border-radius:999px}
+.col .clip audio{width:100%;height:30px;margin:2px 0 0}
+.col .clip .tx{font-size:11.5px;margin-top:7px;padding-left:8px}
+.col .clip .gate{font-size:10px;padding:1px 6px}
+.col .more{margin-top:9px}
+.col .more > summary{cursor:pointer;font-size:11.5px;color:var(--faint);
+  font-family:var(--mono);list-style:none}
+.col .more > summary:hover{color:var(--accent)}
+.col .more > summary::before{content:"▸ ";}
+.col .more[open] > summary::before{content:"▾ ";}
+
+/* A variant is a different SCRIPT, not a different take of one - label it. */
+.vlab{font-family:var(--mono);font-size:11px;color:var(--faint);margin:12px 0 -4px}
+.vlab code{color:var(--accent-ink);font-weight:600}
+.script.none{color:var(--faint);font-style:italic;border-left-color:var(--rule)}
+
 .howto{border:1px solid var(--rule);border-radius:12px;background:var(--lift);
   padding:14px 18px;margin:6px 0 18px;box-shadow:var(--shadow)}
 .howto summary{cursor:pointer;font-weight:650;font-size:13.5px;color:var(--accent-ink)}
