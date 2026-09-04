@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-I2V-09 (sheet row 103) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail, Micro-drama & entertainment, Gaming)
+# Sheet run settings: '5-8s; 3 seeds; reference images required'.
+# Input assets required: Logo file | source: Internal brand kit — build once | link: —
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-I2V-09
+modality: video
+task: image_to_video
+title: Logo reveal from a still
+prompt: Animate the supplied logo revealing itself from a soft blur into sharp focus, settling
+  centred for the final two seconds.
+inputs:
+  logo: assets/bank/VID-I2V-09-logo.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Logo reveal from a still. Capability under test: Brand asset animation. Adherence
+  clauses, check each: 1) Reveal completes  2) Final logo geometry matches the supplied file  3)
+  Colours accurate  4) Holds still at the end'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- image-to-video-first-last-frame
+- scenario-bank
+- pending-assets

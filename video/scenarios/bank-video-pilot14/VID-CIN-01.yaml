@@ -1,0 +1,32 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-CIN-01 (sheet row 65) — prompt verbatim.
+# Sheet run settings: '8s; 1080p; 16:9; 3 seeds; audio off unless stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# PILOT 2026-09-03: run at 720p (deviation from the sheet's 1080p) — the
+# Artificial-Analysis-benchmarked config for Seedance, and 2.5x cheaper.
+# Subset = all Physics & action + CIN-01..04 (14 of 20), Omni Flash vs Seedance 2.5.
+id: VID-CIN-01
+modality: video
+task: text_to_video
+title: Slow dolly-in
+prompt: A slow dolly-in on a woman reading at a wooden table by a window. Soft daylight. The
+  camera moves steadily forward for the full duration. No cuts.
+params:
+  duration_s: 8
+  resolution: 720p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Slow dolly-in. Capability under test: Camera move accuracy and temporal stability.
+  Adherence clauses, check each: 1) Camera moves forward, not zoom  2) Movement steady, no
+  stutter  3) Single continuous take  4) Subject stays framed'
+checks:
+  min_duration_s: 7.0
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- cinematic-hero-shot
+- scenario-bank

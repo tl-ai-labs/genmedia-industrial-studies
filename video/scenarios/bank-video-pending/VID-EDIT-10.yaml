@@ -1,0 +1,28 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-10 (sheet row 114) — prompt verbatim.
+# Industry: Ads (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Previously edited clip | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'video_edit' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-EDIT-10
+modality: video
+task: video_edit
+title: Revert a prior edit
+prompt: Following the previous edit, undo the colour change to the jacket and return it to
+  its original colour. Leave all other edits in place.
+params:
+  audio: false
+expected: 'Revert a prior edit. Capability under test: Instruction reversal. Adherence clauses,
+  check each: 1) Jacket returned to original colour  2) Other edits still present  3) No degradation
+  from the round trip  4) Motion unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

@@ -1,0 +1,30 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-07 (sheet row 111) — prompt verbatim.
+# Industry: Ads (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Static source clip | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'video_edit' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-EDIT-07
+modality: video
+task: video_edit
+title: Change the camera move
+prompt: Re-render this clip with a slow push-in instead of the existing static framing. Keep
+  the subject, action and lighting identical.
+inputs:
+  source: assets/bank/VID-EDIT-07-source.mp4
+params:
+  audio: false
+expected: 'Change the camera move. Capability under test: Motion re-authoring. Adherence clauses,
+  check each: 1) Push-in present  2) Subject and action unchanged  3) Lighting unchanged  4)
+  No warping at frame edges'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets
