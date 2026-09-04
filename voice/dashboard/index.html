@@ -1,0 +1,6034 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice model comparison — gemini-3-1-flash-tts vs elevenlabs-multilingual-v2</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+
+<style>
+/* ── Client report ────────────────────────────────────────────────────
+   LIGHT ONLY, and every colour painted explicitly. This file is opened from
+   a desktop, screen-shared and pasted into decks; there is no viewer theme
+   to inherit and nothing to inherit it from.
+
+   The two arms carry their own colour because the reader's first job on
+   every card is telling the columns apart. Google blue is the Gemini
+   column throughout - it identifies the arm, it is never used as decoration
+   elsewhere, and no verdict is coloured by which arm won. */
+:root{
+  --paper:#f4f6f8; --card:#ffffff; --lift:#f8fafb; --rule:#dde3e9;
+  --ink:#10161c; --body:#3a4650; --dim:#78848e;
+  --accent:#1d4e6f; --accent-soft:#e7eff4;
+  --gem:#1a73e8; --gem-soft:#e8f0fe;
+  --oth:#8a5a12; --oth-soft:#faf2e2;
+  --good:#0f7a5a; --good-soft:#e4f2ed;
+  --warn:#9a6a10; --warn-soft:#faf1de;
+  --bad:#a3312a; --bad-soft:#fbeae8;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --disp:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --text:"Source Sans 3","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--text);
+  font-size:15.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px}
+h1,h2,h3,h4{font-family:var(--disp);color:var(--ink);text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.03em;line-height:1.08}
+h2{font-size:21px;font-weight:650;letter-spacing:-.014em;margin:38px 0 4px}
+h3{font-size:16px;font-weight:640;letter-spacing:-.008em}
+code{font-family:var(--mono);font-size:.9em}
+.dim{color:var(--dim)}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim)}
+
+.masthead{background:var(--card);border-bottom:1px solid var(--rule)}
+.masthead .in{max-width:1180px;margin:0 auto;padding:13px 24px;display:flex;
+  gap:14px;align-items:baseline;flex-wrap:wrap}
+.masthead .t{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:15px}
+.masthead .s{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+header.hero{padding:42px 0 6px}
+.lede{font-size:17px;max-width:66ch;margin:15px 0 0}
+
+/* One-liners. The long banner blocks were compressed on request; the detail
+   they carried moved into the closing notes rather than off the page. */
+.one{font-size:14.5px;line-height:1.55;margin:10px 0;padding:9px 14px;border-radius:8px;
+  border-left:3px solid var(--rule);background:var(--card)}
+.one b{color:var(--ink)}
+.one.flag{border-left-color:var(--bad);background:var(--bad-soft)}
+.one.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.one.lead{border-left-color:var(--accent)}
+.one.dim{border:0;background:none;padding:6px 0;font-size:13px;color:var(--dim)}
+.sv{white-space:normal}
+
+.note{border-left:3px solid var(--accent);background:var(--card);padding:15px 20px;
+  margin:20px 0;border-radius:0 9px 9px 0;font-size:14.5px}
+.note.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.note.flag{border-left-color:var(--bad);background:var(--bad-soft)}
+.note .h{display:block;font-family:var(--disp);font-weight:650;color:var(--ink);
+  font-size:15.5px;margin-bottom:3px}
+.note b{color:var(--ink)}
+
+/* ── head to head ───────────────────────────────────────────────────
+   Two bars meeting in the middle, each side growing away from the centre, so
+   the reader compares lengths rather than reading two numbers and doing the
+   subtraction. Each row shares its own scale; scales are never shared BETWEEN
+   rows, which would compare a cost against a latency. */
+.duel{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:20px 24px 22px;margin:14px 0}
+.heads{display:flex;justify-content:space-between;font-family:var(--mono);
+  font-size:12.5px;font-weight:600;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.heads .gem{color:var(--gem)}
+.heads .oth{color:var(--oth)}
+.drow{padding:8px 0;border-top:1px solid var(--rule)}
+.drow:first-of-type{border-top:0}
+.dlab{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.dpair{display:grid;grid-template-columns:92px 1fr 1fr 92px;align-items:center;gap:9px}
+.dval{font-family:var(--mono);font-size:13px;color:var(--body);
+  font-variant-numeric:tabular-nums}
+.dval.r{text-align:right}
+.dval.win{color:var(--ink);font-weight:700}
+.dtrack{height:9px;background:var(--lift);border-radius:999px;display:flex;overflow:hidden}
+.dtrack.gem{justify-content:flex-end}
+.dtrack i{display:block;height:100%;border-radius:999px}
+.dtrack.gem i{background:var(--gem)}
+.dtrack.oth i{background:var(--oth)}
+@media (max-width:720px){
+  .dpair{grid-template-columns:76px 1fr 1fr 76px;gap:6px}
+  .dval{font-size:11.5px}
+}
+
+/* ── transposed metric table: metrics down, models across ───────────── */
+.mtable{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  overflow:hidden;margin:14px 0}
+.mscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+thead th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--dim);background:var(--lift);font-weight:600;
+  white-space:nowrap}
+th.n,td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+th.gemcol{color:var(--gem)}
+th.othcol{color:var(--oth)}
+td.metric{color:var(--ink);font-weight:600}
+td.metric small{display:block;font-weight:400;color:var(--dim);font-size:12px;
+  font-family:var(--text);letter-spacing:0;text-transform:none}
+td.delta{font-weight:600}
+.better{color:var(--good)}
+.worse{color:var(--bad)}
+.neutral{color:var(--dim)}
+
+/* ── controls ───────────────────────────────────────────────────────── */
+.controls{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:14px 18px;margin:18px 0;display:flex;flex-direction:column;gap:11px}
+.crow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.clab{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);min-width:64px}
+select,.btn{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:8px;
+  border:1px solid var(--rule);background:var(--card);color:var(--body);cursor:pointer}
+select:focus-visible,.btn:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);
+  outline-offset:2px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.chip{font:inherit;font-size:13px;padding:5px 13px;border-radius:999px;
+  border:1px solid var(--rule);background:var(--card);color:var(--body);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip .c{font-family:var(--mono);font-size:11px;opacity:.75;margin-left:5px}
+
+/* ── scenario card ──────────────────────────────────────────────────── */
+.sc{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  padding:22px 24px;margin:16px 0}
+.schead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;
+  flex-wrap:wrap}
+.schead h3{margin:3px 0 2px}
+.schead h3 code{color:var(--accent);font-weight:600;margin-right:8px}
+.badge{font-family:var(--mono);font-size:11.5px;font-weight:600;padding:5px 12px;
+  border-radius:999px;white-space:nowrap}
+.badge.gem{background:var(--gem);color:#fff}
+.badge.oth{background:var(--oth);color:#fff}
+.badge.tie{background:var(--warn-soft);color:var(--warn);border:1px solid #ecdcb8}
+.badge.none{background:var(--lift);color:var(--dim);border:1px dashed var(--rule)}
+
+details{margin:14px 0 0}
+summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--dim);list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ "}
+details[open]>summary::before{content:"▾ "}
+summary:hover{color:var(--accent)}
+.script{background:var(--lift);border-left:3px solid var(--accent);padding:11px 16px;
+  border-radius:0 8px 8px 0;font-size:14px;line-height:1.6;color:var(--ink);margin:9px 0 0}
+.vlab{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 -4px}
+.vlab code{color:var(--accent);font-weight:600}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0 0}
+@media (max-width:820px){.vs{grid-template-columns:1fr}}
+.col{position:relative;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;
+  background:var(--lift);overflow:hidden}
+.col::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--arm)}
+.col.gemini{--arm:var(--gem)}
+.col.rival{--arm:var(--oth)}
+.col.won{background:var(--card);border-color:var(--arm);box-shadow:0 0 0 1px var(--arm) inset}
+.cm{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);
+  display:flex;align-items:center;gap:7px}
+.cm .dot{width:8px;height:8px;border-radius:50%;background:var(--arm);flex:none}
+.tick{margin-left:auto;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  color:#fff;background:var(--arm);padding:2px 8px;border-radius:999px}
+.cq{font-family:var(--disp);font-size:30px;font-weight:680;color:var(--ink);
+  letter-spacing:-.028em;margin:8px 0 1px;font-variant-numeric:tabular-nums;line-height:1.05}
+.cq.none{font-size:17px;color:var(--dim);font-weight:500}
+.cs{font-size:12px;color:var(--dim)}
+.gates{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px}
+.g{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:999px}
+.g.ok{background:var(--good-soft);color:var(--good)}
+.g.no{background:var(--bad-soft);color:var(--bad)}
+
+/* ── clips ──────────────────────────────────────────────────────────── */
+.clip{background:var(--card);border:1px solid var(--rule);border-radius:9px;
+  padding:9px 11px;margin:9px 0 0}
+.clip .head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}
+.clip .vt{font-family:var(--mono);font-size:10.5px;background:var(--accent-soft);
+  color:var(--accent);padding:1px 7px;border-radius:999px;font-weight:600}
+.clip .rl{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+/* The score is the thing a reader is looking for on each clip - it gets the
+   weight, and latency sits beside it because point 4 asks for both. */
+.clip .sc-pill{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:700;
+  color:#fff;background:var(--arm);padding:2px 9px;border-radius:999px}
+.clip .sc-pill.none{background:var(--lift);color:var(--dim);font-weight:500;
+  border:1px solid var(--rule)}
+.clip audio{width:100%;height:32px;display:block;margin-top:2px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:7px;font-family:var(--mono);
+  font-size:10.5px;color:var(--dim)}
+.meta b{color:var(--ink);font-weight:600}
+.meta .lat b{color:var(--accent)}
+
+.runs{margin-top:14px;font-size:12.5px}
+.runs table{font-size:12.5px}
+.runs th,.runs td{padding:6px 12px}
+
+.xtra{display:grid;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.xl{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim);display:block;margin-bottom:6px}
+.xr{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:2px 0;flex-wrap:wrap}
+.xr code{color:var(--ink);font-weight:600}
+.xr b{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.xd{font-size:12px;color:var(--dim);line-height:1.5;margin:2px 0 6px}
+
+.gapbar{margin-top:16px}
+.gbar{position:relative;height:10px;background:var(--lift);border:1px solid var(--rule);
+  border-radius:999px}
+.gbar .band{position:absolute;inset:0 auto 0 0;background:var(--warn-soft);
+  border-right:1px solid #e2cfa6;border-radius:999px 0 0 999px}
+.gbar .door{position:absolute;top:-3px;height:15px;border-left:2px dashed var(--accent)}
+.gbar .mark{position:absolute;top:-4px;width:3px;height:17px;background:var(--good);
+  border-radius:2px}
+.gbar .mark.risk{background:var(--bad)}
+.gkey{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;
+  color:var(--dim);margin-top:7px}
+.gwarn{font-size:12px;line-height:1.5;color:var(--bad);background:var(--bad-soft);
+  border-radius:7px;padding:8px 11px;margin-top:7px}
+
+.sv{font-size:13.5px;color:var(--body);margin:16px 0 0;padding-top:13px;
+  border-top:1px solid var(--rule);line-height:1.6}
+.sv b{color:var(--ink)}
+.nomatch{text-align:center;color:var(--dim);padding:34px}
+footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
+.notes{font-size:13.5px;line-height:1.62;padding-left:19px}
+.notes li{margin:9px 0}
+.notes b{color:var(--ink)}
+@media print{.controls{display:none}.sc{break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+
+<div class="masthead"><div class="in">
+  <span class="t">Voice model comparison</span>
+  <span class="s">17 scenarios · 242 clips · 36 runs</span>
+</div></div>
+
+<div class="wrap">
+<header class="hero">
+  <p class="eyebrow">Tilicho Labs · GenMedia evaluation</p>
+  <h1>gemini-3-1-flash-tts vs elevenlabs-multilingual-v2</h1>
+  <p class="lede">17 industry scenarios, each run under both models at least
+  twice and judged blind against a written rubric. Every clip produced is on this page with
+  its score, the time it took to generate, and the transcript accuracy it was measured at.</p>
+
+  
+  <p class="one flag"><b>Judge:</b> <code>gemini-2.5-flash</code> —
+    a Google model scoring a comparison with a Google arm in it, and
+    never calibrated against human listeners. Detail in the notes.</p>
+  
+  <p class="one lead"><b>Overall:</b> Split — gemini-3-1-flash-tts scores 0.163 higher, but elevenlabs-multilingual-v2 produced a usable clip more often (89.8% of the time against 88.2%). Better on quality, worse on delivery - not a win. The measured run-to-run spread is ±2.228; this gap is smaller than that, so it can move or invert on a re-run.</p>
+  <p class="one warn"><b>A model wins a scenario</b> when the gap clears
+    0.5pp and it cleared no fewer gates —
+    4 of the 5 decided gaps are smaller than that model's own
+    run-to-run spread.</p>
+</header>
+
+<h2>Head to head</h2>
+<div class="duel">
+  <div class="heads">
+    <span class="h gem">◆ gemini-3-1-flash-tts · Google</span>
+    <span class="h oth">elevenlabs-multilingual-v2 · ElevenLabs ◆</span>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Quality</div>
+    <div class="dpair">
+      <span class="dval win">95.1% ✦</span>
+      <span class="dtrack gem"><i style="width:100.0%"></i></span>
+      <span class="dtrack oth"><i style="width:98.3%"></i></span>
+      <span class="dval r">93.4%</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Gates passed</div>
+    <div class="dpair">
+      <span class="dval">88.2%</span>
+      <span class="dtrack gem"><i style="width:98.2%"></i></span>
+      <span class="dtrack oth"><i style="width:100.0%"></i></span>
+      <span class="dval r win">✦ 89.8%</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Run-to-run spread</div>
+    <div class="dpair">
+      <span class="dval">22.3%</span>
+      <span class="dtrack gem"><i style="width:100.0%"></i></span>
+      <span class="dtrack oth"><i style="width:40.5%"></i></span>
+      <span class="dval r win">✦ 9.0%</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Worst word error rate</div>
+    <div class="dpair">
+      <span class="dval">47.9%</span>
+      <span class="dtrack gem"><i style="width:100.0%"></i></span>
+      <span class="dtrack oth"><i style="width:28.5%"></i></span>
+      <span class="dval r win">✦ 13.6%</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Cost per clip</div>
+    <div class="dpair">
+      <span class="dval win">$0.0069 ✦</span>
+      <span class="dtrack gem"><i style="width:47.5%"></i></span>
+      <span class="dtrack oth"><i style="width:100.0%"></i></span>
+      <span class="dval r">$0.0144</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Cost per audio minute</div>
+    <div class="dpair">
+      <span class="dval win">$0.0430 ✦</span>
+      <span class="dtrack gem"><i style="width:43.4%"></i></span>
+      <span class="dtrack oth"><i style="width:100.0%"></i></span>
+      <span class="dval r">$0.0991</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Latency, median</div>
+    <div class="dpair">
+      <span class="dval">7.65s</span>
+      <span class="dtrack gem"><i style="width:100.0%"></i></span>
+      <span class="dtrack oth"><i style="width:21.8%"></i></span>
+      <span class="dval r win">✦ 1.67s</span>
+    </div>
+  </div>
+  
+  <div class="drow">
+    <div class="dlab">Latency, 95th percentile</div>
+    <div class="dpair">
+      <span class="dval">31.97s</span>
+      <span class="dtrack gem"><i style="width:100.0%"></i></span>
+      <span class="dtrack oth"><i style="width:13.5%"></i></span>
+      <span class="dval r win">✦ 4.32s</span>
+    </div>
+  </div>
+  
+</div>
+<p class="one dim">Bars share a scale per row; ✦ marks the better side. Quality follows the
+0.5pp band — no star inside it.</p>
+
+<h2>Every metric, both models</h2>
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr>
+    <th>Metric</th>
+    <th class="n gemcol">gemini-3-1-flash-tts</th>
+    <th class="n othcol">elevenlabs-multilingual-v2</th>
+    <th class="n">Difference</th>
+  </tr></thead>
+  <tbody>
+  
+  <tr>
+    <td class="metric">Quality<small>rubric score, expressed as a percentage</small></td>
+    <td class="n">95.1%</td>
+    <td class="n">93.4%</td>
+    <td class="n delta better">+1.6%
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Gates passed<small>how often the clip was usable at all</small></td>
+    <td class="n">88.2%</td>
+    <td class="n">89.8%</td>
+    <td class="n delta worse">-1.6%
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Run-to-run spread<small>same script twice — smaller is more consistent</small></td>
+    <td class="n">22.3%</td>
+    <td class="n">9.0%</td>
+    <td class="n delta worse">+13.2%
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Worst word error rate<small>the worst single clip, not the average</small></td>
+    <td class="n">47.9%</td>
+    <td class="n">13.6%</td>
+    <td class="n delta worse">+34.3%
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Cost per clip</td>
+    <td class="n">$0.0069</td>
+    <td class="n">$0.0144</td>
+    <td class="n delta better">$-0.0076
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Cost per audio minute</td>
+    <td class="n">$0.0430</td>
+    <td class="n">$0.0991</td>
+    <td class="n delta better">$-0.0561
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Latency, median<small>whole call</small></td>
+    <td class="n">7.65s</td>
+    <td class="n">1.67s</td>
+    <td class="n delta worse">+5.99s
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="metric">Latency, 95th percentile<small>the tail a real-time claim lives on</small></td>
+    <td class="n">31.97s</td>
+    <td class="n">4.32s</td>
+    <td class="n delta worse">+27.66s
+    </td>
+  </tr>
+  
+  </tbody>
+</table></div></div>
+<p class="one dim">Difference is <b>gemini-3-1-flash-tts minus elevenlabs-multilingual-v2</b>; green is the better
+direction for that row.</p>
+
+<h2>Scenario by scenario</h2>
+<div class="controls">
+  <div class="crow">
+    <span class="clab">Sort by</span>
+    <select id="sort">
+      <option value="gap-desc">Difference (A−B) — high to low</option>
+      <option value="gap-asc">Difference (A−B) — low to high</option>
+      <option value="gem-desc">Gemini rating — high to low</option>
+      <option value="gem-asc">Gemini rating — low to high</option>
+      <option value="oth-desc">elevenlabs-multilingual-v2 — high to low</option>
+      <option value="oth-asc">elevenlabs-multilingual-v2 — low to high</option>
+    </select>
+    <button class="btn" id="expand" type="button">Expand all</button>
+    <button class="btn" id="collapse" type="button">Collapse all</button>
+  </div>
+  <div class="crow">
+    <span class="clab">Industry</span>
+    <button class="chip on" data-ind="all">All<span class="c">17</span></button>
+    
+    <button class="chip" data-ind="Ads">Ads<span class="c">3</span></button>
+    
+    <button class="chip" data-ind="Ecommerce &amp; Retail">Ecommerce &amp; Retail<span class="c">6</span></button>
+    
+    <button class="chip" data-ind="Gaming">Gaming<span class="c">5</span></button>
+    
+    <button class="chip" data-ind="Micro-drama &amp; entertainment">Micro-drama &amp; entertainment<span class="c">3</span></button>
+    
+  </div>
+  <div class="crow">
+    <span class="clab">Result</span>
+    <button class="chip on" data-res="all">All</button>
+    <button class="chip" data-res="gem">Gemini wins<span class="c">2</span></button>
+    <button class="chip" data-res="oth">elevenlabs-multilingual-v2 wins<span class="c">3</span></button>
+    <button class="chip" data-res="tie">No winner<span class="c">12</span></button>
+  </div>
+</div>
+
+<div id="cards">
+
+<article class="sc" data-ind="Ads"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ads</span>
+      <h3><code>vr-ads-02</code>Fifteen-second broadcast spot, exact duration - Ads</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Monsoon&#39;s here. So is the Kalyani Motors service camp. Free twenty-one point inspection, wiper and brake-pad check, up to thirty percent off parts. Three days only, at all fourteen Bengaluru branches. Kalyani Motors. Drive the monsoon, don&#39;t dread it.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 7.0%</div>
+      <div class="gates">
+        <span class="g no">trimmed_duration_in_range</span>
+        <span class="g no">wer_within_max</span>
+        <span class="g no">must_say[Kalyani Motors]</span>
+        <span class="g no">must_say[fourteen Bengaluru branches]</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ads-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-02--gemini-3-1-flash-tts--voice-p2-vr-ads-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>11.26s</b></span>
+    
+    <span>length <b>16.8s</b></span>
+    <span>word errors <b>7.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ads-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-02--gemini-3-1-flash-tts--voice-p1-vr-ads-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>10.49s</b></span>
+    
+    <span>length <b>16.1s</b></span>
+    <span>word errors <b>7.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g no">trimmed_duration_in_range</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ads-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-02--elevenlabs-multilingual-v2--voice-p2-vr-ads-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.85s</b></span>
+    
+    <span>length <b>17.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ads-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-02--elevenlabs-multilingual-v2--voice-p1-vr-ads-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.82s</b></span>
+    
+    <span>length <b>17.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 2 passes.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ads"
+  data-res="oth"
+  data-gem="83.3995"
+  data-oth="90.472"
+  data-gap="-7.072500000000001">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ads</span>
+      <h3><code>vr-ads-05</code>Brand name pronunciation, no markup permitted - Ads</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge oth">
+      elevenlabs-multilingual-v2 wins
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">This season, Nykaa brings you three days of beauty. Save up to forty percent at Nykaa, plus an extra ten percent with Jio Pay. Discover Kaya Clinic favourites, Cetaphil essentials, and the full Nykaa Naturals range. Nykaa. Three days only. Kaya, Cetaphil and Jio Pay offers apply while stocks last.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">83.4%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 2.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">94.5%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-05--gemini-3-1-flash-tts--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>12.09s</b></span>
+    
+    <span>length <b>16.9s</b></span>
+    <span>word errors <b>2.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">72.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-05--gemini-3-1-flash-tts--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>83.50s</b></span>
+    
+    <span>length <b>18.0s</b></span>
+    <span>word errors <b>2.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival won">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        <span class="tick">winner</span></div>
+      
+      <div class="cq">90.5%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 2.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">95.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-05--elevenlabs-multilingual-v2--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.29s</b></span>
+    
+    <span>length <b>21.5s</b></span>
+    <span>word errors <b>2.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">86.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-05--elevenlabs-multilingual-v2--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.48s</b></span>
+    
+    <span>length <b>22.7s</b></span>
+    <span>word errors <b>2.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 22:42</th><th class="n">09-03 22:44</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">72.3%</td><td class="n">94.5%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">86.0%</td><td class="n">95.0%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:74.07407407407408%"></span>
+      <span class="door" style="left:1.6621207663706423%"></span>
+      <span class="mark risk" style="left:23.510698240312735%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±22.3pp</span>
+      <span>measured gap 7.1pp</span>
+    </div>
+    
+    <div class="gwarn">Gap is smaller than this model's own spread — a re-run can move it.</div>
+    
+  </div>
+  
+
+  <p class="sv">Elevenlabs ahead by 7.1pp — but that is inside its own ±22.3pp run-to-run spread, so a re-run can move it.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ads"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ads</span>
+      <h3><code>vr-ads-06</code>Compliance disclaimer at broadcast pace - Ads</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Credit is subject to status and affordability checks. Representative APR twenty-four point nine percent variable. Minimum repayment two thousand five hundred rupees per month over thirty-six months. Missing payments may affect your credit rating. Terms, conditions and eligibility criteria apply. Kalyani Finance is a registered non-banking financial company.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 2.0%</div>
+      <div class="gates">
+        <span class="g no">speech_rate_in_range</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ads-06</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-06--gemini-3-1-flash-tts--voice-p2-vr-ads-06.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>14.34s</b></span>
+    
+    <span>length <b>16.8s</b></span>
+    <span>word errors <b>2.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ads-06</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-06--gemini-3-1-flash-tts--voice-p1-vr-ads-06.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>10.58s</b></span>
+    
+    <span>length <b>16.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g no">speech_rate_in_range</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ads-06</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-06--elevenlabs-multilingual-v2--voice-p2-vr-ads-06.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.07s</b></span>
+    
+    <span>length <b>23.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ads-06</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ads-06--elevenlabs-multilingual-v2--voice-p1-vr-ads-06.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.02s</b></span>
+    
+    <span>length <b>23.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 2 passes.
+  </p>
+</article>
+
+<article class="sc" data-ind="Micro-drama &amp; entertainment"
+  data-res="tie"
+  data-gem=""
+  data-oth="97.47133333333332"
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Micro-drama &amp; entertainment</span>
+      <h3><code>vr-drama-01</code>Episodic narration, voice held across sessions - Micro-drama</h3>
+      <span class="dim" style="font-size:12.5px">3 passes</span>
+    </div>
+    <span class="badge none">
+      One arm only
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">The lamps along the causeway came on one at a time, the way they always did, and Sarala counted them without meaning to. Eleven, twelve, thirteen. By the fourteenth she had reached the turning, and by the fifteenth she had decided. She would not go back to the house tonight. She would walk until the road ran out, and then she would see what the sea had to say about it.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 3 clips scored
+        · worst word errors 47.9%</div>
+      <div class="gates">
+        <span class="g no">wer_within_max</span>
+        
+      </div>
+      
+      <details><summary>3 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-s2-vr-drama-01</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-01--gemini-3-1-flash-tts--voice-s2-vr-drama-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>15.49s</b></span>
+    
+    <span>length <b>27.4s</b></span>
+    <span>word errors <b>21.1%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-s1-vr-drama-01</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-01--gemini-3-1-flash-tts--voice-s1-vr-drama-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>19.91s</b></span>
+    
+    <span>length <b>28.0s</b></span>
+    <span>word errors <b>9.9%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-s3-vr-drama-01</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-01--gemini-3-1-flash-tts--voice-s3-vr-drama-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>21.60s</b></span>
+    
+    <span>length <b>27.6s</b></span>
+    <span>word errors <b>47.9%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      
+      <div class="cq">97.5%</div>
+      
+      <div class="cs">3 of 3 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>3 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-s3-vr-drama-01</span>
+    
+      <span class="sc-pill">97.4%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-01--elevenlabs-multilingual-v2--voice-s3-vr-drama-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.04s</b></span>
+    
+    <span>length <b>22.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-s1-vr-drama-01</span>
+    
+      <span class="sc-pill">97.6%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-01--elevenlabs-multilingual-v2--voice-s1-vr-drama-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.22s</b></span>
+    
+    <span>length <b>23.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-s2-vr-drama-01</span>
+    
+      <span class="sc-pill">97.4%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-01--elevenlabs-multilingual-v2--voice-s2-vr-drama-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.20s</b></span>
+    
+    <span>length <b>22.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 22:00</th><th class="n">09-03 22:01</th><th class="n">09-03 22:02</th></tr></thead>
+    <tbody>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">97.6%</td><td class="n">97.4%</td><td class="n">97.4%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+  <div class="xtra">
+    
+    <div><span class="xl">Set verdict</span>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>elevenlabs-multilingual-v2</code><span class="dim">speaker_consistency_across_runs</span></div>
+      <div class="xd">not evaluated - no earlier run of &#39;vr-drama-01&#39; at this exact scenario hash produced a elevenlabs-multilingual-v2 clip. This run is the baseline; holding a voice cannot be shown by the first time we ask for it.</div>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>gemini-3-1-flash-tts</code><span class="dim">speaker_consistency_across_runs</span></div>
+      <div class="xd">not evaluated - no earlier run of &#39;vr-drama-01&#39; at this exact scenario hash produced a gemini-3-1-flash-tts clip. This run is the baseline; holding a voice cannot be shown by the first time we ask for it.</div>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>elevenlabs-multilingual-v2</code><span class="dim">speaker_consistency_across_runs</span></div>
+      <div class="xd">vs run 2026-09-03_220006_voice-s1-vr-drama-01 - lowest pair earlier (voice-s1-vr-drama-01) vs this run at 0.9902 against a floor of 0.9 (mean 0.9902 over 1 pairs)</div>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>gemini-3-1-flash-tts</code><span class="dim">speaker_consistency_across_runs</span></div>
+      <div class="xd">vs run 2026-09-03_220006_voice-s1-vr-drama-01 - lowest pair earlier (voice-s1-vr-drama-01) vs this run at 0.9581 against a floor of 0.9 (mean 0.9581 over 1 pairs)</div>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>elevenlabs-multilingual-v2</code><span class="dim">speaker_consistency_across_runs</span></div>
+      <div class="xd">vs run 2026-09-03_220123_voice-s2-vr-drama-01 - lowest pair earlier (voice-s2-vr-drama-01) vs this run at 0.9933 against a floor of 0.9 (mean 0.9933 over 1 pairs)</div>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>gemini-3-1-flash-tts</code><span class="dim">speaker_consistency_across_runs</span></div>
+      <div class="xd">vs run 2026-09-03_220123_voice-s2-vr-drama-01 - lowest pair earlier (voice-s2-vr-drama-01) vs this run at 0.9477 against a floor of 0.9 (mean 0.9477 over 1 pairs)</div>
+      
+    </div>
+    
+    
+    
+  </div>
+  
+
+  
+
+  <p class="sv">Only one model produced a scored clip here.
+  </p>
+</article>
+
+<article class="sc" data-ind="Micro-drama &amp; entertainment"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Micro-drama &amp; entertainment</span>
+      <h3><code>vr-drama-02</code>Narration to ACX submission spec - Micro-drama &amp; entertainment</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">The harbour at Vathy had been awake for an hour before Ilse reached it. She came down the cut between the chandlery and the ice house with her collar turned up, counting the boats as she always did, and found the Kerensa gone from her mooring. Nobody had thought to telephone. The berth held nothing but a coil of blue rope and the flat grey water closing over where the hull had been. Ilse stood there long enough for the light to change. Then she walked back up the cut, past the chandlery, past the ice house, and knocked on a door she had promised herself she would never knock on again.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 3.6%</div>
+      <div class="gates">
+        <span class="g no">rms_in_range</span>
+        <span class="g no">peak_below_max</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-drama-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-02--gemini-3-1-flash-tts--voice-p2-vr-drama-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>34.13s</b></span>
+    
+    <span>length <b>48.1s</b></span>
+    <span>word errors <b>3.6%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-drama-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-02--gemini-3-1-flash-tts--voice-p1-vr-drama-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>32.27s</b></span>
+    
+    <span>length <b>46.4s</b></span>
+    <span>word errors <b>3.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 3.6%</div>
+      <div class="gates">
+        <span class="g no">rms_in_range</span>
+        <span class="g no">peak_below_max</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-drama-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-02--elevenlabs-multilingual-v2--voice-p2-vr-drama-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.15s</b></span>
+    
+    <span>length <b>35.5s</b></span>
+    <span>word errors <b>3.6%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-drama-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-02--elevenlabs-multilingual-v2--voice-p1-vr-drama-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>5.91s</b></span>
+    
+    <span>length <b>35.7s</b></span>
+    <span>word errors <b>3.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 2 passes.
+  </p>
+</article>
+
+<article class="sc" data-ind="Micro-drama &amp; entertainment"
+  data-res="tie"
+  data-gem="97.15400000000001"
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Micro-drama &amp; entertainment</span>
+      <h3><code>vr-drama-04</code>Dubbed line fitted to an 11.0s shot - Micro-drama &amp; entertainment</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge none">
+      One arm only
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">You said you would come back before the monsoon. I waited. The house is still standing, and so am I. But do not mistake that for forgiveness.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">97.2%</div>
+      
+      <div class="cs">1 of 2 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g no">trimmed_duration_in_range</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-drama-04</span>
+    
+      <span class="sc-pill">97.2%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-04--gemini-3-1-flash-tts--voice-p2-vr-drama-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>18.10s</b></span>
+    
+    <span>length <b>11.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-drama-04</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-04--gemini-3-1-flash-tts--voice-p1-vr-drama-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>11.31s</b></span>
+    
+    <span>length <b>12.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g no">trimmed_duration_in_range</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-drama-04</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-04--elevenlabs-multilingual-v2--voice-p2-vr-drama-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.97s</b></span>
+    
+    <span>length <b>9.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-drama-04</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-drama-04--elevenlabs-multilingual-v2--voice-p1-vr-drama-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.98s</b></span>
+    
+    <span>length <b>9.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 16:47</th><th class="n">09-03 16:55</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">—</td><td class="n">97.2%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+
+  <p class="sv">Only one model produced a scored clip here.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ecommerce &amp; Retail"
+  data-res="oth"
+  data-gem="94.20850000000002"
+  data-oth="96.015"
+  data-gap="-1.8064999999999907">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ecommerce &amp; Retail</span>
+      <h3><code>vr-ecom-01</code>WISMO order status readback - Ecommerce &amp; Retail</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge oth">
+      elevenlabs-multilingual-v2 wins
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Thank you for holding. I have found your order. The reference is 4 8 1 9 0 2 7 7 3 1 5 4. Your parcel left our Bhiwandi facility this morning and is with Blue Dart. Delivery is scheduled for Thursday the fourteenth, between two and four in the afternoon. Shall I send the confirmation to your registered mobile ending 6 3 0 2?</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">94.2%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 1.5%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-01</span>
+    
+      <span class="sc-pill">95.2%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-01--gemini-3-1-flash-tts--voice-p1-vr-ecom-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>13.56s</b></span>
+    
+    <span>length <b>24.4s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-01</span>
+    
+      <span class="sc-pill">93.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-01--gemini-3-1-flash-tts--voice-p2-vr-ecom-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>14.40s</b></span>
+    
+    <span>length <b>25.1s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival won">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        <span class="tick">winner</span></div>
+      
+      <div class="cq">96.0%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 1.5%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-01</span>
+    
+      <span class="sc-pill">96.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-01--elevenlabs-multilingual-v2--voice-p2-vr-ecom-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.30s</b></span>
+    
+    <span>length <b>26.5s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-01</span>
+    
+      <span class="sc-pill">96.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-01--elevenlabs-multilingual-v2--voice-p1-vr-ecom-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.36s</b></span>
+    
+    <span>length <b>26.2s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 16:47</th><th class="n">09-03 16:55</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">95.2%</td><td class="n">93.3%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">96.0%</td><td class="n">96.0%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:74.07407407407408%"></span>
+      <span class="door" style="left:19.669164650577294%"></span>
+      <span class="mark risk" style="left:71.0646918825354%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±1.9pp</span>
+      <span>measured gap 1.8pp</span>
+    </div>
+    
+    <div class="gwarn">Gap is smaller than this model's own spread — a re-run can move it.</div>
+    
+  </div>
+  
+
+  <p class="sv">Elevenlabs ahead by 1.8pp — but that is inside its own ±1.9pp run-to-run spread, so a re-run can move it.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ecommerce &amp; Retail"
+  data-res="oth"
+  data-gem="93.7165"
+  data-oth="94.88"
+  data-gap="-1.1635000000000062">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ecommerce &amp; Retail</span>
+      <h3><code>vr-ecom-02</code>Cart-recovery call, agent turn only - Ecommerce &amp; Retail</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge oth">
+      elevenlabs-multilingual-v2 wins
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Hi, this is Meera calling from Urban Ladder. I noticed you were looking at the Fenton three-seater sofa but did not complete your order, and I wanted to check whether something got in the way. If it was the delivery timeline, we can get it to you in nine days rather than the fourteen shown at checkout. And your cart is still saved. Would it help if I sent the checkout link to your registered number?</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">93.7%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 2.6%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-02</span>
+    
+      <span class="sc-pill">94.5%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-02--gemini-3-1-flash-tts--voice-p1-vr-ecom-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>31.27s</b></span>
+    
+    <span>length <b>24.2s</b></span>
+    <span>word errors <b>1.3%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-02</span>
+    
+      <span class="sc-pill">92.9%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-02--gemini-3-1-flash-tts--voice-p2-vr-ecom-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>18.81s</b></span>
+    
+    <span>length <b>23.6s</b></span>
+    <span>word errors <b>2.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival won">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        <span class="tick">winner</span></div>
+      
+      <div class="cq">94.9%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 2.6%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-02</span>
+    
+      <span class="sc-pill">95.7%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-02--elevenlabs-multilingual-v2--voice-p1-vr-ecom-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.99s</b></span>
+    
+    <span>length <b>22.8s</b></span>
+    <span>word errors <b>1.3%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-02</span>
+    
+      <span class="sc-pill">94.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-02--elevenlabs-multilingual-v2--voice-p2-vr-ecom-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.94s</b></span>
+    
+    <span>length <b>21.9s</b></span>
+    <span>word errors <b>2.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 16:48</th><th class="n">09-03 16:56</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">94.5%</td><td class="n">92.9%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">95.7%</td><td class="n">94.1%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:74.07407407407408%"></span>
+      <span class="door" style="left:22.806057288815925%"></span>
+      <span class="mark risk" style="left:53.06969531107495%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±1.6pp</span>
+      <span>measured gap 1.2pp</span>
+    </div>
+    
+    <div class="gwarn">Gap is smaller than this model's own spread — a re-run can move it.</div>
+    
+  </div>
+  
+
+  <p class="sv">Elevenlabs ahead by 1.2pp — but that is inside its own ±1.6pp run-to-run spread, so a re-run can move it.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ecommerce &amp; Retail"
+  data-res="tie"
+  data-gem="94.1925"
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ecommerce &amp; Retail</span>
+      <h3><code>vr-ecom-03</code>Refund confirmation in Indian numbering - Ecommerce &amp; Retail</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge none">
+      One arm only
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Your refund has been approved. The full amount of Rs 2,50,000 will be credited to the UPI account ending 4 4 1 9 within seven working days. Your reference number for this refund is 9 0 3 7 6 2. If the amount has not appeared after seven working days, please call us back and quote that reference.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">94.2%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 1.6%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-03</span>
+    
+      <span class="sc-pill">97.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-03--gemini-3-1-flash-tts--voice-p1-vr-ecom-03.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>12.17s</b></span>
+    
+    <span>length <b>20.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-03</span>
+    
+      <span class="sc-pill">91.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-03--gemini-3-1-flash-tts--voice-p2-vr-ecom-03.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>20.58s</b></span>
+    
+    <span>length <b>21.6s</b></span>
+    <span>word errors <b>1.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 6.6%</div>
+      <div class="gates">
+        <span class="g no">must_say[lakh]</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-03</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-03--elevenlabs-multilingual-v2--voice-p2-vr-ecom-03.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.50s</b></span>
+    
+    <span>length <b>23.7s</b></span>
+    <span>word errors <b>4.9%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-03</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-03--elevenlabs-multilingual-v2--voice-p1-vr-ecom-03.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.46s</b></span>
+    
+    <span>length <b>23.7s</b></span>
+    <span>word errors <b>6.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 16:49</th><th class="n">09-03 16:57</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">97.3%</td><td class="n">91.1%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+
+  <p class="sv">Only one model produced a scored clip here.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ecommerce &amp; Retail"
+  data-res="tie"
+  data-gem="92.95899999999999"
+  data-oth="97.091"
+  data-gap="-4.028999999999989">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ecommerce &amp; Retail</span>
+      <h3><code>vr-ecom-04</code>After-hours booking readback - Ecommerce &amp; Retail</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge tie">
+      Split
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Lovely, that is all confirmed. Let me read it back to you. A table for seven, on Saturday the twenty-second of November, at eight in the evening, under the name Raghavan. We will hold the table for fifteen minutes past the booking time. If anything changes, call us on 9 8 4 5 0 2 7 7 1 6. We look forward to seeing you.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">93.0%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 3.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-04</span>
+    
+      <span class="sc-pill">93.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-04--gemini-3-1-flash-tts--voice-p1-vr-ecom-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>15.02s</b></span>
+    
+    <span>length <b>22.7s</b></span>
+    <span>word errors <b>3.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-04</span>
+    
+      <span class="sc-pill">92.9%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-04--gemini-3-1-flash-tts--voice-p2-vr-ecom-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>18.45s</b></span>
+    
+    <span>length <b>24.0s</b></span>
+    <span>word errors <b>3.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      
+      <div class="cq">97.1%</div>
+      
+      <div class="cs">1 of 2 clips scored
+        · worst word errors 3.0%</div>
+      <div class="gates">
+        <span class="g no">digits_exact</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-ecom-04</span>
+    
+      <span class="sc-pill">97.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-04--elevenlabs-multilingual-v2--voice-p1-vr-ecom-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.51s</b></span>
+    
+    <span>length <b>23.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-ecom-04</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-04--elevenlabs-multilingual-v2--voice-p2-vr-ecom-04.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.36s</b></span>
+    
+    <span>length <b>23.7s</b></span>
+    <span>word errors <b>3.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 16:50</th><th class="n">09-03 16:58</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">93.1%</td><td class="n">92.9%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">97.1%</td><td class="n">—</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:3.787356480332406%"></span>
+      <span class="door" style="left:9.192612816340812%"></span>
+      <span class="mark" style="left:74.07407407407408%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±0.2pp</span>
+      <span>measured gap 4.0pp</span>
+    </div>
+    
+  </div>
+  
+
+  <p class="sv">Elevenlabs scores 4.0pp higher but cleared fewer gates — not a win.
+  </p>
+</article>
+
+<article class="sc" data-ind="Ecommerce &amp; Retail"
+  data-res="gem"
+  data-gem="98.23825"
+  data-oth="87.98825000000001"
+  data-gap="10.250000000000004">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ecommerce &amp; Retail</span>
+      <h3><code>vr-ecom-06</code>KYC readback, confusable characters - Ecommerce &amp; Retail</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge gem">
+      gemini-3-1-flash-tts wins
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models — 2 variants</summary>
+    
+      <div class="vlab"><code>bare</code> <span class="dim">bare readback, no clarifiers</span></div>
+      <p class="script">Your verification reference is B 8 Q O Z 2 G 6. Please also confirm the card ending 4 4 1 9.</p>
+    
+      <div class="vlab"><code>nato</code> <span class="dim">with NATO clarifiers</span></div>
+      <p class="script">Your verification reference is Bravo, eight, Quebec, Oscar, Zulu, two, Golf, six. Please also confirm the card ending 4 4 1 9.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini won">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        <span class="tick">winner</span></div>
+      
+      <div class="cq">98.2%</div>
+      
+      <div class="cs">4 of 4 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>4 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">bare</span>
+    <span class="rl">voice-f2</span>
+    
+      <span class="sc-pill">98.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--gemini-3-1-flash-tts--bare--voice-f2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>10.03s</b></span>
+    
+    <span>length <b>12.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">bare</span>
+    <span class="rl">voice-f1</span>
+    
+      <span class="sc-pill">98.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--gemini-3-1-flash-tts--bare--voice-f1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>16.95s</b></span>
+    
+    <span>length <b>14.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">nato</span>
+    <span class="rl">voice-f1</span>
+    
+      <span class="sc-pill">98.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--gemini-3-1-flash-tts--nato--voice-f1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>12.45s</b></span>
+    
+    <span>length <b>14.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">nato</span>
+    <span class="rl">voice-f2</span>
+    
+      <span class="sc-pill">98.5%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--gemini-3-1-flash-tts--nato--voice-f2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>15.33s</b></span>
+    
+    <span>length <b>13.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      
+      <div class="cq">88.0%</div>
+      
+      <div class="cs">4 of 4 clips scored
+        · worst word errors 13.6%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>4 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">nato</span>
+    <span class="rl">voice-f1</span>
+    
+      <span class="sc-pill">97.7%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--elevenlabs-multilingual-v2--nato--voice-f1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.04s</b></span>
+    
+    <span>length <b>11.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">bare</span>
+    <span class="rl">voice-f1</span>
+    
+      <span class="sc-pill">78.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--elevenlabs-multilingual-v2--bare--voice-f1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.88s</b></span>
+    
+    <span>length <b>8.2s</b></span>
+    <span>word errors <b>13.6%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">bare</span>
+    <span class="rl">voice-f2</span>
+    
+      <span class="sc-pill">77.4%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--elevenlabs-multilingual-v2--bare--voice-f2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.01s</b></span>
+    
+    <span>length <b>8.6s</b></span>
+    <span>word errors <b>13.6%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">nato</span>
+    <span class="rl">voice-f2</span>
+    
+      <span class="sc-pill">98.7%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-06--elevenlabs-multilingual-v2--nato--voice-f2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.74s</b></span>
+    
+    <span>length <b>12.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 22:45</th><th class="n">09-03 22:47</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">98.1%</td><td class="n">98.4%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">87.9%</td><td class="n">88.0%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:2.222222222222177%"></span>
+      <span class="door" style="left:3.613369467028002%"></span>
+      <span class="mark" style="left:74.07407407407408%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±0.3pp</span>
+      <span>measured gap 10.3pp</span>
+    </div>
+    
+  </div>
+  
+
+  <p class="sv">Gemini ahead by 10.3pp (spread ±0.3pp).
+  <span class="dim">2 earlier runs
+    on an older version of this scenario excluded.</span></p>
+</article>
+
+<article class="sc" data-ind="Ecommerce &amp; Retail"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Ecommerce &amp; Retail</span>
+      <h3><code>vr-ecom-07</code>Cost per finished minute at volume - Ecommerce &amp; Retail</h3>
+      <span class="dim" style="font-size:12.5px">1 pass</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Thank you for calling. Your order is confirmed and will arrive on Thursday. Is there anything else I can help you with today?</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 30 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>30 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">r16</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r16--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.96s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r01</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r01--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>8.24s</b></span>
+    
+    <span>length <b>6.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r02</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r02--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.54s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r03</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r03--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>26.24s</b></span>
+    
+    <span>length <b>6.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r04</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r04--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>8.92s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r05</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r05--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>58.74s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r06</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r06--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.85s</b></span>
+    
+    <span>length <b>7.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r07</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r07--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>8.28s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r08</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r08--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.08s</b></span>
+    
+    <span>length <b>7.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r09</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r09--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>8.00s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r10</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r10--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.62s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r11</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r11--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>134.12s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r12</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r12--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.34s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r13</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r13--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.52s</b></span>
+    
+    <span>length <b>6.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r14</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r14--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>14.10s</b></span>
+    
+    <span>length <b>7.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r15</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r15--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>21.11s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r17</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r17--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>10.79s</b></span>
+    
+    <span>length <b>6.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r18</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r18--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>12.52s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r19</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r19--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>19.28s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r20</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r20--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>129.32s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r21</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r21--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>25.71s</b></span>
+    
+    <span>length <b>6.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r22</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r22--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.72s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r23</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r23--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.88s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r24</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r24--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.01s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r25</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r25--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>11.28s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r26</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r26--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.32s</b></span>
+    
+    <span>length <b>7.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r27</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r27--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.11s</b></span>
+    
+    <span>length <b>6.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r28</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r28--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.79s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r29</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r29--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>22.68s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r30</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--gemini-3-1-flash-tts--r30--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>24.06s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 30 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>30 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">r16</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r16--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.81s</b></span>
+    
+    <span>length <b>7.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r01</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r01--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.98s</b></span>
+    
+    <span>length <b>6.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r02</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r02--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.63s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r03</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r03--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.63s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r04</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r04--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.67s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r05</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r05--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.66s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r06</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r06--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.77s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r07</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r07--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.05s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r08</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r08--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.69s</b></span>
+    
+    <span>length <b>6.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r09</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r09--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.74s</b></span>
+    
+    <span>length <b>7.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r10</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r10--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.73s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r11</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r11--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.87s</b></span>
+    
+    <span>length <b>7.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r12</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r12--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.61s</b></span>
+    
+    <span>length <b>6.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r13</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r13--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.64s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r14</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r14--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.67s</b></span>
+    
+    <span>length <b>7.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r15</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r15--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.80s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r17</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r17--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.77s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r18</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r18--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.63s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r19</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r19--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.76s</b></span>
+    
+    <span>length <b>7.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r20</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r20--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.75s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r21</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r21--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.70s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r22</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r22--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.72s</b></span>
+    
+    <span>length <b>6.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r23</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r23--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.65s</b></span>
+    
+    <span>length <b>7.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r24</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r24--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.67s</b></span>
+    
+    <span>length <b>6.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r25</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r25--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.70s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r26</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r26--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.68s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r27</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r27--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.84s</b></span>
+    
+    <span>length <b>6.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r28</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r28--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.92s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r29</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r29--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.80s</b></span>
+    
+    <span>length <b>7.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r30</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-ecom-07--elevenlabs-multilingual-v2--r30--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.78s</b></span>
+    
+    <span>length <b>7.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="xtra">
+    
+    
+    
+    <div><span class="xl">Throughput</span>
+      
+      <div class="xr"><code>elevenlabs-multilingual-v2</code>
+        <span class="dim">30 clips · 3.57 min of audio</span>
+        <b>$0.1050 per audio minute</b></div>
+      
+      <div class="xr"><code>gemini-3-1-flash-tts</code>
+        <span class="dim">30 clips · 3.53 min of audio</span>
+        <b>$0.0609 per audio minute</b></div>
+      
+    </div>
+    
+  </div>
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 1 pass.
+  </p>
+</article>
+
+<article class="sc" data-ind="Gaming"
+  data-res="tie"
+  data-gem="96.58"
+  data-oth="94.3545"
+  data-gap="5.2309999999999945">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Gaming</span>
+      <h3><code>vr-game-01</code>Mission briefing with item and danger callouts - Gaming</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge tie">
+      Split
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Raider, listen up. Extraction point is grid 7 4 2 9, north face of the Speranza Dam. You are carrying one Kestrel-pattern rebreather and three units of refined cobalt. Do not drop them. ARC patrols are heaviest between the silos, so move along the eastern wall instead. The storm front closes that corridor in nine minutes. If you miss the window, fall back to Cache Delta and hold for the next rotation. Good luck out there.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      
+      <div class="cq">96.6%</div>
+      
+      <div class="cs">1 of 2 clips scored
+        · worst word errors 2.6%</div>
+      <div class="gates">
+        <span class="g no">must_say[rebreather]</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-game-01</span>
+    
+      <span class="sc-pill">96.6%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-01--gemini-3-1-flash-tts--voice-p2-vr-game-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>19.12s</b></span>
+    
+    <span>length <b>25.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-game-01</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-01--gemini-3-1-flash-tts--voice-p1-vr-game-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>13.78s</b></span>
+    
+    <span>length <b>25.4s</b></span>
+    <span>word errors <b>2.6%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      
+      <div class="cq">94.4%</div>
+      
+      <div class="cs">2 of 2 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-game-01</span>
+    
+      <span class="sc-pill">97.4%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-01--elevenlabs-multilingual-v2--voice-p1-vr-game-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.18s</b></span>
+    
+    <span>length <b>24.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-game-01</span>
+    
+      <span class="sc-pill">91.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-01--elevenlabs-multilingual-v2--voice-p2-vr-game-01.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.32s</b></span>
+    
+    <span>length <b>27.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 16:51</th><th class="n">09-03 16:59</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">—</td><td class="n">96.6%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">97.4%</td><td class="n">91.3%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:74.07407407407408%"></span>
+      <span class="door" style="left:6.161543343376642%"></span>
+      <span class="mark risk" style="left:64.46206645840637%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±6.0pp</span>
+      <span>measured gap 5.2pp</span>
+    </div>
+    
+    <div class="gwarn">Gap is smaller than this model's own spread — a re-run can move it.</div>
+    
+  </div>
+  
+
+  <p class="sv">Gemini scores 5.2pp higher but cleared fewer gates — not a win.
+  </p>
+</article>
+
+<article class="sc" data-ind="Gaming"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Gaming</span>
+      <h3><code>vr-game-02</code>Announcer escalation across five energy beats - Gaming</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">We&#39;re level at 14 to 14, ninety seconds on the clock. Vasquez has the cash box and she&#39;s moving. Kowalski is cutting the angle, he&#39;s going to catch her at the bridge. Oh, she jukes! She&#39;s through! Vasquez is through and the platform is lighting up! That is the steal of the tournament, and Ironhaus take it, 18 to 14!</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 17.2%</div>
+      <div class="gates">
+        <span class="g no">wer_within_max</span>
+        <span class="g no">must_say[14 to 14]</span>
+        <span class="g no">must_say[steal of the tournament]</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-game-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-02--gemini-3-1-flash-tts--voice-p2-vr-game-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>11.50s</b></span>
+    
+    <span>length <b>19.7s</b></span>
+    <span>word errors <b>17.2%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-game-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-02--gemini-3-1-flash-tts--voice-p1-vr-game-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>22.29s</b></span>
+    
+    <span>length <b>23.6s</b></span>
+    <span>word errors <b>12.5%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 2 clips scored
+        · worst word errors 12.5%</div>
+      <div class="gates">
+        <span class="g no">wer_within_max</span>
+        <span class="g no">must_say[14 to 14]</span>
+        
+      </div>
+      
+      <details><summary>2 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p2-vr-game-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-02--elevenlabs-multilingual-v2--voice-p2-vr-game-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.73s</b></span>
+    
+    <span>length <b>19.3s</b></span>
+    <span>word errors <b>12.5%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    
+    <span class="rl">voice-p1-vr-game-02</span>
+    
+      <span class="sc-pill">0.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-02--elevenlabs-multilingual-v2--voice-p1-vr-game-02.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.87s</b></span>
+    
+    <span>length <b>19.5s</b></span>
+    <span>word errors <b>12.5%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 2 passes.
+  </p>
+</article>
+
+<article class="sc" data-ind="Gaming"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Gaming</span>
+      <h3><code>vr-game-03</code>Real-time NPC response, time to first audio - Gaming</h3>
+      <span class="dim" style="font-size:12.5px">1 pass</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">You should not have come this far alone, Raider. Turn back to the ridge and I will cover you.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 20 clips scored
+        · worst word errors 5.3%</div>
+      <div class="gates">
+        <span class="g no">ttfa_within_max</span>
+        
+      </div>
+      
+      <details><summary>20 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">r11</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r11--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>5.87s</b></span>
+    <span class="lat">first audio <b>2028 ms</b></span>
+    <span>length <b>5.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r01</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r01--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.41s</b></span>
+    <span class="lat">first audio <b>2263 ms</b></span>
+    <span>length <b>5.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r02</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r02--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.81s</b></span>
+    <span class="lat">first audio <b>2089 ms</b></span>
+    <span>length <b>5.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r03</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r03--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.09s</b></span>
+    <span class="lat">first audio <b>1166 ms</b></span>
+    <span>length <b>5.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r04</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r04--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.73s</b></span>
+    <span class="lat">first audio <b>1986 ms</b></span>
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r05</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r05--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>42.52s</b></span>
+    <span class="lat">first audio <b>2189 ms</b></span>
+    <span>length <b>5.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r06</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r06--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.25s</b></span>
+    <span class="lat">first audio <b>2039 ms</b></span>
+    <span>length <b>5.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r07</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r07--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.88s</b></span>
+    <span class="lat">first audio <b>2179 ms</b></span>
+    <span>length <b>5.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r08</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r08--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>14.72s</b></span>
+    <span class="lat">first audio <b>2090 ms</b></span>
+    <span>length <b>5.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r09</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r09--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.81s</b></span>
+    <span class="lat">first audio <b>2006 ms</b></span>
+    <span>length <b>5.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r10</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r10--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>11.97s</b></span>
+    <span class="lat">first audio <b>2071 ms</b></span>
+    <span>length <b>5.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r12</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r12--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.86s</b></span>
+    <span class="lat">first audio <b>2103 ms</b></span>
+    <span>length <b>5.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r13</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r13--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.68s</b></span>
+    <span class="lat">first audio <b>2107 ms</b></span>
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r14</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r14--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>10.87s</b></span>
+    <span class="lat">first audio <b>2425 ms</b></span>
+    <span>length <b>5.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r15</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r15--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.03s</b></span>
+    <span class="lat">first audio <b>2078 ms</b></span>
+    <span>length <b>5.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r16</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r16--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.46s</b></span>
+    <span class="lat">first audio <b>2941 ms</b></span>
+    <span>length <b>5.8s</b></span>
+    <span>word errors <b>5.3%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r17</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r17--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.36s</b></span>
+    <span class="lat">first audio <b>2098 ms</b></span>
+    <span>length <b>5.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r18</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r18--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>13.55s</b></span>
+    <span class="lat">first audio <b>2055 ms</b></span>
+    <span>length <b>5.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r19</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r19--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.68s</b></span>
+    <span class="lat">first audio <b>2046 ms</b></span>
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r20</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--gemini-3-1-flash-tts--r20--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>3.66s</b></span>
+    <span class="lat">first audio <b>2070 ms</b></span>
+    <span>length <b>5.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 20 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g no">ttfa_within_max</span>
+        
+      </div>
+      
+      <details><summary>20 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">r11</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r11--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.44s</b></span>
+    <span class="lat">first audio <b>1267 ms</b></span>
+    <span>length <b>4.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r01</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r01--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.47s</b></span>
+    <span class="lat">first audio <b>1297 ms</b></span>
+    <span>length <b>4.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r02</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r02--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.49s</b></span>
+    <span class="lat">first audio <b>1332 ms</b></span>
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r03</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r03--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.55s</b></span>
+    <span class="lat">first audio <b>1360 ms</b></span>
+    <span>length <b>4.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r04</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r04--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.41s</b></span>
+    <span class="lat">first audio <b>1233 ms</b></span>
+    <span>length <b>4.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r05</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r05--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.52s</b></span>
+    <span class="lat">first audio <b>1352 ms</b></span>
+    <span>length <b>4.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r06</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r06--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.50s</b></span>
+    <span class="lat">first audio <b>1285 ms</b></span>
+    <span>length <b>4.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r07</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r07--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.59s</b></span>
+    <span class="lat">first audio <b>1380 ms</b></span>
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r08</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r08--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.58s</b></span>
+    <span class="lat">first audio <b>1364 ms</b></span>
+    <span>length <b>5.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r09</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r09--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.96s</b></span>
+    <span class="lat">first audio <b>1760 ms</b></span>
+    <span>length <b>4.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r10</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r10--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.40s</b></span>
+    <span class="lat">first audio <b>1218 ms</b></span>
+    <span>length <b>4.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r12</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r12--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.47s</b></span>
+    <span class="lat">first audio <b>1295 ms</b></span>
+    <span>length <b>4.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r13</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r13--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.40s</b></span>
+    <span class="lat">first audio <b>1236 ms</b></span>
+    <span>length <b>4.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r14</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r14--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.50s</b></span>
+    <span class="lat">first audio <b>1318 ms</b></span>
+    <span>length <b>4.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r15</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r15--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.44s</b></span>
+    <span class="lat">first audio <b>1273 ms</b></span>
+    <span>length <b>4.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r16</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r16--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.48s</b></span>
+    <span class="lat">first audio <b>1298 ms</b></span>
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r17</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r17--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.40s</b></span>
+    <span class="lat">first audio <b>1230 ms</b></span>
+    <span>length <b>4.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r18</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r18--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.41s</b></span>
+    <span class="lat">first audio <b>1238 ms</b></span>
+    <span>length <b>4.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r19</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r19--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.47s</b></span>
+    <span class="lat">first audio <b>1290 ms</b></span>
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r20</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-03--elevenlabs-multilingual-v2--r20--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.48s</b></span>
+    <span class="lat">first audio <b>1271 ms</b></span>
+    <span>length <b>4.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="xtra">
+    
+    
+    <div><span class="xl">Time to first audio</span>
+      
+      <div class="xr"><code>elevenlabs-multilingual-v2</code><span class="dim">n=20</span>
+        <b>median 1292 ms</b><span class="dim">95th 1399 · range 1218–1760</span></div>
+      
+      <div class="xr"><code>gemini-3-1-flash-tts</code><span class="dim">n=20</span>
+        <b>median 2084 ms</b><span class="dim">95th 2451 · range 1166–2941</span></div>
+      
+      <div class="xd">Streaming latency, not whole-call time.</div>
+    </div>
+    
+    
+    <div><span class="xl">Throughput</span>
+      
+      <div class="xr"><code>elevenlabs-multilingual-v2</code>
+        <span class="dim">20 clips · 1.52 min of audio</span>
+        <b>$0.1225 per audio minute</b></div>
+      
+      <div class="xr"><code>gemini-3-1-flash-tts</code>
+        <span class="dim">20 clips · 1.86 min of audio</span>
+        <b>$0.0305 per audio minute</b></div>
+      
+    </div>
+    
+  </div>
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 1 pass.
+  <span class="dim">1 earlier run
+    on an older version of this scenario excluded.</span></p>
+</article>
+
+<article class="sc" data-ind="Gaming"
+  data-res="gem"
+  data-gem="96.01516666666667"
+  data-oth="95.24208333333333"
+  data-gap="0.7730833333333287">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Gaming</span>
+      <h3><code>vr-game-04</code>Six distinct NPC voices - Gaming</h3>
+      <span class="dim" style="font-size:12.5px">2 passes</span>
+    </div>
+    <span class="badge gem">
+      gemini-3-1-flash-tts wins
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models — 6 variants</summary>
+    
+      <div class="vlab"><code>quartermaster</code></div>
+      <p class="script">Supplies are short and the gate closes at dusk. Take what you need and be quick about it.</p>
+    
+      <div class="vlab"><code>scout</code></div>
+      <p class="script">Movement on the ridge. Two of them, maybe three. I am not waiting to find out which.</p>
+    
+      <div class="vlab"><code>handler</code></div>
+      <p class="script">Hold your position, Raider. Extraction is nine minutes out and the corridor is not clear.</p>
+    
+      <div class="vlab"><code>medic</code></div>
+      <p class="script">Sit down and let me look at it. You are not walking anywhere on that leg, so stop arguing.</p>
+    
+      <div class="vlab"><code>engineer</code></div>
+      <p class="script">The coupling is fine. The problem is whoever wired the relay backwards, and it was not me.</p>
+    
+      <div class="vlab"><code>trader</code></div>
+      <p class="script">Good salvage, that. I will give you four hundred for it, and we both know it is worth three.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini won">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        <span class="tick">winner</span></div>
+      
+      <div class="cq">96.0%</div>
+      
+      <div class="cs">12 of 12 clips scored
+        · worst word errors 5.3%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>12 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">quartermaster</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">96.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--quartermaster--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.87s</b></span>
+    
+    <span>length <b>8.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">engineer</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--engineer--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.65s</b></span>
+    
+    <span>length <b>6.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">engineer</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">95.5%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--engineer--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>7.54s</b></span>
+    
+    <span>length <b>6.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">handler</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--handler--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.55s</b></span>
+    
+    <span>length <b>6.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">handler</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">96.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--handler--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.39s</b></span>
+    
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">medic</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">95.9%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--medic--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>16.36s</b></span>
+    
+    <span>length <b>6.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">medic</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">96.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--medic--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.69s</b></span>
+    
+    <span>length <b>6.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">quartermaster</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">95.9%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--quartermaster--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.76s</b></span>
+    
+    <span>length <b>7.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">scout</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--scout--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>9.69s</b></span>
+    
+    <span>length <b>5.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">scout</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">97.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--scout--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>26.38s</b></span>
+    
+    <span>length <b>5.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">trader</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.2%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--trader--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>10.47s</b></span>
+    
+    <span>length <b>5.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">trader</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">90.4%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--gemini-3-1-flash-tts--trader--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.41s</b></span>
+    
+    <span>length <b>5.6s</b></span>
+    <span>word errors <b>5.3%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      
+      <div class="cq">95.2%</div>
+      
+      <div class="cs">12 of 12 clips scored
+        · worst word errors 5.3%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>12 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">scout</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">96.8%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--scout--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.47s</b></span>
+    
+    <span>length <b>4.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">engineer</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">90.2%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--engineer--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>2.03s</b></span>
+    
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">engineer</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">90.6%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--engineer--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.61s</b></span>
+    
+    <span>length <b>4.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">handler</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.2%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--handler--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.50s</b></span>
+    
+    <span>length <b>4.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">handler</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">97.6%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--handler--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.21s</b></span>
+    
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">medic</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">89.2%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--medic--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.52s</b></span>
+    
+    <span>length <b>4.9s</b></span>
+    <span>word errors <b>5.3%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">medic</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">96.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--medic--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.36s</b></span>
+    
+    <span>length <b>5.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">quartermaster</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.1%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--quartermaster--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.99s</b></span>
+    
+    <span>length <b>6.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">quartermaster</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">95.9%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--quartermaster--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.71s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">scout</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">98.0%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--scout--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.83s</b></span>
+    
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">trader</span>
+    <span class="rl">voice-p1</span>
+    
+      <span class="sc-pill">97.3%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--trader--voice-p1.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.76s</b></span>
+    
+    <span>length <b>4.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">trader</span>
+    <span class="rl">voice-p2</span>
+    
+      <span class="sc-pill">96.8%</span>
+    
+  </div>
+  <audio controls preload="none" src="audio/vr-game-04--elevenlabs-multilingual-v2--trader--voice-p2.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.52s</b></span>
+    
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="runs"><span class="xl">Score for each run</span>
+  <div class="mscroll"><table>
+    <thead><tr><th>Model</th><th class="n">09-03 21:29</th><th class="n">09-03 21:33</th></tr></thead>
+    <tbody>
+    
+    <tr><td>gemini-3-1-flash-tts</td>
+      <td class="n">96.7%</td><td class="n">95.3%</td>
+    </tr>
+    
+    <tr><td>elevenlabs-multilingual-v2</td>
+      <td class="n">94.8%</td><td class="n">95.7%</td>
+    </tr>
+    
+    </tbody>
+  </table></div></div>
+  
+
+  
+  <div class="xtra">
+    
+    <div><span class="xl">Set verdict</span>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>elevenlabs-multilingual-v2</code><span class="dim">speaker_distinct</span></div>
+      <div class="xd">closest pair scout vs trader at 0.7491 against a ceiling of 0.8 (mean 0.6385 over 15 pairs)</div>
+      
+      <div class="xr"><span class="g no">fail</span>
+        <code>gemini-3-1-flash-tts</code><span class="dim">speaker_distinct</span></div>
+      <div class="xd">closest pair handler vs medic at 0.8147 against a ceiling of 0.8 (mean 0.7175 over 15 pairs)</div>
+      
+      <div class="xr"><span class="g ok">pass</span>
+        <code>elevenlabs-multilingual-v2</code><span class="dim">speaker_distinct</span></div>
+      <div class="xd">closest pair scout vs trader at 0.7723 against a ceiling of 0.8 (mean 0.6113 over 15 pairs)</div>
+      
+      <div class="xr"><span class="g no">fail</span>
+        <code>gemini-3-1-flash-tts</code><span class="dim">speaker_distinct</span></div>
+      <div class="xd">closest pair medic vs scout at 0.8239 against a ceiling of 0.8 (mean 0.7279 over 15 pairs)</div>
+      
+    </div>
+    
+    
+    
+    <div><span class="xl">Throughput</span>
+      
+      <div class="xr"><code>elevenlabs-multilingual-v2</code>
+        <span class="dim">12 clips · 1.03 min of audio</span>
+        <b>$0.1168 per audio minute</b></div>
+      
+      <div class="xr"><code>gemini-3-1-flash-tts</code>
+        <span class="dim">12 clips · 1.29 min of audio</span>
+        <b>$0.0412 per audio minute</b></div>
+      
+    </div>
+    
+  </div>
+  
+
+  
+  <div class="gapbar"><div class="gbar">
+      <span class="band" style="width:74.07407407407408%"></span>
+      <span class="door" style="left:25.72016460905347%"></span>
+      <span class="mark risk" style="left:39.76766117969794%"></span>
+    </div>
+    <div class="gkey">
+      <span>decides at 0.5pp</span>
+      <span>this model's own spread ±1.4pp</span>
+      <span>measured gap 0.8pp</span>
+    </div>
+    
+    <div class="gwarn">Gap is smaller than this model's own spread — a re-run can move it.</div>
+    
+  </div>
+  
+
+  <p class="sv">Gemini ahead by 0.8pp — but that is inside its own ±1.4pp run-to-run spread, so a re-run can move it.
+  </p>
+</article>
+
+<article class="sc" data-ind="Gaming"
+  data-res="tie"
+  data-gem=""
+  data-oth=""
+  data-gap="">
+  <div class="schead">
+    <div>
+      <span class="eyebrow">Gaming</span>
+      <h3><code>vr-game-07</code>Placeholder VO line, batch throughput - Gaming</h3>
+      <span class="dim" style="font-size:12.5px">1 pass</span>
+    </div>
+    <span class="badge none">
+      No score
+    </span>
+  </div>
+
+  
+  <details><summary>The script sent to both models</summary>
+    
+      
+      <p class="script">Hold this position until the extraction window opens.</p>
+    
+  </details>
+  
+
+  <div class="vs">
+    
+    <div class="col gemini">
+      <div class="cm"><span class="dot"></span>gemini-3-1-flash-tts
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 30 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>30 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">r16</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r16--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.67s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r01</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r01--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>5.10s</b></span>
+    
+    <span>length <b>3.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r02</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r02--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.54s</b></span>
+    
+    <span>length <b>4.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r03</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r03--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.52s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r04</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r04--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.47s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r05</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r05--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.54s</b></span>
+    
+    <span>length <b>3.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r06</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r06--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.61s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r07</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r07--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.66s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r08</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r08--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.71s</b></span>
+    
+    <span>length <b>3.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r09</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r09--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.61s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r10</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r10--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.67s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r11</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r11--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.33s</b></span>
+    
+    <span>length <b>3.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r12</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r12--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.67s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r13</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r13--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.55s</b></span>
+    
+    <span>length <b>3.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r14</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r14--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.46s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r15</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r15--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.71s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r17</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r17--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.69s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r18</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r18--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.65s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r19</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r19--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.63s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r20</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r20--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.50s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r21</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r21--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.46s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r22</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r22--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.54s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r23</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r23--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.70s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r24</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r24--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.50s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r25</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r25--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.64s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r26</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r26--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.56s</b></span>
+    
+    <span>length <b>3.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r27</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r27--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.57s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r28</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r28--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.61s</b></span>
+    
+    <span>length <b>3.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r29</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r29--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>4.55s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r30</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--gemini-3-1-flash-tts--r30--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>6.42s</b></span>
+    
+    <span>length <b>3.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+    <div class="col rival">
+      <div class="cm"><span class="dot"></span>elevenlabs-multilingual-v2
+        </div>
+      <div class="cq none">no score</div>
+      <div class="cs">0 of 30 clips scored
+        · worst word errors 0.0%</div>
+      <div class="gates">
+        <span class="g ok">all gates passed</span>
+      </div>
+      
+      <details><summary>30 clips — listen</summary>
+        
+<div class="clip">
+  <div class="head">
+    <span class="vt">r16</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r16--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.38s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r01</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r01--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.51s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r02</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r02--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.34s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r03</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r03--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.49s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r04</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r04--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.36s</b></span>
+    
+    <span>length <b>2.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r05</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r05--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.29s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r06</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r06--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.41s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r07</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r07--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.52s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r08</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r08--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.40s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r09</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r09--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.46s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r10</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r10--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.36s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r11</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r11--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.62s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r12</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r12--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.41s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r13</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r13--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.39s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r14</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r14--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.36s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r15</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r15--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.34s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r17</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r17--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.40s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r18</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r18--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.45s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r19</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r19--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.40s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r20</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r20--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.54s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r21</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r21--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.34s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r22</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r22--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.44s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r23</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r23--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.48s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r24</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r24--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.78s</b></span>
+    
+    <span>length <b>2.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r25</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r25--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.53s</b></span>
+    
+    <span>length <b>2.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r26</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r26--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.41s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r27</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r27--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.50s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r28</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r28--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.39s</b></span>
+    
+    <span>length <b>2.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r29</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r29--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.48s</b></span>
+    
+    <span>length <b>3.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="head">
+    <span class="vt">r30</span>
+    <span class="rl">voice</span>
+    <span class="sc-pill none">not scored</span>
+  </div>
+  <audio controls preload="none" src="audio/vr-game-07--elevenlabs-multilingual-v2--r30--voice.mp3"></audio>
+  <div class="meta">
+    <span class="lat">generated in <b>1.38s</b></span>
+    
+    <span>length <b>3.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+</div>
+
+      </details>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="xtra">
+    
+    
+    
+    <div><span class="xl">Throughput</span>
+      
+      <div class="xr"><code>elevenlabs-multilingual-v2</code>
+        <span class="dim">30 clips · 1.41 min of audio</span>
+        <b>$0.1129 per audio minute</b></div>
+      
+      <div class="xr"><code>gemini-3-1-flash-tts</code>
+        <span class="dim">30 clips · 1.85 min of audio</span>
+        <b>$0.0601 per audio minute</b></div>
+      
+    </div>
+    
+  </div>
+  
+
+  
+
+  <p class="sv">No score — every clip failed its gates across 1 pass.
+  </p>
+</article>
+
+</div>
+<p class="nomatch" hidden>No scenario matches those filters.</p>
+
+<footer>
+<h2 style="margin-top:0">What this page does and does not claim</h2>
+<ul class="notes">
+  <li><b>All 242 clips are here</b>, encoded to MP3; 24 kHz WAV originals on request.</li>
+  <li><b>A percentage is a rubric score, not an accuracy rate</b> — 95% means 9.5 out of 10.</li>
+  <li><b>Quality is averaged over scored clips only</b>; a gate failure counts against the gate rate.</li>
+  <li><b>Ranked on gates first, quality second</b>, so failing more can never look like scoring higher.</li>
+  <li><b>Transcribed locally by <code>medium</code></b>, which shares a vendor with neither model.</li>
+  <li><b>Absent measurements show as “—”</b>, never as zero; three batch runs carry timing but no score.</li>
+  <li><b>The judge is <code>gemini-2.5-flash</code></b>, a Google model — blinding hides
+  the label, not the acoustic fingerprint, so the judged criteria carry that exposure, and it has never been checked against human listeners. The measured
+  figures — word errors, timing, cost, gate rate — do not depend on it.</li>
+</ul>
+</footer>
+</div>
+
+<script>
+(function () {
+  var cards = document.getElementById('cards');
+  var all = Array.prototype.slice.call(cards.querySelectorAll('.sc'));
+  var state = { ind: 'all', res: 'all' };
+
+  function num(el, key) {
+    var v = el.getAttribute('data-' + key);
+    return v === '' || v === null ? null : parseFloat(v);
+  }
+  function sortBy(mode) {
+    var parts = mode.split('-'), key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
+    all.slice().sort(function (x, y) {
+      var a = num(x, key), b = num(y, key);
+      // A scenario nobody scored is not a zero - it has no place on this
+      // scale at all, so it sits at the end whichever way the sort runs.
+      if (a === null && b === null) return 0;
+      if (a === null) return 1;
+      if (b === null) return -1;
+      return (a - b) * dir;
+    }).forEach(function (c) { cards.appendChild(c); });
+  }
+  var sortEl = document.getElementById('sort');
+  sortEl.addEventListener('change', function () { sortBy(this.value); });
+  // Apply the selected option on load. The biggest separations lead, which
+  // is the order a reader of a comparison actually wants.
+  sortBy(sortEl.value);
+
+  function applyFilters() {
+    var shown = 0;
+    all.forEach(function (c) {
+      var ok = (state.ind === 'all' || c.dataset.ind === state.ind) &&
+               (state.res === 'all' || c.dataset.res === state.res);
+      c.hidden = !ok;
+      if (ok) shown++;
+    });
+    document.querySelector('.nomatch').hidden = shown > 0;
+  }
+  document.querySelectorAll('.chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var axis = b.dataset.ind !== undefined ? 'ind' : 'res';
+      b.parentElement.querySelectorAll('.chip').forEach(function (x) {
+        x.classList.remove('on');
+      });
+      b.classList.add('on');
+      state[axis] = b.dataset[axis];
+      applyFilters();
+    });
+  });
+
+  function setAll(open) {
+    document.querySelectorAll('details').forEach(function (d) { d.open = open; });
+  }
+  document.getElementById('expand').addEventListener('click', function () { setAll(true); });
+  document.getElementById('collapse').addEventListener('click', function () { setAll(false); });
+
+  // One clip audible at a time. Two models talking over each other is
+  // useless for comparison, which is the point of the page.
+  document.addEventListener('play', function (e) {
+    if (e.target.tagName !== 'AUDIO') return;
+    document.querySelectorAll('audio').forEach(function (a) {
+      if (a !== e.target) a.pause();
+    });
+  }, true);
+})();
+</script>
+</body>
+</html>

@@ -337,7 +337,8 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
 
 
 def render_client_report(runs_root: Path, modality: str = "voice",
-                         quality: float | None = None, inline: bool = False) -> Path:
+                         quality: float | None = None, inline: bool = False,
+                         out_dir: Path | None = None) -> Path:
     """
     Write the shareable report.
 
@@ -350,17 +351,29 @@ def render_client_report(runs_root: Path, modality: str = "voice",
     `inline=True` still produces the single self-contained file, which is the
     right shape when the report has to travel as one attachment and the reader
     is willing to wait for it.
+
+    `out_dir` writes the folder somewhere other than beside the runs - which
+    is how `voice/dashboard/` is produced. That folder is COMMITTED, unlike
+    `runs/`, so the report travels with the repo and can be deployed from it.
+    Only the report goes there: the run evidence it was derived from stays
+    gitignored, the same seam `apps/dashboard/public/data` uses in the study
+    console.
     """
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
     if inline:
+        if out_dir is not None:
+            raise SystemExit("--out writes a folder; it cannot be combined with --inline")
         out_dir, out = Path(runs_root), Path(runs_root) / "client-report.html"
         audio_dir = None
     else:
-        out_dir = Path(runs_root) / "client-report"
+        out_dir = Path(out_dir) if out_dir else Path(runs_root) / "client-report"
         out = out_dir / "index.html"
         audio_dir = out_dir / "audio"
         audio_dir.mkdir(parents=True, exist_ok=True)
+        # Clear stale clips so a renamed scenario leaves nothing behind. Only
+        # *.mp3, and only in audio/ - README.md and vercel.json live beside
+        # the page, are hand-written, and are not ours to remove.
         for stale in audio_dir.glob("*.mp3"):
             stale.unlink()
 

@@ -350,3 +350,38 @@ def test_quality_gets_no_star_inside_the_decision_band(tmp_path):
                        {"model": "elevenlabs-multilingual-v2", "score": 8.00}])
     q2 = next(x for x in build(r2, "voice")["strip"] if x["label"] == "Quality")
     assert q2["gem_win"] and not q2["oth_win"]
+
+
+def test_out_writes_the_folder_somewhere_committable(root, tmp_path):
+    """
+    `voice/dashboard/` is the committed export - the rendered report travels
+    with the repo while `runs/` stays gitignored, the same seam
+    `apps/dashboard/public/data` uses in the study console.
+    """
+    dest = tmp_path / "dashboard"
+    out = render_client_report(root, "voice", out_dir=dest)
+    assert out == dest / "index.html" and out.exists()
+    assert (dest / "audio").is_dir()
+    srcs = re.findall(r'<audio[^>]+src="([^"]+)"', out.read_text(encoding="utf-8"))
+    for s in srcs:
+        assert (dest / s).exists(), f"{s} referenced but not written"
+
+
+def test_a_re_export_keeps_the_hand_written_files_beside_the_page(root, tmp_path):
+    """
+    README.md and vercel.json live in that folder and are not generated.
+    The stale-clip sweep must clear audio, not its neighbours.
+    """
+    dest = tmp_path / "dashboard"
+    render_client_report(root, "voice", out_dir=dest)
+    (dest / "README.md").write_text("hand written", encoding="utf-8")
+    (dest / "vercel.json").write_text("{}", encoding="utf-8")
+    render_client_report(root, "voice", out_dir=dest)
+    assert (dest / "README.md").read_text(encoding="utf-8") == "hand written"
+    assert (dest / "vercel.json").exists()
+
+
+def test_out_and_inline_are_refused_together(root, tmp_path):
+    """One writes a folder, the other a file - silently picking would surprise."""
+    with pytest.raises(SystemExit, match="cannot be combined"):
+        render_client_report(root, "voice", inline=True, out_dir=tmp_path / "d")
