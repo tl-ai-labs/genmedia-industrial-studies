@@ -6,9 +6,9 @@ Scoring - weights to a scenario score, and two lenses to a verdict
     scenario_score = sum(weight_i x criterion_score_i)      weights sum to 1
     model_score    = mean(scenario_score) over JUDGED scenarios only
 
-    win / tie / loss = compare two models ON THE SAME scenario; tie at |d| <= 0.5
+    win / tie / loss = compare two models ON THE SAME scenario; tie at |d| <= 0.05
 
-    A beats B  <=>  mean(A) - mean(B) >= 0.5
+    A beats B  <=>  mean(A) - mean(B) >= 0.05
                 OR  A wins >= 70% of the DECIDED scenarios
                 backed by a sign test when there are >= 10 decided
 
@@ -32,9 +32,29 @@ from typing import Any
 
 from .rubrics import Rubric, apply_scale
 
-TIE_BAND = 0.5
+# THE DECISION BAND, and the one place it is written down.
+#
+# Set to 0.05 on 2026-09-04 at the study owner's instruction (was 0.5).
+# `runner.dashboard` imports MEAN_GAP_DOOR rather than carrying its own
+# number, so the report and the board can never disagree about what counts
+# as a difference.
+#
+# WHAT THE BAND NO LONGER DOES, recorded because it is load-bearing for
+# anyone reading a verdict later. 0.5 was a rule of thumb picked before any
+# run; the board replaced it with each model's MEASURED run-to-run spread,
+# on the principle that a gap means nothing until it beats the variation a
+# model shows against itself. At 0.05 that guard is gone: on the bank as it
+# stands, five of the seven scenarios this band decides have a gap SMALLER
+# than the noise floor measured on the same scenario - vr-ecom-01 (0.181 vs
+# ±0.188), vr-ecom-02 (0.116 vs ±0.162), vr-game-04 (0.077 vs ±0.144),
+# vr-ads-05 (0.707 vs ±2.228) and vr-game-01 (0.523 vs ±0.601). Those
+# verdicts can invert on a re-run without either model changing.
+#
+# The floor is still measured and still printed beside every gap, so a
+# reader can see the distance between what was decided and what was shown.
+TIE_BAND = 0.05
 WIN_RATE_DOOR = 0.70
-MEAN_GAP_DOOR = 0.5
+MEAN_GAP_DOOR = 0.05
 COVERAGE_DOOR = 0.80
 SIGN_TEST_MIN_N = 10
 
@@ -328,7 +348,7 @@ def verdict(
     if mean_door or win_door:
         doors = []
         if mean_door:
-            doors.append(f"mean gap {gap:.2f} >= {MEAN_GAP_DOOR}")
+            doors.append(f"mean gap {gap:.3f} >= {MEAN_GAP_DOOR}")
         if win_door:
             doors.append(f"{pair.wins} wins of {pair.decided} decided ({rate:.0%} >= {WIN_RATE_DOOR:.0%})")
         reason = f"{top.model_id} beats {second.model_id}: " + " and ".join(doors)
@@ -343,7 +363,7 @@ def verdict(
 
     rate_txt = f"{rate:.0%}" if rate is not None else "n/a"
     reason = (
-        f"tie: mean gap {gap:.2f} is inside the {MEAN_GAP_DOOR} band and "
+        f"tie: mean gap {gap:.3f} is inside the {MEAN_GAP_DOOR} band and "
         f"{top.model_id} won {pair.wins} of {pair.decided} decided ({rate_txt}), below the "
         f"{WIN_RATE_DOOR:.0%} door. Decide on cost, latency, reliability and worst case."
     )

@@ -80,10 +80,10 @@
     </div>
   </div>
 
-  <div class="banner"><b>Read every gap against the noise floor beside it.</b> The floor is the
-  larger of the two models' own run-to-run spreads on that scenario — a gap has to clear the
-  noisier of the pair to mean anything. A scenario run once has no floor, and its gap is not
-  evidence of anything yet.</div>
+  <div class="banner"><b>A winner is named when the gap clears {{ win_gap }}.</b> That band is set
+  for this study, not derived from the runs. Each model's own run-to-run spread is still measured
+  and printed beside every gap — where a gap is smaller than that spread, the card says so, because
+  those are the verdicts a re-run can move or invert.</div>
 
   {% if uncalibrated %}
   <div class="banner"><b>The judge is uncalibrated.</b> The 2-humans × 5-clips gate has never
@@ -103,19 +103,18 @@
 <section class="runpanel on" data-tab="t-scenarios">
   <details class="howto"><summary>How a winner is decided</summary>
   <div class="hbody">
-    <p><b>Four conditions, all required.</b> Any one failing means no winner is
-    named — the card says which one, rather than showing a number that will not
-    survive a re-run.</p>
+    <p><b>Three conditions, all required.</b> Any one failing means no winner is
+    named, and the card says which one.</p>
+    <p class="note">The band was <b>0.5</b> until 2026-09-04, then each model's
+    own measured run-to-run spread, and is now a flat <b>{{ win_gap }}</b> set for
+    this study. The spread is still measured and still shown, so you can see the
+    distance between what was decided and what the runs demonstrated.</p>
     <ol>
       <li><b>Both models produced a score.</b> A clip that fails a gate is
       <em>invalid</em>, scored nothing, and never reaches the judge. If either
       side has no score the card reads <em>No score</em> or <em>One arm only</em>.</li>
-      <li><b>The gap clears the noise floor.</b> The floor is the larger of the
-      two models' own run-to-run spreads on that scenario — a gap has to beat
-      the noisier of the pair. Inside it, the card reads <em>Inside the noise</em>.</li>
-      <li><b>Both models ran at least twice.</b> A single measurement has no
-      spread, so a floor built from one model alone is not a floor. Otherwise:
-      <em>Not comparable</em>.</li>
+      <li><b>The gap clears {{ win_gap }}.</b> A flat decision band, set for this
+      study. Inside it, the card reads <em>Tie</em>.</li>
       <li><b>The winner's gate record is no worse.</b> A model cannot win on
       quality while clearing fewer gates — that is winning the average by
       skipping the harder half. Otherwise: <em>Split</em>.</li>

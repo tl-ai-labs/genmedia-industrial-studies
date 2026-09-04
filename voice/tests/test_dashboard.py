@@ -16,7 +16,8 @@ from pathlib import Path
 
 import pytest
 
-from runner.dashboard import load_runs, render_dashboard, rollup_models
+from runner.dashboard import (WIN_GAP, load_runs, render_dashboard,
+                              rollup_models)
 
 
 def _write_run(root: Path, run_id: str, cells: list[dict], scenario_hash: str = "h-orig") -> None:
@@ -171,36 +172,56 @@ def test_the_rendered_mean_always_carries_its_denominator(tmp_path):
     assert "(1 of 2)" in html
 
 
-def test_a_result_that_does_not_clear_the_noise_names_no_winner(runs_root):
+def test_a_gap_inside_the_band_names_no_winner(tmp_path):
     """
-    CONTRACT UNCHANGED, INSTRUMENT CHANGED (2026-09-03). This used to be
-    judged against a fixed 0.5-point band - a rule of thumb picked before any
-    run had happened, which named winners on gaps nothing had shown to be
-    real. It is now judged against the MEASURED noise floor: the larger of
-    the two models' own run-to-run spreads.
+    THE BAND, THIRD REVISION (2026-09-04). Fixed 0.5 -> each model's measured
+    run-to-run spread -> flat WIN_GAP, set by the study owner. Only a gap
+    inside the band ties now.
 
-    alpha means 9.05 (9.0, 9.1 -> +/-0.1); beta means 8.70 (8.8, 8.6 ->
-    +/-0.2). The 0.35 gap clears the 0.2 floor but not twice it, so it is
-    marginal and NO winner may be named.
+    alpha means 9.00 and beta 8.98: a 0.02 gap, inside 0.05.
     """
-    html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    assert "Marginal." in html
-    assert "noise floor" in html
+    root = tmp_path / "runs"; root.mkdir()
+    for rid, a, b in (("2026-09-01_100000_voice-r1", 9.00, 8.98),
+                      ("2026-09-01_110000_voice-r2", 9.00, 8.98)):
+        _write_run(root, rid, [{"model": "alpha", "status": "scored", "score": a},
+                               {"model": "beta", "status": "scored", "score": b}])
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    assert "Tie." in html
     assert "leads</b>" not in html
 
 
-def test_a_clear_result_names_a_winner(tmp_path):
+def test_a_gap_that_clears_the_band_names_a_winner(tmp_path):
     root = tmp_path / "runs"; root.mkdir()
-    for i, rid in enumerate(("2026-09-01_100000_voice-r1", "2026-09-01_110000_voice-r2")):
+    for rid in ("2026-09-01_100000_voice-r1", "2026-09-01_110000_voice-r2"):
         _write_run(root, rid, [
             {"model": "alpha", "status": "scored", "score": 9.5},
             {"model": "beta", "status": "scored", "score": 7.0},
         ])
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
-    # Both models are perfectly consistent (+/-0.0), so any real gap clears
-    # the floor and the winner is named outright.
     assert "alpha leads" in html
-    assert "over twice the noise floor" in html
+    assert f"clears the {WIN_GAP} decision band" in html
+
+
+def test_a_decided_gap_smaller_than_its_own_noise_says_so(tmp_path):
+    """
+    The band no longer consults the measured spread, so the board can name a
+    winner on a gap the runs have not shown to be real. It must SAY that
+    where it happens - this is the only thing standing between a reader and
+    a verdict that inverts on a re-run.
+
+    alpha: 9.0 then 9.6 (spread 0.6). beta: 8.9 then 9.4 (spread 0.5).
+    Mean gap 0.15 - past the 0.05 band, well inside a 0.6 floor.
+    """
+    root = tmp_path / "runs"; root.mkdir()
+    for rid, a, b in (("2026-09-01_100000_voice-r1", 9.0, 8.9),
+                      ("2026-09-01_110000_voice-r2", 9.6, 9.4)):
+        _write_run(root, rid, [{"model": "alpha", "status": "scored", "score": a},
+                               {"model": "beta", "status": "scored", "score": b}])
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    # NB the apostrophe in "scenario's" is escaped in the rendered page.
+    assert "SMALLER than this scenario" in html
+    assert "measured" in html
+    assert "re-run can move or invert it" in html
 
 
 def test_every_tab_panel_is_populated(runs_root):
@@ -421,12 +442,16 @@ def test_two_runs_sharing_a_label_are_not_collapsed_into_one_column(tmp_path):
 def test_a_tie_is_never_dressed_as_a_win(tmp_path):
     """
     The filter and the badge both key on `result_class`, so a gap inside the
-    noise floor must classify as `tie` and be reachable only under "No
+    decision band must classify as `tie` and be reachable only under "No
     winner" - never counted in the "Gemini wins" chip.
+
+    Scores chosen so the two passes cancel to a mean gap of 0.005, inside
+    the 0.05 band. (Under the previous noise-floor rule this test used a
+    0.445 gap against a 0.5 floor; the band moved, the contract did not.)
     """
     root = tmp_path / "runs"; root.mkdir()
     for rid, a, b in (("2026-09-01_100000_voice-a", 9.00, 8.99),
-                      ("2026-09-01_110000_voice-b", 8.50, 9.40)):
+                      ("2026-09-01_110000_voice-b", 8.50, 8.51)):
         _write_run(root, rid, [{"model": "gemini-x", "status": "scored", "score": a},
                                {"model": "other-y", "status": "scored", "score": b}],
                    scenario_hash="h")
@@ -434,7 +459,7 @@ def test_a_tie_is_never_dressed_as_a_win(tmp_path):
     # Scoped to the CARDS - the filter chips carry data-res too, and matching
     # those would make this assertion pass no matter how a scenario ended.
     cards = re.findall(r'<article class="scard" data-ind="[^"]*" data-res="(\w+)"', html)
-    # gap 0.445 against a floor of 0.5 - inside the noise, so no winner.
+    # mean gap 0.005, inside the 0.05 band, so no winner.
     assert cards == ["tie"], cards
     assert "wins</span>" not in html.split('class="wbadge')[1][:90]
 
