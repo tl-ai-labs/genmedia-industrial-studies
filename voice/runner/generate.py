@@ -139,6 +139,9 @@ class CellOutcome:
     output_path: Path | None = None
     transcript_path: Path | None = None
     latency_ms: int | None = None
+    # First-chunk time, when the call was streamed. A DIFFERENT quantity from
+    # latency_ms by an order of magnitude - kept beside it, never over it.
+    ttfa_ms: int | None = None
     cost_micro: int = 0
     asr_cost_micro: int = 0
     check_report: Any = None
@@ -266,6 +269,10 @@ def _generate_one(
         language=scenario.language,
         style=scenario.style,
         timeout_s=timeout_s,
+        # Stream only when the scenario asks for a latency number. Streaming
+        # changes how a response is assembled, and a latency claim should not
+        # silently alter how every other clip in the bank is produced.
+        measure_ttfa="max_ttfa_ms" in (scenario.checks or {}),
     )
 
     last_error = "unknown failure"
@@ -373,6 +380,7 @@ def _generate_one(
                 "latency_ms": latency,
                 "request_id": result.provider_request_id,
                 "output": {
+                    "ttfa_ms": getattr(result, "ttfa_ms", None),
                     "path": str(out_path.relative_to(paths.dir)),
                     "bytes": len(result.data),
                     "mime": result.mime,
@@ -393,6 +401,7 @@ def _generate_one(
             "ok",
             attempt,
             output_path=out_path,
+            ttfa_ms=getattr(result, "ttfa_ms", None),
             latency_ms=latency,
             cost_micro=cost.micro_usd,
             voice_used=(voice_logical, voice_id),
@@ -502,7 +511,8 @@ def measure_cell(
                 )
 
     report = checks_mod.run_checks(
-        scenario, model.id, outcome.output_path, transcript, asr_error, predictor
+        scenario, model.id, outcome.output_path, transcript, asr_error, predictor,
+        extra={"ttfa_ms": outcome.ttfa_ms},
     )
     outcome.check_report = report
     outcome.transcript_path = tpath if transcript else None

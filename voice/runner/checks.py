@@ -404,6 +404,7 @@ def run_checks(
     transcript: str | None,
     asr_error: str | None,
     predictor: QualityPredictor,
+    extra: dict[str, Any] | None = None,
 ) -> CheckReport:
     """
     Every voice gate and measurement for one cell.
@@ -495,6 +496,28 @@ def run_checks(
                 f"({report.measurements['script_words']} script words in "
                 f"{facts.trimmed_duration_s:.2f}s)",
             )
+
+    # Gate 2d - time to first audio. Game audio teams cite 300 ms as the
+    # immersion threshold, which is a hard line rather than a preference: past
+    # it, a player hears the gap before they hear the character.
+    #
+    # ttfa_ms arrives from the adapter, not from this file, because only the
+    # code holding the socket can time the first chunk. It is NOT latency_ms -
+    # whole-call latency is a different quantity by an order of magnitude, and
+    # reporting one as the other would be the single most flattering error
+    # available here.
+    max_ttfa = checks.get("max_ttfa_ms")
+    if max_ttfa is not None:
+        got = (extra or {}).get("ttfa_ms")
+        if got is None:
+            report.add("ttfa_within_max", True,
+                       "not evaluated - the call was not streamed, so there is no "
+                       "first-chunk time. Whole-call latency is NOT a substitute.")
+            report.measurements["ttfa_unmeasured"] = True
+        else:
+            report.measurements["ttfa_ms"] = int(got)
+            report.add("ttfa_within_max", int(got) <= int(max_ttfa),
+                       f"first audio at {int(got)} ms vs a {int(max_ttfa)} ms ceiling")
 
     # Gate 3 - not silent overall.
     not_silent = facts.peak > 1e-4 and facts.rms_dbfs > -70.0
