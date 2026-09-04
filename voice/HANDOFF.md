@@ -11,7 +11,8 @@ things we got wrong.
 **3 add a scenario** · **4 where evidence goes** · **5 how dashboards build** ·
 6 the bank · 7 findings · 8 bugs fixed · 9 known limits · 10 blocked scenarios ·
 11 money · 12 rules · 13 current numbers · 14 the lesson ·
-**15 OPEN ITEMS** · 16 debugging checklist
+**15 OPEN ITEMS — starts with this week's directed next steps** ·
+16 debugging checklist
 
 **If you read only one thing, read §0.** If you are here to run something,
 go straight to §2, §3 and §5. If you are here to change something, read §12 first — the
@@ -57,7 +58,7 @@ instrument rather than the model. See §11.
 | **Branch**       | `feat/voice-lane`, cut from `main` at `6ec7f40`                                                                             |
 | **Module**       | `voice/` — self-contained beside the existing `image/` module                                                               |
 | **Venv**         | `voice/.venv` (Python 3.12, created with `uv`)                                                                              |
-| **Credentials**  | `voice/.env` — gitignored, holds `ELEVENLABS_API_KEY`, `GOOGLE_APPLICATION_CREDENTIALS`, `GCP_PROJECT_ID`, `OPENAI_API_KEY` |
+| **Credentials**  | `voice/.env` — gitignored, holds `ELEVENLABS_API_KEY`, `GOOGLE_APPLICATION_CREDENTIALS`, `GCP_PROJECT_ID`, `OPENAI_API_KEY`. ElevenLabs is called **directly**, not through Vertex — see the note in §15. |
 | **Tests**        | `574 passed, 144 skipped` — all offline, no key, no network, no Docker                                                      |
 | **Scenarios**    | 17 runnable, 11 blocked (see §10)                                                                                           |
 | **Runs on disk** | 36, in `voice/runs/` — gitignored, ~214 MB, **not backed up anywhere**                                                      |
@@ -595,6 +596,56 @@ a suspect until cleared.
 ## 15 · OPEN — everything unfinished, most urgent first
 
 
+
+### Directed next steps — voice lane (from the manager, 4 September)
+
+These are the priorities for the coming week. Each carries what already
+exists, so nobody rebuilds something that is already here.
+
+| # | Task | What is already built, and what is actually missing |
+|---|---|---|
+| A | **Retest TTS latency in streaming mode.** Gemini's median whole-call latency is **7.65s** against ElevenLabs' 1.67s, and that number is unflattering partly because it measures the wrong thing for a conversational use case. | **Streaming is already built** — both adapters stream and timestamp the first audio chunk (`measure_ttfa` on `GenRequest`, commit `00c4f05`). What is missing is *coverage*: only **one** scenario (`vr-game-03`) sets `max_ttfa_ms`, so only one scenario is measured that way. Add `max_ttfa_ms` to the scenarios where responsiveness is the claim and re-run. On the one scenario we do have, TTFA is Gemini 2084 ms vs ElevenLabs 1292 ms (p50, n=20) — closer than 7.65s vs 1.67s, but still behind. **Do not report whole-call latency as TTFA; they differ by roughly an order of magnitude.** |
+| B | **Compare against ElevenLabs v3, not v2.** The whole bank so far is `eleven_multilingual_v2`. | **v3 is not configured** — `configs/models.yaml` has `eleven_multilingual_v2` (enabled) and `eleven_flash_v2_5` (disabled), and no v3 entry. Add it, then **re-run both arms from scratch**: v2 and v3 results are not comparable, and every published number so far is against v2. Note this resets the noise floor too. |
+| C | **Restructure the bank into segments:** call centre (retail / telco / banking) and micro-drama. | Today's split is by id prefix — `ecom` 6, `game` 5, `ads` 3, `drama` 3 — and `INDUSTRY` in `runner/dashboard.py` maps those prefixes to labels. Segments are a **re-grouping, not new scenarios**: several `ecom` scenarios (KYC readback, order status) are already call-centre work. Telco and banking have no scenarios yet. Changing an id changes its hash, so **re-tag rather than rename** if you want existing runs to stay comparable. |
+
+**Where the manager expects the story to land**, worth testing rather than assuming: *language and emotion are the strengths; voice drift is the concern.* Two of those three are already measured —
+
+- **Voice drift is real and quantified.** Speaker-embedding self-similarity across sessions: ElevenLabs **0.976**, Gemini **0.859** (1.0 = identical). Gemini also failed the six-NPC distinctness gate that ElevenLabs passed (`vr-game-04`). The instrument for this exists: `runner/voiceprint.py`.
+- **Emotion is not measured at all.** The three scenarios that would test it need a blind human listener panel (§10) — an LLM judge recognising an emotion is a weaker claim than an audience recognising it.
+- **Language is partly blocked.** Hindi–English code-switching is evidenced *unmeasurable* with the current recogniser (commit `aa547ab`); single-language non-English is measurable and untested.
+
+---
+
+### Note — ElevenLabs may be reachable through Vertex
+
+Recorded 4 September, **not yet verified by us.**
+
+We currently call ElevenLabs **directly**, with `ELEVENLABS_API_KEY` from
+`voice/.env`, through `runner/adapters/elevenlabs_tts.py` (plain
+`urllib.request` against `api.elevenlabs.io`). ElevenLabs models are reported
+to be available through **Google Vertex AI** as well. If the models this study
+needs — specifically **v3**, per task B — are offered there, we may have to
+route through Vertex instead of the direct API.
+
+Before anyone starts that work, check three things:
+
+1. **Is the exact model there?** Vertex Model Garden availability lags, and
+   the version matters — a v3 comparison run against a Vertex build that is
+   really v2.5 would be a silent, unrecoverable error in the results.
+2. **Does the billing change?** Vertex bills to the GCP project, not the
+   ElevenLabs plan. That moves cost off the character quota tracked in §11
+   and onto a different wallet, and **every cost number on the boards would
+   become incomparable with the ones beside it** unless re-run.
+3. **Does it change what we are measuring?** Routing both arms through Google
+   infrastructure means the transport is no longer independent of one vendor.
+   That is the same class of exposure as the judge and the retired Google ASR,
+   and it must be disclosed on the client report if it happens.
+
+The adapter is small and the swap is not hard. The evidence consequences are
+the expensive part — treat a gateway change like a model change: **new runs,
+not a re-label of old ones.**
+
+---
 
 ### Needs doing before anything else
 
