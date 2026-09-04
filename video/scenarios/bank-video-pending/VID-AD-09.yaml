@@ -1,0 +1,29 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-09 (sheet row 83) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: none | source: No asset needed | link: —
+# Runnable in v1: yes.
+id: VID-AD-09
+modality: video
+task: text_to_video
+title: Text stable through camera move
+prompt: A camera pushes in on a storefront while the sign text reading MORNING FUEL stays
+  perfectly legible and correctly spelled throughout.
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Text stable through camera move. Capability under test: Typography under motion.
+  Adherence clauses, check each: 1) Text string exact in every frame  2) No warping during
+  the push  3) Camera push completes  4) Text stays in frame'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- runnable-v1

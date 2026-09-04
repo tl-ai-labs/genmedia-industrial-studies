@@ -1,0 +1,101 @@
+judge:
+  video:
+    adapter: gemini_text
+    price:
+      as_of: 2026-08-31
+      est_usd_per_call: 0.01
+      source: ai.google.dev/gemini-api/docs/pricing
+      unit: per_token
+      usd_in_per_1m: 0.5
+      usd_out_per_1m: 3.0
+    provider: google-vertex
+    provider_model: gemini-3-flash-preview
+    temperature: 0
+    vertex:
+      location: global
+      project: ai-studies-console
+version: 1
+video:
+- adapter: veo_video
+  display: Veo 3.1
+  enabled: false
+  id: veo-3-1-vertex
+  limits:
+    max_concurrency: 1
+    rpm: 2
+  params:
+    audio: false
+    resolution: 1080p
+  price:
+    as_of: 2026-09-02
+    est_usd_per_call: 3.2
+    source: cloud.google.com/vertex-ai/generative-ai/pricing
+    unit: per_second
+    usd: 0.4
+  provider: google-vertex
+  provider_model: veo-3.1-generate-001
+  supports:
+  - text_to_video
+  vertex:
+    location: global
+    project: ai-studies-console
+- adapter: openai_video
+  auth_env: OPENAI_API_KEY
+  display: Sora 2
+  enabled: false
+  id: sora-2
+  limits:
+    max_concurrency: 1
+    rpm: 4
+  params: {}
+  price:
+    as_of: 2026-09-02
+    est_usd_per_call: 0.8
+    source: developers.openai.com/api/docs/pricing
+    unit: per_second
+    usd: 0.1
+  provider: openai
+  provider_model: sora-2-2025-12-08
+  supports:
+  - text_to_video
+- adapter: omni_video
+  display: Omni Flash
+  enabled: false
+  id: omni-flash-vertex
+  limits:
+    max_concurrency: 1
+    rpm: 2
+  params:
+    resolution: 1080p
+  price:
+    as_of: 2026-09-03
+    est_usd_per_call: 0.81
+    source: ai.google.dev/gemini-api/docs/omni
+    unit: per_token
+    usd_out_per_1m: 17.5
+  provider: google-vertex
+  provider_model: gemini-omni-1.1-flash-preview
+  supports:
+  - text_to_video
+  vertex:
+    location: global
+    project: ai-studies-console
+- adapter: seedance_video
+  auth_env: ARK_API_KEY
+  display: Seedance 2.5
+  enabled: true
+  id: seedance-2-5
+  limits:
+    max_concurrency: 1
+    rpm: 4
+  params: {}
+  price:
+    as_of: 2026-09-03
+    est_usd_per_call: 0.6
+    source: docs.byteplus.com/en/docs/ModelArk (Seedance 2.5)
+    unit: per_token
+    usd_out_per_1m: 10.7
+  provider: byteplus
+  provider_model: dreamina-seedance-2-5-260628
+  supports:
+  - text_to_video

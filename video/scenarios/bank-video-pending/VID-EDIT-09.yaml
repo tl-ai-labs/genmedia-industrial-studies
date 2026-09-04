@@ -1,0 +1,30 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-09 (sheet row 113) — prompt verbatim.
+# Industry: Ads (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with on-screen text | source: Pexels Video (free commercial) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'video_edit' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-EDIT-09
+modality: video
+task: video_edit
+title: Edit on-screen text only
+prompt: In this clip, change the on-screen text from SALE to OFFER. Match the existing font,
+  size, colour and position. Change nothing else.
+inputs:
+  source: assets/bank/VID-EDIT-09-source.mp4
+params:
+  audio: false
+expected: 'Edit on-screen text only. Capability under test: Typographic targeted edit. Adherence
+  clauses, check each: 1) Text reads OFFER  2) Font, size, colour match the original  3) Position
+  unchanged  4) Rest of frame unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

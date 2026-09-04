@@ -1,0 +1,135 @@
+# The only file you edit to add/remove a model.
+# Adding a model  = one block here + `enabled: true`.
+# Adding a provider = one adapter class in runner/video/.
+# Every price carries unit + source + as_of. Cost is billed from returned
+# usage wherever the provider reports it; `est_usd_per_call` is used ONLY
+# for the pre-flight budget estimate, never for billing.
+#
+# Every arm ships DISABLED; the human decides budget and flips `enabled` —
+# a 20-scenario run is real money (see the README cost table).
+# 2026-09-03: scope narrowed per the 2026-08-28 weekly review (Gaurav Kumar:
+# "focus on Omni versus Seedance ... state-of-the-art models, not the
+# previous generation"). Enabled pair = Omni Flash vs Seedance 2.5; Veo and
+# Sora are parked (both proven working in the smoke run, kept as reference
+# arms). Artificial Analysis Aug-2026 T2V board: Omni Flash 1238 Elo (#2),
+# Seedance 2.0 720p 1221 (#5), Veo 3.1 1092, Sora unlisted.
+version: 1
+
+video:
+  - id: veo-3-1-vertex
+    display: Veo 3.1
+    enabled: false                   # PARKED 2026-09-03: out of the agreed Omni-vs-Seedance
+                                     # scope; proven working (smoke run). ~$3.20 per 8s clip
+    adapter: veo_video               # -> runner/video/veo_video.py
+    provider: google-vertex
+    provider_model: "veo-3.1-generate-001"     # GA id on Vertex, NOT the -preview alias
+    vertex: {project: ai-studies-console, location: global}
+    supports: [text_to_video]
+    limits: {max_concurrency: 1, rpm: 2}   # same project quota posture as the image lane
+    params: {resolution: "1080p", audio: false}
+    price:
+      unit: per_second
+      usd: 0.40                      # standard tier, audio included in the rate;
+                                     # scenarios run audio-off, same rate applies
+      est_usd_per_call: 3.20         # 8s x $0.40 — pre-flight only, never billing
+      source: cloud.google.com/vertex-ai/generative-ai/pricing
+      as_of: 2026-09-02
+
+  - id: sora-2
+    display: Sora 2
+    enabled: false                   # PARKED 2026-09-03: out of the agreed scope and absent
+                                     # from the Artificial Analysis board; proven working
+                                     # (smoke run). NOTE: only ~$0.50 OpenAI credit remains.
+                                     # ALSO: OpenAI retires the Videos API on
+                                     # 2026-09-24 (help.openai.com, Sora discontinuation)
+                                     # — after that date this arm cannot run at all.
+    adapter: openai_video            # -> runner/video/openai_video.py
+    provider: openai
+    provider_model: "sora-2-2025-12-08"        # dated snapshot, NOT the moving alias
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_video]
+    limits: {max_concurrency: 1, rpm: 4}
+    params: {}                       # resolution comes from each scenario; sora-2
+                                     # tops out at 720p — the adapter records the
+                                     # downgrade and technical_compliance grades it
+    price:
+      unit: per_second
+      usd: 0.10                      # sora-2 720p standard tier; billed from the
+                                     # job's echoed seconds (api_reported)
+      est_usd_per_call: 0.80         # 8s x $0.10 — pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-09-02
+
+  - id: omni-flash-vertex
+    display: Omni Flash
+    enabled: true                    # enabled 2026-09-03 by user decision (Omni-vs-Seedance
+                                     # scope); ~$0.81 per 8s clip; 20 scenarios ~ $16.
+                                     # Proven: 4s/720p probe clip in 27.8s for $0.41
+    adapter: omni_video              # -> runner/video/omni_video.py (Interactions API)
+    provider: google-vertex          # Google — Gemini family; same ADC billing as Veo
+    provider_model: "gemini-omni-1.1-flash-preview"   # verified 2026-09-03 against this
+                                     # project's Vertex model list (the docs' bare
+                                     # "gemini-omni-flash-preview" is NOT served here);
+                                     # preview id, no GA snapshot yet
+    vertex: {project: ai-studies-console, location: global}
+    supports: [text_to_video]
+    limits: {max_concurrency: 1, rpm: 2}
+    params: {resolution: "1080p"}    # no audio toggle on this surface
+    price:
+      unit: per_token                # billed from the interaction's reported
+                                     # video output tokens (~5792 tokens/s at 720p)
+      usd_out_per_1m: 17.50
+      est_usd_per_call: 0.81         # 8s x 5792 t/s x $17.50/1M — pre-flight only
+      source: ai.google.dev/gemini-api/docs/omni
+      as_of: 2026-09-03
+
+  - id: seedance-2-5
+    display: Seedance 2.5
+    enabled: false                   # STOPPED 2026-09-03 by user request after the 14-scenario
+                                     # pilot (runs/2026-09-03_225111_video: 14 clips, $26.02,
+                                     # 100% success). BytePlus account is in ARREARS (-$6 and
+                                     # falling as usage posts) — re-enable only after a top-up.
+                                     # ~$1.87 per 8s clip at 720p (measured), ~$4.55 at 1080p.
+                                     # ARK_API_KEY verified; the model id below is in the
+                                     # account catalogue but must be ACTIVATED in the Ark
+                                     # console (Model activation -> Media tab) or every call
+                                     # is refused with ModelNotOpen — recorded, never billed.
+    adapter: seedance_video          # -> runner/video/seedance_video.py (ModelArk REST)
+    provider: byteplus               # ByteDance — the Seedance family
+    provider_model: "dreamina-seedance-2-5-260628"   # dated ModelArk snapshot
+    auth_env: ARK_API_KEY
+    supports: [text_to_video]
+    limits: {max_concurrency: 3, rpm: 180}   # ModelArk "Model list" (2026-09-02):
+                                     # individual accounts = max concurrency 3, max RPM
+                                     # 180 (enterprise 10 / 600); console shows RPM 180
+                                     # for this account. Concurrency 3 cuts a Seedance
+                                     # bank from ~8-10 h to ~3 h. --workers must be >= 4
+                                     # (3 Seedance + 1 Omni) to use it.
+    params: {}                       # resolution/duration/audio ride the scenario params
+    price:
+      unit: per_token                # billed from the task's completion_tokens
+      usd_out_per_1m: 10.70          # ModelArk rate, no-video-input tier (edits with a
+                                     # source clip bill at the $6.40/1M video-input tier)
+      est_usd_per_call: 1.87         # 8s at 720p (measured $0.234/s) — pre-flight/budget
+                                     # only; set to 4.55 (1080p list) for a 1080p run.
+                                     # Measured 2026-09-03: $0.93 for 4s/720p. PROMO: 1080p
+                                     # is 28% off 14 Aug - 17 Oct 2026 (~$0.41/s -> ~$3.28
+                                     # per 8s clip); 720p not discounted.
+      source: docs.byteplus.com/en/docs/ModelArk (Seedance 2.5)
+      as_of: 2026-09-03
+
+judge:
+  video:
+    adapter: gemini_text             # -> runner/adapters/gemini_text.py; Gemini
+    provider: google-vertex          #    reads mp4 media natively
+    provider_model: "gemini-3-flash-preview"   # same judge as the image project
+    vertex: {project: ai-studies-console, location: global}
+    temperature: 0
+    price:
+      unit: per_token
+      usd_in_per_1m: 0.50
+      usd_out_per_1m: 3.00
+      est_usd_per_call: 0.01         # video tokens make judge calls heavier than
+                                     # image ones; pre-flight only
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-08-31

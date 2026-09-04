@@ -1,0 +1,36 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-I2V-03 (sheet row 97) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail, Micro-drama & entertainment, Gaming)
+# Sheet run settings: '5-8s; 3 seeds; reference images required'.
+# Input assets required: Two reference images | source: VBench-I2V image suite | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-I2V-03
+modality: video
+task: image_to_video
+title: First and last frame bridge
+prompt: Use the first supplied image as the opening frame and the second as the closing frame.
+  Generate a natural five-second transition between them.
+inputs:
+  first_frame: assets/bank/VID-I2V-03-first_frame.png
+  last_frame: assets/bank/VID-I2V-03-last_frame.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'First and last frame bridge. Capability under test: Interpolation between two fixed
+  states. Adherence clauses, check each: 1) Opening frame matches image one  2) Closing frame
+  matches image two  3) Transition is continuous and plausible  4) No mid-clip discontinuity'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- image-to-video-first-last-frame
+- scenario-bank
+- pending-assets

@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-PHY-03 (sheet row 117) — prompt verbatim.
+# Sheet run settings: '5-8s; 1080p; 3 seeds; slow motion permitted where stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# Sheet gives no aspect ratio for this family; 16:9 assumed to match the 1080p spec.
+# PILOT 2026-09-03: run at 720p (deviation from the sheet's 1080p) — the
+# Artificial-Analysis-benchmarked config for Seedance, and 2.5x cheaper.
+# Subset = all Physics & action + CIN-01..04 (14 of 20), Omni Flash vs Seedance 2.5.
+id: VID-PHY-03
+modality: video
+task: text_to_video
+title: Cloth in wind
+prompt: A linen curtain moves in a steady breeze at an open window. Movement must be continuous
+  and consistent with a light fabric.
+params:
+  duration_s: 8
+  resolution: 720p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Cloth in wind. Capability under test: Soft-body dynamics. Adherence clauses, check
+  each: 1) Fabric moves continuously  2) Motion consistent with light cloth, not rigid  3)
+  No clipping through the window frame  4) No tearing or geometry breakage'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- physics-action
+- scenario-bank

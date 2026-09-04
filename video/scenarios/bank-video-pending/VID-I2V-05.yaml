@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-I2V-05 (sheet row 99) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail, Micro-drama & entertainment, Gaming)
+# Sheet run settings: '5-8s; 3 seeds; reference images required'.
+# Input assets required: Product reference | source: Google Scanned Objects (CC BY 4.0) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-I2V-05
+modality: video
+task: image_to_video
+title: Product still to rotation
+prompt: Rotate the supplied product image through 180 degrees to show its other side. Keep
+  the product's form, colour and materials consistent.
+inputs:
+  reference: assets/bank/VID-I2V-05-reference.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Product still to rotation. Capability under test: Structure inference from one
+  view. Adherence clauses, check each: 1) Rotation completes  2) Form consistent throughout  3)
+  Colour and material consistent  4) First frame matches the reference'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- image-to-video-first-last-frame
+- scenario-bank
+- pending-assets

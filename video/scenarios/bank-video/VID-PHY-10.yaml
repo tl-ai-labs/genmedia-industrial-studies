@@ -1,0 +1,30 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-PHY-10 (sheet row 124) — prompt verbatim.
+# Sheet run settings: '5-8s; 1080p; 3 seeds; slow motion permitted where stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# Sheet gives no aspect ratio for this family; 16:9 assumed to match the 1080p spec.
+id: VID-PHY-10
+modality: video
+task: text_to_video
+title: Wheel rotation
+prompt: A bicycle rides past the camera from left to right. Wheel rotation speed must match
+  the forward speed — no sliding, no reversed spin.
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Wheel rotation. Capability under test: Rolling-motion consistency. Adherence clauses,
+  check each: 1) Bicycle moves left to right  2) Wheels rotate forward  3) Rotation rate consistent
+  with translation  4) No wheel-slip appearance'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- physics-action
+- scenario-bank

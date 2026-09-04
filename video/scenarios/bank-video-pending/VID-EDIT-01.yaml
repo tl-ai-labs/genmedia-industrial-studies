@@ -1,0 +1,30 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-01 (sheet row 105) — prompt verbatim.
+# Industry: Ads (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with a red umbrella | source: Pexels Video (free commercial) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'video_edit' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-EDIT-01
+modality: video
+task: video_edit
+title: Recolour one object
+prompt: In this clip, change the colour of the red umbrella to yellow. Everything else in
+  the shot must stay exactly as it is.
+inputs:
+  source: assets/bank/VID-EDIT-01-source.mp4
+params:
+  audio: false
+expected: 'Recolour one object. Capability under test: Targeted change across all frames.
+  Adherence clauses, check each: 1) Umbrella is yellow in every frame  2) Umbrella geometry
+  unchanged  3) Nothing else recoloured  4) Motion unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

@@ -1,0 +1,30 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-PHY-08 (sheet row 122) — prompt verbatim.
+# Sheet run settings: '5-8s; 1080p; 3 seeds; slow motion permitted where stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# Sheet gives no aspect ratio for this family; 16:9 assumed to match the 1080p spec.
+id: VID-PHY-08
+modality: video
+task: text_to_video
+title: Object permanence
+prompt: A person walks behind a pillar and emerges on the other side. They must be the same
+  person, same clothing, moving in the same direction.
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Object permanence. Capability under test: Occlusion handling. Adherence clauses,
+  check each: 1) Person disappears behind the pillar  2) Re-emerges on the correct side  3)
+  Same identity and clothing  4) Motion direction unchanged'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- physics-action
+- scenario-bank

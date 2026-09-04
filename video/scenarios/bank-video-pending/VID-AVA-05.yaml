@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AVA-05 (sheet row 89) — prompt verbatim.
+# Industry: Micro-drama & entertainment (also: Ecommerce & Retail, Ads)
+# Sheet run settings: '8-15s; 1080p; audio ON; 3 seeds'.
+# Input assets required: none | source: No asset needed | link: —
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'avatar_dialogue' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-AVA-05
+modality: video
+task: avatar_dialogue
+title: Emotional shift mid-clip
+prompt: A presenter begins with a serious tone describing a problem, then shifts to an optimistic
+  tone at the midpoint when describing the solution.
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: true
+expected: 'Emotional shift mid-clip. Capability under test: Controlled delivery change. Adherence
+  clauses, check each: 1) Two distinct tonal registers  2) Shift occurs near the midpoint  3)
+  Shift is audible and visible  4) Identity and sync hold across the shift'
+checks:
+  min_duration_s: 7.0
+  max_duration_s: 16.0
+  min_width: 1280
+  min_height: 720
+tags:
+- avatar-presenter-dialogue
+- scenario-bank
+- pending-assets

@@ -1,0 +1,36 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-10 (sheet row 84) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Product and logo references | source: Internal brand kit — build once | link: —
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-AD-10
+modality: video
+task: image_to_video
+title: Six-second bumper
+prompt: 'A six-second advertisement for a coffee brand: product appears, text reading BREW
+  BETTER appears, logo closes. Exactly six seconds.'
+inputs:
+  reference: assets/bank/VID-AD-10-reference.png
+  logo: assets/bank/VID-AD-10-logo.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Six-second bumper. Capability under test: Complete message in a hard duration.
+  Adherence clauses, check each: 1) Duration exactly six seconds  2) All three beats present
+  in order  3) Text string exact  4) Logo accurate at close'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets

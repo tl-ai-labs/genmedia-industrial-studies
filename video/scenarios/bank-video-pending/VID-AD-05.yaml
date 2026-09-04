@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-05 (sheet row 79) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Logo file | source: Internal brand kit — build once | link: —
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-AD-05
+modality: video
+task: image_to_video
+title: Logo sting
+prompt: The supplied logo animates into frame from a fade and settles centred for the final
+  two seconds. Mark proportions and colours exactly as supplied.
+inputs:
+  logo: assets/bank/VID-AD-05-logo.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Logo sting. Capability under test: Mark accuracy in motion. Adherence clauses,
+  check each: 1) Logo settles centred  2) Proportions preserved  3) Colours match supplied
+  file  4) Holds still for the final two seconds'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets

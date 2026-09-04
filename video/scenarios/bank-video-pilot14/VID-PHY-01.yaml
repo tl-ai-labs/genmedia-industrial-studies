@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-PHY-01 (sheet row 115) — prompt verbatim.
+# Sheet run settings: '5-8s; 1080p; 3 seeds; slow motion permitted where stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# Sheet gives no aspect ratio for this family; 16:9 assumed to match the 1080p spec.
+# PILOT 2026-09-03: run at 720p (deviation from the sheet's 1080p) — the
+# Artificial-Analysis-benchmarked config for Seedance, and 2.5x cheaper.
+# Subset = all Physics & action + CIN-01..04 (14 of 20), Omni Flash vs Seedance 2.5.
+id: VID-PHY-01
+modality: video
+task: text_to_video
+title: Weighted fall
+prompt: A cast-iron pan falls from a counter onto a tiled floor. It must fall with correct
+  weight, land once, and settle without bouncing unrealistically.
+params:
+  duration_s: 8
+  resolution: 720p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Weighted fall. Capability under test: Gravity and impact realism. Adherence clauses,
+  check each: 1) Fall accelerates under gravity  2) Impact is heavy, minimal bounce  3) Pan
+  does not deform  4) Settles in a stable position'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- physics-action
+- scenario-bank

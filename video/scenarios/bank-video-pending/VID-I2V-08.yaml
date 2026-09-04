@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-I2V-08 (sheet row 102) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail, Micro-drama & entertainment, Gaming)
+# Sheet run settings: '5-8s; 3 seeds; reference images required'.
+# Input assets required: Style plate image | source: Pexels / Unsplash (free commercial) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-I2V-08
+modality: video
+task: image_to_video
+title: Style plate plus motion brief
+prompt: Generate a five-second shot of a market street that matches the colour palette and
+  texture of the supplied style plate, with people moving through the frame.
+inputs:
+  style: assets/bank/VID-I2V-08-style.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Style plate plus motion brief. Capability under test: Aesthetic reference driving
+  generation. Adherence clauses, check each: 1) Palette matches the style plate  2) Market
+  street subject  3) People in motion  4) Style consistent across all frames'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- image-to-video-first-last-frame
+- scenario-bank
+- pending-assets
