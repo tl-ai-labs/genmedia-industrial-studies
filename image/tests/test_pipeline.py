@@ -1,6 +1,7 @@
 """End-to-end offline: run -> checks -> judge -> score -> report, through the
 same registry seam a real provider uses. No network, no keys, no spend."""
 import json
+import re
 
 import pytest
 
@@ -154,8 +155,8 @@ def test_phase1_blind_judging_and_scoring(happy_run):
 
     report = build_report(project, run_dir)
     html = report.read_text()
-    for needle in ("model-a", "model-b", "W–T–L", "Judged", "Latency p50 / max",
-                   "Success", "img-001", "Rubric hashes"):
+    for needle in ("model-a", "model-b", "W–T–L", "Judged", "Latency p50",
+                   "Latency max", "Success", "img-001", "Rubric hashes"):
         assert needle in html
 
 
@@ -292,3 +293,293 @@ def test_rubric_edit_rejects_rejudge(happy_run):
     with pytest.raises(RunRejected, match="NEW run"):
         judge_run(happy_run["project"], happy_run["run_dir"],
                   happy_run["models_yaml"])
+
+def test_report_offers_a_filter_chip_per_winning_model(project, fake_models_yaml,
+                                                       fake_env, monkeypatch):
+    """Regression: the single-run report's evidence filter used to offer only
+    'All results' and 'Ties' — the per-model 'X wins (n)' chips depended on a
+    context key the template never received, so a reader could not filter
+    the scenarios one model won (spotted on the 2026-09-03 pilot report).
+    Here the blind judge scores by clip size, so model-b (bigger fake clip)
+    wins every scenario and must get a chip with the right count."""
+    # a flat image compresses far smaller than a gradient, so the two arms
+    # are separable by byte length alone — no model name reaches the judge
+    small, big = blank_png(), gradient_png(phase=3)
+    assert len(big) > len(small)
+    cutoff = (len(small) + len(big)) // 2
+    fake_a = FakeImageAdapter(model_tag="a", default_bytes=small)
+    fake_b = FakeImageAdapter(model_tag="b", default_bytes=big)
+
+    def by_size(prompt, media):
+        schema = json.loads(prompt.strip().splitlines()[-1])
+        score = 9.5 if len(media[0][0]) > cutoff else 6.0     # b's png is larger
+        return json.dumps({"criteria": [{"name": c["name"], "score": score,
+                                         "reasoning": "observed specifics"}
+                                        for c in schema["criteria"]],
+                           "overall_note": "sized"})
+
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b,
+                                   "fake_judge": FakeJudgeAdapter(handler=by_size)})
+    install_fake_ocr(monkeypatch,
+                     lambda path: ["TRAILHEAD 750", "FRESH FILTER COFFEE"])
+    scenarios, models = _load(project, fake_models_yaml)
+    run_dir = run_generation(project, scenarios, models, "image",
+                             budget_usd=5.0, workers=2)
+    judge_run(project, run_dir, fake_models_yaml)
+    score_run(project, run_dir)
+    html = build_report(project, run_dir).read_text()
+
+    assert html.count('data-win="model-b"') == 3          # every card: b won
+    assert 'data-win="model-a"' not in html
+    assert 'data-win="tie"' not in html
+    # the filter offers exactly the winners that exist, with their counts
+    assert 'data-dim="win" data-val="model-b">model-b wins <span class="n">(3)' in html
+    assert 'data-val="model-a">model-a wins' not in html
+    assert 'data-val="tie">Ties' not in html
+
+# --------------------------------------------------------------------------
+# the two deliverables: an internal report and a client report, one context
+# --------------------------------------------------------------------------
+
+@pytest.fixture
+def scored_run(happy_run):
+    """A judged + scored run, ready to report on."""
+    judge_run(happy_run["project"], happy_run["run_dir"], happy_run["models_yaml"])
+    score_run(happy_run["project"], happy_run["run_dir"])
+    return happy_run
+
+
+def _both(project, run_dir):
+    out = build_report(project, run_dir)
+    client = run_dir / "report-client.html"
+    return out, out.read_text(), client, client.read_text()
+
+
+def test_report_writes_internal_and_client_side_by_side(scored_run):
+    """Both files, every time, from one context — no flag to forget and no
+    way for the two to disagree about a number."""
+    out, internal, client, client_html = _both(scored_run["project"],
+                                               scored_run["run_dir"])
+    assert out.name == "report.html"          # the caller's contract is unchanged
+    assert client.exists() and len(client_html) > 2000
+    assert "<!doctype html>" in client_html.lower()
+
+
+def test_client_report_drops_internal_diagnostics(scored_run):
+    """The client deliverable carries quality, latency, reliability and the
+    per-unit generation cost — but not judge counts, attempt counts, our
+    judging spend or the run's total bill."""
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+
+    for key in ("judged", "below_5", "judge_cost", "success", "attempts"):
+        assert f'data-row="{key}"' in internal, key
+        assert f'data-row="{key}"' not in client, key
+    for key in ("mean", "worst", "lat_p50", "lat_max", "gen_cost"):   # in both
+        assert f'data-row="{key}"' in internal and f'data-row="{key}"' in client
+
+    assert 'class="tiles"' in internal and 'class="tiles"' not in client
+    assert "Rubric hashes" in internal and "Rubric hashes" not in client
+    # unit cost yes, our totals no
+    assert "Generation cost" in internal and "Generation cost" not in client
+    assert "Judging cost" in internal and "Judging cost" not in client
+    assert "Totals: generation" in internal and "Totals:" not in client
+    assert "billed generation cost for one" in client      # the basis is stated
+
+
+def test_client_verdict_keeps_the_cost_tiebreaker(scored_run):
+    """Once a cost row is on the page, silently dropping 'cheaper: X' from the
+    verdict would be inconsistent — and that fact does not always favour the
+    Gemini arm, so hiding it would flatter one side."""
+    from runner.report import _client_prose
+    note = ("tie on quality (mean gap 0.01 < 0.5, no 70% win rate). "
+            "Broken only by facts: cheaper: Rival; faster p50: Gem")
+    out = _client_prose(note)
+    assert "cheaper: Rival" in out                   # kept, not stripped
+    assert "mean gap 0.1 pp < 5 pp" in out           # still restated in %
+
+
+def test_client_shows_percentages_where_internal_shows_points(scored_run):
+    """8.0 out of 10 reads as 80% for the client and stays 8.00 internally.
+    Expected strings come from aggregate(), never hard-coded."""
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    mean = aggregate(scored_run["run_dir"])["tasks"]["text_to_image"]["models"]["model-a"]["mean"]
+
+    assert f"{mean:.2f}" in internal
+    assert f"{mean * 10:.1f}%" in client
+    assert f"{mean:.2f}" not in client
+    assert "percentage of the 10-point rubric" in client
+
+
+def test_gemini_first_puts_the_google_arm_left():
+    from runner.report import _gemini_first
+    assert _gemini_first(["z-gpt", "a-gemini-pro"],
+                         {"a-gemini-pro": "Google", "z-gpt": "OpenAI"}) \
+        == ["a-gemini-pro", "z-gpt"]
+    # vendor beats alphabet: the Google arm wins even from the back of the list
+    assert _gemini_first(["a-seedance", "z-omni"],
+                         {"z-omni": "Google", "a-seedance": "ByteDance"}) \
+        == ["z-omni", "a-seedance"]
+    # no Google arm anywhere -> plain alphabetical, never a hidden dependency
+    assert _gemini_first(["model-b", "model-a"], {}) == ["model-a", "model-b"]
+
+
+def test_google_arm_is_the_first_column(project, fake_models_yaml, fake_env,
+                                        monkeypatch):
+    """Wiring test, not a unit test: the ordering helper can be correct while
+    a template still renders the columns alphabetically."""
+    text = fake_models_yaml.read_text().replace("provider: prov_b",
+                                                "provider: google-vertex")
+    path = project / "configs" / "models-google-b.yaml"
+    path.write_text(text)
+
+    fake_a = FakeImageAdapter(model_tag="a", default_bytes=gradient_png(phase=0))
+    fake_b = FakeImageAdapter(model_tag="b", default_bytes=gradient_png(phase=3))
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b,
+                                   "fake_judge": FakeJudgeAdapter(score=8.0)})
+    install_fake_ocr(monkeypatch, _ocr_by_model)
+    scenarios = load_scenarios(project / "scenarios", modality="image")
+    models = enabled_models(load_models(path), "image")
+    run_dir = run_generation(project, scenarios, models, "image",
+                             budget_usd=5.0, workers=2)
+    judge_run(project, run_dir, path)
+    score_run(project, run_dir)
+    html = build_report(project, run_dir).read_text()
+
+    head = html[html.index('<table class="mx">'):html.index("</thead>")]
+    assert head.index("model-b") < head.index("model-a")
+    assert 'class="num g">model-b' in head        # the Gemini-side column mark
+
+
+def test_scenario_rows_carry_sort_keys_and_the_control(scored_run):
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    for html in (internal, client):
+        assert 'class="scnlist"' in html          # sortable container
+        assert "data-sort" in html
+        for attr in ('data-i="', 'data-g="', 'data-c="', 'data-d="'):
+            assert attr in html
+        for value in ("id", "g-desc", "g-asc", "c-desc", "c-asc",
+                      "d-desc", "d-asc"):
+            assert f'value="{value}"' in html
+
+
+def test_expand_collapse_present_in_both_reports(scored_run):
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    for html in (internal, client):
+        assert 'data-act="expand"' in html and 'data-act="collapse"' in html
+
+
+def test_win_threshold_is_stated_as_5_percent_and_0_05(scored_run):
+    """One threshold, shown in the caller's own terms: a win needs more than
+    5% of the rubric scale, which is 0.05 as a fraction and 0.5 of the 10
+    points. All three name the same number and must never disagree."""
+    from runner.report import TIE_BAND
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    assert TIE_BAND == 0.5 and TIE_BAND / 10 == 0.05
+    for html in (internal, client):
+        assert "5%" in html
+        assert "0.05 of the rubric scale" in html
+    assert "0.5 of the 10 points" in internal      # points form: internal only
+    assert "0.5 of the 10 points" not in client
+
+
+def test_win_counts_agree_across_every_surface(scored_run):
+    """'Handle the count everywhere': the filter chips, the W–T–L column and
+    the per-family wins are three different code paths off one threshold. With
+    two arms they must produce identical counts, or the page contradicts
+    itself in front of a client."""
+    import re as _re
+    from runner.scoring import aggregate
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    agg = aggregate(scored_run["run_dir"])
+    task = next(iter(agg["tasks"].values()))
+    pair = task["pairs"][0]                     # exactly two arms in this lane
+    expected = {pair["a"]: pair["wins_a"], pair["b"]: pair["wins_b"],
+                "tie": pair["ties"]}
+
+    for html in (internal, client):
+        chips = dict(_re.findall(
+            r'data-dim="win" data-val="([^"]+)">[^<]*<span class="n">\((\d+)\)', html))
+        cards = _re.findall(r'data-win="([^"]+)"', html)
+        for key, n in expected.items():
+            # the per-scenario winner (report side) and the paired W-T-L
+            # (scoring side) are separate code paths off the one threshold
+            assert cards.count(key) == n, (key, n, cards.count(key))
+            if n and key in chips:
+                assert int(chips[key]) == n     # and the chip label agrees
+        # every scenario is accounted for exactly once
+        assert len(cards) == len(task["scenarios"]) == sum(expected.values())
+
+
+def test_metric_row_delta_follows_each_metric_direction():
+    """Lower-better metrics must not render a smaller number as a loss."""
+    from runner.report import _metric_rows
+
+    def m(mean, lat, worst=5.0):
+        return {"mean": mean, "worst": worst, "wtl": "1-0-0", "judged_n": 1,
+                "eligible": 1, "below_5": 0, "gen_cost_per_scenario_usd": 0.1,
+                "judge_cost_per_scenario_usd": 0.01, "latency_p50_ms": lat,
+                "latency_max_ms": lat, "success_rate": 1.0, "mean_attempts": 1.0}
+
+    rows = {r["key"]: r for r in
+            _metric_rows({"g": m(8.0, 3000), "r": m(7.0, 5000)}, ["g", "r"])}
+    assert rows["mean"]["delta"] == pytest.approx(1.0)
+    assert rows["mean"]["delta_class"] == "up"          # higher score = ahead
+    assert rows["lat_p50"]["delta"] == pytest.approx(-2000)
+    assert rows["lat_p50"]["delta_class"] == "up"       # faster = ahead
+    assert rows["mean"]["hi"] and rows["lat_p50"]["hi"] # both highlighted
+
+    slower = {r["key"]: r for r in
+              _metric_rows({"g": m(8.0, 9000), "r": m(7.0, 5000)}, ["g", "r"])}
+    assert slower["lat_p50"]["delta_class"] == "down"   # slower = behind
+
+    tied = {r["key"]: r for r in
+            _metric_rows({"g": m(8.0, 3000), "r": m(8.0, 3000)}, ["g", "r"])}
+    assert tied["mean"]["delta_class"] == ""            # equal = neither
+    # a single-model lane has nothing to compare against
+    solo = {r["key"]: r for r in _metric_rows({"g": m(8.0, 3000)}, ["g"])}
+    assert solo["mean"]["delta"] is None
+
+
+def test_client_verdict_prose_restates_the_band_in_percent():
+    """The stored verdict is never edited; the client copy only restates the
+    tie band in the units that report uses."""
+    from runner.report import _client_prose
+    assert _client_prose("mean gap 0.85 >= 0.5") == "mean gap 8.5 pp >= 5 pp"
+    assert _client_prose("") == "" and _client_prose(None) is None
+    note = ("tie on quality (mean gap 0.01 < 0.5, no 70% win rate). "
+            "Broken only by facts: higher success rate: Gem; faster p50: Gem")
+    assert "mean gap 0.1 pp < 5 pp" in _client_prose(note)
+
+def test_client_only_difference_column_is_percentage_only(scored_run):
+    """The difference column belongs to the client deliverable only, and every
+    value in it is a percentage: percentage points for ratings, a relative
+    percentage for speed. The internal table stays two columns wide."""
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    assert ">Difference<" in client
+    assert ">Difference<" not in internal
+    assert 'class="num d' not in internal
+    body = client[client.index('<table class="mx">'):client.index("</table>")]
+    # no bare point values leak into the column: every rendered delta is a %
+    deltas = re.findall(r'<td class="num d[^"]*"><span class="dv">(.*?)</span>', body)
+    assert deltas, "no difference cells rendered"
+    for d in deltas:
+        assert d.endswith(("pp", "%")) or "dash" in d, d
+
+
+def test_relative_difference_is_computed_against_the_rival():
+    from runner.report import _metric_rows
+
+    def m(mean, lat):
+        return {"mean": mean, "worst": 5.0, "wtl": "1-0-0", "judged_n": 1,
+                "eligible": 1, "below_5": 0, "gen_cost_per_scenario_usd": 0.1,
+                "judge_cost_per_scenario_usd": 0.01, "latency_p50_ms": lat,
+                "latency_max_ms": lat, "success_rate": 1.0, "mean_attempts": 1.0}
+
+    rows = {r["key"]: r for r in
+            _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 40000)}, ["g", "r"])}
+    assert rows["lat_p50"]["delta_rel"] == pytest.approx(-50.0)   # half the time
+    assert rows["lat_p50"]["delta_class"] == "up"                 # and that is good
+    # a zero denominator must not raise or invent a number
+    zero = {r["key"]: r for r in
+            _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 0)}, ["g", "r"])}
+    assert zero["lat_p50"]["delta_rel"] is None

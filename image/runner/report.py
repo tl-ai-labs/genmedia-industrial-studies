@@ -9,13 +9,14 @@ from __future__ import annotations
 import base64
 import io
 import json
+import re as _re
 import webbrowser
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .generate import Manifest, _find_existing_output
-from .scoring import aggregate
+from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate
 from .telemetry import RunFiles
 
 THUMB_MAX_PX = 800
@@ -39,23 +40,153 @@ def _mini_data_uri(path: Path) -> str | None:
     return _thumb_data_uri(path, max_px=140, quality=70)
 
 
-def _env(names: dict | None = None) -> Environment:
+def _env(names: dict | None = None, client: bool = False) -> Environment:
+    """One template set, two audiences. `client=True` switches quality into
+    percentages and lets macros drop internal-only rows via the CLIENT global —
+    the audience is a property of the render, not of the data, so it lives here
+    rather than being threaded through every macro call site."""
     env = Environment(loader=FileSystemLoader(Path(__file__).parent / "templates"),
                       autoescape=select_autoescape(["html", "j2"]))
     env.filters["usd"] = lambda micro: f"${micro / 1e6:,.4f}"
     env.filters["s"] = lambda ms: f"{ms / 1000:.1f}s" if ms is not None else "—"
     nm = names or {}
     env.filters["disp"] = lambda mid: nm.get(mid, mid)
+    # "text_to_video" -> "Text to video": the task key is a data
+    # identifier, not a heading a reader should have to decode
+    env.filters["tasktitle"] = lambda t: (
+        str(t).replace("_", " ").capitalize() if t else "")
+
+    def _q(v, short: bool = False) -> str:
+        """A quality score: one 0-10 number in the audience's units. Client
+        means keep a decimal — whole numbers would hide gaps smaller than the
+        tie band and leave the delta column disagreeing with the values."""
+        if v is None:
+            return "—"
+        if client:
+            return f"{v * 10:.0f}%" if short else f"{v * 10:.1f}%"
+        return f"{v:.1f}" if short else f"{v:.2f}"
+
+    def _qd(v) -> str:
+        """A quality GAP: points internally, percentage points for the client."""
+        if v is None:
+            return "—"
+        return f"{v * 10:+.1f} pp" if client else f"{v:+.2f}"
+
+    env.filters["q"] = _q
+    env.filters["qd"] = _qd
+    env.globals["CLIENT"] = client
+    env.globals["TIE_BAND"] = TIE_BAND                 # 0.5 points, 0-10 scale
+    env.globals["TIE_BAND_PP"] = int(TIE_BAND * 10)    # the same band as 5%
+    env.globals["TIE_BAND_FRAC"] = f"{TIE_BAND / 10:g}"  # ... and as 0.05
     return env
+
+
+def _client_prose(text: str) -> str:
+    """Verdict prose for the client report. The stored verdict is untouched —
+    this is a presentation copy that restates the tie band in the percentage
+    points the rest of that report uses. Cost tie-breakers are kept: the client
+    report shows a cost row, so hiding "cheaper: X" would be inconsistent, and
+    that fact does not always favour the Gemini arm."""
+    if not text:
+        return text
+    text = _re.sub(r"mean gap (\d+(?:\.\d+)?)",
+                   lambda m: f"mean gap {float(m.group(1)) * 10:.1f} pp", text)
+    band = f"{int(MEAN_GAP_DOOR * 10)} pp"
+    return (text.replace(f"< {MEAN_GAP_DOOR}", f"< {band}")
+                .replace(f">= {MEAN_GAP_DOOR}", f">= {band}"))
+
+
+def _gemini_first(model_ids, vendors: dict | None = None) -> list:
+    """Presentation order: the Google/Gemini arm first, the rest alphabetical.
+    Ids stay the keys everywhere data is stored — this is column order, nothing
+    more. With no Google arm the result is plain alphabetical, so ordering
+    never becomes a hidden dependency."""
+    vd = vendors or {}
+
+    def rank(mid: str):
+        google = vd.get(mid) == "Google" or "gemini" in mid.lower()
+        return (0 if google else 1, mid)
+
+    return sorted(model_ids, key=rank)
+
+
+# Rows the client deliverable does not carry: internal diagnostics only.
+# Generation cost per image IS client-facing (study lead's call, 2026-09-04);
+# judging cost is ours, not theirs, so it stays internal.
+_INTERNAL_ROWS = {"judged", "below_5", "judge_cost", "success", "attempts"}
+
+
+def _metric_rows(models: dict, order: list) -> list:
+    """Metrics as ROWS, models as COLUMNS — the reader compares down a column
+    instead of across a row. `delta` is Gemini minus competitor in the metric's
+    own units and `better` says which sign is good, so latency and cost read
+    the right way round. Two-model lanes only; otherwise there is no delta."""
+    cols = [mid for mid in order if mid in models]
+
+    def row(key, label, better, unit, get, hi=False):
+        vals = []
+        for mid in cols:
+            try:
+                vals.append(get(models[mid]))
+            except (KeyError, TypeError):
+                vals.append(None)
+        r = {"key": key, "label": label, "unit": unit, "hi": hi, "better": better,
+             "internal_only": key in _INTERNAL_ROWS,
+             "cells": [{"mid": mid, "v": v} for mid, v in zip(cols, vals)],
+             "delta": None, "delta_class": "", "delta_pct": 0,
+             "delta_rel": None}
+        if better and len(vals) == 2 and None not in vals:
+            d = vals[0] - vals[1]
+            hi_abs = max(abs(vals[0]), abs(vals[1])) or 1
+            good = (d > 0) if better == "higher" else (d < 0)
+            r["delta"] = d
+            r["delta_class"] = "" if abs(d) < 1e-9 else ("up" if good else "down")
+            r["delta_pct"] = min(100, round(abs(d) / hi_abs * 100, 1))
+            # the client report states every difference as a percentage:
+            # score rows in percentage points, the rest relative to the rival
+            if vals[1]:
+                r["delta_rel"] = round(d / abs(vals[1]) * 100, 1)
+        return r
+
+    return [
+        row("mean", "Rating", "higher", "score", lambda m: m["mean"], hi=True),
+        row("worst", "Worst scenario rating", "higher", "score", lambda m: m["worst"]),
+        row("wtl", "W–T–L", None, "text", lambda m: m["wtl"]),
+        row("judged", "Judged", None, "text",
+            lambda m: f'{m["judged_n"]}/{m["eligible"]}'),
+        row("below_5", "<5", "lower", "int", lambda m: m["below_5"]),
+        row("gen_cost", "Cost per image", "lower", "usd_micro",
+            lambda m: round(m["gen_cost_per_scenario_usd"] * 1e6)),
+        row("judge_cost", "Judge cost/scen", "lower", "usd_micro",
+            lambda m: round(m["judge_cost_per_scenario_usd"] * 1e6)),
+        row("lat_p50", "Latency p50", "lower", "ms",
+            lambda m: m["latency_p50_ms"], hi=True),
+        row("lat_max", "Latency max", "lower", "ms",
+            lambda m: m["latency_max_ms"]),
+        row("success", "Success", "higher", "ratio",
+            lambda m: m["success_rate"]),
+        row("attempts", "Attempts", "lower", "num",
+            lambda m: m["mean_attempts"]),
+    ]
 
 
 def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
                  hide_industries: tuple = ()) -> Path:
+    """Writes BOTH deliverables from ONE context, every time:
+
+        report.html         internal — summary tiles, cost, every diagnostic
+        report-client.html  the client deliverable — percentages, no cost,
+                            no internal metrics
+
+    One context means the two files can never disagree on a number, and there
+    is no flag to forget. Returns the internal path (the caller's contract)."""
     run_dir = Path(run_dir)
     ctx = _build_context(project_root, run_dir, hide_industries=hide_industries)
-    html = _env(ctx["names"]).get_template("report.html.j2").render(**ctx)
     out = run_dir / "report.html"
-    out.write_text(html)
+    out.write_text(_env(ctx["names"]).get_template("report.html.j2").render(**ctx))
+    client = run_dir / "report-client.html"
+    client.write_text(_env(ctx["names"], client=True)
+                      .get_template("report-client.html.j2").render(**ctx))
     Manifest(run_dir).set_run_state("reported")
     if open_browser:
         webbrowser.open(out.as_uri())
@@ -75,8 +206,10 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
     ctxs = [_build_context(project_root, Path(d), hide_industries=hide_industries)
             for d in run_dirs]
     names: dict = {}
+    vendors: dict = {}
     for c in ctxs:
         names.update(c["names"])
+        vendors.update(c.get("vendors") or {})
     overview = {
         "n_scenarios": sum(len(c["evidence"]) for c in ctxs),
         "gen_micro": sum(c["totals"]["gen_micro"] for c in ctxs),
@@ -93,7 +226,8 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                     "verdict": (names.get(p["winner"], p["winner"]) + " wins")
                                if p["winner"] else "tie",
                     "detail": p.get("door") or "decided on cost / latency facts",
-                    "models": [names.get(m, m) for m in sorted(t["models"])]})
+                    "models": [names.get(m, m) for m
+                               in _gemini_first(t["models"], vendors)]})
     # brief mode: one mixed scenario list + one industry table across lanes.
     # Model arms that differ only by tier are grouped under one label (the
     # parenthetical is dropped) and the grouping is stated on the page.
@@ -114,6 +248,7 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
         industries: dict = {}
         families: dict = {}
         groups: dict = {}
+        label_vendor: dict = {}
         for e in merged_evidence:
             families.setdefault(e["family"], {"n": 0, "models": {}})["n"] += 1
             ind = industries.setdefault(e["industry"], {"n": 0, "models": {}}) \
@@ -124,6 +259,7 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                 lbl = base_label(card["model_id"])
                 groups.setdefault(lbl, set()).add(
                     names.get(card["model_id"], card["model_id"]))
+                label_vendor.setdefault(lbl, vendors.get(card["model_id"]))
                 if ind and card["score"] is not None:
                     m = ind["models"].setdefault(lbl, {"scores": [], "wins": 0})
                     m["scores"].append(card["score"])
@@ -135,10 +271,14 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                 m["n"] = len(m["scores"])
 
         mixed = {k: sorted(v) for k, v in groups.items() if len(v) > 1}
+        # brief mode groups arms by DISPLAY label, so order by the label's
+        # vendor rather than by model id — Gemini stays on the left here too
+        merged_order = sorted(
+            groups, key=lambda l: (0 if label_vendor.get(l) == "Google" else 1, l))
         merged = {
             "evidence": merged_evidence, "industries": industries,
             "families": families,
-            "family_models": sorted(groups),
+            "family_models": merged_order, "model_order": merged_order,
             "hidden_industries": ctxs[0]["hidden_industries"],
             "merged_note": ("Grouped columns: " + "; ".join(
                 f"{k} covers {' and '.join(v)}" for k, v in mixed.items()) +
@@ -170,7 +310,30 @@ def _build_context(project_root: Path, run_dir: Path,
     judge_by_cell = {(r["scenario_id"], r["model_id"]): r for r in judge_rows
                      if r.get("status") == "judged"}
 
-    # per-model W-T-L rollup within each task
+    # vendor attribution — say plainly which arm is the Google/Gemini side and
+    # which is the rival, in the tiles, the tables, the duel strip and the
+    # footnotes. Computed early because presentation ORDER depends on it.
+    def _vendor(provider: str) -> str:
+        p = (provider or "").lower()
+        if p.startswith("google"):
+            return "Google"
+        if p.startswith("openai"):
+            return "OpenAI"
+        if p.startswith(("byteplus", "bytedance")):
+            return "ByteDance"
+        return provider or "?"
+
+    vendors = {m["id"]: _vendor(m.get("provider", ""))
+               for m in manifest.data.get("models", [])}
+    # one presentation order, used by every table, tile, card and duel slot.
+    # Any model that scored but is missing from the manifest still gets a
+    # column — a column must never vanish because of an ordering list.
+    _all_ids = {m["id"] for m in manifest.data.get("models", [])}
+    _all_ids |= {mid for t in agg["tasks"].values() for mid in t["models"]}
+    model_order = _gemini_first(_all_ids, vendors)
+    _rank = {mid: i for i, mid in enumerate(model_order)}
+
+    # per-model W-T-L rollup within each task, plus the transposed metric rows
     for task, t in agg["tasks"].items():
         for mid, m in t["models"].items():
             w = l = ti = 0
@@ -180,6 +343,8 @@ def _build_context(project_root: Path, run_dir: Path,
                 elif p["b"] == mid:
                     w, l, ti = w + p["wins_b"], l + p["wins_a"], ti + p["ties"]
             m["wtl"] = f"{w}-{ti}-{l}"
+        # rides through ctx.agg, so every existing call site gets it for free
+        t["metric_rows"] = _metric_rows(t["models"], model_order)
 
     # evidence blocks
     import yaml as _yaml
@@ -218,6 +383,9 @@ def _build_context(project_root: Path, run_dir: Path,
                 if p.get(key):
                     for k, v in names.items():
                         p[key] = p[key].replace(k, v)
+            # the same verdict, told without cost, for the client report
+            p["door_client"] = _client_prose(p.get("door"))
+            p["note_client"] = _client_prose(p.get("note"))
 
     evidence = []
     for sid in sorted(scenarios_meta):
@@ -275,8 +443,17 @@ def _build_context(project_root: Path, run_dir: Path,
         if len(scored_cards) >= 2:
             top = sorted(scored_cards, key=lambda c: -c["score"])
             margin = round(top[0]["score"] - top[1]["score"], 2)
-            if margin > 0.5:                      # same tie band as the verdict
+            if margin > TIE_BAND:                 # same tie band as the verdict
                 winner = top[0]["model_id"]
+        # Gemini-first everywhere the cards are shown: media figures, the
+        # diagnostic columns, the summary score run, the mini thumbs
+        cards.sort(key=lambda c: _rank.get(c["model_id"], len(_rank)))
+        # sort keys for the client-side "Sort by" control
+        g_card = next((c for c in cards if vendors.get(c["model_id"]) == "Google"),
+                      cards[0] if cards else None)
+        c_card = next((c for c in cards if c is not g_card), None)
+        g_score = (g_card or {}).get("score")
+        c_score = (c_card or {}).get("score")
         evidence.append({"id": sid, "title": smeta.get("title", ""),
                          "prompt": smeta.get("prompt", ""),
                          "expected": smeta.get("expected", ""),
@@ -285,6 +462,10 @@ def _build_context(project_root: Path, run_dir: Path,
                          "industry": primary,
                          "industry_also": also,
                          "winner": winner, "margin": margin,
+                         "g_score": g_score, "c_score": c_score,
+                         "gap": (round(g_score - c_score, 2)
+                                 if g_score is not None and c_score is not None
+                                 else None),
                          "sources": sources, "cards": cards})
 
     # per-family rollup (a scenario's first tag names its use-case family)
@@ -303,7 +484,8 @@ def _build_context(project_root: Path, run_dir: Path,
         for m in fam["models"].values():
             m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
             m["n"] = len(m["scores"])
-    family_models = sorted({mid for fam in families.values() for mid in fam["models"]})
+    _fam_ids = {mid for fam in families.values() for mid in fam["models"]}
+    family_models = [mid for mid in model_order if mid in _fam_ids]
 
     # per-industry rollup (primary industry from the sheet's mapping)
     industries: dict = {}
@@ -323,32 +505,38 @@ def _build_context(project_root: Path, run_dir: Path,
             m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
             m["n"] = len(m["scores"])
 
-    # head-to-head duel strip (exactly two scored models)
+    # head-to-head duel strip (exactly two scored models). Slot a is the
+    # Gemini arm, so the reader always finds it on the same side.
     duel = None
     for task, t in agg["tasks"].items():
-        ms = [(mid, m) for mid, m in sorted(t["models"].items())
-              if m["mean"] is not None]
+        ms = [(mid, t["models"][mid]) for mid in model_order
+              if mid in t["models"] and t["models"][mid]["mean"] is not None]
         if len(ms) != 2:
             continue
         (aid, a), (bid, b) = ms
 
-        def metric(label, av, bv, fmt, better):
+        def metric(key, label, av, bv, fmt, better, client_label=None):
             hi = max(av, bv) or 1
             win = None
             if abs(av - bv) > 1e-9:
                 win = ("a" if av > bv else "b") if better == "higher" \
                     else ("a" if av < bv else "b")
-            return {"label": label, "a": fmt.format(av), "b": fmt.format(bv),
+            return {"key": key, "label": label,
+                    "client_label": client_label or label,
+                    "internal_only": key in _INTERNAL_ROWS,
+                    "a": fmt.format(av), "b": fmt.format(bv),
+                    "a_pct": f"{av * 10:.1f}%", "b_pct": f"{bv * 10:.1f}%",
                     "aw": round(av / hi * 100, 1), "bw": round(bv / hi * 100, 1),
                     "win": win}
 
         duel = {"task": task, "a": aid, "b": bid, "metrics": [
-            metric("Quality — mean", a["mean"], b["mean"], "{:.2f}", "higher"),
-            metric("Worst scenario", a["worst"] or 0, b["worst"] or 0,
+            metric("mean", "Quality — mean", a["mean"], b["mean"], "{:.2f}",
+                   "higher", client_label="Quality — mean rating"),
+            metric("worst", "Worst scenario rating", a["worst"] or 0, b["worst"] or 0,
                    "{:.1f}", "higher"),
-            metric("Cost per scenario", a["gen_cost_per_scenario_usd"],
+            metric("gen_cost", "Cost per image", a["gen_cost_per_scenario_usd"],
                    b["gen_cost_per_scenario_usd"], "${:.3f}", "lower"),
-            metric("Latency p50", (a["latency_p50_ms"] or 0) / 1000,
+            metric("lat_p50", "Latency p50", (a["latency_p50_ms"] or 0) / 1000,
                    (b["latency_p50_ms"] or 0) / 1000, "{:.1f}s", "lower"),
         ]}
         break
@@ -366,6 +554,18 @@ def _build_context(project_root: Path, run_dir: Path,
     voice_maps = {m["id"]: m.get("voice_map") for m in manifest.data.get("models", [])
                   if m.get("voice_map")}
 
+    _family = {"Google": "Google — Gemini/DeepMind family",
+               "OpenAI": "OpenAI — maker of GPT/ChatGPT",
+               "ByteDance": "ByteDance — the Seedance family, via BytePlus ModelArk"}
+    vendor_lines = [
+        f"{names.get(m['id'], m['id'])} = {m['provider_model']} "
+        f"({_family.get(vendors[m['id']], vendors[m['id']])}; "
+        f"{'Vertex AI, ADC' if 'vertex' in (m.get('provider') or '') else 'API-key route'})"
+        for m in manifest.data.get("models", [])]
+    if judge_meta and str(judge_meta.get("provider_model", "")).startswith("gemini"):
+        vendor_lines.append(
+            f"judge {judge_meta['provider_model']} (Google — Gemini family)")
+
     totals = {
         "gen_micro": sum(r.get("cost", {}).get("micro_usd", 0) for r in telemetry),
         "judge_micro": sum(r.get("cost", {}).get("micro_usd", 0) for r in judge_rows),
@@ -375,8 +575,8 @@ def _build_context(project_root: Path, run_dir: Path,
     return dict(
         completion=completion_counts(manifest.data),
         manifest=manifest.data, agg=agg, evidence=evidence, totals=totals,
-        families=families, family_models=family_models,
+        families=families, family_models=family_models, model_order=model_order,
         industries=industries, hidden_industries=sorted(hide_industries),
-        names=names, duel=duel,
+        names=names, duel=duel, vendors=vendors, vendor_lines=vendor_lines,
         params_unsupported=params_unsupported, estimates=estimates,
         judge_meta=judge_meta, judge_version=judge_version, voice_maps=voice_maps)
