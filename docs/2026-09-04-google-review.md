@@ -1,5 +1,11 @@
 # Google weekly review — 4 September 2026
 
+> **Status: the video lane is PAUSED as of 2026-09-04.** Every arm in
+> `video/configs/models.yaml` is `enabled: false`, so a run is rejected at
+> pre-flight and nothing can bill. Resuming means a deliberate flip of one arm
+> plus a `--budget`. Nothing below has been actioned except the metric rename
+> in §3.
+
 Attendees: Ravindar Katkuri (Tilicho), Chom Trevai, Pranav Mehrotra, Gaurav Kumar (Google).
 Sources: call summary + full transcript, `~/Downloads/Google Call 4th Sep, 2026`.
 
