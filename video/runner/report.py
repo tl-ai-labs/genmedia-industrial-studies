@@ -199,7 +199,7 @@ def _metric_rows(models: dict, order: list) -> list:
 
     return [
         row("mean", "Rating", "higher", "score", lambda m: m["mean"], hi=True),
-        row("worst", "Worst scenario rating", "higher", "score", lambda m: m["worst"]),
+        row("worst", "Reliability (worst scenario rating)", "higher", "score", lambda m: m["worst"]),
         row("wtl", "W–T–L", None, "text", lambda m: m["wtl"]),
         row("judged", "Judged", None, "text",
             lambda m: f'{m["judged_n"]}/{m["eligible"]}'),
@@ -605,7 +605,7 @@ def _build_context(project_root: Path, run_dir: Path,
         duel = {"task": task, "a": aid, "b": bid, "metrics": [
             metric("mean", "Quality — mean", a["mean"], b["mean"], "{:.2f}",
                    "higher", client_label="Quality — mean rating"),
-            metric("worst", "Worst scenario rating", a["worst"] or 0, b["worst"] or 0,
+            metric("worst", "Reliability (worst scenario rating)", a["worst"] or 0, b["worst"] or 0,
                    "{:.1f}", "higher"),
             metric("gen_cost", "Cost per clip", a["gen_cost_per_scenario_usd"],
                    b["gen_cost_per_scenario_usd"], "${:.3f}", "lower"),
