@@ -82,7 +82,13 @@ class ElevenLabsTtsAdapter(BaseAdapter):
             body["language_code"] = req.language.split("-")[0]
             applied["language"] = req.language
 
-        url = f"{API_ROOT}/text-to-speech/{req.voice_id}?output_format={self._output_format}"
+        # The streaming route returns the same audio, chunked, so the first
+        # chunk can be timed. Same model, same voice, same body - only the
+        # transport differs, which is what keeps the TTFA number comparable
+        # with the non-streamed clip's own gates.
+        route = "stream" if req.measure_ttfa else ""
+        url = (f"{API_ROOT}/text-to-speech/{req.voice_id}"
+               f"{'/' + route if route else ''}?output_format={self._output_format}")
         request = urllib.request.Request(
             url,
             data=json.dumps(body).encode("utf-8"),
@@ -94,10 +100,29 @@ class ElevenLabsTtsAdapter(BaseAdapter):
             method="POST",
         )
 
+        ttfa_ms: int | None = None
+        # STARTED BEFORE urlopen, deliberately. urlopen blocks until the
+        # response headers arrive, so a timer started after it would exclude
+        # connection AND the server's time to first byte - the bulk of what
+        # TTFA measures - and make this arm look artificially fast.
+        import time as _t
+
+        started = _t.perf_counter()
         try:
             with urllib.request.urlopen(request, timeout=req.timeout_s) as resp:
-                data = resp.read()
                 request_id = resp.headers.get("request-id")
+                if req.measure_ttfa:
+                    parts: list[bytes] = []
+                    while True:
+                        block = resp.read(4096)
+                        if not block:
+                            break
+                        if ttfa_ms is None:
+                            ttfa_ms = int((_t.perf_counter() - started) * 1000)
+                        parts.append(block)
+                    data = b"".join(parts)
+                else:
+                    data = resp.read()
         except urllib.error.HTTPError as exc:
             raise _map_http_error(exc) from exc
         except TimeoutError as exc:
@@ -123,6 +148,7 @@ class ElevenLabsTtsAdapter(BaseAdapter):
                 raw={"note": "ElevenLabs bills on characters sent; no usage object is returned"},
             ),
             applied_params=applied,
+            ttfa_ms=ttfa_ms,
             provider_request_id=request_id,
         )
 

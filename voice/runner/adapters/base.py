@@ -95,6 +95,11 @@ class GenRequest:
     language: str | None = None
     style: str | None = None
     timeout_s: float = 180.0
+    # Ask the adapter to STREAM and time the first chunk carrying audio.
+    # Opt-in, because streaming changes how a response is assembled and only
+    # one scenario needs the number - a latency claim should not silently
+    # alter how every other clip is produced.
+    measure_ttfa: bool = False
 
 
 @dataclass(frozen=True)
@@ -108,6 +113,11 @@ class GenResult:
     # "was this really the same input?" (plan section 10).
     applied_params: dict[str, Any] = field(default_factory=dict)
     provider_request_id: str | None = None
+    # Milliseconds to the first chunk carrying audio. None when the call was
+    # not streamed. It is NOT latency_ms and must never overwrite it: whole-
+    # call latency is a different quantity by an order of magnitude, and
+    # every run before 2026-09-03 recorded only the latter.
+    ttfa_ms: int | None = None
 
 
 @runtime_checkable

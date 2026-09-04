@@ -96,14 +96,35 @@ class GeminiTtsAdapter(BaseAdapter):
             ),
         )
 
+        ttfa_ms: int | None = None
         try:
-            resp = self._client.models.generate_content(
-                model=self.spec.provider_model, contents=text, config=config
-            )
+            if req.measure_ttfa:
+                # Time to the first chunk that actually carries audio - not the
+                # first chunk of any kind, which can be metadata and would
+                # flatter the number.
+                import time as _t
+
+                started = _t.perf_counter()
+                chunks: list[bytes] = []
+                resp = None
+                for ch in self._client.models.generate_content_stream(
+                    model=self.spec.provider_model, contents=text, config=config
+                ):
+                    resp = ch
+                    got = _extract_audio(ch)
+                    if got:
+                        if ttfa_ms is None:
+                            ttfa_ms = int((_t.perf_counter() - started) * 1000)
+                        chunks.append(got)
+                pcm = b"".join(chunks)
+            else:
+                resp = self._client.models.generate_content(
+                    model=self.spec.provider_model, contents=text, config=config
+                )
+                pcm = _extract_audio(resp)
         except Exception as exc:  # noqa: BLE001 - mapped below
             raise _map_error(exc) from exc
 
-        pcm = _extract_audio(resp)
         if not pcm:
             raise ProviderError("Gemini returned no audio part")
 
@@ -123,6 +144,7 @@ class GeminiTtsAdapter(BaseAdapter):
             usage=usage,
             applied_params=applied,
             provider_request_id=getattr(resp, "response_id", None),
+            ttfa_ms=ttfa_ms,
         )
 
 

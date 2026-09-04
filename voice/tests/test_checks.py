@@ -620,3 +620,42 @@ def test_a_genuine_misreading_still_fails_after_those_fixes():
 
     assert "b8qoz2g6" not in extract_alnum_sequence("reference is B8P-OZ2G6")
     assert "b8qoz2g6" not in extract_alnum_sequence("BRAVO 8 PAPA OSCAR ZULU 2 GOLF 6")
+
+
+# --------------------------------------------------------------------------
+# Time to first audio. Added 2026-09-03 for the real-time NPC scenario. Game
+# audio teams cite 300 ms as the immersion threshold - past it a player hears
+# the gap before they hear the character.
+# --------------------------------------------------------------------------
+
+def test_ttfa_gates_on_the_first_chunk(tmp_path, predictor):
+    p = write(tmp_path, "npc.wav", speechlike(3.0))
+    sc = FakeScenario(checks={"max_ttfa_ms": 300})
+    fast = run_checks(sc, "m1", p, None, None, predictor, extra={"ttfa_ms": 214})
+    assert "ttfa_within_max" not in fast.failed_gates
+    assert fast.measurements["ttfa_ms"] == 214
+    slow = run_checks(sc, "m1", p, None, None, predictor, extra={"ttfa_ms": 1626})
+    assert "ttfa_within_max" in slow.failed_gates
+
+
+def test_an_unstreamed_call_is_unmeasured_not_a_pass(tmp_path, predictor):
+    """
+    Whole-call latency is a DIFFERENT quantity by an order of magnitude.
+    Substituting it would be the single most flattering error available here,
+    so an unstreamed call reports absence and says why.
+    """
+    p = write(tmp_path, "npc.wav", speechlike(3.0))
+    r = run_checks(FakeScenario(checks={"max_ttfa_ms": 300}), "m1", p, None, None,
+                   predictor, extra=None)
+    assert r.measurements["ttfa_unmeasured"] is True
+    assert "ttfa_ms" not in r.measurements
+    gate = next(g for g in r.gates if g.name == "ttfa_within_max")
+    assert "NOT a substitute" in gate.detail
+
+
+def test_scenarios_without_the_gate_are_untouched(tmp_path, predictor):
+    """Streaming is opt-in; every other clip is produced exactly as before."""
+    p = write(tmp_path, "npc.wav", speechlike(3.0))
+    r = run_checks(FakeScenario(), "m1", p, None, None, predictor, extra={"ttfa_ms": 9999})
+    assert not any(g.name == "ttfa_within_max" for g in r.gates)
+    assert "ttfa_ms" not in r.measurements
