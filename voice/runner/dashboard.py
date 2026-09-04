@@ -243,6 +243,9 @@ class ModelRollup:
     # the two models' denominators differ for a reason neither model caused.
     scored_n: int = 0
     evaluated_n: int = 0
+    # Cost and duration over the SAME cells, for cost per finished minute.
+    paired_micro: int = 0
+    paired_seconds: float = 0.0
     # (scenario_id, scenario_hash) -> every score that exact scenario
     # produced, one per run. This is what separates the two kinds of spread
     # below.
@@ -328,8 +331,45 @@ class ModelRollup:
         return statistics.mean(self.costs) if self.costs else 0
 
     @property
+    def cost_per_audio_minute(self):
+        """
+        Micro-USD per finished minute of audio.
+
+        Lives here rather than in a report so both surfaces divide the same
+        two totals. `costs` and `durations` are filtered independently for
+        their own uses, so this walks its own paired totals - dividing one
+        filtered list by another would silently compare different cells.
+        """
+        if not self.paired_seconds:
+            return None
+        return self.paired_micro / (self.paired_seconds / 60.0)
+
+    @property
     def mean_latency(self):
+        """Arithmetic mean. Kept for the duel strip, which labels it as a mean."""
         return statistics.mean(self.latencies) if self.latencies else None
+
+    @property
+    def p50_latency(self):
+        """
+        Median. THE BOARD PRINTED A MEAN UNDER A "Latency p50" HEADING until
+        2026-09-04 - `report.py` has always used a real median, so the two
+        surfaces disagreed about the same runs by whatever the tail was worth.
+        A latency distribution here is right-skewed (one 2941 ms call against
+        a 1166 ms floor on the same line), so the mean sits above the median
+        and the mislabelled figure flattered nothing but confused everything.
+        """
+        return statistics.median(self.latencies) if self.latencies else None
+
+    @property
+    def p95_latency(self):
+        """The tail, which is what a real-time claim actually lives or dies on."""
+        if not self.latencies:
+            return None
+        v = sorted(self.latencies)
+        k = (len(v) - 1) * 0.95
+        lo = int(k)
+        return v[lo] + (v[min(lo + 1, len(v) - 1)] - v[lo]) * (k - lo)
 
     @property
     def mean_audio_q(self):
@@ -390,6 +430,8 @@ def rollup_models(runs: list[RunSummary]) -> list[ModelRollup]:
                 invalid=sum(1 for c in cells if c.status == "invalid"),
                 scored_n=len(counted),
                 evaluated_n=sum(1 for c in cells if c.status != "incomplete"),
+                paired_micro=sum(c.total_micro for c in cells if c.duration_s),
+                paired_seconds=sum(c.duration_s for c in cells if c.duration_s),
                 by_scenario=per_scenario,
             )
         )
@@ -791,6 +833,12 @@ def _clip(c: Cell, lead: bool = False) -> dict[str, Any]:
             "status": c.status, "wer": c.wer, "duration_s": c.duration_s,
             "audio_rel": c.audio_rel, "transcript": c.transcript,
             "variant": parts[1] if len(parts) > 1 else "",
+            # Timing per clip. `latency_ms` is the whole call - how long the
+            # model took to hand back this file. `ttfa_ms` is the first audio
+            # chunk and exists only where the call was streamed; the two are
+            # different quantities by an order of magnitude and the surfaces
+            # label them separately rather than picking whichever is present.
+            "latency_ms": c.latency_ms, "ttfa_ms": c.ttfa_ms,
             "gates": c.gates, "lead": lead}
 
 
@@ -840,9 +888,36 @@ def _overall(models: list[ModelRollup]) -> dict[str, Any]:
                 "detail": (f"The {abs(gap):.3f} gap is inside the {WIN_GAP} decision band, so "
                            f"no winner is named." + noise),
                 "winner": None}
-    return {"verdict": f"{a.model_id} leads",
+
+    # WHO IS ACTUALLY AHEAD ON QUALITY is the SIGN of the gap, not the order
+    # of the list. `models` is sorted GATE-FIRST, so models[0] is whoever
+    # produced usable clips most often - which is not necessarily whoever
+    # scored higher. This returned `models[0]` unconditionally and so printed
+    # "X leads" directly above a table showing X behind on quality: on
+    # 2026-09-04, ElevenLabs (gates 89.8%, quality 93.4%) was named the leader
+    # over Gemini (gates 88.2%, quality 95.1%). The bug was invisible while
+    # the noise floor decided - every real gap fell inside it and the answer
+    # was "Tie" - and surfaced the moment a flat 0.05 band let the line run.
+    quality_leader = a if gap > 0 else b
+    gate_leader = a  # the list is already ranked on the gate
+
+    if quality_leader is not gate_leader:
+        # Better quality while clearing fewer gates is the same "won the
+        # average by skipping the harder half" that `_scenario_blocks` calls
+        # a Split. Naming either one the winner hides half the evidence.
+        return {
+            "verdict": "Split",
+            "detail": (
+                f"{quality_leader.model_id} scores {abs(gap):.3f} higher, but "
+                f"{gate_leader.model_id} produced a usable clip more often "
+                f"({gate_leader.gate_pass_rate:.1%} of the time against "
+                f"{quality_leader.gate_pass_rate:.1%}). Better on quality, worse on "
+                f"delivery - not a win." + noise),
+            "winner": None}
+
+    return {"verdict": f"{quality_leader.model_id} leads",
             "detail": (f"The {abs(gap):.3f} gap clears the {WIN_GAP} decision band." + noise),
-            "winner": a.model_id}
+            "winner": quality_leader.model_id}
 
 
 def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
@@ -953,7 +1028,8 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
             "scored_n": m.scored_n, "evaluated_n": m.evaluated_n or m.n,
             "gate_pass_rate": m.gate_pass_rate, "repeat_spread": m.repeat_spread,
             "worst_wer": m.worst_wer, "mean_cost": m.mean_cost,
-            "p50_latency": m.mean_latency, "invalid": m.invalid,
+            "p50_latency": m.p50_latency, "p95_latency": m.p95_latency,
+            "invalid": m.invalid,
         } for m in models],
         runs=runs, run_rows=run_rows, scenarios=scenarios, duel=duel,
         overall=_overall(models),

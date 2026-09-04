@@ -584,3 +584,78 @@ def test_a_variant_clips_url_is_fetchable_not_a_fragment(variant_root):
     from urllib.parse import unquote
     for src in srcs:
         assert (variant_root / unquote(src)).exists(), f"{src} points at nothing"
+
+
+def test_the_latency_column_is_a_real_median_not_a_mean(tmp_path):
+    """
+    The board printed `statistics.mean` under a heading that said "Latency
+    p50" until 2026-09-04, while report.py used a real median - so the two
+    surfaces disagreed about the same runs by whatever the tail was worth.
+
+    Latencies 1000/1000/1000/7000: median 1000, mean 2500. Only one of those
+    may appear under a p50 heading.
+    """
+    root = tmp_path / "runs"; root.mkdir()
+    for rid, lat in (("2026-09-01_100000_voice-r1", 1000), ("2026-09-01_110000_voice-r2", 1000),
+                     ("2026-09-01_120000_voice-r3", 1000), ("2026-09-01_130000_voice-r4", 7000)):
+        _write_run(root, rid, [{"model": "alpha", "status": "scored", "score": 9.0, "lat": lat}])
+    m = {x.model_id: x for x in rollup_models(load_runs(root, "voice"))}["alpha"]
+    assert m.p50_latency == 1000, "median, not mean"
+    assert m.mean_latency == 2500, "the mean is still available for the duel strip"
+    assert m.p95_latency == pytest.approx(6100)
+    html = render_dashboard(root, "voice").read_text(encoding="utf-8")
+    assert "Latency p50 / p95" in html
+    assert "2.5s" not in html, "the mean must not appear under a p50 heading"
+
+
+def _mixed_root(tmp_path):
+    """
+    One model ahead on GATES, the other ahead on QUALITY.
+
+    alpha clears every gate but scores 9.0; beta fails a gate on one run and
+    scores 9.4. `rollup_models` ranks gate-first, so alpha is models[0] while
+    beta is ahead on the quality gap - the exact split that broke `_overall`.
+    """
+    root = tmp_path / "runs"; root.mkdir()
+    _write_run(root, "2026-09-01_100000_voice-r1", [
+        {"model": "alpha", "status": "scored", "score": 9.0},
+        {"model": "beta", "status": "scored", "score": 9.4}])
+    _write_run(root, "2026-09-01_110000_voice-r2", [
+        {"model": "alpha", "status": "scored", "score": 9.0},
+        {"model": "beta", "status": "invalid", "score": 0.0, "passed": False}])
+    return root
+
+
+def test_the_leader_is_whoever_the_gap_points_at_not_whoever_sorts_first(tmp_path):
+    """
+    `_overall` returned models[0] unconditionally, and models[] is sorted
+    GATE-first - so it printed "X leads" above a table showing X behind on
+    quality. On the real bank it named ElevenLabs (gates 89.8%, quality
+    93.4%) the leader over Gemini (gates 88.2%, quality 95.1%).
+
+    Invisible while the noise floor decided, because every gap fell inside it
+    and the answer was "Tie". A flat 0.05 band let the line run.
+    """
+    from runner.dashboard import _overall
+
+    models = rollup_models(load_runs(_mixed_root(tmp_path), "voice"))
+    assert models[0].model_id == "alpha", "ranked gate-first"
+    assert models[0].mean_score < models[1].mean_score, "but behind on quality"
+
+    v = _overall(models)
+    assert v["winner"] is None, "neither model may be crowned on a split"
+    assert v["verdict"] == "Split"
+    assert "alpha leads" not in v["detail"] and v["verdict"] != "alpha leads"
+    assert "beta" in v["detail"] and "alpha" in v["detail"], "both sides named"
+
+
+def test_a_clean_lead_on_both_axes_still_names_a_winner(tmp_path):
+    """The fix must not stop a genuine winner being named."""
+    from runner.dashboard import _overall
+
+    root = tmp_path / "runs"; root.mkdir()
+    for rid in ("2026-09-01_100000_voice-r1", "2026-09-01_110000_voice-r2"):
+        _write_run(root, rid, [{"model": "alpha", "status": "scored", "score": 9.5},
+                               {"model": "beta", "status": "scored", "score": 7.0}])
+    v = _overall(rollup_models(load_runs(root, "voice")))
+    assert v["winner"] == "alpha" and v["verdict"] == "alpha leads"
