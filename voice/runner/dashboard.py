@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any
 
 from .cost import fmt_usd
+from .scoring import MEAN_GAP_DOOR as WIN_GAP
 from .telemetry import RunPaths, artefact_url, incomplete_scenarios
 
 # Per-model accent, assigned in load order. Used ONLY inside spread bars and
@@ -628,59 +629,58 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
                 gap = statistics.mean(real) if real else None
                 floors = [v for v in own.values() if v is not None]
                 floor = max(floors) if floors else None
-                if gap is not None and floor is not None:
-                    if abs(gap) <= floor:
-                        verdict = "Inside the noise"
-                        detail = (f"The gap ({gap:+.3f}) is no bigger than the spread one model "
-                                  f"shows against itself (±{floor:.3f}). This scenario does not "
-                                  f"separate them.")
-                    elif abs(gap) <= 2 * floor:
-                        verdict = "Marginal"
-                        detail = (f"The gap ({gap:+.3f}) clears the noise floor (±{floor:.3f}) "
-                                  f"but not by much. More repeats before quoting it.")
+                # THE DECISION BAND is a flat WIN_GAP, set by the study
+                # owner (2026-09-04). The noise floor is still MEASURED and
+                # still reported beside the gap - it no longer decides. Where
+                # a gap is decided but sits inside its own floor, the detail
+                # says so, because that is the case a re-run can invert and
+                # a reader is entitled to see the distance between what was
+                # decided and what the evidence showed.
+                if gap is not None:
+                    inside = floor is not None and abs(gap) <= floor
+                    if abs(gap) <= WIN_GAP:
+                        verdict = "Tie"
+                        detail = (f"The gap ({gap:+.3f}) is inside the {WIN_GAP} decision band, "
+                                  f"so neither model is ahead here.")
                     else:
-                        verdict = "Larger than noise"
-                        detail = (f"The gap ({gap:+.3f}) is over twice the noise floor "
-                                  f"(±{floor:.3f}), so it is unlikely to be run-to-run variation.")
-                elif gap is not None:
-                    verdict = "Single pass"
-                    detail = ("One measurement per model, so there is no noise floor to compare "
-                              "the gap against. Run it again.")
+                        verdict = "Decided"
+                        detail = (f"The gap ({gap:+.3f}) clears the {WIN_GAP} decision band.")
+                    if floor is None:
+                        detail += (" This scenario has been run once per model, so it has no "
+                                   "measured run-to-run spread to compare the gap against.")
+                    elif inside and abs(gap) > WIN_GAP:
+                        detail += (f" Note the gap is SMALLER than this scenario's measured "
+                                   f"noise floor (±{floor:.3f}) - the spread a model shows "
+                                   f"against itself - so a re-run can move or invert it.")
+                    elif floor is not None:
+                        detail += f" Measured noise floor here: ±{floor:.3f}."
         elif len(ids) == 1:
             verdict, detail = "One arm only", "Only one model produced a scored cell here."
 
-        # WHO WON, and only when the evidence licenses an answer. A gap
-        # inside the noise floor has no winner - naming one there is the
-        # single easiest way to publish a result that does not survive a
-        # re-run, which this bank has already done to us four times.
+        # WHO WON. The gap must clear WIN_GAP, and one condition survives
+        # the move off the noise floor:
+        #
+        # THE WINNER'S GATE RECORD CANNOT BE WORSE. This is not a variant of
+        # the floor rule and does not go with it - it stops a model winning
+        # the average by skipping the harder half. On vr-ecom-04 ElevenLabs
+        # led on quality while failing digits_exact on a pass Gemini passed
+        # clean. Same rule the model ranking already applies: quality is only
+        # comparable inside the set that cleared its gates.
+        #
+        # The "both models must have repeated" condition WAS dropped with the
+        # floor, deliberately - it existed only because a one-sample mean has
+        # no spread, so the floor beside it would have been the other model's
+        # alone. With a flat band there is no floor to protect, and keeping
+        # the rule would have suppressed winners the band is meant to name.
         winner = None
-        if gap is not None and floor is not None and abs(gap) > floor and duel:
+        if gap is not None and abs(gap) > WIN_GAP and duel:
             cand = duel["a"] if gap > 0 else duel["b"]
             rival = duel["b"] if gap > 0 else duel["a"]
-            # TWO conditions beyond clearing the floor, both learned the hard
-            # way on this board:
-            #
-            # 1. BOTH models need a repeat. A one-sample mean has no spread,
-            #    so the "floor" would be the other model's alone - vr-ecom-04
-            #    compared a single ElevenLabs score against a two-pass Gemini
-            #    mean and called a 0.403 gap decisive on a +/-0.021 floor
-            #    that one arm had never been measured against.
-            # 2. The winner's GATE record cannot be worse. On that same card
-            #    ElevenLabs led on quality while failing digits_exact on a
-            #    pass Gemini passed clean - winning the average by skipping
-            #    the harder half. Same rule the model ranking already uses:
-            #    quality is only comparable inside the set that cleared.
             n = {r["model_id"]: sum(1 for v in r["pass_scores"] if v is not None)
                  for r in rows}
-            both_repeated = n.get(cand, 0) > 1 and n.get(rival, 0) > 1
             gates_not_worse = n.get(cand, 0) >= n.get(rival, 0)
-            if both_repeated and gates_not_worse:
+            if gates_not_worse:
                 winner = cand
-            elif not both_repeated:
-                verdict = "Not comparable"
-                detail = (f"{cand} leads by {abs(gap):.3f}, but one model has only a single "
-                          f"scored pass here - there is no spread for it, so the floor beside "
-                          f"this gap was measured on the other model alone.")
             else:
                 verdict = "Split"
                 detail = (f"{cand} scores {abs(gap):.3f} higher, but cleared its gates on "
@@ -809,12 +809,16 @@ def _median_cell(cells: list[Cell]) -> Cell:
 
 def _overall(models: list[ModelRollup]) -> dict[str, Any]:
     """
-    Whether the top two are separated AT ALL, judged against measured noise.
+    Whether the top two are separated AT ALL, against the flat decision band.
 
-    This replaces a fixed 0.5-point band that was a rule of thumb chosen
-    before any run - it named winners on gaps nothing had shown to be real.
-    The floor here is the larger of the two models' own run-to-run spreads,
-    and no winner is named until a gap clears twice it.
+    HISTORY, because this figure has been computed three different ways and
+    a reader needs to know which one produced the sentence they are reading.
+    It began as a fixed 0.5-point band - a rule of thumb chosen before any
+    run had happened. It was then measured against each model's own
+    run-to-run spread, so that no winner was named until a gap beat the
+    variation a model shows against itself. On 2026-09-04 the study owner
+    set a flat WIN_GAP band; the spread is still measured and still stated
+    beside the verdict, but it no longer decides.
     """
     if len(models) < 2:
         return {"verdict": "Single model", "detail": "Nothing to compare.", "winner": None}
@@ -826,24 +830,18 @@ def _overall(models: list[ModelRollup]) -> dict[str, Any]:
     gap = a.mean_score - b.mean_score
     floors = [f for f in (a.repeat_spread, b.repeat_spread) if f is not None]
     floor = max(floors) if floors else None
-    if floor is None:
-        return {"verdict": "Not measured",
-                "detail": (f"{a.model_id} leads by {abs(gap):.3f}, but no scenario has been run "
-                           f"twice, so nothing here says whether that gap survives a re-run."),
-                "winner": None}
-    if abs(gap) <= floor:
+    noise = ("" if floor is None else
+             (f" The measured run-to-run spread is ±{floor:.3f}; this gap is smaller than that, "
+              f"so it can move or invert on a re-run."
+              if abs(gap) <= floor else
+              f" Measured run-to-run spread: ±{floor:.3f}."))
+    if abs(gap) <= WIN_GAP:
         return {"verdict": "Tie",
-                "detail": (f"The {abs(gap):.3f} gap is inside the noise floor (±{floor:.3f}) - "
-                           f"the spread a model shows against itself. No winner can be named."),
-                "winner": None}
-    if abs(gap) <= 2 * floor:
-        return {"verdict": "Marginal",
-                "detail": (f"The {abs(gap):.3f} gap clears the noise floor (±{floor:.3f}) but not "
-                           f"by twice it. Not yet a result worth quoting."),
+                "detail": (f"The {abs(gap):.3f} gap is inside the {WIN_GAP} decision band, so "
+                           f"no winner is named." + noise),
                 "winner": None}
     return {"verdict": f"{a.model_id} leads",
-            "detail": (f"The {abs(gap):.3f} gap is over twice the noise floor (±{floor:.3f}), so "
-                       f"it is unlikely to be run-to-run variation alone."),
+            "detail": (f"The {abs(gap):.3f} gap clears the {WIN_GAP} decision band." + noise),
             "winner": a.model_id}
 
 
@@ -930,7 +928,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
                             "carry no evidence of agreement with a human ear.")
 
     # Result class drives both the badge colour and the filter. "gemini" and
-    # "other" only when a gap actually cleared its noise floor - a tie is
+    # "other" only when a gap actually cleared the decision band - a tie is
     # never dressed as a win.
     gemini_wins = other_wins = 0
     for b in scenarios:
@@ -948,6 +946,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
     industries = [(i, sum(1 for b in scenarios if b["industry"] == i)) for i in industries]
 
     html = env.get_template("dashboard.html.j2").render(
+        win_gap=WIN_GAP,
         industries=industries, gemini_wins=gemini_wins, other_wins=other_wins,
         models=[{
             "model_id": m.model_id, "accent": m.accent, "mean": m.mean_score,

@@ -25,7 +25,8 @@ from . import calibration as calib
 from .cost import fmt_usd
 from .normalize import normalize
 from .rubrics import Rubric
-from .scoring import ScoredCell, ModelSummary, paired_wtl, score_cell, summarise, verdict
+from .scoring import (MEAN_GAP_DOOR, ScoredCell, ModelSummary, paired_wtl, score_cell,
+                      summarise, verdict)
 from .telemetry import (RunPaths, artefact_url, incomplete_scenarios, read_manifest, read_stream,
                         write_manifest)
 
@@ -349,6 +350,7 @@ def render(
     totals["all"] = totals["gen"] + totals["asr"] + totals["judge"]
 
     html = Environment(autoescape=True).from_string(TEMPLATE).render(
+        win_gap=MEAN_GAP_DOOR,
         manifest=manifest,
         tables=tables,
         evidence=evidence,
@@ -575,8 +577,10 @@ TEMPLATE = """<!doctype html>
      These are n/a, excluded from every denominator &mdash; not failures and not zeros.</p>
   {% endif %}
   <p class="mono">Two runs a week apart will differ; these models are non-deterministic and providers
-     update them silently. A 0.3-point difference between runs is noise, which is why the winner
-     threshold is 0.5.</p>
+     update them silently &mdash; on this bank the same model has moved by up to 2.2 points when
+     asked the identical script twice. The winner threshold is {{ win_gap }}, set for this study
+     rather than derived from that spread, so a verdict inside it can change on a re-run without
+     either model changing.</p>
 </footer>
 </div></body></html>
 """

@@ -217,9 +217,11 @@ def _cells(pairs):
 
 
 def test_paired_comparison_uses_the_tie_band():
-    cells = _cells([("s1", "a", 8.0), ("s1", "b", 7.6), ("s2", "a", 9.0), ("s2", "b", 6.0)])
+    """TIE_BAND moved 0.5 -> 0.05 on 2026-09-04, so the gap that ties moved
+    with it. A 0.02 gap is a tie; 3.0 is a win."""
+    cells = _cells([("s1", "a", 8.0), ("s1", "b", 7.98), ("s2", "a", 9.0), ("s2", "b", 6.0)])
     p = paired_wtl(cells, "a", "b", "text_to_speech")
-    assert (p.wins, p.ties, p.losses) == (1, 1, 0)  # 0.4 gap is a tie, 3.0 is a win
+    assert (p.wins, p.ties, p.losses) == (1, 1, 0)
     assert p.decided == 1
 
 
@@ -257,10 +259,13 @@ def test_win_rate_door_names_a_winner_the_mean_would_have_missed():
 
 
 def test_a_close_run_is_a_declared_tie():
+    """At the 0.05 band a "close run" is much closer than it was: a 0.2 gap
+    over six scenarios now clears both doors and names a winner, so this
+    exercises the band with a 0.02 gap."""
     pairs = []
     for i in range(6):
-        pairs.append((f"s{i}", "a", 7.8))
-        pairs.append((f"s{i}", "b", 7.6))
+        pairs.append((f"s{i}", "a", 7.80))
+        pairs.append((f"s{i}", "b", 7.78))
     cells = _cells(pairs)
     summaries = [summarise(cells, "a", "text_to_speech"), summarise(cells, "b", "text_to_speech")]
     v = verdict(summaries, cells, "text_to_speech", True)
