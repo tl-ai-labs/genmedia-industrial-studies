@@ -479,7 +479,8 @@ def cmd_client_report(args: argparse.Namespace) -> int:
     from .client_report import render_client_report
 
     out = render_client_report(Path(args.runs), args.modality, args.audio_quality,
-                               inline=getattr(args, "inline", False))
+                               inline=getattr(args, "inline", False),
+                               out_dir=Path(args.out) if getattr(args, "out", None) else None)
     if args.open:
         subprocess.run(["open", str(out)], check=False)
     return 0
@@ -666,6 +667,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="libsndfile MP3 compression level, 0.0 (best, ~95 kbps) to "
                          "0.8 (~40 kbps). Default is libsndfile's own, about 61 kbps. "
                          "HIGHER IS SMALLER.")
+    cr.add_argument("--out", default=None,
+                    help="write the folder here instead of beside the runs. Used for "
+                         "voice/dashboard/, which is committed so the report travels "
+                         "with the repo.")
     cr.add_argument("--inline", action="store_true",
                     help="one self-contained .html with every clip embedded (~22 MB, slow "
                          "to open). Default writes client-report/ with the clips beside "
