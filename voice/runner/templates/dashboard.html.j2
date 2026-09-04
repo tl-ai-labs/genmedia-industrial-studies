@@ -1,9 +1,12 @@
-{% macro clip_card(c) %}
+{# One clip, rendered inside its own model's column. The model name is NOT
+   repeated here - the column it sits in already says it, and a label on every
+   row of a two-column comparison is noise. #}
+{% macro clip_row(c) %}
   <div class="clip">
     <div class="top">
-      <span class="who">{{ c.model_id }}</span>
+      {% if c.variant %}<span class="who">{{ c.variant }}</span>{% endif %}
       <span class="dash">{{ c.run_label }}</span>
-      {% if c.lead %}<span class="pill">median run</span>{% endif %}
+      {% if c.lead %}<span class="pill">median take</span>{% endif %}
       {% if c.score is not none %}<span class="pill">{{ '%.3f'|format(c.score) }}</span>
       {% elif c.status == 'invalid' %}<span class="pill est">gated</span>
       {% elif c.status == 'unjudged' %}<span class="pill est">unjudged</span>{% endif %}
@@ -94,7 +97,6 @@
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-models">Models<span class="cnt">{{ models|length }}</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-repeats">Repeats<span class="cnt">{{ repeated_n }} repeated</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-runs">Runs<span class="cnt">{{ runs|length }}</span></button>
-  <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-evidence">Evidence<span class="cnt">{{ n_clips }} clips</span></button>
 </div>
 
 <!-- ──────────────────────────── SCENARIOS ──────────────────────────── -->
@@ -142,6 +144,13 @@
     · required phrases present · forbidden phrases absent · delivery rate in
     range.</p>
 
+    <p><b>The clips are in the columns.</b> Each model's column leads with its
+    <em>median</em> take — never its best, which would flatter it and quietly
+    disagree with the mean printed above it — and the rest sit behind the
+    toggle underneath, because they are the evidence the spread figure rests
+    on. Playing one pauses the others: two models talking over each other is
+    useless for comparison, which is the point of the page.</p>
+
     <p class="note"><b>Models are ranked gate-first</b> on the Models tab —
     quality is only compared inside the set that cleared, so failing more can
     never look like scoring higher.</p>
@@ -160,8 +169,13 @@
       </span>
     </div>
 
-    <details class="prompt"><summary>The prompt sent to both models</summary>
-      <p class="script">{{ s.script }}</p></details>
+    <details class="prompt" open><summary>The prompt sent to both models{% if s.scripts|length > 1 %} — {{ s.scripts|length }} variants{% endif %}</summary>
+      {% for sc in s.scripts %}
+        {% if sc.label %}<div class="vlab"><code>{{ sc.label }}</code>{% if sc.title %} <span class="dash">{{ sc.title }}</span>{% endif %}</div>{% endif %}
+        <p class="script">{{ sc.text }}</p>
+      {% else %}
+        <p class="script none">No frozen script recorded for this scenario.</p>
+      {% endfor %}</details>
 
     <div class="vs">
       {% for m in s.side %}
@@ -176,12 +190,52 @@
         <div class="gates">
           {% for g in m.failed %}<span class="gate no">{{ g }}</span>{% else %}<span class="gate ok">all gates passed</span>{% endfor %}
         </div>
-        {% for a in m.audio %}<audio controls preload="none" src="{{ a }}"></audio>{% endfor %}
+        {% for c in m.clips if c.lead %}{{ clip_row(c) }}{% endfor %}
+        {% if m.n_more %}
+        <details class="more"><summary>{{ m.n_more }} more clip{{ '' if m.n_more == 1 else 's' }} — every take the numbers above rest on</summary>
+          {% for c in m.clips if not c.lead %}{{ clip_row(c) }}{% endfor %}
+        </details>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
 
-    <p class="sverdict"><b>{{ s.verdict }}.</b> {{ s.detail }}</p>
+    {% if s.group or s.ttfa or s.throughput %}
+    <div class="xtra">
+      {% if s.group %}
+      <div class="xg"><span class="xl">Set verdict</span>
+        {% for g in s.group %}
+        <div class="xr"><span class="gate {{ 'ok' if g.passed else 'no' }}">{{ 'pass' if g.passed else ('n/a' if not g.measured else 'fail') }}</span>
+          <code>{{ g.model_id }}</code> <span class="dash">{{ g.gate }}</span></div>
+        <div class="xd">{{ g.detail }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if s.ttfa %}
+      <div class="xg"><span class="xl">Time to first audio</span>
+        {% for t in s.ttfa %}
+        <div class="xr"><code>{{ t.model_id }}</code> <span class="dash">n={{ t.n }}</span>
+          <b>p50 {{ t.p50 }} ms</b> <span class="dash">p95 {{ t.p95 }} · {{ t.min }}–{{ t.max }}</span></div>
+        {% endfor %}
+        <div class="xd">One sample is worthless here — the same model returned 775 ms and
+          2616 ms on the same line. This is NOT whole-call latency.</div>
+      </div>
+      {% endif %}
+      {% if s.throughput %}
+      <div class="xg"><span class="xl">Throughput</span>
+        {% for t in s.throughput %}
+        <div class="xr"><code>{{ t.model_id }}</code>
+          <span class="dash">n={{ t.n }} clips · {{ t.audio_minutes }} min</span>
+          <b>${{ '%.4f'|format(t.cost_per_audio_minute / 1000000) }}/audio-min</b></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    <p class="sverdict"><b>{{ s.verdict }}.</b> {{ s.detail }}
+      {% if s.stale %}<br><span class="dash">{{ s.stale }} earlier run{{ '' if s.stale == 1 else 's' }}
+      of this scenario used a different version of it and {{ 'is' if s.stale == 1 else 'are' }}
+      excluded above — a repeat has to be the same script and the same gates.</span>{% endif %}</p>
   </article>
   {% endfor %}
   <p class="note nomatch" hidden>No scenario matches those filters.</p>
@@ -272,7 +326,7 @@
   <div class="banner"><b>{{ s.verdict }}.</b> {{ s.detail }}</div>
   {% else %}
   <p class="note">No scored cell yet — every cell failed its gates, so there is nothing to
-  compare. The failures are in the Evidence tab.</p>
+  compare. The failed clips and the gates they missed are on the Scenarios tab.</p>
   {% endif %}
   {% if s.stale %}
   <p class="note">{{ s.stale }} earlier run{{ '' if s.stale == 1 else 's' }} of this scenario used
@@ -297,25 +351,6 @@
       <td style="font-size:12px">{{ r.judge }}</td><td style="font-size:12px">{{ r.predictor }}</td></tr>
     {% endfor %}
     </tbody></table></div>
-</section>
-
-<!-- ──────────────────────────── EVIDENCE ───────────────────────────── -->
-<section class="runpanel" data-tab="t-evidence" hidden>
-  <h2>Listen to it</h2>
-  <p class="note">Every clip this comparison produced, with the transcript the WER check was
-  measured against and the gates it cleared. Playing one pauses the others — two models talking
-  over each other is useless for comparison, which is the point of the page.</p>
-
-  {% for s in evidence %}
-  <h3><code>{{ s.scenario_id }}</code> <span class="dash">· {{ s.title }}</span></h3>
-  {% for c in s.leads %}{{ clip_card(c) }}{% endfor %}
-  {% if s.more %}
-  <details class="more"><summary>{{ s.n_more }} more clip{{ '' if s.n_more == 1 else 's' }} —
-    the repeats the spread figure rests on</summary>
-    {% for c in s.more %}{{ clip_card(c) }}{% endfor %}
-  </details>
-  {% endif %}
-  {% endfor %}
 </section>
 
 <h2>Footnotes</h2>

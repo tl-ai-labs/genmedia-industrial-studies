@@ -205,7 +205,7 @@ def test_a_clear_result_names_a_winner(tmp_path):
 
 def test_every_tab_panel_is_populated(runs_root):
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panels = ("t-scenarios", "t-models", "t-repeats", "t-runs", "t-evidence")
+    panels = ("t-scenarios", "t-models", "t-repeats", "t-runs")
     for pid in panels:
         assert f'data-tab="{pid}"' in html
     assert html.count("<audio") >= 1
@@ -239,37 +239,43 @@ def test_refuses_when_there_are_no_runs(tmp_path):
         render_dashboard(empty, "voice")
 
 
-def test_evidence_leads_with_one_clip_per_model_and_hides_the_repeats(runs_root):
+def test_clips_live_in_the_model_column_the_verdict_compares(runs_root):
     """
-    Three near-identical cards per model buried the thing worth looking at.
-    One representative leads; the repeats stay on the page behind a toggle,
-    because they are the evidence the spread figure rests on.
+    The clips used to sit in an Evidence tab of their own, so hearing what a
+    verdict was about took a tab switch and a hunt for the same id. They are
+    now inside the two columns being compared - one representative leads per
+    model, the repeats behind a toggle, because they are the evidence the
+    spread figure rests on and hiding them would make it unfalsifiable.
     """
     import re
 
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panel = re.search(r'data-tab="t-evidence" hidden>(.*?)</section>', html, re.S).group(1)
-    lead = panel.split('<details class="more"')[0]
-    assert lead.count("<audio") == 2, "one lead clip per model"
-    assert panel.count("<audio") == 4, "every clip is still on the page"
+    assert "t-evidence" not in html, "the Evidence tab is gone"
+    panel = re.search(r'data-tab="t-scenarios">(.*?)</section>', html, re.S).group(1)
+    cols = panel.split('<div class="col ')[1:]
+    assert len(cols) == 2, "one column per model"
+    for col in cols:
+        lead = col.split('<details class="more"')[0]
+        assert lead.count("<audio") == 1, "one lead clip in the column head"
+        assert col.count("<audio") == 2, "the repeat is still on the page"
     assert "more clip" in panel
 
 
 def test_the_representative_clip_is_the_median_not_the_best(runs_root):
     """
     A best-of-N clip is a flattering sample and would quietly disagree with
-    the mean shown one tab over.
+    the mean shown beside it.
     """
     import re
 
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panel = re.search(r'data-tab="t-evidence" hidden>(.*?)</section>', html, re.S).group(1)
-    lead = panel.split('<details class="more"')[0]
+    panel = re.search(r'data-tab="t-scenarios">(.*?)</section>', html, re.S).group(1)
     # alpha scored 9.0 (r1) and 9.1 (r2); the median of two takes the upper
     # index, so r2 leads - but the point is it is chosen by rank, not by max,
     # and it carries a label saying so.
-    assert "median run" in lead
-    assert lead.count("median run") == 2
+    assert panel.count("median take") == 2, "one per model column"
+    for col in panel.split('<div class="col')[1:]:
+        assert "median take" in col.split('<details class="more"')[0]
 
 
 # --------------------------------------------------------------------------
@@ -439,3 +445,117 @@ def test_every_scenario_card_carries_its_industry_and_prompt(runs_root):
     assert 'data-ind=' in html and 'data-res=' in html
     # The filter bar offers both axes.
     assert 'data-ind="all"' in html and 'data-res="gemini"' in html
+
+
+# --------------------------------------------------------------------------
+# Variants. A scenario with `variants:` sends a DIFFERENT script per variant
+# and produces cells named `parent#variant`. The board renders one card per
+# PARENT, and both of the joins below were written before that was true.
+# --------------------------------------------------------------------------
+
+def _write_variant_run(root: Path, run_id: str, parent: str, variants: list[str],
+                       models: list[str]) -> None:
+    """A run of one variant scenario, with its frozen source beside it."""
+    d = root / run_id
+    (d / "scenarios").mkdir(parents=True)
+    (d / "scenarios" / f"{parent}.yaml").write_text(
+        f"id: {parent}\nmodality: voice\ntask: text_to_speech\nvariants:\n"
+        + "".join(f'  - id: {v}\n    title: "the {v} reading"\n'
+                  f'    script: |\n      Read this the {v} way.\n' for v in variants),
+        encoding="utf-8")
+    sids = [f"{parent}#{v}" for v in variants]
+    (d / "manifest.json").write_text(json.dumps({
+        "run_id": run_id, "modality": "voice", "started_at": "2026-09-01T10:00:00+0530",
+        "scenario_count": len(sids),
+        "scenarios": [{"id": s, "hash": "h-var"} for s in sids],
+        "models": [{"id": m, "voice_map": {}} for m in models],
+        "judge": {"provider_model": "test-judge"}, "mos": {"predictor": "signal"},
+        "calibration": {"passed": False, "reason": "not run"},
+    }), encoding="utf-8")
+    with (d / "checks.jsonl").open("w") as ch, (d / "scores.jsonl").open("w") as sc, \
+         (d / "telemetry.jsonl").open("w") as tl:
+        for i, sid in enumerate(sids):
+            for j, m in enumerate(models):
+                (d / "outputs" / "voice" / sid).mkdir(parents=True, exist_ok=True)
+                (d / "outputs" / "voice" / sid / f"{m}.wav").write_bytes(b"RIFF")
+                key = {"scenario_id": sid, "model_id": m}
+                ch.write(json.dumps({**key, "gates": [{"gate": "decodes", "passed": True}],
+                                     "measurements": {"normalized_wer": 0.01,
+                                                      "duration_s": 30.0}}) + "\n")
+                sc.write(json.dumps({**key, "task": "text_to_speech", "status": "scored",
+                                     "score": 9.0 - j * 0.5 + i * 0.1,
+                                     "criterion_scores": {}, "calibration_trusted": False}) + "\n")
+                tl.write(json.dumps({**key, "attempt": 1, "status": "ok", "latency_ms": 9000,
+                                     "output": {"duration_s": 30.0},
+                                     "cost": {"micro_usd": 40000, "usage_exact": True}}) + "\n")
+
+
+@pytest.fixture
+def variant_root(tmp_path):
+    root = tmp_path / "runs"; root.mkdir()
+    for rid in ("2026-09-01_100000_voice-v1", "2026-09-01_110000_voice-v2"):
+        _write_variant_run(root, rid, "vr-x-01", ["bare", "nato"], ["alpha", "beta"])
+    return root
+
+
+def test_a_variant_scenario_is_one_card_that_still_shows_both_models(variant_root):
+    """
+    The join that broke the board. Both the side-by-side builder and the
+    script reader matched `c.scenario_id == sid`, which was right while a
+    card was one scenario id and silently wrong once a card became one
+    PARENT - every cell is named `parent#variant`, so the match found
+    nothing and the card rendered its verdict above an empty space where
+    the two model columns belong.
+    """
+    html = render_dashboard(variant_root, "voice").read_text(encoding="utf-8")
+    assert html.count('class="scard"') == 1, "two variants are one scenario"
+    panel = re.search(r'data-tab="t-scenarios">(.*?)</section>', html, re.S).group(1)
+    assert len(panel.split('<div class="col ')[1:]) == 2, "both models have a column"
+    assert "<audio" in panel
+
+
+def test_every_variant_script_is_shown_not_just_a_blank_box(variant_root):
+    """
+    `input.script` is absent on a variant scenario, so the prompt box came
+    out empty - and the difference between the two scripts is the whole
+    question those scenarios ask.
+    """
+    html = render_dashboard(variant_root, "voice").read_text(encoding="utf-8")
+    assert "Read this the bare way." in html
+    assert "Read this the nato way." in html
+    assert "2 variants" in html
+
+
+def test_the_scenario_count_is_parents_never_cells(variant_root):
+    """
+    Counting raw ids called a 17-scenario study a 102-scenario one, and
+    contradicted the tab beside it.
+    """
+    html = render_dashboard(variant_root, "voice").read_text(encoding="utf-8")
+    assert "1 scenarios · 8 clips · 2 runs" in html
+
+
+def test_a_variant_clips_url_is_fetchable_not_a_fragment(variant_root):
+    """
+    A silent, total failure that looked fine. Variant clips live under a
+    directory named `parent#variant`, and `#` in a URL opens the FRAGMENT -
+    so `<audio src=".../vr-x-01#bare/alpha.wav">` asked the server for
+    `.../vr-x-01`, got a 404, and rendered a player that did nothing when
+    pressed. 192 of the real board's 242 players were dead this way, with
+    nothing on the page or in the console to say so.
+
+    The assertion is on the SRC, not on the encoding helper: a passing
+    helper with an unencoded call site is exactly the state this was in.
+    """
+    import re
+
+    html = render_dashboard(variant_root, "voice").read_text(encoding="utf-8")
+    srcs = re.findall(r'<audio[^>]+src="([^"]+)"', html)
+    assert srcs, "the page has players at all"
+    for src in srcs:
+        assert "#" not in src, f"{src} truncates at the fragment and cannot load"
+        assert "%23" in src, f"{src} lost the directory the clip is actually in"
+    # And the encoded name is the real one on disk.
+    from urllib.parse import unquote
+    for src in srcs:
+        assert (variant_root / unquote(src)).exists(), f"{src} points at nothing"
