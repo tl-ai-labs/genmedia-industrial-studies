@@ -1,0 +1,91 @@
+# VR-ADS-05 - Brand name pronunciation (Ads)
+#
+# REAL APPLICATION. Mispronounced brand names are the most common client
+# complaint in production voice work, and they are fully objective against a
+# supplied pronunciation guide.
+#   Source: standard agency QA practice; brand pronunciation guides are a
+#   routine client deliverable.
+#
+# WHY THIS ONE IS WORTH MEASURING. It is the failure a client notices in the
+# first three seconds, and no amount of naturalness compensates for it.
+#
+# THE SALES CLAIM:
+#   "Your brand is pronounced correctly in every read, without your team
+#    writing pronunciation markup for it."
+# Note the second half: the scenario forbids SSML, because a model that needs
+# per-name markup has not solved the problem, it has moved it to your team.
+#
+# UNBLOCKED 2026-09-03 by ASR HOTWORD BIASING, and the distinction matters.
+# This scenario was blocked because the transcriber returned NiKa, NICA,
+# Naika and Nika for one correct reading of "Nykaa" - widening the
+# alternation to cover them all makes the gate vacuous, leaving it narrow
+# fails correct readings, and neither is a measurement.
+#
+# Biasing removes the transcriber's IGNORANCE without removing its judgement.
+# The recogniser is told the brand names exist; it is not told they were said.
+# Measured on an existing clip: "Bhiwandi" came back as "Piwandi" unbiased and
+# "Bhiwandi" biased, from the same audio - so the model had been pronouncing
+# it correctly all along and the gate had been failing the recogniser.
+#
+# A MISREADING STILL FAILS. Biasing raises the prior on a name, it does not
+# insert one that was not spoken - a model that says "NYE-kah" for Nykaa
+# still does not produce the biased spelling.
+#
+# STILL WEAKER THAN THE SOURCE SPECIFIES.
+# The source scenario calls for per-mention PHONEME comparison against a
+# reference. This harness has no phoneme aligner, so pronunciation is checked
+# through what the ASR wrote - which is real signal (on 2026-09-03 one model's
+# "Bhiwandi" came back as "Pwandi", which no correct reading produces) but it
+# is coarser: it catches a name mangled beyond recognition, not a name said
+# with the wrong stress. Alternations below accept every spelling a faithful
+# reading could plausibly produce, so the gate fails a MISREADING rather than
+# a transcriber's choice.
+
+id: vr-ads-05
+modality: voice
+task: styled_tts
+title: "Brand name pronunciation, no markup permitted - Ads"
+
+input:
+  script: |
+    This season, Nykaa brings you three days of beauty. Save up to forty percent at Nykaa, plus an extra ten percent with Jio Pay. Discover Kaya Clinic favourites, Cetaphil essentials, and the full Nykaa Naturals range. Nykaa. Three days only. Kaya, Cetaphil and Jio Pay offers apply while stocks last.
+  language: en-IN
+  style: "bright retail beauty read, warm and quick"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) "Nykaa" pronounced NY-kaa consistently on all four mentions - the
+     counter-intuitive one, and the client's own name
+  2) "Kaya", "Cetaphil" and "Jio Pay" each pronounced as the brand does
+  3) No mention slurred or swallowed at pace
+  4) Consistent across mentions - the same name twice, the same way
+  5) Bright retail energy without distortion
+
+checks:
+  duration_s: {min: 14.0, max: 34.0}
+  max_silence_s: 1.0
+  no_clipping: true
+  max_wer: 0.10
+  must_say:
+    - "forty percent"
+    - "ten percent"
+  # Each brand as an alternation of the spellings a FAITHFUL reading can
+  # produce. A misreading falls outside all of them; a transcriber's choice
+  # does not.
+  # Tell the recogniser these names exist. It is not told they were said.
+  asr_hotwords: ["Nykaa", "Kaya Clinic", "Cetaphil", "Jio Pay", "Nykaa Naturals"]
+  must_say_any:
+    # Widened 2026-09-03 after the first run: a correct "NY-kaa" comes back
+    # from the transcriber as NiKa, Naika or Nika depending on the clip. The
+    # gate must fail a MISREADING, not a speller's choice.
+    - ["Nykaa", "Nykka", "Nyka", "Naika", "NiKa", "Nika", "Nyaka"]
+    - ["Kaya Clinic", "Kaia Clinic", "Kaya", "Kaia", "Kya"]
+    - ["Cetaphil", "Setaphil", "Cetafil", "Cetaphil Essentials"]
+    - ["Jio Pay", "Geo Pay", "JioPay", "Geopay", "GOP", "Jiopay"]
+
+tags: [ads, brands, pronunciation, india, no-ssml, vr-ads-05]

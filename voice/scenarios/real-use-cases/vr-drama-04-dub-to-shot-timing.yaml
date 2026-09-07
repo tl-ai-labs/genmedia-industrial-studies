@@ -1,0 +1,69 @@
+# VR-DRAMA-04 - Dubbed line fitted to shot timing (Micro-drama)
+#
+# REAL APPLICATION. Micro-drama and short-form video localisation requires
+# dubbed lines to fit the original cut. Missing the timing means re-editing,
+# which removes the cost saving that motivated the dub in the first place.
+#   Source: standard dubbing practice; ties to the Veo 3.1 customer evidence
+#   in the dossier where lip-sync quality drove adoption.
+#
+# WHY THIS ONE IS WORTH MEASURING. It is the clearest hard line in the whole
+# bank. The shot is 11.0 seconds. A read that lands at 12.4 seconds is not
+# "slightly long", it is unusable without re-cutting - and no amount of
+# naturalness compensates.
+#
+# THE SALES CLAIM:
+#   "Our model hits your existing shot timing, so dubbed dialogue lands
+#    without re-cutting the edit."
+#
+# READ THE MEASUREMENT, NOT JUST THE VERDICT. The tolerance below is the
+# +/-0.15s the source scenario specifies, which is about 1.4% on an 11s
+# line. Both models may well miss it. That is a real finding rather than a
+# broken test: NEITHER arm exposes rate control through this harness (only
+# the OpenAI adapter honours params.speed; ElevenLabs and Gemini ignore it
+# and report it in params_unsupported), so what is measured here is natural
+# delivery length. The interesting number is the signed deviation in
+# measurements.trimmed_duration_s, which ranks the models even when both
+# fail the gate.
+#
+# THE TARGET IS DERIVED, AND HERE IS THE DERIVATION. 27 written words at a
+# 150 wpm dramatic read = 10.8s; the shot is called at 11.0s. That assumption
+# is stated here rather than hidden so a disagreement is about the number,
+# not about where it came from.
+#
+# WHY TRIMMED DURATION. Gating the raw file length would let a model pass by
+# padding with silence. tests/test_checks.py pins that.
+
+id: vr-drama-04
+modality: voice
+task: styled_tts
+title: "Dubbed line fitted to an 11.0s shot - Micro-drama & entertainment"
+
+input:
+  script: |
+    You said you would come back before the monsoon. I waited. The house is still standing, and so am I. But do not mistake that for forgiveness.
+  language: en-IN
+  style: "controlled anger held just under the surface, not shouted"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Trimmed length within 0.15s of the 11.0s shot
+  2) No audible time-stretching or rate artefacts to achieve it
+  3) The four sentences land as four beats, with the pause before
+     "But do not mistake that for forgiveness" carrying the turn
+  4) Anger held under the surface - clipped consonants, not volume
+  5) Every word intelligible despite the restraint
+
+checks:
+  # The shot. 11.0s +/- 0.15s, measured on the trimmed read.
+  trimmed_duration_s: {min: 10.85, max: 11.15}
+  duration_s: {min: 6.0, max: 20.0}
+  max_silence_s: 1.5
+  no_clipping: true
+  max_wer: 0.05
+
+tags: [micro-drama, dubbing, localisation, shot-timing, duration, vr-drama-04]

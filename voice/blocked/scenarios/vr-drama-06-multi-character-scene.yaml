@@ -1,0 +1,35 @@
+# VR-DRAMA-06 - Multi-character scene in one pass
+# BLOCKED BY: diarisation.
+#   The measurement is diarisation cluster count and line-to-speaker mapping
+#   accuracy - any misassigned line fails. That needs a diarisation model
+#   (pyannote or equivalent), which carries a licence/token step this project
+#   has not taken. It ALSO needs multi-speaker synthesis: the current
+#   adapters send one script and one voice, so a four-character scene cannot
+#   be requested, let alone scored.
+# NEEDS: multi-speaker generation + diarisation. The largest blocked build.
+#
+# REAL APPLICATION. Audio drama depends on distinguishable characters in a
+# single scene; Pocket FM's format is casts across hundreds of episodes
+# rather than single-narrator reading.
+#   Source: Pocket FM format description; standard audio-drama practice.
+# CLAIM IF IT PASSES: "Our model produces a full scene in one pass with each
+#   character correctly cast and distinguishable."
+id: vr-drama-06
+modality: voice
+task: multi_speaker
+title: "Four-character scene, one pass - Micro-drama"
+input:
+  script: |
+    NORA: You brought the ledger here? To this house? DEV: Where else would I bring it. RAO: Both of you, quieter. The window is open. NORA: Let it be open. Let the whole street hear what he has been signing. DEV: It is not what you think. NORA: It never is.
+  language: en-GB
+  style: "four distinct characters in one continuous scene, two interruptions"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Four distinguishable character voices, consistently cast
+  2) Every line attributable to the right speaker by ear
+  3) The two interruptions land as interruptions, not as separate takes
+checks:
+  duration_s: {min: 10.0, max: 45.0}
+  max_silence_s: 2.0
+  no_clipping: true
+tags: [micro-drama, multi-speaker, diarisation, blocked, vr-drama-06]

@@ -1,0 +1,50 @@
+# VR-ECOM-07 - Cost per finished minute at production call volume
+#
+#
+# HOW IT IS RUN, AND WHY THE SAMPLE SIZE IS ON THE PAGE.
+# Issued as a batch with `--repeat N`, which sends the same turn N times in
+# one run so throughput and cost have more than one sample to divide. The
+# workbook asks for 500 support turns; N here is smaller, because 500 support turns on the
+# character-billed arm would consume most of a month's quota for a number
+# that is a RATE - and a rate estimated from a few dozen clips is the same
+# rate with wider error bars.
+#
+# That is only honest while the denominator travels with the number, so
+# summary.json carries `n_clips` beside every rate and the board shows it.
+# Never quote "cost per finished minute" from this scenario without it.
+#
+# WHAT IS MEASURED, all of it already recorded per call and only divided here:
+#   cost per finished audio minute   - what a buyer compares across vendors
+#   realtime factor                  - audio seconds produced per second spent
+#   clips per generation minute      - throughput
+#   failure count                    - a batch that needs retries is dearer
+#
+# `generation_seconds_serial` is the SUM of per-call latency, not elapsed
+# time: the runner works provider lanes concurrently, so elapsed would
+# measure our own concurrency rather than the provider's speed.
+#
+# REAL APPLICATION. Developer voice platforms run $0.07-$0.09 per minute;
+# enterprise contracts are reported from around $150,000 per year. At tier-1
+# volumes the per-minute rate decides, once quality is at parity.
+#   Source: Consio 2026 pricing comparison across Retell, Bland, Sierra, PolyAI.
+# CLAIM IF IT PASSES: "At your call volume our cost per minute is materially
+#   lower for the same measured accuracy - and here is the accuracy."
+id: vr-ecom-07
+modality: voice
+task: text_to_speech
+title: "Cost per finished minute at volume - Ecommerce & Retail"
+input:
+  script: |
+    Thank you for calling. Your order is confirmed and will arrive on Thursday. Is there anything else I can help you with today?
+  language: en-IN
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) A representative single support turn, read at service pace
+  2) Cost, latency and finished duration recorded for the cost model
+  3) Quality high enough that the cost comparison is like-for-like
+checks:
+  duration_s: {min: 4.0, max: 20.0}
+  max_silence_s: 1.5
+  no_clipping: true
+  max_wer: 0.06
+tags: [ecommerce, cost, throughput, throughput, vr-ecom-07]

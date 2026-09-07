@@ -1,0 +1,35 @@
+# VR-DRAMA-07 - Emotional range on a single line
+# BLOCKED BY: a blind human listener panel.
+#   The measurement is whether LISTENERS can correctly label six deliveries
+#   of one line, including adjacent pairs (relieved vs grateful, accusing vs
+#   disappointed). The LLM judge could be asked to label them, but that
+#   measures whether a model recognises the emotion, not whether an audience
+#   does - a different and weaker claim. Prosody distance between adjacent
+#   pairs also needs an acoustic feature extractor that is not built.
+# NEEDS: a listener panel (and, separately, prosody-distance measurement).
+#   Related: the project's own calibration gate (2 humans x 5 clips) has
+#   never been run either.
+#
+# REAL APPLICATION. Serialised drama lives on delivery; the audio-fiction
+# format is binge-driven, and performance sustains a 2,000-episode title.
+#   Source: Pocket FM and Kuku FM platform positioning.
+# CLAIM IF IT PASSES: "Our model distinguishes emotions that sit next to each
+#   other, not just happy from sad."
+id: vr-drama-07
+modality: voice
+task: styled_tts
+title: "One line, six emotions, blind-labelled - Micro-drama"
+input:
+  script: |
+    You came back.
+  language: en-GB
+  style: "relieved - not grateful, not surprised: the weight of a held breath released"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) The requested emotion unmistakable to a listener told nothing else
+  2) Distinguishable from its ADJACENT emotion, not merely from its opposite
+  3) Three words carrying it - no room to signal with content
+checks:
+  duration_s: {min: 0.6, max: 8.0}
+  no_clipping: true
+tags: [micro-drama, emotion, listener-panel, blocked, vr-drama-07]

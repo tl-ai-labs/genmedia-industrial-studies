@@ -1,0 +1,30 @@
+id: voi-001
+modality: voice
+task: text_to_speech
+title: "IVR main-menu greeting"
+
+input:
+  script: |
+    Thank you for calling Trailhead Outdoor. Your call is important to us.
+    For order status, press one. For returns and exchanges, press two.
+    To speak with an advisor, press three, or stay on the line.
+  language: en-US
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  Every word spoken clearly at an unhurried IVR pace, with a distinct pause
+  before each menu option so a caller can act on it. Neutral and professional,
+  neither chirpy nor flat.
+
+checks:
+  duration_s: {min: 8, max: 30}
+  max_silence_s: 2.0
+  no_clipping: true
+  max_wer: 0.08
+
+tags: [ivr, telephony, en-us]
