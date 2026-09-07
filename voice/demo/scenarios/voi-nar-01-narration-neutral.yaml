@@ -1,0 +1,85 @@
+# VOI-NAR-01 - Narration & audiobook - sixty-second neutral read.
+#
+# Purpose: baseline quality and intelligibility. This is the scenario that
+# answers "can this model just read a page of prose properly", which is the
+# whole job in audiobook and documentary work.
+#
+# SOURCE. Charles Darwin, "On the Origin of Species" (1859), closing
+# paragraph. Public domain; Project Gutenberg eBook #1228. Chosen because the
+# register is genuinely documentary, the clauses are long enough to expose bad
+# phrasing, and the semicolon chain in the second half is a real pacing test.
+#
+# THE DURATION GATE IS THE ONE TO WATCH. The spec calls for a sixty-second
+# read of ~150 words, which implies ~150 wpm. Measured pace across 11 real
+# Gemini clips on 2026-09-01 was 89-152 wpm, mean 116 - so a 150 wpm window
+# will likely FAIL both Google arms. That is a finding, not a bug: at 116 wpm
+# this passage lands near 84s, and "reads 40% longer than the brief asked for"
+# is exactly the kind of thing an audiobook buyer needs told. If you would
+# rather measure something else, change expected_wpm below - it is the only
+# number the window is derived from.
+id: voi-nar-01
+modality: voice
+task: styled_tts
+title: "Narration & audiobook - sixty-second neutral read"
+
+input:
+  script: |
+    It is interesting to contemplate an entangled bank, clothed with many
+    plants of many kinds, with birds singing on the bushes, with various
+    insects flitting about, and with worms crawling through the damp earth,
+    and to reflect that these elaborately constructed forms, so different from
+    each other, and dependent upon each other in so complex a manner, have all
+    been produced by laws acting around us. These laws, taken in the largest
+    sense, being Growth with Reproduction; Inheritance which is almost implied
+    by reproduction; Variability from the indirect and direct action of the
+    conditions of life, and from use and disuse; a Ratio of Increase so high
+    as to lead to a Struggle for Life, and as a consequence to Natural
+    Selection, entailing Divergence of Character and the Extinction of less
+    improved forms. Thus, from the war of nature, from famine and death, the
+    most exalted object which we are capable of conceiving, namely, the
+    production of the higher animals, directly follows.
+  # en-US, not en-GB. The source text is British, but Gemini's prebuilt
+  # voices cannot select an accent - asking for en-GB would have put a
+  # British ElevenLabs read against an American Gemini one and let the judge
+  # score the accent instead of the reading. Matched on purpose.
+  language: en-US
+  style: >-
+    Neutral, measured documentary tone. Clear diction, natural pacing, no
+    added emphasis. Do not dramatise; do not colour individual words.
+
+params:
+  voice: female_mid_warm      # pinned per provider in models.yaml voice_map
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  The full passage read exactly as written, nothing skipped and nothing added.
+  A neutral documentary register held from first word to last - no rising
+  emphasis, no performance. Sentences separated by natural pauses, and the
+  semicolon chain in the second sentence phrased as a list rather than run
+  together. No audible artefacts, clicks, or abrupt cuts.
+
+checks:
+  # WIDENED 2026-09-01, deliberately and on the record.
+  #
+  # The spec's +/-10% band around a 150 wpm read was 58.3-71.3s. Measured TTS
+  # pace across 11 real clips was 89-152 wpm (mean 116), which puts this
+  # passage at ~84s - so the original band would have FAILED the Google arm
+  # outright, and a failed gate means score 0 with the judge never called.
+  # We would have learned that Gemini overshoots a 60s brief and nothing at
+  # all about which model reads better.
+  #
+  # 55-95s spans real TTS pace (102-177 wpm) while still catching a clip that
+  # is genuinely broken. Duration is still REPORTED exactly, so "reads 40%
+  # longer than the brief asked for" remains visible as a measurement - it
+  # just no longer zeroes the cell before the judge can hear it.
+  duration_s: {min: 55.0, max: 95.0}
+  max_silence_s: 2.0
+  no_clipping: true
+  # The spec's gate: WER < 0.03 on the normalized pair.
+  max_wer: 0.03
+
+# Metadata carried through to the manifest so the run can be traced back to
+# the scenario spec it came from. Not interpreted by the runner.
+tags: [narration, audiobook, baseline, en-gb, public-domain, gutenberg-1228]

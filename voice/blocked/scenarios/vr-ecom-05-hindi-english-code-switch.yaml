@@ -1,0 +1,60 @@
+# VR-ECOM-05 - Hindi-English code-switch support call (Ecommerce & Retail)
+# BLOCKED - AND NOW EVIDENCED, not assumed (probed 2026-09-03).
+#   The blocker is NOT "we need a multilingual ASR". We have one, it is
+#   multilingual, and it still cannot measure this. Both arms generated this
+#   script and the shipped recogniser was run over the audio three ways:
+#
+#     language="hi"   transliterated EVERYTHING into Devanagari, including
+#                     the English -  "please collect from counter two" came
+#                     back as "प्लीस कलेक्ट फरम काूंटर टू".
+#     language="en"   TRANSLATED rather than transcribed - "Aapka order ready
+#                     hai" became "Your order is ready."
+#     auto-detect     detected Hindi, same as the first.
+#
+#   The reference is romanized Hinglish. Devanagari scores ~100% WER against
+#   it however well the model spoke, and a translation is not a transcript.
+#   There is no configuration that preserves the code-switch, so per-segment
+#   WER cannot be computed - and a whole-clip WER here would measure the
+#   recogniser's script choice, not either model.
+#
+# NEEDS: a recogniser that transcribes code-switched speech VERBATIM, in the
+#   script it was written in, without transliterating or translating. Google's
+#   USM/Chirp does this - but it is Google, and this comparison has a Google
+#   arm, which is the vendor overlap that already changed one answer here.
+#   A neutral code-switch ASR, or native-speaker transcription, is the
+#   honest unblock. Native review was always part of this scenario anyway.
+#
+# WORTH KNOWING, though it is not a measurement: under the translating mode
+#   Gemini rendered "6 baje" as "6 pm" and ElevenLabs as "7 o'clock" - one of
+#   them changed the number. That is a real difference and it is NOT reported
+#   as a result, because it arrived through an instrument that was translating.
+#
+# REAL APPLICATION. Indian voice-agent vendors compete explicitly on regional
+# language ability; buyer guides list it as a core selection factor, and one
+# comparison notes a rival platform lacks certain Indian dialects entirely.
+#   Source: SquadStack and Vellum 2026 platform comparisons.
+# CLAIM IF IT PASSES: "Our model handles the way your customers actually
+#   speak - switching between Hindi and English mid-sentence without breaking
+#   accent." This targets a stated Google strength and is therefore a TEST of
+#   it, not a demonstration.
+id: vr-ecom-05
+modality: voice
+task: styled_tts
+title: "Hindi-English code-switch support call - Ecommerce & Retail"
+input:
+  script: |
+    Aapka order ready hai, please collect from counter two before 6 baje. Agar aap late ho jaate hain, no problem - hum ise kal tak hold kar lenge. Aapko SMS bhi mil jayega with the pickup code.
+  language: hi-IN
+  style: "natural Hinglish customer-service delivery, neither language forced"
+params: {voice: female_mid_warm, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Hindi read as Hindi and English as English, with no accent break at
+     any of the four switch points
+  2) "counter two" and "6 baje" both intelligible
+  3) Natural Hinglish rhythm - not two languages spliced together
+  4) A native Hindi speaker would accept this as a service call
+checks:
+  duration_s: {min: 8.0, max: 34.0}
+  max_silence_s: 1.5
+  no_clipping: true
+tags: [ecommerce, india, code-switch, hinglish, blocked, vr-ecom-05]

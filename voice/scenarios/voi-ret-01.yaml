@@ -1,0 +1,78 @@
+# VOI-RET-01 - Conversational product recommendation (E-commerce / Retail)
+#
+# Capability under test: Product-name, attribute, quantity, price and
+# recommendation accuracy in a conversational shopping interaction.
+#
+# REAL-WORLD BASIS:
+# Adapted from Google's Conversational Commerce / AI Commerce Search use case.
+# Google Cloud describes conversational shopping agents that understand complex
+# shopper requests, recommend relevant products from a retail catalog, answer
+# product-detail questions, and guide shoppers toward purchase.
+# Google cites Albertsons' Ask AI as a production example, while OTTO has
+# deployed native voice shopping across approximately 19 million products.
+#
+# TTS ENGINE NOTE:
+# A TTS engine has no shopping agent to interpret the script - what is sent
+# is what it says. The script therefore represents the actual spoken response
+# that a conversational shopping assistant would deliver.
+#
+# The scenario deliberately combines:
+#   - Product/model names
+#   - Sizes and dimensions
+#   - Storage capacity
+#   - Quantity
+#   - Currency and decimal amount
+#   - Product alternatives
+#   - Delivery information
+#   - Natural conversational pacing
+#
+# Capability under test:
+# The listener must be able to clearly understand every commercially relevant
+# entity and number without ambiguity.
+
+id: voi-ret-01
+modality: voice
+task: text_to_speech
+title: "Conversational product recommendation - E-commerce / Retail"
+
+input:
+  script: |
+    I found two options that match your requirements for a lightweight laptop under seventy-five thousand rupees. The ASUS Vivobook S 14 has sixteen gigabytes of RAM, a five-hundred-and-twelve-gigabyte SSD, and a fourteen-inch OLED display. It is currently priced at sixty-nine thousand nine hundred and ninety-nine rupees. If you prefer a larger screen, the Lenovo IdeaPad Slim 5 has sixteen gigabytes of RAM, a one-terabyte SSD, and a sixteen-inch display for seventy-two thousand four hundred and ninety rupees. Both models are available for delivery by Friday, and the Lenovo includes a three-year extended warranty. Based on your preference for battery life and a larger display, I would recommend the Lenovo.
+  language: en-IN
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Product names pronounced clearly and consistently
+  2) RAM, SSD, screen sizes and storage capacities verbalised correctly
+  3) All prices stated with the correct rupee amounts
+  4) No omission or substitution of product attributes
+  5) Delivery date stated clearly
+  6) Warranty duration stated correctly
+  7) Recommendation delivered naturally and conversationally
+  8) Unhurried shopping-assistant pace with every commercially relevant
+     number, product attribute and qualification distinctly intelligible.
+
+checks:
+  duration_s: {min: 18.0, max: 60.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  max_wer: 0.10
+  must_say:
+    - "ASUS Vivobook S 14"
+    - "sixteen gigabytes of RAM"
+    - "five-hundred-and-twelve-gigabyte SSD"
+    - "fourteen-inch OLED display"
+    - "sixty-nine thousand nine hundred and ninety-nine rupees"
+    - "Lenovo IdeaPad Slim 5"
+    - "one-terabyte SSD"
+    - "sixteen-inch display"
+    - "seventy-two thousand four hundred and ninety rupees"
+    - "three-year extended warranty"
+    - "battery life and a larger display"
+
+tags: [ecommerce, retail, conversational-commerce, product-discovery, recommendations, product-names, attributes, prices]

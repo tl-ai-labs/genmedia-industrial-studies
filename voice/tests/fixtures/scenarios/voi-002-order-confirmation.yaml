@@ -1,0 +1,36 @@
+id: voi-002
+modality: voice
+task: text_to_speech
+title: "Order confirmation - digits-heavy"
+
+# THE DIGITS CASE. This scenario exists to prove the normalization pipeline:
+# the script writes "4-8-2-9-1-6" and a good ASR returns "four eight two nine
+# one six". Un-normalized, a perfect clip scores WER ~1.0 and fails. With the
+# shared normalize() applied to both sides, both collapse to the same six
+# words and a correct clip passes a tight gate.
+input:
+  script: |
+    Hello, this is Trailhead Outdoor confirming order 4-8-2-9-1-6.
+    Your total is 137 dollars and 50 cents, charged to the card ending 7104.
+    Delivery is scheduled for the 23rd, between 9 and 11 in the morning.
+  language: en-US
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  Order number read digit by digit, the amount and the card digits spoken
+  accurately, the delivery window unambiguous. No digit dropped or merged.
+
+checks:
+  duration_s: {min: 8, max: 32}
+  max_silence_s: 2.0
+  no_clipping: true
+  # Tight on purpose: this is the scenario that would catch a model that
+  # sounds fine while saying the wrong reference number.
+  max_wer: 0.10
+
+tags: [transactional, numbers, en-us]
