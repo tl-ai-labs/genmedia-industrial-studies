@@ -1,0 +1,30 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-PHY-09 (sheet row 123) — prompt verbatim.
+# Sheet run settings: '5-8s; 1080p; 3 seeds; slow motion permitted where stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# Sheet gives no aspect ratio for this family; 16:9 assumed to match the 1080p spec.
+id: VID-PHY-09
+modality: video
+task: text_to_video
+title: Grasp and lift
+prompt: A hand reaches for an apple on a table, grasps it, and lifts it. The grip must be
+  plausible and the apple must move with the hand.
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Grasp and lift. Capability under test: Hand-object interaction. Adherence clauses,
+  check each: 1) Reach, grasp and lift all occur in order  2) Fingers close around the object  3)
+  Apple moves with the hand, no slipping through  4) Five fingers throughout'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- physics-action
+- scenario-bank

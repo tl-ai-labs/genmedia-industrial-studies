@@ -1,0 +1,57 @@
+# Per-task rubric for text_to_video (plan §5 pattern: per-task rubrics are
+# small, explicit files, not patches). For v1 it restates the base video
+# criteria unchanged — the file exists so the task's rubric is explicit and
+# its sha256 (base + this file) is stamped into every record. Weights sum
+# to 1.0; scenarios may re-weight per family.
+criteria:
+  - name: prompt_adherence
+    weight: 0.30
+    judged_by: judge
+    description: >-
+      Every element of the brief present and correct — subject, action,
+      setting, mood, camera move, framing. 10 = nothing missing, wrong, or
+      invented; each missing or wrong element costs about 2 points. Check
+      the brief clause by clause.
+
+  - name: visual_fidelity
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Per-frame quality — sharpness, lighting, texture, absence of
+      artefacts. Would individual frames pass as a still photograph or a
+      rendered plate?
+
+  - name: temporal_consistency
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Whether things stay themselves across frames: flicker, texture crawl,
+      faces morphing, objects changing size or count, lighting or colour
+      drifting within the clip.
+
+  - name: motion_coherence
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Whether movement is plausible and continuous — gait, weight, momentum,
+      limb count, contact with surfaces. Smooth-but-wrong motion (sliding
+      feet, weightless movement, a limb passing through an object) loses
+      points just as stutter does.
+
+  - name: physics_plausibility
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Whether the world behaves: gravity, collision, fluid, cloth, fire,
+      breakage, object permanence. Any physical event that contradicts how
+      the world works loses points.
+
+  - name: technical_compliance
+    weight: 0.10
+    judged_by: measured          # container headers: duration + dimensions
+    description: >-
+      Measured by code from the mp4 container: clip duration within the
+      scenario's declared band and delivered resolution against the
+      requested one. Full spec maps to 10; shortfalls lose points linearly
+      (the mapping is fixed in scoring.py). Missing measurements drop the
+      criterion and redistribute its weight (recorded in the run manifest).

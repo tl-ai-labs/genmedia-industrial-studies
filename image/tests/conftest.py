@@ -144,6 +144,21 @@ def install_fake_ocr(monkeypatch, text_for_path):
 # a full temp project (configs + scenarios copied from the repo)
 # --------------------------------------------------------------------------
 
+@pytest.fixture(autouse=True)
+def _no_real_providers(monkeypatch):
+    """The suite is offline by contract. Every test runs with Application
+    Default Credentials reported absent and every provider key unset, so a
+    test that accidentally reaches a real adapter is REJECTED at pre-flight
+    instead of billing someone (it happened once in the video lane: a CLI
+    test inherited the working copy's enabled arms and generated three real
+    clips, $1.22). A test that genuinely needs a live provider must opt out."""
+    import runner.generate as gen
+    monkeypatch.setattr(gen, "adc_available", lambda: False)
+    for k in ("OPENAI_API_KEY", "GEMINI_API_KEY",
+              "GOOGLE_APPLICATION_CREDENTIALS"):
+        monkeypatch.delenv(k, raising=False)
+
+
 @pytest.fixture
 def project(tmp_path):
     shutil.copytree(REPO_ROOT / "configs", tmp_path / "configs")

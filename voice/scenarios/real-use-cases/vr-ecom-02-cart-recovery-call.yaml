@@ -1,0 +1,67 @@
+# VR-ECOM-02 - Cart-abandonment recovery call (Ecommerce & Retail)
+#
+# REAL APPLICATION. Outbound AI calls to shoppers who abandoned checkout -
+# the agent asks what stopped them, answers the objection, sends a link.
+# Baymard's 2026 analysis of 50 studies puts cart abandonment at 70.22%, and
+# names unanswered objections rather than price as the cause.
+#   Source: Baymard Institute 2026 analysis, cited in CloudTalk's ecommerce
+#   voice-agent review.
+#
+# THE SALES CLAIM:
+#   "Our model handles interruptions fast enough that a recovery call feels
+#    like a conversation, not a robocall."
+#
+# ============================================================
+# THE HEADLINE MEASURE IS NOT AVAILABLE, AND THE CLAIM ABOVE IS THEREFORE
+# NOT SUPPORTED BY THIS RUN.
+# ============================================================
+# The source scenario measures BARGE-IN SUPPRESSION TIME p95 - how fast the
+# agent stops talking when the customer cuts in. That is a property of a
+# duplex conversational agent, not of a text-to-speech engine: there is no
+# interruption to suppress when the harness sends a script and receives a
+# file. It needs a streaming, full-duplex loop the harness does not have.
+#
+# WHAT THIS RUN DOES MEASURE, and it is worth something on its own: whether
+# the agent's spoken turn is deliverable at all - product name intact, offer
+# stated exactly, and an outbound-sales manner that is warm rather than
+# pushy. Read it as "can this model voice a recovery call", never as "can
+# this model handle interruption".
+
+id: vr-ecom-02
+modality: voice
+task: styled_tts
+title: "Cart-recovery call, agent turn only - Ecommerce & Retail"
+
+input:
+  script: |
+    Hi, this is Meera calling from Urban Ladder. I noticed you were looking at the Fenton three-seater sofa but did not complete your order, and I wanted to check whether something got in the way. If it was the delivery timeline, we can get it to you in nine days rather than the fourteen shown at checkout. And your cart is still saved. Would it help if I sent the checkout link to your registered number?
+  language: en-IN
+  style: "warm outbound service call, helpful and unhurried, never pushy"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) "Urban Ladder" and "Fenton three-seater" stated intact
+  2) Both delivery figures correct and clearly distinguished
+  3) Warm and consultative - a person checking in, not closing
+  4) The closing question sounds like a question, not a script beat
+  5) No pushy sales inflection; this is the difference that gets an
+     outbound call tolerated rather than hung up on
+
+checks:
+  duration_s: {min: 18.0, max: 44.0}
+  max_silence_s: 1.5
+  no_clipping: true
+  max_wer: 0.08
+  must_say:
+    - "Urban Ladder"
+    - "nine days"
+    - "fourteen"
+  must_say_any:
+    - ["Fenton", "Fentin", "Fenten"]
+
+tags: [ecommerce, retail, outbound, cart-recovery, partial-measure, vr-ecom-02]

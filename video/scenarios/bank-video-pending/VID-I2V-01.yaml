@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-I2V-01 (sheet row 95) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail, Micro-drama & entertainment, Gaming)
+# Sheet run settings: '5-8s; 3 seeds; reference images required'.
+# Input assets required: Portrait or scene photograph | source: Pexels / Unsplash (free commercial) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-I2V-01
+modality: video
+task: image_to_video
+title: Subtle animation of a still
+prompt: Animate this photograph with subtle natural motion only — slight hair movement, gentle
+  breathing, small ambient shifts. Nothing in the scene may change or move position.
+inputs:
+  photo: assets/bank/VID-I2V-01-photo.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Subtle animation of a still. Capability under test: Motion without content drift.
+  Adherence clauses, check each: 1) Motion is subtle and natural  2) No object changes position  3)
+  Identity and scene unchanged  4) First frame matches the supplied image'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- image-to-video-first-last-frame
+- scenario-bank
+- pending-assets

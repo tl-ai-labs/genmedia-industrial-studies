@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-I2V-04 (sheet row 98) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail, Micro-drama & entertainment, Gaming)
+# Sheet run settings: '5-8s; 3 seeds; reference images required'.
+# Input assets required: Character reference | source: SFHQ synthetic faces | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-I2V-04
+modality: video
+task: image_to_video
+title: Reference character in a new scene
+prompt: Take the character from the supplied reference and show them walking through a train
+  station. Identity, outfit and build must match the reference.
+inputs:
+  character: assets/bank/VID-I2V-04-character.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Reference character in a new scene. Capability under test: Identity transfer into
+  motion. Adherence clauses, check each: 1) Character matches reference  2) Walking motion
+  plausible  3) Station setting  4) Identity stable across the clip'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- image-to-video-first-last-frame
+- scenario-bank
+- pending-assets
