@@ -105,27 +105,57 @@ someone deliberately re-enables it.
 
 ## 4 · Blind human panel + correlation — **Gaurav**
 
+**All three lanes: image, video and voice.** One panel, one vote store, one
+correlation number, covering the whole study — not a voice-only tool.
+
 Chom's requirement: *"that defines whether your AI is aligned to human
-judgment."* Also our only instrument for the emotion claim in voice.
+judgment."* It is also the only instrument we have for two claims the judge
+cannot settle — emotion in voice, and the mispronunciation nuances Chom
+pointed out that *"LLM might not be able to catch."*
 
-**Build on what exists, do not start fresh:**
-- Outputs are already exported per run, and `blind_label` is already recorded
-  on every judge row — the blinding the panel needs is already in the data.
-- `voice/dashboard/` is the pattern to copy: a generated, committed, deployable
-  folder. It is display-only today; it captures no input.
+### What each lane brings to it
 
-**Scope**
+| Lane | Media per item | Already exported? |
+|---|---|---|
+| **Image** | two stills, side by side | Yes — `outputs/image/<scenario>/<model>.png` |
+| **Video** | two clips, side by side | Yes — and the compressed previews written by `--self-contained` are the right size for a web panel; the raw 14 Mbit/s originals are not |
+| **Voice** | two clips, A/B players | Yes — 242 already exported to `voice/dashboard/audio/` |
 
-1. **UI** — one page per lane. Each item shows the two outputs side by side
-   with the model names hidden and left/right order shuffled per item.
+### The blinding problem — read this before writing the exporter
+
+**Every exported filename in all three lanes currently contains the model id:**
+
+```
+voice/dashboard/audio/vr-ads-02--gemini-3-1-flash-tts--voice-p1.mp3
+video/runs/<id>/previews/VID-CIN-01--omni-flash-vertex.mp4
+image/runs/<id>/outputs/image/IMG-BRAND-01/gemini-3-pro-image-vertex.png
+```
+
+A reviewer who opens devtools, hovers a link, or saves the file sees which
+model made it, and the blind is gone — silently, with the votes still looking
+valid. So the panel exporter must **copy media to opaque ids** (`item-0a3f.mp4`)
+and keep the id→model mapping in a file the page never loads. Reuse the pattern
+in `voice/dashboard/` — generated, committed, deployable — but not its naming.
+
+`blind_label` on the judge rows is the *judge's* blinding and is per-scenario
+shuffled; the panel needs its own shuffle, so do not assume one covers the
+other.
+
+### Scope
+
+1. **UI** — one page, a lane switcher. Each item shows the two outputs side by
+   side, model names hidden, left/right order shuffled per item per reviewer.
 2. **Rating** — a single thumbs-up on the better one. Keep it that simple;
-   60–70 reviewers will not fill in rubrics.
-3. **Storage** — append to a local JSON file, one record per vote:
-   scenario id, reviewer id, which side was picked, which model that actually
-   was, and a timestamp. No database.
-4. **Correlation** — a script that reads the votes plus `scores.jsonl` and
-   reports agreement between the human majority and the LLM judge, per lane
-   and overall. That number is the deliverable Chom asked for.
+   60–70 reviewers will not fill in rubrics. Offer "can't tell" — forcing a
+   pick on a genuine tie manufactures signal that isn't there.
+3. **Storage** — append to a local JSON file, one record per vote: lane,
+   scenario id, reviewer id, side picked, which model that actually was,
+   and a timestamp. No database.
+4. **Correlation** — a script reading the votes plus each lane's
+   `scores.jsonl`, reporting agreement between the human majority and the LLM
+   judge, **per lane and overall**. That number is the deliverable Chom asked
+   for, and it is per-lane because the judge may be well aligned on image and
+   poorly aligned on voice.
 
 **Watch for:** the known disagreement. Our reviewers found Gemini's voice more
 soothing while the judge scored it lower. If the correlation is poor, that is a
