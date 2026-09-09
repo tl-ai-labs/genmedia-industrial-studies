@@ -418,3 +418,89 @@ def test_seedance_adapter_4xx_is_not_retried(monkeypatch):
     with pytest.raises(ProviderError) as e:
         adapter.run(_req(duration_s=8))
     assert not e.value.retryable
+
+
+# --------------------------------------------------------------------------
+# asset-fed payloads: shapes verified against the SDK / API reference
+# --------------------------------------------------------------------------
+
+def _asset(tmp_path, name, data, mime):
+    from runner.adapters.base import Asset
+    p = tmp_path / name
+    p.write_bytes(data)
+    return Asset(role="source" if mime.startswith("video/") else "reference",
+                 path=p, mime=mime, sha256="x" * 64)
+
+
+def test_omni_input_parts_are_flat_and_the_sdk_keeps_the_data(tmp_path):
+    """The Interactions content union is OPEN: a nested part validates
+    cleanly and silently yields data=None, so the asset would be dropped and
+    the model would generate from the prompt alone while the run looked
+    successful. This asserts the shape the SDK actually preserves."""
+    pydantic = pytest.importorskip("pydantic")
+    content = pytest.importorskip(
+        "google.genai._gaos.types.interactions.content")
+
+    from runner.adapters.base import GenRequest
+    from runner.video.omni_video import OmniFlashVideoAdapter
+
+    a = OmniFlashVideoAdapter.__new__(OmniFlashVideoAdapter)
+    req = GenRequest(task="video_edit", text="make it yellow",
+                     inputs=[_asset(tmp_path, "s.mp4", b"CLIP", "video/mp4")],
+                     params={})
+    parts = a._build_input(req)
+    assert parts[0] == {"type": "text", "text": "make it yellow"}
+    assert parts[1]["type"] == "video" and parts[1]["mime_type"] == "video/mp4"
+    assert parts[1]["data"], "the asset carries no data"
+
+    # round-trip through the SDK's own union: data must survive
+    parsed = pydantic.TypeAdapter(list[content.Content]).validate_python(parts)
+    assert type(parsed[1]).__name__ == "VideoContent"
+    assert parsed[1].data, "the SDK dropped the asset"
+
+    # and the nested shape — the one that looks right — must NOT be used
+    nested = [{"type": "video", "video": {"data": "x", "mime_type": "video/mp4"}}]
+    dropped = pydantic.TypeAdapter(list[content.Content]).validate_python(nested)
+    assert dropped[0].data is None      # exactly the silent failure guarded against
+
+
+def test_omni_refuses_to_send_a_payload_that_lost_its_asset(tmp_path):
+    from runner.adapters.base import ProviderError
+    from runner.video.omni_video import _assert_assets_carried
+    good = [{"type": "text", "text": "t"},
+            {"type": "image", "data": "abc", "mime_type": "image/png"}]
+    _assert_assets_carried(good, 1)                       # no raise
+    for bad in ([{"type": "text", "text": "t"}],          # asset vanished
+                [{"type": "text", "text": "t"},
+                 {"type": "image", "image": {"data": "abc"}}]):   # nested
+        with pytest.raises(ProviderError, match="did not survive"):
+            _assert_assets_carried(bad, 1)
+
+
+def test_seedance_content_matches_the_documented_examples(tmp_path):
+    """Shapes taken from the Seedance 2.5 API reference's own worked
+    examples: a data URI for a local file, and a `role` on 2.5 reference
+    parts."""
+    from runner.adapters.base import GenRequest
+    from runner.video.seedance_video import SeedanceVideoAdapter
+
+    a = SeedanceVideoAdapter.__new__(SeedanceVideoAdapter)
+    clip = a._build_content(GenRequest(
+        task="video_edit", text="remove the extras",
+        inputs=[_asset(tmp_path, "s.mp4", b"CLIP", "video/mp4")], params={}))
+    assert clip[0] == {"type": "text", "text": "remove the extras"}
+    assert clip[1]["type"] == "video_url"
+    assert clip[1]["role"] == "reference_video"
+    assert clip[1]["video_url"]["url"].startswith("data:video/mp4;base64,")
+
+    still = a._build_content(GenRequest(
+        task="image_to_video", text="rotate it",
+        inputs=[_asset(tmp_path, "r.png", b"PNG", "image/png")], params={}))
+    assert still[1]["type"] == "image_url"
+    assert still[1]["role"] == "reference_image"
+    assert still[1]["image_url"]["url"].startswith("data:image/png;base64,")
+
+    # text-only is untouched — the path already proven against the live API
+    plain = a._build_content(GenRequest(task="text_to_video", text="a cat",
+                                        inputs=[], params={}))
+    assert plain == [{"type": "text", "text": "a cat"}]
