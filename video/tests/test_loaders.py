@@ -201,16 +201,33 @@ def test_reserved_video_task_is_legal_in_schema(tmp_path):
 
 
 def test_built_asset_fed_tasks_demand_their_input(tmp_path):
-    """image_to_video and video_edit became buildable on 2026-09-09. A
-    buildable asset-fed task without its asset must be REJECTED at load,
-    not run against the prompt alone — a clip generated from the brief
-    while ignoring the product still is not the comparison we claimed."""
-    for task, role in (("image_to_video", "reference"), ("video_edit", "source")):
-        f = tmp_path / f"{task}.yaml"
-        f.write_text(f"id: x-{task}\nmodality: video\ntask: {task}\n"
-                     f"prompt: p\nexpected: e\n")
-        with pytest.raises(Exception, match=f"role '{role}'"):
-            load_scenarios(f)
+    """A buildable asset-fed task without its asset must be REJECTED at load,
+    not run against the prompt alone — a clip generated from the brief while
+    ignoring the product still is not the comparison we claimed."""
+    # video_edit fixes the role name: there is exactly one thing to edit
+    f = tmp_path / "video_edit.yaml"
+    f.write_text("id: x-edit\nmodality: video\ntask: video_edit\n"
+                 "prompt: p\nexpected: e\n")
+    with pytest.raises(Exception, match="role 'source'"):
+        load_scenarios(f)
+
+    # image_to_video requires a COUNT, not a name. The bank's roles carry
+    # meaning — first_frame/last_frame, character/environment, still1..3 —
+    # and collapsing them to one generic "reference" would lose which image
+    # is which. Demanding that name once parked 11 scenarios that had their
+    # assets all along.
+    f2 = tmp_path / "image_to_video.yaml"
+    f2.write_text("id: x-i2v\nmodality: video\ntask: image_to_video\n"
+                  "prompt: p\nexpected: e\n")
+    with pytest.raises(Exception, match="at least 1 input"):
+        load_scenarios(f2)
+
+    # ...and any single meaningful role satisfies it
+    (tmp_path / "a.png").write_bytes(b"x")
+    f3 = tmp_path / "i2v_ok.yaml"
+    f3.write_text("id: x-i2v-ok\nmodality: video\ntask: image_to_video\n"
+                  "prompt: p\nexpected: e\ninputs:\n  first_frame: a.png\n")
+    assert load_scenarios(f3)[0].inputs == {"first_frame": "a.png"}
 
 
 def test_rubric_loads_and_hashes():

@@ -44,8 +44,14 @@ BUILD_TASKS = {
     # Built 2026-09-09 after the Google review scoped video to edits + ads.
     # Both are asset-fed: the role names below are the keys the scenario
     # files already use under `inputs:` and must not drift from them.
-    "image_to_video": {"modality": "video", "inputs": ["reference"], "phase": "3"},
-    "video_edit":     {"modality": "video", "inputs": ["source"],    "phase": "3"},
+    # image_to_video needs at least one image but does NOT fix its role name:
+    # the bank's roles carry meaning (first_frame/last_frame, character/
+    # environment, still1..still3, logo, style) and collapsing them to one
+    # generic "reference" would lose which image is which.
+    "image_to_video": {"modality": "video", "inputs": [], "min_inputs": 1,
+                       "phase": "3"},
+    # an edit always has exactly one thing to edit, and it is always `source`
+    "video_edit":     {"modality": "video", "inputs": ["source"], "phase": "3"},
 }
 
 RESERVED_TASKS = {
