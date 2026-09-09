@@ -15,6 +15,10 @@ inputs:
   source: assets/bank/VID-EDIT-06-source.mp4
 params:
   audio: false
+  # an edit otherwise keeps the source's length (ratio adaptive,
+  # duration -1). This is the one edit that must GROW, so the target
+  # length is stated explicitly or the brief cannot be satisfied.
+  duration_s: 8
 expected: 'Extend clip duration. Capability under test: Continuity beyond the source. Adherence
   clauses, check each: 1) Output is eight seconds  2) Original five seconds preserved  3)
   No visible seam at the join  4) Continued motion is plausible'

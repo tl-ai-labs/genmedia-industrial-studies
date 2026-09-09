@@ -16,7 +16,9 @@ inputs:
 params:
   duration_s: 8
   resolution: 1080p
-  aspect_ratio: '16:9'
+  aspect_ratio: '9:16'   # the brief asks for the vertical variant;
+                       # wired 16:9 until 2026-09-09, which made the
+                       # scenario unsatisfiable by construction
   audio: false
 expected: 'Vertical variant. Capability under test: Reframing without loss. Adherence clauses,
   check each: 1) 9:16 output  2) Product fully in frame  3) Text not cropped  4) Composition
