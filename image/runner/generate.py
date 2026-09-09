@@ -32,7 +32,9 @@ from .loaders import effective_criteria, load_rubric, sha256_file
 from .matrix import build_matrix
 from .telemetry import RunFiles, utcnow
 
-TIMEOUTS_S = {"image": 120, "voice": 180}
+# gpt-image-2 at quality:high runs 76-119s on the edit-lane scenarios;
+# 120s left no headroom and a crossed deadline costs a billed retry.
+TIMEOUTS_S = {"image": 300, "voice": 180}
 MAX_ATTEMPTS = 3
 
 _EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
