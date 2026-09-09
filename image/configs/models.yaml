@@ -43,8 +43,10 @@ image:
       as_of: 2026-08-31
 
   - id: gpt-image-2-medium           # OpenAI's latest image model
-    display: GPT Image 2
-    enabled: true                    # the GPT arm for the edit lane (fits credits)
+    display: GPT Image 2 (medium)    # tier stated: an untiered name is
+                                     # what left the 46-scenario report
+                                     # ambiguous (2026-09-04 review §1)
+    enabled: false                   # off: medium is the invalid pairing
     adapter: openai_image            # same adapter — model swap is config only
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
@@ -63,7 +65,7 @@ image:
 
   - id: gpt-image-2-high             # the "most powerful" OpenAI arm: same
     display: GPT Image 2 (high)
-    enabled: false                   # parked: edit run uses medium (credit fit)
+    enabled: true                    # the tier that pairs with Pro
     adapter: openai_image
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
