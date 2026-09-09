@@ -89,10 +89,14 @@ def test_full_video_bank_extraction_covers_all_60():
     # with no asset is rejected, which is the whole reason they are parked.
     unwired = [yaml.safe_load(f.read_text()) for f in
                sorted((REPO_ROOT / "scenarios" / "bank-video-unwired").glob("*.yaml"))]
-    assert len(bank) == 20 and len(pending) + len(unwired) == 40
+    # retired rows stay in the repo so the catalogue still covers 60, but no
+    # run picks them up (scenarios/bank-video-retired/README.md says why)
+    retired = [yaml.safe_load(f.read_text()) for f in
+               sorted((REPO_ROOT / "scenarios" / "bank-video-retired").glob("*.yaml"))]
+    assert len(bank) == 20 and len(pending) + len(unwired) + len(retired) == 40
     xl_ids = {r["id"] for r in xl}
     assert ({s.id for s in bank} | {s.id for s in pending}
-            | {d["id"] for d in unwired}) == xl_ids
+            | {d["id"] for d in unwired} | {d["id"] for d in retired}) == xl_ids
     imap = yaml.safe_load((REPO_ROOT / "configs" / "industry_map.yaml").read_text())
     assert set(imap["scenarios"]) == xl_ids
     assert all(v["primary"] for v in imap["scenarios"].values())
@@ -104,6 +108,7 @@ def test_full_video_bank_extraction_covers_all_60():
     # the v1 bank is text_to_video only; the asset-fed families live outside it
     assert {s.task for s in bank} == {"text_to_video"}
     assert ({s.task for s in pending} | {d["task"] for d in unwired}
+            | {d["task"] for d in retired}
             ) >= {"image_to_video", "avatar_dialogue", "video_edit"}
 
 
@@ -275,3 +280,24 @@ def test_shipped_models_config():
     assert sora.provider_model == "sora-2-2025-12-08"
     assert mf.judge["video"].temperature == 0
     assert mf.judge["video"].vertex is not None
+
+
+def test_retired_scenarios_are_out_of_the_runnable_set_and_explained():
+    """A retired row stays in the repo (the catalogue is 60) but must not sit
+    in a directory a run would load, and must say why it was retired — a
+    silent disappearance is how a bank quietly stops covering what it claims."""
+    import yaml
+    d = REPO_ROOT / "scenarios" / "bank-video-retired"
+    files = sorted(d.glob("*.yaml"))
+    assert files, "the retired folder should not exist while empty"
+    readme = (d / "README.md")
+    assert readme.exists()
+    body = readme.read_text()
+    runnable_ids = {s.id for s in load_scenarios(
+        REPO_ROOT / "scenarios" / "bank-video-pending", modality="video")}
+    runnable_ids |= {s.id for s in load_scenarios(
+        REPO_ROOT / "scenarios" / "bank-video", modality="video")}
+    for f in files:
+        sid = yaml.safe_load(f.read_text())["id"]
+        assert sid not in runnable_ids, f"{sid} is retired but still loadable"
+        assert sid in body, f"{sid} is retired with no reason recorded"
