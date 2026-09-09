@@ -1,36 +1,28 @@
-# Unwired scenarios — buildable tasks, missing input assets
+# Unwired scenarios — buildable task, no input asset
 
-These are `image_to_video` / `video_edit` scenarios whose required input
-asset does not exist on disk yet. Both tasks became buildable on
-2026-09-09, and the loader now *enforces* that a buildable asset-fed task
-has its asset — so leaving these in `bank-video-pending/` would reject any
-run that loaded the directory.
+A scenario lands here when its task is buildable but its required input does
+not exist on disk. The loader rejects such a scenario, so leaving it in
+`bank-video-pending/` would reject any run that loaded the directory.
 
-They are parked here rather than deleted or stubbed: the scenarios are
-real bank rows, and a stub asset would silently produce a comparison of
-the wrong thing.
+Parked, not stubbed: a placeholder asset would silently produce a comparison
+of the wrong thing, which is worse than a scenario that cannot run.
 
-**Nothing here is generated automatically.** Producing these assets costs
-money (stills) or needs sourcing (clips), so it is a deliberate step.
+| Scenario | Task | Needs | In the edits+ads scope? |
+|---|---|---|---|
+| VID-EDIT-10 | `video_edit` | a `source` clip | **yes** |
 
-| Scenario | Task | Missing role | Title | In the edits+ads scope? |
-|---|---|---|---|---|
-| VID-AD-05 | `image_to_video` | `reference` | Logo sting | **YES** |
-| VID-AD-08 | `image_to_video` | `reference` | SKU line-up pan | **YES** |
-| VID-EDIT-10 | `video_edit` | `source` | Revert a prior edit | **YES** |
-| VID-I2V-01 | `image_to_video` | `reference` | Subtle animation of a still | no |
-| VID-I2V-02 | `image_to_video` | `reference` | First frame continuation | no |
-| VID-I2V-03 | `image_to_video` | `reference` | First and last frame bridge | no |
-| VID-I2V-04 | `image_to_video` | `reference` | Reference character in a new scene | no |
-| VID-I2V-06 | `image_to_video` | `reference` | Landscape parallax | no |
-| VID-I2V-07 | `image_to_video` | `reference` | Two references composited | no |
-| VID-I2V-08 | `image_to_video` | `reference` | Style plate plus motion brief | no |
-| VID-I2V-09 | `image_to_video` | `reference` | Logo reveal from a still | no |
-| VID-I2V-10 | `image_to_video` | `reference` | Three stills to a sequence | no |
+**VID-EDIT-10 "Derived source"** declares no `inputs` at all — the sheet
+describes its source as produced at run time from another scenario's output,
+which the runner has no mechanism for. It needs either a real source clip on
+disk or a decision to retire it.
 
-The three marked YES are inside the scope agreed on 4 September, so the
-in-scope runnable set is **17 of 20** until their assets exist.
+Eleven scenarios were parked here on 2026-09-09 and released again the same
+day: they had their assets all along, under role names that carry meaning
+(`first_frame`/`last_frame`, `character`/`environment`, `still1..3`, `logo`,
+`style`). The task definition had wrongly demanded a single role called
+`reference`; it now requires a COUNT of inputs, not a name. See
+`runner/lifecycle.py`.
 
-To restore one: create the asset under `video/assets/bank/` with its JSON
-provenance sidecar, add the `inputs:` key, and move the file back to
-`bank-video-pending/`.
+To restore VID-EDIT-10: put the clip at `assets/bank/` with its JSON
+provenance sidecar (source clips are never model-generated), add the
+`inputs: {source: ...}` key, and move the file to `bank-video-pending/`.

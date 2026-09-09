@@ -71,11 +71,21 @@ class Scenario(BaseModel):
                 f"scenario {self.id}: task {self.task!r} belongs to modality "
                 f"{expected_mod!r}, not {self.modality!r}")
         from .lifecycle import BUILD_TASKS
-        for role in BUILD_TASKS.get(self.task, {}).get("inputs", []):
+        _cfg = BUILD_TASKS.get(self.task, {})
+        for role in _cfg.get("inputs", []):
             if role not in self.inputs:
                 raise ValueError(
                     f"scenario {self.id}: task {self.task!r} requires an "
                     f"input asset with role {role!r} (inputs: {{{role}: path}})")
+        # Some tasks need an asset but do not fix its role name: the
+        # image_to_video family uses roles that carry meaning — first_frame
+        # and last_frame, character and environment, still1..still3 — and
+        # flattening those to one generic "reference" would throw away which
+        # image is which. So the requirement is a COUNT, not a name.
+        if len(self.inputs) < _cfg.get("min_inputs", 0):
+            raise ValueError(
+                f"scenario {self.id}: task {self.task!r} requires at least "
+                f"{_cfg['min_inputs']} input asset(s); got {len(self.inputs)}")
         if not self.prompt and not self.input.get("script"):
             raise ValueError(f"scenario {self.id}: needs a prompt (or input.script for voice)")
         if (self.criteria is None) != (self.weights is None):
