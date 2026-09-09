@@ -4,9 +4,11 @@ Every wired asset was opened and compared against the prompt it serves,
 before any run. Seven of nine edit clips and all the ad references are sound.
 The exceptions are recorded here rather than discovered mid-run.
 
-## Blocking — needs a decision
+## Resolved — VID-EDIT-02 retired
 
-**VID-EDIT-02 "Remove a background element" — the asset does not fit the brief.**
+**VID-EDIT-02 "Remove a background element" — RETIRED 2026-09-09.** Moved to
+`scenarios/bank-video-retired/`, which records the reason and the route back.
+The asset does not fit the brief:
 
 The prompt is *"Remove the parked bicycle from the background of this clip.
 Reconstruct what is behind it. Do not change the foreground subject or the
@@ -23,10 +25,10 @@ Whatever a model returns cannot be scored: the referent is ambiguous, so the
 judge cannot say whether the right object was removed. This scenario would
 produce noise, not signal.
 
-Options: source a clip with one clearly parked bicycle behind a subject, or
-retire the scenario. The prompt is verbatim from the sheet and should not be
-rewritten to fit the asset we happen to have — that would be fitting the test
-to the data.
+Retired rather than reworded: the prompt is verbatim from the sheet, and
+rewriting it to fit the asset we happen to own would be fitting the test to
+the data. It comes back as soon as a clip with one clearly parked bicycle
+behind a distinct subject is sourced.
 
 ## Fixed
 
