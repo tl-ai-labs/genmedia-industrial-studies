@@ -223,8 +223,20 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
                 facts.append(f"measured preservation (SSIM outside declared region): "
                              f"{measures['preservation_ssim_outside']:.4f}")
 
+            if "source_width" in measures:
+                facts.append(f"source clip: {measures['source_width']}x"
+                             f"{measures['source_height']}, "
+                             f"{float(measures['source_duration_s']):.2f}s "
+                             f"(from its container header)")
+            if measures.get("duration_delta_s") is not None:
+                facts.append(f"output duration differs from the source by "
+                             f"{float(measures['duration_delta_s']):+.2f}s")
+
             prompt = build_judge_prompt(s, judge_crits, facts, measured_names)
             media = []
+            # Asset-fed tasks: the judge cannot answer "was only the requested
+            # thing changed" or "is this the supplied product" without seeing
+            # the input, so it goes FIRST and is named in the prompt.
             if s.task in ("image_edit", "inpaint_mask"):
                 src_rel = next((i for i in manifest.data.get("inputs", {}).get(s.id, [])
                                 if i["role"] == "source"), None)
@@ -233,6 +245,26 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
                                   "image/png"))
                     prompt = ("The FIRST image is the untouched SOURCE; the SECOND is "
                               "the edited RESULT you are scoring.\n\n") + prompt
+            elif s.task == "video_edit":
+                src_rel = next((i for i in manifest.data.get("inputs", {}).get(s.id, [])
+                                if i["role"] == "source"), None)
+                if src_rel:
+                    # source clips go byte-for-byte too, same caveat as the output
+                    media.append(((run_dir / src_rel["path"]).read_bytes(), "video/mp4"))
+                    prompt = ("The FIRST clip is the untouched SOURCE; the SECOND is "
+                              "the edited RESULT you are scoring. Judge the edit "
+                              "against the source: what was asked to change, and "
+                              "whether everything else stayed identical.\n\n") + prompt
+            elif s.task == "image_to_video":
+                ref_rel = next((i for i in manifest.data.get("inputs", {}).get(s.id, [])
+                                if i["role"] == "reference"), None)
+                if ref_rel:
+                    media.append((strip_image_metadata(run_dir / ref_rel["path"]),
+                                  "image/png"))
+                    prompt = ("The FIRST item is the REFERENCE STILL the clip had to "
+                              "animate; the SECOND is the generated CLIP you are "
+                              "scoring. The subject in the clip must be the same "
+                              "object as the still.\n\n") + prompt
             media.append((media_bytes, media_mime))
 
             leaked = [w for w in

@@ -24,7 +24,7 @@ video:
     provider: google-vertex
     provider_model: "veo-3.1-generate-001"     # GA id on Vertex, NOT the -preview alias
     vertex: {project: ai-studies-console, location: global}
-    supports: [text_to_video]
+    supports: [text_to_video, image_to_video, video_edit]
     limits: {max_concurrency: 1, rpm: 2}   # same project quota posture as the image lane
     params: {resolution: "1080p", audio: false}
     price:
@@ -47,7 +47,7 @@ video:
     provider: openai
     provider_model: "sora-2-2025-12-08"        # dated snapshot, NOT the moving alias
     auth_env: OPENAI_API_KEY
-    supports: [text_to_video]
+    supports: [text_to_video, image_to_video, video_edit]
     limits: {max_concurrency: 1, rpm: 4}
     params: {}                       # resolution comes from each scenario; sora-2
                                      # tops out at 720p — the adapter records the
@@ -80,7 +80,7 @@ video:
                                      # "gemini-omni-flash-preview" is NOT served here);
                                      # preview id, no GA snapshot yet
     vertex: {project: ai-studies-console, location: global}
-    supports: [text_to_video]
+    supports: [text_to_video, image_to_video, video_edit]
     limits: {max_concurrency: 1, rpm: 2}
     params: {resolution: "1080p"}    # no audio toggle on this surface
     price:
@@ -106,7 +106,7 @@ video:
     provider: byteplus               # ByteDance — the Seedance family
     provider_model: "dreamina-seedance-2-5-260628"   # dated ModelArk snapshot
     auth_env: ARK_API_KEY
-    supports: [text_to_video]
+    supports: [text_to_video, image_to_video, video_edit]
     limits: {max_concurrency: 3, rpm: 180}   # ModelArk "Model list" (2026-09-02):
                                      # individual accounts = max concurrency 3, max RPM
                                      # 180 (enterprise 10 / 600); console shows RPM 180

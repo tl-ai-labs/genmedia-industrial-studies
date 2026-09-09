@@ -253,3 +253,53 @@ def check_video(scenario, output_path: Path, assets: dict | None = None) -> Chec
         out.measures["target_height"] = target_h
 
     return out
+
+
+# tolerance on an edit's duration: a re-encode can land a frame either side
+# of the source without the edit having changed the shot's length
+EDIT_DURATION_TOLERANCE_S = 0.25
+
+
+def check_video_edit(scenario, output_path: Path,
+                     assets: dict | None = None) -> CheckOutcome:
+    """An edit is measured against its own SOURCE clip as well as the brief.
+
+    "Change the umbrella to yellow, everything else stays exactly as it is"
+    implies the shot is not reframed and not re-timed. Aspect ratio is a
+    gate because a changed one means the frame was recomposed — that is a
+    different shot, not an edit. Duration and scale are recorded as measures
+    rather than gated: delivering 720p from a 1080p source is a shortfall to
+    grade, not a malformed output to throw away.
+    """
+    out = check_video(scenario, output_path, assets)
+    if not out.passed:                       # the clip did not even decode
+        return out
+
+    src = (assets or {}).get("source")
+    if src is None:
+        return out                           # nothing to compare against
+    try:
+        src_info = parse_mp4(Path(src))
+    except Exception as e:
+        out.measures["source_parse_error"] = f"{type(e).__name__}: {e}"
+        return out
+
+    sw, sh, sdur = src_info["width"], src_info["height"], src_info["duration_s"]
+    out.measures["source_width"], out.measures["source_height"] = sw, sh
+    out.measures["source_duration_s"] = round(sdur, 3)
+
+    ow, oh = out.measures["width"], out.measures["height"]
+    if sw and sh and ow and oh:
+        src_ar, out_ar = sw / sh, ow / oh
+        same_ar = abs(src_ar - out_ar) <= 0.01 * src_ar
+        out.gates.append(_gate(
+            "preserves_framing", same_ar,
+            f"source {sw}x{sh} ({src_ar:.3f}) -> output {ow}x{oh} ({out_ar:.3f})"))
+        out.measures["scale_ratio"] = round((ow / sw), 3) if sw else None
+
+    if sdur:
+        delta = out.measures["duration_s"] - sdur
+        out.measures["duration_delta_s"] = round(delta, 3)
+        out.measures["duration_preserved"] = abs(delta) <= EDIT_DURATION_TOLERANCE_S
+
+    return out

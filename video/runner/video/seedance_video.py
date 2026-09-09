@@ -26,6 +26,7 @@ shapes need their own adapter, not a base-URL swap.
 """
 from __future__ import annotations
 
+import base64
 import os
 import time
 
@@ -50,6 +51,29 @@ class SeedanceVideoAdapter(Adapter):
             timeout=min(timeout_s, 120),
             headers={"Authorization": f"Bearer {os.environ[model_cfg.auth_env]}",
                      "Content-Type": "application/json"})
+
+    def _build_content(self, req: GenRequest) -> list:
+        """The `content` array for one task.
+
+        Text-only (text_to_video) sends the single text part — that path is
+        proven against the live endpoint and is left byte-identical.
+
+        Asset-fed tasks add the frozen asset as a data-URI part. THE PART
+        SHAPE BELOW IS NOT YET VERIFIED against ModelArk for these two tasks
+        — it follows the documented content-part convention and is isolated
+        here so there is one place to correct. A wrong shape is refused by
+        the API and recorded as a failed cell; it cannot quietly generate a
+        clip that ignored the asset.
+        """
+        content: list = [{"type": "text", "text": req.text}]
+        for asset in req.inputs or []:
+            b64 = base64.b64encode(asset.path.read_bytes()).decode()
+            uri = f"data:{asset.mime};base64,{b64}"
+            if asset.mime.startswith("video/"):
+                content.append({"type": "video_url", "video_url": {"url": uri}})
+            else:
+                content.append({"type": "image_url", "image_url": {"url": uri}})
+        return content
 
     def run(self, req: GenRequest) -> GenResult:
         applied: dict = {}
@@ -82,7 +106,7 @@ class SeedanceVideoAdapter(Adapter):
             resp = self._http.post(
                 f"{self.base_url}/contents/generations/tasks",
                 json={"model": self.cfg.provider_model,
-                      "content": [{"type": "text", "text": req.text}],
+                      "content": self._build_content(req),
                       **fields})
             task = self._checked(resp)
             task_id = task.get("id")
