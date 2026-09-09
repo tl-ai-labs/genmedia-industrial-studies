@@ -39,6 +39,30 @@ class OmniFlashVideoAdapter(Adapter):
         self.timeout_s = timeout_s
         self.client = _make_client(genai, types, model_cfg, timeout_s)
 
+    def _build_input(self, req: GenRequest):
+        """The `input` payload for one interaction.
+
+        Text-only (text_to_video) sends the bare string — that path is proven
+        against the live endpoint and is deliberately left byte-identical.
+
+        Asset-fed tasks (image_to_video, video_edit) must additionally carry
+        the frozen input asset. THE PART SHAPE BELOW IS NOT YET VERIFIED
+        AGAINST THE LIVE INTERACTIONS API — it is the documented content-part
+        convention, isolated here so there is exactly one place to correct
+        when someone checks it. A wrong shape fails loudly at create() and is
+        recorded as a failed cell; it cannot silently produce a clip that
+        ignored the asset.
+        """
+        if not req.inputs:
+            return req.text
+        parts: list = [{"type": "text", "text": req.text}]
+        for asset in req.inputs:
+            b64 = base64.b64encode(asset.path.read_bytes()).decode()
+            kind = "video" if asset.mime.startswith("video/") else "image"
+            parts.append({"type": kind,
+                          kind: {"data": b64, "mime_type": asset.mime}})
+        return parts
+
     def run(self, req: GenRequest) -> GenResult:
         applied: dict = {}
         unsupported: list[str] = []
@@ -69,7 +93,7 @@ class OmniFlashVideoAdapter(Adapter):
         try:
             interaction = self.client.interactions.create(
                 model=self.cfg.provider_model,
-                input=req.text,
+                input=self._build_input(req),
                 response_format=response_format,   # no response_modalities: see module docstring
                 **create_kwargs)
             deadline = time.monotonic() + self.timeout_s

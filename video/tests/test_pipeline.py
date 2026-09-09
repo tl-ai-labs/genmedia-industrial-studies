@@ -691,3 +691,101 @@ def test_relative_difference_is_computed_against_the_rival():
     zero = {r["key"]: r for r in
             _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 0)}, ["g", "r"])}
     assert zero["lat_p50"]["delta_rel"] is None
+
+
+# --------------------------------------------------------------------------
+# asset-fed video tasks: the input must reach BOTH the model and the judge
+# --------------------------------------------------------------------------
+
+def _edit_project(project, tmp_path, task, role, asset_name, asset_bytes):
+    """A one-scenario bank for an asset-fed task, with the asset on disk."""
+    import yaml
+    (project / "assets").mkdir(exist_ok=True)
+    (project / "assets" / asset_name).write_bytes(asset_bytes)
+    bank = project / "scenarios-edit"
+    bank.mkdir()
+    (bank / "s1.yaml").write_text(yaml.safe_dump({
+        "id": "VID-X-01", "modality": "video", "task": task,
+        "title": "t", "prompt": "make the umbrella yellow, change nothing else",
+        "expected": "only the umbrella changes",
+        "inputs": {role: f"assets/{asset_name}"},
+        "params": {"duration_s": 4, "resolution": "720p", "aspect_ratio": "16:9"},
+        "checks": {"min_width": 1280, "min_height": 720},
+        "tags": ["conversational-local-video-editing"]}, sort_keys=False))
+    return bank
+
+
+def test_video_edit_sends_the_source_to_model_and_judge(project, fake_models_yaml,
+                                                        fake_env, monkeypatch,
+                                                        tmp_path):
+    """The source clip has to reach the adapter (or the model edits nothing)
+    AND the judge (or 'was everything else left alone' is unanswerable).
+    Both halves are asserted because either can break silently."""
+    source = minimal_mp4(duration_s=4.0, width=1280, height=720, payload_bytes=1024)
+    bank = _edit_project(project, tmp_path, "video_edit", "source",
+                         "clip.mp4", source)
+
+    fake_a, fake_b = _fakes()
+    judge = FakeJudgeAdapter(score=8.0)
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b,
+                                   "fake_judge": judge})
+    scenarios = load_scenarios(bank, modality="video")
+    models = enabled_models(load_models(fake_models_yaml), "video")
+    run_dir = run_generation(project, scenarios, models, "video", budget_usd=20.0)
+    judge_run(project, run_dir, fake_models_yaml)
+
+    # the adapter received the frozen source as a typed Asset — if this
+    # breaks, the model "edits" nothing and the run still looks successful
+    for req in fake_a.requests:
+        assert req.task == "video_edit"
+        assert [a.role for a in req.inputs] == ["source"]
+        assert req.inputs[0].path.read_bytes() == source
+        assert req.inputs[0].sha256 == hashlib.sha256(source).hexdigest()
+        assert req.inputs[0].mime == "video/mp4"
+    # the judge received TWO clips, source first, and was told which is which
+    for call in judge.calls:
+        assert call["n_media"] == 2, "judge got one clip — it cannot compare"
+        assert call["mimes"] == ["video/mp4", "video/mp4"]
+        assert call["media_bytes"][0] == source, "first clip is not the source"
+        assert "FIRST clip is the untouched SOURCE" in call["prompt"]
+        assert "everything else stayed identical" in call["prompt"]
+
+    # the source is frozen into the run and hashed, like every input
+    manifest = json.loads((run_dir / "manifest.json").read_text())
+    rows = manifest["inputs"]["VID-X-01"]
+    assert [r["role"] for r in rows] == ["source"]
+    assert rows[0]["sha256"] == hashlib.sha256(source).hexdigest()
+
+    # and the edit's own gates ran against it
+    crow = next(r for r in RunFiles(run_dir).read("checks"))
+    assert crow["measures"]["source_width"] == 1280
+    assert any(g["gate"] == "preserves_framing" for g in crow["gates"])
+
+
+def test_image_to_video_shows_the_reference_still_to_the_judge(
+        project, fake_models_yaml, fake_env, monkeypatch, tmp_path):
+    """For a product ad the clip must animate THE SUPPLIED product, so the
+    judge is shown the still first — otherwise reference_fidelity is guesswork."""
+    import io as _io
+
+    from PIL import Image
+    buf = _io.BytesIO()
+    Image.new("RGB", (64, 64), (200, 120, 60)).save(buf, format="PNG")
+    png = buf.getvalue()
+    bank = _edit_project(project, tmp_path, "image_to_video", "reference",
+                         "ref.png", png)
+
+    fake_a, fake_b = _fakes()
+    judge = FakeJudgeAdapter(score=8.0)
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b,
+                                   "fake_judge": judge})
+    scenarios = load_scenarios(bank, modality="video")
+    models = enabled_models(load_models(fake_models_yaml), "video")
+    run_dir = run_generation(project, scenarios, models, "video", budget_usd=20.0)
+    judge_run(project, run_dir, fake_models_yaml)
+
+    for call in judge.calls:
+        assert call["n_media"] == 2
+        assert call["mimes"][1] == "video/mp4"          # the generated clip
+        assert "REFERENCE STILL" in call["prompt"]
+        assert "same object as the still" in call["prompt"]
