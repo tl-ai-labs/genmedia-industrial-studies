@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-CIN-10 (sheet row 74) — prompt verbatim.
+# Sheet run settings: '8s; 1080p; 16:9; 3 seeds; audio off unless stated'.
+# v1 deviations, recorded: 1 generation per scenario x model (sheet
+# asks 3 seeds); duration/dimension gates are the validity floor
+# (720p) while the requested 1080p spec is graded by the measured
+# technical_compliance criterion.
+# CAUTION: the sheet marks this row 'Input assets required: Reference still image'.
+# v1 runs no input assets, so the 'supplied still' the prompt names does not exist;
+# adherence clauses 1-2 cannot be verified against a reference. Kept for bank
+# completeness — consider excluding it from paid runs until image_to_video lands.
+id: VID-CIN-10
+modality: video
+task: text_to_video
+title: Match a supplied look reference
+prompt: Generate an eight-second shot of a harbour at dawn matching the colour grade, contrast
+  and mood of the supplied still.
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Match a supplied look reference. Capability under test: Aesthetic transfer to motion.
+  Adherence clauses, check each: 1) Colour grade matches reference  2) Contrast character
+  matches  3) Subject matter as briefed  4) Consistent grade across all frames'
+checks:
+  min_duration_s: 7.0
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- cinematic-hero-shot
+- scenario-bank

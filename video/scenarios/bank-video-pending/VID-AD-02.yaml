@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-02 (sheet row 76) — prompt verbatim.
+# Industry: Ads (also: Ecommerce & Retail)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Product reference | source: Google Scanned Objects (CC BY 4.0) | link: open
+# Runnable in v1: no — task reserved in v1 (needs assets and/or audio+lip-sync rubric).
+# task 'image_to_video' is RESERVED in v1: schema-legal, no check suite, no
+# model lists it in `supports`, so the matrix marks it skipped (n/a) — never
+# billed. Assets are deliberately NOT declared under `inputs:` until they
+# exist on disk, so a run containing this file is not rejected outright.
+id: VID-AD-02
+modality: video
+task: image_to_video
+title: Product in use
+prompt: A pair of hands picks up the supplied product from a counter and opens it. Natural
+  hand movement, correct grip, product unchanged.
+inputs:
+  reference: assets/bank/VID-AD-02-reference.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Product in use. Capability under test: Hand-object interaction. Adherence clauses,
+  check each: 1) Hands grip the product plausibly  2) Product opens as it would in reality  3)
+  Product form and label unaltered  4) Five fingers per hand throughout'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets

@@ -1,0 +1,238 @@
+{% macro css() %}
+<style>
+/* ── Client report ────────────────────────────────────────────────────
+   LIGHT ONLY, and every colour painted explicitly. This file is opened from
+   a desktop, screen-shared and pasted into decks; there is no viewer theme
+   to inherit and nothing to inherit it from.
+
+   The two arms carry their own colour because the reader's first job on
+   every card is telling the columns apart. Google blue is the Gemini
+   column throughout - it identifies the arm, it is never used as decoration
+   elsewhere, and no verdict is coloured by which arm won. */
+:root{
+  --paper:#f4f6f8; --card:#ffffff; --lift:#f8fafb; --rule:#dde3e9;
+  --ink:#10161c; --body:#3a4650; --dim:#78848e;
+  --accent:#1d4e6f; --accent-soft:#e7eff4;
+  --gem:#1a73e8; --gem-soft:#e8f0fe;
+  --oth:#8a5a12; --oth-soft:#faf2e2;
+  --good:#0f7a5a; --good-soft:#e4f2ed;
+  --warn:#9a6a10; --warn-soft:#faf1de;
+  --bad:#a3312a; --bad-soft:#fbeae8;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --disp:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --text:"Source Sans 3","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--text);
+  font-size:15.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px}
+h1,h2,h3,h4{font-family:var(--disp);color:var(--ink);text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.03em;line-height:1.08}
+h2{font-size:21px;font-weight:650;letter-spacing:-.014em;margin:38px 0 4px}
+h3{font-size:16px;font-weight:640;letter-spacing:-.008em}
+code{font-family:var(--mono);font-size:.9em}
+.dim{color:var(--dim)}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim)}
+
+.masthead{background:var(--card);border-bottom:1px solid var(--rule)}
+.masthead .in{max-width:1180px;margin:0 auto;padding:13px 24px;display:flex;
+  gap:14px;align-items:baseline;flex-wrap:wrap}
+.masthead .t{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:15px}
+.masthead .s{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+header.hero{padding:42px 0 6px}
+.lede{font-size:17px;max-width:66ch;margin:15px 0 0}
+
+/* One-liners. The long banner blocks were compressed on request; the detail
+   they carried moved into the closing notes rather than off the page. */
+.one{font-size:14.5px;line-height:1.55;margin:10px 0;padding:9px 14px;border-radius:8px;
+  border-left:3px solid var(--rule);background:var(--card)}
+.one b{color:var(--ink)}
+.one.flag{border-left-color:var(--bad);background:var(--bad-soft)}
+.one.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.one.lead{border-left-color:var(--accent)}
+.one.dim{border:0;background:none;padding:6px 0;font-size:13px;color:var(--dim)}
+.sv{white-space:normal}
+
+.note{border-left:3px solid var(--accent);background:var(--card);padding:15px 20px;
+  margin:20px 0;border-radius:0 9px 9px 0;font-size:14.5px}
+.note.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.note.flag{border-left-color:var(--bad);background:var(--bad-soft)}
+.note .h{display:block;font-family:var(--disp);font-weight:650;color:var(--ink);
+  font-size:15.5px;margin-bottom:3px}
+.note b{color:var(--ink)}
+
+/* ── head to head ───────────────────────────────────────────────────
+   Two bars meeting in the middle, each side growing away from the centre, so
+   the reader compares lengths rather than reading two numbers and doing the
+   subtraction. Each row shares its own scale; scales are never shared BETWEEN
+   rows, which would compare a cost against a latency. */
+.duel{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:20px 24px 22px;margin:14px 0}
+.heads{display:flex;justify-content:space-between;font-family:var(--mono);
+  font-size:12.5px;font-weight:600;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.heads .gem{color:var(--gem)}
+.heads .oth{color:var(--oth)}
+.drow{padding:8px 0;border-top:1px solid var(--rule)}
+.drow:first-of-type{border-top:0}
+.dlab{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.dpair{display:grid;grid-template-columns:92px 1fr 1fr 92px;align-items:center;gap:9px}
+.dval{font-family:var(--mono);font-size:13px;color:var(--body);
+  font-variant-numeric:tabular-nums}
+.dval.r{text-align:right}
+.dval.win{color:var(--ink);font-weight:700}
+.dtrack{height:9px;background:var(--lift);border-radius:999px;display:flex;overflow:hidden}
+.dtrack.gem{justify-content:flex-end}
+.dtrack i{display:block;height:100%;border-radius:999px}
+.dtrack.gem i{background:var(--gem)}
+.dtrack.oth i{background:var(--oth)}
+@media (max-width:720px){
+  .dpair{grid-template-columns:76px 1fr 1fr 76px;gap:6px}
+  .dval{font-size:11.5px}
+}
+
+/* ── transposed metric table: metrics down, models across ───────────── */
+.mtable{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  overflow:hidden;margin:14px 0}
+.mscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+thead th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--dim);background:var(--lift);font-weight:600;
+  white-space:nowrap}
+th.n,td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+th.gemcol{color:var(--gem)}
+th.othcol{color:var(--oth)}
+td.metric{color:var(--ink);font-weight:600}
+td.metric small{display:block;font-weight:400;color:var(--dim);font-size:12px;
+  font-family:var(--text);letter-spacing:0;text-transform:none}
+td.delta{font-weight:600}
+.better{color:var(--good)}
+.worse{color:var(--bad)}
+.neutral{color:var(--dim)}
+
+/* ── controls ───────────────────────────────────────────────────────── */
+.controls{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:14px 18px;margin:18px 0;display:flex;flex-direction:column;gap:11px}
+.crow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.clab{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);min-width:64px}
+select,.btn{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:8px;
+  border:1px solid var(--rule);background:var(--card);color:var(--body);cursor:pointer}
+select:focus-visible,.btn:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);
+  outline-offset:2px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.chip{font:inherit;font-size:13px;padding:5px 13px;border-radius:999px;
+  border:1px solid var(--rule);background:var(--card);color:var(--body);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip .c{font-family:var(--mono);font-size:11px;opacity:.75;margin-left:5px}
+
+/* ── scenario card ──────────────────────────────────────────────────── */
+.sc{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  padding:22px 24px;margin:16px 0}
+.schead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;
+  flex-wrap:wrap}
+.schead h3{margin:3px 0 2px}
+.schead h3 code{color:var(--accent);font-weight:600;margin-right:8px}
+.badge{font-family:var(--mono);font-size:11.5px;font-weight:600;padding:5px 12px;
+  border-radius:999px;white-space:nowrap}
+.badge.gem{background:var(--gem);color:#fff}
+.badge.oth{background:var(--oth);color:#fff}
+.badge.tie{background:var(--warn-soft);color:var(--warn);border:1px solid #ecdcb8}
+.badge.none{background:var(--lift);color:var(--dim);border:1px dashed var(--rule)}
+
+details{margin:14px 0 0}
+summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--dim);list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ "}
+details[open]>summary::before{content:"▾ "}
+summary:hover{color:var(--accent)}
+.script{background:var(--lift);border-left:3px solid var(--accent);padding:11px 16px;
+  border-radius:0 8px 8px 0;font-size:14px;line-height:1.6;color:var(--ink);margin:9px 0 0}
+.vlab{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 -4px}
+.vlab code{color:var(--accent);font-weight:600}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0 0}
+@media (max-width:820px){.vs{grid-template-columns:1fr}}
+.col{position:relative;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;
+  background:var(--lift);overflow:hidden}
+.col::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--arm)}
+.col.gemini{--arm:var(--gem)}
+.col.rival{--arm:var(--oth)}
+.col.won{background:var(--card);border-color:var(--arm);box-shadow:0 0 0 1px var(--arm) inset}
+.cm{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);
+  display:flex;align-items:center;gap:7px}
+.cm .dot{width:8px;height:8px;border-radius:50%;background:var(--arm);flex:none}
+.tick{margin-left:auto;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  color:#fff;background:var(--arm);padding:2px 8px;border-radius:999px}
+.cq{font-family:var(--disp);font-size:30px;font-weight:680;color:var(--ink);
+  letter-spacing:-.028em;margin:8px 0 1px;font-variant-numeric:tabular-nums;line-height:1.05}
+.cq.none{font-size:17px;color:var(--dim);font-weight:500}
+.cs{font-size:12px;color:var(--dim)}
+.gates{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px}
+.g{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:999px}
+.g.ok{background:var(--good-soft);color:var(--good)}
+.g.no{background:var(--bad-soft);color:var(--bad)}
+
+/* ── clips ──────────────────────────────────────────────────────────── */
+.clip{background:var(--card);border:1px solid var(--rule);border-radius:9px;
+  padding:9px 11px;margin:9px 0 0}
+.clip .head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}
+.clip .vt{font-family:var(--mono);font-size:10.5px;background:var(--accent-soft);
+  color:var(--accent);padding:1px 7px;border-radius:999px;font-weight:600}
+.clip .rl{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+/* The score is the thing a reader is looking for on each clip - it gets the
+   weight, and latency sits beside it because point 4 asks for both. */
+.clip .sc-pill{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:700;
+  color:#fff;background:var(--arm);padding:2px 9px;border-radius:999px}
+.clip .sc-pill.none{background:var(--lift);color:var(--dim);font-weight:500;
+  border:1px solid var(--rule)}
+.clip audio{width:100%;height:32px;display:block;margin-top:2px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:7px;font-family:var(--mono);
+  font-size:10.5px;color:var(--dim)}
+.meta b{color:var(--ink);font-weight:600}
+.meta .lat b{color:var(--accent)}
+
+.runs{margin-top:14px;font-size:12.5px}
+.runs table{font-size:12.5px}
+.runs th,.runs td{padding:6px 12px}
+
+.xtra{display:grid;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.xl{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim);display:block;margin-bottom:6px}
+.xr{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:2px 0;flex-wrap:wrap}
+.xr code{color:var(--ink);font-weight:600}
+.xr b{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.xd{font-size:12px;color:var(--dim);line-height:1.5;margin:2px 0 6px}
+
+.gapbar{margin-top:16px}
+.gbar{position:relative;height:10px;background:var(--lift);border:1px solid var(--rule);
+  border-radius:999px}
+.gbar .band{position:absolute;inset:0 auto 0 0;background:var(--warn-soft);
+  border-right:1px solid #e2cfa6;border-radius:999px 0 0 999px}
+.gbar .door{position:absolute;top:-3px;height:15px;border-left:2px dashed var(--accent)}
+.gbar .mark{position:absolute;top:-4px;width:3px;height:17px;background:var(--good);
+  border-radius:2px}
+.gbar .mark.risk{background:var(--bad)}
+.gkey{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;
+  color:var(--dim);margin-top:7px}
+.gwarn{font-size:12px;line-height:1.5;color:var(--bad);background:var(--bad-soft);
+  border-radius:7px;padding:8px 11px;margin-top:7px}
+
+.sv{font-size:13.5px;color:var(--body);margin:16px 0 0;padding-top:13px;
+  border-top:1px solid var(--rule);line-height:1.6}
+.sv b{color:var(--ink)}
+.nomatch{text-align:center;color:var(--dim);padding:34px}
+footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
+.notes{font-size:13.5px;line-height:1.62;padding-left:19px}
+.notes li{margin:9px 0}
+.notes b{color:var(--ink)}
+@media print{.controls{display:none}.sc{break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+{% endmacro %}
