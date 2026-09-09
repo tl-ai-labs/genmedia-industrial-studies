@@ -55,24 +55,29 @@ class SeedanceVideoAdapter(Adapter):
     def _build_content(self, req: GenRequest) -> list:
         """The `content` array for one task.
 
-        Text-only (text_to_video) sends the single text part — that path is
-        proven against the live endpoint and is left byte-identical.
+        Verified 2026-09-09 against the Seedance 2.5 API reference
+        (docs.byteplus.com/en/docs/ModelArk/1520757), whose own worked
+        examples are:
 
-        Asset-fed tasks add the frozen asset as a data-URI part. THE PART
-        SHAPE BELOW IS NOT YET VERIFIED against ModelArk for these two tasks
-        — it follows the documented content-part convention and is isolated
-        here so there is one place to correct. A wrong shape is refused by
-        the API and recorded as a failed cell; it cannot quietly generate a
-        clip that ignored the asset.
+          edit:  {"type": "video_url", "video_url": {"url": ...},
+                  "role": "reference_video"}
+          i2v:   {"type": "image_url", "image_url": {"url":
+                  "data:image/png;base64,..."}}
+
+        So a local asset travels as a data URI (no upload step), and the 2.5
+        reference parts carry a `role`. Text-only keeps its single text part,
+        byte-identical to the proven path.
         """
         content: list = [{"type": "text", "text": req.text}]
         for asset in req.inputs or []:
             b64 = base64.b64encode(asset.path.read_bytes()).decode()
             uri = f"data:{asset.mime};base64,{b64}"
             if asset.mime.startswith("video/"):
-                content.append({"type": "video_url", "video_url": {"url": uri}})
+                content.append({"type": "video_url", "video_url": {"url": uri},
+                                "role": "reference_video"})
             else:
-                content.append({"type": "image_url", "image_url": {"url": uri}})
+                content.append({"type": "image_url", "image_url": {"url": uri},
+                                "role": "reference_image"})
         return content
 
     def run(self, req: GenRequest) -> GenResult:
@@ -81,6 +86,18 @@ class SeedanceVideoAdapter(Adapter):
 
         duration_s = DEFAULT_DURATION_S
         fields: dict = {"watermark": False}
+        if req.task == "video_edit":
+            # The API reference's own edit example sends ratio "adaptive" and
+            # duration -1, i.e. "keep the source's framing and length". That
+            # matters here beyond convention: forcing a ratio or a duration on
+            # an edit makes the model reframe or re-time the shot, and the
+            # edit rubric then penalises it for doing exactly what we asked.
+            # A scenario may still override both, and the override is recorded.
+            fields["ratio"] = "adaptive"
+            fields["duration"] = -1
+            duration_s = None                 # the source's length, not ours
+            applied["ratio"] = "adaptive"
+            applied["duration_s"] = "source"
         for key, value in req.params.items():
             if key == "duration_s":
                 duration_s = int(value)
@@ -141,8 +158,13 @@ class SeedanceVideoAdapter(Adapter):
         if u.get("completion_tokens") is not None:
             usage["output_tokens"] = u["completion_tokens"]   # billing basis
             usage["total_tokens"] = u.get("total_tokens")
-        usage["seconds"] = duration_s
-        usage["seconds_source"] = "requested"
+        if duration_s is None:
+            # an edit keeps the source's length, so there is no requested
+            # duration to record — the measured one is on the checks row
+            usage["seconds_source"] = "adaptive (source length)"
+        else:
+            usage["seconds"] = duration_s
+            usage["seconds_source"] = "requested"
 
         return GenResult(
             data=bytes(data),

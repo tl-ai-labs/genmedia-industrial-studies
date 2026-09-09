@@ -30,6 +30,29 @@ DEFAULT_DURATION_S = 8
 _PENDING = ("queued", "in_progress")
 
 
+def _assert_assets_carried(parts: list, expected: int) -> None:
+    """Fail loudly if an asset did not survive into the payload.
+
+    This is not paranoia. The Interactions content union is OPEN and lenient:
+    a malformed image part — say {"type": "image", "image": {...}} with the
+    fields nested instead of flat — VALIDATES CLEANLY and yields an
+    ImageContent whose `data` is None. The asset is silently dropped, the
+    model generates from the prompt alone, and the run looks perfectly
+    successful while comparing the wrong thing. Verified against
+    google-genai 2.20.0 while wiring these tasks up.
+
+    So the payload is checked before it is sent, not trusted.
+    """
+    carried = sum(1 for part in parts
+                  if part.get("type") in ("image", "video") and part.get("data"))
+    if carried != expected:
+        raise ProviderError(
+            f"input assets did not survive into the interaction payload "
+            f"({carried} of {expected} carry data) — refusing to generate "
+            f"from the prompt alone, which would look like a success",
+            retryable=False)
+
+
 class OmniFlashVideoAdapter(Adapter):
     def __init__(self, model_cfg, timeout_s: float):
         from google import genai
@@ -42,25 +65,35 @@ class OmniFlashVideoAdapter(Adapter):
     def _build_input(self, req: GenRequest):
         """The `input` payload for one interaction.
 
-        Text-only (text_to_video) sends the bare string — that path is proven
-        against the live endpoint and is deliberately left byte-identical.
+        Verified against google-genai 2.20.0: `interactions.create(input=...)`
+        is typed `InteractionsInputParam = Union[ContentParam,
+        List[StepParam], List[ContentParam], str]`, and ContentParam is the
+        open union of Text/Document/Image/Audio/VideoContentParam. Each
+        content is FLAT — `type` alongside its own fields, not nested under a
+        key named after the type:
 
-        Asset-fed tasks (image_to_video, video_edit) must additionally carry
-        the frozen input asset. THE PART SHAPE BELOW IS NOT YET VERIFIED
-        AGAINST THE LIVE INTERACTIONS API — it is the documented content-part
-        convention, isolated here so there is exactly one place to correct
-        when someone checks it. A wrong shape fails loudly at create() and is
-        recorded as a failed cell; it cannot silently produce a clip that
-        ignored the asset.
+            {"type": "text",  "text": "..."}
+            {"type": "image", "data": <base64>, "mime_type": "image/png"}
+            {"type": "video", "data": <base64>, "mime_type": "video/mp4"}
+
+        (google/genai/_gaos/types/interactions/{interactionsinput,content,
+        imagecontent,videocontent}.py — the mime_type literals there are the
+        accepted set, and video/mp4 and image/png are both in it.)
+
+        Text-only (text_to_video) keeps sending the bare string: that is a
+        legal InteractionsInputParam and it is the shape already proven
+        against the live endpoint, so the working path is untouched.
         """
         if not req.inputs:
             return req.text
         parts: list = [{"type": "text", "text": req.text}]
         for asset in req.inputs:
-            b64 = base64.b64encode(asset.path.read_bytes()).decode()
-            kind = "video" if asset.mime.startswith("video/") else "image"
-            parts.append({"type": kind,
-                          kind: {"data": b64, "mime_type": asset.mime}})
+            parts.append({
+                "type": "video" if asset.mime.startswith("video/") else "image",
+                "data": base64.b64encode(asset.path.read_bytes()).decode(),
+                "mime_type": asset.mime,
+            })
+        _assert_assets_carried(parts, len(req.inputs))
         return parts
 
     def run(self, req: GenRequest) -> GenResult:
