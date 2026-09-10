@@ -34,7 +34,7 @@ from typing import Any
 from .audio import (clip_bytes, clip_data_uri, fmt_size, guard_size,
                     safe_name)
 from .dashboard import (WIN_GAP, _bar_widths, _duel, _overall, _scenario_blocks,
-                        load_runs, rollup_models)
+                        _streaming_panel, load_runs, rollup_models)
 
 # The arm this report is written to be read alongside. Matched on the vendor
 # prefix rather than a pinned id so a Gemini version bump does not silently
@@ -313,6 +313,11 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
     overall = _overall(models)
     return {
         "win_gap": WIN_GAP,
+        # First-audio, told once in aggregate. Only scenarios that declared
+        # max_ttfa_ms are streamed, so this is drawn from their clips alone;
+        # it is time to the first chunk, not the whole-call latency two rows
+        # up in the metric table.
+        "streaming": _streaming_panel([c for r in runs for c in r.cells], models),
         # The headline is imported, never restated. It currently runs AGAINST
         # the Google arm; a client report that quietly dropped it would be a
         # different report, not a simpler one.
