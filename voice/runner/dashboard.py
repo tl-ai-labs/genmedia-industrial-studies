@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 import statistics
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -920,6 +921,91 @@ def _overall(models: list[ModelRollup]) -> dict[str, Any]:
             "winner": quality_leader.model_id}
 
 
+def _streaming_panel(all_cells: list["Cell"], models: list[ModelRollup]) -> dict[str, Any]:
+    """
+    One place the streaming story is told in aggregate.
+
+    Only the scenarios that declared `max_ttfa_ms` are streamed, so only their
+    clips carry `ttfa_ms`. Everything here is time to FIRST AUDIO - not
+    whole-call latency, which is a different quantity by roughly an order of
+    magnitude and is shown beside it, never in place of it. The pass/fail is
+    against each scenario's own ceiling (300 ms for the game immersion line,
+    1000 ms for the conversational scenarios).
+    """
+    accent = {m.model_id: m.accent for m in models}
+    streamed = [c for c in all_cells if c.ttfa_ms is not None]
+    if not streamed:
+        return {"any": False}
+
+    def _ceiling(cell: "Cell") -> int | None:
+        for g in cell.gates or []:
+            if g.get("gate") == "ttfa_within_max":
+                m = re.search(r"vs a (\d+) ms ceiling", g.get("detail", ""))
+                if m:
+                    return int(m.group(1))
+        return None
+
+    def _pctl(v: list[int], q: float) -> int:
+        v = sorted(v)
+        return v[min(len(v) - 1, int(round(q / 100 * (len(v) - 1))))]
+
+    per_model = []
+    for mid in sorted({c.model_id for c in streamed}):
+        ts = [c.ttfa_ms for c in streamed if c.model_id == mid]
+        ls = [c.latency_ms for c in streamed if c.model_id == mid and c.latency_ms is not None]
+        passed = sum(
+            1 for c in streamed
+            if c.model_id == mid
+            and any(g.get("gate") == "ttfa_within_max" and g.get("passed") for g in (c.gates or []))
+        )
+        per_model.append({
+            "model_id": mid, "accent": accent.get(mid, "#888"),
+            "n": len(ts), "min": min(ts), "p50": _pctl(ts, 50), "p95": _pctl(ts, 95),
+            "whole_p50": _pctl(ls, 50) if ls else None,
+            "passed": passed, "failed": len(ts) - passed,
+        })
+
+    by_scen: dict[str, list["Cell"]] = {}
+    for c in streamed:
+        by_scen.setdefault(_parent_id(c.scenario_id), []).append(c)
+    per_scenario = []
+    for sid in sorted(by_scen):
+        cells = by_scen[sid]
+        ceil = next((x for x in (_ceiling(c) for c in cells) if x), None)
+        rows = []
+        for mid in sorted({c.model_id for c in cells}):
+            ts = [c.ttfa_ms for c in cells if c.model_id == mid]
+            ok = all(
+                any(g.get("gate") == "ttfa_within_max" and g.get("passed") for g in (c.gates or []))
+                for c in cells if c.model_id == mid
+            )
+            rows.append({
+                "model_id": mid, "accent": accent.get(mid, "#888"),
+                "p50": _pctl(ts, 50), "worst": max(ts), "n": len(ts), "pass": ok,
+            })
+        per_scenario.append({"id": sid, "ceiling": ceil, "rows": rows})
+
+    fastest = min(per_model, key=lambda r: r["p50"])
+    slowest = max(per_model, key=lambda r: r["p50"])
+    none_pass = all(r["passed"] == 0 for r in per_model)
+    lead = (
+        f"<b>{fastest['model_id']}</b> reaches first audio in a median "
+        f"{fastest['p50']} ms, against {slowest['p50']} ms for "
+        f"<b>{slowest['model_id']}</b>"
+        if fastest["model_id"] != slowest["model_id"] else ""
+    )
+    tail = (
+        " Every streamed clip on both arms missed its ceiling, so neither is real-time "
+        "by this study's bar - the number is the finding, not a pass."
+        if none_pass else ""
+    )
+    return {
+        "any": True, "per_model": per_model, "per_scenario": per_scenario,
+        "n_clips": len(streamed), "n_scenarios": len(per_scenario),
+        "lead": lead + tail,
+    }
+
+
 def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
     """Write runs/index.html - the cross-run dashboard."""
     from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -1032,6 +1118,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
             "invalid": m.invalid,
         } for m in models],
         runs=runs, run_rows=run_rows, scenarios=scenarios, duel=duel,
+        streaming=_streaming_panel(all_cells, models),
         overall=_overall(models),
         # PARENTS, not cells. Counting raw ids called this a 102-scenario
         # study: `vr-ecom-07#r01`..`#r30` is one scenario measured thirty

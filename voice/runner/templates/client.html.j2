@@ -114,6 +114,53 @@
 <p class="one dim">Difference is <b>{{ gemini }} minus {{ other }}</b>; green is the better
 direction for that row.</p>
 
+{% if streaming.any %}
+<h2>Time to first audio</h2>
+{% if streaming.lead %}<p class="one lead">{{ streaming.lead|safe }}</p>{% endif %}
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr>
+    <th>Model</th><th class="n">First audio, median</th><th class="n">Range, min&ndash;95th</th>
+    <th class="n">Whole call, median</th><th class="n">Cleared its ceiling</th>
+  </tr></thead>
+  <tbody>
+  {% for r in streaming.per_model %}
+  <tr>
+    <td class="metric">{{ r.model_id }}</td>
+    <td class="n">{{ r.p50 }} ms</td>
+    <td class="n">{{ r.min }}&ndash;{{ r.p95 }} ms</td>
+    <td class="n">{% if r.whole_p50 %}{{ '%.1f'|format(r.whole_p50 / 1000) }}s{% else %}&mdash;{% endif %}</td>
+    <td class="n">{{ r.passed }} / {{ r.n }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr><th>Scenario</th><th class="n">Ceiling</th>
+    <th class="n gemcol">{{ gemini }}</th><th class="n othcol">{{ other }}</th></tr></thead>
+  <tbody>
+  {% for s in streaming.per_scenario %}
+  <tr>
+    <td class="metric"><code>{{ s.id }}</code></td>
+    <td class="n">{% if s.ceiling %}{{ s.ceiling }} ms{% else %}&mdash;{% endif %}</td>
+    {% for who in [gemini, other] %}
+      {% set r = (s.rows | selectattr('model_id', 'equalto', who) | first) %}
+      <td class="n">{% if r %}{{ r.p50 }} ms{% if not r.pass %}
+        <span style="color:var(--warn);font-weight:700">over</span>{% endif %}{% else %}&mdash;{% endif %}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+
+<p class="one dim"><b>First audio is the time to the first chunk of sound</b>, not the whole-call
+latency two rows up in the metric table &mdash; the two differ by roughly an order of magnitude.
+Only scenarios that set a responsiveness ceiling are streamed, so only those appear here; the
+median is over both passes. Each ceiling is the scenario&rsquo;s own &mdash; 300&nbsp;ms for the
+game immersion line, 1000&nbsp;ms for the conversational scenarios. This is the ordinary HTTP
+stream, not a real-time WebSocket path.</p>
+{% endif %}
+
 <h2>Scenario by scenario</h2>
 <div class="controls">
   <div class="crow">

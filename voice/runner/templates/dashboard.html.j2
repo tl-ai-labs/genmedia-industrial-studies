@@ -295,6 +295,53 @@
   <em>Invalid</em> and in the gate rate, never averaged into quality: ten of sixteen cells here
   were gated on <em>timing</em>, and a clean read two seconds too long for an ad slot is the
   wrong length, not bad audio.</p>
+
+  {% if streaming.any %}
+  <h2>Streaming — time to first audio</h2>
+  {% if streaming.lead %}<div class="banner">{{ streaming.lead|safe }}</div>{% endif %}
+  <div class="tw"><table>
+  <thead><tr>
+    <th>Model</th><th class="num">Streamed clips</th><th class="num">First audio min</th>
+    <th class="num">First audio p50</th><th class="num">First audio p95</th>
+    <th class="num">Whole-call p50</th><th class="num">Cleared ceiling</th>
+  </tr></thead>
+  <tbody>
+  {% for r in streaming.per_model %}
+  <tr>
+    <td><span class="dot" style="background:{{ r.accent }}"></span> {{ r.model_id }}</td>
+    <td class="num">{{ r.n }}</td>
+    <td class="num">{{ r.min }} ms</td>
+    <td class="num"><b>{{ r.p50 }} ms</b></td>
+    <td class="num">{{ r.p95 }} ms</td>
+    <td class="num">{% if r.whole_p50 %}{{ (r.whole_p50 / 1000)|round(1) }}s{% else %}<span class="dash">—</span>{% endif %}</td>
+    <td class="num">{{ r.passed }} / {{ r.n }}</td>
+  </tr>
+  {% endfor %}
+  </tbody></table></div>
+
+  <div class="tw"><table>
+  <thead><tr><th>Scenario</th><th class="num">Ceiling</th>
+    {% for r in streaming.per_scenario[0].rows %}<th class="num">{{ r.model_id }}</th>{% endfor %}
+  </tr></thead>
+  <tbody>
+  {% for s in streaming.per_scenario %}
+  <tr>
+    <td><code>{{ s.id }}</code></td>
+    <td class="num">{% if s.ceiling %}{{ s.ceiling }} ms{% else %}<span class="dash">—</span>{% endif %}</td>
+    {% for r in s.rows %}
+    <td class="num">{{ r.p50 }} ms{% if not r.pass %} <span class="pill pill-warning">over</span>{% endif %}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+  </tbody></table></div>
+
+  <p class="note"><b>This is time to the first audio chunk, not whole-call latency</b> — a
+  different quantity by roughly an order of magnitude, shown beside it and never in its place.
+  Only scenarios that declared <code>max_ttfa_ms</code> are streamed, so only their clips carry
+  a first-audio time; percentiles are over both passes. The ceiling is each scenario's own —
+  300&nbsp;ms for the game immersion line, 1000&nbsp;ms for the conversational scenarios. This
+  is the HTTP-chunked stream route, not a real-time WebSocket path.</p>
+  {% endif %}
 </section>
 
 <!-- ───────────────────────────── REPEATS ───────────────────────────── -->
