@@ -1,0 +1,195 @@
+{
+  "run_id": "2026-09-10_181529_video",
+  "created": "2026-09-10T12:45:29.443Z",
+  "state": "generated",
+  "modality": "video",
+  "git_sha": "a92dc5562c07a502783a33fbf95bf3ee10065cc7",
+  "budget_usd": 24.0,
+  "budget_by_provider": {
+    "byteplus": 17.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-10T12:45:29.460Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-10T12:45:29.481Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-10T12:45:30.378Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-10T12:56:05.809Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/video_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-EDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-04": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-06": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-07": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "fe964f13d9d416c8cb2b613e34f21e67b416bfd8f17d06c5f652ed4e79c89044",
+  "inputs": {
+    "VID-EDIT-01": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/VID-EDIT-01/VID-EDIT-01-source.mp4"
+      }
+    ],
+    "VID-EDIT-04": [
+      {
+        "role": "source",
+        "sha256": "2ec035ef973fe5f78dd6594e7257ddbdb03eb1d15a0bee2cc5ef1b67e8a41f0c",
+        "path": "inputs/VID-EDIT-04/VID-EDIT-04-source.mp4"
+      }
+    ],
+    "VID-EDIT-06": [
+      {
+        "role": "source",
+        "sha256": "ff2225284b2432a51ca6312570929fad28343491f63232bc2c7dd8d94cd262c0",
+        "path": "inputs/VID-EDIT-06/VID-EDIT-06-source.mp4"
+      }
+    ],
+    "VID-EDIT-07": [
+      {
+        "role": "source",
+        "sha256": "c95a17f8de28a3928ffd215580636faef92937c1919af4a6e7e4e11e65ad27fa",
+        "path": "inputs/VID-EDIT-07/VID-EDIT-07-source.mp4"
+      }
+    ]
+  },
+  "cells": {
+    "VID-EDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    },
+    "VID-EDIT-01::seedance-2-5": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content` specified in the request is not valid: reference_video must be provided as a web url. Request id: 021789044330728ef9a07adf34cf0fac1320e81624057e017c9ad\",\"param\":\"content\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-04::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-04",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-04::seedance-2-5": {
+      "scenario_id": "VID-EDIT-04",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content` specified in the request is not valid: reference_video must be provided as a web url. Request id: 0217890444458744e5823ec317b6ea9d3f5e181cf6332a584c42d\",\"param\":\"content\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-06::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-06",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-06::seedance-2-5": {
+      "scenario_id": "VID-EDIT-06",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content` specified in the request is not valid: reference_video must be provided as a web url. Request id: 02178904466803034865fa4f4ec67e4268045741fa8093fef1abf\",\"param\":\"content\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-07::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-07",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    },
+    "VID-EDIT-07::seedance-2-5": {
+      "scenario_id": "VID-EDIT-07",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content` specified in the request is not valid: reference_video must be provided as a web url. Request id: 02178904486914995691c8304a8e23a54dc26928986fec3111286\",\"param\":\"content\",\"type\":\"BadRequest\"}}"
+    }
+  },
+  "scenario_status": {
+    "VID-EDIT-01": "incomplete",
+    "VID-EDIT-04": "incomplete",
+    "VID-EDIT-06": "incomplete",
+    "VID-EDIT-07": "incomplete"
+  }
+}

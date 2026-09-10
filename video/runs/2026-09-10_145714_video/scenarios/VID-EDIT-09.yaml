@@ -1,0 +1,29 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-09 (sheet row 113) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with on-screen text | source: Pexels Video (free commercial) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-09
+modality: video
+task: video_edit
+title: Edit on-screen text only
+prompt: In this clip, change the on-screen text from SALE to OFFER. Match the existing font,
+  size, colour and position. Change nothing else.
+inputs:
+  source: assets/bank/VID-EDIT-09-source.mp4
+params:
+  resolution: 1080p
+  audio: true
+  seed: 20260910
+expected: 'Edit on-screen text only. Capability under test: Typographic targeted edit. Adherence
+  clauses, check each: 1) Text reads OFFER  2) Font, size, colour match the original  3) Position
+  unchanged  4) Rest of frame unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets
