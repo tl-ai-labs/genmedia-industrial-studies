@@ -53,6 +53,13 @@ expected: |
      outbound call tolerated rather than hung up on
 
 checks:
+  # Time to first audio. 1000 ms is the conversational "perceived-immediate"
+  # threshold and the 0.6-1 s bar set for this study; past it a phone agent
+  # feels laggy. Declaring this STREAMS the call on both arms (measure_ttfa).
+  # NOT latency_ms - whole-call latency is a different quantity by ~10x and is
+  # never a substitute. Both arms are expected to miss this at v3/Gemini-3.1
+  # speeds; that is the finding (V3-RUN-BRIEF), not a reason to loosen it.
+  max_ttfa_ms: 1000
   duration_s: {min: 18.0, max: 44.0}
   max_silence_s: 1.5
   no_clipping: true

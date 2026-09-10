@@ -10,16 +10,18 @@
 # reason recorded, rather than deleted - the block IS the documentation of
 # how to turn them on.
 #
-# WHICH ARMS ARE LIVE HERE, AND WHY (2026-09-01). The matrix for VOI-NAR-01
-# is deliberately two arms:
+# WHICH ARMS ARE LIVE HERE, AND WHY (updated 2026-09-09 for the v3 re-run).
+# The matrix is deliberately two arms:
 #
-#     gemini-3-1-flash-tts        LIVE  - the chosen Google arm
-#     elevenlabs-multilingual-v2  off   - waiting on ELEVENLABS_API_KEY
+#     gemini-3-1-flash-tts        LIVE  - the chosen Google arm (Vertex)
+#     elevenlabs-v3               LIVE  - the ElevenLabs arm (direct API)
+#     elevenlabs-multilingual-v2  off   - SUPERSEDED by v3; v2 numbers withdrawn
 #
 # Everything else is reachable-and-configured but out of this matrix on
 # purpose, each with its reason recorded rather than deleted. The 2.5 Flash
 # and 2.5 Pro blocks are the cost and quality tiers if you want the curve
-# instead of a single point; the OpenAI blocks are blocked on account credits.
+# instead of a single point; elevenlabs-flash-v2-5 is the cheaper latency
+# tier; the OpenAI blocks are blocked on account credits.
 #
 # A model with `enabled: true` and no credential is a HARD STOP at preflight,
 # which is why ElevenLabs stays off until the key exists - an enabled arm with
@@ -159,7 +161,8 @@ voice:
   # here whether the model reads it in 60s or 90s.
   # ---------------------------------------------------------------------
   - id: elevenlabs-multilingual-v2
-    enabled: true
+    enabled: false
+    disabled_reason: "SUPERSEDED 2026-09-09 by elevenlabs-v3 (task B). v2 and v3 are not comparable; every published v2 voice number is withdrawn and the board is v3-only. Reachable; flip to true only for a v2-vs-v3 comparison, which is its own study."
     adapter: elevenlabs_tts
     provider: elevenlabs
     provider_model: "eleven_multilingual_v2"
@@ -201,6 +204,64 @@ voice:
       usd: 0.10
       source: https://elevenlabs.io/pricing/api
       as_of: 2026-08-31
+
+  # ---------------------------------------------------------------------
+  # ElevenLabs v3 (eleven_v3) - THE EXPRESSIVE / QUALITY tier, and the
+  # replacement for multilingual-v2 as the ElevenLabs arm (task B, decisions
+  # locked 2026-09-09). GA 2 Feb 2026. Per 1k CHARACTERS SENT, same rate as
+  # multilingual-v2 ($0.10/1k - verified elevenlabs.io/pricing/api 2026-09-09),
+  # so the price block value carries over unchanged.
+  #
+  # NOT eleven_v3_conversational: that is the real-time agent product (~280 ms
+  # over a Text-to-Dialogue WebSocket the adapter does not have). Quality is
+  # the priority here and every scenario is a single-voice monologue, so
+  # eleven_v3 is the right and sufficient model.
+  #
+  # KNOWN AND ACCEPTED, not bugs:
+  #  - v3 first-audio is ~1-2 s, NOT real-time. The responsiveness scenarios
+  #    measure it honestly next to Gemini; streaming narrows the gap, does not
+  #    close it.
+  #  - v3 reports no `can_use_style` (probe 2026-09-09), so the adapter drops
+  #    `style` for it exactly as it did for v2 (params_unsupported). v3's
+  #    expressiveness is inline audio tags, which the adapter does not send -
+  #    v3 is tested "plain", same input as v2. An expressiveness claim needs
+  #    tag support (code) AND the blocked human panel; out of scope here.
+  #  - v3 delivery differs from v2 at the same voice_id - a DECLARED
+  #    difference, footnoted, nothing more.
+  # ---------------------------------------------------------------------
+  - id: elevenlabs-v3
+    enabled: true
+    adapter: elevenlabs_tts
+    provider: elevenlabs
+    provider_model: "eleven_v3"
+    auth_env: ELEVENLABS_API_KEY
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 20}
+    voice_map:
+      # Identical to the multilingual-v2 / flash-v2-5 map so voices stay
+      # comparable across the version change. All 8 ids confirmed present on
+      # this account (probe 2026-09-09); v3 generation on each confirmed by
+      # the paid route probe.
+      female_mid_warm: "XrExE9yKIg1WjnnlVkGX"   # Matilda - see the multilingual-v2 block
+      male_mid_neutral: "cjVigY5qzO86Huf0OWal"  # Eric
+      # --- the NPC cast, added 2026-09-03 for vr-game-04 ---------------
+      # Six logical roles, each pinned to a DIFFERENT catalogue voice on this
+      # provider. The scenario asks whether a studio can ship six mutually
+      # distinguishable NPCs; six style directives over one voice id cannot
+      # answer that, because a style directive changes delivery and not
+      # identity. Verified against the live catalogue on 2026-09-03.
+      npc_quartermaster: "pqHfZKP75CvOlQylNhV4"  # Bill - male, old, wise
+      npc_scout: "FGY2WhTYpPnrIDTdsKH5"          # Laura - female, young, sassy
+      npc_handler: "pNInz6obpgDQGcFmaJgB"        # Adam - male, dominant, firm
+      npc_medic: "EXAVITQu4vr4xnSDxMaL"          # Sarah - female, reassuring
+      npc_engineer: "SAz9YHcvj6GT2YYXdXww"       # River - neutral, calm
+      npc_trader: "cgSgspJ2msm6clMCkdW9"         # Jessica - female, bright
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: per_1k_chars
+      usd: 0.10
+      source: https://elevenlabs.io/pricing/api
+      as_of: 2026-09-09
 
   # ---------------------------------------------------------------------
   # OpenAI gpt-4o-mini-tts - TOKEN billed. /v1/audio/speech returns no usage
