@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-08 (sheet row 82) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: —)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Three product references | source: Google Scanned Objects (CC BY 4.0) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-AD-08
+modality: video
+task: image_to_video
+title: SKU line-up pan
+prompt: A slow lateral pan across the three supplied product variants arranged on a shelf.
+  All three stay accurate and their labels stay readable.
+inputs:
+  reference1: assets/bank/VID-AD-08-reference1.png
+  reference2: assets/bank/VID-AD-08-reference2.png
+  reference3: assets/bank/VID-AD-08-reference3.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: true
+  seed: 20260910
+expected: 'SKU line-up pan. Capability under test: Multiple references under camera motion.
+  Adherence clauses, check each: 1) All three products present and correct  2) Smooth lateral
+  pan  3) Labels readable as each passes centre  4) No product morphing during the pan'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets
