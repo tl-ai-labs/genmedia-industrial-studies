@@ -65,10 +65,10 @@ border-radius:10px;padding:12px 16px;margin:16px 0;font-size:14px}
 <code>image_to_video</code> task but sit outside it. Counting VID-AD-09 (text-to-video, already
 runnable), the in-scope set is <b>18 of 20 runnable</b> — VID-EDIT-10 has no source clip and
 VID-EDIT-02 is retired.</div>
-<div class="filters"><div class="chips"><span class="chip on" data-dim="scope" data-val="__all">All scopes</span><span class="chip" data-dim="scope" data-val="Edits + ads">Edits + ads <span class="n">(19)</span></span><span class="chip" data-dim="scope" data-val="Out of scope">Out of scope <span class="n">(10)</span></span></div><div class="chips"><span class="chip on" data-dim="fam" data-val="__all">All families</span><span class="chip" data-dim="fam" data-val="Video editing">Video editing <span class="n">(10)</span></span><span class="chip" data-dim="fam" data-val="Advertising &amp; product">Advertising &amp; product <span class="n">(9)</span></span><span class="chip" data-dim="fam" data-val="Image-to-video">Image-to-video <span class="n">(10)</span></span></div><div class="chips"><span class="chip on" data-dim="task" data-val="__all">All tasks</span><span class="chip" data-dim="task" data-val="video_edit">video_edit <span class="n">(10)</span></span><span class="chip" data-dim="task" data-val="image_to_video">image_to_video <span class="n">(19)</span></span></div><div class="chips"><span class="chip on" data-dim="status" data-val="__all">All states</span><span class="chip" data-dim="status" data-val="runnable">runnable <span class="n">(27)</span></span><span class="chip" data-dim="status" data-val="unwired">unwired <span class="n">(1)</span></span><span class="chip" data-dim="status" data-val="retired">retired <span class="n">(1)</span></span></div><div class="shown" id="shown"></div></div>
+<div class="filters"><div class="chips"><span class="chip on" data-val="__all">All <span class="n">(29)</span></span><span class="chip" data-val="Edits + ads">Edits + ads <span class="n">(19)</span></span><span class="chip" data-val="Out of scope">Out of scope <span class="n">(10)</span></span><span class="chip" data-val="video_edit">video_edit <span class="n">(10)</span></span><span class="chip" data-val="image_to_video">image_to_video <span class="n">(19)</span></span><span class="chip" data-val="runnable">runnable <span class="n">(27)</span></span><span class="chip" data-val="needs an asset">needs an asset <span class="n">(1)</span></span><span class="chip" data-val="retired">retired <span class="n">(1)</span></span></div><div class="shown" id="shown"></div></div>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-01</span><span class="title">Recolour one object</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -84,7 +84,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="retired"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="retired">
   <header><span class="sid">VID-EDIT-02</span><span class="title">Remove a background element</span></header>
   <div class="tags">
     <span class="pill bad">retired</span>
@@ -100,7 +100,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-03</span><span class="title">Background replacement</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -116,7 +116,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-04</span><span class="title">Change time of day</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -132,7 +132,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-05</span><span class="title">Add a physically correct object</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -148,7 +148,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-06</span><span class="title">Extend clip duration</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -164,7 +164,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-07</span><span class="title">Change the camera move</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -180,7 +180,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-08</span><span class="title">Three sequential edits</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -196,7 +196,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="runnable">
   <header><span class="sid">VID-EDIT-09</span><span class="title">Edit on-screen text only</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -212,7 +212,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="video_edit" data-status="unwired"
-         data-scope="Edits + ads" data-fam="Video editing">
+         data-scope="Edits + ads" data-fam="Video editing" data-state="needs an asset">
   <header><span class="sid">VID-EDIT-10</span><span class="title">Revert a prior edit</span></header>
   <div class="tags">
     <span class="pill warn">needs an asset</span>
@@ -228,7 +228,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-01</span><span class="title">Product hero rotation</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -244,7 +244,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-02</span><span class="title">Product in use</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -260,7 +260,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-03</span><span class="title">Packshot with supers</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -276,7 +276,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-04</span><span class="title">Before and after transition</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -292,7 +292,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-05</span><span class="title">Logo sting</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -308,7 +308,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-06</span><span class="title">Vertical variant</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -324,7 +324,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-07</span><span class="title">Product against moving background</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -340,7 +340,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-08</span><span class="title">SKU line-up pan</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -356,7 +356,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Edits + ads" data-fam="Advertising &amp; product">
+         data-scope="Edits + ads" data-fam="Advertising &amp; product" data-state="runnable">
   <header><span class="sid">VID-AD-10</span><span class="title">Six-second bumper</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -372,7 +372,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-01</span><span class="title">Subtle animation of a still</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -388,7 +388,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-02</span><span class="title">First frame continuation</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -404,7 +404,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-03</span><span class="title">First and last frame bridge</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -420,7 +420,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-04</span><span class="title">Reference character in a new scene</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -436,7 +436,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-05</span><span class="title">Product still to rotation</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -452,7 +452,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-06</span><span class="title">Landscape parallax</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -468,7 +468,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-07</span><span class="title">Two references composited</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -484,7 +484,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-08</span><span class="title">Style plate plus motion brief</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -500,7 +500,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-09</span><span class="title">Logo reveal from a still</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -516,7 +516,7 @@ VID-EDIT-02 is retired.</div>
 </article>
 
 <article class="scn" data-task="image_to_video" data-status="runnable"
-         data-scope="Out of scope" data-fam="Image-to-video">
+         data-scope="Out of scope" data-fam="Image-to-video" data-state="runnable">
   <header><span class="sid">VID-I2V-10</span><span class="title">Three stills to a sequence</span></header>
   <div class="tags">
     <span class="pill ok">runnable</span>
@@ -535,36 +535,20 @@ VID-EDIT-02 is retired.</div>
 <script>
 (function(){
   var cards=[].slice.call(document.querySelectorAll('.scn'));
-  function apply(){
-    var active={};
-    document.querySelectorAll('.chip.on').forEach(function(c){
-      if(c.dataset.val!=='__all') active[c.dataset.dim]=c.dataset.val;});
-    var n=0;
+  function tags(s){return [s.dataset.scope,s.dataset.fam,s.dataset.task,s.dataset.status,
+                           s.dataset.state];}
+  document.addEventListener('click',function(e){
+    var c=e.target.closest('.chips .chip'); if(!c)return;
+    document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});
+    c.classList.add('on');
+    var v=c.dataset.val,n=0;
     cards.forEach(function(s){
-      var show=Object.keys(active).every(function(d){return s.dataset[d]===active[d];});
+      var show=(v==='__all')||tags(s).indexOf(v)>-1;
       s.style.display=show?'':'none'; if(show)n++;
-    });
-    // faceted counts: what each chip would yield given the other rows
-    document.querySelectorAll('.chip').forEach(function(c){
-      var span=c.querySelector('.n'); if(!span)return;
-      var k=0;
-      cards.forEach(function(s){
-        var ok=true;
-        ['scope','fam','task','status'].forEach(function(d){
-          var v=(d===c.dataset.dim)?c.dataset.val:active[d];
-          if(v&&v!=='__all'&&s.dataset[d]!==v) ok=false;});
-        if(ok)k++;});
-      span.textContent='('+k+')';
-      c.classList.toggle('zero',k===0&&!c.classList.contains('on'));
     });
     document.getElementById('shown').textContent='showing '+n+' of '+cards.length+' scenarios';
     document.getElementById('empty').style.display=n?'none':'block';
-  }
-  document.addEventListener('click',function(e){
-    var c=e.target.closest('.chips .chip'); if(!c)return;
-    c.closest('.chips').querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});
-    c.classList.add('on'); apply();
   });
-  apply();
+  document.getElementById('shown').textContent='showing '+cards.length+' of '+cards.length+' scenarios';
 })();
 </script></body></html>
