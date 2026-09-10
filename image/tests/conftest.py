@@ -70,12 +70,16 @@ def blank_png(size=(1024, 1024), value=200) -> bytes:
 # --------------------------------------------------------------------------
 
 class FakeImageAdapter(Adapter):
-    """script: per-call items — an Exception to raise, or bytes to return."""
+    """script: per-call items — an Exception to raise, or bytes to return.
+    `usage` is echoed verbatim into GenResult, so a test can model a provider
+    that bills per token as well as the default per-image posture."""
 
-    def __init__(self, script=None, default_bytes=None, model_tag="fake"):
+    def __init__(self, script=None, default_bytes=None, model_tag="fake",
+                 usage=None):
         self.script = list(script or [])
         self.default_bytes = default_bytes or gradient_png()
         self.model_tag = model_tag
+        self.usage = usage or {"images": 1}
         self.calls = 0
         self.supports = ["text_to_image", "image_edit"]
 
@@ -87,7 +91,7 @@ class FakeImageAdapter(Adapter):
         data = item if isinstance(item, (bytes, bytearray)) else self.default_bytes
         return GenResult(data=bytes(data), mime="image/png",
                          provider_version=f"{self.model_tag}-v1",
-                         usage={"images": 1},
+                         usage=dict(self.usage),
                          applied_params=dict(req.params),
                          params_unsupported=[],
                          request_id=f"req-{self.model_tag}-{self.calls}")

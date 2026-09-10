@@ -504,3 +504,126 @@ def test_seedance_content_matches_the_documented_examples(tmp_path):
     plain = a._build_content(GenRequest(task="text_to_video", text="a cat",
                                         inputs=[], params={}))
     assert plain == [{"type": "text", "text": "a cat"}]
+
+
+# --------------------------------------------------------------------------
+# Seedance transport safety
+#
+# Every failure below happens after money is committed. On 2026-09-10 blind
+# retries turned 2 logged failures into 5 paid clips, and a lost poll bought a
+# second clip for a task already generating — $33.45 for nothing. These pin
+# the two rules: never create twice, never abandon a task we own.
+# --------------------------------------------------------------------------
+
+class _TimeoutOnCreate:
+    """Create times out; the task list decides what really happened."""
+
+    def __init__(self, landed_ids, clip, fail_creates=1):
+        self.landed = list(landed_ids)
+        self.clip = clip
+        self.fail_creates = fail_creates
+        self.creates = 0
+        self.polls = 0
+
+    def post(self, url, json=None):
+        self.creates += 1
+        if self.creates <= self.fail_creates:
+            import httpx
+            raise httpx.ConnectTimeout("[Errno 60] Operation timed out")
+        return _StubResponse(200, {"id": "task_fresh", "status": "queued"})
+
+    def get(self, url, headers=None, params=None):
+        if params is not None:                      # the task-list lookup
+            return _StubResponse(200, {"items": [
+                {"id": i, "status": "succeeded", "created_at": 9_999_999_999}
+                for i in self.landed]})
+        if url.startswith("https://cdn"):
+            return _StubResponse(200, content=self.clip)
+        self.polls += 1
+        return _StubResponse(200, {
+            "id": "task_x", "status": "succeeded",
+            "model": "dreamina-seedance-2-5-260628",
+            "content": {"video_url": "https://cdn.example/x.mp4"},
+            "usage": {"completion_tokens": 390825, "total_tokens": 390825}})
+
+
+def test_create_timeout_with_nothing_landed_is_safely_retried(monkeypatch):
+    """No task appeared, so a second create cannot pay twice."""
+    stub = _TimeoutOnCreate(landed_ids=[], clip=minimal_mp4(), fail_creates=1)
+    adapter = _seedance_adapter(monkeypatch, stub)
+    res = adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert stub.creates == 2                      # retried, deliberately
+    assert res.data == minimal_mp4()
+
+
+def test_create_timeout_adopts_the_task_it_already_started(monkeypatch):
+    """Exactly one task appeared: adopt it rather than buy a second clip."""
+    stub = _TimeoutOnCreate(landed_ids=["cgt-adopted"], clip=minimal_mp4(),
+                            fail_creates=1)
+    adapter = _seedance_adapter(monkeypatch, stub)
+    res = adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert stub.creates == 1, "must NOT create a second task"
+    assert res.request_id == "cgt-adopted"
+
+
+def test_create_timeout_refuses_to_guess_between_several_tasks(monkeypatch):
+    """Under concurrency the window can hold other workers' tasks. Attributing
+    a clip to the wrong scenario corrupts the study worse than losing the
+    money, so this stops instead."""
+    stub = _TimeoutOnCreate(landed_ids=["cgt-a", "cgt-b"], clip=minimal_mp4(),
+                            fail_creates=1)
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert ei.value.retryable is False
+    assert "cgt-a" in str(ei.value) and "cgt-b" in str(ei.value)
+    assert stub.creates == 1
+
+
+class _FlakyPoll:
+    """Create succeeds; polling blips before the task completes."""
+
+    def __init__(self, blips, clip):
+        self.blips = blips
+        self.clip = clip
+        self.creates = 0
+        self.polls = 0
+
+    def post(self, url, json=None):
+        self.creates += 1
+        return _StubResponse(200, {"id": "task_owned", "status": "queued"})
+
+    def get(self, url, headers=None, params=None):
+        if url.startswith("https://cdn"):
+            return _StubResponse(200, content=self.clip)
+        self.polls += 1
+        if self.polls <= self.blips:
+            raise OSError("[Errno 60] Operation timed out")
+        return _StubResponse(200, {
+            "id": "task_owned", "status": "succeeded",
+            "content": {"video_url": "https://cdn.example/x.mp4"},
+            "usage": {"completion_tokens": 390825}})
+
+
+def test_a_blip_while_polling_never_abandons_a_task_we_own(monkeypatch):
+    """The task is generating and billing. Absorb the blip; do not let the
+    runner restart the cell and create a second one."""
+    stub = _FlakyPoll(blips=3, clip=minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    res = adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert stub.creates == 1
+    assert res.data == minimal_mp4()
+
+
+def test_giving_up_on_an_owned_task_is_never_retryable(monkeypatch):
+    """Past the transient budget the cell fails — but non-retryably, so the
+    runner cannot pay for a replacement clip."""
+    from runner.video import seedance_video
+    monkeypatch.setattr(seedance_video, "POLL_MAX_TRANSIENT", 2)
+    stub = _FlakyPoll(blips=99, clip=minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert ei.value.retryable is False
+    assert "task_owned" in str(ei.value)
+    assert stub.creates == 1

@@ -789,3 +789,209 @@ def test_image_to_video_shows_the_reference_still_to_the_judge(
         assert call["mimes"][1] == "video/mp4"          # the generated clip
         assert "REFERENCE STILL" in call["prompt"]
         assert "same object as the still" in call["prompt"]
+
+
+# --------------------------------------------------------------------------
+# Per-provider budget caps
+#
+# A run bills two accounts at once — the Google arm on Vertex, the BytePlus
+# arm on a prepaid ModelArk balance. One combined --budget protects neither,
+# so each provider can carry its own cap. These pin both halves: the plan is
+# refused up front when it cannot fit, and the run aborts mid-flight when the
+# actual bills drift past the cap even though the estimates fitted.
+# --------------------------------------------------------------------------
+
+def _low_estimate_models_yaml(project, fake_models_yaml):
+    """model-a's estimate understates it 16x: est $0.10, actual 4s x $0.40.
+
+    The pre-flight therefore passes and only the mid-run guard can stop it,
+    which is the case a flat est_usd_per_call gets wrong for variable-length
+    clips (our edits run 5.65s to 19.2s against one flat figure).
+    """
+    text = fake_models_yaml.read_text().replace(
+        "usd: 0.40, est_usd_per_call: 1.60", "usd: 0.40, est_usd_per_call: 0.10")
+    path = project / "configs" / "models-fake-low-est.yaml"
+    path.write_text(text)
+    return path
+
+
+def test_provider_cap_refuses_a_plan_it_cannot_cover(project, fake_models_yaml,
+                                                     fake_env, monkeypatch):
+    """Pre-flight, per provider: 3 x $1.60 of prov_a cannot fit a $2 cap.
+
+    The total budget is deliberately generous, so a rejection can only have
+    come from the provider cap.
+    """
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    with pytest.raises(RunRejected, match="prov_a"):
+        run_generation(project, scenarios, models, "video", budget_usd=20.0,
+                       provider_caps={"prov_a": 2.00})
+    assert fake_a.calls == 0 and fake_b.calls == 0   # nothing was spent
+
+
+def test_provider_cap_aborts_mid_run_and_leaves_other_arms_alone(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """The cap binds prov_a alone; prov_b finishes its whole set.
+
+    prov_a bills $1.60 a call against a $2.50 cap: two calls land ($3.20 of
+    actual spend, since the guard tests the $0.10 estimate), the third is
+    refused. prov_b is uncapped and unaffected — that separation is the
+    entire point of the flag.
+    """
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    models_yaml = _low_estimate_models_yaml(project, fake_models_yaml)
+    scenarios, models = _load(project, models_yaml)
+    run_dir = run_generation(project, scenarios, models, "video",
+                             budget_usd=20.0, workers=1,
+                             provider_caps={"prov_a": 2.50})
+
+    assert fake_a.calls == 2, "prov_a should stop at its own cap"
+    assert fake_b.calls == 3, "prov_b is uncapped and must run its whole set"
+
+    manifest = json.loads((run_dir / "manifest.json").read_text())
+    assert manifest["state"] == "aborted"
+    assert manifest["budget_by_provider"] == {"prov_a": 2.50}
+
+    spent = {}
+    for row in RunFiles(run_dir).read("telemetry"):
+        if row.get("cost"):
+            spent[row["provider"]] = spent.get(row["provider"], 0) + row["cost"]["micro_usd"]
+    assert spent["prov_a"] == 3_200_000      # 2 x $1.60, stopped before a third
+    assert spent["prov_b"] == 1_200_000      # 3 x $0.40, untouched
+
+
+def test_provider_cap_counts_what_that_provider_already_spent_on_resume(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """Resume reads prior spend per provider, not just in total.
+
+    Without that, every resume would hand each provider a fresh full cap and
+    the balance this flag exists to protect would drain a batch at a time.
+    """
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    run_dir = run_generation(project, scenarios[:1], models, "video",
+                             budget_usd=20.0, provider_caps={"prov_a": 5.00})
+    assert fake_a.calls == 1                      # $1.60 of prov_a is now spent
+
+    # $1.60 already gone + $1.60 estimated for the next prov_a cell = $3.20,
+    # which no longer fits a $2.00 cap.
+    with pytest.raises(RunRejected, match="prov_a"):
+        run_generation(project, scenarios[:2], models, "video", budget_usd=20.0,
+                       run_id=run_dir.name, provider_caps={"prov_a": 2.00})
+    assert fake_a.calls == 1                      # and it did not pay again
+
+
+def test_a_cap_on_a_provider_that_is_not_running_is_refused(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """A typo'd provider name would protect nothing at all, silently."""
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    with pytest.raises(RunRejected, match="byteplous"):
+        run_generation(project, scenarios, models, "video", budget_usd=20.0,
+                       provider_caps={"byteplous": 80.0})
+    assert fake_a.calls == 0 and fake_b.calls == 0
+
+
+@pytest.mark.parametrize("bad", ["byteplus", "=80", "byteplus=eighty",
+                                 "byteplus=0", "byteplus=-5"])
+def test_malformed_provider_cap_is_an_error_not_a_shrug(bad):
+    from runner.cli import _parse_provider_caps
+    with pytest.raises(ValueError):
+        _parse_provider_caps([bad])
+
+
+def test_provider_caps_parse_and_reject_duplicates():
+    from runner.cli import _parse_provider_caps
+    assert _parse_provider_caps(["byteplus=80", "google-vertex=30.5"]) == {
+        "byteplus": 80.0, "google-vertex": 30.5}
+    assert _parse_provider_caps([]) == {}
+    with pytest.raises(ValueError, match="twice"):
+        _parse_provider_caps(["byteplus=80", "byteplus=90"])
+
+
+# --------------------------------------------------------------------------
+# Blind judging: the container must not name the vendor
+#
+# Measured on the 2026-09-03 pilot outputs: Seedance stamps
+# "BytePlus_ModelArk" and the literal model id "dreamina-seedance-2-5" into
+# the mp4's C2PA box, Omni stamps "Google LLC" and encoder=Google. The judge
+# is a Gemini model reading mp4 natively, so an untouched container turns
+# blind judging into a labelled preference test.
+# --------------------------------------------------------------------------
+
+def _ffmpeg_or_skip():
+    import shutil
+    if shutil.which("ffmpeg") is None:
+        pytest.skip("ffmpeg not on PATH")
+
+
+def _mp4_stamped_with(tmp_path, tag: str):
+    """A real, decodable mp4 carrying `tag` in its container metadata."""
+    import subprocess
+    out = tmp_path / "stamped.mp4"
+    subprocess.run(
+        ["ffmpeg", "-nostdin", "-v", "error", "-y",
+         "-f", "lavfi", "-i", "testsrc=duration=1:size=64x64:rate=5",
+         "-f", "lavfi", "-i", "anullsrc=r=8000:cl=mono",
+         "-t", "1", "-c:v", "libx264", "-c:a", "aac",
+         "-metadata", f"comment={tag}", str(out)],
+        check=True, capture_output=True, timeout=120)
+    return out
+
+
+def test_the_judge_never_sees_the_vendor_stamped_in_the_container(tmp_path):
+    from runner.judge import blind_video_bytes
+    _ffmpeg_or_skip()
+    src = _mp4_stamped_with(tmp_path, "BytePlus_ModelArk_dreamina-seedance-2-5")
+    assert b"BytePlus_ModelArk" in src.read_bytes(), "fixture did not stamp the tag"
+
+    blinded, stripped = blind_video_bytes(src)
+    assert stripped is True
+    assert b"BytePlus_ModelArk" not in blinded
+    assert b"dreamina-seedance" not in blinded
+    assert src.read_bytes().count(b"BytePlus_ModelArk") == 1, "the original was modified"
+
+
+def test_blinding_keeps_every_stream_including_audio(tmp_path):
+    """Audio is ON for both arms in this run, so its presence is no longer a
+    tell — and dropping it would change what is being judged."""
+    import subprocess
+    from runner.judge import blind_video_bytes
+    _ffmpeg_or_skip()
+    src = _mp4_stamped_with(tmp_path, "anything")
+    blinded, stripped = blind_video_bytes(src)
+    assert stripped is True
+    out = tmp_path / "blinded.mp4"
+    out.write_bytes(blinded)
+    streams = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "stream=codec_type",
+         "-of", "csv=p=0", str(out)],
+        capture_output=True, text=True, timeout=60).stdout.split()
+    assert "video" in streams and "audio" in streams
+
+
+def test_blinding_falls_back_visibly_when_ffmpeg_is_missing(tmp_path, monkeypatch):
+    """No silent failure: without ffmpeg the clip still reaches the judge, but
+    `stripped` is False so the judge row records that it was not blinded."""
+    from runner import judge as judge_mod
+    raw = b"\x00\x00\x00\x18ftypisom-not-a-real-mp4"
+    path = tmp_path / "clip.mp4"
+    path.write_bytes(raw)
+    monkeypatch.setattr(judge_mod.shutil, "which", lambda _: None)
+    blinded, stripped = judge_mod.blind_video_bytes(path)
+    assert blinded == raw and stripped is False
+
+
+def test_blinding_falls_back_when_ffmpeg_cannot_read_the_file(tmp_path):
+    """A corrupt clip must not take the whole judging pass down with it."""
+    from runner.judge import blind_video_bytes
+    _ffmpeg_or_skip()
+    path = tmp_path / "broken.mp4"
+    path.write_bytes(b"not an mp4 at all")
+    blinded, stripped = blind_video_bytes(path)
+    assert blinded == b"not an mp4 at all" and stripped is False
