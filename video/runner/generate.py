@@ -7,6 +7,8 @@ enforced here:
   * per-provider semaphore (limits.max_concurrency) + optional rpm pacing
   * resume is free: an existing output is never regenerated
   * pre-flight budget estimate; missing key is a hard stop before any spend
+  * caps are enforced in total AND per provider, because one run bills more
+    than one account and a combined cap protects neither
   * latency measured around the adapter call only
 """
 from __future__ import annotations
@@ -32,8 +34,15 @@ from .loaders import effective_criteria, load_rubric, sha256_file
 from .matrix import build_matrix
 from .telemetry import RunFiles, utcnow
 
-# video is a long-running operation: submit + poll can take many minutes
-TIMEOUTS_S = {"image": 120, "voice": 180, "video": 900}
+# video is a long-running operation: submit + poll can take many minutes.
+# Raised 900 -> 1800 on 2026-09-10 for the 1080p run. Seedance's MEASURED max
+# at the far lighter 720p/8s pilot was 578.9s (median 244.4s); this run is
+# 2.25x the pixels, audio on, and outputs up to 19.2s. Crossing the old cap
+# was not just a lost clip: Timeout is retryable, so the runner would retry
+# up to MAX_ATTEMPTS while the provider's task kept running and BILLING
+# server-side — paying two or three times for one clip, with only one charge
+# ever reaching telemetry. The budget cap cannot see spend we never record.
+TIMEOUTS_S = {"image": 120, "voice": 180, "video": 1800}
 MAX_ATTEMPTS = 3
 
 _EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
@@ -112,24 +121,52 @@ class RpmPacer:
 
 
 class BudgetGuard:
-    def __init__(self, budget_micro: int | None, already_spent_micro: int = 0):
+    """The total cap, plus an independent cap per provider.
+
+    One run bills more than one account: the Google arm draws on Vertex,
+    the BytePlus arm on a prepaid ModelArk balance. A single combined cap
+    protects neither. It trips on the sum, so a cheap arm eats the headroom
+    the expensive one needed, and a cap set to a prepaid balance stops the
+    run long before that balance is actually gone. Each cap is therefore
+    checked on its own and the first to trip stops that call.
+
+    Both checks compare ACTUAL spend so far against the flat pre-flight
+    estimate for the next call, so a cap can still be overshot by however
+    much one call costs beyond its estimate. Leave a margin.
+
+    Generation only. Judging bills separately and is not counted here.
+    """
+
+    def __init__(self, budget_micro: int | None, already_spent_micro: int = 0,
+                 provider_caps_micro: dict[str, int] | None = None,
+                 already_spent_by_provider: dict[str, int] | None = None):
         self.budget = budget_micro
         self.spent = already_spent_micro
+        self.caps = dict(provider_caps_micro or {})
+        self.by_provider = dict(already_spent_by_provider or {})
         self._lock = threading.Lock()
 
-    def before_call(self, est_micro: int) -> None:
-        if self.budget is None:
-            return
+    def before_call(self, est_micro: int, provider: str | None = None) -> None:
         with self._lock:
-            if self.spent + est_micro > self.budget:
+            if self.budget is not None and self.spent + est_micro > self.budget:
                 raise BudgetExceeded(
                     f"spent {self.spent / MICRO:.4f} USD; next call (~"
                     f"{est_micro / MICRO:.4f}) would exceed budget "
                     f"{self.budget / MICRO:.2f}")
+            cap = self.caps.get(provider)
+            if cap is not None:
+                spent = self.by_provider.get(provider, 0)
+                if spent + est_micro > cap:
+                    raise BudgetExceeded(
+                        f"{provider}: spent {spent / MICRO:.4f} USD; next call "
+                        f"(~{est_micro / MICRO:.4f}) would exceed that "
+                        f"provider's cap {cap / MICRO:.2f}")
 
-    def add(self, micro: int) -> None:
+    def add(self, micro: int, provider: str | None = None) -> None:
         with self._lock:
             self.spent += micro
+            if provider is not None:
+                self.by_provider[provider] = self.by_provider.get(provider, 0) + micro
 
 
 def backoff_s(attempt: int) -> float:
@@ -151,7 +188,7 @@ def _git_sha(project_root: Path) -> str | None:
 
 def prepare_run(project_root: Path, runs_root: Path, run_id: str | None,
                 scenarios, models, modality: str, budget_usd: float | None,
-                rubrics_dir: Path):
+                rubrics_dir: Path, provider_caps: dict[str, float] | None = None):
     """Create (or reopen, for resume) the run folder; freeze everything;
     build the matrix; hard-stop on validation or missing keys."""
     resuming = run_id is not None
@@ -168,7 +205,9 @@ def prepare_run(project_root: Path, runs_root: Path, run_id: str | None,
     if not manifest.data:
         manifest.data = {"run_id": run_id, "created": utcnow(), "state": "draft",
                          "modality": modality, "git_sha": _git_sha(project_root),
-                         "budget_usd": budget_usd, "events": []}
+                         "budget_usd": budget_usd,
+                         "budget_by_provider": dict(provider_caps or {}) or None,
+                         "events": []}
         manifest.set_run_state("draft")
 
     # ---- rubrics + effective weights (validated now, recorded now) --------
@@ -299,7 +338,8 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
     last_exc: Exception | None = None
     attempt = 0
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        budget.before_call(estimate_call_micro_usd(model.price))
+        budget.before_call(estimate_call_micro_usd(model.price),
+                           model.provider)
         with sem:
             if pacer:
                 pacer.wait()
@@ -325,7 +365,7 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
         path = out_dir / f"{model.id}.{ext}"
         path.write_bytes(res.data)
         cost = compute_cost(model.price, res.usage)
-        budget.add(cost["micro_usd"])
+        budget.add(cost["micro_usd"], model.provider)
         out_meta = {"path": str(path.relative_to(run_dir)),
                     "sha256": hashlib.sha256(res.data).hexdigest(),
                     "bytes": len(res.data)}
@@ -365,14 +405,26 @@ def _guess_mime(path: Path) -> str:
 def run_generation(project_root: Path, scenarios, models, modality: str,
                    budget_usd: float | None, workers: int = 4,
                    run_id: str | None = None, runs_root: Path | None = None,
-                   rubrics_dir: Path | None = None) -> Path:
+                   rubrics_dir: Path | None = None,
+                   provider_caps: dict[str, float] | None = None) -> Path:
     project_root = Path(project_root)
     runs_root = runs_root or project_root / "runs"
     rubrics_dir = rubrics_dir or project_root / "configs" / "rubrics"
+    provider_caps = dict(provider_caps or {})
+
+    # A cap naming a provider that is not running protects nothing. That is a
+    # typo, not a preference, so it is refused here rather than ignored — the
+    # whole point of the flag is that someone is relying on it.
+    known = {m.provider for m in models}
+    unknown = sorted(set(provider_caps) - known)
+    if unknown:
+        raise RunRejected(
+            f"provider cap names no enabled provider: {', '.join(unknown)} "
+            f"(enabled: {', '.join(sorted(known))}); nothing was called")
 
     run_dir, manifest, cells, rubrics, frozen_assets = prepare_run(
         project_root, runs_root, run_id, scenarios, models, modality,
-        budget_usd, rubrics_dir)
+        budget_usd, rubrics_dir, provider_caps)
     run_id = manifest.data["run_id"]
     files = RunFiles(run_dir)
     scen_by_id = {s.id: s for s in scenarios}
@@ -384,8 +436,25 @@ def run_generation(project_root: Path, scenarios, models, modality: str,
                                       c.model_id) is None]
     est_micro = sum(estimate_call_micro_usd(model_by_id[c.model_id].price) for c in todo)
     spent_micro = sum(r.get("cost", {}).get("micro_usd", 0) for r in files.read("telemetry"))
+    est_by_provider: dict[str, int] = {}
+    for c in todo:
+        m = model_by_id[c.model_id]
+        est_by_provider[m.provider] = (est_by_provider.get(m.provider, 0)
+                                       + estimate_call_micro_usd(m.price))
+    # resume: what each provider has already been billed on this run
+    spent_by_provider: dict[str, int] = {}
+    for r in files.read("telemetry"):
+        micro = r.get("cost", {}).get("micro_usd", 0)
+        if micro:
+            spent_by_provider[r.get("provider")] = (
+                spent_by_provider.get(r.get("provider"), 0) + micro)
     print(f"[pre-flight] {len(todo)} cell(s) to generate; estimated "
           f"{est_micro / MICRO:.4f} USD (spent so far {spent_micro / MICRO:.4f})")
+    for provider, cap in sorted(provider_caps.items()):
+        print(f"[pre-flight] {provider}: estimated "
+              f"{est_by_provider.get(provider, 0) / MICRO:.4f} USD (spent so far "
+              f"{spent_by_provider.get(provider, 0) / MICRO:.4f}) against cap "
+              f"{cap:.2f}")
     if budget_usd is not None and spent_micro + est_micro > budget_usd * MICRO:
         manifest.set_run_state(
             "rejected", f"pre-flight estimate {(spent_micro + est_micro) / MICRO:.4f} USD "
@@ -393,6 +462,15 @@ def run_generation(project_root: Path, scenarios, models, modality: str,
         raise RunRejected(
             f"pre-flight estimate {(spent_micro + est_micro) / MICRO:.4f} USD exceeds "
             f"--budget {budget_usd:.2f}; nothing was called")
+    for provider, cap in sorted(provider_caps.items()):
+        total = spent_by_provider.get(provider, 0) + est_by_provider.get(provider, 0)
+        if total > cap * MICRO:
+            manifest.set_run_state(
+                "rejected", f"pre-flight estimate for {provider} "
+                            f"{total / MICRO:.4f} USD exceeds its cap {cap:.2f}")
+            raise RunRejected(
+                f"pre-flight estimate for {provider} {total / MICRO:.4f} USD exceeds "
+                f"its cap {cap:.2f}; nothing was called")
 
     # ---- adapters, semaphores, pacers -------------------------------------
     timeout_s = TIMEOUTS_S.get(modality, 180)
@@ -409,7 +487,9 @@ def run_generation(project_root: Path, scenarios, models, modality: str,
             pacers[m.provider] = RpmPacer(m.limits.rpm) if m.limits.rpm else None
 
     budget = BudgetGuard(round(budget_usd * MICRO) if budget_usd is not None else None,
-                         spent_micro)
+                         spent_micro,
+                         {p: round(c * MICRO) for p, c in provider_caps.items()},
+                         spent_by_provider)
     manifest.set_run_state("running")
 
     # ---- fan out -----------------------------------------------------------

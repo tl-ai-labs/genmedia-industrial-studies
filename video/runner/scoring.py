@@ -144,7 +144,15 @@ def score_run(project_root: Path, run_dir: Path) -> dict:
         if r.get("status") == "judged":
             judged_by_cell[(r["scenario_id"], r["model_id"])] = r
 
-    existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")}
+    # A stored `unjudged` row is a placeholder, not a result — it carries no
+    # score. If a judge record has since appeared (a --retry-unjudged pass
+    # after a transient 429, say), that cell must be allowed to score, or a
+    # momentary rate limit permanently discards a clip we already paid for.
+    # Rows that DO carry a score are never recomputed here; re-scoring appends
+    # and aggregate() takes the latest row per cell.
+    existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")
+                if r.get("status") != "unjudged"
+                or (r["scenario_id"], r["model_id"]) not in judged_by_cell}
     counts = {"scored": 0, "invalid": 0, "unjudged": 0, "other": 0}
 
     for key, cell in sorted(manifest.data["cells"].items()):

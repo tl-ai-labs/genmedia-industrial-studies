@@ -3,6 +3,8 @@ purpose (plan §19): re-judging or re-reporting must never re-generate media,
 and a report tweak must cost nothing.
 
     python -m runner.cli run    --modality image --scenarios scenarios/ --budget 5.00
+    python -m runner.cli run    --modality image --scenarios scenarios/ \\
+        --budget 110 --budget-provider byteplus=80   # cap each account too
     python -m runner.cli judge  --run <run-id>
     python -m runner.cli score  --run <run-id>          # re-score after a weight change
     python -m runner.cli report --run <run-id> --open
@@ -28,6 +30,33 @@ def _run_dir(args) -> Path:
     sys.exit(f"error: run not found: {args.run} (looked in {candidate})")
 
 
+def _parse_provider_caps(pairs) -> dict[str, float]:
+    """`--budget-provider byteplus=80` -> {"byteplus": 80.0}.
+
+    Every malformed form raises rather than being dropped: a cap someone is
+    relying on must never silently not exist.
+    """
+    caps: dict[str, float] = {}
+    for raw in pairs or []:
+        provider, sep, amount = raw.partition("=")
+        provider = provider.strip()
+        if not sep or not provider:
+            raise ValueError(
+                f"--budget-provider expects PROVIDER=USD, got {raw!r}")
+        try:
+            usd = float(amount)
+        except ValueError:
+            raise ValueError(f"--budget-provider {provider}: {amount!r} "
+                             f"is not a number") from None
+        if usd <= 0:
+            raise ValueError(f"--budget-provider {provider}: cap must be "
+                             f"greater than 0, got {usd}")
+        if provider in caps:
+            raise ValueError(f"--budget-provider {provider}: given twice")
+        caps[provider] = usd
+    return caps
+
+
 def cmd_run(args) -> int:
     from .generate import RunRejected, run_generation
     from .loaders import enabled_models, load_models, load_scenarios
@@ -37,11 +66,16 @@ def cmd_run(args) -> int:
         models = enabled_models(load_models(args.models), args.modality)
         if len(models) < 1:
             raise RunRejected(f"no enabled {args.modality} models in {args.models}")
+        provider_caps = _parse_provider_caps(args.budget_provider)
         print(f"[plan] {len(scenarios)} scenario(s) x {len(models)} model(s) "
               f"({', '.join(m.id for m in models)})")
+        if provider_caps:
+            print("[plan] provider caps: " + ", ".join(
+                f"{p} <= {c:.2f} USD" for p, c in sorted(provider_caps.items())))
         run_dir = run_generation(
             PROJECT_ROOT, scenarios, models, args.modality,
-            budget_usd=args.budget, workers=args.workers, run_id=args.run)
+            budget_usd=args.budget, workers=args.workers, run_id=args.run,
+            provider_caps=provider_caps)
     except RunRejected as e:
         print(f"\nREJECTED — {e}", file=sys.stderr)
         return 2
@@ -61,7 +95,8 @@ def cmd_judge(args) -> int:
     from .scoring import score_run
     run_dir = _run_dir(args)
     try:
-        counts = judge_run(PROJECT_ROOT, run_dir, Path(args.models))
+        counts = judge_run(PROJECT_ROOT, run_dir, Path(args.models),
+                           retry_unjudged=getattr(args, 'retry_unjudged', False))
     except RunRejected as e:
         print(f"\nREJECTED — {e}", file=sys.stderr)
         return 2
@@ -198,13 +233,27 @@ def main(argv=None) -> int:
                    help="YAML dir/file or CSV sheet (id,task,prompt,expected,required_text)")
     p.add_argument("--models", default=str(PROJECT_ROOT / "configs" / "models.yaml"))
     p.add_argument("--budget", type=float, default=None,
-                   help="hard USD cap; pre-flight refuses, mid-run aborts")
+                   help="hard USD cap across ALL providers together; "
+                        "pre-flight refuses, mid-run aborts")
+    p.add_argument("--budget-provider", action="append", default=[],
+                   metavar="PROVIDER=USD",
+                   help="hard USD cap for ONE provider, repeatable "
+                        "(e.g. --budget-provider byteplus=80). Checked "
+                        "independently of --budget. Use it when the arms bill "
+                        "different accounts and one is a prepaid balance: a "
+                        "combined --budget cannot protect either. Naming a "
+                        "provider that is not enabled is refused, not ignored.")
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--run", default=None, help="existing run id to resume")
     p.set_defaults(fn=cmd_run)
 
     p = sub.add_parser("judge", help="blind-judge a generated run, then score it")
     p.add_argument("--run", required=True)
+    p.add_argument("--retry-unjudged", action="store_true", dest="retry_unjudged",
+                   help="re-attempt cells left `unjudged` by a transient judge "
+                        "failure (e.g. a 429). The clip is already paid for and "
+                        "re-judging costs only judge tokens, but the state is "
+                        "terminal by design, so this never happens implicitly.")
     p.add_argument("--models", default=str(PROJECT_ROOT / "configs" / "models.yaml"))
     p.set_defaults(fn=cmd_judge)
 

@@ -18,6 +18,9 @@ import hashlib
 import io
 import json
 import os
+import shutil
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -119,7 +122,46 @@ def parse_judge_response(text: str, expected_names: list[str]) -> dict:
     return {"criteria": seen, "overall_note": str(data.get("overall_note", "")).strip()}
 
 
-def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
+def blind_video_bytes(path: Path) -> tuple[bytes, bool]:
+    """Strip the container's provenance before the judge ever sees the clip.
+
+    Both providers stamp C2PA content credentials into the mp4. Measured on
+    the 2026-09-03 pilot outputs (2026-09-10): Seedance embeds
+    "BytePlus_ModelArk" and the literal model id "dreamina-seedance-2-5";
+    Omni embeds "Google LLC", "Google C2PA Media Services" and
+    encoder=Google. The judge is a Gemini model that reads mp4 natively, so
+    handing it the untouched container tells it which arm produced which
+    clip — in a comparison of Google against BytePlus. That is not blind
+    judging, it is a labelled preference test.
+
+    A stream copy with metadata dropped removes the uuid/C2PA box without
+    re-encoding a single frame, so the video the judge scores is bit
+    identical to the one on disk. Every stream is kept, audio included:
+    both arms emit audio in this run, so its presence is no longer a tell,
+    and dropping it would change what is being judged.
+
+    The file on disk is never touched — only the copy in flight.
+
+    Returns (bytes, stripped). With no ffmpeg on PATH the original bytes go
+    through with stripped=False and the judge row records it, so the caveat
+    stays visible instead of becoming a silent failure.
+    """
+    if shutil.which("ffmpeg") is None:
+        return path.read_bytes(), False
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "blind.mp4"
+        proc = subprocess.run(
+            ["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", str(path),
+             "-map", "0", "-c", "copy", "-map_metadata", "-1",
+             "-map_chapters", "-1", "-fflags", "+bitexact", str(out)],
+            capture_output=True, timeout=120)
+        if proc.returncode != 0 or not out.exists() or out.stat().st_size == 0:
+            return path.read_bytes(), False
+        return out.read_bytes(), True
+
+
+def judge_run(project_root: Path, run_dir: Path, models_path: Path,
+              retry_unjudged: bool = False) -> dict:
     project_root, run_dir = Path(project_root), Path(run_dir)
     from .loaders import load_models
     mf = load_models(models_path)
@@ -171,7 +213,15 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
     # eligible: passed the gates, not yet judged (resume: never pay twice)
     by_scenario: dict[str, list[str]] = {}
     for key, cell in manifest.data["cells"].items():
-        if cell["state"] in ("measured", "judged"):  # judged = re-run for unscored
+        # `unjudged` is a terminal state on purpose — a cell the judge could not
+        # score is excluded from the mean, never given a 0. But the state does
+        # not distinguish "the judge refused this content" from "Vertex
+        # returned 429 RESOURCE_EXHAUSTED", and the second is a transient
+        # infrastructure failure that permanently costs a paid-for data point.
+        # Re-judging is free, so it is offered explicitly rather than silently:
+        # only --retry-unjudged reopens those cells.
+        eligible = ("measured", "judged") + (("unjudged",) if retry_unjudged else ())
+        if cell["state"] in eligible:  # judged = re-run for unscored
             if (cell["scenario_id"], cell["model_id"]) not in already:
                 by_scenario.setdefault(cell["scenario_id"], []).append(cell["model_id"])
 
@@ -194,12 +244,11 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
             if path is None:
                 continue
             if s.modality == "video":
-                # No safe re-encode exists without a video toolchain, so the
-                # mp4 goes to the judge byte-for-byte: container metadata is
-                # NOT stripped — recorded on the judge row so the blinding
-                # caveat is visible, never silent. (Gemini reads mp4 natively.)
-                media_bytes, media_mime = path.read_bytes(), "video/mp4"
-                media_stripped = False
+                # The container names its own vendor — and Seedance's names
+                # the model — so it is remuxed metadata-free before the judge
+                # sees it. Lossless stream copy; see blind_video_bytes.
+                media_bytes, media_stripped = blind_video_bytes(path)
+                media_mime = "video/mp4"
             else:
                 media_bytes, media_mime = strip_image_metadata(path), "image/png"
                 media_stripped = True
@@ -249,8 +298,11 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
                 src_rel = next((i for i in manifest.data.get("inputs", {}).get(s.id, [])
                                 if i["role"] == "source"), None)
                 if src_rel:
-                    # source clips go byte-for-byte too, same caveat as the output
-                    media.append(((run_dir / src_rel["path"]).read_bytes(), "video/mp4"))
+                    # the source is a bank clip, not a model output, so it
+                    # carries no vendor stamp — but it is remuxed on the same
+                    # path so both clips reach the judge identically shaped
+                    media.append((blind_video_bytes(run_dir / src_rel["path"])[0],
+                                  "video/mp4"))
                     prompt = ("The FIRST clip is the untouched SOURCE; the SECOND is "
                               "the edited RESULT you are scoring. Judge the edit "
                               "against the source: what was asked to change, and "
