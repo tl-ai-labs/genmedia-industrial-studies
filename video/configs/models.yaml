@@ -62,8 +62,12 @@ video:
 
   - id: omni-flash-vertex
     display: Omni Flash
-    enabled: false                   # PAUSED 2026-09-04 by user request. The whole video
-                                     # lane is on hold after the 2026-09-04 Google review
+    enabled: true                    # ENABLED 2026-09-10 on the study lead's explicit
+                                     # instruction, for the 18-scenario edits + ads run
+                                     # (1080p, audio on, seed 20260910). Billing is
+                                     # Google/Vertex ADC, not the BytePlus balance.
+                                     # Was PAUSED 2026-09-04: the whole video
+                                     # lane was on hold after the 2026-09-04 Google review
                                      # re-scoped it to video edits + ads (see
                                      # docs/2026-09-04-google-review.md) — the 14-scenario
                                      # cinematic+physics pilot is out of scope, and the
@@ -86,17 +90,32 @@ video:
     price:
       unit: per_token                # billed from the interaction's reported
                                      # video output tokens (~5792 tokens/s at 720p)
-      usd_out_per_1m: 17.50
-      est_usd_per_call: 0.81         # 8s x 5792 t/s x $17.50/1M — pre-flight only
-      source: ai.google.dev/gemini-api/docs/omni
-      as_of: 2026-09-03
+      usd_out_per_1m: 17.50          # video output tokens
+      usd_in_per_1m: 1.50            # ADDED 2026-09-10. Without this, cost.py prices
+                                     # input tokens at zero and every asset-fed run
+                                     # understates this arm — the 2026-09-09 probe
+                                     # billed 31,815 input tokens on ONE edit, and all
+                                     # 18 in-scope scenarios are asset-fed. Cost is in
+                                     # the client report, so the omission flattered the
+                                     # Google arm. ~5.5% of an edit's output cost.
+      est_usd_per_call: 1.22         # 8s @ 1080p — pre-flight only. MEASURED 2026-09-09
+                                     # from the handle probe: 49,233 output tokens for
+                                     # 5.675s = $0.1518/s (8,675 t/s at 1080p, against
+                                     # 5,792 t/s at 720p). The 720p figure was 0.81.
+                                     # Output only; input adds ~$0.05 on an edit.
+      source: ai.google.dev/gemini-api/docs/omni (output);
+              Vertex AI Gemini Omni 1.1 Flash rate card (input, $1.50/1M)
+      as_of: 2026-09-10
 
   - id: seedance-2-5
     display: Seedance 2.5
-    enabled: false                   # STOPPED 2026-09-03 by user request after the 14-scenario
+    enabled: true                    # ENABLED 2026-09-10 on the study lead's explicit
+                                     # instruction. The BytePlus arrears were cleared and
+                                     # the balance topped up to $91.82; this run is held
+                                     # under it by --budget-provider byteplus=85.
+                                     # Was STOPPED 2026-09-03 after the 14-scenario
                                      # pilot (runs/2026-09-03_225111_video: 14 clips, $26.02,
-                                     # 100% success). BytePlus account is in ARREARS (-$6 and
-                                     # falling as usage posts) — re-enable only after a top-up.
+                                     # 100% success), when the account went into ARREARS.
                                      # ~$1.87 per 8s clip at 720p (measured), ~$4.55 at 1080p.
                                      # ARK_API_KEY verified; the model id below is in the
                                      # account catalogue but must be ACTIVATED in the Ark
@@ -118,8 +137,19 @@ video:
       unit: per_token                # billed from the task's completion_tokens
       usd_out_per_1m: 10.70          # ModelArk rate, no-video-input tier (edits with a
                                      # source clip bill at the $6.40/1M video-input tier)
-      est_usd_per_call: 1.87         # 8s at 720p (measured $0.234/s) — pre-flight/budget
-                                     # only; set to 4.55 (1080p list) for a 1080p run.
+      est_usd_per_call: 4.18         # 8s at 1080p with audio — MEASURED 2026-09-10 from
+                                     # five orphaned tasks: 390,825 completion tokens
+                                     # each = $4.1818 = $0.5227/s. Exactly 2.25x the
+                                     # pilot's 720p 173,700 tokens, i.e. the pixel ratio.
+                                     # 8% under the $4.55 list figure, and the 28% 1080p
+                                     # promo is NOT reflected in token billing — check
+                                     # the CSV bill export before assuming it applies.
+                                     # Superseded: 4.55 (list, docs), 1.87 (720p). Audio is
+                                     # ON for this run, also unmeasured, and may push
+                                     # actuals above this figure. A flat per-call figure
+                                     # cannot track edits of 5.65s-19.2s, so the mid-run
+                                     # guard can overshoot its cap by the difference on
+                                     # the longest clip (~$6 on VID-EDIT-08).
                                      # Measured 2026-09-03: $0.93 for 4s/720p. PROMO: 1080p
                                      # is 28% off 14 Aug - 17 Oct 2026 (~$0.41/s -> ~$3.28
                                      # per 8s clip); 720p not discounted.
