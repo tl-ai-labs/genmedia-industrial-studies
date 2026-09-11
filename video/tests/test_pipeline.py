@@ -995,3 +995,83 @@ def test_blinding_falls_back_when_ffmpeg_cannot_read_the_file(tmp_path):
     path.write_bytes(b"not an mp4 at all")
     blinded, stripped = blind_video_bytes(path)
     assert blinded == b"not an mp4 at all" and stripped is False
+
+
+# --------------------------------------------------------------------------
+# The cap must hold under concurrency, and against per-task cost
+#
+# 2026-09-11: a $14 byteplus cap let $18.94 through. Two workers both passed
+# before_call while `spent` was still $0 — neither call had returned, so
+# neither had been recorded — and the flat $4.18 estimate was 2.7x under what
+# a Seedance edit actually bills. Both halves are pinned here.
+# --------------------------------------------------------------------------
+
+def test_a_reservation_blocks_a_second_concurrent_call():
+    """The failure mode exactly: two calls in flight, nothing settled yet."""
+    from runner.generate import BudgetGuard, BudgetExceeded
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 14 * M}, {})
+    g.before_call(8 * M, "byteplus")          # first worker, nothing spent yet
+    with pytest.raises(BudgetExceeded, match="in flight"):
+        g.before_call(8 * M, "byteplus")      # second must see the first's hold
+
+
+def test_settle_releases_the_hold_so_a_failed_call_costs_no_budget():
+    """A refusal bills nothing. If its reservation were not returned, the cap
+    would strangle work it should have allowed."""
+    from runner.generate import BudgetGuard
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 14 * M}, {})
+    g.before_call(8 * M, "byteplus")
+    g.settle(8 * M, 0, "byteplus")            # refused: actual is zero
+    assert g.reserved_by_provider["byteplus"] == 0
+    assert g.by_provider.get("byteplus", 0) == 0
+    g.before_call(8 * M, "byteplus")          # the headroom came back
+
+
+def test_settle_records_actual_not_the_estimate():
+    from runner.generate import BudgetGuard
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 100 * M}, {})
+    g.before_call(4 * M, "byteplus")
+    g.settle(4 * M, int(11.46 * M), "byteplus")   # billed far above its estimate
+    assert g.by_provider["byteplus"] == int(11.46 * M)
+    assert g.reserved_by_provider["byteplus"] == 0
+
+
+def test_the_estimate_is_task_aware():
+    """One flat figure cannot serve a lane whose tasks differ 3x in cost."""
+    from runner.cost import estimate_call_micro_usd
+    from runner.loaders import Price
+    p = Price(unit="per_token", usd_out_per_1m=10.70, est_usd_per_call=4.18,
+              est_usd_per_call_by_task={"video_edit": 20.0},
+              source="test", as_of="2026-09-11")
+    assert estimate_call_micro_usd(p, "text_to_video") == 4_180_000
+    assert estimate_call_micro_usd(p, "image_to_video") == 4_180_000
+    assert estimate_call_micro_usd(p, "video_edit") == 20_000_000
+    assert estimate_call_micro_usd(p) == 4_180_000        # no task: the default
+
+
+def test_the_2026_09_11_overspend_cannot_recur():
+    """Replayed with the real numbers. That day two edits billed $11.46 and
+    $7.48 against a $14 cap — $18.94 through — because the estimate said
+    $4.18 and nothing was reserved.
+
+    With the honest $20 per-task estimate the cap refuses the FIRST edit, not
+    the second: $14 never could cover an edit whose worst case is $20, and now
+    it says so before spending rather than after. Nothing is billed at all."""
+    from runner.generate import BudgetGuard, BudgetExceeded
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 14 * M}, {})
+    with pytest.raises(BudgetExceeded, match="byteplus"):
+        g.before_call(20 * M, "byteplus")      # the video_edit override
+    assert g.by_provider.get("byteplus", 0) == 0
+    assert g.reserved_by_provider.get("byteplus", 0) == 0
+
+    # and a cap that genuinely covers the worst case lets exactly one through
+    g = BudgetGuard(None, 0, {"byteplus": 25 * M}, {})
+    g.before_call(20 * M, "byteplus")
+    g.settle(20 * M, int(11.4621 * M), "byteplus")
+    with pytest.raises(BudgetExceeded):        # $11.46 spent + $20 held > $25
+        g.before_call(20 * M, "byteplus")
+    assert g.by_provider["byteplus"] / M == pytest.approx(11.4621, abs=0.001)

@@ -90,6 +90,11 @@ video:
     price:
       unit: per_token                # billed from the interaction's reported
                                      # video output tokens (~5792 tokens/s at 720p)
+      est_usd_per_call_by_task:      # pre-flight/budget only, never billing
+        # MEASURED 2026-09-11: $0.161-0.166 per output second on edits. This arm
+        # REFUSES any edit longer than 10s ("Editing duration 11.3333 exceeds
+        # maximum duration 10"), so 10s is the true worst case: ~$1.70.
+        video_edit: 1.70
       usd_out_per_1m: 17.50          # video output tokens
       usd_in_per_1m: 1.50            # ADDED 2026-09-10. Without this, cost.py prices
                                      # input tokens at zero and every asset-fed run
@@ -135,8 +140,19 @@ video:
     params: {}                       # resolution/duration/audio ride the scenario params
     price:
       unit: per_token                # billed from the task's completion_tokens
-      usd_out_per_1m: 10.70          # ModelArk rate, no-video-input tier (edits with a
-                                     # source clip bill at the $6.40/1M video-input tier)
+      usd_out_per_1m: 10.70          # ModelArk rate. The "$6.40/1M video-input tier"
+                                     # noted in the docs did NOT materialise: a
+                                     # 2026-09-11 edit billed the full 10.70 AND
+                                     # carried the source clip's tokens inside
+                                     # completion_tokens — 95,000 tok/s against
+                                     # 48,850 for generation, i.e. ~2x per second.
+      est_usd_per_call_by_task:      # pre-flight/budget only, never billing
+        # MEASURED 2026-09-11: $1.01-1.04 per output second on edits. The longest
+        # source in the bank is VID-EDIT-08 at 19.2s, so the worst case is ~$20.
+        # Deliberately the WORST case, not the mean: the budget guard RESERVES
+        # this figure, so an estimate that is too low does not merely misreport,
+        # it lets the cap be breached. It did — $18.94 through a $14 cap.
+        video_edit: 20.00
       est_usd_per_call: 4.18         # 8s at 1080p with audio — MEASURED 2026-09-10 from
                                      # five orphaned tasks: 390,825 completion tokens
                                      # each = $4.1818 = $0.5227/s. Exactly 2.25x the
