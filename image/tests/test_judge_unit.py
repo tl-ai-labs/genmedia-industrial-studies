@@ -73,3 +73,36 @@ def test_parse_rejects_bad_responses(bad):
     from runner.judge import JudgeSchemaError
     with pytest.raises(JudgeSchemaError):
         parse_judge_response(bad, ["prompt_adherence", "visual_quality"])
+
+
+# --- blind guard: OCR collisions vs real leaks ---------------------------
+# Regression: run 2026-09-09_pairB, IMG-TXT-01. The poster read "FUSION OPEN
+# AIR"; OCR strips spaces -> "FUSIONOPENAIR", and a raw substring scan saw
+# "openai" and refused to judge a perfectly good cell.
+
+TERMS = {"openai", "google-vertex", "gpt-image-2-medium", "gemini-3.1-flash-image"}
+
+
+def test_ocr_word_collision_is_not_a_leak():
+    from runner.judge import blind_leaks
+    ocr = "RIVERSIDE JAZZ FESTIVAL LIVEJAZZ-BLUES-FUSIONOPENAIR|FOOD&DRINKS"
+    assert blind_leaks(TERMS, "", ocr) == []
+
+
+def test_standalone_vendor_in_ocr_is_a_leak():
+    from runner.judge import blind_leaks
+    assert blind_leaks(TERMS, "", "POWERED BY OPENAI") == ["openai"]
+    assert blind_leaks(TERMS, "", "MADE-BY-OPENAI.") == ["openai"]
+
+
+def test_authored_text_still_matches_as_substring():
+    from runner.judge import blind_leaks
+    # authored prompt text keeps the strict rule — no word boundary needed
+    assert blind_leaks(TERMS, "rendered by openaifoo", "") == ["openai"]
+    assert blind_leaks(TERMS, "a seamless white background", "") == []
+
+
+def test_model_id_and_provider_model_are_both_scanned():
+    from runner.judge import blind_leaks
+    assert blind_leaks(TERMS, "made with gpt-image-2-medium", "") == ["gpt-image-2-medium"]
+    assert blind_leaks(TERMS, "", "GEMINI-3.1-FLASH-IMAGE") == ["gemini-3.1-flash-image"]
