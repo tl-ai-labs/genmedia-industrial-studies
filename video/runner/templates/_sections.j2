@@ -54,6 +54,13 @@ are shown. Nothing here pretends to be complete.</div>
   {% if mid in t.models %}{% set _ = cols.append(mid) %}{% endif %}
 {% endfor %}
 <h2>{{ task|tasktitle }}{% if not CLIENT %} <span class="tid">{{ task }}</span>{% endif %}</h2>
+{%- set tg = ctx.manifest.task_grouping if ctx.manifest else None %}
+{%- if tg %}{% set here = tg.scenarios.items()|selectattr('1.reported_under', 'equalto', task)|list %}
+{%- if here %}<p class="tnote">Includes {{ here|map(attribute='0')|join(', ') }},
+which {{ 'is a' if here|length == 1 else 'are' }}
+{{ here[0][1].actual|tasktitle|lower }} scenario{{ '' if here|length == 1 else 's' }} from the same
+part of the bank — grouped here so the set reads as one. Scored on
+{{ here[0][1].actual|tasktitle|lower }}'s own rubric, unchanged.</p>{% endif %}{% endif %}
 <div class="tw"><table class="mx">
 <thead><tr><th>Metric</th>
 {% for mid in cols %}<th class="num{{ ' g' if loop.first }}">{{ mid|disp }}
@@ -223,7 +230,7 @@ win count on this page uses that same threshold.</p>
       {% for c in s.cards %}{% if c.score is not none %}<b class="sc{{ ' win' if s.winner == c.model_id }}" title="{{ c.model_id|disp }}">{{ c.score|q(true) }}</b>{% if not loop.last %} <span class="vs">vs</span> {% endif %}{% endif %}{% endfor %}
     </span>
     <span class="thumbs">
-      {% for src in s.sources %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% endif %}{% endfor %}
+      {% for src in s.sources %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% elif src.video %}<span class="srcth srcclip" title="original input clip ({{ src.role }})">▶ src</span> {% endif %}{% endfor %}
       {% for c in s.cards %}{% if c.mini %}<img src="{{ c.mini }}" alt="">{% endif %}{% endfor %}
     </span>
     <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
@@ -235,12 +242,15 @@ win count on this page uses that same threshold.</p>
     </div>
 
     <div class="media">
-      {% for src in s.sources %}{% if src.thumb %}
+      {% for src in s.sources %}{% if src.thumb or src.video %}
       <figure class="shot src">
         <div class="frame">
-          <img class="out" src="{{ src.thumb }}" alt="original {{ src.role }}"
+          {% if src.video %}<video class="out" controls muted loop playsinline preload="metadata"
+               src="{{ src.video }}" title="{{ s.id }} · original input ({{ src.role }})"></video>
+          {% else %}<img class="out" src="{{ src.thumb }}" alt="original {{ src.role }}"
                data-sid="{{ s.id }}" data-mid="ORIGINAL ({{ src.role }})"
                data-cap="{{ s.id }} · original input ({{ src.role }}) · sha256 {{ src.sha256[:16] }}…">
+          {% endif %}
         </div>
         <figcaption>
           <span class="who accent">original · {{ src.role }}</span>
@@ -295,7 +305,14 @@ win count on this page uses that same threshold.</p>
           {% if c.measures and c.measures.ocr_match is defined %}
             <span class="pill {{ 'ok' if c.measures.ocr_match >= 0.85 else 'est' }}">OCR {{ '%.2f'|format(c.measures.ocr_match) }}</span>{% endif %}
         {% endif %}
-        {% if c.reason %}<div class="crit r">{{ c.reason }}</div>{% endif %}
+        {% if c.why %}<div class="crit r">
+          <b class="wo">{{ c.why.outcome }}</b>{% if c.why.stage %} <span class="pill">{{ c.why.stage }}</span>{% endif %}
+          <div class="wt">{{ c.why.client }}</div>
+          {%- if not CLIENT and c.reason %}
+          <details class="disc rawerr"><summary>Raw provider response</summary>
+            <code>{{ c.reason }}</code></details>{% endif %}
+        </div>
+        {% elif c.reason %}<div class="crit r">{{ c.reason }}</div>{% endif %}
         {% if c.criteria %}
         <div class="crit" style="border-top:0;padding-top:2px">
           {% for name, cs in c.criteria.items() %}

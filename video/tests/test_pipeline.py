@@ -1128,3 +1128,32 @@ def test_complete_only_never_hides_a_refusal(scored_run):
             # every eligible cell is accounted for somewhere, complete or not
             assert m["eligible"] >= m["complete_n"]
             assert {"failed", "invalid", "unjudged"} <= set(m)
+
+
+def test_task_regrouping_is_disclosed_not_silent(scored_run, tmp_path):
+    """A task is a real property of a scenario — it picks the rubric and the
+    required inputs. Reporting one task's scenarios under another is a layout
+    choice, so the page has to say so, and the merged manifest has to record
+    which scenario was actually what.
+
+    This also guards the call site: task_tables only sees the manifest because
+    it is passed explicitly, and a missing key renders as Undefined — silently
+    empty, exactly how the family_models chips once vanished."""
+    from runner.report import build_report, merge_runs
+    out = tmp_path / "merged"
+    merge_runs([scored_run["run_dir"]], out,
+               {"text_to_video": "image_to_video"})
+    mf = json.loads((out / "manifest.json").read_text())
+    assert mf["task_grouping"]["map"] == {"text_to_video": "image_to_video"}
+    assert mf["task_grouping"]["scenarios"], "nothing recorded as regrouped"
+    for sid, info in mf["task_grouping"]["scenarios"].items():
+        assert info["actual"] == "text_to_video"
+        assert info["reported_under"] == "image_to_video"
+    # and every regrouped cell now reports under the new task
+    assert all(c["task"] == "image_to_video" for c in mf["cells"].values())
+
+    build_report(scored_run["project"], out)
+    for name in ("report.html", "report-client.html"):
+        html = (out / name).read_text()
+        assert "grouped here so the set reads as one" in html, \
+            f"{name}: regrouping not disclosed to the reader"

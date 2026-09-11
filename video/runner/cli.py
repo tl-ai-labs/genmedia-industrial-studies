@@ -148,6 +148,38 @@ def cmd_report(args) -> int:
     return 0
 
 
+def cmd_merge_report(args) -> int:
+    """One report over several runs, scenarios deduplicated.
+
+    A pair must live in one run on one source, so re-running a scenario mints
+    a new run — and a study ends up spread across several of them for reasons
+    no reader cares about. This folds them back into one deliverable.
+    """
+    from .report import build_report, merge_runs
+    dirs = []
+    for r in args.run:
+        args.run = r
+        dirs.append(_run_dir(args))
+    out = Path(args.out) if args.out else (
+        PROJECT_ROOT / "runs" /
+        f"merged-{__import__('datetime').datetime.now():%Y-%m-%d_%H%M%S}")
+    groups = {}
+    for raw in getattr(args, "group_task", []) or []:
+        old, _, new = raw.partition("=")
+        if not new:
+            raise ValueError(f"--group-task expects OLD=NEW, got {raw!r}")
+        groups[old.strip()] = new.strip()
+    merge_runs(dirs, out, groups)
+    build_report(PROJECT_ROOT, out, open_browser=args.open,
+                 self_contained=args.self_contained,
+                 complete_only=getattr(args, "complete_only", False),
+                 preview_crf=getattr(args, "preview_crf", 28))
+    print(f"merged {len(dirs)} run(s) -> {out}")
+    print(f"report: {out / 'report.html'}")
+    print(f"client: {out / 'report-client.html'}")
+    return 0
+
+
 def cmd_cost(args) -> int:
     from .telemetry import RunFiles
     run_dir = _run_dir(args)
@@ -289,6 +321,28 @@ def main(argv=None) -> int:
                         "over scenarios its rival never attempted. Excluded "
                         "scenarios stay visible in the reliability figures.")
     p.set_defaults(fn=cmd_report)
+
+    p = sub.add_parser("merge-report", help="ONE report across several runs, "
+                       "scenarios deduplicated (latest run wins)")
+    p.add_argument("--run", required=True, action="append",
+                   help="repeatable, in chronological order")
+    p.add_argument("--out", default=None)
+    p.add_argument("--open", action="store_true")
+    p.add_argument("--self-contained", action="store_true", dest="self_contained")
+    p.add_argument("--complete-only", action="store_true", dest="complete_only",
+                   help="score only the scenarios every arm completed")
+    p.add_argument("--group-task", action="append", default=[], dest="group_task",
+                   metavar="OLD=NEW",
+                   help="report one task's scenarios under another, e.g. "
+                        "text_to_video=image_to_video. Presentation only: the "
+                        "scenarios, their rubrics and the original runs are "
+                        "untouched, and the remap is recorded in the merged "
+                        "manifest and shown on the report.")
+    p.add_argument("--preview-crf", type=int, default=28, dest="preview_crf",
+                   help="x264 CRF for the embedded preview clips (higher = "
+                        "smaller file). 28 is the default; 34 roughly halves a "
+                        "report that has to travel under an attachment limit.")
+    p.set_defaults(fn=cmd_merge_report)
 
     p = sub.add_parser("cost", help="cost rollup from telemetry (gen vs judge)")
     p.add_argument("--run", required=True)
