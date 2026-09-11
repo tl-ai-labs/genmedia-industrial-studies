@@ -147,12 +147,16 @@ video:
                                      # completion_tokens — 95,000 tok/s against
                                      # 48,850 for generation, i.e. ~2x per second.
       est_usd_per_call_by_task:      # pre-flight/budget only, never billing
-        # MEASURED 2026-09-11: $1.01-1.04 per output second on edits. The longest
-        # source in the bank is VID-EDIT-08 at 19.2s, so the worst case is ~$20.
+        # MEASURED 2026-09-11: $1.01-1.04 per output second on edits.
         # Deliberately the WORST case, not the mean: the budget guard RESERVES
         # this figure, so an estimate that is too low does not merely misreport,
         # it lets the cap be breached. It did — $18.94 through a $14 cap.
-        video_edit: 20.00
+        # Retuned 20.00 -> 10.50 on 2026-09-11 after the five long sources were
+        # re-cut under Omni's 10s ceiling. The longest edit in the bank is now
+        # VID-EDIT-04 at 9.68s = $9.97, so 20.00 reserved twice what any call
+        # could cost and made affordable runs look unaffordable. A reservation
+        # must track the real worst case in BOTH directions.
+        video_edit: 10.50
       est_usd_per_call: 4.18         # 8s at 1080p with audio — MEASURED 2026-09-10 from
                                      # five orphaned tasks: 390,825 completion tokens
                                      # each = $4.1818 = $0.5227/s. Exactly 2.25x the
