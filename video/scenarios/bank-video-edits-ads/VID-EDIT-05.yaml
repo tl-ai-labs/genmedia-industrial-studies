@@ -12,7 +12,13 @@ title: Add a physically correct object
 prompt: Add a ceramic vase to the empty end of the table in this clip. It must sit correctly
   on the surface, cast a matching shadow, and stay fixed as the camera moves.
 inputs:
-  source: assets/bank/VID-EDIT-05-source.mp4
+  # Re-cut 16.80s -> 9.60s on 2026-09-11. Omni refuses any edit
+  # longer than 10s ("Editing duration 11.3333 exceeds maximum duration
+  # 10"), which left this scenario unable to produce a pair at all.
+  # Stream copy, not a re-encode: the pixels are the original's. The
+  # full-length source stays at VID-EDIT-05-source.mp4 and the run record
+  # names whichever was used.
+  source: assets/bank/VID-EDIT-05-source-10s.mp4
 params:
   resolution: 1080p
   audio: true

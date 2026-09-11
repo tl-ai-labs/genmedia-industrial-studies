@@ -12,7 +12,13 @@ title: Three sequential edits
 prompt: 'Turn 1: make the jacket blue. Turn 2: remove the sign in the background. Turn 3:
   change the sky to overcast. Each edit must hold and nothing else may drift.'
 inputs:
-  source: assets/bank/VID-EDIT-08-source.mp4
+  # Re-cut 19.20s -> 9.60s on 2026-09-11. Omni refuses any edit
+  # longer than 10s ("Editing duration 11.3333 exceeds maximum duration
+  # 10"), which left this scenario unable to produce a pair at all.
+  # Stream copy, not a re-encode: the pixels are the original's. The
+  # full-length source stays at VID-EDIT-08-source.mp4 and the run record
+  # names whichever was used.
+  source: assets/bank/VID-EDIT-08-source-10s.mp4
 params:
   resolution: 1080p
   audio: true
