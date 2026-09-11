@@ -48,6 +48,37 @@ DEFAULT_BASE_URL = "https://ark.ap-southeast.bytepluses.com/api/v3"
 _TERMINAL = ("succeeded", "failed", "cancelled")
 
 
+def _assert_url_fetchable(url: str) -> None:
+    """Confirm the provider will actually be able to GET this asset.
+
+    ARK_ASSET_BASE_URL pins a commit sha so a run's inputs cannot drift after
+    the fact. The cost of pinning is that the pin goes stale the moment new
+    assets are committed: on 2026-09-11 five sources were re-cut in a later
+    commit than the one the URL named, and four cells came back
+    "content[1].video_url.url ... resource not found" after the run had
+    already started. The provider was right and we were pointing at the past.
+
+    A HEAD before the create turns that into a local error naming the URL,
+    costs one cheap request against a call that takes minutes, and cannot
+    itself be billed.
+    """
+    import httpx
+    try:
+        r = httpx.head(url, timeout=20, follow_redirects=True)
+    except Exception as e:
+        raise ProviderError(
+            f"could not reach the asset url {url} ({e}). ModelArk must fetch "
+            f"it anonymously, so this would have failed provider-side.",
+            retryable=False) from e
+    if r.status_code != 200:
+        raise ProviderError(
+            f"asset url {url} returned HTTP {r.status_code}. ModelArk fetches "
+            f"this itself, so the run would fail. If the file exists locally, "
+            f"ARK_ASSET_BASE_URL is pinned to a commit that predates it — "
+            f"repin it to a pushed commit containing the asset.",
+            retryable=False)
+
+
 def _assert_assets_carried(content: list, expected: int) -> None:
     """Refuse to generate from the prompt alone when an asset went missing.
 
@@ -128,10 +159,10 @@ class SeedanceVideoAdapter(Adapter):
                         "this task sends a video input, which ModelArk accepts "
                         "only as a web url, but ARK_ASSET_BASE_URL is unset. "
                         "Nothing was called.", retryable=False)
-                content.append({
-                    "type": "video_url",
-                    "video_url": {"url": f"{base}/assets/bank/{asset.path.name}"},
-                    "role": "reference_video"})
+                url = f"{base}/assets/bank/{asset.path.name}"
+                _assert_url_fetchable(url)
+                content.append({"type": "video_url", "video_url": {"url": url},
+                                "role": "reference_video"})
                 continue
             b64 = base64.b64encode(asset.path.read_bytes()).decode()
             content.append({"type": "image_url",
