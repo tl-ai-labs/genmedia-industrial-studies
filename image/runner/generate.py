@@ -122,9 +122,18 @@ class BudgetGuard:
     run long before that balance is actually gone. Each cap is therefore
     checked on its own and the first to trip stops that call.
 
-    Both checks compare ACTUAL spend so far against the flat pre-flight
-    estimate for the next call, so a cap can still be overshot by however
-    much one call costs beyond its estimate. Leave a margin.
+    A cap RESERVES before a call and settles after it, rather than checking
+    spend and recording it as two separate steps. That distinction is not
+    academic: on 2026-09-11 a $14 cap let $18.94 through, because two workers
+    both passed the check while `spent` was still zero — neither call had
+    returned, so neither had been recorded. Under `reserve`, the second worker
+    sees the first one's estimate already held against the cap.
+
+    The reservation is the ESTIMATE; settlement records what was actually
+    billed. So a cap can still be overshot by however much one call exceeds
+    its own estimate — $7.28 on a Seedance edit that day, whose real cost was
+    2.7x the flat figure. Reservations bound concurrency, not bad estimates.
+    Leave a margin for both.
 
     Generation only. Judging bills separately and is not counted here.
     """
@@ -136,23 +145,56 @@ class BudgetGuard:
         self.spent = already_spent_micro
         self.caps = dict(provider_caps_micro or {})
         self.by_provider = dict(already_spent_by_provider or {})
+        self.reserved = 0
+        self.reserved_by_provider: dict[str, int] = {}
         self._lock = threading.Lock()
 
     def before_call(self, est_micro: int, provider: str | None = None) -> None:
+        """Hold `est_micro` against every applicable cap, or refuse the call.
+
+        Must be paired with settle() — including on the failure path, or a
+        failed attempt holds budget for the rest of the run.
+        """
         with self._lock:
-            if self.budget is not None and self.spent + est_micro > self.budget:
+            if (self.budget is not None
+                    and self.spent + self.reserved + est_micro > self.budget):
                 raise BudgetExceeded(
-                    f"spent {self.spent / MICRO:.4f} USD; next call (~"
+                    f"spent {self.spent / MICRO:.4f} USD with "
+                    f"{self.reserved / MICRO:.4f} in flight; next call (~"
                     f"{est_micro / MICRO:.4f}) would exceed budget "
                     f"{self.budget / MICRO:.2f}")
             cap = self.caps.get(provider)
             if cap is not None:
                 spent = self.by_provider.get(provider, 0)
-                if spent + est_micro > cap:
+                held = self.reserved_by_provider.get(provider, 0)
+                if spent + held + est_micro > cap:
                     raise BudgetExceeded(
-                        f"{provider}: spent {spent / MICRO:.4f} USD; next call "
-                        f"(~{est_micro / MICRO:.4f}) would exceed that "
+                        f"{provider}: spent {spent / MICRO:.4f} USD with "
+                        f"{held / MICRO:.4f} in flight; next call (~"
+                        f"{est_micro / MICRO:.4f}) would exceed that "
                         f"provider's cap {cap / MICRO:.2f}")
+            self.reserved += est_micro
+            if provider is not None:
+                self.reserved_by_provider[provider] = (
+                    self.reserved_by_provider.get(provider, 0) + est_micro)
+
+    def settle(self, est_micro: int, actual_micro: int,
+               provider: str | None = None) -> None:
+        """Release the reservation and record what the call really cost.
+
+        actual_micro is 0 for a call that failed or was refused — those bill
+        nothing, and the held estimate must come back either way.
+        """
+        with self._lock:
+            self.reserved = max(0, self.reserved - est_micro)
+            if provider is not None:
+                self.reserved_by_provider[provider] = max(
+                    0, self.reserved_by_provider.get(provider, 0) - est_micro)
+            if actual_micro:
+                self.spent += actual_micro
+                if provider is not None:
+                    self.by_provider[provider] = (
+                        self.by_provider.get(provider, 0) + actual_micro)
 
     def add(self, micro: int, provider: str | None = None) -> None:
         with self._lock:
@@ -330,53 +372,60 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
     last_exc: Exception | None = None
     attempt = 0
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        budget.before_call(estimate_call_micro_usd(model.price),
-                           model.provider)
-        with sem:
-            if pacer:
-                pacer.wait()
-            t0 = time.perf_counter()
-            try:
-                res = adapter.run(req)
-                latency_ms = int((time.perf_counter() - t0) * 1000)
-            except Exception as e:
-                latency_ms = int((time.perf_counter() - t0) * 1000)
-                last_exc = e
-                status = getattr(e, "status", "provider_error")
-                files.telemetry.append({"ts": utcnow(), **base_row, "attempt": attempt,
-                                        "status": status, "latency_ms": latency_ms,
-                                        "error": str(e)})
-                if isinstance(e, SafetyRefusal) or not getattr(e, "retryable", False):
-                    break
-                if attempt < MAX_ATTEMPTS:
-                    retry_after = getattr(e, "retry_after", None)
-                    time.sleep(retry_after if retry_after else backoff_s(attempt))
-                continue
-
-        ext = _EXT.get(res.mime, "bin")
-        path = out_dir / f"{model.id}.{ext}"
-        path.write_bytes(res.data)
-        cost = compute_cost(model.price, res.usage)
-        budget.add(cost["micro_usd"], model.provider)
-        out_meta = {"path": str(path.relative_to(run_dir)),
-                    "sha256": hashlib.sha256(res.data).hexdigest(),
-                    "bytes": len(res.data)}
+        est_micro = estimate_call_micro_usd(model.price, scenario.task)
+        budget.before_call(est_micro, model.provider)
+        # Whatever happens below — success, refusal, retry, early return — the
+        # reservation must come back, or a failed attempt holds budget for the
+        # rest of the run and the cap strangles work it should have allowed.
+        billed_micro = 0
         try:
-            from PIL import Image
-            if res.mime.startswith("image/"):
-                with Image.open(path) as im:
-                    out_meta["width"], out_meta["height"] = im.size
-        except Exception:
-            pass
-        files.telemetry.append({
-            "ts": utcnow(), **base_row, "attempt": attempt, "status": "ok",
-            "provider_version": res.provider_version,
-            "params_unsupported": res.params_unsupported,
-            "applied_params": res.applied_params,
-            "latency_ms": latency_ms, "request_id": res.request_id,
-            "output": out_meta, "usage": res.usage, "cost": cost})
-        manifest.set_cell_state(key, "generated")
-        return {"cell": key, "status": "ok", "path": path}
+            with sem:
+                if pacer:
+                    pacer.wait()
+                t0 = time.perf_counter()
+                try:
+                    res = adapter.run(req)
+                    latency_ms = int((time.perf_counter() - t0) * 1000)
+                except Exception as e:
+                    latency_ms = int((time.perf_counter() - t0) * 1000)
+                    last_exc = e
+                    status = getattr(e, "status", "provider_error")
+                    files.telemetry.append({"ts": utcnow(), **base_row, "attempt": attempt,
+                                            "status": status, "latency_ms": latency_ms,
+                                            "error": str(e)})
+                    if isinstance(e, SafetyRefusal) or not getattr(e, "retryable", False):
+                        break
+                    if attempt < MAX_ATTEMPTS:
+                        retry_after = getattr(e, "retry_after", None)
+                        time.sleep(retry_after if retry_after else backoff_s(attempt))
+                    continue
+
+            ext = _EXT.get(res.mime, "bin")
+            path = out_dir / f"{model.id}.{ext}"
+            path.write_bytes(res.data)
+            cost = compute_cost(model.price, res.usage)
+            billed_micro = cost["micro_usd"]
+            out_meta = {"path": str(path.relative_to(run_dir)),
+                        "sha256": hashlib.sha256(res.data).hexdigest(),
+                        "bytes": len(res.data)}
+            try:
+                from PIL import Image
+                if res.mime.startswith("image/"):
+                    with Image.open(path) as im:
+                        out_meta["width"], out_meta["height"] = im.size
+            except Exception:
+                pass
+            files.telemetry.append({
+                "ts": utcnow(), **base_row, "attempt": attempt, "status": "ok",
+                "provider_version": res.provider_version,
+                "params_unsupported": res.params_unsupported,
+                "applied_params": res.applied_params,
+                "latency_ms": latency_ms, "request_id": res.request_id,
+                "output": out_meta, "usage": res.usage, "cost": cost})
+            manifest.set_cell_state(key, "generated")
+            return {"cell": key, "status": "ok", "path": path}
+        finally:
+            budget.settle(est_micro, billed_micro, model.provider)
 
     status = getattr(last_exc, "status", "provider_error") if last_exc else "provider_error"
     manifest.set_cell_state(key, "failed", f"{status} after {attempt} attempt(s): {last_exc}")
@@ -425,13 +474,14 @@ def run_generation(project_root: Path, scenarios, models, modality: str,
     todo = [c for c in cells if c.state == "planned"
             and _find_existing_output(run_dir / "outputs" / c.modality / c.scenario_id,
                                       c.model_id) is None]
-    est_micro = sum(estimate_call_micro_usd(model_by_id[c.model_id].price) for c in todo)
+    est_micro = sum(estimate_call_micro_usd(model_by_id[c.model_id].price, c.task)
+                    for c in todo)
     spent_micro = sum(r.get("cost", {}).get("micro_usd", 0) for r in files.read("telemetry"))
     est_by_provider: dict[str, int] = {}
     for c in todo:
         m = model_by_id[c.model_id]
         est_by_provider[m.provider] = (est_by_provider.get(m.provider, 0)
-                                       + estimate_call_micro_usd(m.price))
+                                       + estimate_call_micro_usd(m.price, c.task))
     # resume: what each provider has already been billed on this run
     spent_by_provider: dict[str, int] = {}
     for r in files.read("telemetry"):
