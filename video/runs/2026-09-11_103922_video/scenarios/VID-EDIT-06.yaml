@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-06 (sheet row 110) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Five-second source clip | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-06
+modality: video
+task: video_edit
+title: Extend clip duration
+prompt: Extend this five-second clip to eight seconds, continuing the existing motion naturally.
+  No repetition, no jump at the join.
+inputs:
+  source: assets/bank/VID-EDIT-06-source.mp4
+params:
+  resolution: 1080p
+  audio: true
+  # an edit otherwise keeps the source's length (ratio adaptive,
+  # duration -1). This is the one edit that must GROW, so the target
+  # length is stated explicitly or the brief cannot be satisfied.
+  duration_s: 8
+  seed: 20260910
+expected: 'Extend clip duration. Capability under test: Continuity beyond the source. Adherence
+  clauses, check each: 1) Output is eight seconds  2) Original five seconds preserved  3)
+  No visible seam at the join  4) Continued motion is plausible'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets
