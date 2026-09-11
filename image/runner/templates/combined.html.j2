@@ -18,7 +18,7 @@
 
 <div class="wrap">
 <header class="hero" id="overview">
-  <p class="kicker">quality · cost · latency · reliability — four columns, never one number</p>
+  <p class="kicker">{% if CLIENT %}quality · latency · reliability — blind-judged, one run per scenario{% else %}quality · cost · latency · reliability — four columns, never one number{% endif %}</p>
   <h1>Gemini vs GPT across {{ overview.n_scenarios }} scenarios,
       {{ runs|length }} task lanes</h1>
   <div class="meta">
@@ -29,12 +29,14 @@
     <div class="tile"><div class="lab">Scenarios</div>
       <div class="val">{{ overview.n_scenarios }}</div>
       <div class="sub">{% for c in runs %}{{ c.evidence|length }} {{ c.agg.tasks.keys()|list|first }}{% if not loop.last %} · {% endif %}{% endfor %}</div></div>
+    {% if not CLIENT %}
     <div class="tile"><div class="lab">Generation cost</div>
       <div class="val">{{ overview.gen_micro|usd }}</div>
       <div class="sub">billed from returned usage</div></div>
     <div class="tile"><div class="lab">Judging cost</div>
       <div class="val">{{ overview.judge_micro|usd }}</div>
       <div class="sub">kept separate, always</div></div>
+    {% endif %}
   </div>
 
   <div class="tw"><table>
@@ -51,13 +53,13 @@
     </tbody></table></div>
 
   <div class="banner"><b>Read within a lane, not across lanes.</b> Each lane is its own
-  controlled comparison (its own scenarios, GPT quality tier and prices) — quality, cost
+  controlled comparison (its own scenarios, GPT quality tier{% if not CLIENT %} and prices{% endif %}) — quality{% if not CLIENT %}, cost{% endif %}
   and latency are comparable inside a lane, never between lanes.</div>
 </header>
 
 {% if brief %}
 {% for c in runs %}
-{{ sec.duel_strip(c, (c.agg.tasks.keys()|list|first|replace('_', ' ')) ~ ' · ' ~ (c.evidence|length) ~ ' scenarios') }}
+{{ sec.duel_strip(c, (c.tab_label or c.agg.tasks.keys()|list|first|replace('_', ' ')) ~ ' · ' ~ (c.evidence|length) ~ ' scenarios') }}
 {{ sec.banners(c) }}
 {{ sec.verdicts_only(c) }}
 {% endfor %}
@@ -68,7 +70,7 @@
 <div class="tabbar">
   {% for c in runs %}
   <button class="tabbtn {{ 'on' if loop.first }}" type="button" data-tab="t{{ loop.index }}">
-    {{ c.agg.tasks.keys()|list|first|replace('_', ' ') }}
+    {{ c.tab_label or c.agg.tasks.keys()|list|first|replace('_', ' ') }}
     <span class="cnt">{{ c.evidence|length }} scenarios</span>
   </button>
   {% endfor %}

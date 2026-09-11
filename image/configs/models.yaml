@@ -46,7 +46,7 @@ image:
     display: GPT Image 2 (medium)    # tier stated: an untiered name is
                                      # what left the 46-scenario report
                                      # ambiguous (2026-09-04 review §1)
-    enabled: false                   # off: medium is the invalid pairing
+    enabled: false                   # Pair B done (60/60)
     adapter: openai_image            # same adapter — model swap is config only
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
@@ -65,7 +65,7 @@ image:
 
   - id: gpt-image-2-high             # the "most powerful" OpenAI arm: same
     display: GPT Image 2 (high)
-    enabled: true                    # the tier that pairs with Pro
+    enabled: false                   # Pair A done (60/60)
     adapter: openai_image
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
@@ -87,8 +87,7 @@ image:
   # route is recorded in telemetry via adapter/provider fields.
   - id: gemini-3-1-flash-image-vertex
     display: Gemini 3.1 Flash
-    enabled: false                   # parked for the bank eval — pro is the
-                                     # "most powerful" Gemini arm
+    enabled: false                   # Pair B done (60/60)
     adapter: gemini_image
     provider: google-vertex
     provider_model: "gemini-3.1-flash-image"
@@ -105,7 +104,7 @@ image:
 
   - id: gemini-3-pro-image-vertex    # Nano Banana Pro — the premium tier
     display: Gemini 3 Pro
-    enabled: true
+    enabled: false                   # Pair A done (60/60)
     adapter: gemini_image            # same adapter: adding a model = this block
     provider: google-vertex
     provider_model: "gemini-3-pro-image"
@@ -119,6 +118,42 @@ image:
       tier: "1K"                     # same price at 1K and 2K per the plan's table
       source: cloud.google.com/vertex-ai/generative-ai/pricing
       as_of: 2026-08-31
+
+  - id: gemini-3-1-flash-lite-image-vertex   # Nano Banana Lite — the entry tier
+    display: Gemini 3.1 Flash Lite
+    enabled: true                    # Pair C t2i lane
+    adapter: gemini_image
+    provider: google-vertex
+    provider_model: "gemini-3.1-flash-lite-image"   # id confirmed against Vertex
+                                     # models.list 2026-09-09; NOT "gemini-3-lite-image"
+    vertex: {project: ai-studies-console, location: global}
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 1, rpm: 2}   # same project quota as the flash/pro twins
+    params: {size: "1024x1024"}
+    price:
+      unit: per_image
+      usd: 0.0336
+      tier: "1K"                     # batch rate is 0.0168; we call standard
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-09
+
+  - id: gpt-image-2-low              # the entry OpenAI arm: same model, quality:low
+    display: GPT Image 2 (low)
+    enabled: true                    # Pair C t2i lane
+    adapter: openai_image
+    provider: openai
+    provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_image, image_edit, inpaint_mask]
+    limits: {max_concurrency: 2, rpm: 8}
+    params: {quality: low}           # size comes from each scenario
+    price:
+      unit: per_token                # billed from returned usage, same rates as
+      usd_in_per_1m: 8.00            # medium/high: quality changes tokens, not rates
+      usd_out_per_1m: 30.00
+      est_usd_per_call: 0.02         # ~2c/image quoted on the 2026-09-04 call; pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-09-02
 
 voice:                               # Phase 2 — configured, not yet enabled
   - id: elevenlabs-flash-v2-5

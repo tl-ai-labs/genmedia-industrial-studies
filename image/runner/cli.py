@@ -107,6 +107,9 @@ def cmd_report(args) -> int:
                                     open_browser=args.open,
                                     hide_industries=hide,
                                     brief=args.brief)
+        print(f"report: {out}")
+        print(f"client: {out.with_name(out.stem + '-client.html')}")
+        return 0
     print(f"report: {out}")
     return 0
 

@@ -210,6 +210,21 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
     for c in ctxs:
         names.update(c["names"])
         vendors.update(c.get("vendors") or {})
+    # Tab label: name the COMPARISON, not the task. Every lane in a tier study
+    # runs the same task, so a task-named tab reads "image edit" three times.
+    # A parenthesised tier is compressed ("GPT Image 2 (high)" -> "GPT high")
+    # so three comparisons fit on one row; the full names stay on the cards.
+    def _short(name: str) -> str:
+        m = _re.match(r"^(\S+).*\((.+)\)\s*$", name)
+        return f"{m.group(1)} {m.group(2)}" if m else name
+
+    for c in ctxs:
+        mids = []
+        for t in c["agg"]["tasks"].values():
+            mids = _gemini_first(t["models"], vendors)
+            break
+        c["tab_label"] = " vs ".join(_short(names.get(m, m)) for m in mids)
+
     overview = {
         "n_scenarios": sum(len(c["evidence"]) for c in ctxs),
         "gen_micro": sum(c["totals"]["gen_micro"] for c in ctxs),
@@ -285,10 +300,14 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                 " — per-lane tiers are on each scenario card.") if mixed else "",
         }
 
-    html = _env(names).get_template("combined.html.j2").render(
-        runs=ctxs, overview=overview, brief=brief, merged=merged)
     out_path = Path(out_path)
-    out_path.write_text(html)
+    # Both audiences from ONE context, so they cannot disagree — the same rule
+    # build_report() follows for a single run.
+    for client, path in ((False, out_path),
+                         (True, out_path.with_name(out_path.stem + "-client.html"))):
+        html = _env(names, client=client).get_template("combined.html.j2").render(
+            runs=ctxs, overview=overview, brief=brief, merged=merged)
+        path.write_text(html)
     if open_browser:
         webbrowser.open(out_path.resolve().as_uri())
     return out_path
