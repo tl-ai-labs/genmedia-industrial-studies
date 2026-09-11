@@ -1,0 +1,49 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-TXT-03 — prompt verbatim; weights follow the
+# sheet's family guidance for 'Text, typography, infographics'
+id: IMG-TXT-03
+modality: image
+task: text_to_image
+title: Chart from supplied values
+prompt: Create a clean bar chart titled Quarterly Revenue with four bars labelled
+  Q1, Q2, Q3, Q4 and values 42, 55, 38, 61. Label each bar with its value. Y axis
+  from 0 to 70.
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'Chart from supplied values. Capability under test: Data fidelity in a generated
+  graphic. Adherence clauses, check each: 1) Four bars present, correctly labelled  2)
+  Printed values match the supplied numbers  3) Bar heights proportional to values  4)
+  Axis range as specified'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - Quarterly Revenue
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - '42'
+  - '55'
+  - '38'
+  - '61'
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- text-typography-infographics
+- scenario-bank
