@@ -477,13 +477,19 @@ def test_omni_refuses_to_send_a_payload_that_lost_its_asset(tmp_path):
             _assert_assets_carried(bad, 1)
 
 
-def test_seedance_content_matches_the_documented_examples(tmp_path):
-    """Shapes taken from the Seedance 2.5 API reference's own worked
-    examples: a data URI for a local file, and a `role` on 2.5 reference
-    parts."""
+def test_seedance_content_matches_the_documented_examples(tmp_path, monkeypatch):
+    """Shapes taken from the Seedance 2.5 API reference's own worked examples:
+    a `role` on 2.5 reference parts, and a data URI for a local file.
+
+    The data-URI half holds for IMAGES only. This test used to assert it for
+    video too, reading the reference's bare `{"url": ...}` as permitting one.
+    The live API disagreed on 2026-09-10 — every edit refused in 1-2s with
+    "reference_video must be provided as a web url" — so video now asserts a
+    fetchable URL instead."""
     from runner.adapters.base import GenRequest
     from runner.video.seedance_video import SeedanceVideoAdapter
 
+    monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
     a = SeedanceVideoAdapter.__new__(SeedanceVideoAdapter)
     clip = a._build_content(GenRequest(
         task="video_edit", text="remove the extras",
@@ -491,7 +497,7 @@ def test_seedance_content_matches_the_documented_examples(tmp_path):
     assert clip[0] == {"type": "text", "text": "remove the extras"}
     assert clip[1]["type"] == "video_url"
     assert clip[1]["role"] == "reference_video"
-    assert clip[1]["video_url"]["url"].startswith("data:video/mp4;base64,")
+    assert clip[1]["video_url"]["url"] == "https://example.test/video/assets/bank/s.mp4"
 
     still = a._build_content(GenRequest(
         task="image_to_video", text="rotate it",
@@ -627,3 +633,45 @@ def test_giving_up_on_an_owned_task_is_never_retryable(monkeypatch):
     assert ei.value.retryable is False
     assert "task_owned" in str(ei.value)
     assert stub.creates == 1
+
+
+def test_video_inputs_are_sent_as_a_url_not_a_data_uri(monkeypatch, tmp_path):
+    """ModelArk refuses `data:video/mp4;base64,...` outright — all four edits
+    were rejected in 1-2s on 2026-09-10 with "reference_video must be provided
+    as a web url". Images are unaffected and still inline."""
+    from runner.adapters.base import Asset, GenRequest
+    monkeypatch.setenv("ARK_ASSET_BASE_URL",
+                       "https://raw.githubusercontent.com/o/r/abc123/video")
+    clip = tmp_path / "VID-EDIT-01-source.mp4"
+    clip.write_bytes(minimal_mp4())
+    stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    adapter.run(GenRequest(task="video_edit", text="recolour it",
+                           inputs=[Asset(role="source", path=clip,
+                                         mime="video/mp4", sha256="x")],
+                           params={"audio": False}))
+    part = [p for p in stub.posted["json"]["content"] if p["type"] == "video_url"][0]
+    assert part["video_url"]["url"] == (
+        "https://raw.githubusercontent.com/o/r/abc123/video/"
+        "assets/bank/VID-EDIT-01-source.mp4")
+    assert not part["video_url"]["url"].startswith("data:")
+    assert part["role"] == "reference_video"
+
+
+def test_a_video_input_without_a_base_url_is_refused_before_any_call(monkeypatch, tmp_path):
+    """Better to reject locally than to pay for a 400 round trip — and the
+    message has to say what to set."""
+    from runner.adapters.base import Asset, GenRequest
+    monkeypatch.delenv("ARK_ASSET_BASE_URL", raising=False)
+    clip = tmp_path / "VID-EDIT-01-source.mp4"
+    clip.write_bytes(minimal_mp4())
+    stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(GenRequest(task="video_edit", text="x",
+                               inputs=[Asset(role="source", path=clip,
+                                             mime="video/mp4", sha256="x")],
+                               params={}))
+    assert "ARK_ASSET_BASE_URL" in str(ei.value)
+    assert ei.value.retryable is False
+    assert stub.posted is None, "nothing should have been sent"
