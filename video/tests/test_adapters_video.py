@@ -710,3 +710,38 @@ def test_a_stale_asset_pin_fails_locally_not_provider_side(monkeypatch, tmp_path
     assert "predates" in msg                      # names the actual cause
     assert ei.value.retryable is False
     assert stub.posted is None, "nothing should have been sent"
+
+
+def test_an_unreachable_host_is_retryable_but_a_404_is_not(monkeypatch, tmp_path):
+    """The guard must not be stricter than the thing it guards.
+
+    On 2026-09-11 a HEAD hit [Errno 60] and the cell died non-retryably — the
+    same url answered 200 a minute later. A network failure teaches nothing
+    about the asset; a 404 does."""
+    import httpx
+    from runner.adapters.base import Asset, GenRequest
+    from runner.video import seedance_video
+    monkeypatch.setattr(seedance_video, "URL_CHECK_ATTEMPTS", 2)
+    monkeypatch.setattr(seedance_video.time, "sleep", lambda *_: None)
+    monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
+    clip = tmp_path / "c.mp4"
+    clip.write_bytes(minimal_mp4())
+    req = GenRequest(task="video_edit", text="x",
+                     inputs=[Asset(role="source", path=clip, mime="video/mp4",
+                                   sha256="x")], params={})
+
+    def boom(*a, **k):
+        raise httpx.ConnectTimeout("[Errno 60] Operation timed out")
+    monkeypatch.setattr(seedance_video.httpx, "head", boom)
+    adapter = _seedance_adapter(monkeypatch, _StubHttp(["queued"], b""))
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(req)
+    assert ei.value.retryable is True, "a network blip must be retryable"
+    assert "not a verdict" in str(ei.value)
+
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(404))
+    adapter = _seedance_adapter(monkeypatch, _StubHttp(["queued"], b""))
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(req)
+    assert ei.value.retryable is False, "a 404 is a verdict — do not retry"

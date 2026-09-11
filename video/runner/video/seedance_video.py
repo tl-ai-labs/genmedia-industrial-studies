@@ -43,6 +43,9 @@ DOWNLOAD_ATTEMPTS = 3
 # ModelArk stamps created_at server-side; allow for clock skew when deciding
 # which tasks appeared after a create we lost the response to
 CREATE_CLOCK_SKEW_S = 10
+# HEAD attempts before giving up on an asset url. A transient network
+# failure is not a verdict on the asset, so it retries and stays retryable.
+URL_CHECK_ATTEMPTS = 3
 DEFAULT_DURATION_S = 8
 DEFAULT_BASE_URL = "https://ark.ap-southeast.bytepluses.com/api/v3"
 _TERMINAL = ("succeeded", "failed", "cancelled")
@@ -63,13 +66,24 @@ def _assert_url_fetchable(url: str) -> None:
     itself be billed.
     """
     import httpx
-    try:
-        r = httpx.head(url, timeout=20, follow_redirects=True)
-    except Exception as e:
+    last: Exception | None = None
+    for attempt in range(1, URL_CHECK_ATTEMPTS + 1):
+        try:
+            r = httpx.head(url, timeout=20, follow_redirects=True)
+            break
+        except Exception as e:                      # network blip, not a verdict
+            last = e
+            if attempt < URL_CHECK_ATTEMPTS:
+                time.sleep(1.0 * attempt)
+    else:
+        # A guard that cannot reach the host has learned nothing about the
+        # asset. Saying "non-retryable" here killed a cell on 2026-09-11 whose
+        # url answered 200 a minute later — the check was stricter than the
+        # thing it was checking. Hand it back to the runner's own retry.
         raise ProviderError(
-            f"could not reach the asset url {url} ({e}). ModelArk must fetch "
-            f"it anonymously, so this would have failed provider-side.",
-            retryable=False) from e
+            f"could not reach the asset url {url} after {URL_CHECK_ATTEMPTS} "
+            f"attempts ({last}); this is a local network failure, not a "
+            f"verdict on the asset", retryable=True)
     if r.status_code != 200:
         raise ProviderError(
             f"asset url {url} returned HTTP {r.status_code}. ModelArk fetches "
