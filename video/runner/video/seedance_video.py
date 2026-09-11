@@ -105,20 +105,38 @@ class SeedanceVideoAdapter(Adapter):
           i2v:   {"type": "image_url", "image_url": {"url":
                   "data:image/png;base64,..."}}
 
-        So a local asset travels as a data URI (no upload step), and the 2.5
-        reference parts carry a `role`. Text-only keeps its single text part,
-        byte-identical to the proven path.
+        An IMAGE travels as a data URI and needs no upload step — that is how
+        all ten ads ran on 2026-09-10. A VIDEO does not: the same shape is
+        refused with `InvalidParameter: reference_video must be provided as a
+        web url`, in 1-2s, before any generation (all four edits, 2026-09-10).
+        The reference's edit example shows a bare url and evidently means a
+        fetchable one.
+
+        So video inputs are sent as a URL built from ARK_ASSET_BASE_URL, which
+        must be a base the PROVIDER can fetch anonymously. Pin it to an
+        immutable ref — a commit sha, never a branch — or a run's inputs can
+        drift after the fact and its record stops being true.
+
+        Text-only keeps its single text part, byte-identical to the proven path.
         """
         content: list = [{"type": "text", "text": req.text}]
         for asset in req.inputs or []:
-            b64 = base64.b64encode(asset.path.read_bytes()).decode()
-            uri = f"data:{asset.mime};base64,{b64}"
             if asset.mime.startswith("video/"):
-                content.append({"type": "video_url", "video_url": {"url": uri},
-                                "role": "reference_video"})
-            else:
-                content.append({"type": "image_url", "image_url": {"url": uri},
-                                "role": "reference_image"})
+                base = os.environ.get("ARK_ASSET_BASE_URL", "").strip().rstrip("/")
+                if not base:
+                    raise ProviderError(
+                        "this task sends a video input, which ModelArk accepts "
+                        "only as a web url, but ARK_ASSET_BASE_URL is unset. "
+                        "Nothing was called.", retryable=False)
+                content.append({
+                    "type": "video_url",
+                    "video_url": {"url": f"{base}/assets/bank/{asset.path.name}"},
+                    "role": "reference_video"})
+                continue
+            b64 = base64.b64encode(asset.path.read_bytes()).decode()
+            content.append({"type": "image_url",
+                            "image_url": {"url": f"data:{asset.mime};base64,{b64}"},
+                            "role": "reference_image"})
         _assert_assets_carried(content, len(req.inputs or []))
         return content
 
