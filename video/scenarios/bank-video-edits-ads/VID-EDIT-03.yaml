@@ -12,7 +12,13 @@ title: Background replacement
 prompt: Replace the background of this clip with a modern office interior. Keep the person,
   their motion and the lighting on them exactly as they are.
 inputs:
-  source: assets/bank/VID-EDIT-03-source.mp4
+  # Re-cut 11.24s -> 9.58s on 2026-09-11. Omni refuses any edit
+  # longer than 10s ("Editing duration 11.3333 exceeds maximum duration
+  # 10"), which left this scenario unable to produce a pair at all.
+  # Stream copy, not a re-encode: the pixels are the original's. The
+  # full-length source stays at VID-EDIT-03-source.mp4 and the run record
+  # names whichever was used.
+  source: assets/bank/VID-EDIT-03-source-10s.mp4
 params:
   resolution: 1080p
   audio: true

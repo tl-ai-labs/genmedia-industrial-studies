@@ -12,7 +12,10 @@ title: Change time of day
 prompt: Change this daytime clip to dusk. Warm low light, longer shadows. Every object, person
   and movement must stay exactly the same.
 inputs:
-  source: assets/bank/VID-EDIT-04-source.mp4
+  # Re-cut 10.01s -> 9.50s on 2026-09-11. Omni's edit limit is a strict
+  # "maximum duration 10", so one hundredth of a second over was still a
+  # rejection. Stream copy; the full-length source stays beside it.
+  source: assets/bank/VID-EDIT-04-source-10s.mp4
 params:
   resolution: 1080p
   audio: true
