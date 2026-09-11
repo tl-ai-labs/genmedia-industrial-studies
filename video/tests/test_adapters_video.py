@@ -489,7 +489,10 @@ def test_seedance_content_matches_the_documented_examples(tmp_path, monkeypatch)
     from runner.adapters.base import GenRequest
     from runner.video.seedance_video import SeedanceVideoAdapter
 
+    from runner.video import seedance_video
     monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(200))   # stay offline
     a = SeedanceVideoAdapter.__new__(SeedanceVideoAdapter)
     clip = a._build_content(GenRequest(
         task="video_edit", text="remove the extras",
@@ -640,8 +643,12 @@ def test_video_inputs_are_sent_as_a_url_not_a_data_uri(monkeypatch, tmp_path):
     were rejected in 1-2s on 2026-09-10 with "reference_video must be provided
     as a web url". Images are unaffected and still inline."""
     from runner.adapters.base import Asset, GenRequest
+    from runner.video import seedance_video
     monkeypatch.setenv("ARK_ASSET_BASE_URL",
                        "https://raw.githubusercontent.com/o/r/abc123/video")
+    # the reachability guard must not reach the real network in an offline suite
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(200))
     clip = tmp_path / "VID-EDIT-01-source.mp4"
     clip.write_bytes(minimal_mp4())
     stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
@@ -673,5 +680,33 @@ def test_a_video_input_without_a_base_url_is_refused_before_any_call(monkeypatch
                                              mime="video/mp4", sha256="x")],
                                params={}))
     assert "ARK_ASSET_BASE_URL" in str(ei.value)
+    assert ei.value.retryable is False
+    assert stub.posted is None, "nothing should have been sent"
+
+
+def test_a_stale_asset_pin_fails_locally_not_provider_side(monkeypatch, tmp_path):
+    """ARK_ASSET_BASE_URL pins a commit sha so inputs cannot drift. The cost is
+    that the pin goes stale when new assets land in a later commit — which
+    happened on 2026-09-11 and cost four cells mid-run. A HEAD first turns a
+    confusing provider 400 into a local error naming the URL."""
+    import httpx
+    from runner.adapters.base import Asset, GenRequest
+    from runner.video import seedance_video
+
+    monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(404))
+    clip = tmp_path / "VID-EDIT-03-source-10s.mp4"
+    clip.write_bytes(minimal_mp4())
+    stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(GenRequest(task="video_edit", text="x",
+                               inputs=[Asset(role="source", path=clip,
+                                             mime="video/mp4", sha256="x")],
+                               params={}))
+    msg = str(ei.value)
+    assert "404" in msg and "VID-EDIT-03-source-10s.mp4" in msg
+    assert "predates" in msg                      # names the actual cause
     assert ei.value.retryable is False
     assert stub.posted is None, "nothing should have been sent"
