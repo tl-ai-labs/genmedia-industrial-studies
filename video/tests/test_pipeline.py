@@ -1075,3 +1075,56 @@ def test_the_2026_09_11_overspend_cannot_recur():
     with pytest.raises(BudgetExceeded):        # $11.46 spent + $20 held > $25
         g.before_call(20 * M, "byteplus")
     assert g.by_provider["byteplus"] / M == pytest.approx(11.4621, abs=0.001)
+
+
+def test_complete_only_scores_the_scenarios_every_arm_finished(scored_run):
+    """Means over different scenario sets are not comparable.
+
+    2026-09-10: Seedance refused two ads, so Omni's mean covered 10 scenarios
+    and Seedance's 8, printed side by side as though they measured the same
+    thing. Dropping the unpaired two moved Omni from ahead to behind."""
+    from runner.scoring import aggregate
+    agg = aggregate(scored_run["run_dir"])
+    for t in agg["tasks"].values():
+        arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+        for sid in t["complete_scenarios"]:
+            for mid in arms:
+                assert sid in t["models"][mid]["by_scenario"], (
+                    f"{sid} counted complete but {mid} has no score")
+        for sid in t["incomplete_scenarios"]:
+            assert any(sid not in t["models"][mid]["by_scenario"] for mid in arms)
+        for m in t["models"].values():
+            assert m["complete_n"] == len(m["numeric_complete"])
+            assert m["complete_n"] <= m["judged_n"]
+
+
+def test_complete_only_excludes_an_unpaired_scenario_from_the_mean():
+    """One arm refuses; the other must not keep averaging in a scenario its
+    rival never attempted."""
+    from runner.scoring import aggregate
+    import json, types
+    # a two-arm task where model-b has no score for scenario s3
+    t = {"models": {
+            "a": {"eligible": 3, "by_scenario": {"s1": 10.0, "s2": 8.0, "s3": 2.0}},
+            "b": {"eligible": 3, "by_scenario": {"s1": 9.0, "s2": 7.0}}},
+         "scenarios": {"s1", "s2", "s3"}}
+    arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+    complete = sorted(sid for sid in t["scenarios"]
+                      if all(sid in t["models"][m]["by_scenario"] for m in arms))
+    assert complete == ["s1", "s2"]
+    a = [t["models"]["a"]["by_scenario"][s] for s in complete]
+    b = [t["models"]["b"]["by_scenario"][s] for s in complete]
+    assert sum(a) / len(a) == 9.0          # not (10+8+2)/3 = 6.67
+    assert sum(b) / len(b) == 8.0
+
+
+def test_complete_only_never_hides_a_refusal(scored_run):
+    """The excluded scenarios are reliability, not missing data. They must
+    still be counted — a refusal is a product fact about that arm."""
+    from runner.scoring import aggregate
+    agg = aggregate(scored_run["run_dir"])
+    for t in agg["tasks"].values():
+        for m in t["models"].values():
+            # every eligible cell is accounted for somewhere, complete or not
+            assert m["eligible"] >= m["complete_n"]
+            assert {"failed", "invalid", "unjudged"} <= set(m)
