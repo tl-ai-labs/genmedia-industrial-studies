@@ -269,6 +269,27 @@ def aggregate(run_dir: Path) -> dict:
 
     # per-model summary + pairwise verdicts
     for task, t in tasks.items():
+        # Scenarios where EVERY eligible arm produced a score. Means taken over
+        # different scenario sets are not comparable: on 2026-09-10 Seedance
+        # refused two ads, so Omni's mean covered 10 scenarios and Seedance's 8
+        # — and the two were printed side by side as though they measured the
+        # same thing. `complete` is the set both arms actually attempted, and
+        # is what a head-to-head number must be built on. The excluded
+        # scenarios are NOT hidden: they are reliability, counted in failed /
+        # refused / unjudged and reported there.
+        arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+        t["complete_scenarios"] = sorted(
+            sid for sid in t["scenarios"]
+            if arms and all(sid in t["models"][mid]["by_scenario"] for mid in arms))
+        t["incomplete_scenarios"] = sorted(set(t["scenarios"]) - set(t["complete_scenarios"]))
+        for mid, m in t["models"].items():
+            m["numeric_complete"] = [m["by_scenario"][sid]
+                                     for sid in t["complete_scenarios"]
+                                     if sid in m["by_scenario"]]
+            nc = m["numeric_complete"]
+            m["mean_complete"] = round(sum(nc) / len(nc), 2) if nc else None
+            m["worst_complete"] = round(min(nc), 2) if nc else None
+            m["complete_n"] = len(nc)
         for mid, m in t["models"].items():
             nums = m["numeric"]
             m["mean"] = round(sum(nums) / len(nums), 2) if nums else None

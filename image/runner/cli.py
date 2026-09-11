@@ -129,7 +129,8 @@ def cmd_report(args) -> int:
     hide = tuple(args.hide_industry or [])
     if len(dirs) == 1:
         out = build_report(PROJECT_ROOT, dirs[0], open_browser=args.open,
-                           hide_industries=hide)
+                           hide_industries=hide,
+                           complete_only=getattr(args, "complete_only", False))
         print(f"report: {out}")
         print(f"client: {out.with_name('report-client.html')}")
         return 0
@@ -275,6 +276,12 @@ def main(argv=None) -> int:
                    help="combined report as a one-page executive summary: no "
                         "tabs, no task/family tables, no per-scenario evidence")
     p.add_argument("--open", action="store_true")
+    p.add_argument("--complete-only", action="store_true", dest="complete_only",
+                   help="score only the scenarios EVERY arm completed. Means "
+                        "over different scenario sets are not comparable — a "
+                        "refusal by one arm otherwise leaves the other averaging "
+                        "over scenarios its rival never attempted. Excluded "
+                        "scenarios stay visible in the reliability figures.")
     p.set_defaults(fn=cmd_report)
 
     p = sub.add_parser("cost", help="cost rollup from telemetry (gen vs judge)")
