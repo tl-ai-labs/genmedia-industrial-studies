@@ -1,0 +1,44 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-TXT-07 — prompt verbatim; weights follow the
+# sheet's family guidance for 'Text, typography, infographics'
+id: IMG-TXT-07
+modality: image
+task: text_to_image
+title: Multi-section infographic
+prompt: 'Create a portrait infographic titled How Rainwater Harvesting Works with
+  three numbered sections: Collection, Filtration, Storage. Each section has a one-line
+  caption. Footnote at the bottom reading: Source - internal estimate.'
+params:
+  size: 1024x1536
+  aspect_ratio: '2:3'
+expected: 'Multi-section infographic. Capability under test: Layout hierarchy at density.
+  Adherence clauses, check each: 1) Title exact  2) Three sections, numbered and named
+  correctly  3) One caption each  4) Footnote present and exact'
+checks:
+  min_width: 700
+  min_height: 900
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - How Rainwater Harvesting Works
+  - Collection
+  - Filtration
+  - Storage
+  - Source - internal estimate
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- text-typography-infographics
+- scenario-bank
