@@ -241,6 +241,23 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
 .notes b{color:var(--ink)}
 @media print{.controls{display:none}.sc{break-inside:avoid}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.note-cell{font-size:12.5px;color:var(--body);max-width:52ch;line-height:1.45}
+/* The two-stopwatches explainer under the first-audio panel. Always open;
+   a reader who needs it should not have to find a toggle. */
+.how{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:18px 22px 12px;margin:14px 0 6px}
+.how h3{font-size:17px;margin:0 0 6px}
+.how h4{font-size:13.5px;margin:16px 0 6px;color:var(--ink)}
+.how p{margin:6px 0 10px;font-size:14.5px}
+.how .tl{display:block;width:100%;max-width:760px;height:auto;margin:6px 0 10px}
+.how .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 10px}
+.how .q{background:var(--lift);border-left:3px solid var(--accent);border-radius:0 9px 9px 0;
+  padding:10px 14px;font-size:14px;line-height:1.55}
+.how .q b{color:var(--ink)}
+.how .steps{margin:0;padding-left:22px;font-size:14px;line-height:1.55}
+.how .steps li{margin:5px 0}
+.how .steps b{color:var(--ink)}
+@media (max-width:640px){.how .two{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -264,6 +281,9 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
     a Google model scoring a comparison with a Google arm in it, and
     never calibrated against human listeners. Detail in the notes.</p>
   
+  <p class="one"><b>Served from:</b>
+    <code>gemini-3-1-flash-tts</code> — Vertex AI · us-central1; <code>elevenlabs-v3</code> — ElevenLabs direct API · us.
+    Detail under <a href="#served">where each model was served from</a>.</p>
   <p class="one lead"><b>Overall:</b> gemini-3-1-flash-tts leads — The 0.095 gap clears the 0.05 decision band. The measured run-to-run spread is ±1.703; this gap is smaller than that, so it can move or invert on a re-run.</p>
   <p class="one warn"><b>A model wins a scenario</b> when the gap clears
     0.5pp and it cleared no fewer gates —
@@ -361,6 +381,42 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
 </div>
 <p class="one dim">Bars share a scale per row; ✦ marks the better side. Quality follows the
 0.5pp band — no star inside it.</p>
+
+<!-- patched 2026-09-14: region + streaming method; superseded by the next re-export -->
+<h2 id="served">Where each model was served from</h2>
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>What that means</th></tr></thead>
+  <tbody>
+  <tr>
+    <td class="metric"><code>gemini-3-1-flash-tts</code></td>
+    <td><b>Vertex AI · us-central1</b></td>
+    <td class="n"><code>us-central1</code></td>
+    <td class="note-cell">Served by Vertex AI at the us-central1 regional endpoint (project from GCP_PROJECT_ID). The adapter passes this location explicitly on every call; it is a choice we make, not the vendor&#x27;s default.</td>
+  </tr>
+  <tr>
+    <td class="metric"><code>elevenlabs-v3</code></td>
+    <td><b>ElevenLabs direct API · us</b></td>
+    <td class="n"><code>us</code></td>
+    <td class="note-cell">Served by ElevenLabs&#x27; direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore - api.&lt;eu|in|sg&gt;.residency.elevenlabs.io) are Enterprise-only. Recorded 2026-09-14 from elevenlabs.io/docs/product-guides/administration/data-residency.</td>
+  </tr>
+  <tr>
+    <td class="metric">judge <code>gemini-2.5-flash</code></td>
+    <td><b>Vertex AI · us-central1</b></td>
+    <td class="n"><code>us-central1</code></td>
+    <td class="note-cell">The judge listens through Vertex AI at us-central1, the same regional endpoint as the Gemini arm - stated so a reader can see the judge and one arm share a vendor AND a region.</td>
+  </tr>
+  <tr>
+    <td class="metric">transcriber <code>medium</code></td>
+    <td><b>local machine · no region</b></td>
+    <td class="n"><code>local</code></td>
+    <td class="note-cell">Runs on the machine that ran the study (faster-whisper on CPU). No network, no region.</td>
+  </tr>
+  </tbody>
+</table></div></div>
+<p class="one dim">Read back from the study's model configuration for runs
+that predate the field in the run record; every run from 14 September 2026 records it itself.
+The Gemini arm is called at a Vertex AI regional endpoint we choose; the ElevenLabs arm is a direct
+API call with no region parameter, so its region is the vendor's default.</p>
 
 <h2>Every metric, both models</h2>
 <div class="mtable"><div class="mscroll"><table>
@@ -604,14 +660,73 @@ direction for that row.</p>
   </tbody>
 </table></div></div>
 
-<p class="one dim"><b>First audio is the time to the first chunk of sound</b>, not the whole-call
-latency two rows up in the metric table &mdash; the two differ by roughly an order of magnitude.
-Only scenarios that set a responsiveness ceiling are streamed, so only those appear here; the
-median is over both passes. Each ceiling is the scenario&rsquo;s own &mdash; 300&nbsp;ms for the
-game immersion line, 1000&nbsp;ms for the conversational scenarios. This is the ordinary HTTP
-stream, not a real-time WebSocket path.</p>
+<p class="one dim">Medians are over both passes. Only scenarios that set a first-audio ceiling are streamed, so only those appear here.</p>
 
+<!-- streaming explainer rendered from _streaming_how.j2 -->
+<div class="how" id="how-latency">
+  <h3>Two stopwatches, two different questions</h3>
+  <p>Every clip on this page was timed. The scenarios where a quick reply matters were timed
+  <b>twice</b>, because "how fast is the model" is two questions, and they have very
+  different answers.</p>
 
+  <svg class="tl" viewBox="0 0 760 118" role="img"
+       aria-label="A timeline from the request being sent to the finished file arriving. First audio is the short interval to the first sound; whole call is the full interval to the finished file.">
+    <line x1="40" y1="30" x2="720" y2="30" stroke="#dde3e9" stroke-width="2"/>
+    <circle cx="40" cy="30" r="5" fill="#10161c"/>
+    <text x="40" y="16" text-anchor="middle" font-size="11" fill="#3a4650" font-family="IBM Plex Mono, Menlo, monospace">request sent</text>
+    <circle cx="250" cy="30" r="5" fill="#0f7a5a"/>
+    <text x="250" y="16" text-anchor="middle" font-size="11" fill="#0f7a5a" font-family="IBM Plex Mono, Menlo, monospace">first word heard</text>
+    <circle cx="720" cy="30" r="5" fill="#1d4e6f"/>
+    <text x="720" y="16" text-anchor="end" font-size="11" fill="#1d4e6f" font-family="IBM Plex Mono, Menlo, monospace">finished file back</text>
+    <rect x="40" y="52" width="210" height="14" rx="4" fill="#0f7a5a"/>
+    <text x="258" y="63" font-size="12" fill="#0f7a5a" font-weight="600" font-family="Source Sans 3, Segoe UI, sans-serif">first audio — what a caller on the phone waits for</text>
+    <rect x="40" y="84" width="680" height="14" rx="4" fill="#1d4e6f"/>
+    <text x="40" y="113" font-size="12" fill="#1d4e6f" font-weight="600" font-family="Source Sans 3, Segoe UI, sans-serif">whole call — what a batch job waits for</text>
+  </svg>
+
+  <div class="two">
+    <div class="q">
+      <b>Whole call</b> asks: <i>how long until the finished audio file is back?</i>
+      Like downloading a song before you can press play. This is the <b>Latency</b> row in the
+      metric table, and every clip in the study has it.
+    </div>
+    <div class="q">
+      <b>First audio</b> asks: <i>how long until the listener hears the first word?</i>
+      Like a phone call: the person on the line hears you start speaking; they do not wait for you
+      to finish. This is the panel above, and it exists for the scenarios that need a quick reply.
+    </div>
+  </div>
+
+  
+  
+  <p class="one lead"><b>On this page:</b>
+    <code>elevenlabs-v3</code> says its first word after a median <b>1105 ms</b> and hands back the finished clip after <b>2.8 s</b>; 
+    <code>gemini-3-1-flash-tts</code> says its first word after a median <b>2318 ms</b> and hands back the finished clip after <b>6.0 s</b>.
+    The two models are <b>1213 ms</b> apart at the first word and <b>3.2 s</b>
+    apart at the finished file, and the same
+    model is ahead on both.
+    No streamed clip on either model reached the first word inside its
+    scenario's ceiling.</p>
+  
+
+  <h4>How we measured it</h4>
+  <ol class="steps">
+    <li><b>Same script, same voice, same model.</b> For the 9
+    scenarios that need a quick reply, we asked each model to <b>stream</b>: send sound as soon as
+    it has some, instead of the whole file at the end. Nothing else about the request changed.</li>
+    <li><b>The clock starts when we send the request</b>, before the connection is even open, so
+    the network and the server's thinking time are all inside the number.</li>
+    <li><b>The clock stops at the first piece of actual sound</b>, not at a header or an empty
+    message that arrives first.</li>
+    <li><b>We keep listening until the clip ends</b>, so the same clip also has a whole-call time.
+    The two are stored side by side and never overwrite each other.</li>
+    <li><b>Each of these scenarios sets a ceiling</b> — 300 ms for the game line, 1000 ms for the
+    conversational ones. A clip over its ceiling fails that gate like any other gate.</li>
+    <li><b>Measured the same way on both models, from the same machine.</b> This is the ordinary
+    HTTP stream. It is not ElevenLabs' WebSocket real-time product, so the sub-second figures
+    ElevenLabs publishes for that product are not what this panel measures.</li>
+  </ol>
+</div>
 <h2>Scenario by scenario</h2>
 <div class="controls">
   <div class="crow">
@@ -4845,6 +4960,8 @@ stream, not a real-time WebSocket path.</p>
   <li><b>Ranked on gates first, quality second</b>, so failing more can never look like scoring higher.</li>
   <li><b>Transcribed locally by <code>medium</code></b>, which shares a vendor with neither model.</li>
   <li><b>Absent measurements show as “—”</b>, never as zero; three batch runs carry timing but no score.</li>
+  <li><b>Served from:</b> <code>gemini-3-1-flash-tts</code> Vertex AI · us-central1; <code>elevenlabs-v3</code> ElevenLabs direct API · us; the judge Vertex AI · us-central1.
+  Read back from the model configuration for runs that predate the field in the run record.</li>
   <li><b>The judge is <code>gemini-2.5-flash</code></b>, a Google model — blinding hides
   the label, not the acoustic fingerprint, so the judged criteria carry that exposure, and it has never been checked against human listeners. The measured
   figures — word errors, timing, cost, gate rate — do not depend on it.</li>

@@ -7,6 +7,7 @@
       {% if c.variant %}<span class="who">{{ c.variant }}</span>{% endif %}
       <span class="dash">{{ c.run_label }}</span>
       {% if c.lead %}<span class="pill">median take</span>{% endif %}
+      {% if c.corrections %}<span class="pill corr">corrected</span>{% endif %}
       {% if c.score is not none %}<span class="pill">{{ '%.3f'|format(c.score) }}</span>
       {% elif c.status == 'invalid' %}<span class="pill est">gated</span>
       {% elif c.status == 'unjudged' %}<span class="pill est">unjudged</span>{% endif %}
@@ -18,6 +19,12 @@
       {% for g in c.gates %}<span class="gate {{ 'ok' if g.passed else 'no' }}">{{ g.gate }}</span>{% endfor %}
     </div>
     {% if c.transcript %}<div class="tx">{{ c.transcript }}</div>{% endif %}
+    {% for x in c.corrections %}
+    <div class="was"><b>Corrected</b> {{ x.field }}{% if x.gate %} <code>{{ x.gate }}</code>{% endif %}:
+      instrument said <code>{{ x.was }}</code>, now <code>{{ x.now }}</code> — {{ x.reason }}
+      <span class="dash">({{ x.reviewer_name }}, {{ x.date }})</span></div>
+    {% endfor %}
+    {% if c.review_note %}<div class="was dimmed">{{ c.review_note }}.</div>{% endif %}
   </div>
 {% endmacro %}
 <!doctype html>
@@ -47,6 +54,7 @@
     <span>scenarios <b>{{ n_scenarios }}</b></span>
     <span>passes <b>{{ max_passes }}</b></span>
     <span>judge <b>{{ judge_model }}</b></span>
+    {% for r in served.models %}<span>{{ r.model_id }} served from <b>{{ r.served_from }}</b></span>{% endfor %}
   </div>
 
   <div class="tiles">
@@ -85,6 +93,16 @@
   and printed beside every gap — where a gap is smaller than that spread, the card says so, because
   those are the verdicts a re-run can move or invert.</div>
 
+  {% if human.present %}
+  <div class="banner human-banner"><b>Human review is on this page, and kept apart.</b>
+  {{ human.n_observations }} observation{{ '' if human.n_observations == 1 else 's' }} by {{ human.reviewer_names }}
+  on {{ human.n_scenarios_reviewed }} scenario{{ '' if human.n_scenarios_reviewed == 1 else 's' }} ({{ human.date_span }}) —
+  in a dashed block on each card and on the Review tab; none enters a score, a gate rate or a winner.
+  {% if human.n_corrections %}{{ human.n_corrections }} automated result{{ '' if human.n_corrections == 1 else 's' }} the
+  reviewers found wrong {{ 'is' if human.n_corrections == 1 else 'are' }} corrected here, each stamped
+  <span class="pill corr">corrected</span> with what the instrument said. <code>--no-review</code> renders the instrument untouched.{% endif %}</div>
+  {% endif %}
+
   {% if uncalibrated %}
   <div class="banner"><b>The judge is uncalibrated.</b> The 2-humans × 5-clips gate has never
   been run, so <code>naturalness</code> and <code>clarity</code> carry no evidence that this
@@ -97,6 +115,7 @@
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-models">Models<span class="cnt">{{ models|length }}</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-repeats">Repeats<span class="cnt">{{ repeated_n }} repeated</span></button>
   <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-runs">Runs<span class="cnt">{{ runs|length }}</span></button>
+  <button class="tabbtn" type="button" role="tab" aria-selected="false" data-tab="t-review">Review<span class="cnt">{{ human.n_observations }} · {{ human.n_corrections }} corrected</span></button>
 </div>
 
 <!-- ──────────────────────────── SCENARIOS ──────────────────────────── -->
@@ -188,6 +207,7 @@
         </div>
         <div class="gates">
           {% for g in m.failed %}<span class="gate no">{{ g }}</span>{% else %}<span class="gate ok">all gates passed</span>{% endfor %}
+          {% if m.n_corrected %}<span class="pill corr">{{ m.n_corrected }} corrected on review</span>{% endif %}
         </div>
         {% for c in m.clips if c.lead %}{{ clip_row(c) }}{% endfor %}
         {% if m.n_more %}
@@ -229,6 +249,23 @@
         {% endfor %}
       </div>
       {% endif %}
+    </div>
+    {% endif %}
+    {% if s.human %}
+    <div class="human">
+      <div class="hl"><span class="xl">Human review</span>
+        <span class="dash">what listeners heard — not part of any number on this card</span></div>
+      {% for o in s.human %}
+      <div class="ob">
+        <div class="obh"><b>{{ o.reviewer_name }}</b> <span class="dash">{{ o.date }}</span>
+          {% if o.model_id %}<code>{{ o.model_id }}</code>{% else %}<span class="dash">both models</span>{% endif %}
+          {% if o.variant %}<span class="who">{{ o.variant }}</span>{% endif %}
+          {% if o.run_label %}<span class="dash">{{ o.run_label }}</span>{% endif %}
+          {% if o.preference %}<span class="pill est">prefers {{ o.preference }}</span>{% endif %}</div>
+        <p class="obn">{{ o.notes }}</p>
+        {% if o.tags %}<div class="obt">{% for t in o.tags %}<span class="pill">{{ t }}</span>{% endfor %}</div>{% endif %}
+      </div>
+      {% endfor %}
     </div>
     {% endif %}
     <p class="sverdict"><b>{{ s.verdict }}.</b> {{ s.detail }}
@@ -388,15 +425,89 @@
   <h2>Every run</h2>
   <div class="tw"><table>
     <thead><tr><th>Run</th><th>Started</th><th>Scenario</th><th class="num">Cells</th>
-      <th class="num">Passed</th><th class="num">Cost</th><th>Judge</th><th>Predictor</th></tr></thead>
+      <th class="num">Passed</th><th class="num">Cost</th><th>Judge</th><th>Predictor</th><th>Served from</th></tr></thead>
     <tbody>
     {% for r in run_rows %}
     <tr><td><code>{{ r.label }}</code></td><td style="font-size:12px">{{ r.started }}</td>
       <td><code>{{ r.scenario }}</code></td><td class="num">{{ r.cells }}</td>
       <td class="num">{{ r.passed }}</td><td class="num">{{ r.cost|usd }}</td>
-      <td style="font-size:12px">{{ r.judge }}</td><td style="font-size:12px">{{ r.predictor }}</td></tr>
+      <td style="font-size:12px">{{ r.judge }}</td><td style="font-size:12px">{{ r.predictor }}</td>
+      <td style="font-size:12px">{{ r.served }}</td></tr>
     {% endfor %}
     </tbody></table></div>
+
+  {% if served.any %}
+  <h2 id="served">Where each model was served from</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>Note</th><th>Source</th></tr></thead>
+    <tbody>
+    {% for r in served.models %}
+    <tr><td><code>{{ r.model_id }}</code></td><td><b>{{ r.served_from }}</b>{% if not r.consistent %} <span class="pill est">differs between runs</span>{% endif %}</td>
+      <td><code>{{ r.region or '—' }}</code></td><td style="font-size:12px;max-width:52ch">{{ r.region_note }}</td>
+      <td style="font-size:12px">{{ 'run manifest' if r.source == 'manifest' else ('configs/models.yaml (run predates the field)' if r.source == 'config' else 'not recorded') }}</td></tr>
+    {% endfor %}
+    {% if served.judge %}
+    <tr><td>judge</td><td><b>{{ served.judge.served_from }}</b></td><td><code>{{ served.judge.region or '—' }}</code></td>
+      <td style="font-size:12px;max-width:52ch">{{ served.judge.region_note }}</td>
+      <td style="font-size:12px">{{ 'run manifest' if served.judge.source == 'manifest' else ('configs/models.yaml' if served.judge.source == 'config' else 'not recorded') }}</td></tr>
+    {% endif %}
+    {% if served.asr %}
+    <tr><td>transcriber</td><td><b>{{ served.asr.served_from }}</b></td><td><code>{{ served.asr.region or '—' }}</code></td>
+      <td style="font-size:12px;max-width:52ch">{{ served.asr.region_note }}</td>
+      <td style="font-size:12px">{{ 'run manifest' if served.asr.source == 'manifest' else ('configs/models.yaml' if served.asr.source == 'config' else 'not recorded') }}</td></tr>
+    {% endif %}
+    </tbody></table></div>
+  {% endif %}
+</section>
+
+<!-- ───────────────────────────── REVIEW ────────────────────────────── -->
+<section class="runpanel" data-tab="t-review" hidden>
+  <h2>Human review</h2>
+  {% if not human.present %}
+  <p class="note">No human review has been recorded yet. Listening notes and corrections go in
+  <code>review/human-review.yaml</code> beside <code>runs/</code> — schema in
+  <code>review/README.md</code> — and both boards pick the file up on the next render.</p>
+  {% else %}
+  <p class="note"><b>Two records, kept apart.</b> The Scenarios tab is what code and the blind
+  judge measured. This tab is what {{ human.reviewer_names }} heard ({{ human.date_span }}). The
+  observations are printed on each card in a dashed block; nothing here enters a number anywhere.</p>
+
+  {% if human.corrections %}
+  <h3>Automated results corrected after human review — {{ human.corrections|length }}</h3>
+  <p class="note">Each row is an instrument result a reviewer found wrong, rewritten to the right
+  result on this board, with the original beside it. The <code>.jsonl</code> records on disk are
+  unaltered; <code>--no-review</code> renders them as they are.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Clip</th><th>What</th><th>Instrument said</th><th>Corrected to</th><th>Why</th><th>Who, when</th></tr></thead>
+    <tbody>
+    {% for x in human.corrections %}
+    <tr><td><code>{{ x.scenario_id }}</code><br><span class="dash">{{ x.model_id }} · {{ x.run_label }}</span></td>
+      <td>{{ x.field }}{% if x.gate %} <code>{{ x.gate }}</code>{% endif %}</td>
+      <td class="num"><code>{{ x.was }}</code></td><td class="num"><code>{{ x.now }}</code></td>
+      <td style="font-size:12.5px;max-width:48ch">{{ x.reason }}</td>
+      <td style="font-size:12px">{{ x.reviewer_name }}<br>{{ x.date }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% endif %}
+
+  <h3>Observations, scenario by scenario — {{ human.n_observations }}</h3>
+  {% for s in scenarios if s.human %}
+  <div class="human">
+    <div class="hl"><code class="sid">{{ s.id }}</code>
+      <span class="dash">automated: {% if s.winner %}{{ s.winner }} wins{% else %}{{ s.verdict }}{% endif %}</span></div>
+    {% for o in s.human %}
+    <div class="ob">
+      <div class="obh"><b>{{ o.reviewer_name }}</b> <span class="dash">{{ o.date }}</span>
+        {% if o.model_id %}<code>{{ o.model_id }}</code>{% else %}<span class="dash">both models</span>{% endif %}
+        {% if o.variant %}<span class="who">{{ o.variant }}</span>{% endif %}
+        {% if o.run_label %}<span class="dash">{{ o.run_label }}</span>{% endif %}
+        {% if o.preference %}<span class="pill est">prefers {{ o.preference }}</span>{% endif %}</div>
+      <p class="obn">{{ o.notes }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  {% endif %}
 </section>
 
 <h2>Footnotes</h2>

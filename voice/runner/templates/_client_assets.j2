@@ -229,6 +229,51 @@ summary:hover{color:var(--accent)}
 .sv b{color:var(--ink)}
 .nomatch{text-align:center;color:var(--dim);padding:34px}
 footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
+/* ── Human review: visibly a different kind of record ─────────────────
+   Dashed edge, its own label, no arm colour and no score typography, so
+   it cannot be mistaken for a measured result even in a screenshot. */
+.human{margin-top:16px;padding:12px 16px 6px;border:1.5px dashed var(--warn);
+  border-radius:10px;background:var(--warn-soft)}
+.human .hl{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.human .xl{color:var(--warn)}
+.ob{padding:8px 0;border-top:1px solid #ecdcb8}
+.ob:first-of-type{border-top:0}
+.obh{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12.5px}
+.obh b{color:var(--ink)}
+.obh code{color:var(--ink);font-weight:600}
+.obh .vt{font-family:var(--mono);font-size:10.5px;background:var(--card);
+  border:1px solid var(--rule);padding:1px 6px;border-radius:5px}
+.obn{margin:5px 0 2px;font-size:14px;color:var(--body);white-space:pre-line}
+.obt{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 2px}
+.tag{font-family:var(--mono);font-size:10.5px;color:var(--dim);background:var(--card);
+  border:1px solid var(--rule);padding:1px 7px;border-radius:999px}
+.pref{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--warn);
+  background:var(--card);border:1px solid #ecdcb8;padding:1px 8px;border-radius:999px}
+.one.human-line{border-left-color:var(--warn);background:var(--warn-soft)}
+.corr{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.04em;
+  color:#7a3e8f;background:#f3e8f7;border:1px solid #dcc6e6;padding:1px 7px;border-radius:999px}
+.was{margin-top:6px;font-size:12.5px;line-height:1.5;padding:6px 10px;border-radius:7px;
+  background:#f7f1fa;border-left:3px solid #b48cc7}
+.was.dimmed{background:var(--lift);border-left-color:var(--rule);color:var(--dim)}
+.was b{color:#7a3e8f}
+.was code{background:var(--card);padding:0 4px;border-radius:4px}
+.note-cell{font-size:12.5px;color:var(--body);max-width:52ch;line-height:1.45}
+/* The two-stopwatches explainer under the first-audio panel. Always open;
+   a reader who needs it should not have to find a toggle. */
+.how{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:18px 22px 12px;margin:14px 0 6px}
+.how h3{font-size:17px;margin:0 0 6px}
+.how h4{font-size:13.5px;margin:16px 0 6px;color:var(--ink)}
+.how p{margin:6px 0 10px;font-size:14.5px}
+.how .tl{display:block;width:100%;max-width:760px;height:auto;margin:6px 0 10px}
+.how .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 10px}
+.how .q{background:var(--lift);border-left:3px solid var(--accent);border-radius:0 9px 9px 0;
+  padding:10px 14px;font-size:14px;line-height:1.55}
+.how .q b{color:var(--ink)}
+.how .steps{margin:0;padding-left:22px;font-size:14px;line-height:1.55}
+.how .steps li{margin:5px 0}
+.how .steps b{color:var(--ink)}
+@media (max-width:640px){.how .two{grid-template-columns:1fr}}
 .notes{font-size:13.5px;line-height:1.62;padding-left:19px}
 .notes li{margin:9px 0}
 .notes b{color:var(--ink)}
