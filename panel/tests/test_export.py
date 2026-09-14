@@ -98,12 +98,17 @@ def test_video_prefers_preview_and_metadata_is_stripped(fake_repo, tmp_path):
     assert vid["judge"] == {"omni-flash-vertex": 7.45, "seedance-2-5": 9.0}
 
 
-def test_reexport_wipes_dist(fake_repo, tmp_path):
+def test_reexport_wipes_dist_but_keeps_item_ids(fake_repo, tmp_path):
     s, dist, private = _export(fake_repo, tmp_path, salt="a")
     stale = dist / "media" / "item-stale.png"
     stale.write_bytes(b"x")
+    before = {i["scenario_id"]: (i["id"], i["pair"]) for i in json.loads((dist / "items.json").read_text())["items"]}
     _export(fake_repo, tmp_path, salt="b")
     assert not stale.exists()
+    after = {i["scenario_id"]: (i["id"], i["pair"]) for i in json.loads((dist / "items.json").read_text())["items"]}
+    for sid in before:
+        assert before[sid][0] == after[sid][0]          # item id: stable, names a scenario
+        assert before[sid][1] != after[sid][1]          # media ids: salted, change every export
 
 
 def test_load_run_reads_the_contract(fake_repo):

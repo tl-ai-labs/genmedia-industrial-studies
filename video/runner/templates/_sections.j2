@@ -92,10 +92,44 @@ means behind. Ratings differ by percentage points; speed is shown as a relative 
   {% if p.winner %}<b class="win">{{ p.winner|disp }} wins</b> — {{ p.door_client if CLIENT else p.door }}{% if p.sign_test_p is not none and not CLIENT %}
     (sign test p ≈ {{ p.sign_test_p }}){% endif %}.
   {% else %}{{ p.note_client if CLIENT else p.note }}{% endif %}
-  <div class="sub">means {{ p.mean_a|q }} vs {{ p.mean_b|q }} · paired {{ p.wins_a }}–{{ p.ties }}–{{ p.wins_b }}
-  over {{ p.n_common }} common scenario(s), {{ p.decided }} decided
+  {% if p.n_scenarios is defined %}{{ pair_tally(p) }}{% endif %}
+  <div class="sub">means {{ p.mean_a|q }} vs {{ p.mean_b|q }}{% if p.means_over_compared %}, both on the
+  {{ p.n_common }} compared scenario{{ 's' if p.n_common != 1 }}{% endif %} · {{ p.decided }} of {{ p.n_common }} decided
   {% if p.sign_test_p is none and p.decided > 0 %} · sign test not quoted (n &lt; 10 decided){% endif %}</div>
 </div>
+{% endmacro %}
+
+{# every scenario in the task, once: compared (W–T–L) + not compared, split
+   into disjoint groups so the line adds up to the total on its own #}
+{% macro pair_tally(p) %}
+{% set verb = 'failed on' if p.missed_all_failed else 'had no result on' %}
+{% set parts = [] %}
+{% if p.missed.both %}{% set _ = parts.append('both ' ~ verb ~ ' ' ~ p.missed.both|length) %}{% endif %}
+{% if p.missed.a %}{% set _ = parts.append((p.a|disp) ~ ' ' ~ verb ~ ' ' ~ p.missed.a|length) %}{% endif %}
+{% if p.missed.b %}{% set _ = parts.append((p.b|disp) ~ ' ' ~ verb ~ ' ' ~ p.missed.b|length) %}{% endif %}
+<div class="tally"><b>{{ p.n_scenarios }} scenario{{ 's' if p.n_scenarios != 1 }}</b> =
+  <b>{{ p.n_common }} compared</b> ({{ p.a|disp }} {{ p.wins_a }} win{{ 's' if p.wins_a != 1 }} ·
+  {{ p.ties }} tie{{ 's' if p.ties != 1 }} · {{ p.b|disp }} {{ p.wins_b }} win{{ 's' if p.wins_b != 1 }})
+  {%- if p.not_compared %} + <b class="nc">{{ p.not_compared }} not compared</b> ({{ parts|join(' · ') }}){% endif %}</div>
+{% endmacro %}
+
+{# the same accounting for the whole page, stated once under the headline #}
+{% macro scenario_tally(ctx) %}
+{% set t = ctx.tally %}
+{% if t and t.n %}
+{% set ord = (ctx.model_order or [])|select('in', t.wins)|list %}
+{% set verb = 'failed on' if t.all_failed else 'had no result on' %}
+{% set won = [] %}{% for mid in ord %}{% set _ = won.append((mid|disp) ~ ' ' ~ t.wins[mid] ~ ' win' ~ ('s' if t.wins[mid] != 1 else '')) %}{% endfor %}
+{% set ties = t.ties ~ ' tie' ~ ('s' if t.ties != 1 else '') %}
+{% set parts = [] %}
+{% if t.all_missing %}{% set _ = parts.append(('both' if ord|length == 2 else 'all') ~ ' ' ~ verb ~ ' ' ~ t.all_missing) %}{% endif %}
+{% for mid in ord %}{% if t.only_missing[mid] %}{% set _ = parts.append('only ' ~ (mid|disp) ~ ' ' ~ verb ~ ' ' ~ t.only_missing[mid]) %}{% endif %}{% endfor %}
+{% if t.some_missing %}{% set _ = parts.append('several ' ~ verb ~ ' ' ~ t.some_missing) %}{% endif %}
+<p class="tally hero-tally"><b>{{ t.n }} scenario{{ 's' if t.n != 1 }}</b> =
+  <b>{{ t.compared }} compared</b>
+  ({% if won|length == 2 %}{{ won[0] }} · {{ ties }} · {{ won[1] }}{% else %}{{ (won + [ties])|join(' · ') }}{% endif %})
+  {%- if t.not_compared %} + <b class="nc">{{ t.not_compared }} not compared</b> ({{ parts|join(' · ') }}){% endif %}</p>
+{% endif %}
 {% endmacro %}
 
 {% macro verdicts_only(ctx) %}
@@ -194,8 +228,11 @@ their next industry from the mapping.{% endif %}{% if ctx.merged_note %}
     {% set wn = ctx.evidence | selectattr('winner', 'equalto', mid) | list | length %}
     {% if wn %}<span class="chip" data-dim="win" data-val="{{ mid }}">{{ mid|disp }} wins <span class="n">({{ wn }})</span></span>{% endif %}
   {% endfor %}
-  {% set tn = ctx.evidence | rejectattr('winner') | list | length %}
+  {# a tie needs two scores; a scenario missing one is not a tie, it is not compared #}
+  {% set tn = ctx.evidence | rejectattr('winner') | selectattr('margin', 'number') | list | length %}
   {% if tn %}<span class="chip" data-dim="win" data-val="tie">Ties <span class="n">({{ tn }})</span></span>{% endif %}
+  {% set nn = ctx.evidence | rejectattr('margin', 'number') | list | length %}
+  {% if nn %}<span class="chip" data-dim="win" data-val="none">Not compared <span class="n">({{ nn }})</span></span>{% endif %}
 </div>
 {% if ctx.families and ctx.families|length > 1 %}
 <div class="chips">
@@ -215,7 +252,7 @@ win count on this page uses that same threshold.</p>
 <div class="scnlist">
 {% for s in ctx.evidence %}
 <details class="scn rev" id="{{ uid }}scn-{{ s.id }}" data-fam="{{ s.family }}"
-         data-ind="{{ s.industry }}" data-win="{{ s.winner or 'tie' }}"
+         data-ind="{{ s.industry }}" data-win="{{ s.winner or ('tie' if s.margin is not none else 'none') }}"
          data-task="{{ s.task }}" data-i="{{ loop.index0 }}"
          data-g="{{ s.g_score if s.g_score is not none }}"
          data-c="{{ s.c_score if s.c_score is not none }}"
@@ -225,9 +262,13 @@ win count on this page uses that same threshold.</p>
     <span class="stitle">{{ s.title }}</span>
     {% if s.industry %}<span class="pill" title="also relevant to: {{ s.industry_also|join(', ') or '—' }}">{{ s.industry }}</span>{% endif %}
     {% if s.winner %}<span class="pill ok">winner: {{ s.winner|disp }} ({{ s.margin|qd }})</span>
-    {% elif s.margin is not none %}<span class="pill" title="inside the {{ TIE_BAND_PP }}% tie band ({{ TIE_BAND_FRAC }} of the scale)">tie · Δ {{ s.margin|qd }}</span>{% endif %}
+    {% elif s.margin is not none %}<span class="pill" title="inside the {{ TIE_BAND_PP }}% tie band ({{ TIE_BAND_FRAC }} of the scale)">tie · Δ {{ s.margin|qd }}</span>
+    {% elif s.cards|length > 1 %}<span class="pill nc" title="one or both models have no result — the reason is inside">not compared</span>{% endif %}
     <span class="scores">
-      {% for c in s.cards %}{% if c.score is not none %}<b class="sc{{ ' win' if s.winner == c.model_id }}" title="{{ c.model_id|disp }}">{{ c.score|q(true) }}</b>{% if not loop.last %} <span class="vs">vs</span> {% endif %}{% endif %}{% endfor %}
+      {# a missing side is shown, not dropped — "90% vs" with nothing after it hid the failure #}
+      {% for c in s.cards %}{% if c.score is not none %}<b class="sc{{ ' win' if s.winner == c.model_id }}" title="{{ c.model_id|disp }}">{{ c.score|q(true) }}</b>
+      {%- elif c.state == 'failed' %}<b class="sc fl" title="{{ c.model_id|disp }} failed — the reason is inside">failed</b>
+      {%- else %}<b class="sc" title="{{ c.model_id|disp }}: no result">—</b>{% endif %}{% if not loop.last %} <span class="vs">vs</span> {% endif %}{% endfor %}
     </span>
     <span class="thumbs">
       {% for src in s.sources %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% elif src.video %}<span class="srcth srcclip" title="original input clip ({{ src.role }})">▶ src</span> {% endif %}{% endfor %}

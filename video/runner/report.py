@@ -17,7 +17,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .generate import Manifest, _find_existing_output
-from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate
+from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate, pairwise_verdict
 from .telemetry import RunFiles
 
 THUMB_MAX_PX = 800
@@ -272,6 +272,10 @@ def _metric_rows(models: dict, order: list) -> list:
         row("mean", "Rating", "higher", "score", lambda m: m["mean"], hi=True),
         row("worst", "Reliability (worst scenario rating)", "higher", "score", lambda m: m["worst"]),
         row("wtl", "W–T–L", None, "text", lambda m: m["wtl"]),
+        # client-facing: W-T-L only counts scenarios both arms delivered, so
+        # without this row the table silently drops every refusal
+        row("failed", "Failed", None, "text",
+            lambda m: f'{m["failed"]} of {m["eligible"]}'),
         row("judged", "Judged", None, "text",
             lambda m: f'{m["judged_n"]}/{m["eligible"]}'),
         row("below_5", "<5", "lower", "int", lambda m: m["below_5"]),
@@ -515,12 +519,22 @@ def _build_context(project_root: Path, run_dir: Path,
         # The excluded scenarios are not hidden: they stay in the reliability
         # figures (failed / refused / unjudged) and in the evidence list,
         # because a refusal is a product fact, not missing data.
-        for t in agg.get("tasks", {}).values():
+        for task, t in agg.get("tasks", {}).items():
             for m in t["models"].values():
                 m["mean"] = m.get("mean_complete")
                 m["worst"] = m.get("worst_complete")
                 m["judged_n"] = m.get("complete_n", 0)
                 m["below_5"] = sum(1 for v in m.get("numeric_complete", []) if v < 5)
+            # The verdict has to be re-taken on the same means the table now
+            # shows. aggregate() decided it on each arm's OWN scenarios: on the
+            # 2026-09-11 edits that set Omni's EDIT-01/03/05/07 against
+            # Seedance's EDIT-03/05/06/07 and printed a 13.5 pp gap under a
+            # table reading 96.7% vs 94.0% — a 2.7 pp tie on the same three.
+            mids = sorted(t["models"])
+            t["pairs"] = [pairwise_verdict(task, a, b, t["models"], t["scenarios"])
+                          for i, a in enumerate(mids) for b in mids[i + 1:]]
+            for p in t["pairs"]:
+                p["means_over_compared"] = True
     telemetry = files.read("telemetry")
     judge_rows = files.read("judge")
     scores = files.read("scores")
@@ -738,11 +752,16 @@ def _build_context(project_root: Path, run_dir: Path,
 
     # per-family rollup (a scenario's first tag names its use-case family)
     families: dict = {}
+    # with complete_only, the rollups average only compared scenarios too —
+    # otherwise this table reprints the unequal-set means the task table fixed
+    def _counts(e, c):
+        return c["score"] is not None and not (complete_only and e["margin"] is None)
+
     for e in evidence:
         fam = families.setdefault(e["family"], {"n": 0, "models": {}})
         fam["n"] += 1
         for c in e["cards"]:
-            if c["score"] is not None:
+            if _counts(e, c):
                 m = fam["models"].setdefault(c["model_id"],
                                              {"scores": [], "wins": 0})
                 m["scores"].append(c["score"])
@@ -763,7 +782,7 @@ def _build_context(project_root: Path, run_dir: Path,
         ind = industries.setdefault(e["industry"], {"n": 0, "models": {}})
         ind["n"] += 1
         for c in e["cards"]:
-            if c["score"] is not None:
+            if _counts(e, c):
                 m = ind["models"].setdefault(c["model_id"], {"scores": [], "wins": 0})
                 m["scores"].append(c["score"])
                 if e["winner"] == c["model_id"]:
@@ -839,8 +858,37 @@ def _build_context(project_root: Path, run_dir: Path,
         "judge_micro": sum(r.get("cost", {}).get("micro_usd", 0) for r in judge_rows),
     }
 
+    # Every scenario on the page, accounted for once: compared (won / tied)
+    # or not compared, with who failed. The hero states this so the counts
+    # further down — W-T-L, chips, verdicts — visibly add up to the total.
+    tally = {"n": len(evidence), "compared": 0, "ties": 0,
+             "wins": {mid: 0 for mid in model_order},
+             "only_missing": {mid: 0 for mid in model_order},
+             "all_missing": 0, "some_missing": 0, "all_failed": True}
+    for e in evidence:
+        if e["margin"] is not None:
+            tally["compared"] += 1
+            if e["winner"]:
+                tally["wins"][e["winner"]] = tally["wins"].get(e["winner"], 0) + 1
+            else:
+                tally["ties"] += 1
+        gone = [c for c in e["cards"] if c["score"] is None]
+        if not gone or e["margin"] is not None:
+            continue
+        # disjoint groups, so the not-compared part adds up by itself
+        tally["all_failed"] &= all(c["state"] == "failed" for c in gone)
+        if len(gone) == len(e["cards"]):
+            tally["all_missing"] += 1
+        elif len(gone) == 1:
+            mid = gone[0]["model_id"]
+            tally["only_missing"][mid] = tally["only_missing"].get(mid, 0) + 1
+        else:
+            tally["some_missing"] += 1
+    tally["not_compared"] = tally["n"] - tally["compared"]
+
     from .summary import completion_counts
     return dict(
+        tally=tally,
         completion=completion_counts(manifest.data),
         manifest=manifest.data, agg=agg, evidence=evidence, totals=totals,
         families=families, family_models=family_models, model_order=model_order,

@@ -150,6 +150,12 @@
   .dot.done { background: var(--ok); }
   .dot.here { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent); transform: scale(1.15); }
 
+  .reasonbox { margin-top: 18px; }
+  .reasonbox textarea { display: block; width: 100%; min-height: 58px; resize: vertical; margin-top: 6px; padding: 10px 12px;
+                        border: 1px solid var(--line-2); border-radius: 10px; background: var(--well); color: var(--ink); font: inherit; }
+  .reasonbox textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .reasonbox .ghost { margin-top: 8px; }
+
   .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
            background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 13.5px; box-shadow: var(--shadow-lift);
            transition: opacity .28s var(--ease), transform .32s var(--ease); z-index: 9; }
@@ -184,7 +190,7 @@
 <script>
 (function () {
   'use strict';
-  var state = { items: [], lanes: [], lane: null, industry: 'all', reviewer: null, voted: {}, order: [], pos: 0, busy: false, keys: null };
+  var state = { items: [], lanes: [], lane: null, industry: 'all', reviewer: null, voted: {}, picks: {}, order: [], pos: 0, busy: false, keys: null, mediaBase: 'media' };
   var main = document.getElementById('main');
   window.__panel = state;   // read-only debugging handle; holds no model names
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -214,13 +220,29 @@
   }
   function sides(item) {
     // item.pair is already in opaque-id order (no model order). Flip per reviewer.
-    var flip = fnv(state.reviewer + '|' + item.id) & 1;
+    var flip = fnv(who() + '|' + item.id) & 1;
     return flip ? [item.pair[1], item.pair[0]] : [item.pair[0], item.pair[1]];
   }
 
   // --- storage / api ------------------------------------------------------
-  function loadReviewer() { try { return localStorage.getItem('panel.reviewer'); } catch (e) { return null; } }
-  function saveReviewer(r) { try { localStorage.setItem('panel.reviewer', r); } catch (e) {} }
+  // Identity = a name (2026-09-11, Sai: name is enough). It is what the
+  // server keys a reviewer's earlier picks on and what seeds the left/right
+  // flip. Remembered here; a `?reviewer=` on the URL wins, because the
+  // studies console asks for the name when its card is opened and passes it
+  // in, so a reviewer identifies themselves once, in one place.
+  function validName(v) { return /^[A-Za-z0-9 ._@+-]{1,64}$/.test(v); }
+  function who() { return state.reviewer || ''; }
+  function saveIdentity(r) { try { localStorage.setItem('panel.reviewer', r || ''); } catch (e) {} }
+  function loadIdentity() {
+    var id = { reviewer: null };
+    try { id.reviewer = localStorage.getItem('panel.reviewer') || null; } catch (e) {}
+    try {
+      var q = new URLSearchParams(window.location.search);
+      var n = (q.get('reviewer') || q.get('name') || '').trim();
+      if (validName(n)) { id.reviewer = n; saveIdentity(n); }
+    } catch (e) {}
+    return id;
+  }
   function api(path, opts) {
     return fetch(path, opts).then(function (r) {
       return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
@@ -265,11 +287,11 @@
   function renderGate() {
     state.keys = null;
     swap(function () {
-      var input = el('input', { placeholder: 'Your name or initials', autocomplete: 'off' });
+      var input = el('input', { placeholder: 'Your name', autocomplete: 'name', value: state.reviewer || '' });
       function start() {
         var v = input.value.trim();
-        if (!/^[A-Za-z0-9 ._@+-]{1,64}$/.test(v)) { input.focus(); toast('Just letters, numbers and spaces please', true); return; }
-        state.reviewer = v; saveReviewer(v); boot();
+        if (!validName(v)) { input.focus(); toast('Just letters, numbers and spaces please', true); return; }
+        state.reviewer = v; saveIdentity(v); boot();
       }
       input.addEventListener('keydown', function (e) { if (e.key === 'Enter') start(); });
       var card = el('div', { class: 'card gate' }, [
@@ -280,7 +302,7 @@
           el('div', {}, [el('span', { text: '🏷️' }), 'Use the industry menu to review only the scenarios from your field, or take a lane end to end.']),
           el('div', {}, [el('span', { text: '⌨️' }), 'Keyboard: ← left is better, → right is better.'])
         ]),
-        el('p', { text: 'Your name only keeps your place and counts each person once.' }),
+        el('p', { text: 'Your name is stored with each answer. Come back with the same name and what you already chose is shown again.' }),
         input,
         el('button', { class: 'primary', text: 'Start reviewing', onclick: start })
       ]);
@@ -337,7 +359,7 @@
     who.innerHTML = '';
     if (state.reviewer) {
       who.appendChild(el('span', {}, ['Reviewing as ', el('b', { text: state.reviewer })]));
-      who.appendChild(el('button', { text: 'change', onclick: function () { state.reviewer = null; saveReviewer(''); renderGate(); renderTabs(); } }));
+      who.appendChild(el('button', { text: 'change', onclick: function () { state.reviewer = null; saveIdentity(''); renderGate(); renderTabs(); } }));
     }
     var p = document.getElementById('progress');
     var n = state.lane ? laneItems(state.lane).length : 0;
@@ -348,7 +370,7 @@
   function setLane(lane) {
     state.lane = lane;
     var items = laneItems(lane);
-    state.order = shuffled(items, fnv(state.reviewer + '|' + lane));
+    state.order = shuffled(items, fnv(who() + '|' + lane));
     var first = state.order.findIndex(function (i) { return !state.voted[i.id]; });
     state.pos = first < 0 ? 0 : first;
     renderTabs();
@@ -372,6 +394,9 @@
     var item = items[state.pos];
     var lr = sides(item);
     var already = state.voted[item.id];
+    // What this person chose before, by MEDIA id - so it lights the right
+    // side whichever way the pair is flipped today - and the reason they gave.
+    var prior = state.picks[item.id] || null;
     var remaining = items.filter(function (i) { return !state.voted[i.id]; }).length;
 
     swap(function () {
@@ -381,7 +406,7 @@
         el('span', { class: 'title', text: item.title || item.scenario_id }),
         item.industry ? el('span', { class: 'chip', text: item.industry }) : null,
         el('span', { text: remaining ? '· ' + remaining + ' left' + (state.industry === 'all' ? ' in this lane' : ' in ' + state.industry) : '· all done here' }),
-        already ? el('span', { text: '· already answered — pick again to change it' }) : null
+        already ? el('span', { text: '· already answered — your choice is shown; pick again to change it' }) : null
       ]));
       card.appendChild(el('div', { class: 'label', text: item.kind === 'audio' ? 'The script both were asked to read' : 'The brief both were given' }));
       card.appendChild(el('p', { class: 'brief', text: item.brief || '(no brief recorded)' }));
@@ -389,7 +414,7 @@
         card.appendChild(el('div', { class: 'label', text: 'Supplied with the brief' }));
         var row = el('div', { class: 'inputs' });
         item.inputs.forEach(function (inp) {
-          row.appendChild(el('figure', {}, [mediaEl(inp.kind, 'media/' + inp.media), el('figcaption', { text: inp.label })]));
+          row.appendChild(el('figure', {}, [mediaEl(inp.kind, state.mediaBase + '/' + inp.media), el('figcaption', { text: inp.label })]));
         });
         card.appendChild(row);
       }
@@ -397,7 +422,7 @@
       var pair = el('div', { class: 'pair' });
       var sideEls = [], players = [];
       ['Left', 'Right'].forEach(function (name, idx) {
-        var m = mediaEl(item.kind, 'media/' + lr[idx]);
+        var m = mediaEl(item.kind, state.mediaBase + '/' + lr[idx]);
         players.push(m);
         var box = el('div', { class: 'mediabox' + (item.kind === 'audio' ? ' audio' : '') }, [m]);
         var thumb = el('button', { class: 'thumb', onclick: function () { vote(idx === 0 ? 'left' : 'right'); } },
@@ -408,6 +433,26 @@
         pair.appendChild(side);
       });
       card.appendChild(pair);
+      if (prior && prior.media) {
+        sideEls.forEach(function (s, i) {
+          var mine = lr[i] === prior.media;
+          s.classList.toggle('picked', mine);
+          s.classList.toggle('dimmed', !mine);
+        });
+      }
+
+      // Optional reason. Sent with the thumbs-up; on an item already
+      // answered, 'Save reason' re-posts the same pick with the new text
+      // (a vote is append-only; the last one per item counts).
+      var reason = el('textarea', { class: 'reason', rows: '2', maxlength: '500',
+                                    placeholder: 'Why? A word on what decided it — optional' });
+      if (prior && prior.reason) reason.value = prior.reason;
+      var reasonBox = el('div', { class: 'reasonbox' }, [el('div', { class: 'label', text: 'Reason (optional)' }), reason]);
+      if (prior && prior.media) {
+        reasonBox.appendChild(el('button', { class: 'ghost', text: 'Save reason',
+                                            onclick: function () { vote(lr[0] === prior.media ? 'left' : 'right', true); } }));
+      }
+      card.appendChild(reasonBox);
 
       var tools = el('div', { class: 'tools' });
       if (item.kind === 'video') {
@@ -429,9 +474,10 @@
       nav.appendChild(prev); nav.appendChild(dots); nav.appendChild(next);
       card.appendChild(nav);
 
-      function vote(pick) {
+      function vote(pick, stay) {
         if (state.busy) return;
         state.busy = true;
+        var why = reason.value.trim();
         // Show the choice immediately; the server confirms it a moment later.
         sideEls.forEach(function (s, i) {
           var mine = (pick === 'left' && i === 0) || (pick === 'right' && i === 1);
@@ -439,10 +485,13 @@
           s.classList.toggle('dimmed', !mine);
         });
         api('api/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ reviewer: state.reviewer, item: item.id, left: lr[0], right: lr[1], pick: pick }) })
+                          body: JSON.stringify({ reviewer: state.reviewer, item: item.id, left: lr[0], right: lr[1], pick: pick, reason: why }) })
           .then(function () {
             state.voted[item.id] = true;
+            state.picks[item.id] = { pick: pick, media: lr[pick === 'left' ? 0 : 1], reason: why || null };
+            prior = state.picks[item.id];
             renderTabs();
+            if (stay) { state.busy = false; toast(why ? 'Reason saved 👍' : 'Saved 👍'); return; }
             toast('Saved 👍');
             var nextIdx = -1;
             for (var k = 1; k <= items.length; k++) { var j = (state.pos + k) % items.length; if (!state.voted[items[j].id]) { nextIdx = j; break; } }
@@ -498,16 +547,26 @@
     api('api/votes?reviewer=' + encodeURIComponent(state.reviewer)).then(function (j) {
       state.voted = {};
       j.items.forEach(function (id) { state.voted[id] = true; });
+      state.picks = j.picks || {};
+      // `?lane=video` (the console embeds one lane per tab) wins over the
+      // first lane with anything left to review.
+      var wanted = null;
+      try { wanted = new URLSearchParams(window.location.search).get('lane'); } catch (e) {}
       var firstOpen = state.lanes.find(function (l) { return state.items.some(function (i) { return i.lane === l && !state.voted[i.id]; }); });
-      setLane(firstOpen || state.lanes[0]);
+      setLane(state.lanes.indexOf(wanted) >= 0 ? wanted : (firstOpen || state.lanes[0]));
     }).catch(function (e) {
       swap(function () { return el('div', { class: 'card', text: 'The panel server is not reachable (' + e.message + '). Open this page through `python -m runner.cli serve`, not as a file.' }); });
     });
   }
 
-  fetch('items.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+  // Where the media lives is the server's to say (PANEL_MEDIA_BASE): its own
+  // dist/media on a laptop, the studies console's files when hosted.
+  fetch('api/config', { cache: 'no-store' }).then(function (r) { return r.json(); })
+    .then(function (c) { if (c && c.media_base) state.mediaBase = String(c.media_base).replace(/\/$/, ''); })
+    .catch(function () {})
+    .then(function () { return fetch('items.json', { cache: 'no-store' }); }).then(function (r) { return r.json(); }).then(function (j) {
     state.items = j.items; state.lanes = j.lanes;
-    state.reviewer = loadReviewer() || null;
+    state.reviewer = loadIdentity().reviewer;
     if (state.reviewer) boot(); else { renderGate(); renderTabs(); }
   }).catch(function () {
     main.appendChild(el('div', { class: 'card', text: 'items.json not found — run the exporter first.' }));

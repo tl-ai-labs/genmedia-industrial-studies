@@ -76,7 +76,10 @@ def export(runs: list[tuple[str, Path]], dist: Path, private: Path,
         summary["lanes"][data.lane]["runs"].append(data.run_id)
         summary["skipped"][f"{data.lane}:{data.run_id}"] = data.skipped
         for pair in data.pairs:
-            item_id = _opaque(salt, data.lane, data.run_id, pair.scenario_id, n=10)
+            # The item id names a scenario, not a model, so it takes no salt:
+            # it is stable across re-exports and a vote cast last week still
+            # marks the item done today. Only the media ids are salted.
+            item_id = _opaque("item", data.lane, data.run_id, pair.scenario_id, n=10)
             media_map: dict[str, str] = {}
             pair_files: list[str] = []
             for arm in pair.arms:

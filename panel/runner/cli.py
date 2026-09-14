@@ -4,8 +4,9 @@
     export    --run image=<run-dir> --run video=<run-dir> --run voice=<run-dir>
               [--voice-dashboard ../voice/dashboard [--voice-items scenario|all]]
     serve     [--port 8765] [--host 0.0.0.0]
-    correlate [--out correlation.md] [--json correlation.json]
+    correlate [--out correlation.md] [--json correlation.json] [--html results.html]
               [--run lane:run_id=<dir>] [--tie-band lane=x]
+    sheet-export [--out-key key.csv] [--out-votes votes.csv]   the two tabs for the Google Sheet
 
 Free, offline, no API key. Nothing here can spend.
 """
@@ -62,7 +63,7 @@ def cmd_serve(a: argparse.Namespace) -> int:
 
 
 def cmd_correlate(a: argparse.Namespace) -> int:
-    from .correlate import correlate, render_markdown
+    from .correlate import correlate, render_html, render_markdown
     overrides = {}
     for spec in a.run or []:
         head, d = spec.split("=", 1)
@@ -77,6 +78,9 @@ def cmd_correlate(a: argparse.Namespace) -> int:
         return 2
     rep = correlate(a.votes, key_path=a.key, overrides=overrides, tie_bands=bands)
     md = render_markdown(rep)
+    for target in (a.out, a.json, a.html):
+        if target:
+            Path(target).parent.mkdir(parents=True, exist_ok=True)
     if a.out:
         Path(a.out).write_text(md, encoding="utf-8")
         print(f"wrote {a.out}")
@@ -85,6 +89,41 @@ def cmd_correlate(a: argparse.Namespace) -> int:
     if a.json:
         Path(a.json).write_text(json.dumps(rep, indent=1), encoding="utf-8")
         print(f"wrote {a.json}")
+    if a.html:
+        Path(a.html).write_text(render_html(rep), encoding="utf-8")
+        print(f"wrote {a.html}")
+    return 0
+
+
+def cmd_sheet_export(a: argparse.Namespace) -> int:
+    """The Google Sheet's two tabs as CSV (deploy/apps-script/Code.gs): the
+    private `key` tab from private/key.json, and - when a votes file exists -
+    the `votes` tab from it, both shapes read, so a session that started on
+    the laptop server carries over."""
+    import csv
+    from .serve import over_of, picked_of
+    key = json.loads(Path(a.key).read_text(encoding="utf-8"))
+    with Path(a.out_key).open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["item", "lane", "run_id", "scenario_id", "media", "model"])
+        for iid, it in key["items"].items():
+            for media, model in it["media"].items():
+                w.writerow([iid, it["lane"], it["run_id"], it["scenario_id"], media, model])
+    print(f"wrote {a.out_key} ({sum(len(it['media']) for it in key['items'].values())} rows)")
+    if Path(a.votes).exists():
+        n = 0
+        with Path(a.out_votes).open("w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["ts", "reviewer", "lane", "run_id", "scenario_id", "picked", "over", "reason"])
+            for line in Path(a.votes).read_text(encoding="utf-8").splitlines():
+                try:
+                    r = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                w.writerow([r.get("ts"), r.get("reviewer"), r.get("lane"), r.get("run_id"), r.get("scenario_id"),
+                            picked_of(r) or "", over_of(r) or "", r.get("reason") or ""])
+                n += 1
+        print(f"wrote {a.out_votes} ({n} rows)")
     return 0
 
 
@@ -124,7 +163,15 @@ def main(argv: list[str] | None = None) -> int:
                    help="override a lane's judge tie band")
     c.add_argument("--out", help="write markdown here instead of stdout")
     c.add_argument("--json", help="also write the full report as JSON")
+    c.add_argument("--html", help="also write a self-contained HTML page (the studies console's Results tab)")
     c.set_defaults(fn=cmd_correlate)
+
+    x = sub.add_parser("sheet-export", help="the key and votes tabs for the Google Sheet, as CSV")
+    x.add_argument("--key", type=Path, default=KEY)
+    x.add_argument("--votes", type=Path, default=VOTES)
+    x.add_argument("--out-key", default="key.csv")
+    x.add_argument("--out-votes", default="votes.csv")
+    x.set_defaults(fn=cmd_sheet_export)
 
     a = p.parse_args(argv)
     return a.fn(a)

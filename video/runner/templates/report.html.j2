@@ -51,7 +51,10 @@
   </div>
 </header>
 
-{{ sec.duel_strip({'duel': duel, 'vendors': vendors}) }}
+{{ sec.scenario_tally({'tally': tally, 'model_order': model_order}) }}
+{{ sec.duel_strip({'duel': duel, 'vendors': vendors},
+                  ((duel.task|tasktitle) ~ ' only — every task has its own table below')
+                  if duel and agg.tasks|length > 1 else None) }}
 {{ sec.banners({'manifest': manifest, 'estimates': estimates}) }}
 {{ sec.task_tables({'agg': agg, 'model_order': model_order, 'vendors': vendors, 'manifest': manifest}) }}
 {{ sec.families_table({'families': families, 'family_models': family_models}) }}

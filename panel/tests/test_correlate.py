@@ -5,7 +5,7 @@ import pytest
 
 from conftest import ELEV, GEM, GPT, GTTS, OMNI, SEED
 
-from runner.correlate import correlate, dedupe, reference_model, render_markdown
+from runner.correlate import HTML_TITLE, correlate, dedupe, reference_model, render_html, render_markdown
 from runner.stats import cohen_kappa, spearman, wilson
 
 
@@ -55,9 +55,10 @@ def test_reference_model_prefers_the_gemini_arm():
     assert reference_model(["b-model", "a-model"]) == "a-model"
 
 
-def test_dedupe_keeps_last_vote_per_reviewer_item():
+def test_dedupe_keeps_last_vote_per_reviewer_scenario():
     a = _vote("image", "r", "S", "sai", GEM, GEM, GPT)
     b = _vote("image", "r", "S", "sai", GPT, GEM, GPT)
+    b["item"] = "a-different-export"       # same scenario, re-exported
     assert dedupe([a, b]) == [b]
     assert len(dedupe([a, _vote("image", "r", "S", "kim", GEM, GEM, GPT)])) == 2
 
@@ -117,6 +118,12 @@ def test_agreement_per_lane_and_overall(fake_repo, tmp_path):
     assert "| **image**" in md and "| **overall**" in md and "IMG-TXT-01" in md
     assert "**no**" in md   # the disagreements are printed, not smoothed
 
+    page = render_html(rep)
+    assert f"<title>{HTML_TITLE}</title>" in page
+    assert "<script" not in page and "http" not in page.split("</style>")[1]   # self-contained, no script
+    assert "IMG-TXT-01" in page and "class=no>no</b>" in page
+    assert page.count("<tr>") >= 4 + 4   # 3 lanes + overall, 4 scenarios
+
 
 def test_tie_band_override_changes_the_judge_verdict(fake_repo, tmp_path):
     img = "2026-09-01_000000_image"
@@ -137,11 +144,14 @@ def test_missing_score_is_no_score_not_a_crash(fake_repo, tmp_path):
     assert rep["lanes"]["image"]["n_3way"] == 0
 
 
-def test_unlocatable_run_is_a_clear_error(tmp_path):
+def test_unlocatable_run_is_noted_and_skipped_not_fatal(fake_repo, tmp_path):
+    img = "2026-09-01_000000_image"
     vp = tmp_path / "v.jsonl"
-    _write(vp, [_vote("image", "no-such-run", "S", "a", GEM, GEM, GPT)])
-    with pytest.raises(SystemExit, match="--run image:no-such-run="):
-        correlate(vp)
+    _write(vp, [_vote("image", "no-such-run", "S", "a", GEM, GEM, GPT),
+                _vote("image", img, "IMG-TXT-01", "a", GPT, GEM, GPT)])
+    rep = correlate(vp, overrides={("image", img): fake_repo["image"]})
+    assert [r["scenario_id"] for r in rep["scenarios"]] == ["IMG-TXT-01"]
+    assert len(rep["notes"]) == 1 and "--run image:no-such-run=" in rep["notes"][0]
 
 
 def test_key_locates_runs(fake_repo, tmp_path):
@@ -152,3 +162,22 @@ def test_key_locates_runs(fake_repo, tmp_path):
     _write(vp, [_vote("image", img, "IMG-TXT-01", "a", GPT, GEM, GPT)])
     rep = correlate(vp, key_path=key)
     assert rep["scenarios"][0]["judge_verdict"] == "other"
+
+
+def test_new_shape_lines_count_and_carry_no_side(tmp_path):
+    """Since 2026-09-11 a vote line is {ts, reviewer, lane, run_id, scenario_id,
+    picked, over, reason}. It must tally exactly like an older line, and the
+    left-pick share must ignore it (it recorded no side)."""
+    from runner.correlate import load_votes, normalize_vote
+    new = {"ts": "2026-09-11T00:00:00Z", "reviewer": "n", "lane": "image", "run_id": "r",
+           "scenario_id": "IMG-TXT-01", "picked": GEM, "over": GPT, "reason": "crisper"}
+    v = normalize_vote(new)
+    assert v["picked_model"] == GEM and {v["left_model"], v["right_model"]} == {GEM, GPT}
+    assert v["pick"] == "decided" and v["side_known"] is False
+    tie = normalize_vote({**new, "picked": None, "over": None})
+    assert tie["pick"] == "tie"
+    old = normalize_vote(_vote("image", "r", "IMG-TXT-01", "o", GEM, GEM, GPT))
+    assert old["pick"] == "left" and old["side_known"] is True
+    p = tmp_path / "v.jsonl"
+    _write(p, [new, _vote("image", "r", "IMG-TXT-01", "o", GEM, GEM, GPT)])
+    assert [x["picked_model"] for x in load_votes(p)] == [GEM, GEM]

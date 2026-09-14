@@ -263,7 +263,7 @@ def aggregate(run_dir: Path) -> dict:
             "eligible": 0, "skipped": 0, "numeric": [], "scored": 0, "invalid": 0,
             "unjudged": 0, "failed": 0, "latencies": [], "attempts": [],
             "gen_micro": 0, "judge_micro": 0, "cost_estimated": False,
-            "refused": 0, "by_scenario": {}})
+            "refused": 0, "by_scenario": {}, "no_result": {}})
         if cell["state"] == "skipped":
             m["skipped"] += 1
             continue
@@ -275,6 +275,10 @@ def aggregate(run_dir: Path) -> dict:
             m[srow["status"]] += 1
         elif srow and srow["status"] == "unjudged" or cell["state"] == "unjudged":
             m["unjudged"] += 1
+        if cell["scenario_id"] not in m["by_scenario"]:
+            # why this arm has nothing to compare here — so a head-to-head
+            # can account for every scenario, not only the ones it paired
+            m["no_result"][cell["scenario_id"]] = cell["state"]
         if cell["state"] == "failed":
             m["failed"] += 1
             if "refused" in (cell.get("reason") or ""):
@@ -344,14 +348,25 @@ def aggregate(run_dir: Path) -> dict:
         mids = sorted(t["models"])
         for i, a in enumerate(mids):
             for b in mids[i + 1:]:
-                t["pairs"].append(pairwise_verdict(task, a, b, t["models"]))
+                t["pairs"].append(pairwise_verdict(task, a, b, t["models"],
+                                                   t["scenarios"]))
         t["scenarios"] = sorted(t["scenarios"])
     return {"tasks": tasks}
 
 
-def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
+def pairwise_verdict(task: str, a: str, b: str, models: dict,
+                     scenarios=None) -> dict:
     ma, mb = models[a], models[b]
     common = sorted(set(ma["by_scenario"]) & set(mb["by_scenario"]))
+    # Every scenario in the task is accounted for: compared, or not compared
+    # because one arm or both have no score. A W-T-L over 8 of 10 scenarios
+    # read on its own looks like the whole task; the other 2 are a result too.
+    scen = sorted(scenarios if scenarios is not None
+                  else set(ma["by_scenario"]) | set(mb["by_scenario"]))
+    missing_a = [s for s in scen if s not in ma["by_scenario"]]
+    missing_b = [s for s in scen if s not in mb["by_scenario"]]
+    states = ([ma.get("no_result", {}).get(s) for s in missing_a]
+              + [mb.get("no_result", {}).get(s) for s in missing_b])
     wins_a = wins_b = ties = 0
     for sid in common:
         d = ma["by_scenario"][sid] - mb["by_scenario"][sid]
@@ -371,7 +386,16 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
               "mean_gap": round(mean_gap, 3) if mean_gap is not None else None,
               "sign_test_p": (round(sign_test_p(max(wins_a, wins_b), decided), 5)
                               if decided >= SIGN_TEST_MIN_N else None),
-              "winner": None, "door": None, "note": ""}
+              "winner": None, "door": None, "note": "",
+              "n_scenarios": len(scen),
+              "not_compared": len(scen) - len(common),
+              "missed": {"both": sorted(set(missing_a) & set(missing_b)),
+                         "a": sorted(set(missing_a) - set(missing_b)),
+                         "b": sorted(set(missing_b) - set(missing_a))},
+              # "failed" only when every missing cell really failed; an
+              # unjudged or skipped cell is not a model failure
+              "missed_all_failed": bool(states) and all(st == "failed"
+                                                        for st in states)}
 
     if mean_gap is None or not common:
         result["note"] = "not comparable: missing scores"
@@ -418,11 +442,17 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
     if ma["latency_p50_ms"] and mb["latency_p50_ms"] \
             and ma["latency_p50_ms"] != mb["latency_p50_ms"]:
         facts.append(f"faster p50: {a if ma['latency_p50_ms'] < mb['latency_p50_ms'] else b}")
-    tie_note = ("tie on quality (mean gap "
-                + (f"{abs(mean_gap):.2f}" if mean_gap is not None else "n/a")
-                + f" < {MEAN_GAP_DOOR}, no {WIN_RATE_DOOR:.0%} win rate). "
-                + ("Broken only by facts: " + "; ".join(facts) if facts
-                   else "Nothing separates them on these scenarios — "
-                        "they are equivalent here, which is itself a result."))
-    result["note"] = (result["note"] + " | " + tie_note) if result["note"] else tie_note
+    # A door that was cleared but blocked (coverage, contradiction) is already
+    # explained in the note. Appending "tie on quality (mean gap 1.35 < 0.5)"
+    # after it would be false, so a blocked verdict gets only the facts.
+    if result["note"]:
+        result["note"] += (". On the facts: " + "; ".join(facts) if facts
+                           else ". Nothing else separates them on these scenarios.")
+    else:
+        result["note"] = ("tie on quality (mean gap "
+                          + (f"{abs(mean_gap):.2f}" if mean_gap is not None else "n/a")
+                          + f" < {MEAN_GAP_DOOR}, no {WIN_RATE_DOOR:.0%} win rate). "
+                          + ("Broken only by facts: " + "; ".join(facts) if facts
+                             else "Nothing separates them on these scenarios — "
+                                  "they are equivalent here, which is itself a result."))
     return result
