@@ -1157,3 +1157,86 @@ def test_task_regrouping_is_disclosed_not_silent(scored_run, tmp_path):
         html = (out / name).read_text()
         assert "grouped here so the set reads as one" in html, \
             f"{name}: regrouping not disclosed to the reader"
+
+
+# ---- every scenario accounted for: compared + not compared = total ---------
+
+def _override_cell(run_dir, sid, mid, score=None,
+                   reason="refused: InputVideoSensitiveContentDetected"):
+    """Test-only: the latest score row wins, so appending one changes a cell's
+    outcome; score=None also marks the cell failed, as a refusal would."""
+    mf_path = run_dir / "manifest.json"
+    mf = json.loads(mf_path.read_text())
+    cell = next(c for c in mf["cells"].values()
+                if c["scenario_id"] == sid and c["model_id"] == mid)
+    if score is None:
+        cell["state"], cell["reason"] = "failed", reason
+        mf_path.write_text(json.dumps(mf))
+    with open(run_dir / "scores.jsonl", "a") as f:
+        f.write(json.dumps({"scenario_id": sid, "model_id": mid,
+                            "task": cell["task"],
+                            "status": "failed" if score is None else "scored",
+                            "score": score}) + "\n")
+
+
+def test_every_scenario_is_accounted_for_when_an_arm_fails(scored_run):
+    """2026-09-14: the merged video report read '8 + 3' against 18 scenarios.
+    W-T-L only counts scenarios both arms delivered, and the 'Ties' chip
+    swallowed the 7 that were never compared. Failures are a result: the
+    tally, the chips and the cards must each add up to the total."""
+    run_dir = scored_run["run_dir"]
+    s_one, s_both, s_ok = SCENARIO_IDS
+    _override_cell(run_dir, s_one, "model-b")              # one arm failed
+    _override_cell(run_dir, s_both, "model-a")             # both arms failed
+    _override_cell(run_dir, s_both, "model-b")
+
+    pair = next(iter(aggregate(run_dir)["tasks"].values()))["pairs"][0]
+    assert pair["n_scenarios"] == 3
+    assert pair["n_common"] + pair["not_compared"] == pair["n_scenarios"]
+    assert pair["wins_a"] + pair["ties"] + pair["wins_b"] == pair["n_common"] == 1
+    assert pair["missed"] == {"both": [s_both], "a": [], "b": [s_one]}
+    assert pair["missed_all_failed"] is True
+
+    _, internal, _, client = _both(scored_run["project"], run_dir)
+    for html in (internal, client):
+        cards = re.findall(r'data-win="([^"]+)"', html)
+        assert len(cards) == 3
+        assert cards.count("none") == 2 and cards.count("tie") == 1
+        chips = dict(re.findall(
+            r'data-dim="win" data-val="([^"]+)">[^<]*<span class="n">\((\d+)\)', html))
+        assert chips == {"tie": "1", "none": "2"}          # not 3 "ties"
+        assert sum(int(n) for n in chips.values()) == 3
+        assert 'class="tally hero-tally"' in html
+        assert "2 not compared" in html
+        assert "both failed on 1" in html
+        assert 'data-row="failed"' in html                 # client sees it too
+
+
+def test_complete_only_verdict_uses_the_means_the_table_shows(scored_run):
+    """2026-09-14: --complete-only fixed the table but not the verdict under
+    it, which still compared each arm's OWN scenarios — a '13.5 pp' gap
+    printed beneath a table reading 96.7% vs 94.0%."""
+    from runner.report import _build_context
+    run_dir = scored_run["run_dir"]
+    s1, s2, s3 = SCENARIO_IDS
+    _override_cell(run_dir, s1, "model-a", 10.0)
+    _override_cell(run_dir, s1, "model-b", 9.0)
+    _override_cell(run_dir, s2, "model-a", 2.0)            # rival never delivered
+    _override_cell(run_dir, s2, "model-b")
+
+    full = next(iter(aggregate(run_dir)["tasks"].values()))
+    assert full["pairs"][0]["mean_a"] != full["models"]["model-a"]["mean_complete"]
+
+    s3_a, s3_b = (full["models"][m]["by_scenario"][s3] for m in ("model-a", "model-b"))
+    ctx = _build_context(scored_run["project"], run_dir, complete_only=True)
+    t = next(iter(ctx["agg"]["tasks"].values()))
+    p = t["pairs"][0]
+    # both on s1 and s3 only — s2, which model-b never delivered, is out
+    assert p["mean_a"] == t["models"]["model-a"]["mean"] == round((10.0 + s3_a) / 2, 2)
+    assert p["mean_b"] == t["models"]["model-b"]["mean"] == round((9.0 + s3_b) / 2, 2)
+    assert p["means_over_compared"] is True
+    assert p["n_common"] + p["not_compared"] == p["n_scenarios"] == 3
+    # and the family / industry rollups agree with the task table
+    for f in list(ctx["families"].values()) + list(ctx["industries"].values()):
+        assert f["models"]["model-a"]["mean"] == p["mean_a"]
+        assert f["models"]["model-b"]["mean"] == p["mean_b"]

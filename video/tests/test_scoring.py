@@ -107,3 +107,27 @@ def test_matrix_filters_by_task_support():
     states = {(c.scenario_id, c.model_id): c.state for c in cells}
     assert states[("s1", "does-video")] == "planned"
     assert states[("s1", "cannot")] == "skipped"   # never attempted, n/a
+
+
+def test_a_blocked_door_is_not_restated_as_a_small_gap():
+    """A 2-point gap blocked by the coverage floor once printed as
+    '... no winner declared | tie on quality (mean gap 2.00 < 0.5 ...)' —
+    the second clause contradicting the first."""
+    models = {"a": _model(9.0, {f"s{i}": 9.0 for i in range(5)}, coverage=0.5),
+              "b": _model(7.0, {f"s{i}": 7.0 for i in range(5)}, coverage=1.0)}
+    v = pairwise_verdict("t", "a", "b", models)
+    assert "coverage" in v["note"]
+    assert "< 0.5" not in v["note"] and "tie on quality" not in v["note"]
+
+
+def test_the_tally_accounts_for_every_scenario():
+    a = _model(8.0, {"s1": 8.0, "s2": 8.0})
+    b = _model(8.0, {"s1": 8.0, "s3": 8.0})
+    a["no_result"] = {"s3": "failed", "s4": "unjudged"}
+    b["no_result"] = {"s2": "failed", "s4": "failed"}
+    v = pairwise_verdict("t", "a", "b", {"a": a, "b": b},
+                         {"s1", "s2", "s3", "s4"})
+    assert v["n_scenarios"] == 4 and v["n_common"] == 1 and v["not_compared"] == 3
+    assert v["missed"] == {"both": ["s4"], "a": ["s3"], "b": ["s2"]}
+    # an unjudged cell is not a model failure, so the word "failed" is withheld
+    assert v["missed_all_failed"] is False
