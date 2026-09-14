@@ -138,6 +138,28 @@ td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;
 .pill.ok{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
 .pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
 .pill.est{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.corr{background:#f3e8f7;color:#7a3e8f;border-color:transparent}
+@media (prefers-color-scheme: dark){.pill.corr{background:#2b1f33;color:#d3a8e6}}
+/* Human review: visibly a different kind of record - dashed, own label,
+   no model accent, no score typography. */
+.human{margin-top:14px;padding:10px 14px 4px;border:1.5px dashed var(--warn);border-radius:10px;
+  background:var(--warn-soft)}
+.human .hl{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
+.human .xl{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--warn);font-weight:600}
+.ob{padding:7px 0;border-top:1px solid var(--rule)}
+.ob:first-of-type{border-top:0}
+.obh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px}
+.obh b{color:var(--ink)}
+.obn{margin:4px 0 2px;font-size:13.5px;white-space:pre-line}
+.obt{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 2px}
+.was{margin-top:6px;font-size:12px;line-height:1.5;padding:5px 9px;border-radius:7px;
+  background:#f7f1fa;border-left:3px solid #b48cc7;color:var(--ink)}
+.was.dimmed{background:transparent;border-left-color:var(--rule);color:var(--muted)}
+.was b{color:#7a3e8f}
+@media (prefers-color-scheme: dark){.was{background:#241a2a}.was b{color:#d3a8e6}}
+.banner.human-banner{border-left-color:#7a3e8f;background:#f7f1fa}
+@media (prefers-color-scheme: dark){.banner.human-banner{background:#241a2a}}
 
 .banner{border-left:3px solid var(--warn);background:var(--warn-soft);
   padding:11px 15px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14px}

@@ -649,6 +649,43 @@ model change: **new runs, not a re-label of old ones.**
 
 ---
 
+### Note — human review kept apart, and where each model is served from (2026-09-14)
+
+Asked for by Ravi on 14 September, built the same day on
+`feat/voice-models-sainadh` → `claude/voice-models-audio-review-5ba2ac`:
+
+1. **Human and automated observations are separate records.** A hand-written
+   `voice/review/human-review.yaml` (schema in `voice/review/README.md`) holds
+   *observations* — what a listener heard, case by case — and *corrections* —
+   automated results a listener found wrong. Observations render in a dashed
+   *Human review* block on each card and in their own section (client) / tab
+   (internal); **they never enter a score, a gate rate, a spread or a winner**.
+   Corrections are applied to the loaded cells by `runner/review.py` through
+   the one shared loader (`dashboard.load_runs_reviewed`), so both boards
+   agree; every corrected clip is stamped *corrected* with what the instrument
+   said, and the full list is on the page. `--no-review` renders the
+   instrument untouched. Run folders are never edited.
+2. **The file is a scaffold with no listening recorded yet.** Ravi's ask for
+   detailed case-by-case review points is a listening session, not code: open
+   `dashboard/index.html`, play each pair, fill the observations in, re-export.
+3. **Region is on the record and on both pages.** `configs/models.yaml` now
+   carries `region` + `region_note` on every arm, the judge and the ASR; the
+   manifest writes `region`, `region_note` and `served_from` per model (from
+   the next run onwards); both boards read the manifest and fall back to the
+   config — labelled *read back from configs/models.yaml* — for runs that
+   predate the field. The answer for the v3 bank:
+   - `gemini-3-1-flash-tts`: **Vertex AI, us-central1** — the adapter passes
+     the location explicitly on every call (`runner/adapters/gemini_tts.py`).
+   - `elevenlabs-v3`: **ElevenLabs direct API, US default** — `api.elevenlabs.io`
+     takes no region parameter; the EU / India / Singapore residency endpoints
+     are Enterprise-only, and this account is a Creator plan.
+   - judge `gemini-2.5-flash`: Vertex AI, us-central1 — same vendor *and* same
+     region as the Gemini arm; stated on the page.
+   - ASR: local Whisper on the machine that ran the study; no region.
+4. **The committed `dashboard/index.html` is stale until re-exported** from the
+   machine holding `voice/runs/` — the review and region changes are in the
+   templates, not in the committed page. `client-report --out dashboard`.
+
 ### Needs doing before anything else
 
 

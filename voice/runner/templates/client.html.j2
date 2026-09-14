@@ -15,9 +15,11 @@
   <div class="head">
     {% if c.variant %}<span class="vt">{{ c.variant }}</span>{% endif %}
     <span class="rl">{{ c.run_label }}</span>
+    {% if c.corrections %}<span class="corr" title="an automated result on this clip was corrected after human review — detail below">corrected</span>{% endif %}
     {% if c.score_pct is not none %}
       <span class="sc-pill">{{ '%.1f'|format(c.score_pct) }}%</span>
     {% elif c.status == 'invalid' %}<span class="sc-pill none">gate failed</span>
+    {% elif c.review_note %}<span class="sc-pill none">cleared on review, not scored</span>
     {% else %}<span class="sc-pill none">not scored</span>{% endif %}
   </div>
   {% if c.audio %}<audio controls preload="none" src="{{ c.audio }}"></audio>{% endif %}
@@ -27,6 +29,14 @@
     {% if c.duration_s %}<span>length <b>{{ '%.1f'|format(c.duration_s) }}s</b></span>{% endif %}
     {% if c.wer_pct is not none %}<span>word errors <b>{{ '%.1f'|format(c.wer_pct) }}%</b></span>{% endif %}
   </div>
+  {% for x in c.corrections %}
+  <div class="was">
+    <b>Corrected</b> {{ x.field }}{% if x.gate %} <code>{{ x.gate }}</code>{% endif %}:
+    the instrument said <code>{{ x.was }}</code>, now <code>{{ x.now }}</code>
+    — {{ x.reason }} <span class="dim">({{ x.reviewer_name }}, {{ x.date }})</span>
+  </div>
+  {% endfor %}
+  {% if c.review_note %}<div class="was dimmed">{{ c.review_note }}.</div>{% endif %}
 </div>
 {% endmacro %}
 <!doctype html>
@@ -62,6 +72,21 @@
     {%- if judge_is_google and uncalibrated %}, and{% endif %}
     {% if uncalibrated %}never calibrated against human listeners{% endif %}. Detail in the notes.</p>
   {% endif %}
+  {% if served.any %}
+  <p class="one"><b>Served from:</b>
+    {% for r in served.models %}<code>{{ r.model_id }}</code> — {{ r.served_from }}{{ '; ' if not loop.last }}{% endfor %}.
+    Detail under <a href="#served">where each model was served from</a>.</p>
+  {% endif %}
+  {% if human.present %}
+  <p class="one human-line"><b>Human review, kept separate:</b>
+    {{ human.n_observations }} observation{{ '' if human.n_observations == 1 else 's' }} by
+    {{ human.reviewer_names }} on {{ human.n_scenarios_reviewed }} scenario{{ '' if human.n_scenarios_reviewed == 1 else 's' }}
+    ({{ human.date_span }}). They sit in their own block on each card and in
+    <a href="#human">the human review section</a>; none enters a score or a verdict.
+    {% if human.n_corrections %}{{ human.n_corrections }} automated result{{ '' if human.n_corrections == 1 else 's' }}
+    the reviewers found wrong {{ 'is' if human.n_corrections == 1 else 'are' }} corrected on this page and marked
+    <span class="corr">corrected</span>, with what the instrument originally said.{% endif %}</p>
+  {% endif %}
   <p class="one lead"><b>Overall:</b> {{ overall_verdict }} — {{ overall_detail }}</p>
   <p class="one warn"><b>A model wins a scenario</b> when the gap clears
     {{ '%.1f'|format(win_gap * 10) }}pp and it cleared no fewer gates —
@@ -89,6 +114,44 @@
 </div>
 <p class="one dim">Bars share a scale per row; ✦ marks the better side. Quality follows the
 {{ '%.1f'|format(win_gap * 10) }}pp band — no star inside it.</p>
+
+{% if served.any %}
+<h2 id="served">Where each model was served from</h2>
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>What that means</th></tr></thead>
+  <tbody>
+  {% for r in served.models %}
+  <tr>
+    <td class="metric"><code>{{ r.model_id }}</code></td>
+    <td><b>{{ r.served_from }}</b>{% if not r.consistent %} <span class="dim">(differs between runs)</span>{% endif %}</td>
+    <td class="n"><code>{{ r.region or '—' }}</code></td>
+    <td class="note-cell">{{ r.region_note }}</td>
+  </tr>
+  {% endfor %}
+  {% if served.judge %}
+  <tr>
+    <td class="metric">judge <code>{{ judge }}</code></td>
+    <td><b>{{ served.judge.served_from }}</b></td>
+    <td class="n"><code>{{ served.judge.region or '—' }}</code></td>
+    <td class="note-cell">{{ served.judge.region_note }}</td>
+  </tr>
+  {% endif %}
+  {% if served.asr %}
+  <tr>
+    <td class="metric">transcriber <code>{{ asr }}</code></td>
+    <td><b>{{ served.asr.served_from }}</b></td>
+    <td class="n"><code>{{ served.asr.region or '—' }}</code></td>
+    <td class="note-cell">{{ served.asr.region_note }}</td>
+  </tr>
+  {% endif %}
+  </tbody>
+</table></div></div>
+<p class="one dim">{% if served.from_config %}Read back from the study's model configuration for runs
+that predate the field in the run record; every run from 14 September 2026 records it itself.
+{% else %}Recorded in each run's own manifest at the time it ran.{% endif %}
+The Gemini arm is called at a Vertex AI regional endpoint we choose; the ElevenLabs arm is a direct
+API call with no region parameter, so its region is the vendor's default.</p>
+{% endif %}
 
 <h2>Every metric, both models</h2>
 <div class="mtable"><div class="mscroll"><table>
@@ -153,12 +216,9 @@ direction for that row.</p>
   </tbody>
 </table></div></div>
 
-<p class="one dim"><b>First audio is the time to the first chunk of sound</b>, not the whole-call
-latency two rows up in the metric table &mdash; the two differ by roughly an order of magnitude.
-Only scenarios that set a responsiveness ceiling are streamed, so only those appear here; the
-median is over both passes. Each ceiling is the scenario&rsquo;s own &mdash; 300&nbsp;ms for the
-game immersion line, 1000&nbsp;ms for the conversational scenarios. This is the ordinary HTTP
-stream, not a real-time WebSocket path.</p>
+<p class="one dim">Medians are over both passes. Only scenarios that set a first-audio ceiling are
+streamed, so only those appear here.</p>
+{% include "_streaming_how.j2" %}
 {% endif %}
 
 <h2>Scenario by scenario</h2>
@@ -232,6 +292,7 @@ stream, not a real-time WebSocket path.</p>
       <div class="gates">
         {% for g in c.failed %}<span class="g no">{{ g }}</span>
         {% else %}<span class="g ok">all gates passed</span>{% endfor %}
+        {% if c.n_corrected %}<span class="corr">{{ c.n_corrected }} clip{{ '' if c.n_corrected == 1 else 's' }} corrected on review</span>{% endif %}
       </div>
       {% if c.clips %}
       <details><summary>{{ c.clips|length }} clip{{ '' if c.clips|length == 1 else 's' }} — listen</summary>
@@ -288,6 +349,26 @@ stream, not a real-time WebSocket path.</p>
   </div>
   {% endif %}
 
+  {% if s.human %}
+  <div class="human">
+    <div class="hl"><span class="xl">Human review</span>
+      <span class="dim">what listeners heard — not part of the score above</span></div>
+    {% for o in s.human %}
+    <div class="ob">
+      <div class="obh">
+        <b>{{ o.reviewer_name }}</b> <span class="dim">{{ o.date }}</span>
+        {% if o.model_id %}<code>{{ o.model_id }}</code>{% else %}<span class="dim">both models</span>{% endif %}
+        {% if o.variant %}<span class="vt">{{ o.variant }}</span>{% endif %}
+        {% if o.run_label %}<span class="dim">{{ o.run_label }}</span>{% endif %}
+        {% if o.preference %}<span class="pref">prefers {{ o.preference if o.preference not in ['tie', 'cant_tell'] else ("neither — a tie" if o.preference == 'tie' else "can't tell") }}</span>{% endif %}
+      </div>
+      <p class="obn">{{ o.notes }}</p>
+      {% if o.tags %}<div class="obt">{% for t in o.tags %}<span class="tag">{{ t }}</span>{% endfor %}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   {% if s.gap is not none %}
   <div class="gapbar">
     {%- set g = s.gap_pct|abs -%}
@@ -318,6 +399,55 @@ stream, not a real-time WebSocket path.</p>
 </div>
 <p class="nomatch" hidden>No scenario matches those filters.</p>
 
+{% if human.present %}
+<h2 id="human">Human review</h2>
+<p class="one human-line"><b>Two records, kept apart.</b> Everything above this line is what code
+and the blind judge measured. This section is what {{ human.reviewer_names }} heard, case by case,
+between {{ human.date_span }}. The two are printed beside each other so they can be read against
+each other; nothing here is averaged into anything above.</p>
+
+{% if human.per_scenario %}
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr><th>Scenario</th><th>Automated verdict</th><th>Human preference</th>
+    <th class="n">Notes</th><th class="n">Corrected clips</th></tr></thead>
+  <tbody>
+  {% for r in human.per_scenario %}
+  <tr>
+    <td class="metric"><code>{{ r.id }}</code>{% if r.title %}<small>{{ r.title }}</small>{% endif %}</td>
+    <td>{{ r.automated }}</td>
+    <td>{% if r.preferences %}{% for p in r.preferences %}<span class="pref">{{ p if p not in ['tie', 'cant_tell'] else ('tie' if p == 'tie' else "can't tell") }}</span> {% endfor %}{% else %}<span class="dim">no preference stated</span>{% endif %}</td>
+    <td class="n">{{ r.n_notes }}</td>
+    <td class="n">{{ r.n_corrected or '—' }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+<p class="one dim">The notes themselves are on each scenario card, under <b>Human review</b>.
+A preference is one listener's call on one card; it is a tally, never a score.</p>
+{% endif %}
+
+{% if human.corrections %}
+<h3 style="margin-top:22px">Automated results corrected after human review</h3>
+<p class="one dim">Each row is an instrument result a reviewer found wrong, changed to the right
+result on this page. The original is kept beside it. The run records on disk are unaltered.</p>
+<div class="mtable"><div class="mscroll"><table>
+  <thead><tr><th>Clip</th><th>What</th><th>Instrument said</th><th>Corrected to</th><th>Why</th><th>Who, when</th></tr></thead>
+  <tbody>
+  {% for x in human.corrections %}
+  <tr>
+    <td class="metric"><code>{{ x.scenario_id }}</code><small>{{ x.model_id }} · {{ x.run_label }}</small></td>
+    <td>{{ x.field }}{% if x.gate %} <code>{{ x.gate }}</code>{% endif %}</td>
+    <td class="n"><code>{{ x.was }}</code></td>
+    <td class="n"><code>{{ x.now }}</code></td>
+    <td class="note-cell">{{ x.reason }}</td>
+    <td><small>{{ x.reviewer_name }}<br>{{ x.date }}</small></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+{% endif %}
+{% endif %}
+
 <footer>
 <h2 style="margin-top:0">What this page does and does not claim</h2>
 <ul class="notes">
@@ -327,6 +457,16 @@ stream, not a real-time WebSocket path.</p>
   <li><b>Ranked on gates first, quality second</b>, so failing more can never look like scoring higher.</li>
   <li><b>Transcribed locally by <code>{{ asr }}</code></b>, which shares a vendor with neither model.</li>
   <li><b>Absent measurements show as “—”</b>, never as zero; three batch runs carry timing but no score.</li>
+  {% if served.any %}
+  <li><b>Served from:</b> {% for r in served.models %}<code>{{ r.model_id }}</code> {{ r.served_from }}{{ '; ' if not loop.last }}{% endfor %}{% if served.judge %}; the judge {{ served.judge.served_from }}{% endif %}.
+  {% if served.from_config %}Read back from the model configuration for runs that predate the field in the run record.{% else %}Recorded in each run's manifest.{% endif %}</li>
+  {% endif %}
+  {% if human.present %}
+  <li><b>Human observations never enter a number on this page.</b> They are printed in their own
+  blocks and their own section. {% if human.n_corrections %}The {{ human.n_corrections }} correction{{ '' if human.n_corrections == 1 else 's' }}
+  to automated results {{ 'is' if human.n_corrections == 1 else 'are' }} listed in full with the original value; a page rendered without them is one
+  command away.{% endif %}</li>
+  {% endif %}
   <li><b>The judge is <code>{{ judge }}</code></b>{% if judge_is_google %}, a Google model — blinding hides
   the label, not the acoustic fingerprint, so the judged criteria carry that exposure{% endif %}
   {%- if uncalibrated %}, and it has never been checked against human listeners{% endif %}. The measured

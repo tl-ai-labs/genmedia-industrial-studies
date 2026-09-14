@@ -34,7 +34,9 @@ from typing import Any
 from .audio import (clip_bytes, clip_data_uri, fmt_size, guard_size,
                     safe_name)
 from .dashboard import (WIN_GAP, _bar_widths, _duel, _overall, _scenario_blocks,
-                        _streaming_panel, load_runs, rollup_models)
+                        _streaming_panel, load_runs_reviewed, rollup_models,
+                        served_rows)
+from .review import review_context
 
 # The arm this report is written to be read alongside. Matched on the vendor
 # prefix rather than a pinned id so a Gemini version bump does not silently
@@ -195,18 +197,23 @@ def _clip_row(c: dict[str, Any], runs_root: Path, quality: float | None,
         "latency_ms": c.get("latency_ms"),
         "ttfa_ms": c.get("ttfa_ms"),
         "audio": audio,
+        # Human corrections to THIS clip's automated results, with what the
+        # instrument said - rendered beside the corrected value, never
+        # instead of it.
+        "corrections": c.get("corrections") or [],
+        "review_note": c.get("review_note") or "",
     }
 
 
 def build(runs_root: Path, modality: str = "voice", quality: float | None = None,
-          audio_dir: Path | None = None) -> dict[str, Any]:
+          audio_dir: Path | None = None, review_path: Path | None = None) -> dict[str, Any]:
     """Everything the template needs. No verdicts are decided here."""
-    runs = load_runs(runs_root, modality)
+    runs, review, applied = load_runs_reviewed(runs_root, modality, review_path)
     if not runs:
         raise SystemExit(f"no {modality} runs under {runs_root}")
     models = rollup_models(runs)
     duel = _duel(models)
-    blocks = _scenario_blocks(runs, duel, {m.model_id: m.accent for m in models})
+    blocks = _scenario_blocks(runs, duel, {m.model_id: m.accent for m in models}, review)
     by_id = {m.model_id: m for m in models}
     titles = _titles(runs)
 
@@ -232,6 +239,7 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
                 "worst_wer_pct": (None if col["worst_wer"] is None
                                   else col["worst_wer"] * 100.0),
                 "is_winner": col["is_winner"],
+                "n_corrected": col["n_corrected"],
                 "clips": [_clip_row(c, runs_root, quality, audio_dir, b["id"], mid)
                           for c in col["clips"]],
             })
@@ -251,6 +259,8 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
             "labels": b["labels"], "rows": rows,
             "group": b["group"], "ttfa": b["ttfa"], "throughput": b["throughput"],
             "stale": b["stale"],
+            # The human block, beside the automated verdict and outside it.
+            "human": b["human"], "n_corrected": b["n_corrected"],
             # Sort keys. None stays None so the page can push it last rather
             # than treating "never scored" as zero.
             "sort_gem": pct(next((c["mean"] for c in cols if c["is_gemini"]), None)),
@@ -311,7 +321,31 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
 
     n_win = sum(1 for s in scenarios if s["winner"])
     overall = _overall(models)
+    human = review_context(review, applied)
+    # Automated winner beside the human preference, per reviewed scenario.
+    # A table of the two side by side is the "keep them separate" ask made
+    # visible: agreement is something the reader sees, not something the
+    # page computes into a verdict.
+    human["per_scenario"] = []
+    for s in scenarios:
+        if not s["human"]:
+            continue
+        prefs = [o["preference"] for o in s["human"] if o.get("preference")]
+        human["per_scenario"].append({
+            "id": s["id"], "title": s["title"],
+            "automated": (f"{s['winner']} wins" if s["winner"] else s["verdict"]),
+            "winner": s["winner"],
+            "preferences": prefs,
+            "reviewers": sorted({o["reviewer_name"] for o in s["human"]}),
+            "n_notes": len(s["human"]),
+            "n_corrected": s["n_corrected"],
+        })
+    # Gemini first, like every other list on this page.
+    served = served_rows(runs)
+    served["models"].sort(key=lambda r: (not is_gemini(r["model_id"]), r["model_id"]))
     return {
+        "served": served,
+        "human": human,
         "win_gap": WIN_GAP,
         # First-audio, told once in aggregate. Only scenarios that declared
         # max_ttfa_ms are streamed, so this is drawn from their clips alone;
@@ -343,7 +377,8 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
 
 def render_client_report(runs_root: Path, modality: str = "voice",
                          quality: float | None = None, inline: bool = False,
-                         out_dir: Path | None = None) -> Path:
+                         out_dir: Path | None = None,
+                         review_path: Path | None = None) -> Path:
     """
     Write the shareable report.
 
@@ -382,7 +417,7 @@ def render_client_report(runs_root: Path, modality: str = "voice",
         for stale in audio_dir.glob("*.mp3"):
             stale.unlink()
 
-    ctx = build(runs_root, modality, quality, audio_dir)
+    ctx = build(runs_root, modality, quality, audio_dir, review_path)
     env = Environment(
         loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
         autoescape=select_autoescape(["html", "j2"]),

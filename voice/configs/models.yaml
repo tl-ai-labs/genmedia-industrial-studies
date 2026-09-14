@@ -41,6 +41,7 @@ voice:
     provider_model: "gemini-2.5-flash-tts"
     auth_env: GOOGLE_APPLICATION_CREDENTIALS
     region: us-central1
+    region_note: "Served by Vertex AI at the us-central1 regional endpoint (project from GCP_PROJECT_ID). The adapter passes this location explicitly on every call; it is a choice we make, not the vendor's default."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 10}
     voice_map:
@@ -86,6 +87,7 @@ voice:
     provider_model: "gemini-2.5-pro-tts"
     auth_env: GOOGLE_APPLICATION_CREDENTIALS
     region: us-central1
+    region_note: "Served by Vertex AI at the us-central1 regional endpoint (project from GCP_PROJECT_ID). The adapter passes this location explicitly on every call; it is a choice we make, not the vendor's default."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 10}
     voice_map:
@@ -127,6 +129,7 @@ voice:
     provider_model: "gemini-3.1-flash-tts-preview"
     auth_env: GOOGLE_APPLICATION_CREDENTIALS
     region: us-central1
+    region_note: "Served by Vertex AI at the us-central1 regional endpoint (project from GCP_PROJECT_ID). The adapter passes this location explicitly on every call; it is a choice we make, not the vendor's default."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 10}
     voice_map:
@@ -167,6 +170,8 @@ voice:
     provider: elevenlabs
     provider_model: "eleven_multilingual_v2"
     auth_env: ELEVENLABS_API_KEY
+    region: us
+    region_note: "Served by ElevenLabs' direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore - api.<eu|in|sg>.residency.elevenlabs.io) are Enterprise-only. Recorded 2026-09-14 from elevenlabs.io/docs/product-guides/administration/data-residency."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 20}
     voice_map:
@@ -235,6 +240,8 @@ voice:
     provider: elevenlabs
     provider_model: "eleven_v3"
     auth_env: ELEVENLABS_API_KEY
+    region: us
+    region_note: "Served by ElevenLabs' direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore - api.<eu|in|sg>.residency.elevenlabs.io) are Enterprise-only. Recorded 2026-09-14 from elevenlabs.io/docs/product-guides/administration/data-residency."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 20}
     voice_map:
@@ -275,6 +282,8 @@ voice:
     provider: openai
     provider_model: "gpt-4o-mini-tts"
     auth_env: OPENAI_API_KEY
+    region: us
+    region_note: "Served by OpenAI's direct API (api.openai.com), which takes no region parameter; requests are processed in the United States by default."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 30}
     voice_map:
@@ -305,6 +314,8 @@ voice:
     provider: openai
     provider_model: "tts-1"
     auth_env: OPENAI_API_KEY
+    region: us
+    region_note: "Served by OpenAI's direct API (api.openai.com), which takes no region parameter; requests are processed in the United States by default."
     supports: [text_to_speech]        # tts-1 takes no style directive
     limits: {max_concurrency: 2, rpm: 30}
     voice_map:
@@ -327,6 +338,8 @@ voice:
     provider: elevenlabs
     provider_model: "eleven_flash_v2_5"
     auth_env: ELEVENLABS_API_KEY
+    region: us
+    region_note: "Served by ElevenLabs' direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore - api.<eu|in|sg>.residency.elevenlabs.io) are Enterprise-only. Recorded 2026-09-14 from elevenlabs.io/docs/product-guides/administration/data-residency."
     supports: [text_to_speech, styled_tts]
     limits: {max_concurrency: 2, rpm: 20}
     voice_map:
@@ -359,6 +372,7 @@ judge:
     provider_model: "gemini-2.5-flash"
     auth_env: GOOGLE_APPLICATION_CREDENTIALS
     region: us-central1
+    region_note: "The judge listens through Vertex AI at us-central1, the same regional endpoint as the Gemini arm - stated so a reader can see the judge and one arm share a vendor AND a region."
     temperature: 0
     price:
       unit: tokens
@@ -394,6 +408,8 @@ judge:
 asr:
   adapter: local_whisper
   provider: local
+  region: local
+  region_note: "Runs on the machine that ran the study (faster-whisper on CPU). No network, no region."
   # MEDIUM, and multilingual - not small.en. Most of this bank is en-IN, and
   # the English-only model wrote "ARIES" for "rupees" and "Ragavan" for
   # "Raghavan", inventing failures on exactly the India-specific scenarios
@@ -415,6 +431,7 @@ asr_disabled_gemini:
   provider_model: "gemini-2.5-flash"
   auth_env: GOOGLE_APPLICATION_CREDENTIALS
   region: us-central1
+  region_note: "Vertex AI, us-central1 - retired as the ASR on 2026-09-03; kept for the record."
   price:
     unit: tokens
     usd_in_per_1m: 0.30

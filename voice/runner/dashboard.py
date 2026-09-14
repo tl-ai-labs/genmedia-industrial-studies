@@ -78,6 +78,14 @@ class Cell:
     # What the Evidence tab needs to show the clip beside what it produced.
     gates: list[dict[str, Any]] = field(default_factory=list)
     transcript: str | None = None
+    # Human corrections applied to this cell (runner/review.py), each with
+    # what the instrument originally said. Empty for an untouched cell.
+    corrections: list[dict[str, Any]] = field(default_factory=list)
+    review_note: str = ""
+
+    @property
+    def corrected(self) -> bool:
+        return bool(self.corrections)
 
     @property
     def total_micro(self) -> int:
@@ -103,10 +111,53 @@ class RunSummary:
     # Where this run lives, so the board can read its OWN frozen scenario.
     runs_root: str = ""
     cells: list[Cell] = field(default_factory=list)
+    # WHERE EACH MODEL WAS SERVED FROM, per model id, plus the judge and the
+    # ASR: {"region", "region_note", "served_from", "source"}. `source` is
+    # "manifest" when the run recorded it, "config" when it was read back
+    # from configs/models.yaml because the run predates the field.
+    served: dict[str, dict[str, Any]] = field(default_factory=dict)
+    judge_served: dict[str, Any] = field(default_factory=dict)
+    asr_served: dict[str, Any] = field(default_factory=dict)
 
     @property
     def total_micro(self) -> int:
         return sum(c.total_micro for c in self.cells)
+
+
+CONFIGS_DIR = Path(__file__).resolve().parent.parent / "configs"
+
+
+def default_review_path(runs_root: Path) -> Path:
+    """`review/human-review.yaml` beside the runs folder. See review/README.md."""
+    return Path(runs_root).resolve().parent / "review" / "human-review.yaml"
+
+
+def _served_from(rec: dict[str, Any] | None, fallback: Any) -> dict[str, Any]:
+    """
+    Region provenance for one model or service.
+
+    The MANIFEST is the record and wins when it has the field. A run from
+    before the field existed falls back to the spec in configs/models.yaml,
+    and says so - the config is what the adapter read at the time, but it is
+    today's file, not the run's own record.
+    """
+    rec = rec or {}
+    if rec.get("served_from") or rec.get("region"):
+        return {"region": rec.get("region"), "region_note": rec.get("region_note") or "",
+                "served_from": rec.get("served_from") or "", "source": "manifest"}
+    if fallback is not None:
+        return {"region": fallback.region, "region_note": fallback.region_note,
+                "served_from": fallback.served_from, "source": "config"}
+    return {"region": None, "region_note": "", "served_from": "not recorded", "source": "unknown"}
+
+
+def _registry_or_none():
+    try:
+        from .models import load_registry
+
+        return load_registry(CONFIGS_DIR)
+    except Exception:  # noqa: BLE001 - a board must render without a config
+        return None
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -118,6 +169,10 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
     """Every run directory that carries a manifest, newest last."""
     out: list[RunSummary] = []
+    # Today's config, read ONCE, as the fallback for runs whose manifest
+    # predates the region fields. Never overrides what a manifest recorded.
+    reg = _registry_or_none()
+    by_spec = {m.id: m for m in reg.models} if reg else {}
     for d in sorted(p for p in Path(runs_root).iterdir() if p.is_dir()):
         man_path = d / "manifest.json"
         if not man_path.exists():
@@ -161,6 +216,11 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
             calibration_reason=str(cal.get("reason", "not evaluated")),
             mos_predictor=(man.get("mos") or {}).get("predictor", "—"),
             git_sha=man.get("git_sha", "—"),
+            served={m["id"]: _served_from(m, by_spec.get(m["id"]))
+                    for m in man.get("models", []) if m.get("id")},
+            judge_served=_served_from(man.get("judge"),
+                                      (reg.judges.get(man.get("modality", "voice")) if reg else None)),
+            asr_served=_served_from(man.get("asr"), reg.asr if reg else None),
         )
 
         # Same rule as the report: a scenario not every model answered is a
@@ -220,6 +280,51 @@ def load_runs(runs_root: Path, modality: str | None = None) -> list[RunSummary]:
             )
         out.append(run)
     return out
+
+
+def load_runs_reviewed(runs_root: Path, modality: str | None = None,
+                       review_path: Path | None = None):
+    """
+    The runs with the human review applied - the ONE loader both boards use.
+
+    Returns (runs, review, applied). The corrections are applied here and
+    nowhere else, so the internal board and the client report can never
+    disagree about which automated results were corrected. `review_path=None`
+    loads no review: the instrument's own answer, untouched.
+    """
+    from .review import apply_corrections, load_review
+
+    runs = load_runs(runs_root, modality)
+    review = load_review(review_path)
+    applied = apply_corrections(runs, review) if runs and not review.empty else []
+    return runs, review, applied
+
+
+def served_rows(runs: list[RunSummary]) -> dict[str, Any]:
+    """
+    Where every arm, the judge and the ASR were served from, for the page.
+
+    One row per model across all runs. Runs are expected to agree; where they
+    do not, the row says so rather than picking one - a study whose arm moved
+    region between passes has a confound to disclose, not to hide.
+    """
+    if not runs:
+        return {"models": [], "judge": {}, "asr": {}, "from_config": False, "any": False}
+    rows = []
+    for mid in sorted({m for r in runs for m in r.served}):
+        seen = [r.served[mid] for r in runs if mid in r.served]
+        labels = sorted({s["served_from"] for s in seen})
+        latest = seen[-1]
+        rows.append({
+            "model_id": mid,
+            "served_from": " / ".join(labels) if len(labels) > 1 else latest["served_from"],
+            "region": latest["region"], "region_note": latest["region_note"],
+            "source": latest["source"], "consistent": len(labels) == 1,
+        })
+    judge, asr = runs[-1].judge_served, runs[-1].asr_served
+    from_config = any(r["source"] == "config" for r in rows) or judge.get("source") == "config"
+    return {"models": rows, "judge": judge, "asr": asr, "from_config": from_config,
+            "any": bool(rows)}
 
 
 @dataclass
@@ -580,7 +685,8 @@ def _frozen_scripts(runs: list[RunSummary], sid: str) -> list[dict[str, str]]:
 
 
 def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
-                     accents: dict[str, str] | None = None) -> list[dict[str, Any]]:
+                     accents: dict[str, str] | None = None,
+                     review=None) -> list[dict[str, Any]]:
     """
     One block per scenario: every pass side by side, each model's own spread,
     and the verdict that spread licenses.
@@ -763,6 +869,11 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
                 "mean": (sum(scored) / len(scored)) if scored else None,
                 "n_scored": len(scored), "n_cells": len(cells),
                 "failed": failed,
+                # Automated results on this column that a human corrected.
+                # Shown on the column so a corrected mean is never read as
+                # the instrument's own.
+                "n_corrected": sum(1 for c in cells if c.corrected),
+                "corrections": [x for c in cells for x in c.corrections],
                 "worst_wer": max(wers) if wers else None,
                 "is_winner": mid == winner,
                 "clips": clips,
@@ -816,7 +927,16 @@ def _scenario_blocks(runs: list[RunSummary], duel: dict | None,
                              "audio_minutes": round(secs / 60.0, 2),
                              "cost_per_audio_minute": round(cost / (secs / 60.0))})
 
+        # THE HUMAN BLOCK. What people heard on this scenario, beside the
+        # automated verdict and never inside it - no observation here moves
+        # a score, a gate or a winner.
+        from .review import observations_block
+
+        human = observations_block(review, sid) if review is not None else []
+
         out.append({"group": group, "ttfa": ttfa, "throughput": thru,
+                    "human": human,
+                    "n_corrected": sum(m["n_corrected"] for m in side),
                     "id": sid, "n_passes": len(keys), "labels": short, "rows": rows,
                     "gaps": gaps, "gap": gap, "floor": floor, "verdict": verdict,
                     "detail": detail, "stale": stale,
@@ -840,7 +960,8 @@ def _clip(c: Cell, lead: bool = False) -> dict[str, Any]:
             # different quantities by an order of magnitude and the surfaces
             # label them separately rather than picking whichever is present.
             "latency_ms": c.latency_ms, "ttfa_ms": c.ttfa_ms,
-            "gates": c.gates, "lead": lead}
+            "gates": c.gates, "lead": lead,
+            "corrections": c.corrections, "review_note": c.review_note}
 
 
 def _median_cell(cells: list[Cell]) -> Cell:
@@ -1006,17 +1127,22 @@ def _streaming_panel(all_cells: list["Cell"], models: list[ModelRollup]) -> dict
     }
 
 
-def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
+def render_dashboard(runs_root: Path, modality: str = "voice",
+                     review_path: Path | None = None) -> Path:
     """Write runs/index.html - the cross-run dashboard."""
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-    runs = load_runs(runs_root, modality)
+    from .review import review_context
+
+    runs, review, applied = load_runs_reviewed(runs_root, modality, review_path)
     if not runs:
         raise SystemExit(f"no {modality} runs under {runs_root}")
     models = rollup_models(runs)
     all_cells = [c for r in runs for c in r.cells]
     duel = _duel(models)
-    scenarios = _scenario_blocks(runs, duel, {m.model_id: m.accent for m in models})
+    scenarios = _scenario_blocks(runs, duel, {m.model_id: m.accent for m in models}, review)
+    served = served_rows(runs)
+    human = review_context(review, applied)
 
     env = Environment(
         loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
@@ -1032,6 +1158,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
         "passed": sum(1 for c in r.cells if c.status == "scored"),
         "cost": sum(c.total_micro for c in r.cells),
         "judge": r.judge_model, "predictor": r.mos_predictor,
+        "served": "; ".join(f"{m}: {v['served_from']}" for m, v in sorted(r.served.items())) or "—",
     } for r in reversed(runs)]
 
     uncalibrated = any(not r.calibration_passed for r in runs)
@@ -1087,6 +1214,32 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
         footnotes.insert(0, "<b>The judge is uncalibrated.</b> The 2-humans x 5-clips gate has "
                             "never been run, so <code>naturalness</code> and <code>clarity</code> "
                             "carry no evidence of agreement with a human ear.")
+    # WHERE IT WAS SERVED FROM. One line per arm, plus the judge, so the
+    # region question is answered on the page and not in a chat thread.
+    if served["any"]:
+        parts = [f"<code>{r['model_id']}</code> from <b>{_e(r['served_from'])}</b>"
+                 for r in served["models"]]
+        footnotes.append(
+            "<b>Served from:</b> " + "; ".join(parts)
+            + (f"; the judge from <b>{_e(served['judge'].get('served_from', 'not recorded'))}</b>"
+               if served["judge"] else "")
+            + ". "
+            + ("<em>Read back from <code>configs/models.yaml</code> for runs that predate the "
+               "field in the manifest; every run from 2026-09-14 records it itself.</em>"
+               if served["from_config"] else "Recorded in each run's own manifest.")
+        )
+    if human["present"]:
+        footnotes.append(
+            f"<b>Human review is kept apart from the automated results.</b> "
+            f"{human['n_observations']} observation{'s' if human['n_observations'] != 1 else ''} by "
+            f"{_e(human['reviewer_names'])} on {human['n_scenarios_reviewed']} scenarios sit in "
+            f"their own block on each card and in the Review tab; none enters a score, a gate "
+            f"rate or a winner. {human['n_corrections']} automated result"
+            f"{'s' if human['n_corrections'] != 1 else ''} the reviewers found wrong "
+            f"{'are' if human['n_corrections'] != 1 else 'is'} corrected on this page, each "
+            f"marked <em>corrected</em> with what the instrument originally said. "
+            f"<code>--no-review</code> renders the instrument's answer untouched."
+        )
 
     # Result class drives both the badge colour and the filter. "gemini" and
     # "other" only when a gap actually cleared the decision band - a tie is
@@ -1118,6 +1271,7 @@ def render_dashboard(runs_root: Path, modality: str = "voice") -> Path:
             "invalid": m.invalid,
         } for m in models],
         runs=runs, run_rows=run_rows, scenarios=scenarios, duel=duel,
+        served=served, human=human,
         streaming=_streaming_panel(all_cells, models),
         overall=_overall(models),
         # PARENTS, not cells. Counting raw ids called this a 102-scenario

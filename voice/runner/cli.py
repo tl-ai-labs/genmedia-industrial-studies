@@ -298,6 +298,11 @@ def cmd_run(args: argparse.Namespace) -> int:
                 "provider": m.provider,
                 "provider_model": m.provider_model,
                 "supports": list(m.supports),
+                # WHERE IT WAS SERVED FROM. Asked after the fact on 2026-09-14
+                # and the run record could not answer; now every run says.
+                "region": m.region,
+                "region_note": m.region_note,
+                "served_from": m.served_from,
                 # The pinned voice per provider, recorded because it is a
                 # DECLARED difference between arms, not a hidden one.
                 "voice_map": m.voice_map,
@@ -307,12 +312,17 @@ def cmd_run(args: argparse.Namespace) -> int:
             for m in models
         ],
         "rubrics": {t: {"hash": r.rubric_hash, "sources": list(r.source_files)} for t, r in rubrics.items()},
-        "asr": {"provider_model": registry.asr.provider_model, "price": registry.asr.price.as_record}
+        "asr": {"provider_model": registry.asr.provider_model, "price": registry.asr.price.as_record,
+                "region": registry.asr.region, "region_note": registry.asr.region_note,
+                "served_from": registry.asr.served_from}
         if registry.asr
         else None,
         "judge": {
             "provider_model": registry.judges[args.modality].provider_model,
             "temperature": registry.judges[args.modality].temperature,
+            "region": registry.judges[args.modality].region,
+            "region_note": registry.judges[args.modality].region_note,
+            "served_from": registry.judges[args.modality].served_from,
         }
         if args.modality in registry.judges
         else None,
@@ -480,15 +490,33 @@ def cmd_client_report(args: argparse.Namespace) -> int:
 
     out = render_client_report(Path(args.runs), args.modality, args.audio_quality,
                                inline=getattr(args, "inline", False),
-                               out_dir=Path(args.out) if getattr(args, "out", None) else None)
+                               out_dir=Path(args.out) if getattr(args, "out", None) else None,
+                               review_path=_review_path(args))
     if args.open:
         subprocess.run(["open", str(out)], check=False)
     return 0
 
 
+def _review_path(args: argparse.Namespace) -> Path | None:
+    """
+    The human-review file both boards read, or None to render without it.
+
+    Default is `review/human-review.yaml` beside the runs. `--no-review`
+    renders the automated results untouched - the way to see what the
+    instrument said before anyone corrected it.
+    """
+    from .dashboard import default_review_path
+
+    if getattr(args, "no_review", False):
+        return None
+    if getattr(args, "review", None):
+        return Path(args.review)
+    return default_review_path(Path(args.runs))
+
+
 def cmd_dashboard(args: argparse.Namespace) -> int:
     """The cross-run view. Pure arithmetic over stored records - no spend."""
-    out = render_dashboard(Path(args.runs), args.modality)
+    out = render_dashboard(Path(args.runs), args.modality, review_path=_review_path(args))
     print(f"dashboard: {out}")
     if args.open:
         subprocess.run(["open", str(out)], check=False)
@@ -658,6 +686,11 @@ def main(argv: list[str] | None = None) -> int:
 
     d = sub.add_parser("dashboard", help="cross-run GenMedia runs dashboard")
     d.add_argument("--open", action="store_true")
+    d.add_argument("--review", default=None,
+                    help="human-review file to apply (default: review/human-review.yaml "
+                         "beside the runs; see review/README.md)")
+    d.add_argument("--no-review", action="store_true", dest="no_review",
+                    help="render the automated results with no human corrections applied")
     d.set_defaults(fn=cmd_dashboard)
 
     cr = sub.add_parser("client-report",
@@ -675,6 +708,11 @@ def main(argv: list[str] | None = None) -> int:
                     help="one self-contained .html with every clip embedded (~22 MB, slow "
                          "to open). Default writes client-report/ with the clips beside "
                          "the page, which opens instantly.")
+    cr.add_argument("--review", default=None,
+                    help="human-review file to apply (default: review/human-review.yaml "
+                         "beside the runs; see review/README.md)")
+    cr.add_argument("--no-review", action="store_true", dest="no_review",
+                    help="render the automated results with no human corrections applied")
     cr.set_defaults(fn=cmd_client_report)
 
     al = sub.add_parser("all", help="run + judge + report + dashboard, in one command")
@@ -696,6 +734,11 @@ def main(argv: list[str] | None = None) -> int:
     al.add_argument("--open", action="store_true", help="open the report and dashboard when done")
     al.add_argument("--bundle", action="store_true",
                     help="put every scenario in ONE run folder (default: one run per scenario)")
+    al.add_argument("--review", default=None,
+                    help="human-review file to apply (default: review/human-review.yaml "
+                         "beside the runs; see review/README.md)")
+    al.add_argument("--no-review", action="store_true", dest="no_review",
+                    help="render the automated results with no human corrections applied")
     al.set_defaults(fn=cmd_all)
 
     sm = sub.add_parser("summarise", help="write summary.json for a run (derived, no spend)")
