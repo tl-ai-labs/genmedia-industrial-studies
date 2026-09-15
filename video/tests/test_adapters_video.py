@@ -418,3 +418,330 @@ def test_seedance_adapter_4xx_is_not_retried(monkeypatch):
     with pytest.raises(ProviderError) as e:
         adapter.run(_req(duration_s=8))
     assert not e.value.retryable
+
+
+# --------------------------------------------------------------------------
+# asset-fed payloads: shapes verified against the SDK / API reference
+# --------------------------------------------------------------------------
+
+def _asset(tmp_path, name, data, mime):
+    from runner.adapters.base import Asset
+    p = tmp_path / name
+    p.write_bytes(data)
+    return Asset(role="source" if mime.startswith("video/") else "reference",
+                 path=p, mime=mime, sha256="x" * 64)
+
+
+def test_omni_input_parts_are_flat_and_the_sdk_keeps_the_data(tmp_path):
+    """The Interactions content union is OPEN: a nested part validates
+    cleanly and silently yields data=None, so the asset would be dropped and
+    the model would generate from the prompt alone while the run looked
+    successful. This asserts the shape the SDK actually preserves."""
+    pydantic = pytest.importorskip("pydantic")
+    content = pytest.importorskip(
+        "google.genai._gaos.types.interactions.content")
+
+    from runner.adapters.base import GenRequest
+    from runner.video.omni_video import OmniFlashVideoAdapter
+
+    a = OmniFlashVideoAdapter.__new__(OmniFlashVideoAdapter)
+    req = GenRequest(task="video_edit", text="make it yellow",
+                     inputs=[_asset(tmp_path, "s.mp4", b"CLIP", "video/mp4")],
+                     params={})
+    parts = a._build_input(req)
+    assert parts[0] == {"type": "text", "text": "make it yellow"}
+    assert parts[1]["type"] == "video" and parts[1]["mime_type"] == "video/mp4"
+    assert parts[1]["data"], "the asset carries no data"
+
+    # round-trip through the SDK's own union: data must survive
+    parsed = pydantic.TypeAdapter(list[content.Content]).validate_python(parts)
+    assert type(parsed[1]).__name__ == "VideoContent"
+    assert parsed[1].data, "the SDK dropped the asset"
+
+    # and the nested shape — the one that looks right — must NOT be used
+    nested = [{"type": "video", "video": {"data": "x", "mime_type": "video/mp4"}}]
+    dropped = pydantic.TypeAdapter(list[content.Content]).validate_python(nested)
+    assert dropped[0].data is None      # exactly the silent failure guarded against
+
+
+def test_omni_refuses_to_send_a_payload_that_lost_its_asset(tmp_path):
+    from runner.adapters.base import ProviderError
+    from runner.video.omni_video import _assert_assets_carried
+    good = [{"type": "text", "text": "t"},
+            {"type": "image", "data": "abc", "mime_type": "image/png"}]
+    _assert_assets_carried(good, 1)                       # no raise
+    for bad in ([{"type": "text", "text": "t"}],          # asset vanished
+                [{"type": "text", "text": "t"},
+                 {"type": "image", "image": {"data": "abc"}}]):   # nested
+        with pytest.raises(ProviderError, match="did not survive"):
+            _assert_assets_carried(bad, 1)
+
+
+def test_seedance_content_matches_the_documented_examples(tmp_path, monkeypatch):
+    """Shapes taken from the Seedance 2.5 API reference's own worked examples:
+    a `role` on 2.5 reference parts, and a data URI for a local file.
+
+    The data-URI half holds for IMAGES only. This test used to assert it for
+    video too, reading the reference's bare `{"url": ...}` as permitting one.
+    The live API disagreed on 2026-09-10 — every edit refused in 1-2s with
+    "reference_video must be provided as a web url" — so video now asserts a
+    fetchable URL instead."""
+    from runner.adapters.base import GenRequest
+    from runner.video.seedance_video import SeedanceVideoAdapter
+
+    from runner.video import seedance_video
+    monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(200))   # stay offline
+    a = SeedanceVideoAdapter.__new__(SeedanceVideoAdapter)
+    clip = a._build_content(GenRequest(
+        task="video_edit", text="remove the extras",
+        inputs=[_asset(tmp_path, "s.mp4", b"CLIP", "video/mp4")], params={}))
+    assert clip[0] == {"type": "text", "text": "remove the extras"}
+    assert clip[1]["type"] == "video_url"
+    assert clip[1]["role"] == "reference_video"
+    assert clip[1]["video_url"]["url"] == "https://example.test/video/assets/bank/s.mp4"
+
+    still = a._build_content(GenRequest(
+        task="image_to_video", text="rotate it",
+        inputs=[_asset(tmp_path, "r.png", b"PNG", "image/png")], params={}))
+    assert still[1]["type"] == "image_url"
+    assert still[1]["role"] == "reference_image"
+    assert still[1]["image_url"]["url"].startswith("data:image/png;base64,")
+
+    # text-only is untouched — the path already proven against the live API
+    plain = a._build_content(GenRequest(task="text_to_video", text="a cat",
+                                        inputs=[], params={}))
+    assert plain == [{"type": "text", "text": "a cat"}]
+
+
+# --------------------------------------------------------------------------
+# Seedance transport safety
+#
+# Every failure below happens after money is committed. On 2026-09-10 blind
+# retries turned 2 logged failures into 5 paid clips, and a lost poll bought a
+# second clip for a task already generating — $33.45 for nothing. These pin
+# the two rules: never create twice, never abandon a task we own.
+# --------------------------------------------------------------------------
+
+class _TimeoutOnCreate:
+    """Create times out; the task list decides what really happened."""
+
+    def __init__(self, landed_ids, clip, fail_creates=1):
+        self.landed = list(landed_ids)
+        self.clip = clip
+        self.fail_creates = fail_creates
+        self.creates = 0
+        self.polls = 0
+
+    def post(self, url, json=None):
+        self.creates += 1
+        if self.creates <= self.fail_creates:
+            import httpx
+            raise httpx.ConnectTimeout("[Errno 60] Operation timed out")
+        return _StubResponse(200, {"id": "task_fresh", "status": "queued"})
+
+    def get(self, url, headers=None, params=None):
+        if params is not None:                      # the task-list lookup
+            return _StubResponse(200, {"items": [
+                {"id": i, "status": "succeeded", "created_at": 9_999_999_999}
+                for i in self.landed]})
+        if url.startswith("https://cdn"):
+            return _StubResponse(200, content=self.clip)
+        self.polls += 1
+        return _StubResponse(200, {
+            "id": "task_x", "status": "succeeded",
+            "model": "dreamina-seedance-2-5-260628",
+            "content": {"video_url": "https://cdn.example/x.mp4"},
+            "usage": {"completion_tokens": 390825, "total_tokens": 390825}})
+
+
+def test_create_timeout_with_nothing_landed_is_safely_retried(monkeypatch):
+    """No task appeared, so a second create cannot pay twice."""
+    stub = _TimeoutOnCreate(landed_ids=[], clip=minimal_mp4(), fail_creates=1)
+    adapter = _seedance_adapter(monkeypatch, stub)
+    res = adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert stub.creates == 2                      # retried, deliberately
+    assert res.data == minimal_mp4()
+
+
+def test_create_timeout_adopts_the_task_it_already_started(monkeypatch):
+    """Exactly one task appeared: adopt it rather than buy a second clip."""
+    stub = _TimeoutOnCreate(landed_ids=["cgt-adopted"], clip=minimal_mp4(),
+                            fail_creates=1)
+    adapter = _seedance_adapter(monkeypatch, stub)
+    res = adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert stub.creates == 1, "must NOT create a second task"
+    assert res.request_id == "cgt-adopted"
+
+
+def test_create_timeout_refuses_to_guess_between_several_tasks(monkeypatch):
+    """Under concurrency the window can hold other workers' tasks. Attributing
+    a clip to the wrong scenario corrupts the study worse than losing the
+    money, so this stops instead."""
+    stub = _TimeoutOnCreate(landed_ids=["cgt-a", "cgt-b"], clip=minimal_mp4(),
+                            fail_creates=1)
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert ei.value.retryable is False
+    assert "cgt-a" in str(ei.value) and "cgt-b" in str(ei.value)
+    assert stub.creates == 1
+
+
+class _FlakyPoll:
+    """Create succeeds; polling blips before the task completes."""
+
+    def __init__(self, blips, clip):
+        self.blips = blips
+        self.clip = clip
+        self.creates = 0
+        self.polls = 0
+
+    def post(self, url, json=None):
+        self.creates += 1
+        return _StubResponse(200, {"id": "task_owned", "status": "queued"})
+
+    def get(self, url, headers=None, params=None):
+        if url.startswith("https://cdn"):
+            return _StubResponse(200, content=self.clip)
+        self.polls += 1
+        if self.polls <= self.blips:
+            raise OSError("[Errno 60] Operation timed out")
+        return _StubResponse(200, {
+            "id": "task_owned", "status": "succeeded",
+            "content": {"video_url": "https://cdn.example/x.mp4"},
+            "usage": {"completion_tokens": 390825}})
+
+
+def test_a_blip_while_polling_never_abandons_a_task_we_own(monkeypatch):
+    """The task is generating and billing. Absorb the blip; do not let the
+    runner restart the cell and create a second one."""
+    stub = _FlakyPoll(blips=3, clip=minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    res = adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert stub.creates == 1
+    assert res.data == minimal_mp4()
+
+
+def test_giving_up_on_an_owned_task_is_never_retryable(monkeypatch):
+    """Past the transient budget the cell fails — but non-retryably, so the
+    runner cannot pay for a replacement clip."""
+    from runner.video import seedance_video
+    monkeypatch.setattr(seedance_video, "POLL_MAX_TRANSIENT", 2)
+    stub = _FlakyPoll(blips=99, clip=minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(_req(duration_s=8, resolution="1080p"))
+    assert ei.value.retryable is False
+    assert "task_owned" in str(ei.value)
+    assert stub.creates == 1
+
+
+def test_video_inputs_are_sent_as_a_url_not_a_data_uri(monkeypatch, tmp_path):
+    """ModelArk refuses `data:video/mp4;base64,...` outright — all four edits
+    were rejected in 1-2s on 2026-09-10 with "reference_video must be provided
+    as a web url". Images are unaffected and still inline."""
+    from runner.adapters.base import Asset, GenRequest
+    from runner.video import seedance_video
+    monkeypatch.setenv("ARK_ASSET_BASE_URL",
+                       "https://raw.githubusercontent.com/o/r/abc123/video")
+    # the reachability guard must not reach the real network in an offline suite
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(200))
+    clip = tmp_path / "VID-EDIT-01-source.mp4"
+    clip.write_bytes(minimal_mp4())
+    stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    adapter.run(GenRequest(task="video_edit", text="recolour it",
+                           inputs=[Asset(role="source", path=clip,
+                                         mime="video/mp4", sha256="x")],
+                           params={"audio": False}))
+    part = [p for p in stub.posted["json"]["content"] if p["type"] == "video_url"][0]
+    assert part["video_url"]["url"] == (
+        "https://raw.githubusercontent.com/o/r/abc123/video/"
+        "assets/bank/VID-EDIT-01-source.mp4")
+    assert not part["video_url"]["url"].startswith("data:")
+    assert part["role"] == "reference_video"
+
+
+def test_a_video_input_without_a_base_url_is_refused_before_any_call(monkeypatch, tmp_path):
+    """Better to reject locally than to pay for a 400 round trip — and the
+    message has to say what to set."""
+    from runner.adapters.base import Asset, GenRequest
+    monkeypatch.delenv("ARK_ASSET_BASE_URL", raising=False)
+    clip = tmp_path / "VID-EDIT-01-source.mp4"
+    clip.write_bytes(minimal_mp4())
+    stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(GenRequest(task="video_edit", text="x",
+                               inputs=[Asset(role="source", path=clip,
+                                             mime="video/mp4", sha256="x")],
+                               params={}))
+    assert "ARK_ASSET_BASE_URL" in str(ei.value)
+    assert ei.value.retryable is False
+    assert stub.posted is None, "nothing should have been sent"
+
+
+def test_a_stale_asset_pin_fails_locally_not_provider_side(monkeypatch, tmp_path):
+    """ARK_ASSET_BASE_URL pins a commit sha so inputs cannot drift. The cost is
+    that the pin goes stale when new assets land in a later commit — which
+    happened on 2026-09-11 and cost four cells mid-run. A HEAD first turns a
+    confusing provider 400 into a local error naming the URL."""
+    import httpx
+    from runner.adapters.base import Asset, GenRequest
+    from runner.video import seedance_video
+
+    monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(404))
+    clip = tmp_path / "VID-EDIT-03-source-10s.mp4"
+    clip.write_bytes(minimal_mp4())
+    stub = _StubHttp(["queued", "succeeded"], minimal_mp4())
+    adapter = _seedance_adapter(monkeypatch, stub)
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(GenRequest(task="video_edit", text="x",
+                               inputs=[Asset(role="source", path=clip,
+                                             mime="video/mp4", sha256="x")],
+                               params={}))
+    msg = str(ei.value)
+    assert "404" in msg and "VID-EDIT-03-source-10s.mp4" in msg
+    assert "predates" in msg                      # names the actual cause
+    assert ei.value.retryable is False
+    assert stub.posted is None, "nothing should have been sent"
+
+
+def test_an_unreachable_host_is_retryable_but_a_404_is_not(monkeypatch, tmp_path):
+    """The guard must not be stricter than the thing it guards.
+
+    On 2026-09-11 a HEAD hit [Errno 60] and the cell died non-retryably — the
+    same url answered 200 a minute later. A network failure teaches nothing
+    about the asset; a 404 does."""
+    import httpx
+    from runner.adapters.base import Asset, GenRequest
+    from runner.video import seedance_video
+    monkeypatch.setattr(seedance_video, "URL_CHECK_ATTEMPTS", 2)
+    monkeypatch.setattr(seedance_video.time, "sleep", lambda *_: None)
+    monkeypatch.setenv("ARK_ASSET_BASE_URL", "https://example.test/video")
+    clip = tmp_path / "c.mp4"
+    clip.write_bytes(minimal_mp4())
+    req = GenRequest(task="video_edit", text="x",
+                     inputs=[Asset(role="source", path=clip, mime="video/mp4",
+                                   sha256="x")], params={})
+
+    def boom(*a, **k):
+        raise httpx.ConnectTimeout("[Errno 60] Operation timed out")
+    monkeypatch.setattr(seedance_video.httpx, "head", boom)
+    adapter = _seedance_adapter(monkeypatch, _StubHttp(["queued"], b""))
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(req)
+    assert ei.value.retryable is True, "a network blip must be retryable"
+    assert "not a verdict" in str(ei.value)
+
+    monkeypatch.setattr(seedance_video.httpx, "head",
+                        lambda *a, **k: _StubResponse(404))
+    adapter = _seedance_adapter(monkeypatch, _StubHttp(["queued"], b""))
+    with pytest.raises(ProviderError) as ei:
+        adapter.run(req)
+    assert ei.value.retryable is False, "a 404 is a verdict — do not retry"

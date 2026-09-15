@@ -1,0 +1,188 @@
+{
+  "run_id": "2026-09-01_193618_image",
+  "created": "2026-09-01T14:06:18.335Z",
+  "state": "reported",
+  "modality": "image",
+  "git_sha": "337e923dc330801e8269419456cd8839deae62d0",
+  "budget_usd": 2.0,
+  "events": [
+    {
+      "ts": "2026-09-01T14:06:18.362Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-01T14:06:18.365Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-01T14:06:20.298Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-01T14:08:36.588Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-01T14:09:38.663Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-01T14:09:38.674Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-01T14:09:39.263Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-01T15:55:31.818Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-01T15:55:33.534Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-01T15:56:20.116Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-01T15:57:18.822Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-01T15:57:18.834Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-01T15:57:19.507Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-01T17:15:56.414Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-01T17:24:37.886Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-image-2-medium",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-1-flash-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-pro-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3-pro-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-eval/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-TXT-01": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.15
+    },
+    "IMG-UI-01": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.15
+    }
+  },
+  "scenario_set_hash": "021bcb475acbc5b037a185040e027e0671fae7670973c4f6342f3e258a7f2b24",
+  "inputs": {
+    "IMG-TXT-01": [],
+    "IMG-UI-01": []
+  },
+  "cells": {
+    "IMG-TXT-01::gpt-image-2-medium": {
+      "scenario_id": "IMG-TXT-01",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-01::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-TXT-01",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-01::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-TXT-01",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-01::gpt-image-2-medium": {
+      "scenario_id": "IMG-UI-01",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-01::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-UI-01",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-01::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-UI-01",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  }
+}

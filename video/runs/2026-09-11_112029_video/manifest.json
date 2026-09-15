@@ -1,0 +1,143 @@
+{
+  "run_id": "2026-09-11_112029_video",
+  "created": "2026-09-11T05:50:29.723Z",
+  "state": "scored",
+  "modality": "video",
+  "git_sha": "dc756d41a8f13df5cddf958c01cea481419d8eb2",
+  "budget_usd": 30.0,
+  "budget_by_provider": {
+    "byteplus": 25.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-11T05:50:29.743Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-11T05:50:29.754Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-11T05:50:30.668Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-11T05:54:56.216Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-11T06:19:28.214Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-11T06:19:28.228Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/video_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-EDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-09": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "8c5b066a31b5211e2ddec8fa53746253f6faead65c8bd8fb7a2392cfd3221f6c",
+  "inputs": {
+    "VID-EDIT-01": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/VID-EDIT-01/VID-EDIT-01-source.mp4"
+      }
+    ],
+    "VID-EDIT-09": [
+      {
+        "role": "source",
+        "sha256": "6fb95c6e89417dadc65a1861fe3d5835df84e0da04fcb8c006600932f6efcc25",
+        "path": "inputs/VID-EDIT-09/VID-EDIT-09-source-10s.mp4"
+      }
+    ]
+  },
+  "cells": {
+    "VID-EDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-01::seedance-2-5": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): could not reach the asset url https://raw.githubusercontent.com/tl-ai-labs/genmedia-industrial-studies/df9811d7f44262a9a58cca3aabfbf270a8795a38/video/assets/bank/VID-EDIT-01-source.mp4 ([Errno 60] Operation timed out). ModelArk must fetch it anonymously, so this would have failed provider-side."
+    },
+    "VID-EDIT-09::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-09",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-09::seedance-2-5": {
+      "scenario_id": "VID-EDIT-09",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "refused after 1 attempt(s): {\"error\":{\"code\":\"InputVideoSensitiveContentDetected.PrivacyInformation\",\"message\":\"The request failed because the input video 'content[1]' may contain real person. Request id: 0217891059309454e5823ec317b6ea9d3f5e181cf6332a5de9e85\",\"param\":\"\",\"type\":\"BadRequest\"}}"
+    }
+  },
+  "scenario_status": {
+    "VID-EDIT-01": "incomplete",
+    "VID-EDIT-09": "incomplete"
+  }
+}

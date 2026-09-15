@@ -1,0 +1,136 @@
+{
+  "run_id": "2026-08-31_182420_image",
+  "created": "2026-08-31T12:54:20.286Z",
+  "state": "rejected",
+  "modality": "image",
+  "git_sha": null,
+  "budget_usd": 1.0,
+  "events": [
+    {
+      "ts": "2026-08-31T12:54:20.314Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-08-31T12:54:20.333Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-08-31T12:54:20.334Z",
+      "state": "rejected",
+      "reason": "missing API keys: gemini-3-1-flash-image (GEMINI_API_KEY), gpt-image-1-medium (OPENAI_API_KEY)"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-1-flash-image",
+      "provider": "google",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    },
+    {
+      "id": "gpt-image-1-medium",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-1",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-eval/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "img-001": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.15
+    },
+    "img-002": {
+      "prompt_adherence": 0.411765,
+      "visual_quality": 0.235294,
+      "composition": 0.176471,
+      "realism_style": 0.176471
+    },
+    "img-003": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.15
+    }
+  },
+  "scenario_set_hash": "b10985be6b6f5431d7436d40fc1d0bb550afe57c9d9bfe681b06b4e07b1146b3",
+  "inputs": {
+    "img-001": [],
+    "img-002": [],
+    "img-003": []
+  },
+  "cells": {
+    "img-001::gemini-3-1-flash-image": {
+      "scenario_id": "img-001",
+      "model_id": "gemini-3-1-flash-image",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "img-001::gpt-image-1-medium": {
+      "scenario_id": "img-001",
+      "model_id": "gpt-image-1-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "img-002::gemini-3-1-flash-image": {
+      "scenario_id": "img-002",
+      "model_id": "gemini-3-1-flash-image",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "img-002::gpt-image-1-medium": {
+      "scenario_id": "img-002",
+      "model_id": "gpt-image-1-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "img-003::gemini-3-1-flash-image": {
+      "scenario_id": "img-003",
+      "model_id": "gemini-3-1-flash-image",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "img-003::gpt-image-1-medium": {
+      "scenario_id": "img-003",
+      "model_id": "gpt-image-1-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

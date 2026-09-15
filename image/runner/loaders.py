@@ -232,6 +232,11 @@ class Price(BaseModel):
     usd_out_per_1m: Optional[float] = None
     usd_audio_in_per_1m: Optional[float] = None
     est_usd_per_call: Optional[float] = None  # pre-flight budget only, never billing
+    # Per-task override of the above. One flat figure cannot serve a lane whose
+    # tasks differ in cost by nearly 3x: on 2026-09-11 a Seedance edit billed
+    # $11.46 against a $4.18 generation-shaped estimate, and the budget cap —
+    # which reserves the ESTIMATE — let $18.94 through a $14 cap as a result.
+    est_usd_per_call_by_task: Optional[dict] = None
     tier: Optional[str] = None
     source: str
     as_of: str

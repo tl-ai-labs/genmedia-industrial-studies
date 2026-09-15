@@ -111,7 +111,15 @@ def score_run(project_root: Path, run_dir: Path) -> dict:
         if r.get("status") == "judged":
             judged_by_cell[(r["scenario_id"], r["model_id"])] = r
 
-    existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")}
+    # A stored `unjudged` row is a placeholder, not a result — it carries no
+    # score. If a judge record has since appeared (a --retry-unjudged pass
+    # after a transient 429, say), that cell must be allowed to score, or a
+    # momentary rate limit permanently discards a clip we already paid for.
+    # Rows that DO carry a score are never recomputed here; re-scoring appends
+    # and aggregate() takes the latest row per cell.
+    existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")
+                if r.get("status") != "unjudged"
+                or (r["scenario_id"], r["model_id"]) not in judged_by_cell}
     counts = {"scored": 0, "invalid": 0, "unjudged": 0, "other": 0}
 
     for key, cell in sorted(manifest.data["cells"].items()):
@@ -261,6 +269,27 @@ def aggregate(run_dir: Path) -> dict:
 
     # per-model summary + pairwise verdicts
     for task, t in tasks.items():
+        # Scenarios where EVERY eligible arm produced a score. Means taken over
+        # different scenario sets are not comparable: on 2026-09-10 Seedance
+        # refused two ads, so Omni's mean covered 10 scenarios and Seedance's 8
+        # — and the two were printed side by side as though they measured the
+        # same thing. `complete` is the set both arms actually attempted, and
+        # is what a head-to-head number must be built on. The excluded
+        # scenarios are NOT hidden: they are reliability, counted in failed /
+        # refused / unjudged and reported there.
+        arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+        t["complete_scenarios"] = sorted(
+            sid for sid in t["scenarios"]
+            if arms and all(sid in t["models"][mid]["by_scenario"] for mid in arms))
+        t["incomplete_scenarios"] = sorted(set(t["scenarios"]) - set(t["complete_scenarios"]))
+        for mid, m in t["models"].items():
+            m["numeric_complete"] = [m["by_scenario"][sid]
+                                     for sid in t["complete_scenarios"]
+                                     if sid in m["by_scenario"]]
+            nc = m["numeric_complete"]
+            m["mean_complete"] = round(sum(nc) / len(nc), 2) if nc else None
+            m["worst_complete"] = round(min(nc), 2) if nc else None
+            m["complete_n"] = len(nc)
         for mid, m in t["models"].items():
             nums = m["numeric"]
             m["mean"] = round(sum(nums) / len(nums), 2) if nums else None

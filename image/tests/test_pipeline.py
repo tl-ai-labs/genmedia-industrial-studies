@@ -583,3 +583,163 @@ def test_relative_difference_is_computed_against_the_rival():
     zero = {r["key"]: r for r in
             _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 0)}, ["g", "r"])}
     assert zero["lat_p50"]["delta_rel"] is None
+
+
+# --------------------------------------------------------------------------
+# Per-provider budget caps
+#
+# A run bills two accounts at once — the Google arm on Vertex, the other on
+# its own provider account. One combined --budget protects neither, so each
+# provider can carry its own cap. These pin both halves: the plan is refused
+# up front when it cannot fit, and the run aborts mid-flight when the actual
+# bills drift past the cap even though the estimates fitted.
+# --------------------------------------------------------------------------
+
+def _token_billed_models_yaml(project):
+    """model-a estimated at $0.01 a call but actually billing $1.60.
+
+    The pre-flight therefore passes and only the mid-run guard can stop it,
+    which is the case a flat est_usd_per_call gets wrong whenever real usage
+    varies from call to call.
+    """
+    text = """
+version: 1
+image:
+  - id: model-a
+    enabled: true
+    adapter: fake_a
+    provider: prov_a
+    provider_model: "prov-a-img-1"
+    auth_env: FAKE_KEY_A
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 2}
+    params: {size: "1024x1024"}
+    price: {unit: per_token, usd_out_per_1m: 40.0, est_usd_per_call: 0.01,
+            source: test, as_of: 2026-08-31}
+  - id: model-b
+    enabled: true
+    adapter: fake_b
+    provider: prov_b
+    provider_model: "prov-b-img-1"
+    auth_env: FAKE_KEY_B
+    supports: [text_to_image]
+    limits: {max_concurrency: 2}
+    params: {size: "1024x1024"}
+    price: {unit: per_token, usd_in_per_1m: 10.0, usd_out_per_1m: 40.0,
+            est_usd_per_call: 0.07, source: test, as_of: 2026-08-31}
+judge:
+  image:
+    adapter: fake_judge
+    provider: prov_j
+    provider_model: "prov-judge-1"
+    auth_env: FAKE_KEY_J
+    temperature: 0
+    price: {unit: per_token, usd_in_per_1m: 0.5, usd_out_per_1m: 3.0,
+            est_usd_per_call: 0.003, source: test, as_of: 2026-08-31}
+"""
+    path = project / "configs" / "models-fake-token.yaml"
+    path.write_text(text)
+    return path
+
+
+def test_provider_cap_refuses_a_plan_it_cannot_cover(project, fake_models_yaml,
+                                                     fake_env, monkeypatch):
+    """Pre-flight, per provider: 3 x $0.067 of prov_a cannot fit a $0.10 cap.
+
+    The total budget is deliberately generous, so a rejection can only have
+    come from the provider cap.
+    """
+    fake_a = FakeImageAdapter(model_tag="a")
+    fake_b = FakeImageAdapter(model_tag="b")
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    with pytest.raises(RunRejected, match="prov_a"):
+        run_generation(project, scenarios, models, "image", budget_usd=5.0,
+                       provider_caps={"prov_a": 0.10})
+    assert fake_a.calls == 0 and fake_b.calls == 0   # nothing was spent
+
+
+def test_provider_cap_aborts_mid_run_and_leaves_other_arms_alone(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """The cap binds prov_a alone; prov_b finishes its whole set.
+
+    prov_a bills $1.60 a call against a $2.50 cap: two calls land ($3.20 of
+    actual spend, since the guard tests the $0.01 estimate), the third is
+    refused. prov_b is uncapped and unaffected — that separation is the
+    entire point of the flag.
+    """
+    fake_a = FakeImageAdapter(model_tag="a", usage={"output_tokens": 40_000})
+    fake_b = FakeImageAdapter(model_tag="b")
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    models_yaml = _token_billed_models_yaml(project)
+    scenarios, models = _load(project, models_yaml)
+    run_dir = run_generation(project, scenarios, models, "image",
+                             budget_usd=20.0, workers=1,
+                             provider_caps={"prov_a": 2.50})
+
+    assert fake_a.calls == 2, "prov_a should stop at its own cap"
+    assert fake_b.calls == 3, "prov_b is uncapped and must run its whole set"
+
+    manifest = json.loads((run_dir / "manifest.json").read_text())
+    assert manifest["state"] == "aborted"
+    assert manifest["budget_by_provider"] == {"prov_a": 2.50}
+
+    spent = {}
+    for row in RunFiles(run_dir).read("telemetry"):
+        if row.get("cost"):
+            spent[row["provider"]] = spent.get(row["provider"], 0) + row["cost"]["micro_usd"]
+    assert spent["prov_a"] == 3_200_000      # 2 x $1.60, stopped before a third
+    assert spent["prov_b"] == 210_000        # 3 x $0.07, untouched
+
+
+def test_provider_cap_counts_what_that_provider_already_spent_on_resume(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """Resume reads prior spend per provider, not just in total.
+
+    Without that, every resume would hand each provider a fresh full cap and
+    the balance this flag exists to protect would drain a batch at a time.
+    """
+    fake_a = FakeImageAdapter(model_tag="a")
+    fake_b = FakeImageAdapter(model_tag="b")
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    run_dir = run_generation(project, scenarios[:1], models, "image",
+                             budget_usd=5.0, provider_caps={"prov_a": 1.00})
+    assert fake_a.calls == 1                     # $0.067 of prov_a is now spent
+
+    # $0.067 already gone + $0.067 estimated for the next prov_a cell = $0.134,
+    # which no longer fits a $0.10 cap.
+    with pytest.raises(RunRejected, match="prov_a"):
+        run_generation(project, scenarios[:2], models, "image", budget_usd=5.0,
+                       run_id=run_dir.name, provider_caps={"prov_a": 0.10})
+    assert fake_a.calls == 1                     # and it did not pay again
+
+
+def test_a_cap_on_a_provider_that_is_not_running_is_refused(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """A typo'd provider name would protect nothing at all, silently."""
+    fake_a = FakeImageAdapter(model_tag="a")
+    fake_b = FakeImageAdapter(model_tag="b")
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    with pytest.raises(RunRejected, match="openai_typo"):
+        run_generation(project, scenarios, models, "image", budget_usd=5.0,
+                       provider_caps={"openai_typo": 80.0})
+    assert fake_a.calls == 0 and fake_b.calls == 0
+
+
+@pytest.mark.parametrize("bad", ["openai", "=80", "openai=eighty",
+                                 "openai=0", "openai=-5"])
+def test_malformed_provider_cap_is_an_error_not_a_shrug(bad):
+    from runner.cli import _parse_provider_caps
+    with pytest.raises(ValueError):
+        _parse_provider_caps([bad])
+
+
+def test_provider_caps_parse_and_reject_duplicates():
+    from runner.cli import _parse_provider_caps
+    assert _parse_provider_caps(["openai=80", "google-vertex=30.5"]) == {
+        "openai": 80.0, "google-vertex": 30.5}
+    assert _parse_provider_caps([]) == {}
+    with pytest.raises(ValueError, match="twice"):
+        _parse_provider_caps(["openai=80", "openai=90"])

@@ -1,0 +1,41 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-TXT-06 — prompt verbatim; weights follow the
+# sheet's family guidance for 'Text, typography, infographics'
+id: IMG-TXT-06
+modality: image
+task: text_to_image
+title: Code rendered as an image
+prompt: 'Render a Python function on a dark editor background. Code must read exactly:
+  def total(items): return sum(i.price for i in items). Monospace, syntax colouring,
+  visible line number 1.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'Code rendered as an image. Capability under test: Monospace structure and
+  syntax colour. Adherence clauses, check each: 1) Code string exact including punctuation  2)
+  Monospace with consistent alignment  3) Keywords coloured differently from identifiers  4)
+  Line number present'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - 'def total(items): return sum(i.price for i in items)'
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- text-typography-infographics
+- scenario-bank

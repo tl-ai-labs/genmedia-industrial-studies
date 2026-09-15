@@ -1,0 +1,29 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-04 (sheet row 108) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Daytime source clip | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-04
+modality: video
+task: video_edit
+title: Change time of day
+prompt: Change this daytime clip to dusk. Warm low light, longer shadows. Every object, person
+  and movement must stay exactly the same.
+inputs:
+  source: assets/bank/VID-EDIT-04-source.mp4
+params:
+  resolution: 1080p
+  audio: true
+  seed: 20260910
+expected: 'Change time of day. Capability under test: Global relight without content change.
+  Adherence clauses, check each: 1) Lighting reads as dusk  2) Shadow direction and length
+  changed consistently  3) All objects unchanged in position  4) Motion unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

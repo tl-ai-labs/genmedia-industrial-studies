@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMedia blind panel</title>
+<style>
+  :root {
+    --ink: #17181c; --ink-2: #4b4f58; --dim: #8a8f9a; --line: #e6e8ec; --line-2: #d5d8de;
+    --bg: #f4f5f7; --card: #ffffff; --well: #f8f9fb;
+    --accent: #1f5081; --accent-soft: #e6eef7;
+    --ok: #178a5b; --ok-soft: #e4f5ec; --warn: #b3261e;
+    --shadow: 0 1px 2px rgba(20, 24, 40, .05), 0 6px 20px rgba(20, 24, 40, .06);
+    --shadow-lift: 0 2px 4px rgba(20, 24, 40, .06), 0 14px 34px rgba(20, 24, 40, .10);
+    --r: 14px; --ease: cubic-bezier(.2, .7, .2, 1);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+         -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
+
+  /* ---------- header ---------- */
+  header { position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,.86);
+           -webkit-backdrop-filter: saturate(160%) blur(10px); backdrop-filter: saturate(160%) blur(10px);
+           border-bottom: 1px solid var(--line); }
+  .bar { max-width: 1240px; margin: 0 auto; padding: 12px 22px; display: flex; flex-wrap: wrap;
+         gap: 10px 22px; align-items: center; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 15px; letter-spacing: -.01em; }
+  .brand .mark { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #1f5081, #3b7bc0);
+                 display: grid; place-items: center; color: #fff; font-size: 14px; }
+  .tabs { display: flex; gap: 4px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 999px; }
+  .tab { border: 0; background: transparent; padding: 6px 14px; border-radius: 999px; cursor: pointer;
+         color: var(--ink-2); display: flex; align-items: center; gap: 8px; transition: background .25s var(--ease), color .25s, transform .2s; }
+  .tab:hover { color: var(--ink); }
+  .tab:active { transform: scale(.97); }
+  .tab[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(20,24,40,.10); font-weight: 600; }
+  .tab .n { font-size: 11.5px; padding: 2px 7px; border-radius: 999px; background: var(--line); color: var(--ink-2);
+            font-variant-numeric: tabular-nums; transition: background .3s, color .3s; }
+  .tab[aria-selected="true"] .n { background: var(--accent-soft); color: var(--accent); }
+  .tab.complete .n { background: var(--ok-soft); color: var(--ok); }
+  .spacer { flex: 1; }
+  .ind { display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 13px; }
+  .ind[hidden] { display: none; }
+  .ind select { font: inherit; font-size: 13px; padding: 6px 30px 6px 12px; border-radius: 999px; border: 1px solid var(--line);
+                background: var(--well) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236b6f78' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center;
+                color: var(--ink); -webkit-appearance: none; appearance: none; cursor: pointer; transition: border-color .2s, box-shadow .2s; }
+  .ind select:hover { border-color: var(--line-2); }
+  .ind select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .chip { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+          font-size: 12px; font-weight: 600; letter-spacing: .01em; }
+  .who { color: var(--dim); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .who b { color: var(--ink); font-weight: 600; }
+  .who button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 3px 10px;
+                font-size: 12px; cursor: pointer; color: var(--ink-2); transition: border-color .2s, color .2s; }
+  .who button:hover { border-color: var(--line-2); color: var(--ink); }
+  .progress { height: 3px; background: transparent; }
+  .progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #3b7bc0);
+                transition: width .5s var(--ease); border-radius: 0 3px 3px 0; }
+
+  /* ---------- stage ---------- */
+  main { max-width: 1240px; margin: 0 auto; padding: 22px 22px 90px; }
+  .stage { transition: opacity .28s var(--ease), transform .32s var(--ease); }
+  .stage.enter { animation: rise .42s var(--ease) both; }
+  .stage.leave { opacity: 0; transform: translateX(-28px) scale(.99); pointer-events: none; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow); }
+
+  /* ---------- gate ---------- */
+  .gate { max-width: 540px; margin: 8vh auto 0; padding: 30px 32px; }
+  .gate h2 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.02em; }
+  .gate p { color: var(--ink-2); margin: 10px 0; }
+  .gate .how { display: grid; gap: 10px; margin: 16px 0 20px; }
+  .gate .how div { display: flex; gap: 12px; align-items: flex-start; color: var(--ink-2); font-size: 14px; }
+  .gate .how span { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; background: var(--well); border: 1px solid var(--line);
+                    display: grid; place-items: center; font-size: 15px; }
+  .gate input { width: 100%; padding: 12px 14px; font: inherit; border: 1px solid var(--line-2); border-radius: 10px;
+                outline: none; transition: border-color .2s, box-shadow .2s; }
+  .gate input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .primary { background: var(--accent); color: #fff; border: 0; padding: 12px 18px; border-radius: 10px; font-weight: 600;
+             cursor: pointer; transition: transform .15s var(--ease), box-shadow .2s, filter .2s; box-shadow: 0 4px 14px rgba(31,80,129,.25); }
+  .primary:hover { filter: brightness(1.06); box-shadow: 0 6px 18px rgba(31,80,129,.32); transform: translateY(-1px); }
+  .primary:active { transform: translateY(0) scale(.98); }
+  .gate .primary { margin-top: 14px; width: 100%; }
+
+  /* ---------- item ---------- */
+  .meta { display: flex; gap: 8px 16px; align-items: baseline; flex-wrap: wrap; color: var(--dim); font-size: 13px; }
+  .meta .pos { font-weight: 650; color: var(--ink); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .meta .title { color: var(--ink-2); }
+  .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin-top: 16px; font-weight: 600; }
+  .brief { margin: 8px 0 0; padding: 14px 16px; background: var(--well); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+           border-radius: 10px; white-space: pre-wrap; font-size: 15.5px; line-height: 1.55; color: var(--ink); }
+  .inputs { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .inputs figure { margin: 0; }
+  .inputs figcaption { font-size: 12px; color: var(--dim); margin-top: 4px; }
+  .inputs img, .inputs video { max-height: 170px; max-width: 300px; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .inputs audio { width: 300px; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+  @media (max-width: 780px) { .pair { grid-template-columns: 1fr; } }
+  .side { position: relative; border: 2px solid var(--line); border-radius: var(--r); padding: 12px; background: var(--card);
+          transition: border-color .3s var(--ease), box-shadow .3s var(--ease), transform .35s var(--ease), opacity .35s var(--ease); }
+  .side:hover { border-color: var(--line-2); box-shadow: var(--shadow); }
+  .side h3 { margin: 0 0 10px; font-size: 12px; color: var(--dim); font-weight: 650; text-transform: uppercase; letter-spacing: .08em;
+             display: flex; align-items: center; gap: 8px; }
+  .side h3 kbd { font: 11px/1 ui-monospace, Menlo, monospace; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
+  .mediabox { display: flex; justify-content: center; align-items: center; min-height: 160px; background: #0f1115; border-radius: 10px; overflow: hidden; }
+  .mediabox.audio { background: var(--well); min-height: 0; padding: 14px; border: 1px solid var(--line); }
+  .side img { max-width: 100%; max-height: 66vh; display: block; cursor: zoom-in; transition: transform .35s var(--ease); }
+  .side img.zoom { max-height: none; cursor: zoom-out; }
+  .side video { max-width: 100%; max-height: 66vh; display: block; }
+  .side audio { width: 100%; }
+
+  .thumb { margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+           padding: 13px 16px; border-radius: 12px; border: 1.5px solid var(--line-2); background: var(--card); cursor: pointer;
+           font-weight: 600; font-size: 15px; color: var(--ink);
+           transition: transform .18s var(--ease), border-color .2s, background .25s, box-shadow .25s, color .2s; }
+  .thumb .ico { font-size: 20px; line-height: 1; display: inline-block; transition: transform .25s var(--ease); }
+  .thumb:hover { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(23,138,91,.16); }
+  .thumb:hover .ico { transform: rotate(-12deg) scale(1.15); }
+  .thumb:active { transform: translateY(0) scale(.98); }
+
+  .side.picked { border-color: var(--ok); box-shadow: 0 0 0 4px var(--ok-soft), var(--shadow-lift); transform: translateY(-3px); }
+  .side.picked .thumb { border-color: var(--ok); background: var(--ok); color: #fff; }
+  .side.picked .thumb .ico { animation: pop .55s var(--ease); }
+  .side.dimmed { opacity: .45; transform: scale(.985); }
+  @keyframes pop { 0% { transform: scale(1); } 35% { transform: scale(1.45) rotate(-14deg); } 70% { transform: scale(.95); } 100% { transform: scale(1); } }
+  .side.picked::after { content: "✓"; position: absolute; top: -12px; right: 14px; width: 26px; height: 26px; border-radius: 50%;
+                        background: var(--ok); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 700;
+                        animation: pop .5s var(--ease); box-shadow: 0 2px 8px rgba(23,138,91,.35); }
+
+  .tools { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  .ghost { padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--card); color: var(--ink-2);
+           cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: border-color .2s, color .2s, background .2s, transform .15s; }
+  .ghost:hover { border-color: var(--ink-2); color: var(--ink); background: var(--well); }
+  .ghost:active { transform: scale(.98); }
+  .ghost kbd { font: 11px/1 ui-monospace, Menlo, monospace; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
+
+  .nav { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .nav button.step { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; cursor: pointer;
+                     color: var(--ink-2); transition: border-color .2s, color .2s, transform .15s; }
+  .nav button.step:hover { color: var(--ink); border-color: var(--line-2); }
+  .nav button.step:disabled { opacity: .35; cursor: default; }
+  .dots { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); cursor: pointer; border: 0; padding: 0;
+         transition: background .3s, transform .25s var(--ease), box-shadow .25s; }
+  .dot:hover { transform: scale(1.35); }
+  .dot.done { background: var(--ok); }
+  .dot.here { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent); transform: scale(1.15); }
+
+  .reasonbox { margin-top: 18px; }
+  .reasonbox textarea { display: block; width: 100%; min-height: 58px; resize: vertical; margin-top: 6px; padding: 10px 12px;
+                        border: 1px solid var(--line-2); border-radius: 10px; background: var(--well); color: var(--ink); font: inherit; }
+  .reasonbox textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .reasonbox .ghost { margin-top: 8px; }
+
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+           background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 13.5px; box-shadow: var(--shadow-lift);
+           transition: opacity .28s var(--ease), transform .32s var(--ease); z-index: 9; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.err { background: var(--warn); }
+
+  .done-card { text-align: center; padding: 56px 24px; }
+  .done-card .big { font-size: 46px; animation: pop .7s var(--ease); display: inline-block; }
+  .done-card h2 { margin: 10px 0 6px; font-size: 22px; letter-spacing: -.02em; }
+  .done-card p { color: var(--ink-2); }
+  .done-card .primary { margin: 6px 6px 0; width: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand"><span class="mark">👍</span>GenMedia blind panel</div>
+    <nav class="tabs" id="tabs" role="tablist"></nav>
+    <label class="ind" id="indbox" hidden>Industry <select id="ind"></select></label>
+    <span class="spacer"></span>
+    <span class="who" id="who"></span>
+  </div>
+  <div class="progress"><i id="progress"></i></div>
+</header>
+<main id="main"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var state = { items: [], lanes: [], lane: null, industry: 'all', reviewer: null, voted: {}, picks: {}, order: [], pos: 0, busy: false, keys: null, mediaBase: 'media' };
+  var main = document.getElementById('main');
+  window.__panel = state;   // read-only debugging handle; holds no model names
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var LANE_ICON = { image: '🖼️', video: '🎬', voice: '🎧' };
+
+  // --- deterministic per-reviewer randomness ---------------------------
+  // FNV-1a over a string. Same reviewer + same item = same left/right every
+  // time they open the page; a different reviewer gets a different order.
+  function fnv(s) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    return h >>> 0;
+  }
+  function mulberry(seed) {
+    return function () {
+      seed = (seed + 0x6D2B79F5) >>> 0;
+      var t = seed;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffled(list, seed) {
+    var a = list.slice(), rnd = mulberry(seed);
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function sides(item) {
+    // item.pair is already in opaque-id order (no model order). Flip per reviewer.
+    var flip = fnv(who() + '|' + item.id) & 1;
+    return flip ? [item.pair[1], item.pair[0]] : [item.pair[0], item.pair[1]];
+  }
+
+  // --- storage / api ------------------------------------------------------
+  // Identity = a name (2026-09-11, Sai: name is enough). It is what the
+  // server keys a reviewer's earlier picks on and what seeds the left/right
+  // flip. Remembered here; a `?reviewer=` on the URL wins, because the
+  // studies console asks for the name when its card is opened and passes it
+  // in, so a reviewer identifies themselves once, in one place.
+  function validName(v) { return /^[A-Za-z0-9 ._@+-]{1,64}$/.test(v); }
+  function who() { return state.reviewer || ''; }
+  function saveIdentity(r) { try { localStorage.setItem('panel.reviewer', r || ''); } catch (e) {} }
+  function loadIdentity() {
+    var id = { reviewer: null };
+    try { id.reviewer = localStorage.getItem('panel.reviewer') || null; } catch (e) {}
+    try {
+      var q = new URLSearchParams(window.location.search);
+      var n = (q.get('reviewer') || q.get('name') || '').trim();
+      if (validName(n)) { id.reviewer = n; saveIdentity(n); }
+    } catch (e) {}
+    return id;
+  }
+  function api(path, opts) {
+    return fetch(path, opts).then(function (r) {
+      return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
+    });
+  }
+
+  // --- tiny dom helper ------------------------------------------------------
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    for (var k in (attrs || {})) {
+      if (k === 'class') e.className = attrs[k];
+      else if (k === 'text') e.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    }
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return e;
+  }
+  var toastTimer;
+  function toast(msg, err) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.className = 'toast'; }, err ? 3200 : 1400);
+  }
+  function swap(build) {
+    // leave -> replace -> enter. Reduced motion skips straight to the new view.
+    var old = main.firstElementChild;
+    function place() {
+      main.innerHTML = '';
+      var next = build();
+      next.classList.add('stage', 'enter');
+      main.appendChild(next);
+      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    }
+    if (!old || reduced) { place(); return; }
+    old.classList.add('leave');
+    setTimeout(place, 240);
+  }
+
+  // --- gate --------------------------------------------------------------
+  function renderGate() {
+    state.keys = null;
+    swap(function () {
+      var input = el('input', { placeholder: 'Your name', autocomplete: 'name', value: state.reviewer || '' });
+      function start() {
+        var v = input.value.trim();
+        if (!validName(v)) { input.focus(); toast('Just letters, numbers and spaces please', true); return; }
+        state.reviewer = v; saveIdentity(v); boot();
+      }
+      input.addEventListener('keydown', function (e) { if (e.key === 'Enter') start(); });
+      var card = el('div', { class: 'card gate' }, [
+        el('h2', { text: 'Which one did it better?' }),
+        el('p', { text: 'Each item shows two results made from the same brief. The model names are hidden and the order is random.' }),
+        el('div', { class: 'how' }, [
+          el('div', {}, [el('span', { text: '👍' }), 'Tap the thumbs-up under the result that answers the brief better.']),
+          el('div', {}, [el('span', { text: '🏷️' }), 'Use the industry menu to review only the scenarios from your field, or take a lane end to end.']),
+          el('div', {}, [el('span', { text: '⌨️' }), 'Keyboard: ← left is better, → right is better.'])
+        ]),
+        el('p', { text: 'Your name is stored with each answer. Come back with the same name and what you already chose is shown again.' }),
+        input,
+        el('button', { class: 'primary', text: 'Start reviewing', onclick: start })
+      ]);
+      setTimeout(function () { input.focus(); }, 350);
+      return card;
+    });
+  }
+
+  // --- header ------------------------------------------------------------
+  function laneAll(lane) { return state.items.filter(function (i) { return i.lane === lane; }); }
+  function laneItems(lane) {
+    return laneAll(lane).filter(function (i) { return state.industry === 'all' || (i.industry || 'Other') === state.industry; });
+  }
+  function industriesOf(lane) {
+    var seen = {};
+    laneAll(lane).forEach(function (i) { seen[i.industry || 'Other'] = true; });
+    return Object.keys(seen).sort();
+  }
+  function renderIndustry() {
+    var box = document.getElementById('indbox'), sel = document.getElementById('ind');
+    var list = state.lane ? industriesOf(state.lane) : [];
+    box.hidden = !(state.reviewer && list.length > 1);
+    sel.innerHTML = '';
+    sel.appendChild(el('option', { value: 'all', text: 'All industries (' + laneAll(state.lane || '').length + ')' }));
+    list.forEach(function (ind) {
+      var n = laneAll(state.lane).filter(function (i) { return (i.industry || 'Other') === ind; }).length;
+      sel.appendChild(el('option', { value: ind, text: ind + ' (' + n + ')' }));
+    });
+    if (list.indexOf(state.industry) < 0) state.industry = 'all';
+    sel.value = state.industry;
+  }
+  document.getElementById('ind').addEventListener('change', function (e) {
+    state.industry = e.target.value;
+    setLane(state.lane);
+  });
+  function laneDone(lane) { return laneItems(lane).filter(function (i) { return state.voted[i.id]; }).length; }
+
+  function renderTabs() {
+    var tabs = document.getElementById('tabs');
+    tabs.innerHTML = '';
+    state.lanes.forEach(function (lane) {
+      var all = laneAll(lane), n = all.length;
+      var done = all.filter(function (i) { return state.voted[i.id]; }).length;
+      var b = el('button', { class: 'tab' + (done === n && n ? ' complete' : ''), role: 'tab',
+                             'aria-selected': String(lane === state.lane),
+                             onclick: function () {
+                               if (!state.reviewer) { toast('Enter your name first'); renderGate(); return; }
+                               if (lane !== state.lane) setLane(lane);
+                             } },
+        [(LANE_ICON[lane] || '') + ' ' + lane.charAt(0).toUpperCase() + lane.slice(1), el('span', { class: 'n', text: done + '/' + n })]);
+      tabs.appendChild(b);
+    });
+    var who = document.getElementById('who');
+    who.innerHTML = '';
+    if (state.reviewer) {
+      who.appendChild(el('span', {}, ['Reviewing as ', el('b', { text: state.reviewer })]));
+      who.appendChild(el('button', { text: 'change', onclick: function () { state.reviewer = null; saveIdentity(''); renderGate(); renderTabs(); } }));
+    }
+    var p = document.getElementById('progress');
+    var n = state.lane ? laneItems(state.lane).length : 0;
+    p.style.width = n ? (100 * laneDone(state.lane) / n) + '%' : '0%';
+    renderIndustry();
+  }
+
+  function setLane(lane) {
+    state.lane = lane;
+    var items = laneItems(lane);
+    state.order = shuffled(items, fnv(who() + '|' + lane));
+    var first = state.order.findIndex(function (i) { return !state.voted[i.id]; });
+    state.pos = first < 0 ? 0 : first;
+    renderTabs();
+    if (first < 0 && items.length) renderDone(); else renderItem();
+  }
+
+  // --- item --------------------------------------------------------------
+  function mediaEl(kind, src) {
+    if (kind === 'image') {
+      var img = el('img', { src: src, alt: '', draggable: 'false' });
+      img.addEventListener('click', function () { img.classList.toggle('zoom'); });
+      return img;
+    }
+    if (kind === 'video') return el('video', { src: src, controls: '', playsinline: '', preload: 'metadata', loop: '' });
+    return el('audio', { src: src, controls: '', preload: 'none' });
+  }
+
+  function renderItem() {
+    var items = state.order;
+    if (!items.length) { swap(function () { return el('div', { class: 'card done-card', text: 'Nothing to review in this lane.' }); }); return; }
+    var item = items[state.pos];
+    var lr = sides(item);
+    var already = state.voted[item.id];
+    // What this person chose before, by MEDIA id - so it lights the right
+    // side whichever way the pair is flipped today - and the reason they gave.
+    var prior = state.picks[item.id] || null;
+    var remaining = items.filter(function (i) { return !state.voted[i.id]; }).length;
+
+    swap(function () {
+      var card = el('div', { class: 'card' });
+      card.appendChild(el('div', { class: 'meta' }, [
+        el('span', { class: 'pos', text: 'Item ' + (state.pos + 1) + ' of ' + items.length }),
+        el('span', { class: 'title', text: item.title || item.scenario_id }),
+        item.industry ? el('span', { class: 'chip', text: item.industry }) : null,
+        el('span', { text: remaining ? '· ' + remaining + ' left' + (state.industry === 'all' ? ' in this lane' : ' in ' + state.industry) : '· all done here' }),
+        already ? el('span', { text: '· already answered — your choice is shown; pick again to change it' }) : null
+      ]));
+      card.appendChild(el('div', { class: 'label', text: item.kind === 'audio' ? 'The script both were asked to read' : 'The brief both were given' }));
+      card.appendChild(el('p', { class: 'brief', text: item.brief || '(no brief recorded)' }));
+      if (item.inputs && item.inputs.length) {
+        card.appendChild(el('div', { class: 'label', text: 'Supplied with the brief' }));
+        var row = el('div', { class: 'inputs' });
+        item.inputs.forEach(function (inp) {
+          row.appendChild(el('figure', {}, [mediaEl(inp.kind, state.mediaBase + '/' + inp.media), el('figcaption', { text: inp.label })]));
+        });
+        card.appendChild(row);
+      }
+
+      var pair = el('div', { class: 'pair' });
+      var sideEls = [], players = [];
+      ['Left', 'Right'].forEach(function (name, idx) {
+        var m = mediaEl(item.kind, state.mediaBase + '/' + lr[idx]);
+        players.push(m);
+        var box = el('div', { class: 'mediabox' + (item.kind === 'audio' ? ' audio' : '') }, [m]);
+        var thumb = el('button', { class: 'thumb', onclick: function () { vote(idx === 0 ? 'left' : 'right'); } },
+                       [el('span', { class: 'ico', text: '👍' }), name + ' is better']);
+        var side = el('div', { class: 'side' }, [
+          el('h3', {}, [name, el('kbd', { text: idx === 0 ? '←' : '→' })]), box, thumb]);
+        sideEls.push(side);
+        pair.appendChild(side);
+      });
+      card.appendChild(pair);
+      if (prior && prior.media) {
+        sideEls.forEach(function (s, i) {
+          var mine = lr[i] === prior.media;
+          s.classList.toggle('picked', mine);
+          s.classList.toggle('dimmed', !mine);
+        });
+      }
+
+      // Optional reason. Sent with the thumbs-up; on an item already
+      // answered, 'Save reason' re-posts the same pick with the new text
+      // (a vote is append-only; the last one per item counts).
+      var reason = el('textarea', { class: 'reason', rows: '2', maxlength: '500',
+                                    placeholder: 'Why? A word on what decided it — optional' });
+      if (prior && prior.reason) reason.value = prior.reason;
+      var reasonBox = el('div', { class: 'reasonbox' }, [el('div', { class: 'label', text: 'Reason (optional)' }), reason]);
+      if (prior && prior.media) {
+        reasonBox.appendChild(el('button', { class: 'ghost', text: 'Save reason',
+                                            onclick: function () { vote(lr[0] === prior.media ? 'left' : 'right', true); } }));
+      }
+      card.appendChild(reasonBox);
+
+      var tools = el('div', { class: 'tools' });
+      if (item.kind === 'video') {
+        tools.appendChild(el('button', { class: 'ghost', onclick: function () {
+          players.forEach(function (v) { v.currentTime = 0; v.play(); }); } }, ['▶ Play both from the start']));
+      }
+      if (tools.childNodes.length) card.appendChild(tools);
+
+      var nav = el('div', { class: 'nav' });
+      var prev = el('button', { class: 'step', text: '‹ Previous', onclick: function () { go(state.pos - 1); } });
+      var next = el('button', { class: 'step', text: 'Next ›', onclick: function () { go(state.pos + 1); } });
+      if (state.pos === 0) prev.disabled = true;
+      if (state.pos === items.length - 1) next.disabled = true;
+      var dots = el('div', { class: 'dots' });
+      items.forEach(function (it, i) {
+        dots.appendChild(el('button', { class: 'dot' + (state.voted[it.id] ? ' done' : '') + (i === state.pos ? ' here' : ''),
+                                        title: 'Item ' + (i + 1), onclick: function () { go(i); } }));
+      });
+      nav.appendChild(prev); nav.appendChild(dots); nav.appendChild(next);
+      card.appendChild(nav);
+
+      function vote(pick, stay) {
+        if (state.busy) return;
+        state.busy = true;
+        var why = reason.value.trim();
+        // Show the choice immediately; the server confirms it a moment later.
+        sideEls.forEach(function (s, i) {
+          var mine = (pick === 'left' && i === 0) || (pick === 'right' && i === 1);
+          s.classList.toggle('picked', mine);
+          s.classList.toggle('dimmed', !mine);
+        });
+        api('api/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ reviewer: state.reviewer, item: item.id, left: lr[0], right: lr[1], pick: pick, reason: why }) })
+          .then(function () {
+            state.voted[item.id] = true;
+            state.picks[item.id] = { pick: pick, media: lr[pick === 'left' ? 0 : 1], reason: why || null };
+            prior = state.picks[item.id];
+            renderTabs();
+            if (stay) { state.busy = false; toast(why ? 'Reason saved 👍' : 'Saved 👍'); return; }
+            toast('Saved 👍');
+            var nextIdx = -1;
+            for (var k = 1; k <= items.length; k++) { var j = (state.pos + k) % items.length; if (!state.voted[items[j].id]) { nextIdx = j; break; } }
+            setTimeout(function () {
+              state.busy = false;
+              if (nextIdx < 0) renderDone(); else { state.pos = nextIdx; renderItem(); }
+            }, reduced ? 0 : 520);
+          })
+          .catch(function (e) {
+            state.busy = false;
+            sideEls.forEach(function (s) { s.classList.remove('picked', 'dimmed'); });
+            toast('Not saved: ' + e.message, true);
+          });
+      }
+      function go(i) { if (i < 0 || i >= items.length || state.busy) return; state.pos = i; renderItem(); }
+
+      // Capture phase, so a focused <video>/<audio> does not turn the arrow
+      // keys into seeks before the vote fires. The players keep their mouse
+      // controls; the arrow keys belong to voting.
+      state.keys = function (e) {
+        if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+        if (e.key === 'ArrowLeft' && !e.shiftKey) { e.preventDefault(); vote('left'); }
+        else if (e.key === 'ArrowRight' && !e.shiftKey) { e.preventDefault(); vote('right'); }
+        else if (e.key === 'ArrowLeft' && e.shiftKey) { e.preventDefault(); go(state.pos - 1); }
+        else if (e.key === 'ArrowRight' && e.shiftKey) { e.preventDefault(); go(state.pos + 1); }
+      };
+      return card;
+    });
+  }
+
+  function renderDone() {
+    state.keys = null;
+    swap(function () {
+      var others = state.lanes.filter(function (l) {
+        return l !== state.lane && state.items.some(function (i) { return i.lane === l && !state.voted[i.id]; });
+      });
+      var moreHere = state.industry !== 'all' && laneAll(state.lane).some(function (i) { return !state.voted[i.id]; });
+      var card = el('div', { class: 'card done-card' }, [
+        el('div', { class: 'big', text: others.length ? '🎉' : '🙏' }),
+        el('h2', { text: (state.industry === 'all' ? 'This lane is complete.' : state.industry + ' is complete in this lane.') + ' Thank you.' }),
+        el('p', { text: others.length ? 'There is more to review in ' + others.join(' and ') + '.' : 'You have reviewed everything. You can close this page.' })
+      ]);
+      if (moreHere) card.appendChild(el('button', { class: 'primary', text: 'Review other industries in ' + state.lane, onclick: function () { state.industry = 'all'; setLane(state.lane); } }));
+      others.forEach(function (l) { card.appendChild(el('button', { class: 'primary', text: 'Review ' + (LANE_ICON[l] || '') + ' ' + l, onclick: function () { setLane(l); } })); });
+      return card;
+    });
+  }
+  window.addEventListener('keydown', function (e) { if (state.keys) state.keys(e); }, true);
+
+  // --- boot --------------------------------------------------------------
+  function boot() {
+    renderTabs();
+    api('api/votes?reviewer=' + encodeURIComponent(state.reviewer)).then(function (j) {
+      state.voted = {};
+      j.items.forEach(function (id) { state.voted[id] = true; });
+      state.picks = j.picks || {};
+      // `?lane=video` (the console embeds one lane per tab) wins over the
+      // first lane with anything left to review.
+      var wanted = null;
+      try { wanted = new URLSearchParams(window.location.search).get('lane'); } catch (e) {}
+      var firstOpen = state.lanes.find(function (l) { return state.items.some(function (i) { return i.lane === l && !state.voted[i.id]; }); });
+      setLane(state.lanes.indexOf(wanted) >= 0 ? wanted : (firstOpen || state.lanes[0]));
+    }).catch(function (e) {
+      swap(function () { return el('div', { class: 'card', text: 'The panel server is not reachable (' + e.message + '). Open this page through `python -m runner.cli serve`, not as a file.' }); });
+    });
+  }
+
+  // Where the media lives is the server's to say (PANEL_MEDIA_BASE): its own
+  // dist/media on a laptop, the studies console's files when hosted.
+  fetch('api/config', { cache: 'no-store' }).then(function (r) { return r.json(); })
+    .then(function (c) { if (c && c.media_base) state.mediaBase = String(c.media_base).replace(/\/$/, ''); })
+    .catch(function () {})
+    .then(function () { return fetch('items.json', { cache: 'no-store' }); }).then(function (r) { return r.json(); }).then(function (j) {
+    state.items = j.items; state.lanes = j.lanes;
+    state.reviewer = loadIdentity().reviewer;
+    if (state.reviewer) boot(); else { renderGate(); renderTabs(); }
+  }).catch(function () {
+    main.appendChild(el('div', { class: 'card', text: 'items.json not found — run the exporter first.' }));
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-10 (sheet row 114) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Previously edited clip | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-10
+modality: video
+task: video_edit
+title: Revert a prior edit
+prompt: Following the previous edit, undo the colour change to the jacket and return it to
+  its original colour. Leave all other edits in place.
+params:
+  audio: false
+expected: 'Revert a prior edit. Capability under test: Instruction reversal. Adherence clauses,
+  check each: 1) Jacket returned to original colour  2) Other edits still present  3) No degradation
+  from the round trip  4) Motion unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

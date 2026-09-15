@@ -1,0 +1,39 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-UI-10 — prompt verbatim; weights follow the
+# sheet's family guidance for 'UI mockups & layout'
+id: IMG-UI-10
+modality: image
+task: text_to_image
+title: Slide layout with placeholders
+prompt: Design a presentation slide with the title Q3 Performance, three bullet lines,
+  and an empty chart placeholder occupying the right half. 16:9.
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+expected: 'Slide layout with placeholders. Capability under test: Presentation structure.
+  Adherence clauses, check each: 1) Title exact  2) Three bullets present  3) Chart
+  placeholder on the right half, empty  4) 16:9 ratio'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - Q3 Performance
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.15
+  composition: 0.25
+  realism_style: 0.05
+  text_accuracy: 0.3
+tags:
+- ui-mockups-&-layout
+- scenario-bank
