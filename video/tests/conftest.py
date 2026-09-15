@@ -125,10 +125,12 @@ class FakeVideoAdapter(Adapter):
         self.model_tag = model_tag
         self.usage = usage or {"seconds": 4}
         self.calls = 0
-        self.supports = ["text_to_video"]
+        self.requests = []          # what the runner actually handed us
+        self.supports = ["text_to_video", "image_to_video", "video_edit"]
 
     def run(self, req):
         self.calls += 1
+        self.requests.append(req)
         item = self.script.pop(0) if self.script else None
         if isinstance(item, Exception):
             raise item
@@ -227,7 +229,7 @@ video:
     provider: prov_a
     provider_model: "prov-a-vid-1"
     auth_env: FAKE_KEY_A
-    supports: [text_to_video]
+    supports: [text_to_video, image_to_video, video_edit]
     limits: {max_concurrency: 2}
     params: {}
     price: {unit: per_second, usd: 0.40, est_usd_per_call: 1.60,
@@ -238,7 +240,7 @@ video:
     provider: prov_b
     provider_model: "prov-b-vid-1"
     auth_env: FAKE_KEY_B
-    supports: [text_to_video]
+    supports: [text_to_video, image_to_video, video_edit]
     limits: {max_concurrency: 2}
     params: {}
     price: {unit: per_second, usd: 0.10, est_usd_per_call: 0.40,

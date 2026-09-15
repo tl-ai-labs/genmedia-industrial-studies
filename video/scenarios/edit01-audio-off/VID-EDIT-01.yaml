@@ -1,0 +1,38 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-01 (sheet row 105) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with a red umbrella | source: Pexels Video (free commercial) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-01
+modality: video
+task: video_edit
+title: Recolour one object
+prompt: In this clip, change the colour of the red umbrella to yellow. Everything else in
+  the shot must stay exactly as it is.
+inputs:
+  source: assets/bank/VID-EDIT-01-source.mp4
+params:
+  resolution: 1080p
+  # AUDIO OFF for this scenario only, 2026-09-11, on the study lead's
+  # instruction. Every other scenario in the bank runs audio ON; this one
+  # variant exists to test whether Seedance's refusal here is audio-related.
+  # NOTE: it refused with InputVideoSensitiveContentDetected.PrivacyInformation
+  # — the INPUT-VIDEO filter reacting to a face — not the output-audio
+  # copyright filter that stopped VID-AD-05 and -08. So this is expected to
+  # refuse again; it is run to rule the variable out, not because it should work.
+  # Omni has no audio toggle on its surface, so this flag does not change
+  # that arm and the pair stays comparable.
+  audio: false
+  seed: 20260910
+expected: 'Recolour one object. Capability under test: Targeted change across all frames.
+  Adherence clauses, check each: 1) Umbrella is yellow in every frame  2) Umbrella geometry
+  unchanged  3) Nothing else recoloured  4) Motion unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

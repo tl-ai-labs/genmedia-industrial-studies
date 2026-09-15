@@ -63,8 +63,18 @@ def compute_cost(price, usage: dict) -> dict:
     raise ValueError(f"unknown price unit {unit!r}")
 
 
-def estimate_call_micro_usd(price) -> int:
-    """Pre-flight estimate for ONE call — printing and --budget only."""
+def estimate_call_micro_usd(price, task: str | None = None) -> int:
+    """Pre-flight estimate for ONE call — printing and --budget only.
+
+    `task` selects a per-task override when the price block declares one. The
+    budget guard reserves this figure before a call, so an estimate that is
+    too low does not merely misreport: it lets the cap be breached. A video
+    edit bills roughly 2x per second what a generation does, because the
+    source clip's input tokens land inside completion_tokens.
+    """
+    by_task = getattr(price, "est_usd_per_call_by_task", None) or {}
+    if task and task in by_task:
+        return _micro(by_task[task])
     if price.unit == "per_image":
         return _micro(price.usd)
     if price.est_usd_per_call is not None:

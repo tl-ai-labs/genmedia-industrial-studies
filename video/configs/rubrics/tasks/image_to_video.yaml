@@ -1,0 +1,66 @@
+# Per-task rubric for image_to_video (plan §5 pattern: per-task rubrics are
+# small, explicit files, not patches). Added 2026-09-09, when the Google
+# review scoped video to edits + ads — the ads family is image_to_video for
+# nine of its ten scenarios, driven by a supplied product still.
+#
+# The distinguishing question against text_to_video is subject identity: the
+# clip has to animate THE SUPPLIED PRODUCT, not a plausible lookalike. For a
+# product ad that is the whole point — a rotating bottle that is subtly the
+# wrong bottle is worthless to a retailer, however beautiful the clip. So
+# reference_fidelity carries the most weight and is scored against the still
+# itself, which the judge is shown first (runner/judge.py).
+#
+# Weights sum to 1.0.
+criteria:
+  - name: reference_fidelity
+    weight: 0.30
+    judged_by: judge
+    description: >-
+      Is the subject in the clip the same object as the supplied reference
+      still? Compare shape, proportions, colour, material, and any text,
+      logo or label on it. 10 = it is unmistakably the same item from every
+      angle shown. Losses: label text degraded or invented, colour shifted,
+      proportions altered, details dropped or added. A convincing but
+      different object scores near 0 regardless of clip quality.
+
+  - name: prompt_adherence
+    weight: 0.25
+    judged_by: judge
+    description: >-
+      Every element of the brief present and correct — the action, camera
+      move, lighting, setting and framing asked for. Read the brief clause
+      by clause; each missing or wrong element costs about 2 points.
+
+  - name: motion_coherence
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Whether the movement is plausible and continuous — a rotation that
+      holds its axis, weight and momentum that make sense, no sliding,
+      warping or objects passing through each other. Smooth-but-wrong
+      motion loses points just as stutter does.
+
+  - name: temporal_consistency
+    weight: 0.10
+    judged_by: judge
+    description: >-
+      Whether things stay themselves across frames: the product morphing,
+      its label crawling or re-rendering, lighting or colour drifting
+      within the clip.
+
+  - name: visual_fidelity
+    weight: 0.10
+    judged_by: judge
+    description: >-
+      Per-frame quality — sharpness, lighting, texture, absence of
+      artefacts. Would individual frames pass as a studio product shot?
+
+  - name: technical_compliance
+    weight: 0.10
+    judged_by: measured          # container headers: duration + dimensions
+    description: >-
+      Measured by code from the mp4 container: clip duration within the
+      scenario's declared band and delivered resolution against the
+      requested one. Full spec maps to 10; shortfalls lose points linearly
+      (the mapping is fixed in scoring.py). Missing measurements drop the
+      criterion and redistribute its weight (recorded in the run manifest).

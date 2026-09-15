@@ -1,0 +1,29 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-08 (sheet row 112) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-08
+modality: video
+task: video_edit
+title: Three sequential edits
+prompt: 'Turn 1: make the jacket blue. Turn 2: remove the sign in the background. Turn 3:
+  change the sky to overcast. Each edit must hold and nothing else may drift.'
+inputs:
+  source: assets/bank/VID-EDIT-08-source.mp4
+params:
+  resolution: 1080p
+  audio: true
+  seed: 20260910
+expected: 'Three sequential edits. Capability under test: Multi-turn drift resistance. Adherence
+  clauses, check each: 1) All three edits applied  2) Earlier edits still intact after later
+  turns  3) Nothing outside the three targets changed  4) No cumulative quality loss'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

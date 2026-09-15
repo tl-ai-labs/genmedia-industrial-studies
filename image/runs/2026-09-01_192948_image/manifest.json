@@ -1,0 +1,127 @@
+{
+  "run_id": "2026-09-01_192948_image",
+  "created": "2026-09-01T13:59:48.178Z",
+  "state": "reported",
+  "modality": "image",
+  "git_sha": "337e923dc330801e8269419456cd8839deae62d0",
+  "budget_usd": 2.0,
+  "events": [
+    {
+      "ts": "2026-09-01T13:59:48.232Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-01T13:59:48.246Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-01T13:59:49.757Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-01T14:02:07.684Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-01T14:05:01.533Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-01T14:05:01.542Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-01T14:05:02.081Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-1-flash-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-pro-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3-pro-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-eval/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-TXT-01": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.15
+    },
+    "IMG-UI-01": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.15
+    }
+  },
+  "scenario_set_hash": "f5341bf0775bb4e6523641c8b125ee97a1db73d3d1e4b1d16b24d5964241304c",
+  "inputs": {
+    "IMG-TXT-01": [],
+    "IMG-UI-01": []
+  },
+  "cells": {
+    "IMG-TXT-01::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-TXT-01",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-01::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-TXT-01",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-01::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-UI-01",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-01::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-UI-01",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  }
+}

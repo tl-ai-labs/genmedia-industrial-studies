@@ -171,3 +171,30 @@ these wins are against *medium*, and need re-confirming against *high*.
 3. For video, is the priority `video_edit` (Gaurav's "we know we do well") or the
    ads set? The adapter work differs: edits need a source clip, ads need a source
    still.
+
+---
+
+## 8. Handle probe — 2026-09-09 (added after the review)
+
+Seedance's API reference addresses assets in the prompt by handle
+(`@Video1`); our bank prompts do not. If one arm needed a handle and the
+other did not, the two would receive different briefs and the comparison
+would be unfair.
+
+Probed on one scenario (VID-EDIT-01, both prompt variants, both arms,
+`--budget 6.0`, isolated config so the lane stayed paused). Full record:
+`video/runs/2026-09-09_155106_video/NOTE-handle-probe.md`.
+
+- **Omni Flash binds the source clip with no handle at all.** It produced a
+  correct edit — umbrella recoloured, subject, fence and treeline unchanged —
+  and matched the source's duration (5.674s vs 5.653s) rather than emitting a
+  default-length clip. The handle changed nothing: both variants were
+  equivalent. Cost $1.72 for the two cells.
+- **Seedance could not be tested.** Every request is refused with
+  `AccountOverdueError` (403) before generation, so it cost nothing. The
+  BytePlus balance must be cleared first.
+
+**What it settles:** the verbatim prompts work for the Gemini arm. And since
+the handle is inert for Omni, adding it to *both* prompts would be a fair
+fallback if Seedance turns out to need it — it cannot advantage either side.
+Caveat: one scenario, one seed.
