@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-26 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-ring.png — provenance in each sidecar .json
+id: IMG-VIEW-26
+modality: image
+task: image_edit
+title: Flat jewellery shot to an angled display view
+inputs:
+  source: assets/bank/IMG-VIEW-base-ring.png
+params:
+  size: auto
+prompt: Re-photograph this ring from directly above, looking straight down at it lying flat,
+  so the band reads as a perfect circle and the roof-form bezel is seen in plan from the top.
+  The gold tone, the band width and every decorative detail must match the original. Soft
+  diffused light, plain background.
+expected: 'Flat jewellery shot to an angled display view. Capability under test: Angled-to-plan
+  rotation of a small object with fine detail preserved. Adherence clauses, check each: 1)
+  Camera directly above, band reads as a perfect circle  2) Roof-form bezel seen in plan from
+  directly overhead  3) Gold tone, band width and decorative detail match the original  4)
+  Soft diffused light, plain background, macro sharpness retained'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- product-&-object-rotation
+- scenario-bank-view
+- tier-medium

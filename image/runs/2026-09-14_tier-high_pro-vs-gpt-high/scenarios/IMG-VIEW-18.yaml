@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-18 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-facade.png — provenance in each sidecar .json
+id: IMG-VIEW-18
+modality: image
+task: image_edit
+title: Angled facade to a flat architectural elevation
+inputs:
+  source: assets/bank/IMG-VIEW-base-facade.png
+params:
+  size: auto
+prompt: 'Re-render this building as a flat architectural elevation of its main facade: viewed
+  dead on, orthographic with no perspective convergence at all, so parallel lines in the building
+  stay parallel and windows at the top are the same size as equivalent windows at the bottom.
+  Keep the storey count, window arrangement and masonry colour faithful. Plain white background,
+  no sky, no street, no text.'
+expected: 'Angled facade to a flat architectural elevation. Capability under test: Perspective
+  to orthographic projection — no convergence anywhere in the frame. Adherence clauses, check
+  each: 1) Dead-on orthographic view, no convergence, parallel lines stay parallel  2) Upper
+  windows the same size as equivalent lower windows  3) Storey count, window arrangement and
+  masonry colour faithful  4) Plain white background, no sky, street or text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.55
+  visual_quality: 0.15
+  realism_style: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-high

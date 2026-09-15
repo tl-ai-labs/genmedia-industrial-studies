@@ -1,0 +1,43 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row IMG-TXT-04 — prompt verbatim; weights follow the
+# sheet's family guidance for 'Text, typography, infographics'
+id: IMG-TXT-04
+modality: image
+task: text_to_image
+title: Ordered process diagram
+prompt: 'Create a horizontal five-step process diagram. Steps in order: Intake, Triage,
+  Build, Review, Release. Arrows between consecutive steps only.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'Ordered process diagram. Capability under test: Sequence and label correctness.
+  Adherence clauses, check each: 1) Five steps present  2) Labels spelled correctly  3)
+  Left-to-right order matches  4) Exactly four connecting arrows'
+checks:
+  min_width: 900
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - Intake
+  - Triage
+  - Build
+  - Review
+  - Release
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- text-typography-infographics
+- scenario-bank

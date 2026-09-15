@@ -1,0 +1,44 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-51 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-hair.png — provenance in each sidecar .json
+# The museum's Back, Left and Three-Quarter photographs are scoring targets only — never feed them to models.
+id: IMG-VIEW-51
+modality: image
+task: image_edit
+title: Head turnaround from a single front view
+inputs:
+  source: assets/bank/IMG-VIEW-base-hair.png
+params:
+  size: auto
+prompt: From this single front view of the carved head, generate the matching left profile,
+  three-quarter and rear views of the same head, arranged left to right in one image on a
+  shared baseline. The hairstyle, its braiding and coil at the back, the facial proportions,
+  the material and the surface weathering must all stay consistent with the front view and
+  be resolved plausibly where the front view does not show them. Same even museum lighting
+  and plain background.
+expected: 'Head turnaround from a single front view. Capability under test: Novel-view synthesis
+  of a head, scoreable against real photographs of the same object. Adherence clauses, check
+  each: 1) Three new views present — left profile, three-quarter and rear  2) Facial proportions
+  and hairstyle consistent with the front view  3) Rear view resolves the coiled braid plausibly
+  rather than repeating the face  4) Same material, weathering, lighting and plain background
+  across all views'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-high

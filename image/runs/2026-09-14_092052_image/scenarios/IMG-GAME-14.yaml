@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-14 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-heavy.png — provenance in each sidecar .json
+id: IMG-GAME-14
+modality: image
+task: image_edit
+title: Loadout tier progression
+inputs:
+  source: assets/bank/IMG-GAME-base-heavy.png
+params:
+  size: auto
+prompt: Using this figure as the character reference, show the same operator three times in
+  one row wearing tier one, tier two and tier three versions of the same protective loadout.
+  Tier one is plain and scuffed, tier two adds hardened shoulder and thigh plates, tier three
+  adds a full articulated carapace, a reinforced visor and a shoulder-mounted light. Build
+  and proportions stay identical; the silhouette should grow more imposing across the three.
+expected: 'Loadout tier progression. Capability under test: Coherent escalating variant set
+  on one held identity. Adherence clauses, check each: 1) Three versions in one row, left
+  to right  2) Each tier recognisably the same loadout family, not three unrelated designs  3)
+  Build and proportions identical across all three  4) Visible escalation — scuffed, hardened
+  plates, full carapace with visor and light'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- variants-&-progression
+- scenario-bank-game
+- tier-medium

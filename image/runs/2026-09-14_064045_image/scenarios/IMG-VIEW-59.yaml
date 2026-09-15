@@ -1,0 +1,42 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-59 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-group.png — provenance in each sidecar .json
+# KNOWN ISSUE: the pinned group stands in one row, so the two-row structure clause cannot be met.
+id: IMG-VIEW-59
+modality: image
+task: image_edit
+title: Overhead arrangement of a group portrait
+inputs:
+  source: assets/bank/IMG-VIEW-base-group.png
+params:
+  size: auto
+prompt: Re-render this group seen from directly above, looking straight down, so each person
+  appears from overhead and the shape of the arrangement — who stands in front, who behind,
+  and the gaps between them — is clearly legible. All the people in the original must appear,
+  none added or removed, keeping their left-to-right order and their row. The grass becomes
+  the background.
+expected: 'Overhead arrangement of a group portrait. Capability under test: Group-to-plan
+  reprojection preserving headcount, order and row structure. Adherence clauses, check each:
+  1) Camera directly overhead, every person seen from above  2) Headcount matches the original
+  exactly, nobody added or removed  3) Left-to-right order and front/back row structure preserved  4)
+  Grass reads as the background, even daylight retained'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.55
+  visual_quality: 0.15
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-high

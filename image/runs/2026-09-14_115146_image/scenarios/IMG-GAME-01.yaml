@@ -1,0 +1,42 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-01 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-01
+modality: image
+task: text_to_image
+title: Operator class concept from a design brief
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: Full-body character concept art of a fictional recon operator for a modern battle-royale
+  shooter. A wiry woman in her late twenties, cropped bleached hair, a lightweight grey plate
+  carrier over a rolled-sleeve olive shirt, knee pads, a shemagh bunched at the throat, and
+  a spotting scope clipped to the chest webbing. Neutral standing pose facing the camera,
+  painted concept-art style, even lighting, flat neutral background, no logos, no real-world
+  insignia, no text.
+expected: 'Operator class concept from a design brief. Capability under test: Brief-to-design
+  translation for a readable modern operator. Adherence clauses, check each: 1) Wiry woman,
+  late twenties, cropped bleached hair  2) Grey plate carrier over an olive rolled-sleeve
+  shirt, knee pads present  3) Shemagh at the throat and a spotting scope on the chest webbing  4)
+  Neutral full-body pose, flat background, no logos or real-world insignia'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-low

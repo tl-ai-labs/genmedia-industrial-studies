@@ -1,0 +1,44 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-40 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-masked.png — provenance in each sidecar .json
+# The sheet's caveat about a face-bearing base does not apply: this row reveals a face the source hides.
+# KNOWN ISSUE: the pinned 'masked' photo shows several suited people, one face visible through a visor; the
+# prompt assumes one soldier with the face fully covered.
+id: IMG-GAME-40
+modality: image
+task: image_edit
+title: Respirator off, face revealed
+inputs:
+  source: assets/bank/IMG-GAME-base-masked.png
+params:
+  size: auto
+prompt: Using this reference, show the same operator with the hood pushed back and the respirator
+  removed and held in one hand, revealing the face for the first time. The suit, harness,
+  gloves, build and stance stay exactly as they are. Invent a face that fits the frame and
+  proportions of the hood opening — the head must be the right size for the collar and shoulders.
+  Same lighting and plain background.
+expected: 'Respirator off, face revealed. Capability under test: Plausible reveal of an occluded
+  region constrained by the surrounding geometry. Adherence clauses, check each: 1) Hood pushed
+  back and respirator removed, face fully visible  2) Head sized correctly for the collar
+  and shoulder width  3) Suit, harness, gloves and stance unchanged  4) Same lighting and
+  plain background'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-medium

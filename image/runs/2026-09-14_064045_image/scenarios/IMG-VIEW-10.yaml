@@ -1,0 +1,42 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-10 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-room.png — provenance in each sidecar .json
+id: IMG-VIEW-10
+modality: image
+task: image_edit
+title: Pull the camera back to a wider view
+inputs:
+  source: assets/bank/IMG-VIEW-base-room.png
+params:
+  size: auto
+prompt: 'Re-photograph this room with the camera pulled back about two metres and a wider
+  lens, revealing more of the room on both sides and more of the ceiling and floor. This is
+  a camera move, not a zoom out of the existing frame: the perspective must change, near objects
+  receding more than far ones. Everything already visible must stay in the same place, with
+  new room continuing plausibly at the edges.'
+expected: 'Pull the camera back to a wider view. Capability under test: Dolly-back with genuine
+  perspective change rather than a scaled crop. Adherence clauses, check each: 1) Field of
+  view visibly wider — more of both side walls, ceiling and floor  2) Perspective genuinely
+  changed, not a uniform scale-down of the original frame  3) All original furniture present
+  and in the same relative positions  4) New edge content continues the room plausibly, no
+  duplicated furniture'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- scene-&-interior-re-angle
+- scenario-bank-view
+- tier-high

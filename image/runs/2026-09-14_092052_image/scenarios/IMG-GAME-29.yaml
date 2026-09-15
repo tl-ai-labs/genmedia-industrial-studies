@@ -1,0 +1,42 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-29 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-29
+modality: image
+task: text_to_image
+title: Infected enemy with a silhouette rule
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: Concept art of a stylised infected enemy for a shooter's PvE mode, unsettling but
+  not gory. A gaunt figure still wearing the shredded remains of a security uniform, far too
+  many joints in its arms so the limbs fold in the wrong places, face obscured by a fused
+  respirator, moving on all fours. The silhouette must stay one readable mass with a long
+  diagonal from head to trailing hand. Muted desaturated palette, painted concept art, plain
+  background, no blood, no text.
+expected: 'Infected enemy with a silhouette rule. Capability under test: Unease through shape
+  and proportion under an explicit silhouette constraint. Adherence clauses, check each: 1)
+  Figure in shredded security uniform with a fused respirator, no visible face  2) Arms visibly
+  over-jointed, folding in the wrong places  3) Silhouette reads as one mass with a long head-to-hand
+  diagonal  4) Desaturated palette, no blood or gore, plain background, no text'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

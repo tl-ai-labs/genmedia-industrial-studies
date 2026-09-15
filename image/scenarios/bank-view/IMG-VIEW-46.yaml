@@ -1,0 +1,42 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-46 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-wideroom.png — provenance in each sidecar .json
+# KNOWN ISSUE: the pinned photo is an empty room; the prompt and clauses describe near and edge furniture.
+id: IMG-VIEW-46
+modality: image
+task: image_edit
+title: Ultra-wide room to a natural focal length
+inputs:
+  source: assets/bank/IMG-VIEW-base-wideroom.png
+params:
+  size: auto
+prompt: 'Re-render this room as though photographed on a normal thirty-five millimetre lens
+  from the same position instead of an ultra-wide one: the exaggerated depth reduced, the
+  near furniture no longer oversized, the stretched objects at the edges returned to natural
+  proportions. The room''s actual contents and layout must be unchanged, and the frame must
+  stay rectangular even though the field of view narrows.'
+expected: 'Ultra-wide room to a natural focal length. Capability under test: Focal-length
+  change — perspective compression without altering the scene. Adherence clauses, check each:
+  1) Exaggerated depth reduced, room proportions look natural  2) Near furniture no longer
+  oversized relative to the far wall  3) Edge objects no longer stretched  4) Same contents
+  and layout, frame still rectangular'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.55
+  visual_quality: 0.15
+  realism_style: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-high

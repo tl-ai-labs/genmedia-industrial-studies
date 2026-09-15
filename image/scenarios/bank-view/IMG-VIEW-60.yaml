@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-60 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-model.png — provenance in each sidecar .json
+id: IMG-VIEW-60
+modality: image
+task: image_edit
+title: Full-body person from an extreme low angle
+inputs:
+  source: assets/bank/IMG-VIEW-base-model.png
+params:
+  size: auto
+prompt: Re-photograph this person from an extreme low angle, camera near ground level about
+  a metre in front of her looking steeply up, so she towers in the frame, the underside of
+  the coat's hem is visible and the background falls away behind her. Her face, coat, footwear
+  and pose must stay the same, with the foreshortening of the legs and torso anatomically
+  correct. Same setting and daylight.
+expected: 'Full-body person from an extreme low angle. Capability under test: Extreme low-angle
+  foreshortening on a full human figure without proportion collapse. Adherence clauses, check
+  each: 1) Camera near ground level looking steeply up  2) Underside of the coat hem visible,
+  background falling away behind  3) Leg and torso foreshortening anatomically correct, head
+  not shrunken  4) Same person, coat, footwear, pose, setting and daylight'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-medium

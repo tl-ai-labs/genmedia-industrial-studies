@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-15 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-horizon.png — provenance in each sidecar .json
+# Input is the pinned photo rotated 7° clockwise (see IMG-VIEW-base-horizon.json); untouched copy is -groundtruth.png.
+id: IMG-VIEW-15
+modality: image
+task: image_edit
+title: Level a tilted horizon without cropping the subject
+inputs:
+  source: assets/bank/IMG-VIEW-base-horizon.png
+params:
+  size: auto
+prompt: Rotate this photograph so the sea horizon is perfectly level. Fill the corners that
+  the rotation would empty by extending the sky, sea and pier plausibly rather than cropping
+  in — the lighthouse and the full length of the pier must remain in frame. Keep the colours,
+  grain and light exactly as they are.
+expected: 'Level a tilted horizon without cropping the subject. Capability under test: Rotation
+  plus outpainting — levelling without losing subject matter. Adherence clauses, check each:
+  1) Horizon perfectly level, left to right  2) Lighthouse and full pier still in frame, nothing
+  cropped away  3) Corners filled with plausible sky, sea and pier — no black wedges  4) Colour,
+  grain and light unchanged from the original'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.55
+  visual_quality: 0.15
+  realism_style: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-low

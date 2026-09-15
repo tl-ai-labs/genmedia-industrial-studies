@@ -1,0 +1,44 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-03 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# KNOWN ISSUE: text_to_image, but the prompt says 'Using the leftmost figure in this reference' — there is
+# no input. Prompt kept verbatim from the sheet; fix the sheet before quoting results.
+id: IMG-GAME-03
+modality: image
+task: text_to_image
+title: Operator turnaround / model sheet
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'Using the leftmost figure in this reference as the character, produce a model sheet
+  on a plain light-grey background: the same soldier drawn four times in one image, left to
+  right — front view, three-quarter view, side view, back view. The uniform pattern, webbing
+  layout, boots and headgear must match across all four, with the back view resolving the
+  pack and straps plausibly. All four the same height on a shared horizon line, flat even
+  lighting, no text.'
+expected: 'Operator turnaround / model sheet. Capability under test: Multi-view consistency
+  on a uniformed figure within a single image. Adherence clauses, check each: 1) Four views
+  in the order front, three-quarter, side, back  2) Uniform pattern, webbing, boots and headgear
+  identical across all four  3) Back view plausibly resolves the pack and strap routing  4)
+  All four aligned on one horizon at equal height, plain background, no text'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-high

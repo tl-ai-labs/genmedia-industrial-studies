@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-22 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-22
+modality: image
+task: text_to_image
+title: True isometric projection, no convergence
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: A true isometric illustration of a small corner shop with its roof removed, drawn
+  in axonometric projection with absolutely no perspective convergence — all parallel edges
+  stay parallel in the image and the two visible ground axes both run at thirty degrees to
+  the horizontal. Shelves, a counter, a floor of chequered tiles, a delivery crate by the
+  door. Clean flat vector-style shading, plain background, no text.
+expected: 'True isometric projection, no convergence. Capability under test: Axonometric discipline
+  — parallel projection held across the whole image. Adherence clauses, check each: 1) No
+  perspective convergence anywhere; parallel edges stay parallel  2) Both visible ground axes
+  at thirty degrees to the horizontal  3) Roof removed, interior visible — shelves, counter,
+  tiled floor, crate  4) Flat vector-style shading, plain background, no text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.35
+  visual_quality: 0.2
+  composition: 0.3
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-medium
