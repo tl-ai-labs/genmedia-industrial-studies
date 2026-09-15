@@ -464,18 +464,6 @@ def test_client_report_drops_internal_diagnostics(scored_run):
     assert "billed generation cost for one" in client      # the basis is stated
 
 
-def test_client_verdict_keeps_the_cost_tiebreaker(scored_run):
-    """Once a cost row is on the page, silently dropping 'cheaper: X' from the
-    verdict would be inconsistent — and that fact does not always favour the
-    Gemini arm, so hiding it would flatter one side."""
-    from runner.report import _client_prose
-    note = ("tie on quality (mean gap 0.01 < 0.5, no 70% win rate). "
-            "Broken only by facts: cheaper: Rival; faster p50: Gem")
-    out = _client_prose(note)
-    assert "cheaper: Rival" in out                   # kept, not stripped
-    assert "mean gap 0.1 pp < 5 pp" in out           # still restated in %
-
-
 def test_client_shows_percentages_where_internal_shows_points(scored_run):
     """8.0 out of 10 reads as 80% for the client and stays 8.00 internally.
     Expected strings come from aggregate(), never hard-coded."""
@@ -486,19 +474,6 @@ def test_client_shows_percentages_where_internal_shows_points(scored_run):
     assert f"{mean * 10:.1f}%" in client
     assert f"{mean:.2f}" not in client
     assert "percentage of the 10-point rubric" in client
-
-
-def test_gemini_first_puts_the_google_arm_left():
-    from runner.report import _gemini_first
-    assert _gemini_first(["z-gpt", "a-gemini-pro"],
-                         {"a-gemini-pro": "Google", "z-gpt": "OpenAI"}) \
-        == ["a-gemini-pro", "z-gpt"]
-    # vendor beats alphabet: the Google arm wins even from the back of the list
-    assert _gemini_first(["a-seedance", "z-omni"],
-                         {"z-omni": "Google", "a-seedance": "ByteDance"}) \
-        == ["z-omni", "a-seedance"]
-    # no Google arm anywhere -> plain alphabetical, never a hidden dependency
-    assert _gemini_first(["model-b", "model-a"], {}) == ["model-a", "model-b"]
 
 
 def test_google_arm_is_the_first_column(project, fake_models_yaml, fake_env,
@@ -594,46 +569,6 @@ def test_win_counts_agree_across_every_surface(scored_run):
         assert len(cards) == len(task["scenarios"]) == sum(expected.values())
 
 
-def test_metric_row_delta_follows_each_metric_direction():
-    """Lower-better metrics must not render a smaller number as a loss."""
-    from runner.report import _metric_rows
-
-    def m(mean, lat, worst=5.0):
-        return {"mean": mean, "worst": worst, "wtl": "1-0-0", "judged_n": 1,
-                "eligible": 1, "below_5": 0, "gen_cost_per_scenario_usd": 0.1,
-                "judge_cost_per_scenario_usd": 0.01, "latency_p50_ms": lat,
-                "latency_max_ms": lat, "success_rate": 1.0, "mean_attempts": 1.0}
-
-    rows = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 3000), "r": m(7.0, 5000)}, ["g", "r"])}
-    assert rows["mean"]["delta"] == pytest.approx(1.0)
-    assert rows["mean"]["delta_class"] == "up"          # higher score = ahead
-    assert rows["lat_p50"]["delta"] == pytest.approx(-2000)
-    assert rows["lat_p50"]["delta_class"] == "up"       # faster = ahead
-    assert rows["mean"]["hi"] and rows["lat_p50"]["hi"] # both highlighted
-
-    slower = {r["key"]: r for r in
-              _metric_rows({"g": m(8.0, 9000), "r": m(7.0, 5000)}, ["g", "r"])}
-    assert slower["lat_p50"]["delta_class"] == "down"   # slower = behind
-
-    tied = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 3000), "r": m(8.0, 3000)}, ["g", "r"])}
-    assert tied["mean"]["delta_class"] == ""            # equal = neither
-    # a single-model lane has nothing to compare against
-    solo = {r["key"]: r for r in _metric_rows({"g": m(8.0, 3000)}, ["g"])}
-    assert solo["mean"]["delta"] is None
-
-
-def test_client_verdict_prose_restates_the_band_in_percent():
-    """The stored verdict is never edited; the client copy only restates the
-    tie band in the units that report uses."""
-    from runner.report import _client_prose
-    assert _client_prose("mean gap 0.85 >= 0.5") == "mean gap 8.5 pp >= 5 pp"
-    assert _client_prose("") == "" and _client_prose(None) is None
-    note = ("tie on quality (mean gap 0.01 < 0.5, no 70% win rate). "
-            "Broken only by facts: higher success rate: Gem; faster p50: Gem")
-    assert "mean gap 0.1 pp < 5 pp" in _client_prose(note)
-
 def test_self_contained_leaves_small_runs_alone(scored_run, monkeypatch):
     """A run already under the inline budget is embedded as-is: no re-encode,
     no preview folder, and no disclosure claiming one happened."""
@@ -674,31 +609,12 @@ def test_client_only_difference_column_is_percentage_only(scored_run):
     assert ">Difference<" in client
     assert ">Difference<" not in internal
     assert 'class="num d' not in internal
-    body = client[client.index('<table class="mx mx2">'):client.index("</table>")]
+    body = client[client.index('<table class="mx">'):client.index("</table>")]
     # no bare point values leak into the column: every rendered delta is a %
     deltas = re.findall(r'<td class="num d[^"]*"><span class="dv">(.*?)</span>', body)
     assert deltas, "no difference cells rendered"
     for d in deltas:
         assert d.endswith(("pp", "%")) or "dash" in d, d
-
-
-def test_relative_difference_is_computed_against_the_rival():
-    from runner.report import _metric_rows
-
-    def m(mean, lat):
-        return {"mean": mean, "worst": 5.0, "wtl": "1-0-0", "judged_n": 1,
-                "eligible": 1, "below_5": 0, "gen_cost_per_scenario_usd": 0.1,
-                "judge_cost_per_scenario_usd": 0.01, "latency_p50_ms": lat,
-                "latency_max_ms": lat, "success_rate": 1.0, "mean_attempts": 1.0}
-
-    rows = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 40000)}, ["g", "r"])}
-    assert rows["lat_p50"]["delta_rel"] == pytest.approx(-50.0)   # half the time
-    assert rows["lat_p50"]["delta_class"] == "up"                 # and that is good
-    # a zero denominator must not raise or invent a number
-    zero = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 0)}, ["g", "r"])}
-    assert zero["lat_p50"]["delta_rel"] is None
 
 
 # --------------------------------------------------------------------------
@@ -1214,10 +1130,12 @@ def test_every_scenario_is_accounted_for_when_an_arm_fails(scored_run):
             r'data-dim="win" data-val="([^"]+)">[^<]*<span class="n">\((\d+)\)', html))
         assert chips == {"tie": "1", "none": "2"}          # not 3 "ties"
         assert sum(int(n) for n in chips.values()) == 3
-        assert 'class="tally hero-tally"' in html
-        assert "2 not compared" in html
-        assert "both failed on 1" in html
         assert 'data-row="failed"' in html                 # client sees it too
+    # the internal summary states the accounting in words; the client reads
+    # the same split off the chips ("Not compared (2)") and the Failed row
+    assert '<p class="tally">' in internal
+    assert "2 not compared" in internal and "both failed on 1" in internal
+    assert '<p class="tally">' not in client
 
 
 def test_complete_only_verdict_uses_the_means_the_table_shows(scored_run):
@@ -1268,58 +1186,31 @@ def test_client_report_drops_the_verdict_but_internal_keeps_it(scored_run):
     assert 'class="verdict"' not in client
     assert "no winner declared" not in client and "tie on quality" not in client
     assert 'id="overall"' in client and ">Overall summary<" in client
-    assert 'class="h vs">vs<' in client                    # duel strip names
-    # table header: "vs" in its own column, and every body row keeps the grid
-    assert '<th class="vsc" aria-hidden="true"><span>vs</span></th>' in client
-    assert client.count('<td class="vsc"></td>') == client.count('class="mrow')
-    assert 'class="vsc"' not in internal
+    assert 'class="vsx">vs<' in client                     # duel strip names
     # reliability is explained once, under the Overall summary card, not under each table
-    assert client.count("Reliability is the model's lowest rating") == 1
-    assert (client.index('id="overall"') < client.index("Reliability is the model's lowest rating")
-            < client.index('class="mx'))
-
-
-def test_rollup_win_percent_counts_only_compared_scenarios():
-    """Win % is over scenarios both models completed: a rival's failure is
-    not a loss for the model that delivered, nor a win for anyone."""
-    from runner.report import _finish_rollup
-    row = {"n": 8, "compared": 3, "models": {
-        "g": {"scores": [10.0, 9.0, 10.0, 10.0], "wins": 1},
-        "r": {"scores": [10.0, 8.2, 10.0, 5.4], "wins": 0}}}
-    _finish_rollup(row)
-    assert row["models"]["g"]["win_pct"] == 33.3
-    assert row["models"]["r"]["win_pct"] == 0.0
-    assert row["lead_mean"] == "g" and row["lead_wins"] == "g"
-    # 5 of 8 and 3 of 8 must not round in opposite directions
-    row = {"n": 10, "compared": 8, "models": {
-        "g": {"scores": [9.0], "wins": 3}, "r": {"scores": [9.0], "wins": 5}}}
-    _finish_rollup(row)
-    assert (row["models"]["g"]["win_pct"], row["models"]["r"]["win_pct"]) == (37.5, 62.5)
-    assert row["lead_mean"] is None                        # equal means tag nobody
-    assert row["lead_wins"] == "r"
-    # nothing compared: no percentage, no fake 0%
-    row = {"n": 2, "compared": 0, "models": {"g": {"scores": [9.0], "wins": 0}}}
-    _finish_rollup(row)
-    assert row["models"]["g"]["win_pct"] is None and row["lead_wins"] is None
+    rel = "is the model's lowest rating on any single scenario"
+    assert client.count(rel) == 1
+    assert client.index('id="overall"') < client.index(rel) < client.index('class="mx')
 
 
 def test_rollup_rows_filter_like_their_chips_and_tag_leaders():
     """Every family / industry row carries the same dim/val as its chip, so a
     click applies exactly that chip's filter; leaders are tagged."""
-    from runner.report import _env, _finish_rollup
+    from runner._report_kit import finish_rollup
+    from runner.report import _env
     rows = {"ads": {"n": 10, "compared": 8, "models": {
                 "g": {"scores": [9.16], "wins": 3}, "r": {"scores": [9.39], "wins": 5}}}}
     for r in rows.values():
-        _finish_rollup(r)
+        finish_rollup(r)
     env = _env({"g": "Gem", "r": "Rival"}, client=True)
-    macro = env.get_template("_sections.j2").module.rollup_table
+    macro = env.get_template("kit/_sections.j2").module.rollup_table
     html = str(macro(rows, ["g", "r"], "fam", "Family"))
     assert 'class="frow" data-dim="fam" data-val="ads"' in html
     assert ">Quality mean<" in html and ">Win %<" in html and "mean · wins" not in html
     assert '<span class="tag lead"' in html and "93.9%" in html     # r leads quality
-    assert '<span class="tag win">5 wins</span>' in html
+    assert '<span class="tag win lead">5 wins</span>' in html
     assert "62.5%" in html and "37.5%" in html
-    js = env.get_template("_assets.j2").module.js()
+    js = env.get_template("kit/_behaviour.j2").module.js()
     assert "table.roll .frow" in str(js) and "pickRow" in str(js)
 
 
@@ -1340,11 +1231,11 @@ def test_overall_summary_card_tags_the_better_value_not_the_tally_line(scored_ru
     tally sentence above it stays plain text."""
     import re as _re
     _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
-    tally = _re.search(r'<p class="tally hero-tally">.*?</p>', client, _re.S).group(0)
+    tally = _re.search(r'<p class="tally">.*?</p>', internal, _re.S).group(0)
     assert "tag" not in tally
     duel = _re.search(r'<div class="duel rev">.*?\n</div>', client, _re.S).group(0)
     assert "✦" not in duel
-    assert _re.search(r'<span class="tag win" title="better on this row">[^<]+</span>', duel)
+    assert _re.search(r'<span class="wtag">[^<]+</span>', duel)
 
 
 def test_both_reports_state_when_they_were_generated(scored_run):

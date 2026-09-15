@@ -386,17 +386,6 @@ def test_client_report_drops_internal_diagnostics(scored_run):
     assert "billed generation cost for one" in client      # the basis is stated
 
 
-def test_client_verdict_keeps_the_cost_tiebreaker(scored_run):
-    """Once a cost row is on the page, silently dropping 'cheaper: X' from the
-    verdict would be inconsistent — and that fact does not always favour the
-    Gemini arm, so hiding it would flatter one side."""
-    from runner.report import _client_prose
-    note = ("tie on quality (identical mean and identical scenario wins). "
-            "Broken only by facts: cheaper: Rival; faster p50: Gem")
-    out = _client_prose(note)
-    assert "cheaper: Rival" in out                   # kept, not stripped
-
-
 def test_client_shows_percentages_where_internal_shows_points(scored_run):
     """8.0 out of 10 reads as 80% for the client and stays 8.00 internally.
     Expected strings come from aggregate(), never hard-coded."""
@@ -407,19 +396,6 @@ def test_client_shows_percentages_where_internal_shows_points(scored_run):
     assert f"{mean * 10:.1f}%" in client
     assert f"{mean:.2f}" not in client
     assert "percentage of the 10-point rubric" in client
-
-
-def test_gemini_first_puts_the_google_arm_left():
-    from runner.report import _gemini_first
-    assert _gemini_first(["z-gpt", "a-gemini-pro"],
-                         {"a-gemini-pro": "Google", "z-gpt": "OpenAI"}) \
-        == ["a-gemini-pro", "z-gpt"]
-    # vendor beats alphabet: the Google arm wins even from the back of the list
-    assert _gemini_first(["a-seedance", "z-omni"],
-                         {"z-omni": "Google", "a-seedance": "ByteDance"}) \
-        == ["z-omni", "a-seedance"]
-    # no Google arm anywhere -> plain alphabetical, never a hidden dependency
-    assert _gemini_first(["model-b", "model-a"], {}) == ["model-a", "model-b"]
 
 
 def test_google_arm_is_the_first_column(project, fake_models_yaml, fake_env,
@@ -475,8 +451,8 @@ def test_win_rule_is_stated_as_any_margin(scored_run):
     for html in (internal, client):
         assert "by any margin" in html
         assert "Only an identical score" in html
-    assert "compared at two" in internal           # precision note: internal only
-    assert "compared at two" not in client
+    assert "99% vs 100%" in client and "100% vs 100%" in client   # in each audience's units
+    assert "9.9 vs 10" in internal and "10 vs 10" in internal
 
 
 def test_win_counts_agree_across_every_surface(scored_run):
@@ -507,43 +483,6 @@ def test_win_counts_agree_across_every_surface(scored_run):
         assert len(cards) == len(task["scenarios"]) == sum(expected.values())
 
 
-def test_metric_row_delta_follows_each_metric_direction():
-    """Lower-better metrics must not render a smaller number as a loss."""
-    from runner.report import _metric_rows
-
-    def m(mean, lat, worst=5.0):
-        return {"mean": mean, "worst": worst, "wtl": "1-0-0", "judged_n": 1,
-                "eligible": 1, "below_5": 0, "gen_cost_per_scenario_usd": 0.1,
-                "judge_cost_per_scenario_usd": 0.01, "latency_p50_ms": lat,
-                "latency_max_ms": lat, "success_rate": 1.0, "mean_attempts": 1.0}
-
-    rows = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 3000), "r": m(7.0, 5000)}, ["g", "r"])}
-    assert rows["mean"]["delta"] == pytest.approx(1.0)
-    assert rows["mean"]["delta_class"] == "up"          # higher score = ahead
-    assert rows["lat_p50"]["delta"] == pytest.approx(-2000)
-    assert rows["lat_p50"]["delta_class"] == "up"       # faster = ahead
-    assert rows["mean"]["hi"] and rows["lat_p50"]["hi"] # both highlighted
-
-    slower = {r["key"]: r for r in
-              _metric_rows({"g": m(8.0, 9000), "r": m(7.0, 5000)}, ["g", "r"])}
-    assert slower["lat_p50"]["delta_class"] == "down"   # slower = behind
-
-    tied = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 3000), "r": m(8.0, 3000)}, ["g", "r"])}
-    assert tied["mean"]["delta_class"] == ""            # equal = neither
-    # a single-model lane has nothing to compare against
-    solo = {r["key"]: r for r in _metric_rows({"g": m(8.0, 3000)}, ["g"])}
-    assert solo["mean"]["delta"] is None
-
-
-def test_client_verdict_prose_restates_the_band_in_percent():
-    """The stored verdict is never edited; the client copy only restates the
-    tie band in the units that report uses."""
-    from runner.report import _client_prose
-    assert _client_prose("higher mean (gap 0.36)") == "higher mean (gap 3.6 pp)"
-    assert _client_prose("") == "" and _client_prose(None) is None
-
 def test_client_only_difference_column_is_percentage_only(scored_run):
     """The difference column belongs to the client deliverable only, and every
     value in it is a percentage: percentage points for ratings, a relative
@@ -559,35 +498,6 @@ def test_client_only_difference_column_is_percentage_only(scored_run):
     for d in deltas:
         assert d.endswith(("pp", "%")) or "dash" in d, d
 
-
-def test_relative_difference_is_computed_against_the_rival():
-    from runner.report import _metric_rows
-
-    def m(mean, lat):
-        return {"mean": mean, "worst": 5.0, "wtl": "1-0-0", "judged_n": 1,
-                "eligible": 1, "below_5": 0, "gen_cost_per_scenario_usd": 0.1,
-                "judge_cost_per_scenario_usd": 0.01, "latency_p50_ms": lat,
-                "latency_max_ms": lat, "success_rate": 1.0, "mean_attempts": 1.0}
-
-    rows = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 40000)}, ["g", "r"])}
-    assert rows["lat_p50"]["delta_rel"] == pytest.approx(-50.0)   # half the time
-    assert rows["lat_p50"]["delta_class"] == "up"                 # and that is good
-    # a zero denominator must not raise or invent a number
-    zero = {r["key"]: r for r in
-            _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 0)}, ["g", "r"])}
-    assert zero["lat_p50"]["delta_rel"] is None
-
-
-# --------------------------------------------------------------------------
-# Per-provider budget caps
-#
-# A run bills two accounts at once — the Google arm on Vertex, the other on
-# its own provider account. One combined --budget protects neither, so each
-# provider can carry its own cap. These pin both halves: the plan is refused
-# up front when it cannot fit, and the run aborts mid-flight when the actual
-# bills drift past the cap even though the estimates fitted.
-# --------------------------------------------------------------------------
 
 def _token_billed_models_yaml(project):
     """model-a estimated at $0.01 a call but actually billing $1.60.

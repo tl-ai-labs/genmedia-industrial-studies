@@ -1,0 +1,384 @@
+{#- Voice lane hooks — the only voice-specific markup in any voice report.
+    Contract: shared/report_kit/report_kit/templates/kit/lane_hooks_default.j2
+
+    ctx.voice carries the lane's own context (runner/kit_context.py):
+      mode "study" (every run, one comparison) | "run" (one run folder).
+    Every colour here is a kit token; nothing is hard-coded. -#}
+
+{% macro extra_css() %}
+<style>
+/* audio evidence: a player where the image lanes have a picture */
+.clip{padding:8px 0;border-top:1px dashed var(--rule)}
+.clip:first-child{border-top:0;padding-top:0}
+.clip .top{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin-bottom:6px}
+.clip .rl{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+.clip .meta{display:flex;flex-wrap:wrap;gap:2px 12px;font-family:var(--mono);font-size:11px;
+  color:var(--muted);margin-top:4px}
+.clip .meta b{color:var(--ink)}
+.clip .tx{font-size:12px;color:var(--muted);margin-top:6px;white-space:pre-wrap}
+.clip .was{font-size:12px;color:var(--warn);background:var(--warn-soft);border-radius:8px;
+  padding:6px 9px;margin-top:6px}
+.clip .was.dimmed{color:var(--muted);background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+.pill.corr{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.shot .frame.audio{height:auto;align-items:stretch;justify-content:flex-start;flex-direction:column;
+  padding:12px 14px;overflow:visible}
+.shot .frame.audio .badge{position:static;align-self:flex-end;margin-bottom:6px}
+/* the word-level transcript diff: what the WER gate actually compared */
+.wdiff{font-family:var(--mono);font-size:12px;line-height:1.9;padding:8px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+.wdiff .missing{background:var(--bad-soft);color:var(--bad);text-decoration:line-through;padding:0 2px}
+.wdiff .added{background:var(--accent-soft);color:var(--accent-ink);padding:0 2px}
+.wdiff .same{color:var(--muted)}
+/* human review, beside the automated result and never inside it */
+.human{border:1px dashed var(--warn);border-radius:12px;padding:10px 14px;margin-top:12px}
+.human .ob{border-top:1px dashed var(--rule);padding-top:8px;margin-top:8px}
+.human .ob:first-of-type{border-top:0;margin-top:4px}
+.human .obn{margin:4px 0;font-size:13.5px}
+/* the streaming explainer's drawing */
+.how .tl{width:100%;max-width:760px;height:auto;display:block;margin:10px 0}
+.how .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:10px 0}
+.how .q{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;font-size:13.5px}
+</style>
+{% endmacro %}
+
+{# ------------------------------------------------------------- one clip #}
+
+{% macro clip_block(c, cl, show_lead) %}
+{% set src = cl.audio_client if CLIENT else cl.audio_internal %}
+<div class="clip">
+  <div class="top">
+    {% if cl.variant %}<span class="pill">{{ cl.variant }}</span>{% endif %}
+    {% if cl.run_label %}<span class="rl">{{ cl.run_label }}</span>{% endif %}
+    {% if show_lead and cl.lead %}<span class="pill ok">median take</span>{% endif %}
+    {% if cl.corrections %}<span class="pill corr" title="an automated result on this clip was corrected after human review">corrected</span>{% endif %}
+    {% if cl.score is not none and cl.status != 'invalid' %}<span class="pill">{{ cl.score|q(true) }}</span>
+    {% elif cl.status == 'invalid' %}<span class="pill bad">gate failed</span>
+    {% elif cl.review_note %}<span class="pill est">cleared on review, not scored</span>
+    {% elif cl.status == 'unjudged' %}<span class="pill est">unjudged</span>
+    {% elif cl.status == 'incomplete' %}<span class="pill est">n/a — scenario incomplete</span>{% endif %}
+  </div>
+  {% if src %}<audio controls preload="none" src="{{ src }}"></audio>{% endif %}
+  <div class="meta">
+    {% if cl.latency_ms %}<span>generated in <b>{{ cl.latency_ms|s }}</b></span>{% endif %}
+    {% if cl.ttfa_ms %}<span>first audio <b>{{ cl.ttfa_ms|ms }}</b></span>{% endif %}
+    {% if cl.duration_s %}<span>length <b>{{ '%.1f'|format(cl.duration_s) }}s</b></span>{% endif %}
+    {% if cl.wer is not none %}<span>word errors <b>{{ cl.wer|pct(1) }}</b></span>{% endif %}
+  </div>
+  {% if cl.transcript and not CLIENT %}<div class="tx">{{ cl.transcript }}</div>{% endif %}
+  {% for x in cl.corrections %}
+  <div class="was"><b>Corrected</b> {{ x.field }}{% if x.gate %} <code>{{ x.gate }}</code>{% endif %}:
+    the instrument said <code>{{ x.was }}</code>, now <code>{{ x.now }}</code> — {{ x.reason }}
+    ({{ x.reviewer_name }}, {{ x.date }})</div>
+  {% endfor %}
+  {% if cl.review_note %}<div class="was dimmed">{{ cl.review_note }}.</div>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro summary_thumbs(s) %}{% endmacro %}
+
+{% macro source_media(s, src) %}{% endmacro %}
+
+{# the model's lead (median) take, with every other take behind a toggle #}
+{% macro card_media(s, c) %}
+{% set study = c.study %}
+<div class="frame audio">
+  {% if c.score is not none %}<span class="badge {{ 'win' if s.winner == c.model_id }}">{{ c.score|q(true) }}</span>
+  {% else %}<span class="badge bad">no score</span>{% endif %}
+  {% for cl in c.clips if cl.lead or not study %}{{ clip_block(c, cl, study) }}{% endfor %}
+  {% if study %}
+  {% set more = c.clips|rejectattr('lead')|list %}
+  {% if more %}
+  <details class="disc more"><summary>{{ more|length }} more clip{{ '' if more|length == 1 else 's' }} — every take the numbers rest on</summary>
+    <div class="inner">{% for cl in more %}{{ clip_block(c, cl, study) }}{% endfor %}</div>
+  </details>
+  {% endif %}
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro media_note(ctx, s) %}
+{% if s.voice.negative_control %}<p class="hint"><span class="pill est">negative control</span>
+WER is measured against a deliberately different reference — a working gate must fail this cell.</p>{% endif %}
+{% endmacro %}
+
+{% macro evidence_hint(ctx) %}; press play on any clip — one plays at a time{% endmacro %}
+
+{% macro card_measures(s, c) %}
+<span class="pill">{{ c.n_scored }} of {{ c.n_cells }} clip{{ '' if c.n_cells == 1 else 's' }} scored</span>
+{% if c.worst_wer is not none %}<span class="pill">worst word errors {{ c.worst_wer|pct(1) }}</span>{% endif %}
+{% if c.n_corrected %}<span class="pill corr">{{ c.n_corrected }} corrected on review</span>{% endif %}
+{% if c.uncalibrated and c.score is not none %}<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>{% endif %}
+{% if c.measurements and c.measurements.audio_quality_1_5 %}
+  <span class="pill">audio {{ c.measurements.audio_quality_1_5 }}/5</span>
+  {% if not c.measurements.audio_quality_is_mos %}<span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>{% endif %}
+{% endif %}
+{% if c.voice_pin and not CLIENT %}<span class="pill">voice {{ c.voice_pin }}</span>{% endif %}
+{% endmacro %}
+
+{% macro card_diagnostics(s, c) %}
+{% if c.diff %}
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff">{% for d in c.diff %}<span class="{{ d.kind }}">{{ d.text }}</span> {% endfor %}</div></div>
+{% endif %}
+{% endmacro %}
+
+{# per scenario: set verdicts, first audio, throughput, each run's score, human review, the verdict line #}
+{% macro scenario_extra(ctx, s) %}
+{% set v = s.voice %}
+{% if ctx.voice.mode == 'study' %}
+{% if v.rows and v.labels %}
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th>{% for l in v.labels %}<th class="num">{{ l }}</th>{% endfor %}<th class="num">Own spread</th></tr></thead>
+  <tbody>
+  {% for r in v.rows %}
+  <tr><td>{{ r.model_id|disp }}</td>
+    {% for x in r.pass_scores %}<td class="num">{{ x|q }}</td>{% endfor %}
+    <td class="num">{% if r.spread is not none %}±{{ r.spread|q }}{% else %}<span class="dash">not measured</span>{% endif %}</td></tr>
+  {% endfor %}
+  {% if v.gap is not none and not CLIENT %}
+  <tr><td>Δ {{ v.gap_label }}</td>
+    {% for g in v.gaps %}<td class="num">{{ g|qd }}</td>{% endfor %}
+    <td class="num">{% if v.floor is not none %}noise ±{{ v.floor|q }}{% else %}<span class="dash">not measured</span>{% endif %}</td></tr>
+  {% endif %}
+  </tbody></table></div>
+{% endif %}
+
+{% if v.group or v.ttfa or v.throughput %}
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  {% for g in v.group %}
+  <tr><td>Set verdict · {{ g.gate }}</td><td>{{ g.model_id|disp }}</td>
+    <td><span class="pill {{ 'ok' if g.passed else ('est' if not g.measured else 'bad') }}">{{ 'pass' if g.passed else ('n/a' if not g.measured else 'fail') }}</span></td>
+    <td class="note">{{ g.detail }}</td></tr>
+  {% endfor %}
+  {% for t in v.ttfa %}
+  <tr><td>Time to first audio</td><td>{{ t.model_id|disp }}</td>
+    <td class="num">median {{ t.p50|ms }}</td>
+    <td class="note">95th {{ t.p95|ms }} · range {{ t.min }}–{{ t.max }} ms · n={{ t.n }} — streaming latency, not whole-call time</td></tr>
+  {% endfor %}
+  {% for t in v.throughput %}
+  <tr><td>Throughput</td><td>{{ t.model_id|disp }}</td>
+    <td class="num">{{ t.cost_per_audio_minute|usd }} per audio minute</td>
+    <td class="note">{{ t.n }} clips · {{ t.audio_minutes }} min of audio</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endif %}
+
+{% if v.human %}
+<div class="human">
+  <b>Human review</b> <span class="note">what listeners heard — not part of the score above</span>
+  {% for o in v.human %}
+  <div class="ob">
+    <b>{{ o.reviewer_name }}</b> <span class="dash">{{ o.date }}</span>
+    {% if o.model_id %}<code>{{ o.model_id }}</code>{% else %}<span class="dash">both models</span>{% endif %}
+    {% if o.variant %}<span class="pill">{{ o.variant }}</span>{% endif %}
+    {% if o.run_label %}<span class="dash">{{ o.run_label }}</span>{% endif %}
+    {% if o.preference %}<span class="pill est">prefers {{ o.preference if o.preference not in ['tie', 'cant_tell'] else ('neither — a tie' if o.preference == 'tie' else "can't tell") }}</span>{% endif %}
+    <p class="obn">{{ o.notes }}</p>
+    {% for t in o.tags or [] %}<span class="pill">{{ t }}</span>{% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<p class="note">{% if CLIENT %}{{ v.short }}{% else %}<b>{{ v.verdict }}.</b> {{ v.detail }}{% endif %}
+{% if v.stale %}<br>{{ v.stale }} earlier run{{ '' if v.stale == 1 else 's' }} of this scenario used a
+<b>different version</b> of it and {{ 'is' if v.stale == 1 else 'are' }} excluded — a repeat has to be the
+same script and the same gates.{% endif %}</p>
+{% endif %}
+{% endmacro %}
+
+{# ------------------------------------------------------ page sections #}
+
+{# disclosures that qualify every number below, stated before the tables #}
+{% macro after_summary(ctx) %}
+{% set v = ctx.voice %}
+{% if not CLIENT and v.overall %}
+<div class="banner"><b>{{ v.overall.verdict }}.</b> {{ v.overall.detail }}</div>
+{% endif %}
+{% if v.judge_is_google or v.uncalibrated %}
+<div class="banner"><b>Judge:</b> <code>{{ v.judge }}</code>
+  {%- if v.judge_is_google %} — a Google model scoring a comparison with a Google arm in it{% endif %}
+  {%- if v.judge_is_google and v.uncalibrated %}, and{% endif %}
+  {%- if v.uncalibrated %} never calibrated against human listeners{% endif %}.
+  The measured figures — word errors, timing, cost, gate rate — do not depend on it.</div>
+{% endif %}
+{% if v.mode == 'run' %}
+<div class="banner"><b>{{ 'Judge calibrated.' if v.calibration.passed else 'Judge uncalibrated.' }}</b> {{ v.calibration.reason }}</div>
+{% endif %}
+<ul class="tnote">
+  <li><b>How a voice scenario is decided.</b> A model wins a scenario only when its quality gap
+  clears the {{ v.band_pp|round(1) }} pp decision band ({{ v.win_gap }} on the 10-point scale){% if v.mode == 'study' %}
+  and it cleared no fewer gates; closer gaps are a tie, and "better on quality, worse on delivery"
+  is a split{% endif %}.</li>
+  {% if v.mode == 'study' %}<li><b>Quality is averaged over scored clips only</b>, and every mean carries its
+  denominator; a gate failure counts against the gate rate, never as a zero.</li>{% endif %}
+</ul>
+{% if v.served and v.served.any %}
+<p class="note"><b>Served from:</b>
+  {% for r in v.served.models %}<code>{{ r.model_id }}</code> — {{ r.served_from }}{{ '; ' if not loop.last }}{% endfor %}.
+  Detail under <a href="#served">where each model was served from</a>.</p>
+{% endif %}
+{% if v.human and v.human.present %}
+<p class="note"><b>Human review, kept separate:</b>
+  {{ v.human.n_observations }} observation{{ '' if v.human.n_observations == 1 else 's' }} by
+  {{ v.human.reviewer_names }} on {{ v.human.n_scenarios_reviewed }} scenario{{ '' if v.human.n_scenarios_reviewed == 1 else 's' }}
+  ({{ v.human.date_span }}), in their own block on each scenario and in <a href="#human">the human review section</a>;
+  none enters a score or a verdict.
+  {% if v.human.n_corrections %}{{ v.human.n_corrections }} automated result{{ '' if v.human.n_corrections == 1 else 's' }}
+  the reviewers found wrong {{ 'is' if v.human.n_corrections == 1 else 'are' }} corrected on this page and marked
+  <span class="pill corr">corrected</span>, with what the instrument originally said.{% endif %}</p>
+{% endif %}
+{% endmacro %}
+
+{% macro after_tables(ctx) %}
+{% set v = ctx.voice %}
+{% if v.mode == 'run' and not CLIENT %}
+<h2>Rubrics and cost</h2>
+<div class="tw"><table>
+  <thead><tr><th>Task</th><th>Rubric</th><th>Weights</th></tr></thead>
+  <tbody>
+  {% for task, t in ctx.agg.tasks.items() %}
+  <tr><td>{{ task|tasktitle }}</td><td><code>{{ t.rubric.rubric_hash[:16] }}…</code></td>
+    <td class="note">{% for c in t.rubric.criteria %}{{ c.key }}={{ c.weight }}{{ ', ' if not loop.last }}{% endfor %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+<div class="tw"><table>
+  <thead><tr><th>Component</th><th class="num">Total</th></tr></thead>
+  <tbody>
+  <tr><td>Generation</td><td class="num">{{ v.totals.gen|usd }}</td></tr>
+  <tr><td>ASR (word accuracy)</td><td class="num">{{ v.totals.asr|usd }}</td></tr>
+  <tr><td>Judge</td><td class="num">{{ v.totals.judge|usd }}</td></tr>
+  <tr><td><b>Run total</b></td><td class="num"><b>{{ v.totals.all|usd }}</b></td></tr>
+  </tbody></table></div>
+<p class="tnote">Generation and judging are reported separately and never summed in storage.</p>
+{% endif %}
+
+{% if v.streaming and v.streaming.any %}
+<h2 id="ttfa">Time to first audio</h2>
+{% if v.streaming.lead %}<p class="note">{{ v.streaming.lead|safe }}</p>{% endif %}
+<div class="tw"><table>
+  <thead><tr><th>Model</th><th class="num">Streamed clips</th><th class="num">First audio, median</th>
+    <th class="num">Range, min–95th</th><th class="num">Whole call, median</th><th class="num">Cleared its ceiling</th></tr></thead>
+  <tbody>
+  {% for r in v.streaming.per_model %}
+  <tr><td>{{ r.model_id|disp }}</td><td class="num">{{ r.n }}</td><td class="num">{{ r.p50|ms }}</td>
+    <td class="num">{{ r.min }}–{{ r.p95 }} ms</td><td class="num">{{ r.whole_p50|s }}</td>
+    <td class="num">{{ r.passed }} / {{ r.n }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+<div class="tw"><table>
+  <thead><tr><th>Scenario</th><th class="num">Ceiling</th>
+    {% for mid in ctx.model_order %}<th class="num">{{ mid|disp }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for sc in v.streaming.per_scenario %}
+  <tr><td><code>{{ sc.id }}</code></td><td class="num">{{ sc.ceiling|ms if sc.ceiling else '—' }}</td>
+    {% for mid in ctx.model_order %}{% set r = sc.rows|selectattr('model_id', 'equalto', mid)|first %}
+    <td class="num">{% if r %}{{ r.p50|ms }}{% if not r.pass %} <span class="pill est">over</span>{% endif %}{% else %}<span class="dash">—</span>{% endif %}</td>
+    {% endfor %}</tr>
+  {% endfor %}
+  </tbody></table></div>
+<p class="tnote">Time to the first audio chunk, not whole-call latency. Only scenarios that set a
+first-audio ceiling are streamed, so only those appear here.</p>
+{% set streaming = v.streaming %}{% include "_streaming_how.j2" %}
+{% endif %}
+
+{% if v.served and v.served.any %}
+<h2 id="served">Where each model was served from</h2>
+<div class="tw"><table>
+  <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>What that means</th>{% if not CLIENT %}<th>Source</th>{% endif %}</tr></thead>
+  <tbody>
+  {% for r in v.served.models %}
+  <tr><td><code>{{ r.model_id }}</code></td>
+    <td><b>{{ r.served_from }}</b>{% if not r.consistent %} <span class="pill est">differs between runs</span>{% endif %}</td>
+    <td><code>{{ r.region or '—' }}</code></td><td class="note">{{ r.region_note }}</td>
+    {% if not CLIENT %}<td class="note">{{ 'run manifest' if r.source == 'manifest' else ('configs/models.yaml (run predates the field)' if r.source == 'config' else 'not recorded') }}</td>{% endif %}</tr>
+  {% endfor %}
+  {% for who, row, name in [('judge', v.served.judge, v.judge), ('transcriber', v.served.asr, v.asr)] if row %}
+  <tr><td>{{ who }} <code>{{ name }}</code></td><td><b>{{ row.served_from }}</b></td>
+    <td><code>{{ row.region or '—' }}</code></td><td class="note">{{ row.region_note }}</td>
+    {% if not CLIENT %}<td class="note">{{ 'run manifest' if row.source == 'manifest' else ('configs/models.yaml' if row.source == 'config' else 'not recorded') }}</td>{% endif %}</tr>
+  {% endfor %}
+  </tbody></table></div>
+<p class="tnote">{% if v.served.from_config %}Read back from the study's model configuration for runs
+that predate the field in the run record; every run from 14 September 2026 records it itself.
+{% else %}Recorded in each run's own manifest at the time it ran.{% endif %}</p>
+{% endif %}
+{% endmacro %}
+
+{% macro after_evidence(ctx) %}
+{% set v = ctx.voice %}
+{% if v.human and v.human.present %}
+<h2 id="human">Human review</h2>
+<p class="note"><b>Two records, kept apart.</b> Everything above is what code and the blind judge
+measured. This section is what {{ v.human.reviewer_names }} heard ({{ v.human.date_span }}); nothing
+here is averaged into anything above, and it is not part of any score.</p>
+{% if v.per_scenario_human %}
+<div class="tw"><table>
+  <thead><tr><th>Scenario</th><th>Automated verdict</th><th>Human preference</th><th class="num">Notes</th><th class="num">Corrected clips</th></tr></thead>
+  <tbody>
+  {% for r in v.per_scenario_human %}
+  <tr><td><code>{{ r.id }}</code>{% if r.title %} <span class="note">{{ r.title }}</span>{% endif %}</td>
+    <td>{{ r.automated }}</td>
+    <td>{% for p in r.preferences %}<span class="pill">{{ p if p not in ['tie', 'cant_tell'] else ('tie' if p == 'tie' else "can't tell") }}</span>{% else %}<span class="dash">no preference stated</span>{% endfor %}</td>
+    <td class="num">{{ r.n_notes }}</td><td class="num">{{ r.n_corrected or '—' }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endif %}
+{% if v.human.corrections %}
+<h2>Automated results corrected after human review</h2>
+<div class="tw"><table>
+  <thead><tr><th>Clip</th><th>What</th><th>Instrument said</th><th>Corrected to</th><th>Why</th><th>Who, when</th></tr></thead>
+  <tbody>
+  {% for x in v.human.corrections %}
+  <tr><td><code>{{ x.scenario_id }}</code><br><span class="note">{{ x.model_id }} · {{ x.run_label }}</span></td>
+    <td>{{ x.field }}{% if x.gate %} <code>{{ x.gate }}</code>{% endif %}</td>
+    <td class="num"><code>{{ x.was }}</code></td><td class="num"><code>{{ x.now }}</code></td>
+    <td class="note">{{ x.reason }}</td><td class="note">{{ x.reviewer_name }}<br>{{ x.date }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+<p class="tnote">The run records on disk are unaltered; <code>--no-review</code> renders them as they are.</p>
+{% endif %}
+{% endif %}
+
+{% if v.mode == 'study' and not CLIENT %}
+<h2 id="runs">Every run</h2>
+<div class="tw"><table>
+  <thead><tr><th>Run</th><th>Started</th><th>Scenario</th><th class="num">Cells</th><th class="num">Passed</th>
+    <th class="num">Cost</th><th>Judge</th><th>Predictor</th><th>Served from</th></tr></thead>
+  <tbody>
+  {% for r in v.run_rows %}
+  <tr><td><code>{{ r.label }}</code></td><td class="note">{{ r.started }}</td><td><code>{{ r.scenario }}</code></td>
+    <td class="num">{{ r.cells }}</td><td class="num">{{ r.passed }}</td><td class="num">{{ r.cost|usd }}</td>
+    <td class="note">{{ r.judge }}</td><td class="note">{{ r.predictor }}</td><td class="note">{{ r.served }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endif %}
+{% endmacro %}
+
+{% macro footnote_lines(ctx) %}
+{% set v = ctx.voice %}
+{% if v.mode == 'study' %}
+{% if CLIENT %}
+Every clip is on this page, encoded to MP3; each scenario was generated more than once per model and every take is kept. A percentage is a rubric score, not an accuracy rate — 95% means 9.5 out of 10.<br>
+Transcribed locally by {{ v.asr }}, which shares a vendor with neither model. Absent measurements show as “—”, never as zero.<br>
+{% if v.mos_signal %}The objective audio number is a signal metric, not a MOS.<br>{% endif %}
+{% else %}
+{% for f in v.footnotes %}{{ f|safe }}<br>{% endfor %}
+Transcription cost on this page: {{ v.asr_micro|usd }} (inside the cost per clip).<br>
+{% endif %}
+{% else %}
+Judge failure is recorded as unjudged and excluded from the mean — never scored 0. Audio is re-encoded
+before judging so no provider metadata reaches the judge.<br>
+{% if not CLIENT %}Calibration thresholds: mean |human − judge| ≤ {{ v.calibration.as_record.thresholds.max_mean_abs_diff }},
+rank correlation ≥ {{ v.calibration.as_record.thresholds.min_rank_correlation }},
+{{ v.calibration.as_record.thresholds.required_reviewers }} reviewers × {{ v.calibration.as_record.thresholds.required_clips }} clips.<br>{% endif %}
+{% if v.voice_map_rows %}Voices are a declared difference — one voice pinned per provider:
+{% for r in v.voice_map_rows %}{{ r.model }}: {{ r.logical }} → {{ r.provider_voice }}{{ '; ' if not loop.last }}{% endfor %}.<br>{% endif %}
+{% if v.mos_fallback_reason %}Audio quality predictor: {{ v.mos_fallback_reason }} A signal-metric score is not a MOS.<br>{% endif %}
+{% if v.skipped and not CLIENT %}Not attempted (n/a, excluded from every denominator):
+{% for x in v.skipped %}{{ x.scenario_id }} × {{ x.model_id }} ({{ x.reason }}){{ '; ' if not loop.last }}{% endfor %}.<br>{% endif %}
+These models are non-deterministic; the winner threshold is {{ v.win_gap }}, set for this study, so a verdict inside it can change on a re-run.<br>
+{% endif %}
+{% endmacro %}

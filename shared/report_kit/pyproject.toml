@@ -1,0 +1,23 @@
+[project]
+name = "genmedia-report-kit"
+version = "1.0.0"
+description = "GenMedia report kit — the one presentation layer for the image, video and voice lanes"
+requires-python = ">=3.11"
+dependencies = ["jinja2>=3.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["report_kit"]
+
+[tool.setuptools.package-data]
+report_kit = ["templates/kit/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

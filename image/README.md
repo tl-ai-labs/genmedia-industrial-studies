@@ -97,7 +97,8 @@ runs/<run-id>/
 ├── checks.jsonl       one row per deterministic check result
 ├── judge.jsonl        one row per judge call: blind map, prompt hash, raw response
 ├── scores.jsonl       one row per scenario × model: criteria, weights, total
-└── report.html        the deliverable — opens anywhere, no server
+├── report.html        internal report — opens anywhere, no server
+└── report-client.html the client deliverable (same context; see ../shared/report_kit/RULES.md)
 ```
 
 JSONL rows are append-only and outputs are immutable: a correction is a new

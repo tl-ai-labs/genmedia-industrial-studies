@@ -1,0 +1,36 @@
+<!doctype html>
+{#- One report page — a single run, or several runs merged into one comparison.
+    Rendered twice (internal + client) by report_kit.render_both. -#}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMedia comparison · {{ LANE.key }} — {{ manifest.run_id }}</title>
+{% import "kit/_styles.j2" as styles %}
+{% import "kit/_behaviour.j2" as behaviour %}
+{% import "kit/_sections.j2" as sec %}
+{% import "lane_hooks.j2" as lane %}
+{{ styles.css() }}
+{{ lane.extra_css() }}
+</head>
+<body>
+
+<div class="topbar"><div class="in">
+  <span class="t">GenMedia comparison</span>
+  <span class="m">{{ LANE.key }} · {{ manifest.run_id }}</span>
+  <nav>
+    <a href="#overall">Summary</a>
+    <a href="#evidence">Scenarios</a>
+    <a href="#footnotes">Footnotes</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+{{ sec.hero(ctx) }}
+{{ sec.report_body(ctx) }}
+</div>
+
+<div id="lb"><div class="sw"></div><img alt=""><div class="cap"></div></div>
+{{ behaviour.js() }}
+</body>
+</html>

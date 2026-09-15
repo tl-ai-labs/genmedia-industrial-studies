@@ -294,7 +294,7 @@ def test_both_pages_mark_corrections_and_keep_the_original(root, tmp_path):
         assert "Human review" in html
         assert "paced for writing down" in html
         assert "not part of" in html, "the block says it is not part of the score"
-    assert 'id="human"' in client and 'data-tab="t-review"' in board
+    assert 'id="human"' in client and 'id="human"' in board
 
 
 def test_the_review_summary_names_who_and_when(root, tmp_path):

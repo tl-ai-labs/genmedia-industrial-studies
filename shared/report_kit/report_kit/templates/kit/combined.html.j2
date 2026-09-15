@@ -1,27 +1,34 @@
 <!doctype html>
+{#- A study: several runs on one page, one tab per run (or, with `brief`, stacked
+    strips over one mixed scenario list). Each tab is the same report_body a
+    single-run page shows. Rendered twice (internal + client). -#}
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GenMedia comparison — combined</title>
-{% import "_assets.j2" as assets %}
-{% import "_sections.j2" as sec %}
-{{ assets.css() }}
+<title>GenMedia comparison · {{ LANE.key }} — {{ overview.title }}</title>
+{% import "kit/_styles.j2" as styles %}
+{% import "kit/_behaviour.j2" as behaviour %}
+{% import "kit/_sections.j2" as sec %}
+{% import "lane_hooks.j2" as lane %}
+{{ styles.css() }}
+{{ lane.extra_css() }}
 </head>
 <body>
 
 <div class="topbar"><div class="in">
   <span class="t">GenMedia comparison</span>
-  <span class="m">{{ runs|length }} lanes · {{ overview.n_scenarios }} scenarios</span>
+  <span class="m">{{ LANE.key }} · {{ runs|length }} lanes · {{ overview.n_scenarios }} scenarios</span>
   <nav><a href="#overview">Overview</a></nav>
 </div></div>
 
 <div class="wrap">
 <header class="hero" id="overview">
-  <p class="kicker">quality · cost · latency · reliability — four columns, never one number</p>
-  <h1>Gemini vs GPT across {{ overview.n_scenarios }} scenarios,
+  <p class="kicker">{% if CLIENT %}quality · latency · reliability — blind-judged, one run per scenario{% else %}quality · cost · latency · reliability — four columns, never one number{% endif %}</p>
+  <h1>{{ overview.title }} across {{ overview.n_scenarios }} scenarios,
       {{ runs|length }} task lanes</h1>
   <div class="meta">
+    {% if generated %}<span>report generated <b>{{ generated }}</b></span>{% endif %}
     {% for c in runs %}<span>{{ c.agg.tasks.keys()|list|first }}
       <b>{{ c.manifest.run_id }}</b></span>{% endfor %}
   </div>
@@ -29,46 +36,48 @@
     <div class="tile"><div class="lab">Scenarios</div>
       <div class="val">{{ overview.n_scenarios }}</div>
       <div class="sub">{% for c in runs %}{{ c.evidence|length }} {{ c.agg.tasks.keys()|list|first }}{% if not loop.last %} · {% endif %}{% endfor %}</div></div>
+    {% if not CLIENT %}
     <div class="tile"><div class="lab">Generation cost</div>
       <div class="val">{{ overview.gen_micro|usd }}</div>
       <div class="sub">billed from returned usage</div></div>
     <div class="tile"><div class="lab">Judging cost</div>
       <div class="val">{{ overview.judge_micro|usd }}</div>
       <div class="sub">kept separate, always</div></div>
+    {% endif %}
   </div>
 
   <div class="tw"><table>
     <thead><tr><th>Task lane</th><th class="num">Scenarios</th>
       <th class="num">Completed</th><th>Models</th>
-      <th>Verdict</th><th>How decided</th></tr></thead>
+      {% if not CLIENT %}<th>Verdict</th><th>How decided</th>{% endif %}</tr></thead>
     <tbody>
     {% for r in overview.rows %}
     <tr><td>{{ r.task|tasktitle }}</td><td class="num">{{ r.n }}</td>
       <td class="num">{{ r.completed }}/{{ r.n }}</td>
-      <td style="font-family:var(--mono);font-size:12px">{{ r.models|join('<br>')|safe }}</td>
-      <td><b>{{ r.verdict }}</b></td><td style="font-size:13px">{{ r.detail }}</td></tr>
+      <td style="font-family:var(--mono);font-size:12px">{% if CLIENT %}{{ r.models|join(' <span class="vs">vs</span> ')|safe }}{% else %}{{ r.models|join('<br>')|safe }}{% endif %}</td>
+      {% if not CLIENT %}<td><b>{{ r.verdict }}</b></td><td style="font-size:13px">{{ r.detail }}</td>{% endif %}</tr>
     {% endfor %}
     </tbody></table></div>
 
   <div class="banner"><b>Read within a lane, not across lanes.</b> Each lane is its own
-  controlled comparison (its own scenarios, GPT quality tier and prices) — quality, cost
+  controlled comparison (its own scenarios, model tiers{% if not CLIENT %} and prices{% endif %}) — quality{% if not CLIENT %}, cost{% endif %}
   and latency are comparable inside a lane, never between lanes.</div>
 </header>
 
 {% if brief %}
 {% for c in runs %}
-{{ sec.duel_strip(c, (c.agg.tasks.keys()|list|first|replace('_', ' ')) ~ ' · ' ~ (c.evidence|length) ~ ' scenarios') }}
+{{ sec.duel_strip(c, (c.tab_label or c.agg.tasks.keys()|list|first|replace('_', ' ')) ~ ' · ' ~ (c.evidence|length) ~ ' scenarios') }}
 {{ sec.banners(c) }}
 {{ sec.verdicts_only(c) }}
 {% endfor %}
 {{ sec.industries_table(merged) }}
 {{ sec.evidence_section(merged, 'm-', gallery=false) }}
-{% for c in runs %}{{ sec.footnotes(c) }}{% endfor %}
+{% for c in runs %}{{ sec.footnotes(c, 'm' ~ loop.index ~ '-') }}{% endfor %}
 {% else %}
 <div class="tabbar">
   {% for c in runs %}
   <button class="tabbtn {{ 'on' if loop.first }}" type="button" data-tab="t{{ loop.index }}">
-    {{ c.agg.tasks.keys()|list|first|replace('_', ' ') }}
+    {{ c.tab_label or c.agg.tasks.keys()|list|first|replace('_', ' ') }}
     <span class="cnt">{{ c.evidence|length }} scenarios</span>
   </button>
   {% endfor %}
@@ -76,19 +85,13 @@
 
 {% for c in runs %}
 <section class="runpanel {{ 'on' if loop.first }}" data-tab="t{{ loop.index }}">
-  {{ sec.duel_strip(c) }}
-  {{ sec.banners(c) }}
-  {{ sec.task_tables(c) }}
-  {{ sec.families_table(c) }}
-  {{ sec.industries_table(c) }}
-  {{ sec.evidence_section(c, 'r' ~ loop.index ~ '-') }}
-  {{ sec.footnotes(c) }}
+  {{ sec.report_body(c, 'r' ~ loop.index ~ '-') }}
 </section>
 {% endfor %}
 {% endif %}
 </div>
 
 <div id="lb"><div class="sw"></div><img alt=""><div class="cap"></div></div>
-{{ assets.js() }}
+{{ behaviour.js() }}
 </body>
 </html>

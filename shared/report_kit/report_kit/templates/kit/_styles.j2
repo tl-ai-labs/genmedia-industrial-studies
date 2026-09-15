@@ -1,3 +1,5 @@
+{# The kit's design tokens and components. Colours come ONLY from the :root
+   tokens below; a lane never hard-codes a colour. #}
 {% macro css() %}
 <script>document.documentElement.classList.add('js');</script>
 <style>
@@ -83,11 +85,9 @@ h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin
 .duel .heads{align-items:center}
 .duel .heads .vsx{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--faint)}
-.osum{font-size:15px;line-height:1.6;margin:6px 0 4px}
 .duel .wtag{display:inline-block;padding:3px 11px;border-radius:14px;white-space:nowrap;
   border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);
   background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
-.osum .nc{color:var(--warn)}
 .duel .dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
 .duel .m{margin:12px 0}
@@ -180,34 +180,36 @@ h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint
 .verdict b.win{color:var(--accent-ink)}
 .verdict .sub{font-size:12.5px;color:var(--muted);margin-top:6px}
 
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;align-items:center;scroll-margin-top:70px}
 .chip{font-size:12.5px;padding:6px 14px;border-radius:20px;border:1px solid var(--rule);
   background:var(--card);color:var(--muted);cursor:pointer;user-select:none;
   transition:background .15s,color .15s,border-color .15s}
 .chip:hover{border-color:var(--accent)}
 .chip .n{opacity:.75}
 .chip.zero{opacity:.4}
-table.bdt th{vertical-align:bottom}
-table.bdt th.grp{text-align:center;letter-spacing:.08em}
-table.bdt th.grp.a{color:var(--accent-ink)}
-table.bdt th.grp.b{color:var(--rival)}
-table.bdt th.grp,table.bdt .sep{border-left:1px solid var(--rule)}
-table.bdt td{vertical-align:middle}
-table.bdt tbody tr:last-child td{border-bottom:0}
-table.bdt .bdrow{cursor:pointer;transition:background .15s}
-table.bdt .bdrow:hover td{background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
-table.bdt .bdrow.on td{background:var(--accent-soft)}
-table.bdt .bdrow.on .bdname{color:var(--accent-ink);font-weight:600}
-table.bdt .bdname{text-decoration:underline dashed;text-decoration-color:var(--faint);
+/* family / industry rollup tables: grouped per model, leaders tagged, rows filter */
+table.roll th{vertical-align:bottom}
+table.roll th.grp{text-align:center;letter-spacing:.08em}
+table.roll th.grp.a{color:var(--accent-ink)}
+table.roll th.grp.b{color:var(--rival)}
+table.roll th.grp,table.roll .sep{border-left:1px solid var(--rule)}
+table.roll td{vertical-align:middle}
+table.roll tbody tr:last-child td{border-bottom:0}
+table.roll .frow{cursor:pointer;transition:background .15s}
+table.roll .frow:hover td{background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
+table.roll .frow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+table.roll .frow.on td{background:var(--accent-soft)}
+table.roll .frow.on .fname{color:var(--accent-ink);font-weight:600}
+table.roll .fname{text-decoration:underline dashed;text-decoration-color:var(--faint);
   text-underline-offset:4px}
-table.bdt .tag{display:inline-block;padding:3px 11px;border-radius:14px;
+table.roll .tag{display:inline-block;padding:3px 11px;border-radius:14px;
   border:1px solid var(--rule);white-space:nowrap}
-table.bdt .tag.zero{color:var(--faint)}
-table.bdt .tag.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+table.roll .tag.zero{color:var(--faint)}
+table.roll .tag.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
   background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
-table.bdt td.lead{color:var(--accent-ink);font-weight:700}
-table.bdt .tag.win{font-weight:700;color:var(--ink);border-color:var(--faint)}
-table.bdt .tag.win.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+table.roll td.lead{color:var(--accent-ink);font-weight:700}
+table.roll .tag.win{font-weight:700;color:var(--ink);border-color:var(--faint)}
+table.roll .tag.win.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
   background:var(--accent-soft);color:var(--accent-ink)}
 ul.tnote{margin:4px 0 12px;padding-left:20px}
 ul.tnote li{margin:2px 0}
@@ -322,206 +324,26 @@ details[open].scn .chev{transform:rotate(180deg)}
 .foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
   font-family:var(--mono);font-size:11.5px;line-height:1.8;color:var(--faint)}
 a{color:var(--accent-ink)}
+
+/* scenario accounting: a scenario missing a result is "not compared", never a tie */
+.tally{font-size:13.5px;margin-top:8px;line-height:1.55}
+.tally .nc{color:var(--warn)}
+.pill.nc{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.scn .scores .sc.fl,.scn .scores .sc.fl:first-child{color:var(--warn);font-size:12px;font-weight:600}
+/* why an output is missing, in words, with the raw provider text kept internal */
+.crit.r .wo{display:block;color:var(--bad);font-size:12.5px;margin-bottom:3px}
+.crit.r .wt{color:var(--muted);font-size:12px;line-height:1.5}
+.rawerr{margin-top:6px}
+.rawerr summary{font-size:11px;color:var(--faint);cursor:pointer}
+.rawerr code{display:block;margin-top:4px;font-size:10.5px;color:var(--faint);word-break:break-all;line-height:1.4}
+/* media frames hold whatever the lane shows: an image, a video, an audio player */
+.shot .frame video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;display:block}
+.shot .frame.audio{height:auto;min-height:0;padding:14px;display:block}
+.shot .frame audio{width:100%;display:block}
+.srcth{border:2px solid var(--accent)}
+.scn .thumbs .srcclip{display:inline-block;padding:1px 5px;border-radius:3px;background:var(--accent);
+  color:#fff;font-size:10px;vertical-align:middle}
+.hint{font-size:12px;color:var(--faint);margin:2px 4px 0}
+.note{font-size:12.5px;color:var(--muted)}
 </style>
-{% endmacro %}
-
-{% macro js() %}
-<script>
-(function () {
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () {
-      document.documentElement.classList.add('ready');
-    });
-  });
-
-  function revealAll(scope) {
-    (scope || document).querySelectorAll('.rev').forEach(function (el) {
-      el.classList.add('vis');
-    });
-  }
-  if (!reduced && 'IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); }
-      });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.rev').forEach(function (el) { io.observe(el); });
-  } else {
-    revealAll();
-  }
-
-  // tabs (combined report)
-  var tabbar = document.querySelector('.tabbar');
-  if (tabbar) tabbar.addEventListener('click', function (e) {
-    var b = e.target.closest('.tabbtn'); if (!b) return;
-    tabbar.querySelectorAll('.tabbtn').forEach(function (x) { x.classList.remove('on'); });
-    b.classList.add('on');
-    document.querySelectorAll('.runpanel').forEach(function (p) {
-      p.classList.toggle('on', p.dataset.tab === b.dataset.tab);
-      if (p.dataset.tab === b.dataset.tab) revealAll(p);
-    });
-  });
-
-  // lightbox with in-place model switching, scoped to the panel
-  var lb = document.getElementById('lb'), lbi = lb.querySelector('img'),
-      cap = lb.querySelector('.cap'), sw = lb.querySelector('.sw');
-  var current = { list: [], idx: 0 };
-  function openLb(img) {
-    var scope = img.closest('.runpanel') || document;
-    current.list = Array.prototype.slice.call(
-      scope.querySelectorAll('.out[data-sid="' + CSS.escape(img.dataset.sid) + '"]'));
-    current.idx = Math.max(0, current.list.indexOf(img));
-    renderLb(); lb.classList.add('show');
-  }
-  function renderLb() {
-    var im = current.list[current.idx]; if (!im) return;
-    lbi.src = im.src;
-    cap.textContent = im.dataset.cap + '   (chips or ←/→ to flip)';
-    sw.innerHTML = '';
-    current.list.forEach(function (m, i) {
-      var b = document.createElement('button');
-      b.className = 'swb' + (i === current.idx ? ' on' : '');
-      b.textContent = m.dataset.mid;
-      b.addEventListener('click', function (e) {
-        e.stopPropagation(); current.idx = i; renderLb();
-      });
-      sw.appendChild(b);
-    });
-  }
-  function applyChip(chip) {
-    var chips = chip.closest('.chips');
-    chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
-    chip.classList.add('on');
-    var scope = chip.closest('.runpanel') || document;
-    // AND-combine the active selection of every chip dimension
-    // (industry, winner, family)
-    var active = {};
-    scope.querySelectorAll('.chips .chip.on').forEach(function (c) {
-      if (c.dataset.dim) active[c.dataset.dim] = c.dataset.val;
-    });
-    // keep the breakdown-table rows in step with the chips
-  scope.querySelectorAll('.bdrow').forEach(function (r) {
-    r.classList.toggle('on', active[r.dataset.dim] === r.dataset.val);
-  });
-  var dets = scope.querySelectorAll('details.scn');
-    dets.forEach(function (d) {
-      var show = true;
-      if (active.fam && active.fam !== '__all' && d.dataset.fam !== active.fam) show = false;
-      if (active.ind && active.ind !== '__all' && d.dataset.ind !== active.ind) show = false;
-      if (active.win && active.win !== '__all' && d.dataset.win !== active.win) show = false;
-      if (active.task && active.task !== '__all' && d.dataset.task !== active.task) show = false;
-      d.style.display = show ? '' : 'none';
-    });
-    // faceted counts: each chip shows how many scenarios IT would yield
-    // under the other rows' current selections
-    scope.querySelectorAll('.chips .chip').forEach(function (c) {
-      var dim = c.dataset.dim, span = c.querySelector('.n');
-      if (!dim || !span) return;
-      var n = 0;
-      dets.forEach(function (d) {
-        var ok = true;
-        ['fam', 'ind', 'win', 'task'].forEach(function (k) {
-          var v = (k === dim) ? c.dataset.val : active[k];
-          if (v && v !== '__all' && d.dataset[k] !== v) ok = false;
-        });
-        if (ok) n++;
-      });
-      span.textContent = '(' + n + ')';
-      c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
-    });
-  }
-
-  document.addEventListener('click', function (e) {
-    var t = e.target;
-    if (t.classList && t.classList.contains('out')) { openLb(t); return; }
-    if (e.target === lb || e.target === lbi) lb.classList.remove('show');
-    var g = t.closest && t.closest('.gallery .g');
-    if (g) {
-      var d = document.getElementById(g.dataset.target);
-      if (d) { d.style.display = ''; d.open = true; d.classList.add('vis');
-        d.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
-      return;
-    }
-    // a family / industry row drives the matching filter chip; clicking the
-    // row that is already active goes back to "All"
-    var tf = t.closest && t.closest('.bdrow');
-    if (tf) {
-      var tscope = tf.closest('.runpanel') || document;
-      var val = tf.classList.contains('on') ? '__all' : tf.dataset.val;
-      var target = null;
-      tscope.querySelectorAll('.chips .chip').forEach(function (c) {
-        if (c.dataset.dim === tf.dataset.dim && c.dataset.val === val) target = c;
-      });
-      if (target) {
-        applyChip(target);
-        if (val !== '__all')
-          target.closest('.chips').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
-      }
-      return;
-    }
-    var chip = t.closest && t.closest('.chips .chip');
-    if (chip) { applyChip(chip); return; }
-    var ctl = t.closest && t.closest('.ctl');
-    if (ctl) {
-      var scope2 = ctl.closest('.runpanel') || document;
-      scope2.querySelectorAll('details.scn').forEach(function (d) {
-        if (ctl.dataset.act === 'expand') {
-          if (d.style.display !== 'none') { d.open = true; d.classList.add('vis'); }
-        } else { d.open = false; }
-      });
-    }
-  });
-
-  // Sort by: reorders the scenario nodes. Filtering only toggles
-  // display, so the two compose — neither reads the other's state.
-  function applySort(sel) {
-    var scope = sel.closest('.runpanel') || document;
-    var list = scope.querySelector('.scnlist');
-    if (!list) return;
-    var parts = String(sel.value).split('-');
-    var key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
-    var items = Array.prototype.slice.call(list.children).filter(function (n) {
-      return n.classList && n.classList.contains('scn');
-    });
-    items.sort(function (x, y) {
-      var xi = +x.dataset.i, yi = +y.dataset.i;
-      if (key === 'id') return xi - yi;
-      var a = parseFloat(x.dataset[key]), b = parseFloat(y.dataset[key]);
-      var an = isNaN(a), bn = isNaN(b);
-      if (an && bn) return xi - yi;        // unscored keep their id order …
-      if (an) return 1;                    // … and always sink to the bottom
-      if (bn) return -1;
-      if (a === b) return xi - yi;         // stable: equal scores never shuffle
-      return (a < b ? -1 : 1) * dir;
-    });
-    items.forEach(function (d) { list.appendChild(d); });
-    // keep the gallery strip in step with the list it indexes
-    var gal = scope.querySelector('.gallery');
-    if (gal) {
-      var pos = {};
-      items.forEach(function (d, i) { pos[d.id] = i; });
-      Array.prototype.slice.call(gal.querySelectorAll('.g')).sort(function (x, y) {
-        var px = pos[x.dataset.target], py = pos[y.dataset.target];
-        return (px === undefined ? 1e9 : px) - (py === undefined ? 1e9 : py);
-      }).forEach(function (g) { gal.appendChild(g); });
-    }
-  }
-
-  document.addEventListener('change', function (e) {
-    var sel = e.target.closest && e.target.closest('[data-sort]');
-    if (sel) applySort(sel);
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (!lb.classList.contains('show')) return;
-    if (e.key === 'Escape') lb.classList.remove('show');
-    if (e.key === 'ArrowRight' && current.list.length > 1) {
-      current.idx = (current.idx + 1) % current.list.length; renderLb(); }
-    if (e.key === 'ArrowLeft' && current.list.length > 1) {
-      current.idx = (current.idx - 1 + current.list.length) % current.list.length; renderLb(); }
-  });
-})();
-</script>
 {% endmacro %}

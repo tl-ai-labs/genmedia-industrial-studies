@@ -8,14 +8,11 @@ be zipped and mailed. But three runs of the same scenario produce three
 disconnected reports and no way to see the thing that matters most about
 repeated runs - how much the numbers move between them. This file is that view.
 
-DESIGN REFERENCE, NOT A COPY.
-The visual language follows apps/dashboard/DESIGN_SYSTEM.md: Space Grotesk for
-display, IBM Plex Sans for body, IBM Plex Mono for identifiers and labels;
-three grays and no more; one accent used only on the active tab and primary
-links; status colour confined to pills; per-model colour used ONLY where it
-identifies a model in a bar, never as decoration. None of that app's code is
-imported or copied - it is a React/Tailwind app and this is one static file
-with no build step, which is the constraint the plan sets for this project.
+ONE PRESENTATION LAYER.
+The page is rendered by the shared report kit (shared/report_kit), which gives
+image, video and voice one layout, one set of sections, one stylesheet and one
+set of number formats. This file keeps what is voice: the loading, the
+rollups and the verdicts. runner/kit_context.py arranges them for the kit.
 
 WHAT IT DELIBERATELY DOES NOT DO.
 No blending of quality, cost, latency and reliability into one number. No
@@ -561,14 +558,9 @@ def _num(v, fmt="{:.2f}", dash="—"):
 
 
 # ---------------------------------------------------------------------------
-# Rendering. The data above is the whole truth; this half only arranges it.
-#
-# The markup follows the image lane's report (image/runner/templates) so the
-# two modalities read as one product - same tokens, same tiles, same duel
-# strip, same "four columns, never one number" framing. What differs is what
-# a voice lane actually has to say: a REPEATS tab, because a spoken clip is
-# not reproducible the way a rendered image is, and evidence you LISTEN to
-# rather than look at.
+# Shaping for the page. The data above is the whole truth; this half only
+# arranges it. The page itself is the shared report kit's - see
+# runner/kit_context.py and runner/templates/lane_hooks.j2.
 # ---------------------------------------------------------------------------
 
 def _fmt_usd(micro: int | float | None) -> str:
@@ -1129,175 +1121,18 @@ def _streaming_panel(all_cells: list["Cell"], models: list[ModelRollup]) -> dict
 
 def render_dashboard(runs_root: Path, modality: str = "voice",
                      review_path: Path | None = None) -> Path:
-    """Write runs/index.html - the cross-run dashboard."""
-    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    """
+    Write runs/index.html - the internal audience of the voice study.
 
-    from .review import review_context
+    The page is the shared report kit's (shared/report_kit): the same layout,
+    sections and styling as the image and video lanes. The client report
+    (runner.client_report) renders the client audience of the SAME context
+    builder, so the two can never disagree on a number.
+    """
+    from .kit_context import render, study_context
 
-    runs, review, applied = load_runs_reviewed(runs_root, modality, review_path)
-    if not runs:
-        raise SystemExit(f"no {modality} runs under {runs_root}")
-    models = rollup_models(runs)
-    all_cells = [c for r in runs for c in r.cells]
-    duel = _duel(models)
-    scenarios = _scenario_blocks(runs, duel, {m.model_id: m.accent for m in models}, review)
-    served = served_rows(runs)
-    human = review_context(review, applied)
-
-    env = Environment(
-        loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
-        autoescape=select_autoescape(["html", "j2"]),
-    )
-    env.filters["usd"] = _fmt_usd
-    env.filters["s"] = _fmt_s
-
-    run_rows = [{
-        "label": r.label, "started": (r.started_at or "")[:16].replace("T", " "),
-        "scenario": ", ".join(sorted({_parent_id(c.scenario_id) for c in r.cells})) or "—",
-        "cells": len(r.cells),
-        "passed": sum(1 for c in r.cells if c.status == "scored"),
-        "cost": sum(c.total_micro for c in r.cells),
-        "judge": r.judge_model, "predictor": r.mos_predictor,
-        "served": "; ".join(f"{m}: {v['served_from']}" for m, v in sorted(r.served.items())) or "—",
-    } for r in reversed(runs)]
-
-    uncalibrated = any(not r.calibration_passed for r in runs)
-    footnotes = [
-        "<b>Quality is meaned over scored cells only</b>, and always carries its denominator. "
-        "A gated cell is counted in <em>Invalid</em> and in the gate rate, never averaged into "
-        "quality - a clean read that is too long for an ad slot is the wrong length, not bad audio.",
-        "<b>Models are ranked on the gate first</b>, quality second, so failing more can never "
-        "look like scoring higher.",
-        "<b>A repeat is the same script and the same gates.</b> Runs of an edited scenario are "
-        "excluded from every spread on this page.",
-        "<b>The objective audio number is a signal metric, not a MOS.</b> It measures SNR, "
-        "spectral flatness, clipping and bandwidth - it is labelled as such wherever it appears "
-        "and must not be quoted as a mean opinion score.",
-        "<b>Cost is what the run believed it paid</b>, at the rates frozen in its own manifest.",
-    ]
-    n_excluded = len(all_cells) - sum(len(m["clips"]) for b in scenarios for m in b["side"])
-    if n_excluded:
-        stale = ", ".join(f"<code>{b['id']}</code>" for b in scenarios if b["stale"])
-        footnotes.append(
-            f"<b>{n_excluded} clips are not on this page.</b> They were produced by earlier runs "
-            f"of {stale} against a <em>different version</em> of the scenario - the script or the "
-            f"gates changed afterwards. Comparing them with the clips beside them would measure "
-            f"our edit rather than the model, so they are excluded from every card and every "
-            f"spread here. They remain in their own run folders, unaltered."
-        )
-    # PROVENANCE, stated once and factually. The judge and the ASR are named
-    # so a reader can see for themselves whether either shares a vendor with
-    # an arm - which is a thing that has already changed an answer here once,
-    # when the ASR did. Whether that exposure is acceptable is a decision for
-    # whoever runs the study; whether it is DISCLOSED is not.
-    arms = {m.model_id.split("-")[0] for m in models}
-    judge_vendor = (runs[-1].judge_model or "").split("-")[0]
-    shared = judge_vendor in arms
-    footnotes.append(
-        f"<b>Judged by <code>{runs[-1].judge_model}</code>, listening to the audio</b>, blinded "
-        f"A/B/C per scenario and told the measured facts as established truth. "
-        + (f"It shares a vendor with one arm under test - blinding hides the label, not the "
-           f"acoustic fingerprint, so treat judge-derived criteria "
-           f"(<code>pronunciation</code>, <code>naturalness</code>, <code>clarity</code>, "
-           f"<code>style_adherence</code>, and half of <code>audio_quality</code>) as carrying "
-           f"that exposure. Accepted deliberately for this study."
-           if shared else
-           "It shares a vendor with neither arm.")
-    )
-    footnotes.append(
-        f"<b>Transcribed by <code>{runs[-1].asr_model}</code></b>, run locally. The transcript is "
-        f"the basis of every WER number and every phrase gate. It shares a vendor with neither "
-        f"arm - a Google recogniser measurably favoured the Google arm and was retired on "
-        f"2026-09-03."
-    )
-    if uncalibrated:
-        footnotes.insert(0, "<b>The judge is uncalibrated.</b> The 2-humans x 5-clips gate has "
-                            "never been run, so <code>naturalness</code> and <code>clarity</code> "
-                            "carry no evidence of agreement with a human ear.")
-    # WHERE IT WAS SERVED FROM. One line per arm, plus the judge, so the
-    # region question is answered on the page and not in a chat thread.
-    if served["any"]:
-        parts = [f"<code>{r['model_id']}</code> from <b>{_e(r['served_from'])}</b>"
-                 for r in served["models"]]
-        footnotes.append(
-            "<b>Served from:</b> " + "; ".join(parts)
-            + (f"; the judge from <b>{_e(served['judge'].get('served_from', 'not recorded'))}</b>"
-               if served["judge"] else "")
-            + ". "
-            + ("<em>Read back from <code>configs/models.yaml</code> for runs that predate the "
-               "field in the manifest; every run from 2026-09-14 records it itself.</em>"
-               if served["from_config"] else "Recorded in each run's own manifest.")
-        )
-    if human["present"]:
-        footnotes.append(
-            f"<b>Human review is kept apart from the automated results.</b> "
-            f"{human['n_observations']} observation{'s' if human['n_observations'] != 1 else ''} by "
-            f"{_e(human['reviewer_names'])} on {human['n_scenarios_reviewed']} scenarios sit in "
-            f"their own block on each card and in the Review tab; none enters a score, a gate "
-            f"rate or a winner. {human['n_corrections']} automated result"
-            f"{'s' if human['n_corrections'] != 1 else ''} the reviewers found wrong "
-            f"{'are' if human['n_corrections'] != 1 else 'is'} corrected on this page, each "
-            f"marked <em>corrected</em> with what the instrument originally said. "
-            f"<code>--no-review</code> renders the instrument's answer untouched."
-        )
-
-    # Result class drives both the badge colour and the filter. "gemini" and
-    # "other" only when a gap actually cleared the decision band - a tie is
-    # never dressed as a win.
-    gemini_wins = other_wins = 0
-    for b in scenarios:
-        if b["winner"] and "gemini" in b["winner"].lower():
-            b["result_class"] = "gemini"; gemini_wins += 1
-        elif b["winner"]:
-            b["result_class"] = "other"; other_wins += 1
-        elif b["verdict"] == "Split":
-            b["result_class"] = "split"
-        elif b["gap"] is not None:
-            b["result_class"] = "tie"
-        else:
-            b["result_class"] = "none"
-    industries = sorted({(b["industry"]) for b in scenarios})
-    industries = [(i, sum(1 for b in scenarios if b["industry"] == i)) for i in industries]
-
-    html = env.get_template("dashboard.html.j2").render(
-        win_gap=WIN_GAP,
-        industries=industries, gemini_wins=gemini_wins, other_wins=other_wins,
-        models=[{
-            "model_id": m.model_id, "accent": m.accent, "mean": m.mean_score,
-            "scored_n": m.scored_n, "evaluated_n": m.evaluated_n or m.n,
-            "gate_pass_rate": m.gate_pass_rate, "repeat_spread": m.repeat_spread,
-            "worst_wer": m.worst_wer, "mean_cost": m.mean_cost,
-            "p50_latency": m.p50_latency, "p95_latency": m.p95_latency,
-            "invalid": m.invalid,
-        } for m in models],
-        runs=runs, run_rows=run_rows, scenarios=scenarios, duel=duel,
-        served=served, human=human,
-        streaming=_streaming_panel(all_cells, models),
-        overall=_overall(models),
-        # PARENTS, not cells. Counting raw ids called this a 102-scenario
-        # study: `vr-ecom-07#r01`..`#r30` is one scenario measured thirty
-        # times, not thirty scenarios, and the figure contradicted both the
-        # Scenarios tab and the workbook it is drawn from.
-        n_scenarios=len({_parent_id(c.scenario_id) for c in all_cells}),
-        # CLIPS THE PAGE ACTUALLY CARRIES. A run of a since-edited scenario
-        # is excluded from its card, because its difference is the size of
-        # our edit rather than the model's. While those clips sat in an
-        # Evidence tab they were still on the page and the total was honest;
-        # with the clips folded into the cards they are not, so the header
-        # counts what is reachable and the excluded ones are declared below
-        # rather than quietly dropped.
-        n_clips=sum(len(m["clips"]) for b in scenarios for m in b["side"]),
-        n_excluded=len(all_cells) - sum(len(m["clips"]) for b in scenarios for m in b["side"]),
-        stale_ids=sorted({b["id"] for b in scenarios if b["stale"]}),
-        max_passes=max((s["n_passes"] for s in scenarios), default=0),
-        repeated_n=sum(1 for s in scenarios if s["n_passes"] > 1),
-        gen_micro=sum(c.cost_micro for c in all_cells),
-        asr_micro=sum(c.asr_micro for c in all_cells),
-        judge_micro=sum(c.judge_micro for c in all_cells),
-        judge_model=runs[-1].judge_model,
-        uncalibrated=uncalibrated,
-        footnotes=footnotes,
-    )
+    ctx = study_context(Path(runs_root), modality, review_path)
     out = Path(runs_root) / "index.html"
-    out.write_text(html, encoding="utf-8")
+    from . import _report_kit as kit
+    kit.write_page(render(ctx, client=False), out)
     return out

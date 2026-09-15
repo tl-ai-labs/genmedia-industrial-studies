@@ -6,6 +6,10 @@ video lane in `runner/video/` instead of the image lane. Scenarios come from
 `../assets/genmedia_validation_rubrics_with_industry_mappings.xlsx`
 ("Scenario bank" sheet, Video rows; scoring dimensions from the "Video" tab).
 
+Reports (`report.html` + `report-client.html`) are presented by the shared kit
+in [`../shared/report_kit`](../shared/report_kit/RULES.md); this lane supplies
+only its data and the video player markup in `runner/templates/lane_hooks.j2`.
+
 ## Scope (v1)
 
 20 scenarios — the two **asset-free** families only:
