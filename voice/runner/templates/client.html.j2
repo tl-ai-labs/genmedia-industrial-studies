@@ -94,29 +94,35 @@
     run-to-run spread.</p>
 </header>
 
-<h2>Head to head</h2>
+<h2>Overall summary</h2>
+
+<h3>Head to head</h3>
 <div class="duel">
   <div class="heads">
-    <span class="h gem">◆ {{ gemini }}{% if gem_vendor %} · {{ gem_vendor }}{% endif %}</span>
-    <span class="h oth">{{ other }}{% if oth_vendor %} · {{ oth_vendor }}{% endif %} ◆</span>
+    <button type="button" class="h gem hbtn" data-res="gem">◆ {{ gemini }}{% if gem_vendor %} · {{ gem_vendor }}{% endif %}
+      <span class="c">{{ gemini_wins }} wins</span></button>
+    <button type="button" class="h oth hbtn" data-res="oth">{{ other }}{% if oth_vendor %} · {{ oth_vendor }}{% endif %} ◆
+      <span class="c">{{ other_wins }} wins</span></button>
   </div>
   {% for r in strip %}
   <div class="drow">
     <div class="dlab">{{ r.label }}</div>
     <div class="dpair">
-      <span class="dval{{ ' win' if r.gem_win }}">{{ val(r.gem, r.fmt) }}{% if r.gem_win %} ✦{% endif %}</span>
+      <span class="dval{{ ' win' if r.gem_win }}">{{ val(r.gem, r.fmt) }}</span>
       <span class="dtrack gem"><i style="width:{{ '%.1f'|format(r.gem_w) }}%"></i></span>
       <span class="dtrack oth"><i style="width:{{ '%.1f'|format(r.oth_w) }}%"></i></span>
-      <span class="dval r{{ ' win' if r.oth_win }}">{% if r.oth_win %}✦ {% endif %}{{ val(r.oth, r.fmt) }}</span>
+      <span class="dval r{{ ' win' if r.oth_win }}">{{ val(r.oth, r.fmt) }}</span>
     </div>
   </div>
   {% endfor %}
 </div>
-<p class="one dim">Bars share a scale per row; ✦ marks the better side. Quality follows the
-{{ '%.1f'|format(win_gap * 10) }}pp band — no star inside it.</p>
+<p class="one dim">Bars share a scale per row; the highlighted pill marks the better side. Quality
+follows the {{ '%.1f'|format(win_gap * 10) }}pp band — nothing is highlighted inside it. Click
+either name above to see just its wins below, or <button type="button" class="linklike" data-res="tie">the
+{{ n_scenarios - n_win }} with no winner</button>; click a highlighted one again to show all.</p>
 
 {% if served.any %}
-<h2 id="served">Where each model was served from</h2>
+<h3 id="served">Where each model was served from</h3>
 <div class="mtable"><div class="mscroll"><table>
   <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>What that means</th></tr></thead>
   <tbody>
@@ -153,13 +159,18 @@ The Gemini arm is called at a Vertex AI regional endpoint we choose; the ElevenL
 API call with no region parameter, so its region is the vendor's default.</p>
 {% endif %}
 
-<h2>Every metric, both models</h2>
+<h3>Every metric, both models</h3>
 <div class="mtable"><div class="mscroll"><table>
-  <thead><tr>
+  <thead><tr><th colspan="4" class="vshead plain">
+    <div class="vs-line">{{ gemini }}</div>
+    <div class="vs-mid">vs</div>
+    <div class="vs-line">{{ other }}</div>
+  </th></tr>
+  <tr>
     <th>Metric</th>
     <th class="n gemcol">{{ gemini }}</th>
     <th class="n othcol">{{ other }}</th>
-    <th class="n">Difference</th>
+    <th class="n diffcol">Difference</th>
   </tr></thead>
   <tbody>
   {% for m in metrics %}
@@ -176,6 +187,48 @@ API call with no region parameter, so its region is the vendor's default.</p>
 </table></div></div>
 <p class="one dim">Difference is <b>{{ gemini }} minus {{ other }}</b>; green is the better
 direction for that row.</p>
+
+{% if industry_table %}
+<h3>By industry</h3>
+<div class="mtable"><div class="mscroll"><table class="itbl">
+  <thead><tr><th></th><th></th><th colspan="3" class="vshead gemcol">{{ gemini }}</th>
+    <th colspan="3" class="vshead othcol">{{ other }}</th></tr>
+  <tr>
+    <th>Industry</th><th class="n">Scenarios</th>
+    <th class="n gemcol">Quality mean</th><th class="n gemcol">Wins</th><th class="n gemcol">Win %</th>
+    <th class="n othcol">Quality mean</th><th class="n othcol">Wins</th><th class="n othcol">Win %</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for row in industry_table %}
+  <tr class="rowfilter" data-ind="{{ row.industry }}">
+    <td class="metric">{{ row.industry }}</td>
+    <td class="n">{{ row.n }}</td>
+    {% for c in row.cols %}
+    <td class="n">{% if c.quality_mean_pct is not none %}
+      <span class="imean{{ ' lead' if c.is_leader }}">{{ '%.1f'|format(c.quality_mean_pct) }}%</span>
+      {% else %}<span class="dash">—</span>{% endif %}</td>
+    <td class="n"><span class="iwins{{ ' lead' if c.is_leader }}">{{ c.wins }} win{{ '' if c.wins == 1 else 's' }}</span></td>
+    <td class="n">{% if c.win_pct is not none %}
+      <span class="iwinpct{{ ' lead' if c.is_leader }}">{{ '%.0f'|format(c.win_pct) }}%</span>
+      {% else %}<span class="dash">—</span>{% endif %}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div></div>
+<ul class="notes">
+  <li><b>Quality mean</b> is the average of the model's own rating across the row's scenarios.</li>
+  <li><b>Wins</b> are scenarios where the model scored higher, by any margin more than the
+  {{ '%.1f'|format(win_gap * 10) }}pp decision band; closer gaps are a tie for either model.</li>
+  <li><b>Win %</b> is wins out of the scenarios in that row both models completed. The highlighted
+  cells mark the row's leader.</li>
+  <li><b>Reliability</b> is not in this table — it is each model's own run-to-run spread on a
+  repeated script, shown as "Run-to-run spread" in the metric table above; smaller means more
+  consistent, not higher-scoring.</li>
+  <li>Click a row to show only its scenarios in the list below; click it again to show all.</li>
+</ul>
+{% endif %}
 
 {% if streaming.any %}
 <h2>Time to first audio</h2>
@@ -243,14 +296,9 @@ streamed, so only those appear here.</p>
     <button class="chip" data-ind="{{ i }}">{{ i }}<span class="c">{{ scenarios|selectattr('industry','equalto',i)|list|length }}</span></button>
     {% endfor %}
   </div>
-  <div class="crow">
-    <span class="clab">Result</span>
-    <button class="chip on" data-res="all">All</button>
-    <button class="chip" data-res="gem">Gemini wins<span class="c">{{ gemini_wins }}</span></button>
-    <button class="chip" data-res="oth">{{ other }} wins<span class="c">{{ other_wins }}</span></button>
-    <button class="chip" data-res="tie">No winner<span class="c">{{ n_scenarios - n_win }}</span></button>
-  </div>
 </div>
+<p class="one dim">Filter by result from the head to head names or the "no winner" link above,
+or by industry from the row above or the industry table above.</p>
 
 <div id="cards">
 {% for s in scenarios %}
@@ -513,15 +561,35 @@ result on this page. The original is kept beside it. The run records on disk are
     });
     document.querySelector('.nomatch').hidden = shown > 0;
   }
-  document.querySelectorAll('.chip').forEach(function (b) {
+  // Anything carrying data-ind or data-res is a filter trigger - a chip, an
+  // industry-table row, or a head-to-head name - EXCEPT the scenario cards
+  // themselves, which carry the same attributes so applyFilters can read
+  // them. Whatever the trigger's shape, setting state highlights every
+  // OTHER element for that same value (the top chip AND the table row for
+  // one industry light up together), and clicking an already-active one
+  // clears back to "all" rather than needing a separate All control.
+  function setState(axis, val) {
+    state[axis] = val;
+    document.querySelectorAll('[data-' + axis + ']:not(.sc)').forEach(function (x) {
+      x.classList.toggle('on', x.dataset[axis] === val);
+    });
+    applyFilters();
+  }
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-ind]:not(.sc), [data-res]:not(.sc)').forEach(function (b) {
     b.addEventListener('click', function () {
       var axis = b.dataset.ind !== undefined ? 'ind' : 'res';
-      b.parentElement.querySelectorAll('.chip').forEach(function (x) {
-        x.classList.remove('on');
-      });
-      b.classList.add('on');
-      state[axis] = b.dataset[axis];
-      applyFilters();
+      var val = b.dataset[axis];
+      setState(axis, state[axis] === val ? 'all' : val);
+      // The scenario controls row (right above the cards) is already beside
+      // its own results - clicking there needs no scroll. Every OTHER filter
+      // trigger (the by-industry table, the head-to-head names) sits well up
+      // the page, so clicking it silently filtering something off-screen
+      // reads as broken. Jump to the filtered list so the click visibly does
+      // something.
+      if (!b.closest('.controls')) {
+        cards.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+      }
     });
   });
 

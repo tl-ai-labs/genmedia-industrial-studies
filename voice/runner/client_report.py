@@ -142,6 +142,59 @@ def short_verdict(s: dict[str, Any], gem_label: str, oth_label: str,
     return f"{s['verdict']}."
 
 
+def _industry_table(scenarios: list[dict[str, Any]], order: list[str]) -> list[dict[str, Any]]:
+    """
+    Scenarios rolled up by industry - the same "what do I say to a retail
+    customer" grouping the internal board already computes per scenario
+    (`dashboard._industry`), just read back off each scenario's own
+    `industry` field so this file never recomputes a category the board
+    already decided.
+
+    Quality mean is the average of the model's OWN scenario means in that
+    industry - a model with no scored clip in a given scenario contributes
+    nothing to its own average rather than dragging it toward zero. Win %
+    divides by scenarios BOTH models actually completed (produced at least
+    one scored clip each), the same "both models completed" rule stated in
+    the footnote - so the phrase means the same thing everywhere it appears.
+    """
+    industries = sorted({s["industry"] for s in scenarios})
+    rows = []
+    for ind in industries:
+        in_ind = [s for s in scenarios if s["industry"] == ind]
+        cols = []
+        for mid in order:
+            means = [c["mean_pct"] for s in in_ind for c in s["cols"]
+                     if c["model"] == mid and c["mean_pct"] is not None]
+            wins = sum(1 for s in in_ind if s["winner"] == mid)
+            both = sum(
+                1 for s in in_ind
+                if all(any(c["model"] == m and c["n_scored"] for c in s["cols"])
+                       for m in order)
+            )
+            cols.append({
+                "model": mid,
+                "quality_mean_pct": (sum(means) / len(means)) if means else None,
+                "wins": wins,
+                "win_pct": (wins / both * 100.0) if both else None,
+            })
+        # The row's leader, marked once rather than per cell, so a reader
+        # never sees one model's quality mean highlighted beside the OTHER
+        # model's win count. Win % decides it; quality mean is the tiebreak
+        # only when win % does not.
+        leader = None
+        if len(cols) == 2 and all(c["win_pct"] is not None for c in cols):
+            a, b = cols
+            if a["win_pct"] != b["win_pct"]:
+                leader = (a if a["win_pct"] > b["win_pct"] else b)["model"]
+            elif (a["quality_mean_pct"] is not None and b["quality_mean_pct"] is not None
+                  and a["quality_mean_pct"] != b["quality_mean_pct"]):
+                leader = (a if a["quality_mean_pct"] > b["quality_mean_pct"] else b)["model"]
+        for c in cols:
+            c["is_leader"] = c["model"] == leader
+        rows.append({"industry": ind, "n": len(in_ind), "cols": cols})
+    return rows
+
+
 def _titles(runs) -> dict[str, str]:
     """
     Human titles, read from each run's OWN frozen scenario copy.
@@ -347,6 +400,7 @@ def build(runs_root: Path, modality: str = "voice", quality: float | None = None
         "served": served,
         "human": human,
         "win_gap": WIN_GAP,
+        "industry_table": _industry_table(scenarios, order),
         # First-audio, told once in aggregate. Only scenarios that declared
         # max_ttfa_ms are streamed, so this is drawn from their clips alone;
         # it is time to the first chunk, not the whole-call latency two rows
