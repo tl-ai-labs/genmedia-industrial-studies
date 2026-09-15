@@ -1,0 +1,69 @@
+# Human review of the voice bank - schema and rules in README.md beside this file.
+#
+# TWO RECORDS, KEPT APART. `observations` are what a listener heard and never
+# touch a number. `corrections` change an automated result the listener found
+# wrong, and the page marks every one with what the instrument originally said.
+#
+# STATE, 2026-09-14: no listening session has been recorded yet. Both lists are
+# empty. The scaffold below lists every scenario on the committed report
+# (v3 re-run, passes voice-p1 and voice-p2, models gemini-3-1-flash-tts and
+# elevenlabs-v3) so a reviewer can uncomment and fill in as they listen.
+# Clips are in dashboard/audio/ as <scenario>--<model>--[<variant>--]<pass>.mp3.
+
+reviewers:
+  - id: sai
+    name: Sai Nadh
+    role: voice lane
+
+corrections: []
+
+observations: []
+
+# ---------------------------------------------------------------------------
+# SCAFFOLD - copy an entry under `observations:` above and fill in `notes`.
+# Every entry needs scenario_id, reviewer, date and notes; the rest is optional.
+#
+#  - scenario_id: voi-ret-01     # Conversational product recommendation - E-commerce / Retail
+#    reviewer: sai
+#    date: 2026-09-14
+#    model_id:                   # gemini-3-1-flash-tts | elevenlabs-v3 | omit for both
+#    preference:                 # a model id, tie, or cant_tell
+#    notes: >-
+#
+#  - scenario_id: voi-tel-01     # Order number readback - Transactional / telephony
+#  - scenario_id: voi-tel-02     # Currency confirmation - Transactional / telephony
+#  - scenario_id: voi-tel-06     # Phone number readback - Transactional / telephony
+#  - scenario_id: voi-tel-08     # OTP digit sequence - Transactional / telephony
+#  - scenario_id: voi-tel-09     # Card last-four confirmation - Transactional / telephony
+#  - scenario_id: vr-ads-02      # Fifteen-second broadcast spot, exact duration - Ads
+#  - scenario_id: vr-ads-05      # Brand name pronunciation, no markup permitted - Ads
+#  - scenario_id: vr-ads-06      # Compliance disclaimer at broadcast pace - Ads
+#  - scenario_id: vr-drama-01    # Episodic narration, voice held across sessions - Micro-drama
+#  - scenario_id: vr-drama-02    # Narration to ACX submission spec - Micro-drama
+#  - scenario_id: vr-drama-04    # Dubbed line fitted to an 11.0s shot - Micro-drama
+#  - scenario_id: vr-ecom-01     # WISMO order status readback - Ecommerce & Retail
+#  - scenario_id: vr-ecom-02     # Cart-recovery call, agent turn only - Ecommerce & Retail
+#  - scenario_id: vr-ecom-03     # Refund confirmation in Indian numbering - Ecommerce & Retail
+#  - scenario_id: vr-ecom-04     # After-hours booking readback - Ecommerce & Retail
+#  - scenario_id: vr-ecom-06     # KYC readback, confusable characters - variants: #bare, #nato
+#  - scenario_id: vr-ecom-07     # Cost per finished minute at volume - Ecommerce & Retail
+#  - scenario_id: vr-game-01     # Mission briefing with item and danger callouts - Gaming
+#  - scenario_id: vr-game-02     # Announcer escalation across five energy beats - Gaming
+#  - scenario_id: vr-game-03     # Real-time NPC response, time to first audio - Gaming
+#  - scenario_id: vr-game-04     # Six distinct NPC voices - variants: #quartermaster, #scout,
+#                                #   #handler, #medic, #engineer, #trader
+#  - scenario_id: vr-game-07     # Placeholder VO line, batch throughput - Gaming
+#
+# A CORRECTION looks like this (see README.md for what each field may touch):
+#
+#  - scenario_id: vr-ecom-06#nato
+#    model_id: gemini-3-1-flash-tts
+#    run_label: voice-p1
+#    field: gate                 # gate | wer | score
+#    gate: must_say_digits
+#    was: false
+#    now: true
+#    reason: >-
+#      The clip reads the digits cleanly; the transcript, not the model, dropped one.
+#    reviewer: sai
+#    date: 2026-09-14

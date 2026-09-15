@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blind voice panel</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --fg:#1a1a1a; --muted:#666; --rule:#ddd; --card:#fff;
+    --accent:#2b6cb0; --accent-fg:#fff; --pick:#e6f0f9; --good:#1f7a3d;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#16181a; --fg:#e8e8e6; --muted:#9aa0a6; --rule:#333; --card:#1e2124;
+      --accent:#4a9eda; --accent-fg:#0b0f12; --pick:#1d3a52; --good:#4cc47a;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:720px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:22px;margin:0 0 12px}
+  p{margin:0 0 14px}
+  .muted{color:var(--muted)}
+  .hidden{display:none!important}
+  button{font:inherit;cursor:pointer;border:1px solid var(--rule);
+    background:var(--card);color:var(--fg);border-radius:8px;padding:10px 16px}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+  input[type=text]{font:inherit;padding:9px 12px;border:1px solid var(--rule);
+    border-radius:8px;background:var(--card);color:var(--fg);width:100%;max-width:320px}
+
+  .bar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--rule);border-radius:999px;padding:2px 9px}
+  .tag.warn{color:var(--good);border-color:var(--good)}
+
+  .script{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:16px 18px;font-size:17px;white-space:pre-wrap}
+  .style{margin-top:10px;font-size:14px}
+  .style b{font-weight:600}
+
+  .players{display:grid;gap:14px;margin:22px 0 8px}
+  @media (min-width:620px){.players{grid-template-columns:1fr 1fr}}
+  .player{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px}
+  .player h3{margin:0 0 10px;font-size:15px;display:flex;justify-content:space-between}
+  .player h3 .done{color:var(--good);font-size:13px}
+  .transport{display:flex;align-items:center;gap:10px}
+  .transport button{width:44px;height:44px;padding:0;border-radius:50%;flex:none;font-size:16px}
+  .seek{flex:1;accent-color:var(--accent)}
+  .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);min-width:78px;text-align:right}
+
+  .vote{margin:18px 0 6px}
+  .vote .hint{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .choices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .choices button.sel{background:var(--pick);border-color:var(--accent);font-weight:600}
+  .note{margin-top:12px}
+  .note input{max-width:none}
+
+  footer{display:flex;justify-content:space-between;margin-top:26px}
+
+  textarea{width:100%;height:220px;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+    border:1px solid var(--rule);border-radius:10px;background:var(--card);color:var(--fg);padding:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+</style>
+</head>
+<body>
+<main>
+
+  <section id="err" class="hidden">
+    <h1>Panel data not found</h1>
+    <p class="muted">manifest.blind.js did not load. If you opened this file directly and
+    the browser blocked it, run <code>python serve.py</code> in this folder instead.</p>
+  </section>
+
+  <section id="intro" class="hidden">
+    <h1>Blind voice listening panel</h1>
+    <p>You will hear pairs of short voice clips. For each pair you see the line the
+    voice was asked to say, then two versions, <b>A</b> and <b>B</b>. Play both in
+    full, then say which you prefer &mdash; or <b>No preference</b>.</p>
+    <p class="muted">You are not told which system made which clip, and the sides are
+    shuffled per person. A few pairs are the same recording twice &mdash; choose
+    <b>No preference</b> when they sound identical. Use headphones if you can, and set
+    a comfortable volume on the first clip. About 20&ndash;40 minutes.</p>
+    <p><label>Your name or initials<br><input id="name" type="text" autocomplete="off"
+      placeholder="e.g. sn"></label></p>
+    <p id="resume" class="muted hidden"></p>
+    <p><button id="start" class="primary">Start</button></p>
+  </section>
+
+  <section id="card" class="hidden">
+    <div class="bar">
+      <span id="progress" class="muted"></span>
+      <span class="tags" id="tags"></span>
+    </div>
+    <div class="script" id="script"></div>
+    <div class="style muted hidden" id="style"></div>
+
+    <div class="players">
+      <div class="player" data-side="left">
+        <h3><span>Option A</span><span class="done hidden">heard ✓</span></h3>
+        <div class="transport">
+          <button class="pp" aria-label="play A">▶</button>
+          <input class="seek" type="range" min="0" max="100" value="0" step="0.1">
+          <span class="time">0:00 / 0:00</span>
+        </div>
+        <audio preload="metadata"></audio>
+      </div>
+      <div class="player" data-side="right">
+        <h3><span>Option B</span><span class="done hidden">heard ✓</span></h3>
+        <div class="transport">
+          <button class="pp" aria-label="play B">▶</button>
+          <input class="seek" type="range" min="0" max="100" value="0" step="0.1">
+          <span class="time">0:00 / 0:00</span>
+        </div>
+        <audio preload="metadata"></audio>
+      </div>
+    </div>
+
+    <div class="vote">
+      <div class="hint" id="voteHint">Play both clips in full to vote.</div>
+      <div class="choices">
+        <button data-choice="left">A is better</button>
+        <button data-choice="tie">No preference</button>
+        <button data-choice="right">B is better</button>
+      </div>
+      <div class="note">
+        <input id="note" type="text" autocomplete="off" placeholder="why? (optional, one line)">
+      </div>
+    </div>
+
+    <footer>
+      <button id="back">← Back</button>
+      <button id="next" class="primary">Next →</button>
+    </footer>
+  </section>
+
+  <section id="done" class="hidden">
+    <h1>All done — thank you</h1>
+    <p id="doneSummary" class="muted"></p>
+    <p>Send this back to whoever gave you the folder:</p>
+    <textarea id="json" readonly></textarea>
+    <div class="row">
+      <button id="copy" class="primary">Copy JSON</button>
+      <button id="download">Download .json</button>
+      <button id="review">Review my answers</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="manifest.blind.js"></script>
+<script>
+(function(){
+  "use strict";
+  var P = window.PANEL;
+  var $ = function(s,r){return (r||document).querySelector(s);};
+  var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  if(!P || !P.cards || !P.cards.length){ $("#err").classList.remove("hidden"); return; }
+
+  // ---- seeded RNG so a person's layout is stable across reloads ----------
+  function hashStr(s){var h=2166136261>>>0;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+
+  var NAME="", rng=null, ORDER=[], SWAP={}, POS=0, STARTED_AT="", SHOWN_AT=0;
+  var STATE={};   // cardId -> {choice, note, ms, playedBoth}
+  var KEY="";
+
+  function fmt(t){ if(!isFinite(t))t=0; var m=Math.floor(t/60), s=Math.floor(t%60); return m+":"+(s<10?"0":"")+s; }
+  function card(){ return P.cards[ORDER[POS]]; }
+  function sidesFor(c){ var s=SWAP[c.id]; return { left: s?c.pair[1]:c.pair[0], right: s?c.pair[0]:c.pair[1] }; }
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify({order:ORDER, pos:POS, state:STATE, startedAt:STARTED_AT})); }catch(e){}
+    try{ localStorage.setItem("panel:last", NAME); }catch(e){}
+  }
+
+  // ---- intro -----------------------------------------------------------
+  var last=""; try{ last=localStorage.getItem("panel:last")||""; }catch(e){}
+  $("#name").value=last;
+  function refreshResume(){
+    var n=$("#name").value.trim(); var msg=$("#resume");
+    if(!n){ msg.classList.add("hidden"); return; }
+    var raw=null; try{ raw=localStorage.getItem("panel:"+P.manifestHash+":"+n.toLowerCase()); }catch(e){}
+    if(raw){
+      try{ var d=JSON.parse(raw); var done=Object.keys(d.state||{}).filter(function(k){return d.state[k].choice;}).length;
+        msg.textContent="Found saved progress for “"+n+"”: "+done+" of "+P.cards.length+" answered. Start will resume it.";
+        msg.classList.remove("hidden"); return; }catch(e){}
+    }
+    msg.classList.add("hidden");
+  }
+  $("#name").addEventListener("input", refreshResume);
+  refreshResume();
+
+  $("#start").addEventListener("click", function(){
+    var n=$("#name").value.trim();
+    if(!n){ $("#name").focus(); return; }
+    NAME=n; KEY="panel:"+P.manifestHash+":"+n.toLowerCase();
+    rng=mulberry32(hashStr(n.toLowerCase()));
+    ORDER=P.cards.map(function(_,i){return i;});
+    for(var i=ORDER.length-1;i>0;i--){ var j=Math.floor(rng()*(i+1)); var t=ORDER[i];ORDER[i]=ORDER[j];ORDER[j]=t; }
+    SWAP={}; P.cards.forEach(function(c){ SWAP[c.id]= rng()<0.5; });
+
+    var raw=null; try{ raw=localStorage.getItem(KEY); }catch(e){}
+    if(raw){ try{ var d=JSON.parse(raw); if(d.order&&d.order.length===ORDER.length){ ORDER=d.order; }
+      STATE=d.state||{}; POS=d.pos||0; STARTED_AT=d.startedAt||new Date().toISOString(); }catch(e){ STATE={};POS=0; } }
+    if(!STARTED_AT) STARTED_AT=new Date().toISOString();
+    if(!POS){ for(var k=0;k<ORDER.length;k++){ if(!(STATE[P.cards[ORDER[k]].id]||{}).choice){ POS=k; break; } } }
+
+    $("#intro").classList.add("hidden");
+    $("#card").classList.remove("hidden");
+    render();
+  });
+
+  // ---- players -------------------------------------------------------------
+  var players = $$(".player").map(function(el){
+    var audio=$("audio",el), pp=$(".pp",el), seek=$(".seek",el), time=$(".time",el), done=$(".done",el);
+    var maxProg=0;
+    function ui(){
+      var d=audio.duration||0;
+      seek.value = d ? (audio.currentTime/d*100) : 0;
+      time.textContent = fmt(audio.currentTime)+" / "+fmt(d);
+      pp.textContent = audio.paused ? "▶" : "⏸";
+    }
+    audio.addEventListener("loadedmetadata", ui);
+    audio.addEventListener("timeupdate", function(){
+      var d=audio.duration||0; if(d) maxProg=Math.max(maxProg, audio.currentTime/d);
+      ui();
+      if(maxProg>=0.95) markHeard();
+    });
+    audio.addEventListener("ended", function(){ markHeard(); ui(); });
+    audio.addEventListener("play", function(){ players.forEach(function(o){ if(o.audio!==audio) o.audio.pause(); }); ui(); });
+    audio.addEventListener("pause", ui);
+    pp.addEventListener("click", function(){ if(audio.paused) audio.play(); else audio.pause(); });
+    seek.addEventListener("input", function(){ var d=audio.duration||0; audio.currentTime=d*seek.value/100; });
+    function markHeard(){
+      if(done.classList.contains("hidden")){ done.classList.remove("hidden"); onHeard(); }
+    }
+    return {
+      el:el, audio:audio, done:done,
+      load:function(clip,gain){
+        audio.pause();
+        audio.src="clips/"+clip+".mp3";
+        audio.volume=Math.max(0,Math.min(1, gain==null?1:gain));
+        audio.currentTime=0; maxProg=0;
+        done.classList.add("hidden");
+        seek.value=0; time.textContent="0:00 / 0:00"; pp.textContent="▶";
+      },
+      heard:function(){ return !done.classList.contains("hidden"); },
+      forceHeard:function(){ done.classList.remove("hidden"); }
+    };
+  });
+
+  function onHeard(){
+    var c=card();
+    if(players[0].heard() && players[1].heard()){
+      STATE[c.id]=STATE[c.id]||{}; STATE[c.id].playedBoth=true; save();
+    }
+    updateVoteLock();
+  }
+
+  // ---- render one card ---------------------------------------------------
+  function render(){
+    var c=card(), s=sidesFor(c), st=STATE[c.id]||{};
+    SHOWN_AT=Date.now();
+
+    $("#progress").textContent=(POS+1)+" / "+ORDER.length;
+    var tags=[c.task];
+    if(c.lang) tags.push(c.lang);
+    var html=tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("");
+    if(c.attn) html+='<span class="tag warn">check</span>';
+    $("#tags").innerHTML=html;
+
+    $("#script").textContent=c.script;
+    if(c.style){ $("#style").innerHTML="<b>Target style:</b> "+esc(c.style); $("#style").classList.remove("hidden"); }
+    else $("#style").classList.add("hidden");
+
+    players[0].load(s.left.clip, s.left.gain);
+    players[1].load(s.right.clip, s.right.gain);
+    if(st.playedBoth){ players[0].forceHeard(); players[1].forceHeard(); }
+
+    $$(".choices button").forEach(function(b){ b.classList.toggle("sel", st.choice===b.dataset.choice); });
+    $("#note").value=st.note||"";
+
+    $("#back").disabled = POS===0;
+    $("#next").textContent = POS===ORDER.length-1 ? "Finish →" : "Next →";
+    updateVoteLock();
+  }
+
+  function updateVoteLock(){
+    var c=card(), st=STATE[c.id]||{};
+    var ok = (players[0].heard() && players[1].heard()) || st.playedBoth;
+    $$(".choices button").forEach(function(b){ b.disabled = !ok; });
+    $("#voteHint").textContent = ok
+      ? "Which do you prefer?"
+      : "Play both clips in full to vote.";
+    $("#next").disabled = !st.choice;
+  }
+
+  $$(".choices button").forEach(function(b){
+    b.addEventListener("click", function(){
+      var c=card(); var st=STATE[c.id]=STATE[c.id]||{};
+      st.choice=b.dataset.choice;
+      st.ms=(st.ms||0) + (Date.now()-SHOWN_AT); SHOWN_AT=Date.now();
+      $$(".choices button").forEach(function(x){ x.classList.toggle("sel", x===b); });
+      $("#next").disabled=false;
+      save();
+    });
+  });
+  $("#note").addEventListener("input", function(){
+    var c=card(); (STATE[c.id]=STATE[c.id]||{}).note=$("#note").value; save();
+  });
+
+  $("#back").addEventListener("click", function(){ if(POS>0){ POS--; save(); render(); window.scrollTo(0,0); } });
+  $("#next").addEventListener("click", function(){
+    if((STATE[card().id]||{}).choice==null) return;
+    if(POS<ORDER.length-1){ POS++; save(); render(); window.scrollTo(0,0); }
+    else finish();
+  });
+
+  // ---- finish ----------------------------------------------------------
+  function buildExport(){
+    return {
+      reviewer:NAME,
+      manifestHash:P.manifestHash,
+      builtAt:P.builtAt,
+      startedAt:STARTED_AT,
+      submittedAt:new Date().toISOString(),
+      nCards:ORDER.length,
+      votes:ORDER.map(function(i){
+        var c=P.cards[i], s=sidesFor(c), st=STATE[c.id]||{};
+        return {
+          card:c.id, attn:!!c.attn,
+          left:s.left.clip, right:s.right.clip,
+          choice:st.choice||null,
+          playedBoth:!!st.playedBoth,
+          msToDecide:st.ms||null,
+          note:(st.note||"").trim()
+        };
+      })
+    };
+  }
+  function finish(){
+    players.forEach(function(p){ p.audio.pause(); });
+    var ex=buildExport();
+    var answered=ex.votes.filter(function(v){return v.choice;}).length;
+    $("#doneSummary").textContent=answered+" of "+ex.votes.length+" pairs answered, as “"+NAME+"”.";
+    $("#json").value=JSON.stringify(ex,null,2);
+    $("#card").classList.add("hidden");
+    $("#done").classList.remove("hidden");
+    save();
+    window.scrollTo(0,0);
+  }
+  $("#review").addEventListener("click", function(){
+    $("#done").classList.add("hidden"); $("#card").classList.remove("hidden");
+    POS=0; render(); window.scrollTo(0,0);
+  });
+  $("#copy").addEventListener("click", function(){
+    var ta=$("#json"); ta.focus(); ta.select();
+    var ok=false;
+    if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(function(){flash("Copied");}); return; }
+    try{ ok=document.execCommand("copy"); }catch(e){}
+    flash(ok?"Copied":"Press Ctrl/Cmd+C");
+  });
+  function flash(msg){ var b=$("#copy"); var o=b.textContent; b.textContent=msg; setTimeout(function(){b.textContent=o;},1200); }
+  $("#download").addEventListener("click", function(){
+    var blob=new Blob([$("#json").value],{type:"application/json"});
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="panel-votes-"+NAME.replace(/[^a-z0-9_-]+/gi,"_")+".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },2000);
+  });
+
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  $("#intro").classList.remove("hidden");
+})();
+</script>
+</body>
+</html>
