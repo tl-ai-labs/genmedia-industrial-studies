@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-12 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-model.png — provenance in each sidecar .json
+id: IMG-VIEW-12
+modality: image
+task: image_edit
+title: Front-on garment to the back view
+inputs:
+  source: assets/bank/IMG-VIEW-base-model.png
+params:
+  size: auto
+prompt: Re-photograph this person from directly behind, showing the back of the trench coat.
+  The coat's colour, fabric, length and belt must match the original, with the belt now tied
+  at the back and a plausible centre back seam and vent. Same person, same hair, same footwear,
+  same setting and lighting.
+expected: 'Front-on garment to the back view. Capability under test: Full turn of a person
+  and garment, resolving the unseen back plausibly. Adherence clauses, check each: 1) Camera
+  directly behind, back of the coat facing us  2) Coat colour, fabric and length match the
+  original  3) Belt tied at the back, plausible centre seam and vent  4) Same hair, footwear,
+  setting and lighting'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-food-&-fashion
+- scenario-bank-view
+- tier-medium

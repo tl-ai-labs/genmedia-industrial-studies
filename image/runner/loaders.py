@@ -188,11 +188,22 @@ def _scenarios_from_xlsx(path: Path) -> list[Scenario]:
 
 
 def load_scenarios(path: str | Path, modality: str | None = None) -> list[Scenario]:
-    """Load from a YAML file, a directory of YAML files, or a CSV file."""
+    """Load from a YAML file, a directory of YAML files, a CSV file, or a .txt
+    list of YAML paths (one per line, relative to the list; # comments)."""
     p = Path(path)
     if not p.exists():
         raise FileNotFoundError(f"scenario path does not exist: {p}")
-    if p.is_dir():
+    if p.suffix == ".txt":
+        scenarios = []
+        for line in p.read_text().splitlines():
+            entry = line.split("#", 1)[0].strip()
+            if not entry:
+                continue
+            f = p.parent / entry
+            if not f.is_file():
+                raise FileNotFoundError(f"{p}: listed scenario does not exist: {entry}")
+            scenarios.append(_scenario_from_yaml(f))
+    elif p.is_dir():
         scenarios = []
         for f in sorted(p.glob("*.yaml")) + sorted(p.glob("*.yml")):
             scenarios.append(_scenario_from_yaml(f))

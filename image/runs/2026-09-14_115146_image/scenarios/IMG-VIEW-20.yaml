@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-20 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-20
+modality: image
+task: text_to_image
+title: Directly overhead flat lay
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: A directly overhead flat-lay photograph of a wooden desk, camera perpendicular to
+  the surface so nothing shows a side face. An open notebook, a fountain pen, a pair of round
+  glasses, a mug of black coffee, three loose photographs and a small potted succulent, arranged
+  with generous even spacing. Soft diffused daylight, gentle shadows straight beneath each
+  object, photorealistic.
+expected: 'Directly overhead flat lay. Capability under test: True perpendicular overhead
+  framing — no residual side faces or convergence. Adherence clauses, check each: 1) Camera
+  perpendicular to the desk, no side faces of any object visible  2) All six named items present
+  and clearly separated  3) Shadows fall directly beneath the objects, consistent with a diffuse
+  overhead light  4) Even spacing, nothing cropped at the frame edges'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.35
+  visual_quality: 0.2
+  composition: 0.3
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-low

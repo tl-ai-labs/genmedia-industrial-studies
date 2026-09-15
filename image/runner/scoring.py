@@ -5,10 +5,13 @@
     model_score      = mean over JUDGED scenarios (invalid = an earned 0;
                        unjudged is EXCLUDED, never 0)
 
-Verdict, per task (either door is enough, coverage >= 80% required):
-    A beats B  <=>  mean(A) - mean(B) >= 0.5
-               OR   A wins >= 70% of the DECIDED scenarios (ties excluded,
-                    tie = |delta| <= 0.5), sign test quoted when decided >= 10.
+Verdict, per task (coverage >= 80% required). Scores are compared at the two
+decimals the report shows; only an identical score is a tie:
+    A beats B  <=>  mean(A) > mean(B)
+               OR   means equal AND A wins more scenarios than B
+                    (scenario tie = identical score), sign test quoted when
+                    decided >= 10.
+    Equal means and equal scenario wins = tie, broken only by facts.
 
 Re-scoring from stored criterion scores is free: no regeneration, no
 re-judging. The rubric hash is stamped into every score row.
@@ -25,9 +28,8 @@ from .generate import Manifest
 from .loaders import Scenario, effective_criteria, load_rubric
 from .telemetry import RunFiles, utcnow
 
-TIE_BAND = 0.5          # |delta| <= 0.5 on the same scenario = tie
-MEAN_GAP_DOOR = 0.5
-WIN_RATE_DOOR = 0.70
+TIE_BAND = 0.0          # only an identical score (at SCORE_DECIMALS) is a tie
+SCORE_DECIMALS = 2      # the precision the internal report shows
 COVERAGE_FLOOR = 0.80
 SIGN_TEST_MIN_N = 10
 
@@ -298,6 +300,7 @@ def aggregate(run_dir: Path) -> dict:
             m["judged_n"] = len(nums)
             m["coverage"] = len(nums) / m["eligible"] if m["eligible"] else 0.0
             m["latency_p50_ms"] = _p50(m["latencies"])
+            m["latency_min_ms"] = min(m["latencies"]) if m["latencies"] else None
             m["latency_max_ms"] = max(m["latencies"]) if m["latencies"] else None
             m["success_rate"] = ((m["eligible"] - m["failed"]) / m["eligible"]
                                  if m["eligible"] else None)
@@ -321,7 +324,7 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
     common = sorted(set(ma["by_scenario"]) & set(mb["by_scenario"]))
     wins_a = wins_b = ties = 0
     for sid in common:
-        d = ma["by_scenario"][sid] - mb["by_scenario"][sid]
+        d = round(ma["by_scenario"][sid] - mb["by_scenario"][sid], SCORE_DECIMALS)
         if abs(d) <= TIE_BAND:
             ties += 1
         elif d > 0:
@@ -344,28 +347,21 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
         result["note"] = "not comparable: missing scores"
         return result
 
-    def door_for(cand: str, opp: str, wins: int) -> str | None:
-        gap = models[cand]["mean"] - models[opp]["mean"]
-        if gap >= MEAN_GAP_DOOR:
-            return f"mean gap {gap:.2f} >= {MEAN_GAP_DOOR}"
-        if decided > 0 and wins / decided >= WIN_RATE_DOOR:
-            return (f"{wins}/{decided} decided scenarios "
-                    f"({wins / decided:.0%} >= {WIN_RATE_DOOR:.0%})")
-        return None
-
-    door_a, door_b = door_for(a, b, wins_a), door_for(b, a, wins_b)
-    if door_a and door_b:
-        result["note"] = (f"the two lenses contradict ({a}: {door_a}; {b}: {door_b}) "
-                          f"— no winner declared; inspect the per-scenario evidence")
-    else:
-        for cand, door in ((a, door_a), (b, door_b)):
-            if not door:
-                continue
-            if models[cand]["coverage"] < COVERAGE_FLOOR:
-                result["note"] = (f"{cand} clears a door ({door}) but coverage "
-                                  f"{models[cand]['coverage']:.0%} < "
-                                  f"{COVERAGE_FLOOR:.0%} — no winner declared")
-                continue
+    gap = round(mean_gap, SCORE_DECIMALS)
+    cand = door = None
+    if gap != 0:
+        cand = a if gap > 0 else b
+        door = f"higher mean (gap {abs(gap):.2f})"
+    elif wins_a != wins_b:
+        cand = a if wins_a > wins_b else b
+        door = (f"equal means; more scenario wins "
+                f"({max(wins_a, wins_b)}–{min(wins_a, wins_b)})")
+    if cand:
+        if models[cand]["coverage"] < COVERAGE_FLOOR:
+            result["note"] = (f"{cand} leads ({door}) but coverage "
+                              f"{models[cand]['coverage']:.0%} < "
+                              f"{COVERAGE_FLOOR:.0%} — no winner declared")
+        else:
             result["winner"], result["door"] = cand, door
             return result
 
@@ -385,9 +381,7 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
     if ma["latency_p50_ms"] and mb["latency_p50_ms"] \
             and ma["latency_p50_ms"] != mb["latency_p50_ms"]:
         facts.append(f"faster p50: {a if ma['latency_p50_ms'] < mb['latency_p50_ms'] else b}")
-    tie_note = ("tie on quality (mean gap "
-                + (f"{abs(mean_gap):.2f}" if mean_gap is not None else "n/a")
-                + f" < {MEAN_GAP_DOOR}, no {WIN_RATE_DOOR:.0%} win rate). "
+    tie_note = ("tie on quality (identical mean and identical scenario wins). "
                 + ("Broken only by facts: " + "; ".join(facts) if facts
                    else "Nothing separates them on these scenarios — "
                         "they are equivalent here, which is itself a result."))

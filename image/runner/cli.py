@@ -143,6 +143,9 @@ def cmd_report(args) -> int:
                                     open_browser=args.open,
                                     hide_industries=hide,
                                     brief=args.brief)
+        print(f"report: {out}")
+        print(f"client: {out.with_name(out.stem + '-client.html')}")
+        return 0
     print(f"report: {out}")
     return 0
 
@@ -231,7 +234,7 @@ def main(argv=None) -> int:
     p = sub.add_parser("run", help="generate outputs + deterministic checks")
     p.add_argument("--modality", required=True, choices=["image", "voice"])
     p.add_argument("--scenarios", default=str(PROJECT_ROOT / "scenarios"),
-                   help="YAML dir/file or CSV sheet (id,task,prompt,expected,required_text)")
+                   help="YAML dir/file, CSV sheet (id,task,prompt,expected,required_text), or .txt list of YAML paths")
     p.add_argument("--models", default=str(PROJECT_ROOT / "configs" / "models.yaml"))
     p.add_argument("--budget", type=float, default=None,
                    help="hard USD cap across ALL providers together; "

@@ -35,32 +35,35 @@ def _model(mean, by_scenario, coverage=1.0, invalid=0, success=1.0,
             "latency_p50_ms": p50, "latency_max_ms": p50 * 2}
 
 
-def test_verdict_mean_gap_door():
-    models = {"a": _model(8.1, {f"s{i}": 8.1 for i in range(10)}),
+def test_verdict_any_mean_gap_wins():
+    # 0.1 points apart is a win, not a tie
+    models = {"a": _model(7.6, {f"s{i}": 7.6 for i in range(10)}),
               "b": _model(7.5, {f"s{i}": 7.5 for i in range(10)})}
     v = pairwise_verdict("t", "a", "b", models)
-    assert v["winner"] == "a" and "mean gap" in v["door"]
+    assert v["winner"] == "a" and "higher mean" in v["door"]
+    assert (v["wins_a"], v["ties"]) == (10, 0)
 
 
-def test_verdict_win_rate_door_survives_compressed_means():
-    # mean gap 0.4 (under the door) but a wins 8/10 decided by >0.5 each
-    a_scores = {f"s{i}": (8.0 if i < 8 else 6.0) for i in range(10)}
-    b_scores = {f"s{i}": (7.2 if i < 8 else 8.4) for i in range(10)}
-    mean_a = sum(a_scores.values()) / 10
-    mean_b = sum(b_scores.values()) / 10
-    assert mean_a - mean_b < 0.5
-    models = {"a": _model(round(mean_a, 2), a_scores),
-              "b": _model(round(mean_b, 2), b_scores)}
+def test_verdict_scenario_tie_only_on_identical_score():
+    a = {"s0": 8.0, "s1": 7.01, "s2": 6.004}
+    b = {"s0": 8.0, "s1": 7.0, "s2": 6.0}      # s2 differs only past 2 decimals
+    models = {"a": _model(7.0, a), "b": _model(7.0, b)}
     v = pairwise_verdict("t", "a", "b", models)
-    assert v["winner"] == "a"
-    assert "decided" in v["door"]
-    assert v["sign_test_p"] is not None  # n >= 10 decided
+    assert (v["wins_a"], v["wins_b"], v["ties"]) == (1, 0, 2)
 
 
-def test_verdict_tie_inside_both_doors():
-    a = {f"s{i}": 7.8 for i in range(10)}
+def test_verdict_equal_means_decided_by_scenario_wins():
+    a = {"s0": 9.0, "s1": 8.0, "s2": 4.0}
+    b = {"s0": 8.0, "s1": 7.0, "s2": 6.0}
+    models = {"a": _model(7.0, a), "b": _model(7.0, b)}
+    v = pairwise_verdict("t", "a", "b", models)
+    assert v["winner"] == "a" and "more scenario wins (2–1)" in v["door"]
+
+
+def test_verdict_tie_only_when_identical():
+    a = {f"s{i}": 7.5 for i in range(10)}
     b = {f"s{i}": 7.5 for i in range(10)}
-    models = {"a": _model(7.8, a, cost=0.07), "b": _model(7.5, b, cost=0.03)}
+    models = {"a": _model(7.5, a, cost=0.07), "b": _model(7.5, b, cost=0.03)}
     v = pairwise_verdict("t", "a", "b", models)
     assert v["winner"] is None
     assert "tie on quality" in v["note"]

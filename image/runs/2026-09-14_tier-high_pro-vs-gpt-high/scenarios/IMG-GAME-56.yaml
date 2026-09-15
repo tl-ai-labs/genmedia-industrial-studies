@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-56 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-56
+modality: image
+task: image_edit
+title: Flat-colour sheet with a palette strip
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: 'Convert this person into a flat-colour sheet: every surface filled with a single
+  flat colour and no shading, gradients or highlights at all. Beneath the figure, place a
+  horizontal strip of eight colour swatches showing exactly the colours used in the figure,
+  in order from darkest to lightest, as plain squares. Same framing, white background, no
+  text or numbers.'
+expected: 'Flat-colour sheet with a palette strip. Capability under test: Flattening plus
+  an accurate self-consistent palette readout. Adherence clauses, check each: 1) Every surface
+  a single flat colour, no shading or gradients  2) Exactly eight swatches in a horizontal
+  strip beneath the figure  3) Swatch colours actually match the colours used in the figure  4)
+  Swatches ordered darkest to lightest, white background, no text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- style-&-production-assets
+- scenario-bank-game
+- tier-high

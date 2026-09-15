@@ -16,6 +16,26 @@ def test_shipped_scenarios_load():
     assert abs(sum(s1.weights.values()) - 1.0) < 1e-9
 
 
+def test_txt_list_loader(tmp_path):
+    (tmp_path / "bank").mkdir()
+    for sid in ("a-001", "b-001"):
+        (tmp_path / "bank" / f"{sid}.yaml").write_text(textwrap.dedent(f"""
+            id: {sid}
+            modality: image
+            task: text_to_image
+            prompt: "x"
+            expected: "x"
+        """))
+    lst = tmp_path / "tiers" / "high.txt"
+    lst.parent.mkdir()
+    lst.write_text("# tier list\n../bank/b-001.yaml\n\n../bank/a-001.yaml  # kept\n")
+    assert [s.id for s in load_scenarios(lst)] == ["b-001", "a-001"]
+
+    lst.write_text("../bank/missing.yaml\n")
+    with pytest.raises(FileNotFoundError, match="missing.yaml"):
+        load_scenarios(lst)
+
+
 def test_weights_not_summing_to_one_rejected(tmp_path):
     bad = tmp_path / "bad.yaml"
     bad.write_text(textwrap.dedent("""

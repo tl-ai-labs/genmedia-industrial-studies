@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-47 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-47
+modality: image
+task: text_to_image
+title: High-angle crowd shot
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: A high-angle photograph taken from a balcony about four storeys up, looking down at
+  roughly sixty degrees onto a busy open-air market square. Hundreds of people and rows of
+  striped awnings recede across the square, everyone foreshortened consistently for a single
+  elevated camera, with long late-afternoon shadows all falling the same way. Photorealistic,
+  16:9.
+expected: 'High-angle crowd shot. Capability under test: One consistent elevated viewpoint
+  applied across a crowded scene. Adherence clauses, check each: 1) Elevated camera looking
+  down at roughly sixty degrees  2) Crowd and awnings foreshortened consistently for one camera
+  position  3) All shadows fall the same way, consistent with one light source  4) No figures
+  drawn at a conflicting eye level, 16:9'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-medium

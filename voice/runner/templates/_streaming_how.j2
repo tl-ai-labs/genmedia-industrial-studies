@@ -1,0 +1,84 @@
+{#- The two latencies, explained for a reader who has never seen a stopwatch
+    around an API call. Plain words, one drawing, this page's own numbers
+    restated in a sentence - no new arithmetic beyond a difference between
+    two medians the panel above already prints.
+
+    Shared by the client template and by scratch/patch_committed_report.py,
+    which renders it against the numbers parsed from an already-exported
+    page. `streaming.per_model` rows carry model_id, p50 (ms) and whole_p50
+    (ms, may be None); `streaming.per_scenario` is the list of streamed
+    scenarios. -#}
+<div class="how" id="how-latency">
+  <h3>Two stopwatches, two different questions</h3>
+  <p>Every clip on this page was timed. The scenarios where a quick reply matters were timed
+  <b>twice</b>, because "how fast is the model" is two questions, and they have very
+  different answers.</p>
+
+  <svg class="tl" viewBox="0 0 760 118" role="img"
+       aria-label="A timeline from the request being sent to the finished file arriving. First audio is the short interval to the first sound; whole call is the full interval to the finished file.">
+    <line x1="40" y1="30" x2="720" y2="30" stroke="#dde3e9" stroke-width="2"/>
+    <circle cx="40" cy="30" r="5" fill="#10161c"/>
+    <text x="40" y="16" text-anchor="middle" font-size="11" fill="#3a4650" font-family="IBM Plex Mono, Menlo, monospace">request sent</text>
+    <circle cx="250" cy="30" r="5" fill="#0f7a5a"/>
+    <text x="250" y="16" text-anchor="middle" font-size="11" fill="#0f7a5a" font-family="IBM Plex Mono, Menlo, monospace">first word heard</text>
+    <circle cx="720" cy="30" r="5" fill="#1d4e6f"/>
+    <text x="720" y="16" text-anchor="end" font-size="11" fill="#1d4e6f" font-family="IBM Plex Mono, Menlo, monospace">finished file back</text>
+    <rect x="40" y="52" width="210" height="14" rx="4" fill="#0f7a5a"/>
+    <text x="258" y="63" font-size="12" fill="#0f7a5a" font-weight="600" font-family="Source Sans 3, Segoe UI, sans-serif">first audio — what a caller on the phone waits for</text>
+    <rect x="40" y="84" width="680" height="14" rx="4" fill="#1d4e6f"/>
+    <text x="40" y="113" font-size="12" fill="#1d4e6f" font-weight="600" font-family="Source Sans 3, Segoe UI, sans-serif">whole call — what a batch job waits for</text>
+  </svg>
+
+  <div class="two">
+    <div class="q">
+      <b>Whole call</b> asks: <i>how long until the finished audio file is back?</i>
+      Like downloading a song before you can press play. This is the <b>Latency</b> row in the
+      metric table, and every clip in the study has it.
+    </div>
+    <div class="q">
+      <b>First audio</b> asks: <i>how long until the listener hears the first word?</i>
+      Like a phone call: the person on the line hears you start speaking; they do not wait for you
+      to finish. This is the panel above, and it exists for the scenarios that need a quick reply.
+    </div>
+  </div>
+
+  {% set rows = streaming.per_model if streaming and streaming.per_model else [] %}
+  {% if rows %}
+  <p class="one lead"><b>On this page:</b>
+    {% for r in rows -%}
+    <code>{{ r.model_id }}</code> says its first word after a median <b>{{ r.p50 }} ms</b>
+    {%- if r.whole_p50 %} and hands back the finished clip after <b>{{ '%.1f'|format(r.whole_p50 / 1000) }} s</b>{% endif %}
+    {{- '; ' if not loop.last else '.' }}
+    {% endfor -%}
+    {% if rows|length == 2 and rows[0].whole_p50 and rows[1].whole_p50 -%}
+    {% set fa = (rows[0].p50 - rows[1].p50)|abs -%}
+    {% set wc = ((rows[0].whole_p50 - rows[1].whole_p50) / 1000)|abs -%}
+    The two models are <b>{{ fa }} ms</b> apart at the first word and <b>{{ '%.1f'|format(wc) }} s</b>
+    apart at the finished file
+    {%- if (rows[0].p50 < rows[1].p50) == (rows[0].whole_p50 < rows[1].whole_p50) %}, and the same
+    model is ahead on both.{% else %}, and a different model is ahead on each.{% endif %}
+    {% endif -%}
+    {% set cleared = rows|sum(attribute='passed') %}{% set total = rows|sum(attribute='n') -%}
+    {% if cleared == 0 %}No streamed clip on either model reached the first word inside its
+    scenario's ceiling.{% else %}{{ cleared }} of {{ total }} streamed clips reached the first word
+    inside their scenario's ceiling.{% endif %}</p>
+  {% endif %}
+
+  <h4>How we measured it</h4>
+  <ol class="steps">
+    <li><b>Same script, same voice, same model.</b> For the {{ streaming.per_scenario|length if streaming and streaming.per_scenario else 'responsive' }}
+    scenarios that need a quick reply, we asked each model to <b>stream</b>: send sound as soon as
+    it has some, instead of the whole file at the end. Nothing else about the request changed.</li>
+    <li><b>The clock starts when we send the request</b>, before the connection is even open, so
+    the network and the server's thinking time are all inside the number.</li>
+    <li><b>The clock stops at the first piece of actual sound</b>, not at a header or an empty
+    message that arrives first.</li>
+    <li><b>We keep listening until the clip ends</b>, so the same clip also has a whole-call time.
+    The two are stored side by side and never overwrite each other.</li>
+    <li><b>Each of these scenarios sets a ceiling</b> — 300 ms for the game line, 1000 ms for the
+    conversational ones. A clip over its ceiling fails that gate like any other gate.</li>
+    <li><b>Measured the same way on both models, from the same machine.</b> This is the ordinary
+    HTTP stream. It is not ElevenLabs' WebSocket real-time product, so the sub-second figures
+    ElevenLabs publishes for that product are not what this panel measures.</li>
+  </ol>
+</div>

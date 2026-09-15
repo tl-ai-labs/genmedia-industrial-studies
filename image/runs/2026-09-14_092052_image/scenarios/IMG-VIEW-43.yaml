@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-43 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-painting.png — provenance in each sidecar .json
+# Input is the pinned photo with a fixed projective warp; the unwarped -groundtruth.png is the target view.
+id: IMG-VIEW-43
+modality: image
+task: image_edit
+title: Off-axis artwork to a flat reproduction
+inputs:
+  source: assets/bank/IMG-VIEW-base-painting.png
+params:
+  size: auto
+prompt: Rectify this photograph so the painting is seen perfectly square on, its frame a true
+  rectangle filling the frame, as though shot on a copy stand. The painting's composition,
+  colours and brushwork must be unchanged — do not repaint, sharpen or reinterpret any part
+  of the artwork. Crop to the outer edge of the frame.
+expected: 'Off-axis artwork to a flat reproduction. Capability under test: Projective correction
+  of artwork with a strict no-reinterpretation bound. Adherence clauses, check each: 1) Frame
+  a true rectangle, painting square on and filling the frame  2) Composition, colours and
+  brushwork unchanged, nothing repainted  3) No part of the canvas cropped away or extended  4)
+  Cropped to the outer edge of the frame'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.55
+  visual_quality: 0.15
+  realism_style: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-medium

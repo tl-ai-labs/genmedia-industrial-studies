@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-56 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-cafe.png — provenance in each sidecar .json
+id: IMG-VIEW-56
+modality: image
+task: image_edit
+title: Reverse angle on a group in conversation
+inputs:
+  source: assets/bank/IMG-VIEW-base-cafe.png
+params:
+  size: auto
+prompt: Re-photograph this same group from the opposite side, so the camera now looks back
+  at them from where they are facing. Every person must remain, in the same relative positions,
+  wearing the same clothes and holding the same postures, now seen from the front rather than
+  from behind or the side. The deck, its fittings and the daylight must stay consistent with
+  the new viewpoint.
+expected: 'Reverse angle on a group in conversation. Capability under test: One-hundred-and-eighty-degree
+  reverse angle across a multi-person group. Adherence clauses, check each: 1) Camera on the
+  opposite side, looking back at the group  2) Every person still present in the same relative
+  position  3) Clothing and postures unchanged, now seen from the reverse side  4) Setting
+  and daylight consistent with the new viewpoint'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-high

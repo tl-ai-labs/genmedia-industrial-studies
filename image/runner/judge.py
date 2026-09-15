@@ -57,6 +57,32 @@ def strip_image_metadata(path: Path) -> bytes:
         return buf.getvalue()
 
 
+def blind_leaks(terms, authored: str, ocr_text: str = "") -> list:
+    """Vendor names that would actually unblind the judge.
+
+    Authored text (scenario title / prompt / expected) is matched as a raw
+    substring — deliberately strict, because a human wrote it and any
+    occurrence is real.
+
+    OCR text is different. The reader strips spaces, so a poster reading
+    "FUSION OPEN AIR" arrives as "FUSIONOPENAIR" and a naive scan sees
+    "openai". Inside OCR output a term must therefore stand as its own
+    word (no letter/digit either side).
+
+    Known limit: a brand genuinely rendered in an image can also arrive
+    space-stripped ("MADEBYOPENAI") and will not match here. That is
+    accepted because the judge is shown the image itself — withholding the
+    OCR fact would not have blinded it anyway.
+    """
+    import re
+    hits = {w for w in terms if w.lower() in authored.lower()}
+    if ocr_text:
+        low = ocr_text.lower()
+        hits |= {w for w in terms
+                 if re.search(rf"(?<![a-z0-9]){re.escape(w.lower())}(?![a-z0-9])", low)}
+    return sorted(hits)
+
+
 def build_judge_prompt(scenario: Scenario, judge_criteria, measured_facts: list[str],
                        measured_names: list[str]) -> str:
     names = [c.name for c in judge_criteria]
@@ -207,10 +233,12 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path,
             facts = []
             if measures.get("width"):
                 facts.append(f"resolution: {measures['width']}x{measures['height']}")
+            ocr_fact = ""
             if "ocr_match" in measures:
-                facts.append(f"text found by OCR: {json.dumps(measures.get('ocr_text', ''))} "
-                             f"(fuzzy match {measures['ocr_match']:.2f} against the "
-                             f"required text)")
+                ocr_fact = (f"text found by OCR: {json.dumps(measures.get('ocr_text', ''))} "
+                            f"(fuzzy match {measures['ocr_match']:.2f} against the "
+                            f"required text)")
+                facts.append(ocr_fact)
             if "preservation_phash_distance" in measures:
                 facts.append(f"measured preservation (global pHash distance vs source): "
                              f"{measures['preservation_phash_distance']}")
@@ -230,11 +258,14 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path,
                               "the edited RESULT you are scoring.\n\n") + prompt
             media.append((clean_bytes, "image/png"))
 
-            leaked = [w for w in
-                      {m["id"] for m in manifest.data["models"]}
-                      | {m["provider"] for m in manifest.data["models"]}
-                      | {m["provider_model"] for m in manifest.data["models"]}
-                      if w.lower() in prompt.lower()]
+            terms = ({m["id"] for m in manifest.data["models"]}
+                     | {m["provider"] for m in manifest.data["models"]}
+                     | {m["provider_model"] for m in manifest.data["models"]})
+            # OCR output is scanned under a word-boundary rule; everything a
+            # human authored is still matched as a raw substring.
+            leaked = blind_leaks(terms,
+                                 prompt.replace(ocr_fact, "") if ocr_fact else prompt,
+                                 measures.get("ocr_text", ""))
             if leaked:
                 # blinding is structurally impossible for this scenario — an
                 # unjudged cell with a loud reason, never a silently-unblind call

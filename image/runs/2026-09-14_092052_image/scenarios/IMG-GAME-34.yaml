@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-34 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-34
+modality: image
+task: text_to_image
+title: Design brief with explicit exclusions
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: 'Full-body concept art of a coastal militia scavenger for an open-world shooter. Include:
+  a patched fisherman''s jacket, a improvised chest rig of stitched webbing, a machete sheathed
+  at the hip, rope-soled boots, and a scarf tied over the lower face. Exclude entirely: any
+  real-world military insignia, any recognisable brand mark, any modern plate carrier, any
+  night-vision device, and any visible blood. Painted concept art, plain background, no text.'
+expected: 'Design brief with explicit exclusions. Capability under test: Negative-constraint
+  obedience — exclusions matter as much as inclusions. Adherence clauses, check each: 1) Patched
+  jacket, stitched chest rig, sheathed machete, rope-soled boots and face scarf present  2)
+  No real-world military insignia and no brand marks  3) No modern plate carrier and no night-vision
+  device  4) No visible blood; plain background, no text'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

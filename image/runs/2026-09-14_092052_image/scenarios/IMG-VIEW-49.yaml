@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-49 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-49
+modality: image
+task: text_to_image
+title: Two-point perspective street scene
+params:
+  size: 1280x896
+  aspect_ratio: '4:3'
+prompt: 'An architectural illustration of a street corner drawn in strict two-point perspective:
+  the corner of a four-storey building faces the viewer, its two visible faces receding to
+  a vanishing point on the left and one on the right, both on a single horizon line at the
+  viewer''s eye level. All verticals stay perfectly vertical with no third vanishing point.
+  Clean line-and-wash style, no text.'
+expected: 'Two-point perspective street scene. Capability under test: Formal perspective construction
+  with an explicit two-point rule. Adherence clauses, check each: 1) Two visible building
+  faces receding to two separate vanishing points  2) Both vanishing points on a single horizon
+  line at eye level  3) All verticals perfectly vertical, no third vanishing point  4) Clean
+  line-and-wash style, no text'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.35
+  visual_quality: 0.2
+  composition: 0.3
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-medium

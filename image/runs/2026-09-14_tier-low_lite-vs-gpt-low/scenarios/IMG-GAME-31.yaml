@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-31 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-31
+modality: image
+task: text_to_image
+title: Companion pet design for a battle-royale lobby
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: 'Character art of a fictional collectible companion pet for a mobile battle-royale
+  game, built from simple bold shapes: a stocky round-bodied desert fox with oversized ears,
+  a tiny utility harness with a single pouch, and a stubby tail. Bold clean outlines, flat
+  colour with one shadow tone, no gradients, no fine texture. Standing alert, centred on a
+  plain pale background with generous margins, no text.'
+expected: 'Companion pet design for a battle-royale lobby. Capability under test: Extreme
+  simplification that still reads as a specific companion character. Adherence clauses, check
+  each: 1) Built from simple bold shapes, no fine detail  2) Stocky desert fox with oversized
+  ears, utility harness and stubby tail  3) Bold outlines, flat colour with one shadow tone,
+  no gradients  4) Centred with margins on a plain background, no text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.35
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-low
