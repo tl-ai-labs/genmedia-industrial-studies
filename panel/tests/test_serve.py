@@ -226,3 +226,17 @@ def test_media_base_is_the_servers_to_say(served, monkeypatch):
     monkeypatch.setenv("PANEL_MEDIA_BASE", "https://studies-dev.adlc.tilicho.in/reports/genmedia-blind-panel/media/")
     _, body = _get(served["base"] + "/api/config")
     assert body["media_base"] == "https://studies-dev.adlc.tilicho.in/reports/genmedia-blind-panel/media"
+
+
+def test_serve_port_comes_from_PORT_unless_given(monkeypatch):
+    """A preview launcher assigns the port through PORT so it can run beside
+    a live panel on 8765; an explicit --port must still override it."""
+    import runner.cli as cli
+    seen = []
+    monkeypatch.setattr(cli, "cmd_serve", lambda a: seen.append(a.port) or 0)
+    monkeypatch.delenv("PORT", raising=False)
+    cli.main(["serve"])
+    monkeypatch.setenv("PORT", "9123")
+    cli.main(["serve"])
+    cli.main(["serve", "--port", "8800"])
+    assert seen == [8765, 9123, 8800]
