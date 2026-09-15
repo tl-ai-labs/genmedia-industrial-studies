@@ -17,7 +17,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .generate import Manifest, _find_existing_output
-from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate, pairwise_verdict
+from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate, is_tie, pairwise_verdict
 from .telemetry import RunFiles
 
 THUMB_MAX_PX = 800
@@ -108,27 +108,59 @@ def _env(names: dict | None = None, client: bool = False) -> Environment:
 
     def _q(v, short: bool = False) -> str:
         """A quality score: one 0-10 number in the audience's units. Client
-        means keep a decimal — whole numbers would hide gaps smaller than the
-        tie band and leave the delta column disagreeing with the values."""
+        means keep a decimal — whole numbers would hide small gaps and leave
+        the delta column disagreeing with the values. Short (per-scenario)
+        badges drop only trailing zeros: any difference decides a scenario, so
+        two different scores must never print alike ("91% vs 91%" for 90.75
+        vs 91.0 would show a winner between equal-looking numbers)."""
         if v is None:
             return "—"
         if client:
-            return f"{v * 10:.0f}%" if short else f"{v * 10:.1f}%"
-        return f"{v:.1f}" if short else f"{v:.2f}"
+            return (f"{v * 10:.2f}".rstrip("0").rstrip(".") + "%") if short \
+                else f"{v * 10:.1f}%"
+        return f"{v:.3f}".rstrip("0").rstrip(".") if short else f"{v:.2f}"
 
-    def _qd(v) -> str:
-        """A quality GAP: points internally, percentage points for the client."""
+    def _qd(v, short: bool = False) -> str:
+        """A quality GAP: points internally, percentage points for the client.
+        Short (one scenario's margin) is exact to match the short badges beside
+        it: 90.75% vs 100% reads +9.25 pp, not a rounded +9.2."""
         if v is None:
             return "—"
+        if short:
+            return (f"{v * 10:+.2f}".rstrip("0").rstrip(".") + " pp") if client \
+                else f"{v:+.3f}".rstrip("0").rstrip(".")
         return f"{v * 10:+.1f} pp" if client else f"{v:+.2f}"
 
     env.filters["q"] = _q
     env.filters["qd"] = _qd
     env.globals["CLIENT"] = client
-    env.globals["TIE_BAND"] = TIE_BAND                 # 0.5 points, 0-10 scale
-    env.globals["TIE_BAND_PP"] = int(TIE_BAND * 10)    # the same band as 5%
-    env.globals["TIE_BAND_FRAC"] = f"{TIE_BAND / 10:g}"  # ... and as 0.05
+    env.globals["TIE_BAND"] = TIE_BAND                 # 0.0: only identical scores tie
     return env
+
+
+def _finish_rollup(row: dict) -> None:
+    """Close one family / industry row: each model's quality mean, its win
+    percentage, and which model leads the row, so the table can tag it.
+
+    Win % is wins over the scenarios in the row that BOTH models completed —
+    the only ones a win was possible on. Dividing by every scenario would
+    count a rival's failure as a loss for the model that delivered."""
+    for m in row["models"].values():
+        m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
+        m["n"] = len(m["scores"])
+        # one decimal: whole numbers would round 5/8 and 3/8 in opposite
+        # directions (62 and 38) and hide small-row differences
+        m["win_pct"] = (round(100 * m["wins"] / row["compared"], 1)
+                        if row.get("compared") else None)
+    ms = row["models"]
+    top_mean = max((m["mean"] for m in ms.values()), default=None)
+    top_wins = max((m["wins"] for m in ms.values()), default=0)
+    lead_mean = [mid for mid, m in ms.items() if m["mean"] == top_mean]
+    lead_wins = [mid for mid, m in ms.items() if m["wins"] == top_wins]
+    # a shared top is not a lead: two equal means tag nobody
+    row["lead_mean"] = lead_mean[0] if len(ms) > 1 and len(lead_mean) == 1 else None
+    row["lead_wins"] = (lead_wins[0] if len(ms) > 1 and len(lead_wins) == 1
+                        and top_wins > 0 else None)
 
 
 def _client_prose(text: str) -> str:
@@ -283,6 +315,8 @@ def _metric_rows(models: dict, order: list) -> list:
             lambda m: round(m["gen_cost_per_scenario_usd"] * 1e6)),
         row("judge_cost", "Judge cost/scen", "lower", "usd_micro",
             lambda m: round(m["judge_cost_per_scenario_usd"] * 1e6)),
+        row("lat_min", "Latency min", "lower", "ms",
+            lambda m: m["latency_min_ms"]),
         row("lat_p50", "Latency p50", "lower", "ms",
             lambda m: m["latency_p50_ms"], hi=True),
         row("lat_max", "Latency max", "lower", "ms",
@@ -457,10 +491,11 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
         label_vendor: dict = {}
         for e in merged_evidence:
             families.setdefault(e["family"], {"n": 0, "models": {}})["n"] += 1
-            ind = industries.setdefault(e["industry"], {"n": 0, "models": {}}) \
+            ind = industries.setdefault(e["industry"], {"n": 0, "compared": 0, "models": {}}) \
                 if e["industry"] else None
             if ind:
                 ind["n"] += 1
+                ind["compared"] += e.get("margin") is not None
             for card in e["cards"]:
                 lbl = base_label(card["model_id"])
                 groups.setdefault(lbl, set()).add(
@@ -472,9 +507,7 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                     if e["winner"] == lbl:
                         m["wins"] += 1
         for ind in industries.values():
-            for m in ind["models"].values():
-                m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-                m["n"] = len(m["scores"])
+            _finish_rollup(ind)
 
         mixed = {k: sorted(v) for k, v in groups.items() if len(v) > 1}
         # brief mode groups arms by DISPLAY label, so order by the label's
@@ -724,8 +757,8 @@ def _build_context(project_root: Path, run_dir: Path,
         winner = margin = None
         if len(scored_cards) >= 2:
             top = sorted(scored_cards, key=lambda c: -c["score"])
-            margin = round(top[0]["score"] - top[1]["score"], 2)
-            if margin > TIE_BAND:                 # same tie band as the verdict
+            margin = round(top[0]["score"] - top[1]["score"], 3)
+            if not is_tie(top[0]["score"] - top[1]["score"]):   # same rule as the verdict
                 winner = top[0]["model_id"]
         # Gemini-first everywhere the cards are shown: media figures, the
         # diagnostic columns, the summary score run, the mini thumbs
@@ -758,8 +791,9 @@ def _build_context(project_root: Path, run_dir: Path,
         return c["score"] is not None and not (complete_only and e["margin"] is None)
 
     for e in evidence:
-        fam = families.setdefault(e["family"], {"n": 0, "models": {}})
+        fam = families.setdefault(e["family"], {"n": 0, "compared": 0, "models": {}})
         fam["n"] += 1
+        fam["compared"] += e["margin"] is not None
         for c in e["cards"]:
             if _counts(e, c):
                 m = fam["models"].setdefault(c["model_id"],
@@ -768,9 +802,7 @@ def _build_context(project_root: Path, run_dir: Path,
                 if e["winner"] == c["model_id"]:
                     m["wins"] += 1
     for fam in families.values():
-        for m in fam["models"].values():
-            m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-            m["n"] = len(m["scores"])
+        _finish_rollup(fam)
     _fam_ids = {mid for fam in families.values() for mid in fam["models"]}
     family_models = [mid for mid in model_order if mid in _fam_ids]
 
@@ -779,8 +811,9 @@ def _build_context(project_root: Path, run_dir: Path,
     for e in evidence:
         if not e["industry"]:
             continue
-        ind = industries.setdefault(e["industry"], {"n": 0, "models": {}})
+        ind = industries.setdefault(e["industry"], {"n": 0, "compared": 0, "models": {}})
         ind["n"] += 1
+        ind["compared"] += e["margin"] is not None
         for c in e["cards"]:
             if _counts(e, c):
                 m = ind["models"].setdefault(c["model_id"], {"scores": [], "wins": 0})
@@ -788,9 +821,7 @@ def _build_context(project_root: Path, run_dir: Path,
                 if e["winner"] == c["model_id"]:
                     m["wins"] += 1
     for ind in industries.values():
-        for m in ind["models"].values():
-            m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-            m["n"] = len(m["scores"])
+        _finish_rollup(ind)
 
     # head-to-head duel strip (exactly two scored models). Slot a is the
     # Gemini arm, so the reader always finds it on the same side.

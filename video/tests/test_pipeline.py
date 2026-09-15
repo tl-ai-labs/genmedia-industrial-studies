@@ -544,18 +544,26 @@ def test_expand_collapse_present_in_both_reports(scored_run):
         assert 'data-act="expand"' in html and 'data-act="collapse"' in html
 
 
-def test_win_threshold_is_stated_as_5_percent_and_0_05(scored_run):
-    """One threshold, shown in the caller's own terms: a win needs more than
-    5% of the rubric scale, which is 0.05 as a fraction and 0.5 of the 10
-    points. All three name the same number and must never disagree."""
+def test_win_rule_is_stated_as_any_difference(scored_run):
+    """The page states the rule it applies: any difference wins, only identical
+    scores tie — in each audience's own units, and no leftover band."""
     from runner.report import TIE_BAND
     _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
-    assert TIE_BAND == 0.5 and TIE_BAND / 10 == 0.05
+    assert TIE_BAND == 0.0
+    assert "99% vs 100%" in client and "100% vs 100%" in client
+    assert "9.9 vs 10" in internal and "10 vs 10" in internal
     for html in (internal, client):
-        assert "5%" in html
-        assert "0.05 of the rubric scale" in html
-    assert "0.5 of the 10 points" in internal      # points form: internal only
-    assert "0.5 of the 10 points" not in client
+        assert "tie band" not in html and "0.05 of the rubric scale" not in html
+
+
+def test_short_scores_never_print_alike_when_they_differ():
+    """With no tie band a 90.75% vs 91% scenario has a winner, so its badges
+    must not both read "91%"."""
+    from runner.report import _env
+    q = _env({}, client=True).filters["q"]
+    assert q(9.075, True) == "90.75%" and q(9.1, True) == "91%" and q(10.0, True) == "100%"
+    qi = _env({}, client=False).filters["q"]
+    assert qi(9.075, True) == "9.075" and qi(10.0, True) == "10"
 
 
 def test_win_counts_agree_across_every_surface(scored_run):
@@ -666,7 +674,7 @@ def test_client_only_difference_column_is_percentage_only(scored_run):
     assert ">Difference<" in client
     assert ">Difference<" not in internal
     assert 'class="num d' not in internal
-    body = client[client.index('<table class="mx">'):client.index("</table>")]
+    body = client[client.index('<table class="mx mx2">'):client.index("</table>")]
     # no bare point values leak into the column: every rendered delta is a %
     deltas = re.findall(r'<td class="num d[^"]*"><span class="dv">(.*?)</span>', body)
     assert deltas, "no difference cells rendered"
@@ -1240,3 +1248,100 @@ def test_complete_only_verdict_uses_the_means_the_table_shows(scored_run):
     for f in list(ctx["families"].values()) + list(ctx["industries"].values()):
         assert f["models"]["model-a"]["mean"] == p["mean_a"]
         assert f["models"]["model-b"]["mean"] == p["mean_b"]
+
+
+def test_scenario_margin_is_exact_like_its_badges():
+    from runner.report import _env
+    qd = _env({}, client=True).filters["qd"]
+    assert qd(0.925, True) == "+9.25 pp" and qd(0.3, True) == "+3 pp"
+    assert qd(0.925) == "+9.2 pp" or qd(0.925) == "+9.3 pp"      # means keep one decimal
+    assert _env({}, client=False).filters["qd"](0.925, True) == "+0.925"
+
+
+# ---- client report layout, 2026-09-15 --------------------------------------
+
+def test_client_report_drops_the_verdict_but_internal_keeps_it(scored_run):
+    """The client reads the table and the evidence; who-wins-the-task and the
+    rule that decided it stay in the internal report."""
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    assert 'class="verdict"' in internal
+    assert 'class="verdict"' not in client
+    assert "no winner declared" not in client and "tie on quality" not in client
+    assert 'id="overall"' in client and ">Overall summary<" in client
+    assert 'class="h vs">vs<' in client                    # duel strip names
+    # table header: "vs" in its own column, and every body row keeps the grid
+    assert '<th class="vsc" aria-hidden="true"><span>vs</span></th>' in client
+    assert client.count('<td class="vsc"></td>') == client.count('class="mrow')
+    assert 'class="vsc"' not in internal
+    # reliability is explained once, under the Overall summary card, not under each table
+    assert client.count("Reliability is the model's lowest rating") == 1
+    assert (client.index('id="overall"') < client.index("Reliability is the model's lowest rating")
+            < client.index('class="mx'))
+
+
+def test_rollup_win_percent_counts_only_compared_scenarios():
+    """Win % is over scenarios both models completed: a rival's failure is
+    not a loss for the model that delivered, nor a win for anyone."""
+    from runner.report import _finish_rollup
+    row = {"n": 8, "compared": 3, "models": {
+        "g": {"scores": [10.0, 9.0, 10.0, 10.0], "wins": 1},
+        "r": {"scores": [10.0, 8.2, 10.0, 5.4], "wins": 0}}}
+    _finish_rollup(row)
+    assert row["models"]["g"]["win_pct"] == 33.3
+    assert row["models"]["r"]["win_pct"] == 0.0
+    assert row["lead_mean"] == "g" and row["lead_wins"] == "g"
+    # 5 of 8 and 3 of 8 must not round in opposite directions
+    row = {"n": 10, "compared": 8, "models": {
+        "g": {"scores": [9.0], "wins": 3}, "r": {"scores": [9.0], "wins": 5}}}
+    _finish_rollup(row)
+    assert (row["models"]["g"]["win_pct"], row["models"]["r"]["win_pct"]) == (37.5, 62.5)
+    assert row["lead_mean"] is None                        # equal means tag nobody
+    assert row["lead_wins"] == "r"
+    # nothing compared: no percentage, no fake 0%
+    row = {"n": 2, "compared": 0, "models": {"g": {"scores": [9.0], "wins": 0}}}
+    _finish_rollup(row)
+    assert row["models"]["g"]["win_pct"] is None and row["lead_wins"] is None
+
+
+def test_rollup_rows_filter_like_their_chips_and_tag_leaders():
+    """Every family / industry row carries the same dim/val as its chip, so a
+    click applies exactly that chip's filter; leaders are tagged."""
+    from runner.report import _env, _finish_rollup
+    rows = {"ads": {"n": 10, "compared": 8, "models": {
+                "g": {"scores": [9.16], "wins": 3}, "r": {"scores": [9.39], "wins": 5}}}}
+    for r in rows.values():
+        _finish_rollup(r)
+    env = _env({"g": "Gem", "r": "Rival"}, client=True)
+    macro = env.get_template("_sections.j2").module.rollup_table
+    html = str(macro(rows, ["g", "r"], "fam", "Family"))
+    assert 'class="frow" data-dim="fam" data-val="ads"' in html
+    assert ">Quality mean<" in html and ">Win %<" in html and "mean · wins" not in html
+    assert '<span class="tag lead"' in html and "93.9%" in html     # r leads quality
+    assert '<span class="tag win">5 wins</span>' in html
+    assert "62.5%" in html and "37.5%" in html
+    js = env.get_template("_assets.j2").module.js()
+    assert "table.roll .frow" in str(js) and "pickRow" in str(js)
+
+
+def test_latency_min_sits_beside_p50_and_max(scored_run):
+    """Latency is shown as a range: fastest, typical, slowest — in both reports."""
+    from runner.scoring import aggregate
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    m = next(iter(aggregate(scored_run["run_dir"])["tasks"].values()))["models"]["model-a"]
+    assert m["latency_min_ms"] <= m["latency_p50_ms"] <= m["latency_max_ms"]
+    for html in (internal, client):
+        i_min, i_p50, i_max = (html.index(f'data-row="{k}"') for k in ("lat_min", "lat_p50", "lat_max"))
+        assert i_min < i_p50 < i_max
+        assert "Latency min" in html
+
+
+def test_overall_summary_card_tags_the_better_value_not_the_tally_line(scored_run):
+    """The green tag marks the better value on each row of the summary card; the
+    tally sentence above it stays plain text."""
+    import re as _re
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    tally = _re.search(r'<p class="tally hero-tally">.*?</p>', client, _re.S).group(0)
+    assert "tag" not in tally
+    duel = _re.search(r'<div class="duel rev">.*?\n</div>', client, _re.S).group(0)
+    assert "✦" not in duel
+    assert _re.search(r'<span class="tag win" title="better on this row">[^<]+</span>', duel)

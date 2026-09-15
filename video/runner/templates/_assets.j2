@@ -80,12 +80,15 @@ h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin
 .duel .heads .h{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.02em}
 .duel .heads .h.a{color:var(--accent-ink)}
 .duel .heads .h.b{color:var(--rival)}
+.duel .heads .h.vs{color:var(--faint);font-weight:400;text-transform:uppercase;letter-spacing:.12em;
+  font-size:11px;align-self:center}
 .duel .dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
 .duel .m{margin:12px 0}
 .duel .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:4px}
-.duel .pair{display:grid;grid-template-columns:56px 1fr 1fr 56px;gap:8px;align-items:center}
+.duel .pair{display:grid;grid-template-columns:84px 1fr 1fr 84px;gap:8px;align-items:center}
+.duel .val .tag{font-size:12px;padding:1px 8px}
 .duel .val{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
 .duel .val.r{text-align:right}
 .duel .track{height:8px;border-radius:5px;background:var(--rule);overflow:hidden;position:relative}
@@ -153,6 +156,38 @@ table.mx td.d .dv{font-weight:700}
 table.mx td.d.up .dv{color:var(--accent-ink)}
 table.mx td.d.down .dv{color:var(--bad)}
 .tnote{font-size:12.5px;color:var(--muted);margin:8px 2px 0}
+ul.tnote{padding-left:18px}
+ul.tnote li{margin:2px 0}
+/* "vs" between the two model columns of a two-model table: its own narrow
+   column, centred, so it never crowds either model's name */
+table.mx .vsc{width:44px;padding-left:0;padding-right:0;text-align:center}
+table.mx th.vsc{vertical-align:middle}
+/* two-model client table: equal, centred model columns so the pair reads
+   "Model A  vs  Model B" symmetrically, with each value under its name */
+table.mx2 th.num:not(.d),table.mx2 td.num{text-align:center;width:19%}
+table.mx2 td.num.d,table.mx2 th.num.d{text-align:right;width:15%}
+table.mx th.vsc span{display:inline-block;font-size:10px;letter-spacing:.12em;
+  color:var(--faint);padding:2px 7px;border-radius:20px;border:1px solid var(--rule);
+  background:var(--card)}
+
+/* family / industry tables: grouped per model, tagged leaders, rows filter */
+table.roll th.grp{text-align:center;border-left:1px solid var(--rule);color:var(--rival)}
+table.roll th.grp.g{color:var(--accent-ink)}
+table.roll thead tr:last-child th:nth-child(3n+1){border-left:1px solid var(--rule)}
+table.roll tbody td:nth-child(3n){border-left:1px solid var(--rule)}
+table.roll .frow{cursor:pointer;transition:background .15s}
+table.roll .frow:hover td{background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+table.roll .frow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+table.roll .frow.on td{background:var(--accent-soft)}
+table.roll .frow.on .fname{color:var(--accent-ink);font-weight:700}
+table.roll .fname{border-bottom:1px dashed var(--faint)}
+table.roll td.lead{color:var(--accent-ink);font-weight:700}
+.tag{display:inline-block;font-family:var(--mono);font-size:11.5px;padding:2px 9px;
+  border-radius:20px;border:1px solid var(--rule);color:var(--ink);
+  background:color-mix(in srgb,var(--paper) 70%,var(--card));white-space:nowrap}
+.tag.lead,.tag.win{background:var(--accent-soft);color:var(--accent-ink);
+  border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-weight:700}
+.tag.zero{color:var(--faint)}
 /* the raw task key, kept beside the heading in the internal report only */
 h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint);
   letter-spacing:0;vertical-align:middle;margin-left:8px}
@@ -174,9 +209,11 @@ h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint
 .tally{font-size:13.5px;margin-top:8px;line-height:1.55}
 .tally .nc{color:var(--warn)}
 .hero-tally{margin:10px 0 0;color:var(--ink)}
+h2.sumh{margin-top:26px}
+ul.tnote.sumnote{margin:-6px 2px 8px}
 .pill.nc{background:var(--warn-soft);color:var(--warn);border-color:transparent}
 
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;align-items:center;scroll-margin-top:70px}
 .chip{font-size:12.5px;padding:6px 14px;border-radius:20px;border:1px solid var(--rule);
   background:var(--card);color:var(--muted);cursor:pointer;user-select:none;
   transition:background .15s,color .15s,border-color .15s}
@@ -375,6 +412,8 @@ a{color:var(--accent-ink)}
         d.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
       return;
     }
+    var frow = t.closest && t.closest('table.roll .frow');
+    if (frow) { pickRow(frow); return; }
     var chip = t.closest && t.closest('.chips .chip');
     if (chip) {
       var chips = chip.closest('.chips');
@@ -413,6 +452,10 @@ a{color:var(--accent-ink)}
         span.textContent = '(' + n + ')';
         c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
       });
+      // family / industry table rows mirror their chips
+      scope.querySelectorAll('table.roll .frow').forEach(function (r) {
+        r.classList.toggle('on', active[r.dataset.dim] === r.dataset.val);
+      });
       return;
     }
     var ctl = t.closest && t.closest('.ctl');
@@ -424,6 +467,26 @@ a{color:var(--accent-ink)}
         } else { d.open = false; }
       });
     }
+  });
+
+  // A family / industry row is a shortcut for its chip: the same filter, then
+  // the list is brought into view. Clicking the active row shows all again.
+  function pickRow(r) {
+    var scope = r.closest('.runpanel') || document;
+    var sel = '.chips .chip[data-dim="' + r.dataset.dim + '"]';
+    var target = r.classList.contains('on')
+      ? scope.querySelector(sel + '[data-val="__all"]')
+      : scope.querySelector(sel + '[data-val="' + CSS.escape(r.dataset.val) + '"]');
+    if (!target) return;
+    target.click();
+    // land on the filter chips, so the active filter is visible above the list
+    var anchor = target.closest('.chips') || scope.querySelector('.scnlist');
+    anchor.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var r = e.target.closest && e.target.closest('table.roll .frow');
+    if (r) { e.preventDefault(); pickRow(r); }
   });
 
   // Sort by: reorders the scenario nodes. Filtering only toggles
