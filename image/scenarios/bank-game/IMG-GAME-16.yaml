@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-16 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-16
+modality: image
+task: image_edit
+title: Class re-skin, same face
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: 'Using this reference, re-equip the same person as a heavy support class: replace
+  the shirt with a bulky armoured vest and shoulder pauldrons, add a belt-fed ammunition drum
+  on the back and reinforced gauntlets, and swap the cap for a padded ballistic helmet worn
+  pushed back so the face stays fully visible. Keep the face, hairline and skin tone exactly
+  as in the reference. Same framing, plain background.'
+expected: 'Class re-skin, same face. Capability under test: Total kit replacement with the
+  head region held identical. Adherence clauses, check each: 1) Shirt replaced by an armoured
+  vest with pauldrons  2) Ammunition drum on the back and reinforced gauntlets added  3) Face,
+  hairline and skin tone unchanged from the reference  4) Helmet worn pushed back so the face
+  remains fully visible'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- variants-&-progression
+- scenario-bank-game
+- tier-low

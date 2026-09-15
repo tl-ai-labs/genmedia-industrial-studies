@@ -71,6 +71,17 @@ class ModelSpec:
     voice_map: dict[str, str] = field(default_factory=dict)
     region: str | None = None
     disabled_reason: str = ""
+    # WHERE THE CALL IS SERVED FROM, in words a reader of the report can act
+    # on. `region` is the code the adapter sends (a Vertex location) or the
+    # vendor's default when there is no choice to make; `region_note` says
+    # which of those it is and why. Both travel into the manifest and onto
+    # every board, because "which region was this served from" was asked
+    # after the fact and the run record could not answer it.
+    region_note: str = ""
+
+    @property
+    def served_from(self) -> str:
+        return served_from_label(self.provider, self.region)
 
     def supports_task(self, task: str) -> bool:
         return task in self.supports
@@ -119,6 +130,11 @@ class ServiceSpec:
     price: Price
     temperature: float = 0.0
     region: str | None = None
+    region_note: str = ""
+
+    @property
+    def served_from(self) -> str:
+        return served_from_label(self.provider, self.region)
 
     @property
     def has_credential(self) -> bool:
@@ -128,6 +144,23 @@ class ServiceSpec:
         if not self.auth_env:
             return True
         return bool(os.environ.get(self.auth_env))
+
+
+def served_from_label(provider: str, region: str | None) -> str:
+    """
+    One short phrase per arm: the doorway and the region, as the board prints
+    it. The provider decides the doorway - Google arms here go through Vertex
+    AI at a named location; every other vendor is its own direct API, where
+    the region is the vendor's default rather than a parameter we set.
+    """
+    prov = (provider or "").lower()
+    if prov == "google":
+        return f"Vertex AI · {region or 'us-central1'}"
+    if prov == "local":
+        return "local machine · no region"
+    name = {"elevenlabs": "ElevenLabs direct API", "openai": "OpenAI direct API"}.get(
+        prov, f"{provider} direct API")
+    return f"{name} · {region or 'vendor default'}"
 
 
 @dataclass(frozen=True)
@@ -224,6 +257,7 @@ def _model(raw: dict, modality: str, path: Path) -> ModelSpec:
         voice_map=dict(raw.get("voice_map") or {}),
         region=raw.get("region"),
         disabled_reason=str(raw.get("disabled_reason") or ""),
+        region_note=str(raw.get("region_note") or ""),
     )
 
 
@@ -247,6 +281,7 @@ def _service(raw: dict, role: str, path: Path) -> ServiceSpec:
         price=_price(raw.get("price"), where),
         temperature=float(raw.get("temperature", 0.0)),
         region=raw.get("region"),
+        region_note=str(raw.get("region_note") or ""),
     )
 
 

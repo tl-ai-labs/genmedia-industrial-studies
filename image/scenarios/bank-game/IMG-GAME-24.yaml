@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-24 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-24
+modality: image
+task: text_to_image
+title: Two-phase armoured boss
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A two-phase boss design shown side by side in one image. Phase one, on the left:
+  a hulking operator encased in bolted composite armour with a blank slab visor and a riot
+  shield. Phase two, on the right: the same operator with the armour blown away, revealing
+  a wiry frame in scorched underarmour, exposed harness webbing and a cracked visor now hanging
+  at the throat. Painted concept art, plain background, no text.'
+expected: 'Two-phase armoured boss. Capability under test: Transformation design — identity
+  continuity across a dramatic phase change. Adherence clauses, check each: 1) Two figures
+  side by side, phase one left and phase two right  2) Phase two clearly the same entity —
+  visor, harness and proportions carry over  3) Armour stripped away to reveal scorched underarmour
+  and webbing  4) One consistent art style, plain background, no text'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-36 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-model.png — provenance in each sidecar .json
+id: IMG-VIEW-36
+modality: image
+task: image_edit
+title: Straight-on model shot to a three-quarter lifestyle angle
+inputs:
+  source: assets/bank/IMG-VIEW-base-model.png
+params:
+  size: auto
+prompt: Re-photograph this person at a three-quarter angle, turned about thirty-five degrees
+  with her weight on one hip, so the side of the trench coat, its shoulder line and the drape
+  of the belt are visible. The coat's colour, length, lapel shape and fastening must match
+  the original, as must her hair and footwear. Same setting and lighting.
+expected: 'Straight-on model shot to a three-quarter lifestyle angle. Capability under test:
+  Person and garment rotation with cut and construction preserved. Adherence clauses, check
+  each: 1) Turned roughly thirty-five degrees, weight on one hip  2) Side of the coat, shoulder
+  line and belt drape visible  3) Colour, length, lapel shape and fastening match the original  4)
+  Same hair, footwear, setting and lighting'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-food-&-fashion
+- scenario-bank-view
+- tier-medium

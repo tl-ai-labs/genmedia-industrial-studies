@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-44 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-44
+modality: image
+task: image_edit
+title: Operator, silhouette and lobby icon in one sheet
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: 'Using this reference, produce a one-row sheet with three panels: the full character
+  as drawn, a pure black silhouette of exactly that same figure on white, and a simplified
+  circular lobby icon of the character''s head and shoulders. The silhouette must match the
+  character''s outline precisely, and the icon must be recognisably the same person reduced
+  for small-size legibility. Plain background, no text.'
+expected: 'Operator, silhouette and lobby icon in one sheet. Capability under test: Three
+  representations of one design that genuinely agree with each other. Adherence clauses, check
+  each: 1) Three panels — full character, black silhouette, circular icon  2) Silhouette outline
+  matches the character exactly, no added or dropped shapes  3) Icon recognisably the same
+  person, simplified for small size  4) Plain background, no text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-high

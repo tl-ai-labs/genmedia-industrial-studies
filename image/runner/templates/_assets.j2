@@ -80,6 +80,14 @@ h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin
 .duel .heads .h{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.02em}
 .duel .heads .h.a{color:var(--accent-ink)}
 .duel .heads .h.b{color:var(--rival)}
+.duel .heads{align-items:center}
+.duel .heads .vsx{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+.osum{font-size:15px;line-height:1.6;margin:6px 0 4px}
+.duel .wtag{display:inline-block;padding:3px 11px;border-radius:14px;white-space:nowrap;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+.osum .nc{color:var(--warn)}
 .duel .dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
 .duel .m{margin:12px 0}
@@ -179,6 +187,31 @@ h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint
 .chip:hover{border-color:var(--accent)}
 .chip .n{opacity:.75}
 .chip.zero{opacity:.4}
+table.bdt th{vertical-align:bottom}
+table.bdt th.grp{text-align:center;letter-spacing:.08em}
+table.bdt th.grp.a{color:var(--accent-ink)}
+table.bdt th.grp.b{color:var(--rival)}
+table.bdt th.grp,table.bdt .sep{border-left:1px solid var(--rule)}
+table.bdt td{vertical-align:middle}
+table.bdt tbody tr:last-child td{border-bottom:0}
+table.bdt .bdrow{cursor:pointer;transition:background .15s}
+table.bdt .bdrow:hover td{background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
+table.bdt .bdrow.on td{background:var(--accent-soft)}
+table.bdt .bdrow.on .bdname{color:var(--accent-ink);font-weight:600}
+table.bdt .bdname{text-decoration:underline dashed;text-decoration-color:var(--faint);
+  text-underline-offset:4px}
+table.bdt .tag{display:inline-block;padding:3px 11px;border-radius:14px;
+  border:1px solid var(--rule);white-space:nowrap}
+table.bdt .tag.zero{color:var(--faint)}
+table.bdt .tag.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+table.bdt td.lead{color:var(--accent-ink);font-weight:700}
+table.bdt .tag.win{font-weight:700;color:var(--ink);border-color:var(--faint)}
+table.bdt .tag.win.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink)}
+ul.tnote{margin:4px 0 12px;padding-left:20px}
+ul.tnote li{margin:2px 0}
+td .vs{font-size:10px;letter-spacing:.06em;color:var(--faint);padding:0 4px}
 .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (prefers-color-scheme:dark){.chip.on{color:#08211c}}
 
@@ -357,6 +390,49 @@ a{color:var(--accent-ink)}
       sw.appendChild(b);
     });
   }
+  function applyChip(chip) {
+    var chips = chip.closest('.chips');
+    chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+    chip.classList.add('on');
+    var scope = chip.closest('.runpanel') || document;
+    // AND-combine the active selection of every chip dimension
+    // (industry, winner, family)
+    var active = {};
+    scope.querySelectorAll('.chips .chip.on').forEach(function (c) {
+      if (c.dataset.dim) active[c.dataset.dim] = c.dataset.val;
+    });
+    // keep the breakdown-table rows in step with the chips
+  scope.querySelectorAll('.bdrow').forEach(function (r) {
+    r.classList.toggle('on', active[r.dataset.dim] === r.dataset.val);
+  });
+  var dets = scope.querySelectorAll('details.scn');
+    dets.forEach(function (d) {
+      var show = true;
+      if (active.fam && active.fam !== '__all' && d.dataset.fam !== active.fam) show = false;
+      if (active.ind && active.ind !== '__all' && d.dataset.ind !== active.ind) show = false;
+      if (active.win && active.win !== '__all' && d.dataset.win !== active.win) show = false;
+      if (active.task && active.task !== '__all' && d.dataset.task !== active.task) show = false;
+      d.style.display = show ? '' : 'none';
+    });
+    // faceted counts: each chip shows how many scenarios IT would yield
+    // under the other rows' current selections
+    scope.querySelectorAll('.chips .chip').forEach(function (c) {
+      var dim = c.dataset.dim, span = c.querySelector('.n');
+      if (!dim || !span) return;
+      var n = 0;
+      dets.forEach(function (d) {
+        var ok = true;
+        ['fam', 'ind', 'win', 'task'].forEach(function (k) {
+          var v = (k === dim) ? c.dataset.val : active[k];
+          if (v && v !== '__all' && d.dataset[k] !== v) ok = false;
+        });
+        if (ok) n++;
+      });
+      span.textContent = '(' + n + ')';
+      c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
+    });
+  }
+
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (t.classList && t.classList.contains('out')) { openLb(t); return; }
@@ -368,46 +444,25 @@ a{color:var(--accent-ink)}
         d.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
       return;
     }
-    var chip = t.closest && t.closest('.chips .chip');
-    if (chip) {
-      var chips = chip.closest('.chips');
-      chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
-      chip.classList.add('on');
-      var scope = chip.closest('.runpanel') || document;
-      // AND-combine the active selection of every chip dimension
-      // (industry, winner, family)
-      var active = {};
-      scope.querySelectorAll('.chips .chip.on').forEach(function (c) {
-        if (c.dataset.dim) active[c.dataset.dim] = c.dataset.val;
+    // a family / industry row drives the matching filter chip; clicking the
+    // row that is already active goes back to "All"
+    var tf = t.closest && t.closest('.bdrow');
+    if (tf) {
+      var tscope = tf.closest('.runpanel') || document;
+      var val = tf.classList.contains('on') ? '__all' : tf.dataset.val;
+      var target = null;
+      tscope.querySelectorAll('.chips .chip').forEach(function (c) {
+        if (c.dataset.dim === tf.dataset.dim && c.dataset.val === val) target = c;
       });
-      var dets = scope.querySelectorAll('details.scn');
-      dets.forEach(function (d) {
-        var show = true;
-        if (active.fam && active.fam !== '__all' && d.dataset.fam !== active.fam) show = false;
-        if (active.ind && active.ind !== '__all' && d.dataset.ind !== active.ind) show = false;
-        if (active.win && active.win !== '__all' && d.dataset.win !== active.win) show = false;
-        if (active.task && active.task !== '__all' && d.dataset.task !== active.task) show = false;
-        d.style.display = show ? '' : 'none';
-      });
-      // faceted counts: each chip shows how many scenarios IT would yield
-      // under the other rows' current selections
-      scope.querySelectorAll('.chips .chip').forEach(function (c) {
-        var dim = c.dataset.dim, span = c.querySelector('.n');
-        if (!dim || !span) return;
-        var n = 0;
-        dets.forEach(function (d) {
-          var ok = true;
-          ['fam', 'ind', 'win', 'task'].forEach(function (k) {
-            var v = (k === dim) ? c.dataset.val : active[k];
-            if (v && v !== '__all' && d.dataset[k] !== v) ok = false;
-          });
-          if (ok) n++;
-        });
-        span.textContent = '(' + n + ')';
-        c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
-      });
+      if (target) {
+        applyChip(target);
+        if (val !== '__all')
+          target.closest('.chips').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+      }
       return;
     }
+    var chip = t.closest && t.closest('.chips .chip');
+    if (chip) { applyChip(chip); return; }
     var ctl = t.closest && t.closest('.ctl');
     if (ctl) {
       var scope2 = ctl.closest('.runpanel') || document;

@@ -1,6 +1,20 @@
-# runs are dated, immutable artefacts — never committed, in any module
+# Run GENERATIONS stay out of git — large, and not worth versioning.
+# Run EVIDENCE and REPORTS are committed: a result has to be defensible without
+# the images, so records (INDEX.csv, *.jsonl, manifest.json, frozen scenarios)
+# and the rendered reports are tracked. inputs/ and outputs/ are not: inputs are
+# the shared asset bank (SHAs are in each manifest) and outputs are regenerable.
 **/runs/*
 !**/runs/.gitkeep
+!**/runs/*.html
+!**/runs/*/
+**/runs/*/inputs/
+**/runs/*/outputs/
+**/runs/**/*.png
+**/runs/**/*.jpg
+**/runs/**/*.jpeg
+**/runs/**/*.webp
+**/runs/**/*.mp4
+**/runs/**/*.wav
 
 # secrets — never committed, at any level
 .env
@@ -20,6 +34,10 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# local-only voice notes and generated scenario-bank export — not for commit
+voice/OBSERVATIONS.md
+voice/scenario-bank-call-centre-microdrama.xlsx
 
 # blind panel: the exported media and the id->model key are generated;
 # anyone with the key can decode the live panel, so it never travels with the repo

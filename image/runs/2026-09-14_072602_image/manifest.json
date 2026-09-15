@@ -1,0 +1,112 @@
+{
+  "run_id": "2026-09-14_072602_image",
+  "created": "2026-09-14T07:26:02.299Z",
+  "state": "reported",
+  "modality": "image",
+  "git_sha": "4e35177b1339d7a06f3d5ffe807d9598b2cb28f4",
+  "budget_usd": 2.0,
+  "events": [
+    {
+      "ts": "2026-09-14T07:26:02.361Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-14T07:26:02.588Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-14T07:26:18.670Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-14T07:27:33.717Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-14T07:38:04.676Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-14T07:38:04.760Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-14T09:12:06.503Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-image-2-high",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-pro-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3-pro-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-GAME-50": {
+      "edit_fidelity": 0.571429,
+      "visual_quality": 0.214286,
+      "realism_style": 0.214285
+    }
+  },
+  "scenario_set_hash": "27c86dd6ddb667361f08406fe19bcfde38070ffe1e6f3f0f17c02750123c93ea",
+  "inputs": {
+    "IMG-GAME-50": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-50/IMG-GAME-base-heavy.png"
+      }
+    ]
+  },
+  "cells": {
+    "IMG-GAME-50::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-50",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-50::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-50",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "IMG-GAME-50": "completed"
+  }
+}

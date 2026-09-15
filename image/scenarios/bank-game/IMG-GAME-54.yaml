@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-54 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-54
+modality: image
+task: image_edit
+title: Concept to a stylised 3D render look
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: 'Re-render this person as a stylised 3D mobile game character: subsurface-scattered
+  skin, physically based fabric on the shirt with visible weave and roughness variation, a
+  slightly glossy cap brim, soft three-point studio lighting and a subtle ambient occlusion
+  contact shadow. The design, proportions, colours and framing stay exactly as in the reference.
+  Plain neutral background.'
+expected: 'Concept to a stylised 3D render look. Capability under test: Register change from
+  photograph to 3D render with the design held fixed. Adherence clauses, check each: 1) Reads
+  as a 3D render — PBR fabric, subsurface skin, soft studio lighting  2) Ambient occlusion
+  contact shadow present  3) Design, proportions, colours and framing unchanged  4) Plain
+  neutral background, no added props or environment'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- style-&-production-assets
+- scenario-bank-game
+- tier-low

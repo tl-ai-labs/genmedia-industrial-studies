@@ -1,0 +1,44 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-38 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png; reference = IMG-GAME-base-brute.png — provenance in each sidecar .json
+# KNOWN ISSUE: the prompt calls the second character a 'heavier suited figure', but its reference is a
+# non-human brute. Prompt kept verbatim from the sheet; fix the sheet before quoting results.
+id: IMG-GAME-38
+modality: image
+task: image_edit
+title: Two operators in a takedown interaction
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+  reference: assets/bank/IMG-GAME-base-brute.png
+params:
+  size: auto
+prompt: 'Place these two characters in a single frame: the lighter operator from the first
+  image driving the heavier suited figure from the second back against a concrete wall, both
+  mid-motion, feet planted. Each must match its own reference exactly — face or visor, kit
+  and colours — with correct relative scale and a shared light direction. No feature blending
+  between them.'
+expected: 'Two operators in a takedown interaction. Capability under test: Two identities
+  in physical contact with correct scale and contact points. Adherence clauses, check each:
+  1) Both characters present and matching their own references  2) Plausible physical contact,
+  both figures mid-motion  3) Relative scale correct — the suited figure clearly heavier and
+  bulkier  4) One shared light direction, no blended features between them'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-high

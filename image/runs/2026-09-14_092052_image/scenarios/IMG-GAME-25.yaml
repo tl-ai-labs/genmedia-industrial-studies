@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-25 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-25
+modality: image
+task: text_to_image
+title: Skin concept from a mood-board word list
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: 'Design a single battle-royale operator skin from this brief and nothing else. Words:
+  salvaged, monsoon, patient, hand-repaired. Palette: oxidised copper, wet slate, bleached
+  canvas, one accent of signal orange. Silhouette note: bulky above the waist, narrow below.
+  Full body, painted concept-art style, plain neutral background, no logos, no text.'
+expected: 'Skin concept from a mood-board word list. Capability under test: Interpreting an
+  abstract skin brief into a specific, defensible design. Adherence clauses, check each: 1)
+  Design legibly reflects salvaged, monsoon, patient and hand-repaired  2) Palette limited
+  to oxidised copper, wet slate, bleached canvas and a signal-orange accent  3) Silhouette
+  visibly bulky above the waist and narrow below  4) Full body in frame, plain background,
+  no logos or text'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

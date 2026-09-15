@@ -1,0 +1,42 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-09 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-cafe.png — provenance in each sidecar .json
+id: IMG-VIEW-09
+modality: image
+task: image_edit
+title: Isolate one person from a group at a new angle
+inputs:
+  source: assets/bank/IMG-VIEW-base-cafe.png
+params:
+  size: auto
+prompt: From this group photograph, re-photograph only the man standing furthest to the right
+  as a single half-body subject, seen front-on at his own eye level rather than from the side.
+  His face, cap, clothing and build must match how he appears in the group. Everyone else
+  is removed and the background becomes a plain continuation of the deck behind him. Same
+  daylight.
+expected: 'Isolate one person from a group at a new angle. Capability under test: Single-subject
+  extraction from a crowd plus a viewpoint change on that subject. Adherence clauses, check
+  each: 1) Only the rightmost man remains; no other figure present  2) He is seen front-on
+  at his own eye level, not from the original side angle  3) Face, cap, clothing and build
+  consistent with how he appears in the group  4) Background is a plain continuation of the
+  deck, same daylight'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- scene-&-interior-re-angle
+- scenario-bank-view
+- tier-high

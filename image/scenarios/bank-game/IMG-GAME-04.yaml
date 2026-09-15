@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-04 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-04
+modality: image
+task: text_to_image
+title: Mobile low-poly operator under a triangle budget
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: 'A low-polygon 3D game character render of a fictional modern soldier, built to a
+  mobile triangle budget: visible flat polygon facets, hard-edged shading, simplified fingerless
+  glove shapes, a single low-resolution camouflage texture and no fine surface detail. The
+  silhouette must still read clearly as a soldier with a helmet, plate carrier and rifle.
+  Neutral standing pose, plain background, no anti-aliasing on the polygon edges, no text.'
+expected: 'Mobile low-poly operator under a triangle budget. Capability under test: Hard technical
+  constraint — a design that reads at drastically reduced fidelity. Adherence clauses, check
+  each: 1) Visible flat polygon facets and hard-edged shading throughout  2) Simplified hands
+  and low-resolution camouflage texture  3) Helmet, plate carrier and rifle still readable
+  in the silhouette  4) Neutral pose, plain background, no text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.35
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-52 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-portrait.png — provenance in each sidecar .json
+id: IMG-VIEW-52
+modality: image
+task: image_edit
+title: Full-length portrait to a strict side profile
+inputs:
+  source: assets/bank/IMG-VIEW-base-portrait.png
+params:
+  size: auto
+prompt: Re-photograph this standing man from his left side, camera square to his profile at
+  the same height, so he is seen in strict side view. His face, build, hairstyle, suit, posture
+  and the position of his hands must stay the same person and the same pose, seen from ninety
+  degrees around. Same studio backdrop, floor and lighting.
+expected: 'Full-length portrait to a strict side profile. Capability under test: Ninety-degree
+  orbit around a standing person with identity and pose held. Adherence clauses, check each:
+  1) Camera square to the subject''s side, strict profile view  2) Same person — face, build
+  and hairstyle unmistakably unchanged  3) Same suit, posture and hand position, seen from
+  the new angle  4) Same studio backdrop, floor and lighting'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-medium

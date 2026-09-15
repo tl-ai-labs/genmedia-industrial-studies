@@ -32,6 +32,21 @@ image process and the two never touch each other's files.
 
 ---
 
+## 0 · Human review, and where each model was served from
+
+`review/human-review.yaml` is the one hand-written file the boards read
+(schema: `review/README.md`). *Observations* are what a listener heard and
+never touch a number; *corrections* change an automated result a listener
+found wrong, and the page marks each one with what the instrument originally
+said. `--no-review` renders the instrument untouched.
+
+Every arm, the judge and the ASR carry `region` and `region_note` in
+`configs/models.yaml`; the manifest records them per run, and both boards
+print them — the Gemini arm at a Vertex AI regional endpoint we choose, the
+ElevenLabs arm on its direct API at the vendor's default (US) region.
+
+---
+
 ## 1 · Adding a TTS provider
 
 One YAML block, one adapter class. Nothing in `checks.py`, `judge.py`,

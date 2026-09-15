@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-21 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-21
+modality: image
+task: text_to_image
+title: Over-the-shoulder framing
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'An over-the-shoulder photograph: the back of a woman''s head and her right shoulder
+  occupy the lower left third of the frame, softly out of focus, while a man seated across
+  a desk from her is sharp and centred in the upper right, mid-sentence. A window with venetian
+  blinds behind him, warm office light, shallow depth of field, photorealistic, 16:9.'
+expected: 'Over-the-shoulder framing. Capability under test: Two-plane over-the-shoulder geometry
+  with correct focus separation. Adherence clauses, check each: 1) Back of a head and shoulder
+  in the lower left third, out of focus  2) Second person sharp, centred in the upper right,
+  facing the camera  3) Consistent eyeline and desk geometry between the two  4) Venetian
+  blinds behind, shallow depth of field, 16:9'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-low

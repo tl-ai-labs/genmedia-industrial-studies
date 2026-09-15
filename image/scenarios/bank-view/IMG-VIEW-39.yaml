@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-39 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-model.png — provenance in each sidecar .json
+id: IMG-VIEW-39
+modality: image
+task: image_edit
+title: Full-body shot to a close garment detail angle
+inputs:
+  source: assets/bank/IMG-VIEW-base-model.png
+params:
+  size: auto
+prompt: 'Re-photograph this coat as a close detail shot: camera moved in to about half a metre
+  and angled down at roughly thirty degrees onto the collar, lapel and the knot of the belt.
+  This is a camera move, not a crop — the perspective must change and the fabric weave, the
+  stitching and the belt knot must be genuinely resolved at close range. Same colour and lighting.'
+expected: 'Full-body shot to a close garment detail angle. Capability under test: Close-range
+  camera move with real detail resolution rather than upscaled crop. Adherence clauses, check
+  each: 1) Camera close and angled down at roughly thirty degrees onto the collar and belt  2)
+  Perspective genuinely changed, not a scaled crop of the original  3) Fabric weave, stitching
+  and belt knot resolved at close range  4) Coat colour and lighting consistent with the original'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-food-&-fashion
+- scenario-bank-view
+- tier-medium
