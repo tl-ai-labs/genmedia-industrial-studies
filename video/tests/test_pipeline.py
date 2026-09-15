@@ -1345,3 +1345,14 @@ def test_overall_summary_card_tags_the_better_value_not_the_tally_line(scored_ru
     duel = _re.search(r'<div class="duel rev">.*?\n</div>', client, _re.S).group(0)
     assert "✦" not in duel
     assert _re.search(r'<span class="tag win" title="better on this row">[^<]+</span>', duel)
+
+
+def test_both_reports_state_when_they_were_generated(scored_run):
+    """A re-render is a new report: the header carries today's generation
+    date beside the run's own creation time, so two copies can be told apart."""
+    import datetime as _dt
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    today = _dt.datetime.now().astimezone().strftime("%d %b %Y")
+    for html in (internal, client):
+        assert f"report generated <b>{today}" in html
+        assert "run created <b>" in html
