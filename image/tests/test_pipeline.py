@@ -391,11 +391,10 @@ def test_client_verdict_keeps_the_cost_tiebreaker(scored_run):
     verdict would be inconsistent — and that fact does not always favour the
     Gemini arm, so hiding it would flatter one side."""
     from runner.report import _client_prose
-    note = ("tie on quality (mean gap 0.01 < 0.5, no 70% win rate). "
+    note = ("tie on quality (identical mean and identical scenario wins). "
             "Broken only by facts: cheaper: Rival; faster p50: Gem")
     out = _client_prose(note)
     assert "cheaper: Rival" in out                   # kept, not stripped
-    assert "mean gap 0.1 pp < 5 pp" in out           # still restated in %
 
 
 def test_client_shows_percentages_where_internal_shows_points(scored_run):
@@ -468,18 +467,16 @@ def test_expand_collapse_present_in_both_reports(scored_run):
         assert 'data-act="expand"' in html and 'data-act="collapse"' in html
 
 
-def test_win_threshold_is_stated_as_5_percent_and_0_05(scored_run):
-    """One threshold, shown in the caller's own terms: a win needs more than
-    5% of the rubric scale, which is 0.05 as a fraction and 0.5 of the 10
-    points. All three name the same number and must never disagree."""
+def test_win_rule_is_stated_as_any_margin(scored_run):
+    """Only an identical score is a tie; both reports say so in words."""
     from runner.report import TIE_BAND
     _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
-    assert TIE_BAND == 0.5 and TIE_BAND / 10 == 0.05
+    assert TIE_BAND == 0.0
     for html in (internal, client):
-        assert "5%" in html
-        assert "0.05 of the rubric scale" in html
-    assert "0.5 of the 10 points" in internal      # points form: internal only
-    assert "0.5 of the 10 points" not in client
+        assert "by any margin" in html
+        assert "Only an identical score" in html
+    assert "compared at two" in internal           # precision note: internal only
+    assert "compared at two" not in client
 
 
 def test_win_counts_agree_across_every_surface(scored_run):
@@ -544,11 +541,8 @@ def test_client_verdict_prose_restates_the_band_in_percent():
     """The stored verdict is never edited; the client copy only restates the
     tie band in the units that report uses."""
     from runner.report import _client_prose
-    assert _client_prose("mean gap 0.85 >= 0.5") == "mean gap 8.5 pp >= 5 pp"
+    assert _client_prose("higher mean (gap 0.36)") == "higher mean (gap 3.6 pp)"
     assert _client_prose("") == "" and _client_prose(None) is None
-    note = ("tie on quality (mean gap 0.01 < 0.5, no 70% win rate). "
-            "Broken only by facts: higher success rate: Gem; faster p50: Gem")
-    assert "mean gap 0.1 pp < 5 pp" in _client_prose(note)
 
 def test_client_only_difference_column_is_percentage_only(scored_run):
     """The difference column belongs to the client deliverable only, and every
