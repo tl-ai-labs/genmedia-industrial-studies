@@ -1,0 +1,39 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-55 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-55
+modality: image
+task: image_edit
+title: Clean line-art pass
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: 'Convert this person into clean black line art on pure white: even-weight outlines,
+  no shading, no hatching, no grey tones and no colour anywhere. Every design element must
+  survive as a line — the cap seams and brim, the shirt collar and hem, the facial features
+  and the hairline. Same framing.'
+expected: 'Clean line-art pass. Capability under test: Reduction to line while preserving
+  every design element. Adherence clauses, check each: 1) Pure black lines on pure white,
+  no grey, colour or shading  2) Even line weight throughout, no hatching  3) Cap seams, collar,
+  facial features and hairline all present as lines  4) Same framing as the reference'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- style-&-production-assets
+- scenario-bank-game
+- tier-low

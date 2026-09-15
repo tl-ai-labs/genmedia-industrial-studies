@@ -1,0 +1,43 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-42 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-masked.png — provenance in each sidecar .json
+# KNOWN ISSUE: the pinned 'masked' photo shows several suited people, one face visible through a visor; the
+# prompt assumes one soldier with the face fully covered.
+id: IMG-GAME-42
+modality: image
+task: image_edit
+title: Weapon grip and hand study
+inputs:
+  source: assets/bank/IMG-GAME-base-masked.png
+params:
+  size: auto
+prompt: 'Using this figure as the character reference, produce three close studies of the
+  same operator''s gloved hands in one row: the support hand on a rifle handguard, the firing
+  hand on a pistol grip with the index finger indexed along the frame, and both hands seating
+  a magazine. Correct anatomy, five fingers per hand, the same gloves as the reference, the
+  same weapon design across the studies. Plain background, even lighting, no text.'
+expected: 'Weapon grip and hand study. Capability under test: Hand anatomy and grip plausibility
+  under close scrutiny. Adherence clauses, check each: 1) Three hand studies matching the
+  three described grips  2) Five fingers per hand, correct anatomy, no fused or extra digits  3)
+  Same gloves and consistent weapon design across all three  4) Plain background, even lighting,
+  no text'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-high

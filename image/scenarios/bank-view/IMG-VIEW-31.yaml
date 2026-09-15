@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-31 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-facade.png — provenance in each sidecar .json
+id: IMG-VIEW-31
+modality: image
+task: image_edit
+title: Front of a building to its side elevation
+inputs:
+  source: assets/bank/IMG-VIEW-base-facade.png
+params:
+  size: auto
+prompt: Re-photograph this corner building from the side street, looking square at its other
+  elevation instead of the one facing the camera, from normal standing height across the road.
+  The masonry, storey count, roofline and window proportions must be consistent with the original
+  building, with the second face resolved plausibly. Same light and weather.
+expected: 'Front of a building to its side elevation. Capability under test: Ninety-degree
+  move around a structure with architectural consistency. Adherence clauses, check each: 1)
+  Camera facing the other elevation, original face now oblique or out of frame  2) Masonry,
+  storey count and roofline consistent with the original  3) Window proportions and spacing
+  plausible for the same building  4) Same light and weather, standing eye level'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- scene-&-interior-re-angle
+- scenario-bank-view
+- tier-high

@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-02 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-02
+modality: image
+task: text_to_image
+title: Operator skin silhouette exploration
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A silhouette exploration sheet for a modern shooter: exactly six full-body operator
+  silhouettes in a single horizontal row on a plain white background. Solid black fills, no
+  interior detail, no outlines. Each is a visibly different loadout shape for the same soldier
+  class — light scout, heavy breacher, long-coat marksman, hooded skirmisher, bulky demolitions,
+  slim infiltrator. Even spacing, all six the same height, no text.'
+expected: 'Operator skin silhouette exploration. Capability under test: Controlled variety
+  — distinct shape language for skins that must read at distance. Adherence clauses, check
+  each: 1) Exactly six silhouettes in one horizontal row  2) Solid black fills, no interior
+  detail or outline  3) Six visibly different loadout shapes, not repeats  4) Even spacing,
+  equal heights, plain white background, no text'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

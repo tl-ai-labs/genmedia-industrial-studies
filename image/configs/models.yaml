@@ -46,7 +46,7 @@ image:
     display: GPT Image 2 (medium)    # tier stated: an untiered name is
                                      # what left the 46-scenario report
                                      # ambiguous (2026-09-04 review §1)
-    enabled: false                   # Pair B done (60/60)
+    enabled: false                   # Tier-medium done (55/55), 2026-09-14
     adapter: openai_image            # same adapter — model swap is config only
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
@@ -65,7 +65,7 @@ image:
 
   - id: gpt-image-2-high             # the "most powerful" OpenAI arm: same
     display: GPT Image 2 (high)
-    enabled: false                   # Pair A done (60/60)
+    enabled: false                   # Tier-high done (43/43), 2026-09-14
     adapter: openai_image
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
@@ -87,7 +87,7 @@ image:
   # route is recorded in telemetry via adapter/provider fields.
   - id: gemini-3-1-flash-image-vertex
     display: Gemini 3.1 Flash
-    enabled: false                   # Pair B done (60/60)
+    enabled: false                   # Tier-medium done (55/55), 2026-09-14
     adapter: gemini_image
     provider: google-vertex
     provider_model: "gemini-3.1-flash-image"
@@ -104,7 +104,7 @@ image:
 
   - id: gemini-3-pro-image-vertex    # Nano Banana Pro — the premium tier
     display: Gemini 3 Pro
-    enabled: false                   # Pair A done (60/60)
+    enabled: false                   # Tier-high done (43/43), 2026-09-14
     adapter: gemini_image            # same adapter: adding a model = this block
     provider: google-vertex
     provider_model: "gemini-3-pro-image"
@@ -121,7 +121,7 @@ image:
 
   - id: gemini-3-1-flash-lite-image-vertex   # Nano Banana Lite — the entry tier
     display: Gemini 3.1 Flash Lite
-    enabled: true                    # Pair C t2i lane
+    enabled: true                    # Tier-low run (36 scen), 2026-09-14
     adapter: gemini_image
     provider: google-vertex
     provider_model: "gemini-3.1-flash-lite-image"   # id confirmed against Vertex
@@ -139,7 +139,7 @@ image:
 
   - id: gpt-image-2-low              # the entry OpenAI arm: same model, quality:low
     display: GPT Image 2 (low)
-    enabled: true                    # Pair C t2i lane
+    enabled: true                    # Tier-low run (36 scen), 2026-09-14
     adapter: openai_image
     provider: openai
     provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
