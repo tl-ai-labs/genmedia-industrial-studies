@@ -42,13 +42,13 @@
   <div class="tw"><table>
     <thead><tr><th>Task lane</th><th class="num">Scenarios</th>
       <th class="num">Completed</th><th>Models</th>
-      <th>Verdict</th><th>How decided</th></tr></thead>
+      {% if not CLIENT %}<th>Verdict</th><th>How decided</th>{% endif %}</tr></thead>
     <tbody>
     {% for r in overview.rows %}
     <tr><td>{{ r.task|tasktitle }}</td><td class="num">{{ r.n }}</td>
       <td class="num">{{ r.completed }}/{{ r.n }}</td>
-      <td style="font-family:var(--mono);font-size:12px">{{ r.models|join('<br>')|safe }}</td>
-      <td><b>{{ r.verdict }}</b></td><td style="font-size:13px">{{ r.detail }}</td></tr>
+      <td style="font-family:var(--mono);font-size:12px">{% if CLIENT %}{{ r.models|join(' <span class="vs">vs</span> ')|safe }}{% else %}{{ r.models|join('<br>')|safe }}{% endif %}</td>
+      {% if not CLIENT %}<td><b>{{ r.verdict }}</b></td><td style="font-size:13px">{{ r.detail }}</td>{% endif %}</tr>
     {% endfor %}
     </tbody></table></div>
 
@@ -78,7 +78,14 @@
 
 {% for c in runs %}
 <section class="runpanel {{ 'on' if loop.first }}" data-tab="t{{ loop.index }}">
+  {% if CLIENT %}
+  {{ sec.overall_summary(c) }}
+  {% set tasks = c.agg.tasks.keys()|list %}
+  {{ sec.duel_strip(c, (c.duel.task|tasktitle ~ ' only — every task has its own table below') if c.duel and tasks|length > 1 else none) }}
+  {% if c.duel %}{{ sec.reliability_note() }}{% endif %}
+  {% else %}
   {{ sec.duel_strip(c) }}
+  {% endif %}
   {{ sec.banners(c) }}
   {{ sec.task_tables(c) }}
   {{ sec.families_table(c) }}

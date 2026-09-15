@@ -63,12 +63,12 @@ twice. A missing API key or an over-budget pre-flight estimate rejects the run
    whether the usage was `api_reported` or `estimated`. Changing rubric
    *weights* re-scores stored criterion scores for free (`cli score`); changing
    rubric *text* means a new run — the judge command refuses a hash mismatch.
-6. **The verdict reads two lenses.** Weighted means compress (LLM judges score
-   almost everything 6.5–8.5), so the report also computes paired
-   win/tie/loss on the same scenarios (tie = |Δ| ≤ 0.5). A winner needs a mean
-   gap ≥ 0.5 **or** ≥ 70 % of decided scenarios (sign test quoted from n ≥ 10),
-   plus ≥ 80 % coverage; otherwise it is a declared tie, broken only by facts:
-   check failures → reliability → cost → latency.
+6. **Only an identical score is a tie.** Scores are compared at two decimals.
+   On a scenario, the higher score wins by any margin. Overall, the higher
+   mean wins; equal means are decided by more scenario wins (the paired
+   win/tie/loss, sign test quoted from n ≥ 10). A winner also needs ≥ 80 %
+   coverage. Equal means and equal wins is a declared tie, broken only by
+   facts: check failures → reliability → cost → latency.
 
 ## The cell lifecycle
 
