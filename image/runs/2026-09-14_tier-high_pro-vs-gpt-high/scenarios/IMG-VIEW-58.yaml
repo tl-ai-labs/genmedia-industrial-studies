@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-58 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-group.png — provenance in each sidecar .json
+id: IMG-VIEW-58
+modality: image
+task: image_edit
+title: View along the line of a group portrait
+inputs:
+  source: assets/bank/IMG-VIEW-base-group.png
+params:
+  size: auto
+prompt: Re-photograph this group from the far left end of the line, camera at the same height
+  looking along the row rather than at it, so the nearest person is large in frame and the
+  others recede in a receding line behind them. Every person must remain, in the same order
+  along the row, wearing the same clothes. Same grass, treeline and daylight.
+expected: 'View along the line of a group portrait. Capability under test: Ninety-degree yaw
+  on a line of people, producing correct occlusion and depth falloff. Adherence clauses, check
+  each: 1) Camera at one end looking along the row, not at it  2) Nearest person largest,
+  the rest receding in order behind  3) Everyone present in their original order along the
+  line  4) Same clothing, grass, treeline and daylight'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-high

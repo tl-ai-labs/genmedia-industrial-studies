@@ -1,0 +1,48 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-05 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-05
+modality: image
+task: text_to_image
+title: Tactical gear callout sheet
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A character design callout sheet on a plain light background. A full-body modern
+  operator stands centred: a ripstop cotton field shirt, a laminate nylon plate carrier, an
+  aramid helmet with a fabric cover, and rubber-soled suede boots. Thin leader lines run from
+  four parts of the kit to printed labels at the edge reading RIPSTOP, LAMINATE NYLON, ARAMID
+  and SUEDE. Painted concept-art style, labels in small clean capitals, nothing else written.'
+expected: 'Tactical gear callout sheet. Capability under test: Character rendering plus legible
+  annotation of its own materials. Adherence clauses, check each: 1) Full-body operator centred,
+  all four named materials visibly present  2) Four leader lines, each touching the part it
+  names  3) RIPSTOP, LAMINATE NYLON, ARAMID and SUEDE all legible and correctly spelled  4)
+  Plain light background, no other text'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - RIPSTOP
+  - LAMINATE NYLON
+  - ARAMID
+  - SUEDE
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.15
+  composition: 0.25
+  realism_style: 0.05
+  text_accuracy: 0.3
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-high

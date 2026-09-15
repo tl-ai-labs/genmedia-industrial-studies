@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-29 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-kitchen.png — provenance in each sidecar .json
+# KNOWN ISSUE: the pinned photo is a mid-century fitted kitchen with no hearth or dresser; the prompt describes both.
+id: IMG-VIEW-29
+modality: image
+task: image_edit
+title: Kitchen seen from the opposite corner
+inputs:
+  source: assets/bank/IMG-VIEW-base-kitchen.png
+params:
+  size: auto
+prompt: Re-photograph this kitchen from the opposite side of the room, looking back toward
+  the doorway the original was taken from. Every fixture must stay where it is, seen from
+  the new side — the hearth, the dresser, the table and the window. Same daylight, now falling
+  from behind the camera.
+expected: 'Kitchen seen from the opposite corner. Capability under test: Large camera translation
+  and yaw with room layout preserved. Adherence clauses, check each: 1) Camera at the far
+  side looking back toward the original doorway  2) Fixtures mirrored consistently for the
+  new viewpoint  3) Hearth, dresser, table and window all present  4) Light now falls from
+  behind the camera, consistent with the move'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- scene-&-interior-re-angle
+- scenario-bank-view
+- tier-high

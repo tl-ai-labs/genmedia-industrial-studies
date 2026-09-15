@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-50 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-50
+modality: image
+task: text_to_image
+title: Telephoto compression versus wide angle
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A photograph of a runner on a straight tree-lined avenue, shot on a long four hundred
+  millimetre telephoto lens from far away, so the perspective is strongly compressed: the
+  rows of trees appear stacked close together with almost no size falloff into the distance,
+  the background is flattened and very shallow in focus, and the runner is isolated against
+  it. Photorealistic, 3:2 framing, no text.'
+expected: 'Telephoto compression versus wide angle. Capability under test: Rendering long-lens
+  perspective compression rather than a normal-lens look. Adherence clauses, check each: 1)
+  Trees appear stacked with minimal size falloff into the distance  2) Background visibly
+  flattened and compressed, not receding naturally  3) Very shallow depth of field isolating
+  the runner  4) Photorealistic, no wide-angle stretching at the frame edges'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-medium

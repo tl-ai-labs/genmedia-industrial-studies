@@ -1,0 +1,1629 @@
+{
+  "run_id": "2026-09-14_092052_image",
+  "created": "2026-09-14T09:20:52.660Z",
+  "state": "scored",
+  "modality": "image",
+  "git_sha": "4e35177b1339d7a06f3d5ffe807d9598b2cb28f4",
+  "budget_usd": 12.0,
+  "events": [
+    {
+      "ts": "2026-09-14T09:20:52.704Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-14T09:21:02.529Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-14T09:21:19.730Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-14T10:10:06.904Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-14T10:48:09.057Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-14T10:48:11.400Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-image-2-medium",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-1-flash-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b",
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ],
+    "text_to_image": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-LE-02": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-LE-03": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-LE-04": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-LE-05": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-LE-06": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-BRAND-03": {
+      "edit_fidelity": 0.444444,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111,
+      "text_accuracy": 0.277778
+    },
+    "IMG-BRAND-06": {
+      "edit_fidelity": 0.444444,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111,
+      "text_accuracy": 0.277778
+    },
+    "IMG-BRAND-08": {
+      "edit_fidelity": 0.444444,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111,
+      "text_accuracy": 0.277778
+    },
+    "IMG-STY-04": {
+      "edit_fidelity": 0.45,
+      "visual_quality": 0.25,
+      "realism_style": 0.3
+    },
+    "IMG-STY-08": {
+      "edit_fidelity": 0.45,
+      "visual_quality": 0.25,
+      "realism_style": 0.3
+    },
+    "IMG-STY-10": {
+      "edit_fidelity": 0.45,
+      "visual_quality": 0.25,
+      "realism_style": 0.3
+    },
+    "IMG-TXT-02": {
+      "prompt_adherence": 0.25,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1,
+      "text_accuracy": 0.45
+    },
+    "IMG-TXT-05": {
+      "prompt_adherence": 0.25,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1,
+      "text_accuracy": 0.45
+    },
+    "IMG-TXT-08": {
+      "edit_fidelity": 0.294117,
+      "visual_quality": 0.117647,
+      "realism_style": 0.058824,
+      "text_accuracy": 0.529412
+    },
+    "IMG-TXT-10": {
+      "edit_fidelity": 0.25,
+      "preservation": 0.15,
+      "visual_quality": 0.1,
+      "realism_style": 0.05,
+      "text_accuracy": 0.45
+    },
+    "IMG-UI-04": {
+      "edit_fidelity": 0.4,
+      "visual_quality": 0.15,
+      "realism_style": 0.05,
+      "text_accuracy": 0.4
+    },
+    "IMG-GAME-02": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-04": {
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.35
+    },
+    "IMG-GAME-07": {
+      "prompt_adherence": 0.25,
+      "visual_quality": 0.15,
+      "composition": 0.25,
+      "realism_style": 0.05,
+      "text_accuracy": 0.3
+    },
+    "IMG-GAME-24": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-25": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-26": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-27": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-29": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-34": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-09": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-13": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-36": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-37": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-39": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-40": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-22": {
+      "edit_fidelity": 0.4,
+      "visual_quality": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.3
+    },
+    "IMG-GAME-57": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-59": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-14": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-17": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-45": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-22": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.3,
+      "realism_style": 0.15
+    },
+    "IMG-VIEW-47": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-VIEW-48": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.3,
+      "realism_style": 0.15
+    },
+    "IMG-VIEW-49": {
+      "prompt_adherence": 0.35,
+      "visual_quality": 0.2,
+      "composition": 0.3,
+      "realism_style": 0.15
+    },
+    "IMG-VIEW-50": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-VIEW-52": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-60": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-11": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-12": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-36": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-39": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-05": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-23": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-25": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-26": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-14": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-41": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-43": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    }
+  },
+  "scenario_set_hash": "4cdd50eda82eaf50a395819c77d7459cb81bd80bd79a5e931d9a345553731fb2",
+  "inputs": {
+    "IMG-LE-02": [
+      {
+        "role": "source",
+        "sha256": "2737303c4c734c7634a4613dc88be32fb277352b392a522c75ea6d42f07d4e30",
+        "path": "inputs/IMG-LE-02/IMG-LE-02-source.png"
+      }
+    ],
+    "IMG-LE-03": [
+      {
+        "role": "source",
+        "sha256": "c0c7b271f99a50f25f1ac23fd34c903b7229e1cc9dde5cdf8f1633bee5567722",
+        "path": "inputs/IMG-LE-03/IMG-LE-03-source.png"
+      }
+    ],
+    "IMG-LE-04": [
+      {
+        "role": "source",
+        "sha256": "e36dc082a89928c6cf9f1f97877b5f8b722d34a1b7f8b74f30c2171a6ab576d1",
+        "path": "inputs/IMG-LE-04/IMG-LE-04-source.png"
+      }
+    ],
+    "IMG-LE-05": [
+      {
+        "role": "source",
+        "sha256": "5ebfb7635f9644678f03e325c91df2b66f058406f06aab8540d3833a30eaf806",
+        "path": "inputs/IMG-LE-05/IMG-LE-05-source.png"
+      }
+    ],
+    "IMG-LE-06": [
+      {
+        "role": "source",
+        "sha256": "487ac74239d2918df052b66c16b5d096e6b8dda9d70ca60f11b87b7aaf000cc5",
+        "path": "inputs/IMG-LE-06/IMG-LE-06-source.png"
+      }
+    ],
+    "IMG-BRAND-03": [
+      {
+        "role": "source",
+        "sha256": "2885d619df06b3744ca5cc0beb6696f165fbc5eea3674cdfd0e8269f9d26c8b9",
+        "path": "inputs/IMG-BRAND-03/IMG-BRAND-03-source.png"
+      }
+    ],
+    "IMG-BRAND-06": [
+      {
+        "role": "source",
+        "sha256": "28e45c85261ee3092e61c9e9697b2cd7be4079a6065c846a3718e19608e0ef68",
+        "path": "inputs/IMG-BRAND-06/IMG-BRAND-06-source.png"
+      }
+    ],
+    "IMG-BRAND-08": [
+      {
+        "role": "source",
+        "sha256": "bbb276a7fb231a99232e1676ce4324183833b04b59480354e85e333d1200e3be",
+        "path": "inputs/IMG-BRAND-08/IMG-BRAND-08-source.png"
+      }
+    ],
+    "IMG-STY-04": [
+      {
+        "role": "source",
+        "sha256": "4c0cb94e8ff5eaf374c596792f9621b86aa8e5883c9ddc58e6616aa7c964e02b",
+        "path": "inputs/IMG-STY-04/IMG-STY-04-source.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "51b2c6340caae3eb024b5035cb96d0254e493dca5eba8830b0334d250a39804d",
+        "path": "inputs/IMG-STY-04/IMG-STY-04-reference.png"
+      },
+      {
+        "role": "reference2",
+        "sha256": "4fffe9590f167a8f9d46f91eb11ca67485812b248bf76a23f4d40a05d87a1d14",
+        "path": "inputs/IMG-STY-04/IMG-STY-04-reference2.png"
+      },
+      {
+        "role": "reference3",
+        "sha256": "5908b622c7682b2f2b092a875fc330ccf387d1d2532091eca05fbac80ae1a77c",
+        "path": "inputs/IMG-STY-04/IMG-STY-04-reference3.png"
+      }
+    ],
+    "IMG-STY-08": [
+      {
+        "role": "source",
+        "sha256": "9c067a80d734b7773b12baaba09aef00962418149052bcc1497f3b500882d8b3",
+        "path": "inputs/IMG-STY-08/IMG-STY-08-source.png"
+      }
+    ],
+    "IMG-STY-10": [
+      {
+        "role": "source",
+        "sha256": "05a21ed07165b54ac35e0e6d9b6853a833224e271e1c0a19db23b64f4cbcc92c",
+        "path": "inputs/IMG-STY-10/IMG-STY-10-source.png"
+      }
+    ],
+    "IMG-TXT-02": [],
+    "IMG-TXT-05": [],
+    "IMG-TXT-08": [
+      {
+        "role": "source",
+        "sha256": "6dc2995bf82746a0b43c5199ceeb107f15334b61c92128d3d6585942cfc370d3",
+        "path": "inputs/IMG-TXT-08/IMG-TXT-08-source.png"
+      }
+    ],
+    "IMG-TXT-10": [
+      {
+        "role": "source",
+        "sha256": "3ff9462b0a47e02da8017d2f32636dd76862081ba1fad20bf81af449d4172dd9",
+        "path": "inputs/IMG-TXT-10/IMG-TXT-10-source.png"
+      }
+    ],
+    "IMG-UI-04": [
+      {
+        "role": "source",
+        "sha256": "d19c6c148b6a8ed41342a96ca427301631ea476b14b844f98a8913b10b349964",
+        "path": "inputs/IMG-UI-04/IMG-UI-04-source.png"
+      }
+    ],
+    "IMG-GAME-02": [],
+    "IMG-GAME-04": [],
+    "IMG-GAME-07": [],
+    "IMG-GAME-24": [],
+    "IMG-GAME-25": [],
+    "IMG-GAME-26": [],
+    "IMG-GAME-27": [],
+    "IMG-GAME-29": [],
+    "IMG-GAME-34": [],
+    "IMG-GAME-09": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-09/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-13": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-13/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-36": [
+      {
+        "role": "source",
+        "sha256": "847b46a893e45751d67e661a03e0cb529fcf3ceb76429f0785db1765011ee90c",
+        "path": "inputs/IMG-GAME-36/IMG-GAME-base-masked.png"
+      }
+    ],
+    "IMG-GAME-37": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-37/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-39": [
+      {
+        "role": "source",
+        "sha256": "847b46a893e45751d67e661a03e0cb529fcf3ceb76429f0785db1765011ee90c",
+        "path": "inputs/IMG-GAME-39/IMG-GAME-base-masked.png"
+      }
+    ],
+    "IMG-GAME-40": [
+      {
+        "role": "source",
+        "sha256": "847b46a893e45751d67e661a03e0cb529fcf3ceb76429f0785db1765011ee90c",
+        "path": "inputs/IMG-GAME-40/IMG-GAME-base-masked.png"
+      }
+    ],
+    "IMG-GAME-22": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-22/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-57": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-57/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-GAME-59": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-59/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-14": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-14/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-GAME-17": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-17/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-GAME-45": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-45/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-VIEW-22": [],
+    "IMG-VIEW-47": [],
+    "IMG-VIEW-48": [],
+    "IMG-VIEW-49": [],
+    "IMG-VIEW-50": [],
+    "IMG-VIEW-52": [
+      {
+        "role": "source",
+        "sha256": "2c75b3f128f6d36948de7067d62c833d6f43fceeecf2f543eedc3e4f9aa530de",
+        "path": "inputs/IMG-VIEW-52/IMG-VIEW-base-portrait.png"
+      }
+    ],
+    "IMG-VIEW-60": [
+      {
+        "role": "source",
+        "sha256": "6ac281f3c54929e0ab62c167b7c820f5a740862d16ad3d953e7c69e06e9daaea",
+        "path": "inputs/IMG-VIEW-60/IMG-VIEW-base-model.png"
+      }
+    ],
+    "IMG-VIEW-11": [
+      {
+        "role": "source",
+        "sha256": "12bfc1746e515549c1071f8f527623fe92285d8c0d05bb96015d534133195f16",
+        "path": "inputs/IMG-VIEW-11/IMG-VIEW-base-plate.png"
+      }
+    ],
+    "IMG-VIEW-12": [
+      {
+        "role": "source",
+        "sha256": "6ac281f3c54929e0ab62c167b7c820f5a740862d16ad3d953e7c69e06e9daaea",
+        "path": "inputs/IMG-VIEW-12/IMG-VIEW-base-model.png"
+      }
+    ],
+    "IMG-VIEW-36": [
+      {
+        "role": "source",
+        "sha256": "6ac281f3c54929e0ab62c167b7c820f5a740862d16ad3d953e7c69e06e9daaea",
+        "path": "inputs/IMG-VIEW-36/IMG-VIEW-base-model.png"
+      }
+    ],
+    "IMG-VIEW-39": [
+      {
+        "role": "source",
+        "sha256": "6ac281f3c54929e0ab62c167b7c820f5a740862d16ad3d953e7c69e06e9daaea",
+        "path": "inputs/IMG-VIEW-39/IMG-VIEW-base-model.png"
+      }
+    ],
+    "IMG-VIEW-05": [
+      {
+        "role": "source",
+        "sha256": "cb792053ac269d96e35adc56f5dfb9e57bbc2fad49d6824c7d0c03d1fb5fb224",
+        "path": "inputs/IMG-VIEW-05/IMG-VIEW-base-bottle.png"
+      }
+    ],
+    "IMG-VIEW-23": [
+      {
+        "role": "source",
+        "sha256": "cb792053ac269d96e35adc56f5dfb9e57bbc2fad49d6824c7d0c03d1fb5fb224",
+        "path": "inputs/IMG-VIEW-23/IMG-VIEW-base-bottle.png"
+      }
+    ],
+    "IMG-VIEW-25": [
+      {
+        "role": "source",
+        "sha256": "929a5c898ba0eb67c942c7c251a7e4d85059c9e1d037df5c90bcde8ae1a94c33",
+        "path": "inputs/IMG-VIEW-25/IMG-VIEW-base-sofa.png"
+      }
+    ],
+    "IMG-VIEW-26": [
+      {
+        "role": "source",
+        "sha256": "537b5c2f5b097195dd340df772d4f8d87fa86184367777848e28c99950693f89",
+        "path": "inputs/IMG-VIEW-26/IMG-VIEW-base-ring.png"
+      }
+    ],
+    "IMG-VIEW-14": [
+      {
+        "role": "source",
+        "sha256": "c3e61f19e32db12978ed031f7e77a2f78c5cbcb074f36a3b9aeb6e3c6e66ff2c",
+        "path": "inputs/IMG-VIEW-14/IMG-VIEW-base-facade.png"
+      }
+    ],
+    "IMG-VIEW-41": [
+      {
+        "role": "source",
+        "sha256": "2258647a29b053913c39eeb5615836a7198faf82294e6e07816ebd07c159e6b1",
+        "path": "inputs/IMG-VIEW-41/IMG-VIEW-base-fisheye.png"
+      }
+    ],
+    "IMG-VIEW-43": [
+      {
+        "role": "source",
+        "sha256": "15a720ea19c712635cb42fb6d01796341000e99f2c5849e8c9015bc284e7449c",
+        "path": "inputs/IMG-VIEW-43/IMG-VIEW-base-painting.png"
+      }
+    ]
+  },
+  "cells": {
+    "IMG-LE-02::gpt-image-2-medium": {
+      "scenario_id": "IMG-LE-02",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-02::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-LE-02",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-03::gpt-image-2-medium": {
+      "scenario_id": "IMG-LE-03",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-03::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-LE-03",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-04::gpt-image-2-medium": {
+      "scenario_id": "IMG-LE-04",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-04::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-LE-04",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-05::gpt-image-2-medium": {
+      "scenario_id": "IMG-LE-05",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-05::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-LE-05",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-06::gpt-image-2-medium": {
+      "scenario_id": "IMG-LE-06",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": "failed gates: preservation"
+    },
+    "IMG-LE-06::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-LE-06",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-03::gpt-image-2-medium": {
+      "scenario_id": "IMG-BRAND-03",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-03::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-BRAND-03",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-06::gpt-image-2-medium": {
+      "scenario_id": "IMG-BRAND-06",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-06::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-BRAND-06",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-08::gpt-image-2-medium": {
+      "scenario_id": "IMG-BRAND-08",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-08::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-BRAND-08",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-04::gpt-image-2-medium": {
+      "scenario_id": "IMG-STY-04",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-04::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-STY-04",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-08::gpt-image-2-medium": {
+      "scenario_id": "IMG-STY-08",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-08::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-STY-08",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-10::gpt-image-2-medium": {
+      "scenario_id": "IMG-STY-10",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-10::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-STY-10",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-02::gpt-image-2-medium": {
+      "scenario_id": "IMG-TXT-02",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-02::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-TXT-02",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-05::gpt-image-2-medium": {
+      "scenario_id": "IMG-TXT-05",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-05::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-TXT-05",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-08::gpt-image-2-medium": {
+      "scenario_id": "IMG-TXT-08",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-08::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-TXT-08",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-10::gpt-image-2-medium": {
+      "scenario_id": "IMG-TXT-10",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-TXT-10::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-TXT-10",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-04::gpt-image-2-medium": {
+      "scenario_id": "IMG-UI-04",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-04::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-UI-04",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-02::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-02",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-02::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-02",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-04::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-04",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-04::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-04",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-07::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-07",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-07::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-07",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-24::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-24",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-24::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-24",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-25::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-25",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-25::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-25",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-26::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-26",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-26::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-26",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-27::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-27",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-27::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-27",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-29::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-29",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-29::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-29",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-34::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-34",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-34::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-34",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-09::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-09",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-09::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-09",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-13::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-13",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-13::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-13",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-36::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-36",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-36::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-36",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-37::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-37",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-37::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-37",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-39::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-39",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-39::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-39",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-40::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-40",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-40::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-40",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-22::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-22",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-22::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-22",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-57::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-57",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-57::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-57",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-59::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-59",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-59::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-59",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-14::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-14",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-14::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-14",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-17::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-17",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-17::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-17",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-45::gpt-image-2-medium": {
+      "scenario_id": "IMG-GAME-45",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-45::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GAME-45",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-22::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-22",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-22::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-22",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-47::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-47",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-47::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-47",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-48::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-48",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-48::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-48",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-49::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-49",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-49::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-49",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-50::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-50",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-50::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-50",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-52::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-52",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-52::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-52",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-60::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-60",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-60::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-60",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-11::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-11",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-11::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-11",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-12::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-12",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-12::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-12",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-36::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-36",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-36::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-36",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-39::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-39",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-39::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-39",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-05::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-05",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-05::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-05",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-23::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-23",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-23::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-23",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-25::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-25",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-25::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-25",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-26::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-26",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-26::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-26",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-14::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-14",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-14::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-14",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-41::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-41",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-41::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-41",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-43::gpt-image-2-medium": {
+      "scenario_id": "IMG-VIEW-43",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-43::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-VIEW-43",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "IMG-BRAND-03": "completed",
+    "IMG-BRAND-06": "completed",
+    "IMG-BRAND-08": "completed",
+    "IMG-GAME-02": "completed",
+    "IMG-GAME-04": "completed",
+    "IMG-GAME-07": "completed",
+    "IMG-GAME-09": "completed",
+    "IMG-GAME-13": "completed",
+    "IMG-GAME-14": "completed",
+    "IMG-GAME-17": "completed",
+    "IMG-GAME-22": "completed",
+    "IMG-GAME-24": "completed",
+    "IMG-GAME-25": "completed",
+    "IMG-GAME-26": "completed",
+    "IMG-GAME-27": "completed",
+    "IMG-GAME-29": "completed",
+    "IMG-GAME-34": "completed",
+    "IMG-GAME-36": "completed",
+    "IMG-GAME-37": "completed",
+    "IMG-GAME-39": "completed",
+    "IMG-GAME-40": "completed",
+    "IMG-GAME-45": "completed",
+    "IMG-GAME-57": "completed",
+    "IMG-GAME-59": "completed",
+    "IMG-LE-02": "completed",
+    "IMG-LE-03": "completed",
+    "IMG-LE-04": "completed",
+    "IMG-LE-05": "completed",
+    "IMG-LE-06": "incomplete",
+    "IMG-STY-04": "completed",
+    "IMG-STY-08": "completed",
+    "IMG-STY-10": "completed",
+    "IMG-TXT-02": "completed",
+    "IMG-TXT-05": "completed",
+    "IMG-TXT-08": "completed",
+    "IMG-TXT-10": "completed",
+    "IMG-UI-04": "completed",
+    "IMG-VIEW-05": "completed",
+    "IMG-VIEW-11": "completed",
+    "IMG-VIEW-12": "completed",
+    "IMG-VIEW-14": "completed",
+    "IMG-VIEW-22": "completed",
+    "IMG-VIEW-23": "completed",
+    "IMG-VIEW-25": "completed",
+    "IMG-VIEW-26": "completed",
+    "IMG-VIEW-36": "completed",
+    "IMG-VIEW-39": "completed",
+    "IMG-VIEW-41": "completed",
+    "IMG-VIEW-43": "completed",
+    "IMG-VIEW-47": "completed",
+    "IMG-VIEW-48": "completed",
+    "IMG-VIEW-49": "completed",
+    "IMG-VIEW-50": "completed",
+    "IMG-VIEW-52": "completed",
+    "IMG-VIEW-60": "completed"
+  }
+}
