@@ -1,0 +1,44 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-21 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-heavy.png — provenance in each sidecar .json
+# Fixed 2026-09-14: the sheet's preservation gate (global pHash vs source, max 14) was removed. The task replaces
+# the whole background, which alone moves a global pHash past 14 — in runs/2026-09-14_115146_image all four
+# outputs (both arms, both attempts) were clean, unaltered cut-outs yet measured 16-18 and went invalid. The
+# preservation criterion's 0.3 weight is redistributed proportionally; figure fidelity is judged via `expected`.
+id: IMG-GAME-21
+modality: image
+task: image_edit
+title: Clean cut-out for a game-ready asset
+inputs:
+  source: assets/bank/IMG-GAME-base-heavy.png
+params:
+  size: auto
+prompt: Remove the background from this operator and place the figure on a single flat magenta
+  field, keeping the full silhouette intact including the helmet profile, every strap and
+  the boot soles. Do not alter, recolour, redraw or crop the figure in any way. Clean edges,
+  no halo, no leftover background fragments, no drop shadow.
+expected: 'Clean cut-out for a game-ready asset. Capability under test: Background isolation
+  with a hard no-change bound on the subject. Adherence clauses, check each: 1) Background
+  fully replaced by one flat magenta field  2) Full silhouette intact — helmet profile, straps
+  and boot soles all present  3) Figure otherwise pixel-identical, not redrawn or recoloured  4)
+  Clean edges, no halo, fragments or drop shadow'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.571429
+  visual_quality: 0.214286
+  realism_style: 0.214285
+tags:
+- style-&-production-assets
+- scenario-bank-game
+- tier-low

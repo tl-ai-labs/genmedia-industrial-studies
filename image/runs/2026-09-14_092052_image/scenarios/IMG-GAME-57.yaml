@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-57 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-heavy.png — provenance in each sidecar .json
+id: IMG-GAME-57
+modality: image
+task: image_edit
+title: Battle-pass card illustration crop
+inputs:
+  source: assets/bank/IMG-GAME-base-heavy.png
+params:
+  size: auto
+prompt: 'Recompose this operator into a vertical battle-pass card illustration: portrait format,
+  the figure framed from the knees up and angled slightly toward the viewer, filling the upper
+  two-thirds, with an ornate dark bronze card border around the whole image and a blank banner
+  panel across the lower third left empty for text. Suit design, colours and equipment unchanged.
+  Dramatic rim lighting.'
+expected: 'Battle-pass card illustration crop. Capability under test: Recomposition into a
+  fixed frame with a reserved layout region. Adherence clauses, check each: 1) Vertical card
+  format with an ornate dark bronze border  2) Figure framed from the knees up, filling the
+  upper two-thirds  3) Lower-third banner panel present and completely empty  4) Suit design,
+  colours and equipment unchanged from the reference'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- style-&-production-assets
+- scenario-bank-game
+- tier-medium

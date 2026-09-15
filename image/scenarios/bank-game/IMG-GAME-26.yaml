@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-26 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-26
+modality: image
+task: text_to_image
+title: Driver designed to match a vehicle livery
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: Concept art of a fictional street racer standing beside the front wing of their car,
+  seen from the side on a plain background. The driver wears a cropped racing jacket, fingerless
+  gloves and low boots. The jacket's colour blocking, stripe angle and accent colour must
+  match the car's livery exactly — teal body, cream stripe, matte black trim. Painted concept
+  art, one consistent style for both, no brand marks, no text.
+expected: 'Driver designed to match a vehicle livery. Capability under test: Two designs built
+  to match — colour blocking and motif shared across character and vehicle. Adherence clauses,
+  check each: 1) Driver and the car''s front wing both in frame, seen from the side  2) Jacket
+  colour blocking and stripe angle match the car livery  3) Teal, cream and matte black used
+  consistently across both  4) One art style, plain background, no brand marks or text'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

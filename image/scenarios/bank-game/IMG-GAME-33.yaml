@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-33 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-33
+modality: image
+task: text_to_image
+title: Stylised all-ages battle-royale character
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: 'Character art of a cheerful stylised battle-royale operator for an all-ages mobile
+  shooter: soft rounded proportions, a bright open expression, a colourful padded vest in
+  teal and coral, a backwards cap, chunky trainers and an oversized foam-look grappling launcher.
+  Bright palette, soft shapes, nothing sharp, no weapons that read as real firearms, no blood.
+  Clean illustration style, plain background, full body, no text.'
+expected: 'Stylised all-ages battle-royale character. Capability under test: Age-appropriate
+  design language held consistently across the whole figure. Adherence clauses, check each:
+  1) Soft rounded proportions and a bright open expression  2) Teal and coral padded vest,
+  backwards cap, chunky trainers, foam-look launcher  3) Nothing sharp or menacing; no realistic
+  firearm  4) Bright palette, full body, plain background, no text'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-low

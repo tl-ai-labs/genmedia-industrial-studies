@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-30 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-30
+modality: image
+task: text_to_image
+title: Skin locked to a named rarity palette
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: 'Full-body concept art of a desert-theatre operator skin, using only these five colours
+  and their shades: sand beige, burnt sienna, deep indigo, off-white and a single brass accent.
+  No other hue may appear anywhere in the image, including the background and the skin tones,
+  which must be rendered within this palette. Layered wind wrap, chest rig of sealed pouches,
+  wrapped face. Painted concept art, no logos, no text.'
+expected: 'Skin locked to a named rarity palette. Capability under test: Strict palette obedience
+  across subject, skin and background. Adherence clauses, check each: 1) Only sand beige,
+  burnt sienna, deep indigo, off-white and brass appear  2) No stray hue anywhere, background
+  and skin included  3) Layered wind wrap, sealed pouches and a wrapped face all present  4)
+  Full body in frame, no logos or text'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.35
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-high

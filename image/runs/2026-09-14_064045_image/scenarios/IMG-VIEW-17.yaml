@@ -1,0 +1,49 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-17 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-notice.png — provenance in each sidecar .json
+id: IMG-VIEW-17
+modality: image
+task: image_edit
+title: Oblique photo of a document to a flat-on scan
+inputs:
+  source: assets/bank/IMG-VIEW-base-notice.png
+params:
+  size: auto
+prompt: Rectify this photograph so the BUSINESS HOURS sign is seen flat on, straight down
+  the lens, filling the frame as a clean rectangle as though it had been scanned. Remove the
+  perspective skew, the glass reflections and the glare. Keep the printed text sharp and unchanged
+  — BUSINESS HOURS, MONDAY thru FRIDAY, SATURDAY, SUNDAY — and keep the card's pink and red
+  border intact.
+expected: 'Oblique photo of a document to a flat-on scan. Capability under test: Inverse projective
+  transform on text with no character corruption. Adherence clauses, check each: 1) Sign flat
+  on and rectangular, filling the frame like a scan  2) Perspective skew, reflections and
+  glare removed  3) BUSINESS HOURS, MONDAY thru FRIDAY, SATURDAY and SUNDAY all legible and
+  unchanged  4) Pink and red decorative border intact, no invented lines or numbers'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - BUSINESS HOURS
+  - MONDAY
+  - FRIDAY
+  - SATURDAY
+  - SUNDAY
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+- text_accuracy
+weights:
+  edit_fidelity: 0.4
+  visual_quality: 0.15
+  realism_style: 0.15
+  text_accuracy: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-high

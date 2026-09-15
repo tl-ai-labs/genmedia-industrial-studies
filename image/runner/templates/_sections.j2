@@ -15,21 +15,38 @@ are shown. Nothing here pretends to be complete.</div>
   {% if title %}<div class="dt">{{ title }}</div>{% endif %}
   <div class="heads">
     <span class="h a">◆ {{ ctx.duel.a|disp }}{% if ctx.vendors and ctx.vendors.get(ctx.duel.a) %} · {{ ctx.vendors[ctx.duel.a] }}{% endif %}</span>
+    {% if CLIENT %}<span class="vsx">vs</span>{% endif %}
     <span class="h b">{{ ctx.duel.b|disp }}{% if ctx.vendors and ctx.vendors.get(ctx.duel.b) %} · {{ ctx.vendors[ctx.duel.b] }}{% endif %} ◆</span>
   </div>
   {% for m in ctx.duel.metrics if not (CLIENT and m.internal_only) %}
   <div class="m">
     <div class="lab">{{ m.client_label if CLIENT else m.label }}</div>
     <div class="pair">
-      <span class="val">{{ (m.a_pct if CLIENT and m.key in ('mean', 'worst') else m.a) }}{% if m.win == 'a' %} ✦{% endif %}</span>
+      {% if CLIENT %}<span class="val"><span class="{{ 'wtag' if m.win == 'a' }}">{{ m.a_pct if m.key in ('mean', 'worst') else m.a }}</span></span>
+      {% else %}<span class="val">{{ m.a }}{% if m.win == 'a' %} ✦{% endif %}</span>{% endif %}
       <span class="track a {{ 'win' if m.win == 'a' }}"><span class="fill" style="width: {{ m.aw }}%"></span></span>
       <span class="track b {{ 'win' if m.win == 'b' }}"><span class="fill" style="width: {{ m.bw }}%"></span></span>
-      <span class="val r">{% if m.win == 'b' %}✦ {% endif %}{{ (m.b_pct if CLIENT and m.key in ('mean', 'worst') else m.b) }}</span>
+      {% if CLIENT %}<span class="val r"><span class="{{ 'wtag' if m.win == 'b' }}">{{ m.b_pct if m.key in ('mean', 'worst') else m.b }}</span></span>
+      {% else %}<span class="val r">{% if m.win == 'b' %}✦ {% endif %}{{ m.b }}</span>{% endif %}
     </div>
   </div>
   {% endfor %}
 </div>
 {% endif %}
+{% endmacro %}
+
+{% macro overall_summary(ctx) %}
+{% set su = ctx.summary %}
+{% if su %}
+<h2>Overall summary</h2>
+{% endif %}
+{% endmacro %}
+
+{% macro reliability_note() %}
+<ul class="tnote">
+  <li><b>Reliability</b> is the model's lowest rating on any single scenario — its worst
+  result. Higher is better: it shows how bad an output can get, not just the average.</li>
+</ul>
 {% endmacro %}
 
 {# one metric value, rendered in its own unit #}
@@ -75,7 +92,7 @@ are shown. Nothing here pretends to be complete.</div>
 compared with {{ cols[1]|disp }}. Green means {{ cols[0]|disp }} is ahead on that row, red
 means behind. Ratings differ by percentage points; speed is shown as a relative percentage.</p>{% endif %}
 
-{% for p in t.pairs %}{{ verdict_box(p) }}{% endfor %}
+{% if not CLIENT %}{% for p in t.pairs %}{{ verdict_box(p) }}{% endfor %}{% endif %}
 {% endfor %}
 {% endmacro %}
 
@@ -95,9 +112,51 @@ means behind. Ratings differ by percentage points; speed is shown as a relative 
 {% for task, t in ctx.agg.tasks.items() %}{% for p in t.pairs %}{{ verdict_box(p) }}{% endfor %}{% endfor %}
 {% endmacro %}
 
+{# client breakdown table: one row per family / industry, models as grouped
+   columns, the row's leader tagged in green. A row filters the list below. #}
+{% macro breakdown_table(ctx, rows, dim, first_label) %}
+{% set models = ctx.family_models %}
+<div class="tw"><table class="bdt">
+<thead>
+<tr><th rowspan="2">{{ first_label }}</th><th class="num" rowspan="2">Scenarios</th>
+{% for mid in models %}<th class="grp{{ ' a' if loop.first else ' b' }}" colspan="3">{{ mid|disp }}</th>{% endfor %}
+</tr>
+<tr>{% for mid in models %}<th class="num sep">Quality mean</th><th class="num">Wins</th><th class="num">Win %</th>{% endfor %}</tr>
+</thead>
+<tbody>
+{% for key, f in rows.items()|sort %}
+{% set means = [] %}{% set wins = [] %}
+{% for mid in models if mid in f.models %}{% set _ = means.append(f.models[mid].mean) %}{% set _ = wins.append(f.models[mid].wins) %}{% endfor %}
+{% set top_mean = means|max if means|length == models|length and means|unique|list|length > 1 else none %}
+{% set top_wins = wins|max if wins|length == models|length and wins|unique|list|length > 1 else none %}
+{% set denom = f.n_both if f.n_both is defined and f.n_both else f.n %}
+<tr class="bdrow" data-dim="{{ dim }}" data-val="{{ key }}" title="Show only {{ key }} scenarios">
+  <td><span class="bdname">{{ key }}</span></td><td class="num">{{ f.n }}</td>
+  {% for mid in models %}{% set m = f.models.get(mid) %}
+  {% if m %}
+  <td class="num sep">{% if m.mean == top_mean %}<span class="tag lead">{{ m.mean|q }}</span>{% else %}{{ m.mean|q }}{% endif %}</td>
+  <td class="num"><span class="tag{{ ' win' if m.wins > 0 }}{{ ' lead' if m.wins == top_wins }}{{ ' zero' if m.wins == 0 }}">{{ m.wins }} {{ 'win' if m.wins == 1 else 'wins' }}</span></td>
+  <td class="num{{ ' lead' if m.wins == top_wins }}">{{ '%.0f%%'|format(m.wins / denom * 100) }}</td>
+  {% else %}<td class="num sep"><span class="dash">—</span></td><td class="num"><span class="dash">—</span></td><td class="num"><span class="dash">—</span></td>{% endif %}
+  {% endfor %}
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% endmacro %}
+
 {% macro families_table(ctx) %}
 {% if ctx.families and ctx.families|length > 1 %}
 <h2>By use-case family</h2>
+{% if CLIENT %}
+{{ breakdown_table(ctx, ctx.families, 'fam', 'Family') }}
+<ul class="tnote">
+  <li><b>Quality mean</b> is the average rating across the row's scenarios. <b>Wins</b> are
+  scenarios where the model scored higher, by any margin; identical scores are a tie.</li>
+  <li><b>Win %</b> is wins out of the scenarios in that row both models completed. Green tags
+  mark the row's leader.</li>
+  <li>Click a row to show only its scenarios in the list below; click it again to show all.</li>
+</ul>
+{% else %}
 <div class="tw"><table>
 <thead><tr><th>Family</th><th class="num">Scenarios</th>
 {% for mid in ctx.family_models %}<th class="num">{{ mid|disp }}<br>mean · wins</th>{% endfor %}
@@ -112,16 +171,19 @@ means behind. Ratings differ by percentage points; speed is shown as a relative 
 </tr>
 {% endfor %}
 </tbody></table></div>
-<p style="font-size:12.5px;color:var(--muted)">“Wins” = scenarios where the model beat every
-other by more than {{ TIE_BAND_PP }}% ({{ TIE_BAND_FRAC }} of the rubric scale{% if not CLIENT %},
-{{ TIE_BAND }} of the 10 points{% endif %}) — the same threshold as the W–T–L column and the
-filter chips.</p>
+<p style="font-size:12.5px;color:var(--muted)">“Wins” = scenarios where the model scored higher
+than every other, by any margin; only an identical score is a tie — the same rule as the W–T–L
+column and the filter chips.</p>
+{% endif %}
 {% endif %}
 {% endmacro %}
 
 {% macro industries_table(ctx) %}
 {% if ctx.industries %}
 <h2>By target industry</h2>
+{% if CLIENT %}
+{{ breakdown_table(ctx, ctx.industries, 'ind', 'Industry (primary)') }}
+{% else %}
 <div class="tw"><table>
 <thead><tr><th>Industry (primary)</th><th class="num">Scenarios</th>
 {% for mid in ctx.family_models %}<th class="num">{{ mid|disp }}<br>mean · wins</th>{% endfor %}
@@ -136,9 +198,11 @@ filter chips.</p>
 </tr>
 {% endfor %}
 </tbody></table></div>
+{% endif %}
 <p style="font-size:12.5px;color:var(--muted)">Industries come from the sheet's own
 “Industry mapping” tab (primary industry per scenario; many scenarios are also relevant
-to further industries, per its “also” column).{% if ctx.hidden_industries %}
+to further industries, per its “also” column).{% if CLIENT %} Click a row to show only its
+scenarios below.{% endif %}{% if ctx.hidden_industries %}
 Not shown here: {{ ctx.hidden_industries|join(', ') }} — those scenarios are filed under
 their next industry from the mapping.{% endif %}{% if ctx.merged_note %}
 {{ ctx.merged_note }}{% endif %}</p>
@@ -198,10 +262,9 @@ their next industry from the mapping.{% endif %}{% if ctx.merged_note %}
 {% endif %}
 <p style="font-size:12.5px;color:var(--muted)">Click a scenario to expand; click an image to
 zoom, then flip between models (and the original, for edits) with ←/→.
-A scenario counts as won only when the gap is more than
-{{ TIE_BAND_PP }}% — a difference of {{ TIE_BAND_FRAC }} of the rubric scale{% if not CLIENT %},
-i.e. {{ TIE_BAND }} of the 10 points{% endif %}. Anything closer is recorded as a tie, and every
-win count on this page uses that same threshold.</p>
+A scenario is won by the higher score, by any margin{% if not CLIENT %} (compared at two
+decimals){% endif %}. Only an identical score is recorded as a tie, and every win count on this
+page uses that same rule.</p>
 
 {# the list is wrapped so the sort control can reorder nodes without pushing
    scenarios past the footnotes that follow them #}
@@ -218,7 +281,7 @@ win count on this page uses that same threshold.</p>
     <span class="stitle">{{ s.title }}</span>
     {% if s.industry %}<span class="pill" title="also relevant to: {{ s.industry_also|join(', ') or '—' }}">{{ s.industry }}</span>{% endif %}
     {% if s.winner %}<span class="pill ok">winner: {{ s.winner|disp }} ({{ s.margin|qd }})</span>
-    {% elif s.margin is not none %}<span class="pill" title="inside the {{ TIE_BAND_PP }}% tie band ({{ TIE_BAND_FRAC }} of the scale)">tie · Δ {{ s.margin|qd }}</span>{% endif %}
+    {% elif s.margin is not none %}<span class="pill" title="identical score">tie</span>{% endif %}
     <span class="scores">
       {% for c in s.cards %}{% if c.score is not none %}<b class="sc{{ ' win' if s.winner == c.model_id }}" title="{{ c.model_id|disp }}">{{ c.score|q(true) }}</b>{% if not loop.last %} <span class="vs">vs</span> {% endif %}{% endif %}{% endfor %}
     </span>

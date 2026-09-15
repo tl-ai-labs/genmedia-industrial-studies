@@ -1,0 +1,43 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-12 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png; reference = IMG-GAME-base-arcanist.png; reference2 = IMG-GAME-base-ranger.png — provenance in each sidecar .json
+# reference and reference2 are in-house synthetic images (gemini-3.1-flash-image, prompts in their sidecar JSON).
+id: IMG-GAME-12
+modality: image
+task: image_edit
+title: Squad lineup from three separate references
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+  reference: assets/bank/IMG-GAME-base-arcanist.png
+  reference2: assets/bank/IMG-GAME-base-ranger.png
+params:
+  size: auto
+prompt: Place these three characters side by side in a single squad lineup on a plain background.
+  Each must match its own reference exactly — face or visor, headgear, kit and build — with
+  no features borrowed between them. Consistent height relationship, one shared light direction,
+  full body visible for all three.
+expected: 'Squad lineup from three separate references. Capability under test: Three identities
+  held simultaneously with no cross-contamination. Adherence clauses, check each: 1) All three
+  characters present, side by side  2) Each matches its own reference with no blended features  3)
+  Consistent relative heights and one shared light direction  4) Full body visible for all
+  three on a plain background'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-high

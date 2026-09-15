@@ -1,0 +1,40 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-09 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-09
+modality: image
+task: image_edit
+title: Lobby expression sheet from one reference
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: 'Using this person as the character reference, produce an expression sheet: the same
+  operator''s head and shoulders drawn six times in a two-by-three grid, showing neutral,
+  taunting, focused, alarmed, exhausted and grinning. Keep the face, cap, hairline and shirt
+  identical in every panel; only the expression changes. Plain grey background, even lighting.'
+expected: 'Lobby expression sheet from one reference. Capability under test: Identity held
+  across an emotion set. Adherence clauses, check each: 1) Six head-and-shoulders panels in
+  a two-by-three grid  2) All six expressions distinct and matching the named emotions  3)
+  Same face, cap, hairline and shirt in every panel  4) No drift in age, build or colour between
+  panels'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-medium

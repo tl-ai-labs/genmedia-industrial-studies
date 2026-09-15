@@ -1,0 +1,42 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-27 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-GAME-27
+modality: image
+task: text_to_image
+title: Squad ranks across three tiers
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: Three members of one fictional private military faction standing side by side, showing
+  operative, team leader and commander from left to right. All three wear the same slate-grey
+  and brass-buckled kit system with the same chevron motif; rank reads through increasing
+  detail — the operative in plain webbing, the leader with a shoulder rig and comms headset,
+  the commander with a long coat, chest rig and peaked cap. Painted concept art, plain background,
+  no real-world insignia, no text.
+expected: 'Squad ranks across three tiers. Capability under test: A visual system where rank
+  escalates within one shared design language. Adherence clauses, check each: 1) Three figures,
+  rank increasing left to right  2) Same slate-grey kit system and chevron motif on all three  3)
+  Escalation visible — plain webbing, shoulder rig and headset, long coat with peaked cap  4)
+  Same scale and style, plain background, no real-world insignia or text'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game
+- tier-medium

@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-25 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-sofa.png — provenance in each sidecar .json
+id: IMG-VIEW-25
+modality: image
+task: image_edit
+title: Front elevation to a three-quarter furniture angle
+inputs:
+  source: assets/bank/IMG-VIEW-base-sofa.png
+params:
+  size: auto
+prompt: Re-photograph this settee from a three-quarter angle, rotated about thirty degrees
+  to the right and raised slightly, so the depth of the seat, the side arm and the rear legs
+  are visible. The upholstery colour and pattern, the gilded frame profile, the leg shape
+  and the overall proportions must match the original exactly. Same plain background and even
+  lighting.
+expected: 'Front elevation to a three-quarter furniture angle. Capability under test: Rotation
+  revealing depth — rear leg geometry and seat depth invented plausibly. Adherence clauses,
+  check each: 1) Rotated roughly thirty degrees, slightly raised camera  2) Seat depth, side
+  arm and rear legs now visible  3) Upholstery colour and pattern and the gilded frame profile
+  unchanged  4) Plain background and even lighting consistent with the new angle'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- product-&-object-rotation
+- scenario-bank-view
+- tier-medium

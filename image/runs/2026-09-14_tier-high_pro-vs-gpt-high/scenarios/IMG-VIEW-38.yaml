@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-38 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-group.png — provenance in each sidecar .json
+# KNOWN ISSUE: the pinned group stands in one row, not two rows as the prompt says.
+id: IMG-VIEW-38
+modality: image
+task: image_edit
+title: Raise the camera so every face is visible
+inputs:
+  source: assets/bank/IMG-VIEW-base-group.png
+params:
+  size: auto
+prompt: Re-photograph this group from a camera raised about a metre and a half above the original
+  and angled down, so every person in both rows has an unobstructed face. Each person keeps
+  their own face, clothing, position in the group and relative height — nobody may be added,
+  removed or swapped. Same grass, treeline and daylight.
+expected: 'Raise the camera so every face is visible. Capability under test: Elevation change
+  resolving occlusion without altering who is in the frame. Adherence clauses, check each:
+  1) Camera clearly raised and angled down  2) Every person present with an unobstructed face  3)
+  Each keeps their own clothing, position and relative height  4) Nobody added, removed or
+  duplicated; same grass, treeline and daylight'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-food-&-fashion
+- scenario-bank-view
+- tier-high
