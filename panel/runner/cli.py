@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -150,7 +151,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--key", type=Path, default=KEY)
     s.add_argument("--votes", type=Path, default=VOTES)
     s.add_argument("--host", default="0.0.0.0")
-    s.add_argument("--port", type=int, default=8765)
+    # PORT lets a launcher pick the port (a preview beside a live panel);
+    # an explicit --port still wins
+    s.add_argument("--port", type=int, default=int(os.environ.get("PORT") or 8765))
     s.set_defaults(fn=cmd_serve)
 
     c = sub.add_parser("correlate", help="human majority vs judge, per lane and overall")
