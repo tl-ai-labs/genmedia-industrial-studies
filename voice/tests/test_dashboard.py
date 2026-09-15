@@ -226,7 +226,7 @@ def test_a_decided_gap_smaller_than_its_own_noise_says_so(tmp_path):
 
 def test_every_tab_panel_is_populated(runs_root):
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panels = ("t-scenarios", "t-models", "t-repeats", "t-runs")
+    panels = ("t-scenarios", "t-models", "t-repeats", "t-runs", "t-review")
     for pid in panels:
         assert f'data-tab="{pid}"' in html
     assert html.count("<audio") >= 1

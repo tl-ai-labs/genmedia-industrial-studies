@@ -616,36 +616,75 @@ exists, so nobody rebuilds something that is already here.
 
 ---
 
-### Note — ElevenLabs may be reachable through Vertex
+### Note — ElevenLabs transport: DIRECT API. Vertex ruled out. (verified 2026-09-09)
 
-Recorded 4 September, **not yet verified by us.**
+**Decision, recorded 9 September 2026 for the v3 re-run (task B).** The
+ElevenLabs arm stays on the **direct API** (`api.elevenlabs.io`,
+`ELEVENLABS_API_KEY` from `voice/.env`, via
+`runner/adapters/elevenlabs_tts.py`). The Gemini arm stays on **Vertex**
+(`gemini-3.1-flash-tts-preview`, `us-central1`). The transport is
+deliberately asymmetric, and that helps independence — the two arms do not
+share a vendor for transport.
 
-We currently call ElevenLabs **directly**, with `ELEVENLABS_API_KEY` from
-`voice/.env`, through `runner/adapters/elevenlabs_tts.py` (plain
-`urllib.request` against `api.elevenlabs.io`). ElevenLabs models are reported
-to be available through **Google Vertex AI** as well. If the models this study
-needs — specifically **v3**, per task B — are offered there, we may have to
-route through Vertex instead of the direct API.
+The three checks HANDOFF asked for before a gateway change, answered
+(detail in `voice/V3-RUN-BRIEF.md`, "Three things to settle"):
 
-Before anyone starts that work, check three things:
+1. **Is the exact model on Vertex?** No. Model Garden on project
+   `ai-studies-console` lists exactly one ElevenLabs model —
+   `elevenlabs/elevenlabs-tts-v2-5@default`, `CAN_DEPLOY: Yes`,
+   **`CAN_PREDICT: No`**. There is **no `eleven_v3` on Vertex at all**, only
+   a v2.5-era build, and it cannot even be called through managed prediction
+   (it would have to be self-deployed to an endpoint). Task B needs v3, so
+   Vertex is a dead end here — on availability, not on policy.
+2. **Does billing change?** N/A — we are not moving. Direct API keeps billing
+   on the ElevenLabs character quota (§11), so the `$/clip` and `$/minute`
+   columns stay comparable across the re-run.
+3. **Does it change what we measure?** No — transport independence is
+   preserved (ElevenLabs direct, Gemini on Vertex). No new vendor-shared
+   exposure to disclose beyond the judge and the retired Google ASR already
+   footnoted.
 
-1. **Is the exact model there?** Vertex Model Garden availability lags, and
-   the version matters — a v3 comparison run against a Vertex build that is
-   really v2.5 would be a silent, unrecoverable error in the results.
-2. **Does the billing change?** Vertex bills to the GCP project, not the
-   ElevenLabs plan. That moves cost off the character quota tracked in §11
-   and onto a different wallet, and **every cost number on the boards would
-   become incomparable with the ones beside it** unless re-run.
-3. **Does it change what we are measuring?** Routing both arms through Google
-   infrastructure means the transport is no longer independent of one vendor.
-   That is the same class of exposure as the judge and the retired Google ASR,
-   and it must be disclosed on the client report if it happens.
-
-The adapter is small and the swap is not hard. The evidence consequences are
-the expensive part — treat a gateway change like a model change: **new runs,
-not a re-label of old ones.**
+The adapter swap was never needed. Treat any future gateway change like a
+model change: **new runs, not a re-label of old ones.**
 
 ---
+
+### Note — human review kept apart, and where each model is served from (2026-09-14)
+
+Asked for by Ravi on 14 September, built the same day on
+`feat/voice-models-sainadh` → `claude/voice-models-audio-review-5ba2ac`:
+
+1. **Human and automated observations are separate records.** A hand-written
+   `voice/review/human-review.yaml` (schema in `voice/review/README.md`) holds
+   *observations* — what a listener heard, case by case — and *corrections* —
+   automated results a listener found wrong. Observations render in a dashed
+   *Human review* block on each card and in their own section (client) / tab
+   (internal); **they never enter a score, a gate rate, a spread or a winner**.
+   Corrections are applied to the loaded cells by `runner/review.py` through
+   the one shared loader (`dashboard.load_runs_reviewed`), so both boards
+   agree; every corrected clip is stamped *corrected* with what the instrument
+   said, and the full list is on the page. `--no-review` renders the
+   instrument untouched. Run folders are never edited.
+2. **The file is a scaffold with no listening recorded yet.** Ravi's ask for
+   detailed case-by-case review points is a listening session, not code: open
+   `dashboard/index.html`, play each pair, fill the observations in, re-export.
+3. **Region is on the record and on both pages.** `configs/models.yaml` now
+   carries `region` + `region_note` on every arm, the judge and the ASR; the
+   manifest writes `region`, `region_note` and `served_from` per model (from
+   the next run onwards); both boards read the manifest and fall back to the
+   config — labelled *read back from configs/models.yaml* — for runs that
+   predate the field. The answer for the v3 bank:
+   - `gemini-3-1-flash-tts`: **Vertex AI, us-central1** — the adapter passes
+     the location explicitly on every call (`runner/adapters/gemini_tts.py`).
+   - `elevenlabs-v3`: **ElevenLabs direct API, US default** — `api.elevenlabs.io`
+     takes no region parameter; the EU / India / Singapore residency endpoints
+     are Enterprise-only, and this account is a Creator plan.
+   - judge `gemini-2.5-flash`: Vertex AI, us-central1 — same vendor *and* same
+     region as the Gemini arm; stated on the page.
+   - ASR: local Whisper on the machine that ran the study; no region.
+4. **The committed `dashboard/index.html` is stale until re-exported** from the
+   machine holding `voice/runs/` — the review and region changes are in the
+   templates, not in the committed page. `client-report --out dashboard`.
 
 ### Needs doing before anything else
 

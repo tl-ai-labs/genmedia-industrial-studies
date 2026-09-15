@@ -205,9 +205,11 @@ def test_the_removed_metrics_are_absent(root):
 
 def test_metrics_are_rows_and_models_are_columns_with_a_difference(root):
     html = render_client_report(root, "voice").read_text(encoding="utf-8")
-    head = re.search(r"<thead><tr>(.*?)</tr></thead>", html, re.S).group(1)
+    # THE METRICS TABLE, not the first table on the page - the served-from
+    # table precedes it now.
+    heads = re.findall(r"<thead><tr>(.*?)</tr></thead>", html, re.S)
+    head = next(h for h in heads if "Difference" in h)
     assert "gemini-3-1-flash-tts" in head and "elevenlabs-multilingual-v2" in head
-    assert "Difference" in head
     # Gemini's column comes first.
     assert head.index("gemini-3-1-flash-tts") < head.index("elevenlabs-multilingual-v2")
     for metric in ("Quality", "Gates passed", "Run-to-run spread", "Cost per clip",
