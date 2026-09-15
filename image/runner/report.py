@@ -176,7 +176,7 @@ def _metric_rows(models: dict, order: list) -> list:
 
 
 def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
-                 hide_industries: tuple = ()) -> Path:
+                 hide_industries: tuple = (), complete_only: bool = False) -> Path:
     """Writes BOTH deliverables from ONE context, every time:
 
         report.html         internal — summary tiles, cost, every diagnostic
@@ -186,7 +186,8 @@ def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
     One context means the two files can never disagree on a number, and there
     is no flag to forget. Returns the internal path (the caller's contract)."""
     run_dir = Path(run_dir)
-    ctx = _build_context(project_root, run_dir, hide_industries=hide_industries)
+    ctx = _build_context(project_root, run_dir, hide_industries=hide_industries,
+                         complete_only=complete_only)
     out = run_dir / "report.html"
     out.write_text(_env(ctx["names"]).get_template("report.html.j2").render(**ctx))
     client = run_dir / "report-client.html"
@@ -322,11 +323,32 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
 
 
 def _build_context(project_root: Path, run_dir: Path,
-                   hide_industries: tuple = ()) -> dict:
+                   hide_industries: tuple = (),
+                   complete_only: bool = False) -> dict:
     run_dir = Path(run_dir)
     manifest = Manifest(run_dir)
     files = RunFiles(run_dir)
     agg = aggregate(run_dir)
+
+    if complete_only:
+        # Report quality over the scenarios EVERY arm actually completed.
+        # Otherwise the means compare different scenario sets: on 2026-09-10
+        # Seedance refused two ads, so Omni's mean covered 10 scenarios and
+        # Seedance's 8, printed side by side as though they measured the same
+        # thing — and dropping those two moves Omni from ahead to behind.
+        # The excluded scenarios are not hidden: they stay in the reliability
+        # figures (failed / refused / unjudged) and in the evidence list,
+        # because a refusal is a product fact, not missing data.
+        for t in agg.get("tasks", {}).values():
+            for m in t["models"].values():
+                m["mean"] = m.get("mean_complete")
+                m["worst"] = m.get("worst_complete")
+                m["judged_n"] = m.get("complete_n", 0)
+                m["below_5"] = sum(1 for v in m.get("numeric_complete", []) if v < 5)
+    telemetry = files.read("telemetry")
+    judge_rows = files.read("judge")
+    scores = files.read("scores")
+    checks = files.read("checks")
     telemetry = files.read("telemetry")
     judge_rows = files.read("judge")
     scores = files.read("scores")

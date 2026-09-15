@@ -41,6 +41,17 @@ BUILD_TASKS = {
                        "optional_inputs": ["mask", "bbox"]},
     "styled_tts":     {"modality": "voice", "inputs": [],          "phase": "2b"},
     "text_to_video":  {"modality": "video", "inputs": [],          "phase": "3"},
+    # Built 2026-09-09 after the Google review scoped video to edits + ads.
+    # Both are asset-fed: the role names below are the keys the scenario
+    # files already use under `inputs:` and must not drift from them.
+    # image_to_video needs at least one image but does NOT fix its role name:
+    # the bank's roles carry meaning (first_frame/last_frame, character/
+    # environment, still1..still3, logo, style) and collapsing them to one
+    # generic "reference" would lose which image is which.
+    "image_to_video": {"modality": "video", "inputs": [], "min_inputs": 1,
+                       "phase": "3"},
+    # an edit always has exactly one thing to edit, and it is always `source`
+    "video_edit":     {"modality": "video", "inputs": ["source"], "phase": "3"},
 }
 
 RESERVED_TASKS = {
@@ -50,9 +61,9 @@ RESERVED_TASKS = {
     # voice
     "cloned_voice_tts": "voice", "multi_speaker": "voice",
     "speech_to_speech": "voice", "long_form": "voice",
-    # video — asset-fed families (I2V, editing, avatars) are schema-legal
-    # now, buildable when their reference assets and checks arrive
-    "image_to_video": "video", "video_edit": "video",
+    # video — avatar_dialogue stays reserved: it needs an audio track and a
+    # lip-sync rubric that do not exist yet (the other two moved to
+    # BUILD_TASKS above)
     "avatar_dialogue": "video",
 }
 

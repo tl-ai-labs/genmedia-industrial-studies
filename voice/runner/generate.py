@@ -69,11 +69,27 @@ class BudgetExceeded(RuntimeError):
 
 
 class Budget:
-    """Running total in micro-USD, checked before every billable call."""
+    """Running total in micro-USD, checked before every billable call.
 
-    def __init__(self, cap_usd: float | None) -> None:
+    A cap can also be set per provider. One run bills more than one account -
+    generation on the model's provider, ASR on its own - and a single
+    combined cap protects none of them: it trips on the sum, so a cheap
+    service eats the headroom an expensive one needed, and a cap set to
+    match a prepaid balance stops the run long before that balance is gone.
+    Each cap is checked on its own and the first to trip stops the call.
+
+    Both checks are on spend ALREADY BILLED, so any cap can be overshot by
+    up to whatever the next call turns out to cost. Leave a margin.
+    """
+
+    def __init__(self, cap_usd: float | None,
+                 provider_caps_usd: dict[str, float] | None = None) -> None:
         self.cap_micro = int(cap_usd * 1_000_000) if cap_usd is not None else None
+        self.provider_caps_micro = {
+            p: int(u * 1_000_000) for p, u in (provider_caps_usd or {}).items()
+        }
         self._spent = 0
+        self._by_provider: dict[str, int] = {}
         self._lock = threading.Lock()
 
     @property
@@ -81,18 +97,29 @@ class Budget:
         with self._lock:
             return self._spent
 
-    def add(self, micro: int) -> None:
+    def spent_micro_for(self, provider: str) -> int:
+        with self._lock:
+            return self._by_provider.get(provider, 0)
+
+    def add(self, micro: int, provider: str | None = None) -> None:
         with self._lock:
             self._spent += micro
+            if provider is not None:
+                self._by_provider[provider] = self._by_provider.get(provider, 0) + micro
 
-    def guard(self, what: str) -> None:
-        if self.cap_micro is None:
-            return
+    def guard(self, what: str, provider: str | None = None) -> None:
         with self._lock:
-            if self._spent >= self.cap_micro:
+            if self.cap_micro is not None and self._spent >= self.cap_micro:
                 raise BudgetExceeded(
                     f"budget cap ${self.cap_micro / 1e6:.2f} reached "
                     f"(spent ${self._spent / 1e6:.4f}) - stopping before {what}"
+                )
+            cap = self.provider_caps_micro.get(provider)
+            if cap is not None and self._by_provider.get(provider, 0) >= cap:
+                raise BudgetExceeded(
+                    f"{provider}: cap ${cap / 1e6:.2f} reached (spent "
+                    f"${self._by_provider.get(provider, 0) / 1e6:.4f}) - "
+                    f"stopping before {what}"
                 )
 
 
@@ -278,7 +305,7 @@ def _generate_one(
     last_error = "unknown failure"
     last_status = "provider_error"
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        budget.guard(f"{scenario.id} x {model.id}")
+        budget.guard(f"{scenario.id} x {model.id}", model.provider)
         t0 = time.perf_counter()
         try:
             result = lanes.run(
@@ -358,7 +385,7 @@ def _generate_one(
             raw=result.usage.raw,
         )
         cost = compute_cost(usage, model.price, label=f"{model.id}/{scenario.id}")
-        budget.add(cost.micro_usd)
+        budget.add(cost.micro_usd, model.provider)
         unsupported = params_unsupported(requested, result.applied_params)
 
         tel.write(
@@ -446,7 +473,7 @@ def measure_cell(
             duration = 0.0
             asr_error = f"could not decode audio for ASR: {exc}"
         if asr_error is None:
-            budget.guard(f"ASR for {scenario.id} x {model.id}")
+            budget.guard(f"ASR for {scenario.id} x {model.id}", asr.spec.provider)
             # Through the provider lane, and under the same runner-owned
             # deadline as generation: the ASR backend is a network call like
             # any other and must not be the thing that hangs a cell.
@@ -492,7 +519,7 @@ def measure_cell(
                 # The RAW transcript is kept beside the audio as evidence.
                 # Never cleaned, never normalised on disk.
                 tpath.write_text(res.text + "\n", encoding="utf-8")
-                budget.add(res.cost.micro_usd)
+                budget.add(res.cost.micro_usd, asr.spec.provider)
                 outcome.asr_cost_micro = res.cost.micro_usd
                 tel.write(
                     "telemetry",

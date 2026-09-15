@@ -3,6 +3,8 @@ purpose (plan §19): re-judging or re-reporting must never re-generate media,
 and a report tweak must cost nothing.
 
     python -m runner.cli run    --modality video --scenarios scenarios/ --budget 5.00
+    python -m runner.cli run    --modality video --scenarios scenarios/ \\
+        --budget 110 --budget-provider byteplus=80   # cap each account too
     python -m runner.cli judge  --run <run-id>
     python -m runner.cli score  --run <run-id>          # re-score after a weight change
     python -m runner.cli report --run <run-id> --open
@@ -28,6 +30,33 @@ def _run_dir(args) -> Path:
     sys.exit(f"error: run not found: {args.run} (looked in {candidate})")
 
 
+def _parse_provider_caps(pairs) -> dict[str, float]:
+    """`--budget-provider byteplus=80` -> {"byteplus": 80.0}.
+
+    Every malformed form raises rather than being dropped: a cap someone is
+    relying on must never silently not exist.
+    """
+    caps: dict[str, float] = {}
+    for raw in pairs or []:
+        provider, sep, amount = raw.partition("=")
+        provider = provider.strip()
+        if not sep or not provider:
+            raise ValueError(
+                f"--budget-provider expects PROVIDER=USD, got {raw!r}")
+        try:
+            usd = float(amount)
+        except ValueError:
+            raise ValueError(f"--budget-provider {provider}: {amount!r} "
+                             f"is not a number") from None
+        if usd <= 0:
+            raise ValueError(f"--budget-provider {provider}: cap must be "
+                             f"greater than 0, got {usd}")
+        if provider in caps:
+            raise ValueError(f"--budget-provider {provider}: given twice")
+        caps[provider] = usd
+    return caps
+
+
 def cmd_run(args) -> int:
     from .generate import RunRejected, run_generation
     from .loaders import enabled_models, load_models, load_scenarios
@@ -37,11 +66,16 @@ def cmd_run(args) -> int:
         models = enabled_models(load_models(args.models), args.modality)
         if len(models) < 1:
             raise RunRejected(f"no enabled {args.modality} models in {args.models}")
+        provider_caps = _parse_provider_caps(args.budget_provider)
         print(f"[plan] {len(scenarios)} scenario(s) x {len(models)} model(s) "
               f"({', '.join(m.id for m in models)})")
+        if provider_caps:
+            print("[plan] provider caps: " + ", ".join(
+                f"{p} <= {c:.2f} USD" for p, c in sorted(provider_caps.items())))
         run_dir = run_generation(
             PROJECT_ROOT, scenarios, models, args.modality,
-            budget_usd=args.budget, workers=args.workers, run_id=args.run)
+            budget_usd=args.budget, workers=args.workers, run_id=args.run,
+            provider_caps=provider_caps)
     except RunRejected as e:
         print(f"\nREJECTED — {e}", file=sys.stderr)
         return 2
@@ -61,7 +95,8 @@ def cmd_judge(args) -> int:
     from .scoring import score_run
     run_dir = _run_dir(args)
     try:
-        counts = judge_run(PROJECT_ROOT, run_dir, Path(args.models))
+        counts = judge_run(PROJECT_ROOT, run_dir, Path(args.models),
+                           retry_unjudged=getattr(args, 'retry_unjudged', False))
     except RunRejected as e:
         print(f"\nREJECTED — {e}", file=sys.stderr)
         return 2
@@ -95,6 +130,7 @@ def cmd_report(args) -> int:
     if len(dirs) == 1:
         out = build_report(PROJECT_ROOT, dirs[0], open_browser=args.open,
                            hide_industries=hide,
+                           complete_only=getattr(args, "complete_only", False),
                            self_contained=args.self_contained)
         print(f"report: {out}")
         print(f"client: {out.with_name('report-client.html')}")
@@ -109,6 +145,38 @@ def cmd_report(args) -> int:
                                     hide_industries=hide,
                                     brief=args.brief)
     print(f"report: {out}")
+    return 0
+
+
+def cmd_merge_report(args) -> int:
+    """One report over several runs, scenarios deduplicated.
+
+    A pair must live in one run on one source, so re-running a scenario mints
+    a new run — and a study ends up spread across several of them for reasons
+    no reader cares about. This folds them back into one deliverable.
+    """
+    from .report import build_report, merge_runs
+    dirs = []
+    for r in args.run:
+        args.run = r
+        dirs.append(_run_dir(args))
+    out = Path(args.out) if args.out else (
+        PROJECT_ROOT / "runs" /
+        f"merged-{__import__('datetime').datetime.now():%Y-%m-%d_%H%M%S}")
+    groups = {}
+    for raw in getattr(args, "group_task", []) or []:
+        old, _, new = raw.partition("=")
+        if not new:
+            raise ValueError(f"--group-task expects OLD=NEW, got {raw!r}")
+        groups[old.strip()] = new.strip()
+    merge_runs(dirs, out, groups)
+    build_report(PROJECT_ROOT, out, open_browser=args.open,
+                 self_contained=args.self_contained,
+                 complete_only=getattr(args, "complete_only", False),
+                 preview_crf=getattr(args, "preview_crf", 28))
+    print(f"merged {len(dirs)} run(s) -> {out}")
+    print(f"report: {out / 'report.html'}")
+    print(f"client: {out / 'report-client.html'}")
     return 0
 
 
@@ -199,13 +267,27 @@ def main(argv=None) -> int:
                    help="YAML dir/file or CSV sheet (id,task,prompt,expected,required_text)")
     p.add_argument("--models", default=str(PROJECT_ROOT / "configs" / "models.yaml"))
     p.add_argument("--budget", type=float, default=None,
-                   help="hard USD cap; pre-flight refuses, mid-run aborts")
+                   help="hard USD cap across ALL providers together; "
+                        "pre-flight refuses, mid-run aborts")
+    p.add_argument("--budget-provider", action="append", default=[],
+                   metavar="PROVIDER=USD",
+                   help="hard USD cap for ONE provider, repeatable "
+                        "(e.g. --budget-provider byteplus=80). Checked "
+                        "independently of --budget. Use it when the arms bill "
+                        "different accounts and one is a prepaid balance: a "
+                        "combined --budget cannot protect either. Naming a "
+                        "provider that is not enabled is refused, not ignored.")
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--run", default=None, help="existing run id to resume")
     p.set_defaults(fn=cmd_run)
 
     p = sub.add_parser("judge", help="blind-judge a generated run, then score it")
     p.add_argument("--run", required=True)
+    p.add_argument("--retry-unjudged", action="store_true", dest="retry_unjudged",
+                   help="re-attempt cells left `unjudged` by a transient judge "
+                        "failure (e.g. a 429). The clip is already paid for and "
+                        "re-judging costs only judge tokens, but the state is "
+                        "terminal by design, so this never happens implicitly.")
     p.add_argument("--models", default=str(PROJECT_ROOT / "configs" / "models.yaml"))
     p.set_defaults(fn=cmd_judge)
 
@@ -232,7 +314,35 @@ def main(argv=None) -> int:
                         "<run>/previews/ when the originals exceed the inline "
                         "budget (originals untouched, and the report says so)")
     p.add_argument("--open", action="store_true")
+    p.add_argument("--complete-only", action="store_true", dest="complete_only",
+                   help="score only the scenarios EVERY arm completed. Means "
+                        "over different scenario sets are not comparable — a "
+                        "refusal by one arm otherwise leaves the other averaging "
+                        "over scenarios its rival never attempted. Excluded "
+                        "scenarios stay visible in the reliability figures.")
     p.set_defaults(fn=cmd_report)
+
+    p = sub.add_parser("merge-report", help="ONE report across several runs, "
+                       "scenarios deduplicated (latest run wins)")
+    p.add_argument("--run", required=True, action="append",
+                   help="repeatable, in chronological order")
+    p.add_argument("--out", default=None)
+    p.add_argument("--open", action="store_true")
+    p.add_argument("--self-contained", action="store_true", dest="self_contained")
+    p.add_argument("--complete-only", action="store_true", dest="complete_only",
+                   help="score only the scenarios every arm completed")
+    p.add_argument("--group-task", action="append", default=[], dest="group_task",
+                   metavar="OLD=NEW",
+                   help="report one task's scenarios under another, e.g. "
+                        "text_to_video=image_to_video. Presentation only: the "
+                        "scenarios, their rubrics and the original runs are "
+                        "untouched, and the remap is recorded in the merged "
+                        "manifest and shown on the report.")
+    p.add_argument("--preview-crf", type=int, default=28, dest="preview_crf",
+                   help="x264 CRF for the embedded preview clips (higher = "
+                        "smaller file). 28 is the default; 34 roughly halves a "
+                        "report that has to travel under an attachment limit.")
+    p.set_defaults(fn=cmd_merge_report)
 
     p = sub.add_parser("cost", help="cost rollup from telemetry (gen vs judge)")
     p.add_argument("--run", required=True)
