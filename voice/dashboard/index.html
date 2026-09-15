@@ -81,6 +81,22 @@ header.hero{padding:42px 0 6px}
   font-size:12.5px;font-weight:600;margin-bottom:16px;gap:12px;flex-wrap:wrap}
 .heads .gem{color:var(--gem)}
 .heads .oth{color:var(--oth)}
+/* Clickable head-to-head names - the filter row this replaces used to sit
+   below as its own row of tabs; now the same two names double as the
+   trigger, so there is one fewer control on the page for the same job. */
+.hbtn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  border-radius:999px;padding:3px 5px}
+.hbtn:hover{text-decoration:underline}
+.hbtn .c{font-size:10.5px;font-weight:600;opacity:.7;padding:1px 8px;
+  border-radius:999px;border:1px solid currentColor}
+.hbtn.on{text-decoration:underline}
+.hbtn.on .c{opacity:1;color:#fff;border-color:transparent}
+.hbtn.gem.on .c{background:var(--gem)}
+.hbtn.oth.on .c{background:var(--oth)}
+.linklike{all:unset;cursor:pointer;color:var(--accent);font-weight:600;
+  text-decoration:underline;text-underline-offset:2px}
+.linklike.on{color:var(--ink);background:var(--accent-soft);border-radius:5px;
+  padding:0 4px;text-decoration:none}
 .drow{padding:8px 0;border-top:1px solid var(--rule)}
 .drow:first-of-type{border-top:0}
 .dlab{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
@@ -89,7 +105,13 @@ header.hero{padding:42px 0 6px}
 .dval{font-family:var(--mono);font-size:13px;color:var(--body);
   font-variant-numeric:tabular-nums}
 .dval.r{text-align:right}
-.dval.win{color:var(--ink);font-weight:700}
+/* The winning side of each row used to be plain bold text plus a bare ✦ -
+   readable, but nothing marked it as a WINNER at a glance from across the
+   room. A soft pill in the same green "good" colour used everywhere else on
+   this page ties the reading to the rest of the page's vocabulary instead
+   of inventing a one-off treatment just for this row. */
+.dval.win{color:var(--good);font-weight:700;background:var(--good-soft);
+  border:1px solid #bfe0d2;border-radius:999px;padding:2px 10px}
 .dtrack{height:9px;background:var(--lift);border-radius:999px;display:flex;overflow:hidden}
 .dtrack.gem{justify-content:flex-end}
 .dtrack i{display:block;height:100%;border-radius:999px}
@@ -111,8 +133,14 @@ thead th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
   text-transform:uppercase;color:var(--dim);background:var(--lift);font-weight:600;
   white-space:nowrap}
 th.n,td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
-th.gemcol{color:var(--gem)}
-th.othcol{color:var(--oth)}
+/* Column headers naming a model: centred over their own numbers rather than
+   jammed right against the column's edge with everything else that's `.n`,
+   and tinted in the model's own colour so the two columns read apart at a
+   glance the same way the head-to-head strip already does. */
+th.gemcol{color:var(--gem);background:var(--gem-soft);
+  text-align:center;border-bottom:2px solid var(--gem)}
+th.othcol{color:var(--oth);background:var(--oth-soft);
+  text-align:center;border-bottom:2px solid var(--oth)}
 td.metric{color:var(--ink);font-weight:600}
 td.metric small{display:block;font-weight:400;color:var(--dim);font-size:12px;
   font-family:var(--text);letter-spacing:0;text-transform:none}
@@ -120,6 +148,45 @@ td.delta{font-weight:600}
 .better{color:var(--good)}
 .worse{color:var(--bad)}
 .neutral{color:var(--dim)}
+/* The header word itself, not the values under it - the column needed
+   something naming it as clearly as the two model columns beside it. */
+th.diffcol{color:var(--accent);background:var(--accent-soft);
+  border-bottom:2px solid var(--accent)}
+.dash{color:var(--dim)}
+
+/* The "vs" title row sitting above a table's two model columns - one line
+   naming the match before the reader gets to the columns themselves.
+   THREE SEPARATE BLOCK LINES, not one wrapped text run: centring one long
+   inline string that wraps mid-sentence centres each wrapped fragment
+   against whatever width the browser happened to break it at, which is
+   not the same width twice. A block per line always centres against the
+   cell's own full width, so "vs" lands under the gap between the two
+   names every time. (Also: this used to be a <span class="vs"> - which
+   collided with the UNRELATED .vs grid class below and silently turned
+   the word "vs" into a two-column grid, shoving it to one side.) */
+.vshead{text-align:center;font-size:12.5px;letter-spacing:0;
+  text-transform:none;background:var(--card);padding:14px 16px}
+.vshead.plain{color:var(--ink)}
+.vshead .vs-line{font-size:15px;font-weight:700}
+.vshead .vs-mid{font-family:var(--text);color:var(--dim);font-weight:400;
+  font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin:3px 0}
+
+/* ── by-industry table ─────────────────────────────────────────────────
+   Same shape as the metric table, with one difference: a row's LEADER is
+   marked once (not per cell) so a reader never sees one model's quality
+   mean highlighted beside the other model's win count. */
+.itbl tbody tr.rowfilter{cursor:pointer}
+.itbl tbody tr.rowfilter:hover{background:var(--lift)}
+.itbl tbody tr.rowfilter.on{background:var(--accent-soft)}
+.imean{color:var(--body)}
+.imean.lead{color:var(--good);font-weight:700;background:var(--good-soft);
+  border:1px solid #bfe0d2;border-radius:999px;padding:2px 10px}
+.iwins{display:inline-block;font-family:var(--mono);font-size:11.5px;
+  color:var(--dim);background:var(--lift);border:1px solid var(--rule);
+  border-radius:999px;padding:2px 9px}
+.iwins.lead{color:var(--good);background:var(--good-soft);border-color:#bfe0d2;font-weight:600}
+.iwinpct{color:var(--body)}
+.iwinpct.lead{color:var(--good);font-weight:700}
 
 /* ── controls ───────────────────────────────────────────────────────── */
 .controls{background:var(--card);border:1px solid var(--rule);border-radius:12px;
@@ -236,11 +303,34 @@ summary:hover{color:var(--accent)}
 .sv b{color:var(--ink)}
 .nomatch{text-align:center;color:var(--dim);padding:34px}
 footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
-.notes{font-size:13.5px;line-height:1.62;padding-left:19px}
-.notes li{margin:9px 0}
-.notes b{color:var(--ink)}
-@media print{.controls{display:none}.sc{break-inside:avoid}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ── Human review: visibly a different kind of record ─────────────────
+   Dashed edge, its own label, no arm colour and no score typography, so
+   it cannot be mistaken for a measured result even in a screenshot. */
+.human{margin-top:16px;padding:12px 16px 6px;border:1.5px dashed var(--warn);
+  border-radius:10px;background:var(--warn-soft)}
+.human .hl{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.human .xl{color:var(--warn)}
+.ob{padding:8px 0;border-top:1px solid #ecdcb8}
+.ob:first-of-type{border-top:0}
+.obh{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12.5px}
+.obh b{color:var(--ink)}
+.obh code{color:var(--ink);font-weight:600}
+.obh .vt{font-family:var(--mono);font-size:10.5px;background:var(--card);
+  border:1px solid var(--rule);padding:1px 6px;border-radius:5px}
+.obn{margin:5px 0 2px;font-size:14px;color:var(--body);white-space:pre-line}
+.obt{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 2px}
+.tag{font-family:var(--mono);font-size:10.5px;color:var(--dim);background:var(--card);
+  border:1px solid var(--rule);padding:1px 7px;border-radius:999px}
+.pref{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--warn);
+  background:var(--card);border:1px solid #ecdcb8;padding:1px 8px;border-radius:999px}
+.one.human-line{border-left-color:var(--warn);background:var(--warn-soft)}
+.corr{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.04em;
+  color:#7a3e8f;background:#f3e8f7;border:1px solid #dcc6e6;padding:1px 7px;border-radius:999px}
+.was{margin-top:6px;font-size:12.5px;line-height:1.5;padding:6px 10px;border-radius:7px;
+  background:#f7f1fa;border-left:3px solid #b48cc7}
+.was.dimmed{background:var(--lift);border-left-color:var(--rule);color:var(--dim)}
+.was b{color:#7a3e8f}
+.was code{background:var(--card);padding:0 4px;border-radius:4px}
 .note-cell{font-size:12.5px;color:var(--body);max-width:52ch;line-height:1.45}
 /* The two-stopwatches explainer under the first-audio panel. Always open;
    a reader who needs it should not have to find a toggle. */
@@ -258,6 +348,11 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
 .how .steps li{margin:5px 0}
 .how .steps b{color:var(--ink)}
 @media (max-width:640px){.how .two{grid-template-columns:1fr}}
+.notes{font-size:13.5px;line-height:1.62;padding-left:19px}
+.notes li{margin:9px 0}
+.notes b{color:var(--ink)}
+@media print{.controls{display:none}.sc{break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 </head>
@@ -281,9 +376,12 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
     a Google model scoring a comparison with a Google arm in it, and
     never calibrated against human listeners. Detail in the notes.</p>
   
+  
   <p class="one"><b>Served from:</b>
     <code>gemini-3-1-flash-tts</code> — Vertex AI · us-central1; <code>elevenlabs-v3</code> — ElevenLabs direct API · us.
     Detail under <a href="#served">where each model was served from</a>.</p>
+  
+  
   <p class="one lead"><b>Overall:</b> gemini-3-1-flash-tts leads — The 0.095 gap clears the 0.05 decision band. The measured run-to-run spread is ±1.703; this gap is smaller than that, so it can move or invert on a re-run.</p>
   <p class="one warn"><b>A model wins a scenario</b> when the gap clears
     0.5pp and it cleared no fewer gates —
@@ -291,17 +389,21 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
     run-to-run spread.</p>
 </header>
 
-<h2>Head to head</h2>
+<h2>Overall summary</h2>
+
+<h3>Head to head</h3>
 <div class="duel">
   <div class="heads">
-    <span class="h gem">◆ gemini-3-1-flash-tts · Google</span>
-    <span class="h oth">elevenlabs-v3 · ElevenLabs ◆</span>
+    <button type="button" class="h gem hbtn" data-res="gem">◆ gemini-3-1-flash-tts · Google
+      <span class="c">3 wins</span></button>
+    <button type="button" class="h oth hbtn" data-res="oth">elevenlabs-v3 · ElevenLabs ◆
+      <span class="c">4 wins</span></button>
   </div>
   
   <div class="drow">
     <div class="dlab">Quality</div>
     <div class="dpair">
-      <span class="dval win">95.0% ✦</span>
+      <span class="dval win">95.0%</span>
       <span class="dtrack gem"><i style="width:100.0%"></i></span>
       <span class="dtrack oth"><i style="width:99.0%"></i></span>
       <span class="dval r">94.1%</span>
@@ -311,7 +413,7 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
   <div class="drow">
     <div class="dlab">Gates passed</div>
     <div class="dpair">
-      <span class="dval win">51.7% ✦</span>
+      <span class="dval win">51.7%</span>
       <span class="dtrack gem"><i style="width:100.0%"></i></span>
       <span class="dtrack oth"><i style="width:90.0%"></i></span>
       <span class="dval r">46.6%</span>
@@ -321,7 +423,7 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
   <div class="drow">
     <div class="dlab">Run-to-run spread</div>
     <div class="dpair">
-      <span class="dval win">17.0% ✦</span>
+      <span class="dval win">17.0%</span>
       <span class="dtrack gem"><i style="width:99.6%"></i></span>
       <span class="dtrack oth"><i style="width:100.0%"></i></span>
       <span class="dval r">17.0%</span>
@@ -331,7 +433,7 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
   <div class="drow">
     <div class="dlab">Worst word error rate</div>
     <div class="dpair">
-      <span class="dval win">12.5% ✦</span>
+      <span class="dval win">12.5%</span>
       <span class="dtrack gem"><i style="width:88.9%"></i></span>
       <span class="dtrack oth"><i style="width:100.0%"></i></span>
       <span class="dval r">14.1%</span>
@@ -341,7 +443,7 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
   <div class="drow">
     <div class="dlab">Cost per clip</div>
     <div class="dpair">
-      <span class="dval win">$0.0088 ✦</span>
+      <span class="dval win">$0.0088</span>
       <span class="dtrack gem"><i style="width:41.2%"></i></span>
       <span class="dtrack oth"><i style="width:100.0%"></i></span>
       <span class="dval r">$0.0215</span>
@@ -351,7 +453,7 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
   <div class="drow">
     <div class="dlab">Cost per audio minute</div>
     <div class="dpair">
-      <span class="dval win">$0.0351 ✦</span>
+      <span class="dval win">$0.0351</span>
       <span class="dtrack gem"><i style="width:38.8%"></i></span>
       <span class="dtrack oth"><i style="width:100.0%"></i></span>
       <span class="dval r">$0.0905</span>
@@ -364,7 +466,7 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
       <span class="dval">10.41s</span>
       <span class="dtrack gem"><i style="width:100.0%"></i></span>
       <span class="dtrack oth"><i style="width:44.0%"></i></span>
-      <span class="dval r win">✦ 4.58s</span>
+      <span class="dval r win">4.58s</span>
     </div>
   </div>
   
@@ -374,57 +476,73 @@ footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--rule)}
       <span class="dval">20.62s</span>
       <span class="dtrack gem"><i style="width:100.0%"></i></span>
       <span class="dtrack oth"><i style="width:71.5%"></i></span>
-      <span class="dval r win">✦ 14.75s</span>
+      <span class="dval r win">14.75s</span>
     </div>
   </div>
   
 </div>
-<p class="one dim">Bars share a scale per row; ✦ marks the better side. Quality follows the
-0.5pp band — no star inside it.</p>
+<p class="one dim">Bars share a scale per row; the highlighted pill marks the better side. Quality
+follows the 0.5pp band — nothing is highlighted inside it. Click
+either name above to see just its wins below, or <button type="button" class="linklike" data-res="tie">the
+16 with no winner</button>; click a highlighted one again to show all.</p>
 
-<!-- patched 2026-09-14: region + streaming method; superseded by the next re-export -->
-<h2 id="served">Where each model was served from</h2>
+
+<h3 id="served">Where each model was served from</h3>
 <div class="mtable"><div class="mscroll"><table>
   <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>What that means</th></tr></thead>
   <tbody>
+  
   <tr>
     <td class="metric"><code>gemini-3-1-flash-tts</code></td>
     <td><b>Vertex AI · us-central1</b></td>
     <td class="n"><code>us-central1</code></td>
-    <td class="note-cell">Served by Vertex AI at the us-central1 regional endpoint (project from GCP_PROJECT_ID). The adapter passes this location explicitly on every call; it is a choice we make, not the vendor&#x27;s default.</td>
+    <td class="note-cell">Served by Vertex AI at the us-central1 regional endpoint (project from GCP_PROJECT_ID). The adapter passes this location explicitly on every call; it is a choice we make, not the vendor&#39;s default.</td>
   </tr>
+  
   <tr>
     <td class="metric"><code>elevenlabs-v3</code></td>
     <td><b>ElevenLabs direct API · us</b></td>
     <td class="n"><code>us</code></td>
-    <td class="note-cell">Served by ElevenLabs&#x27; direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore - api.&lt;eu|in|sg&gt;.residency.elevenlabs.io) are Enterprise-only. Recorded 2026-09-14 from elevenlabs.io/docs/product-guides/administration/data-residency.</td>
+    <td class="note-cell">Served by ElevenLabs&#39; direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore - api.&lt;eu|in|sg&gt;.residency.elevenlabs.io) are Enterprise-only. Recorded 2026-09-14 from elevenlabs.io/docs/product-guides/administration/data-residency.</td>
   </tr>
+  
+  
   <tr>
     <td class="metric">judge <code>gemini-2.5-flash</code></td>
     <td><b>Vertex AI · us-central1</b></td>
     <td class="n"><code>us-central1</code></td>
     <td class="note-cell">The judge listens through Vertex AI at us-central1, the same regional endpoint as the Gemini arm - stated so a reader can see the judge and one arm share a vendor AND a region.</td>
   </tr>
+  
+  
   <tr>
     <td class="metric">transcriber <code>medium</code></td>
     <td><b>local machine · no region</b></td>
     <td class="n"><code>local</code></td>
     <td class="note-cell">Runs on the machine that ran the study (faster-whisper on CPU). No network, no region.</td>
   </tr>
+  
   </tbody>
 </table></div></div>
 <p class="one dim">Read back from the study's model configuration for runs
 that predate the field in the run record; every run from 14 September 2026 records it itself.
+
 The Gemini arm is called at a Vertex AI regional endpoint we choose; the ElevenLabs arm is a direct
 API call with no region parameter, so its region is the vendor's default.</p>
 
-<h2>Every metric, both models</h2>
+
+<h3>Every metric, both models</h3>
 <div class="mtable"><div class="mscroll"><table>
-  <thead><tr>
+  <thead><tr><th colspan="4" class="vshead plain">
+    <div class="vs-line">gemini-3-1-flash-tts</div>
+    <div class="vs-mid">vs</div>
+    <div class="vs-line">elevenlabs-v3</div>
+  </th></tr>
+  <tr>
     <th>Metric</th>
     <th class="n gemcol">gemini-3-1-flash-tts</th>
     <th class="n othcol">elevenlabs-v3</th>
-    <th class="n">Difference</th>
+    <th class="n diffcol">Difference</th>
   </tr></thead>
   <tbody>
   
@@ -496,6 +614,136 @@ API call with no region parameter, so its region is the vendor's default.</p>
 </table></div></div>
 <p class="one dim">Difference is <b>gemini-3-1-flash-tts minus elevenlabs-v3</b>; green is the better
 direction for that row.</p>
+
+
+<h3>By industry</h3>
+<div class="mtable"><div class="mscroll"><table class="itbl">
+  <thead><tr><th></th><th></th><th colspan="3" class="vshead gemcol">gemini-3-1-flash-tts</th>
+    <th colspan="3" class="vshead othcol">elevenlabs-v3</th></tr>
+  <tr>
+    <th>Industry</th><th class="n">Scenarios</th>
+    <th class="n gemcol">Quality mean</th><th class="n gemcol">Wins</th><th class="n gemcol">Win %</th>
+    <th class="n othcol">Quality mean</th><th class="n othcol">Wins</th><th class="n othcol">Win %</th>
+  </tr>
+  </thead>
+  <tbody>
+  
+  <tr class="rowfilter" data-ind="Ads">
+    <td class="metric">Ads</td>
+    <td class="n">3</td>
+    
+    <td class="n">
+      <span class="imean lead">90.6%</span>
+      </td>
+    <td class="n"><span class="iwins lead">1 win</span></td>
+    <td class="n">
+      <span class="iwinpct lead">100%</span>
+      </td>
+    
+    <td class="n">
+      <span class="imean">79.3%</span>
+      </td>
+    <td class="n"><span class="iwins">0 wins</span></td>
+    <td class="n">
+      <span class="iwinpct">0%</span>
+      </td>
+    
+  </tr>
+  
+  <tr class="rowfilter" data-ind="Ecommerce &amp; Retail">
+    <td class="metric">Ecommerce &amp; Retail</td>
+    <td class="n">6</td>
+    
+    <td class="n">
+      <span class="imean lead">95.2%</span>
+      </td>
+    <td class="n"><span class="iwins lead">2 wins</span></td>
+    <td class="n">
+      <span class="iwinpct lead">67%</span>
+      </td>
+    
+    <td class="n">
+      <span class="imean">93.8%</span>
+      </td>
+    <td class="n"><span class="iwins">1 win</span></td>
+    <td class="n">
+      <span class="iwinpct">33%</span>
+      </td>
+    
+  </tr>
+  
+  <tr class="rowfilter" data-ind="Gaming">
+    <td class="metric">Gaming</td>
+    <td class="n">5</td>
+    
+    <td class="n">
+      <span class="imean">96.3%</span>
+      </td>
+    <td class="n"><span class="iwins">0 wins</span></td>
+    <td class="n">
+      <span class="iwinpct">0%</span>
+      </td>
+    
+    <td class="n">
+      <span class="imean lead">96.8%</span>
+      </td>
+    <td class="n"><span class="iwins lead">2 wins</span></td>
+    <td class="n">
+      <span class="iwinpct lead">67%</span>
+      </td>
+    
+  </tr>
+  
+  <tr class="rowfilter" data-ind="Micro-drama &amp; entertainment">
+    <td class="metric">Micro-drama &amp; entertainment</td>
+    <td class="n">3</td>
+    
+    <td class="n">
+      <span class="imean">95.6%</span>
+      </td>
+    <td class="n"><span class="iwins">0 wins</span></td>
+    <td class="n">
+      <span class="iwinpct">0%</span>
+      </td>
+    
+    <td class="n">
+      <span class="imean lead">97.3%</span>
+      </td>
+    <td class="n"><span class="iwins lead">1 win</span></td>
+    <td class="n">
+      <span class="iwinpct lead">100%</span>
+      </td>
+    
+  </tr>
+  
+  <tr class="rowfilter" data-ind="Other">
+    <td class="metric">Other</td>
+    <td class="n">6</td>
+    
+    <td class="n"><span class="dash">—</span></td>
+    <td class="n"><span class="iwins">0 wins</span></td>
+    <td class="n"><span class="dash">—</span></td>
+    
+    <td class="n"><span class="dash">—</span></td>
+    <td class="n"><span class="iwins">0 wins</span></td>
+    <td class="n"><span class="dash">—</span></td>
+    
+  </tr>
+  
+  </tbody>
+</table></div></div>
+<ul class="notes">
+  <li><b>Quality mean</b> is the average of the model's own rating across the row's scenarios.</li>
+  <li><b>Wins</b> are scenarios where the model scored higher, by any margin more than the
+  0.5pp decision band; closer gaps are a tie for either model.</li>
+  <li><b>Win %</b> is wins out of the scenarios in that row both models completed. The highlighted
+  cells mark the row's leader.</li>
+  <li><b>Reliability</b> is not in this table — it is each model's own run-to-run spread on a
+  repeated script, shown as "Run-to-run spread" in the metric table above; smaller means more
+  consistent, not higher-scoring.</li>
+  <li>Click a row to show only its scenarios in the list below; click it again to show all.</li>
+</ul>
+
 
 
 <h2>Time to first audio</h2>
@@ -660,9 +908,8 @@ direction for that row.</p>
   </tbody>
 </table></div></div>
 
-<p class="one dim">Medians are over both passes. Only scenarios that set a first-audio ceiling are streamed, so only those appear here.</p>
-
-<!-- streaming explainer rendered from _streaming_how.j2 -->
+<p class="one dim">Medians are over both passes. Only scenarios that set a first-audio ceiling are
+streamed, so only those appear here.</p>
 <div class="how" id="how-latency">
   <h3>Two stopwatches, two different questions</h3>
   <p>Every clip on this page was timed. The scenarios where a quick reply matters were timed
@@ -727,6 +974,8 @@ direction for that row.</p>
     ElevenLabs publishes for that product are not what this panel measures.</li>
   </ol>
 </div>
+
+
 <h2>Scenario by scenario</h2>
 <div class="controls">
   <div class="crow">
@@ -757,14 +1006,9 @@ direction for that row.</p>
     <button class="chip" data-ind="Other">Other<span class="c">6</span></button>
     
   </div>
-  <div class="crow">
-    <span class="clab">Result</span>
-    <button class="chip on" data-res="all">All</button>
-    <button class="chip" data-res="gem">Gemini wins<span class="c">3</span></button>
-    <button class="chip" data-res="oth">elevenlabs-v3 wins<span class="c">4</span></button>
-    <button class="chip" data-res="tie">No winner<span class="c">16</span></button>
-  </div>
 </div>
+<p class="one dim">Filter by result from the head to head names or the "no winner" link above,
+or by industry from the row above or the industry table above.</p>
 
 <div id="cards">
 
@@ -805,6 +1049,7 @@ direction for that row.</p>
         <span class="g no">ttfa_within_max</span>
         <span class="g no">must_say[sixty-nine thousand nine hun]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -813,6 +1058,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -824,12 +1070,15 @@ direction for that row.</p>
     <span>length <b>42.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -841,6 +1090,8 @@ direction for that row.</p>
     <span>length <b>43.5s</b></span>
     <span>word errors <b>5.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -856,6 +1107,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -864,6 +1116,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -875,12 +1128,15 @@ direction for that row.</p>
     <span>length <b>47.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -892,6 +1148,8 @@ direction for that row.</p>
     <span>length <b>47.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -919,6 +1177,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -963,6 +1223,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -971,6 +1232,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -982,12 +1244,15 @@ direction for that row.</p>
     <span>length <b>7.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -999,6 +1264,8 @@ direction for that row.</p>
     <span>length <b>7.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1014,6 +1281,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1022,6 +1290,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1033,12 +1302,15 @@ direction for that row.</p>
     <span>length <b>7.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1050,6 +1322,8 @@ direction for that row.</p>
     <span>length <b>6.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1077,6 +1351,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -1122,6 +1398,7 @@ direction for that row.</p>
         <span class="g no">ttfa_within_max</span>
         <span class="g no">must_say[four thousand two hundred an]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1130,6 +1407,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1141,12 +1419,15 @@ direction for that row.</p>
     <span>length <b>5.9s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1158,6 +1439,8 @@ direction for that row.</p>
     <span>length <b>5.8s</b></span>
     <span>word errors <b>7.1%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1174,6 +1457,7 @@ direction for that row.</p>
         <span class="g no">ttfa_within_max</span>
         <span class="g no">must_say[four thousand two hundred an]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1182,6 +1466,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1193,12 +1478,15 @@ direction for that row.</p>
     <span>length <b>4.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1210,6 +1498,8 @@ direction for that row.</p>
     <span>length <b>4.6s</b></span>
     <span>word errors <b>7.1%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1237,6 +1527,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -1282,6 +1574,7 @@ direction for that row.</p>
         <span class="g no">ttfa_within_max</span>
         <span class="g no">digits_exact</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1290,6 +1583,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1301,12 +1595,15 @@ direction for that row.</p>
     <span>length <b>6.0s</b></span>
     <span>word errors <b>7.7%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1318,6 +1615,8 @@ direction for that row.</p>
     <span>length <b>5.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1333,6 +1632,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1341,6 +1641,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1352,12 +1653,15 @@ direction for that row.</p>
     <span>length <b>4.5s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1369,6 +1673,8 @@ direction for that row.</p>
     <span>length <b>4.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1396,6 +1702,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -1440,6 +1748,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1448,6 +1757,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1459,12 +1769,15 @@ direction for that row.</p>
     <span>length <b>6.8s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1476,6 +1789,8 @@ direction for that row.</p>
     <span>length <b>7.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1491,6 +1806,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1499,6 +1815,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1510,12 +1827,15 @@ direction for that row.</p>
     <span>length <b>4.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1527,6 +1847,8 @@ direction for that row.</p>
     <span>length <b>4.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1554,6 +1876,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -1598,6 +1922,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1606,6 +1931,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1617,12 +1943,15 @@ direction for that row.</p>
     <span>length <b>4.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1634,6 +1963,8 @@ direction for that row.</p>
     <span>length <b>4.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1649,6 +1980,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1657,6 +1989,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1668,12 +2001,15 @@ direction for that row.</p>
     <span>length <b>3.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1685,6 +2021,8 @@ direction for that row.</p>
     <span>length <b>3.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1712,6 +2050,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -1756,6 +2096,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">trimmed_duration_in_range</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1764,6 +2105,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1775,12 +2117,15 @@ direction for that row.</p>
     <span>length <b>16.4s</b></span>
     <span>word errors <b>2.3%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1792,6 +2137,8 @@ direction for that row.</p>
     <span>length <b>17.1s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1807,6 +2154,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">trimmed_duration_in_range</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1815,6 +2163,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1826,12 +2175,15 @@ direction for that row.</p>
     <span>length <b>18.1s</b></span>
     <span>word errors <b>2.3%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -1843,6 +2195,8 @@ direction for that row.</p>
     <span>length <b>17.4s</b></span>
     <span>word errors <b>2.3%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1850,6 +2204,8 @@ direction for that row.</p>
     </div>
     
   </div>
+
+  
 
   
 
@@ -1898,6 +2254,7 @@ direction for that row.</p>
         · worst word errors 2.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1906,6 +2263,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">94.6%</span>
     
@@ -1917,12 +2275,15 @@ direction for that row.</p>
     <span>length <b>19.1s</b></span>
     <span>word errors <b>2.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">77.6%</span>
     
@@ -1934,6 +2295,8 @@ direction for that row.</p>
     <span>length <b>17.9s</b></span>
     <span>word errors <b>2.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -1950,6 +2313,7 @@ direction for that row.</p>
         · worst word errors 4.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -1958,6 +2322,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">87.8%</span>
     
@@ -1969,12 +2334,15 @@ direction for that row.</p>
     <span>length <b>20.9s</b></span>
     <span>word errors <b>4.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">70.8%</span>
     
@@ -1986,6 +2354,8 @@ direction for that row.</p>
     <span>length <b>20.4s</b></span>
     <span>word errors <b>4.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2010,6 +2380,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -2072,6 +2444,7 @@ direction for that row.</p>
         · worst word errors 2.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2080,6 +2453,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">95.8%</span>
     
@@ -2091,12 +2465,15 @@ direction for that row.</p>
     <span>length <b>14.5s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">94.4%</span>
     
@@ -2108,6 +2485,8 @@ direction for that row.</p>
     <span>length <b>15.6s</b></span>
     <span>word errors <b>2.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2123,6 +2502,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">speech_rate_in_range</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2131,6 +2511,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2142,12 +2523,15 @@ direction for that row.</p>
     <span>length <b>23.0s</b></span>
     <span>word errors <b>2.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2159,6 +2543,8 @@ direction for that row.</p>
     <span>length <b>22.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2179,6 +2565,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -2227,6 +2615,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">wer_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2235,6 +2624,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">95.6%</span>
     
@@ -2246,12 +2636,15 @@ direction for that row.</p>
     <span>length <b>27.5s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2263,6 +2656,8 @@ direction for that row.</p>
     <span>length <b>28.1s</b></span>
     <span>word errors <b>8.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2280,6 +2675,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">wer_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2288,6 +2684,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.3%</span>
     
@@ -2299,12 +2696,15 @@ direction for that row.</p>
     <span>length <b>21.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2316,6 +2716,8 @@ direction for that row.</p>
     <span>length <b>22.0s</b></span>
     <span>word errors <b>8.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2368,6 +2770,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -2425,6 +2829,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">rms_in_range</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2433,6 +2838,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2444,12 +2850,15 @@ direction for that row.</p>
     <span>length <b>44.3s</b></span>
     <span>word errors <b>3.6%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2461,6 +2870,8 @@ direction for that row.</p>
     <span>length <b>45.2s</b></span>
     <span>word errors <b>4.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2477,6 +2888,7 @@ direction for that row.</p>
         <span class="g no">peak_below_max</span>
         <span class="g no">wer_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2485,6 +2897,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2496,12 +2909,15 @@ direction for that row.</p>
     <span>length <b>33.7s</b></span>
     <span>word errors <b>5.4%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2513,6 +2929,8 @@ direction for that row.</p>
     <span>length <b>33.6s</b></span>
     <span>word errors <b>3.6%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2520,6 +2938,8 @@ direction for that row.</p>
     </div>
     
   </div>
+
+  
 
   
 
@@ -2567,6 +2987,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">trimmed_duration_in_range</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2575,6 +2996,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2586,12 +3008,15 @@ direction for that row.</p>
     <span>length <b>12.8s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2603,6 +3028,8 @@ direction for that row.</p>
     <span>length <b>12.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2618,6 +3045,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">trimmed_duration_in_range</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2626,6 +3054,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2637,12 +3066,15 @@ direction for that row.</p>
     <span>length <b>8.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2654,6 +3086,8 @@ direction for that row.</p>
     <span>length <b>8.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2661,6 +3095,8 @@ direction for that row.</p>
     </div>
     
   </div>
+
+  
 
   
 
@@ -2708,6 +3144,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2716,6 +3153,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2727,12 +3165,15 @@ direction for that row.</p>
     <span>length <b>26.1s</b></span>
     <span>word errors <b>3.1%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2744,6 +3185,8 @@ direction for that row.</p>
     <span>length <b>24.6s</b></span>
     <span>word errors <b>1.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2759,6 +3202,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2767,6 +3211,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2778,12 +3223,15 @@ direction for that row.</p>
     <span>length <b>23.8s</b></span>
     <span>word errors <b>1.5%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2795,6 +3243,8 @@ direction for that row.</p>
     <span>length <b>21.6s</b></span>
     <span>word errors <b>1.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2822,6 +3272,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -2866,6 +3318,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2874,6 +3327,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2885,12 +3339,15 @@ direction for that row.</p>
     <span>length <b>23.4s</b></span>
     <span>word errors <b>1.3%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2902,6 +3359,8 @@ direction for that row.</p>
     <span>length <b>23.9s</b></span>
     <span>word errors <b>1.3%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2917,6 +3376,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -2925,6 +3385,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2936,12 +3397,15 @@ direction for that row.</p>
     <span>length <b>21.8s</b></span>
     <span>word errors <b>1.3%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -2953,6 +3417,8 @@ direction for that row.</p>
     <span>length <b>21.5s</b></span>
     <span>word errors <b>1.3%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -2980,6 +3446,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -3025,6 +3493,7 @@ direction for that row.</p>
         · worst word errors 3.3%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3033,6 +3502,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.2%</span>
     
@@ -3044,12 +3514,15 @@ direction for that row.</p>
     <span>length <b>21.1s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">91.1%</span>
     
@@ -3061,6 +3534,8 @@ direction for that row.</p>
     <span>length <b>22.6s</b></span>
     <span>word errors <b>3.3%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3078,6 +3553,7 @@ direction for that row.</p>
         <span class="g no">must_say[lakh]</span>
         <span class="g no">must_say[903762]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3086,6 +3562,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -3097,12 +3574,15 @@ direction for that row.</p>
     <span>length <b>21.9s</b></span>
     <span>word errors <b>1.6%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -3114,6 +3594,8 @@ direction for that row.</p>
     <span>length <b>21.8s</b></span>
     <span>word errors <b>11.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3134,6 +3616,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -3183,6 +3667,7 @@ direction for that row.</p>
         <span class="g no">digits_exact</span>
         <span class="g no">must_say_any[twenty-second|22nd]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3191,6 +3676,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">93.9%</span>
     
@@ -3202,12 +3688,15 @@ direction for that row.</p>
     <span>length <b>27.0s</b></span>
     <span>word errors <b>1.5%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -3219,6 +3708,8 @@ direction for that row.</p>
     <span>length <b>24.8s</b></span>
     <span>word errors <b>3.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3235,6 +3726,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3243,6 +3735,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">98.1%</span>
     
@@ -3254,12 +3747,15 @@ direction for that row.</p>
     <span>length <b>22.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">98.0%</span>
     
@@ -3271,6 +3767,8 @@ direction for that row.</p>
     <span>length <b>23.5s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3295,6 +3793,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -3358,6 +3858,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>4 clips — listen</summary>
@@ -3366,6 +3867,7 @@ direction for that row.</p>
   <div class="head">
     <span class="vt">bare</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">98.2%</span>
     
@@ -3377,12 +3879,15 @@ direction for that row.</p>
     <span>length <b>13.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">bare</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">98.5%</span>
     
@@ -3394,12 +3899,15 @@ direction for that row.</p>
     <span>length <b>12.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">nato</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">91.5%</span>
     
@@ -3411,12 +3919,15 @@ direction for that row.</p>
     <span>length <b>16.8s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">nato</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.5%</span>
     
@@ -3428,6 +3939,8 @@ direction for that row.</p>
     <span>length <b>14.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3444,6 +3957,7 @@ direction for that row.</p>
         · worst word errors 13.6%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>4 clips — listen</summary>
@@ -3452,6 +3966,7 @@ direction for that row.</p>
   <div class="head">
     <span class="vt">nato</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">98.1%</span>
     
@@ -3463,12 +3978,15 @@ direction for that row.</p>
     <span>length <b>12.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">bare</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">78.0%</span>
     
@@ -3480,12 +3998,15 @@ direction for that row.</p>
     <span>length <b>10.4s</b></span>
     <span>word errors <b>13.6%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">bare</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">75.9%</span>
     
@@ -3497,12 +4018,15 @@ direction for that row.</p>
     <span>length <b>10.2s</b></span>
     <span>word errors <b>13.6%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">nato</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">98.1%</span>
     
@@ -3514,6 +4038,8 @@ direction for that row.</p>
     <span>length <b>11.9s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3538,6 +4064,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -3598,6 +4126,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3606,6 +4135,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.5%</span>
     
@@ -3617,12 +4147,15 @@ direction for that row.</p>
     <span>length <b>6.9s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.3%</span>
     
@@ -3634,6 +4167,8 @@ direction for that row.</p>
     <span>length <b>7.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3650,6 +4185,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3658,6 +4194,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">98.0%</span>
     
@@ -3669,12 +4206,15 @@ direction for that row.</p>
     <span>length <b>6.5s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">93.5%</span>
     
@@ -3686,6 +4226,8 @@ direction for that row.</p>
     <span>length <b>6.5s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3710,6 +4252,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -3772,6 +4316,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3780,6 +4325,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.5%</span>
     
@@ -3791,12 +4337,15 @@ direction for that row.</p>
     <span>length <b>26.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.4%</span>
     
@@ -3808,6 +4357,8 @@ direction for that row.</p>
     <span>length <b>25.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3824,6 +4375,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3832,6 +4384,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.4%</span>
     
@@ -3843,12 +4396,15 @@ direction for that row.</p>
     <span>length <b>32.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.1%</span>
     
@@ -3860,6 +4416,8 @@ direction for that row.</p>
     <span>length <b>29.8s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3884,6 +4442,8 @@ direction for that row.</p>
     
     </tbody>
   </table></div></div>
+  
+
   
 
   
@@ -3944,6 +4504,7 @@ direction for that row.</p>
         <span class="g no">wer_within_max</span>
         <span class="g no">must_say[14 to 14]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -3952,6 +4513,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -3963,12 +4525,15 @@ direction for that row.</p>
     <span>length <b>22.3s</b></span>
     <span>word errors <b>12.5%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -3980,6 +4545,8 @@ direction for that row.</p>
     <span>length <b>20.6s</b></span>
     <span>word errors <b>12.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -3997,6 +4564,7 @@ direction for that row.</p>
         <span class="g no">must_say[14 to 14]</span>
         <span class="g no">must_say[steal of the tournament]</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -4005,6 +4573,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -4016,12 +4585,15 @@ direction for that row.</p>
     <span>length <b>22.4s</b></span>
     <span>word errors <b>14.1%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -4033,6 +4605,8 @@ direction for that row.</p>
     <span>length <b>23.1s</b></span>
     <span>word errors <b>12.5%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4040,6 +4614,8 @@ direction for that row.</p>
     </div>
     
   </div>
+
+  
 
   
 
@@ -4087,6 +4663,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -4095,6 +4672,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -4106,12 +4684,15 @@ direction for that row.</p>
     <span>length <b>5.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -4123,6 +4704,8 @@ direction for that row.</p>
     <span>length <b>5.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4138,6 +4721,7 @@ direction for that row.</p>
       <div class="gates">
         <span class="g no">ttfa_within_max</span>
         
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -4146,6 +4730,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -4157,12 +4742,15 @@ direction for that row.</p>
     <span>length <b>4.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">0.0%</span>
     
@@ -4174,6 +4762,8 @@ direction for that row.</p>
     <span>length <b>5.1s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4201,6 +4791,8 @@ direction for that row.</p>
     
     
   </div>
+  
+
   
 
   
@@ -4261,6 +4853,7 @@ direction for that row.</p>
         · worst word errors 5.3%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>12 clips — listen</summary>
@@ -4269,6 +4862,7 @@ direction for that row.</p>
   <div class="head">
     <span class="vt">medic</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.8%</span>
     
@@ -4280,12 +4874,15 @@ direction for that row.</p>
     <span>length <b>7.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">engineer</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.7%</span>
     
@@ -4297,12 +4894,15 @@ direction for that row.</p>
     <span>length <b>6.9s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">engineer</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.5%</span>
     
@@ -4314,12 +4914,15 @@ direction for that row.</p>
     <span>length <b>6.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">handler</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.5%</span>
     
@@ -4331,12 +4934,15 @@ direction for that row.</p>
     <span>length <b>6.9s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">handler</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.9%</span>
     
@@ -4348,12 +4954,15 @@ direction for that row.</p>
     <span>length <b>7.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">medic</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.8%</span>
     
@@ -4365,12 +4974,15 @@ direction for that row.</p>
     <span>length <b>8.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">quartermaster</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">95.1%</span>
     
@@ -4382,12 +4994,15 @@ direction for that row.</p>
     <span>length <b>8.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">quartermaster</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.4%</span>
     
@@ -4399,12 +5014,15 @@ direction for that row.</p>
     <span>length <b>8.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">scout</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.5%</span>
     
@@ -4416,12 +5034,15 @@ direction for that row.</p>
     <span>length <b>5.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">scout</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.8%</span>
     
@@ -4433,12 +5054,15 @@ direction for that row.</p>
     <span>length <b>5.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">trader</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">88.5%</span>
     
@@ -4450,12 +5074,15 @@ direction for that row.</p>
     <span>length <b>5.3s</b></span>
     <span>word errors <b>5.3%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">trader</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">89.8%</span>
     
@@ -4467,6 +5094,8 @@ direction for that row.</p>
     <span>length <b>5.4s</b></span>
     <span>word errors <b>5.3%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4483,6 +5112,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>12 clips — listen</summary>
@@ -4491,6 +5121,7 @@ direction for that row.</p>
   <div class="head">
     <span class="vt">trader</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.8%</span>
     
@@ -4502,12 +5133,15 @@ direction for that row.</p>
     <span>length <b>7.3s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">engineer</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.4%</span>
     
@@ -4519,12 +5153,15 @@ direction for that row.</p>
     <span>length <b>6.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">engineer</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">93.7%</span>
     
@@ -4536,12 +5173,15 @@ direction for that row.</p>
     <span>length <b>6.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">handler</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.0%</span>
     
@@ -4553,12 +5193,15 @@ direction for that row.</p>
     <span>length <b>5.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">handler</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.8%</span>
     
@@ -4570,12 +5213,15 @@ direction for that row.</p>
     <span>length <b>5.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">medic</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.3%</span>
     
@@ -4587,12 +5233,15 @@ direction for that row.</p>
     <span>length <b>5.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">medic</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">96.3%</span>
     
@@ -4604,12 +5253,15 @@ direction for that row.</p>
     <span>length <b>5.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">quartermaster</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.5%</span>
     
@@ -4621,12 +5273,15 @@ direction for that row.</p>
     <span>length <b>6.4s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">quartermaster</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.2%</span>
     
@@ -4638,12 +5293,15 @@ direction for that row.</p>
     <span>length <b>7.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">scout</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.1%</span>
     
@@ -4655,12 +5313,15 @@ direction for that row.</p>
     <span>length <b>6.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">scout</span>
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.3%</span>
     
@@ -4672,12 +5333,15 @@ direction for that row.</p>
     <span>length <b>4.8s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     <span class="vt">trader</span>
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.2%</span>
     
@@ -4689,6 +5353,8 @@ direction for that row.</p>
     <span>length <b>7.6s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4756,6 +5422,8 @@ direction for that row.</p>
   
 
   
+
+  
   <div class="gapbar"><div class="gbar">
       <span class="band" style="width:11.352047963242581%"></span>
       <span class="door" style="left:33.619095646327224%"></span>
@@ -4811,6 +5479,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -4819,6 +5488,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">97.1%</span>
     
@@ -4830,12 +5500,15 @@ direction for that row.</p>
     <span>length <b>3.7s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">96.8%</span>
     
@@ -4847,6 +5520,8 @@ direction for that row.</p>
     <span>length <b>3.8s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4863,6 +5538,7 @@ direction for that row.</p>
         · worst word errors 0.0%</div>
       <div class="gates">
         <span class="g ok">all gates passed</span>
+        
       </div>
       
       <details><summary>2 clips — listen</summary>
@@ -4871,6 +5547,7 @@ direction for that row.</p>
   <div class="head">
     
     <span class="rl">voice-p1</span>
+    
     
       <span class="sc-pill">97.7%</span>
     
@@ -4882,12 +5559,15 @@ direction for that row.</p>
     <span>length <b>3.0s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
 <div class="clip">
   <div class="head">
     
     <span class="rl">voice-p2</span>
+    
     
       <span class="sc-pill">95.7%</span>
     
@@ -4899,6 +5579,8 @@ direction for that row.</p>
     <span>length <b>3.2s</b></span>
     <span>word errors <b>0.0%</b></span>
   </div>
+  
+  
 </div>
 
       </details>
@@ -4928,6 +5610,8 @@ direction for that row.</p>
   
 
   
+
+  
   <div class="gapbar"><div class="gbar">
       <span class="band" style="width:74.07407407407408%"></span>
       <span class="door" style="left:18.43555850524485%"></span>
@@ -4951,6 +5635,8 @@ direction for that row.</p>
 </div>
 <p class="nomatch" hidden>No scenario matches those filters.</p>
 
+
+
 <footer>
 <h2 style="margin-top:0">What this page does and does not claim</h2>
 <ul class="notes">
@@ -4960,8 +5646,11 @@ direction for that row.</p>
   <li><b>Ranked on gates first, quality second</b>, so failing more can never look like scoring higher.</li>
   <li><b>Transcribed locally by <code>medium</code></b>, which shares a vendor with neither model.</li>
   <li><b>Absent measurements show as “—”</b>, never as zero; three batch runs carry timing but no score.</li>
+  
   <li><b>Served from:</b> <code>gemini-3-1-flash-tts</code> Vertex AI · us-central1; <code>elevenlabs-v3</code> ElevenLabs direct API · us; the judge Vertex AI · us-central1.
   Read back from the model configuration for runs that predate the field in the run record.</li>
+  
+  
   <li><b>The judge is <code>gemini-2.5-flash</code></b>, a Google model — blinding hides
   the label, not the acoustic fingerprint, so the judged criteria carry that exposure, and it has never been checked against human listeners. The measured
   figures — word errors, timing, cost, gate rate — do not depend on it.</li>
@@ -5007,15 +5696,35 @@ direction for that row.</p>
     });
     document.querySelector('.nomatch').hidden = shown > 0;
   }
-  document.querySelectorAll('.chip').forEach(function (b) {
+  // Anything carrying data-ind or data-res is a filter trigger - a chip, an
+  // industry-table row, or a head-to-head name - EXCEPT the scenario cards
+  // themselves, which carry the same attributes so applyFilters can read
+  // them. Whatever the trigger's shape, setting state highlights every
+  // OTHER element for that same value (the top chip AND the table row for
+  // one industry light up together), and clicking an already-active one
+  // clears back to "all" rather than needing a separate All control.
+  function setState(axis, val) {
+    state[axis] = val;
+    document.querySelectorAll('[data-' + axis + ']:not(.sc)').forEach(function (x) {
+      x.classList.toggle('on', x.dataset[axis] === val);
+    });
+    applyFilters();
+  }
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-ind]:not(.sc), [data-res]:not(.sc)').forEach(function (b) {
     b.addEventListener('click', function () {
       var axis = b.dataset.ind !== undefined ? 'ind' : 'res';
-      b.parentElement.querySelectorAll('.chip').forEach(function (x) {
-        x.classList.remove('on');
-      });
-      b.classList.add('on');
-      state[axis] = b.dataset[axis];
-      applyFilters();
+      var val = b.dataset[axis];
+      setState(axis, state[axis] === val ? 'all' : val);
+      // The scenario controls row (right above the cards) is already beside
+      // its own results - clicking there needs no scroll. Every OTHER filter
+      // trigger (the by-industry table, the head-to-head names) sits well up
+      // the page, so clicking it silently filtering something off-screen
+      // reads as broken. Jump to the filtered list so the click visibly does
+      // something.
+      if (!b.closest('.controls')) {
+        cards.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+      }
     });
   });
 
