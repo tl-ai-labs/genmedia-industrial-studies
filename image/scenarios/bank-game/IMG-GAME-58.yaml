@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-58 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: low (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-pet.png — provenance in each sidecar .json
+id: IMG-GAME-58
+modality: image
+task: image_edit
+title: Store icon that survives downscaling
+inputs:
+  source: assets/bank/IMG-GAME-base-pet.png
+params:
+  size: auto
+prompt: 'Turn this companion animal into a square app icon: the head and upper body centred
+  and enlarged to fill most of the frame, on a bold flat teal background with rounded corners.
+  Simplify the detail so the icon stays readable at sixty-four pixels — thicker outlines,
+  fewer internal lines, higher contrast between the animal and the background. No text, no
+  drop shadow, no gradient.'
+expected: 'Store icon that survives downscaling. Capability under test: Legibility-driven
+  simplification for small-size rendering. Adherence clauses, check each: 1) Square icon,
+  head and upper body centred and filling most of the frame  2) Bold flat teal background
+  with rounded corners  3) Detail visibly simplified — thicker outlines, fewer internal lines  4)
+  No text, drop shadow or gradient'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- style-&-production-assets
+- scenario-bank-game
+- tier-low

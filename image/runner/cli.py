@@ -198,7 +198,7 @@ def main(argv=None) -> int:
     p = sub.add_parser("run", help="generate outputs + deterministic checks")
     p.add_argument("--modality", required=True, choices=["image", "voice"])
     p.add_argument("--scenarios", default=str(PROJECT_ROOT / "scenarios"),
-                   help="YAML dir/file or CSV sheet (id,task,prompt,expected,required_text)")
+                   help="YAML dir/file, CSV sheet (id,task,prompt,expected,required_text), or .txt list of YAML paths")
     p.add_argument("--models", default=str(PROJECT_ROOT / "configs" / "models.yaml"))
     p.add_argument("--budget", type=float, default=None,
                    help="hard USD cap; pre-flight refuses, mid-run aborts")

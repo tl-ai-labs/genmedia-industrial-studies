@@ -1,0 +1,44 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-44 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-floorplan.png — provenance in each sidecar .json
+# Input is the pinned plan with a fixed projective warp; the unwarped -groundtruth.png is the target view.
+id: IMG-VIEW-44
+modality: image
+task: image_edit
+title: Angled floor plan rectified to true plan view
+inputs:
+  source: assets/bank/IMG-VIEW-base-floorplan.png
+params:
+  size: auto
+prompt: Rectify this photograph of a floor plan so the sheet is seen square on and fills the
+  frame as a clean rectangle, with all the plan's lines straight and its right angles true.
+  The printed labelling must remain exactly as drawn, and no wall, column, door or dimension
+  line may be added or removed.
+expected: 'Angled floor plan rectified to true plan view. Capability under test: Metric rectification
+  of technical line work with content integrity. Adherence clauses, check each: 1) Sheet square
+  on, filling the frame as a clean rectangle  2) Plan lines straight and right angles true  3)
+  Printed labelling present and unchanged  4) No wall, column, door or line added or removed'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - OLIVER BUILDING
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+- text_accuracy
+weights:
+  edit_fidelity: 0.4
+  visual_quality: 0.15
+  realism_style: 0.15
+  text_accuracy: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-high
