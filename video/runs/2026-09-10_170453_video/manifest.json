@@ -1,0 +1,119 @@
+{
+  "run_id": "2026-09-10_170453_video",
+  "created": "2026-09-10T11:34:53.306Z",
+  "state": "reported",
+  "modality": "video",
+  "git_sha": "a92dc5562c07a502783a33fbf95bf3ee10065cc7",
+  "budget_usd": 12.0,
+  "budget_by_provider": {
+    "byteplus": 10.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-10T11:34:53.324Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-10T11:34:53.332Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-10T11:34:54.227Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-10T11:44:23.407Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-10T11:45:07.782Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-10T11:45:07.801Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-11T05:36:45.174Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_to_video": "ee94b22672656a5016fd28884c8711cf4216f0ff8abb54448899852bd61997db"
+  },
+  "rubric_files": {
+    "image_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/image_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-AD-06": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "3745501d73fea0670364be87d94b9391d100d18cf803d38665b5d4a6f2521b76",
+  "inputs": {
+    "VID-AD-06": [
+      {
+        "role": "reference",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-06/VID-AD-06-reference.png"
+      }
+    ]
+  },
+  "cells": {
+    "VID-AD-06::omni-flash-vertex": {
+      "scenario_id": "VID-AD-06",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-06::seedance-2-5": {
+      "scenario_id": "VID-AD-06",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "VID-AD-06": "completed"
+  }
+}

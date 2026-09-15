@@ -38,6 +38,10 @@ def _gate(name: str, passed: bool, detail: str = "") -> dict:
 
 CHECK_SUITES = {
     ("video", "text_to_video"): "runner.video.checks:check_video",
+    # image_to_video delivers a fresh clip, so the same container gates apply
+    ("video", "image_to_video"): "runner.video.checks:check_video",
+    # an edit is judged against its own source as well as the brief
+    ("video", "video_edit"): "runner.video.checks:check_video_edit",
     # image is a sibling project (../image/), not a package here
     # ("voice", "text_to_speech"): "runner.voice.checks:check_voice", Phase 2
 }

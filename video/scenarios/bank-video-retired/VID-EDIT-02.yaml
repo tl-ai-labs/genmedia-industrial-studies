@@ -1,0 +1,31 @@
+# RETIRED 2026-09-09 — see README.md in this folder. The brief names a
+# single parked bicycle in the BACKGROUND; the asset is a street with
+# dozens of bicycles filling the FOREGROUND, so no output can be graded.
+# The scenario is sound, our asset is wrong for it. Not deleted.
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-02 (sheet row 106) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with a static bicycle | source: TGVE+ (adds removal / addition) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-02
+modality: video
+task: video_edit
+title: Remove a background element
+prompt: Remove the parked bicycle from the background of this clip. Reconstruct what is behind
+  it. Do not change the foreground subject or the camera move.
+inputs:
+  source: assets/bank/VID-EDIT-02-source.mp4
+params:
+  audio: false
+expected: 'Remove a background element. Capability under test: Deletion with temporal stability.
+  Adherence clauses, check each: 1) Bicycle absent in all frames  2) Background reconstruction
+  stable, no flicker  3) Foreground subject unchanged  4) Camera move preserved'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets
