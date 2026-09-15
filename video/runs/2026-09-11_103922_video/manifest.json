@@ -1,0 +1,233 @@
+{
+  "run_id": "2026-09-11_103922_video",
+  "created": "2026-09-11T05:09:22.522Z",
+  "state": "scored",
+  "modality": "video",
+  "git_sha": "df9811d7f44262a9a58cca3aabfbf270a8795a38",
+  "budget_usd": 65.0,
+  "budget_by_provider": {
+    "byteplus": 55.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-11T05:09:22.540Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-11T05:09:22.562Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-11T05:09:23.515Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-11T05:24:31.143Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-11T06:18:59.483Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-11T06:18:59.501Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/video_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-EDIT-03": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-04": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-05": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-06": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-08": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "56bc15867b6acfe17e59d9d02ff0f43e63998d545a662eb8ca63cd8d19a45c2a",
+  "inputs": {
+    "VID-EDIT-03": [
+      {
+        "role": "source",
+        "sha256": "74097dba39ae83ef8241397157edae093e7b7c55484739782ef477c76642419b",
+        "path": "inputs/VID-EDIT-03/VID-EDIT-03-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-04": [
+      {
+        "role": "source",
+        "sha256": "d9102f7cc1fa6eae6e1e7a1e951592a8b12ae9055bcb99139fd2b184a298cce9",
+        "path": "inputs/VID-EDIT-04/VID-EDIT-04-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-05": [
+      {
+        "role": "source",
+        "sha256": "90112680b16aa2d106e7a7029a93eb8228c8ffd4e4ec181d475e371f49fd0291",
+        "path": "inputs/VID-EDIT-05/VID-EDIT-05-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-06": [
+      {
+        "role": "source",
+        "sha256": "ff2225284b2432a51ca6312570929fad28343491f63232bc2c7dd8d94cd262c0",
+        "path": "inputs/VID-EDIT-06/VID-EDIT-06-source.mp4"
+      }
+    ],
+    "VID-EDIT-08": [
+      {
+        "role": "source",
+        "sha256": "d8a591c3234c6ae6f81fa7c8804d4651e9b76db696273cdf93312f5ba79bc86a",
+        "path": "inputs/VID-EDIT-08/VID-EDIT-08-source-10s.mp4"
+      }
+    ]
+  },
+  "cells": {
+    "VID-EDIT-03::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-03",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-03::seedance-2-5": {
+      "scenario_id": "VID-EDIT-03",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content[1].video_url.url` specified in the request is not valid: resource not found. Request id: 021789103363861e142d87b6a9bdf1f5f94f64260ca2a93d53403\",\"param\":\"content[1].video_url.url\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-04::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-04",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-04::seedance-2-5": {
+      "scenario_id": "VID-EDIT-04",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content[1].video_url.url` specified in the request is not valid: resource not found. Request id: 021789103530463df1fe1cc6cb558c8468775817e951d5d6fa0cd\",\"param\":\"content[1].video_url.url\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-05::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-05",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-05::seedance-2-5": {
+      "scenario_id": "VID-EDIT-05",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content[1].video_url.url` specified in the request is not valid: resource not found. Request id: 021789103708469a81c77d48bc6ef475723297888da35167bd1a4\",\"param\":\"content[1].video_url.url\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-06::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-06",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-06::seedance-2-5": {
+      "scenario_id": "VID-EDIT-06",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-08::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-08",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-08::seedance-2-5": {
+      "scenario_id": "VID-EDIT-08",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content[1].video_url.url` specified in the request is not valid: resource not found. Request id: 021789104110658c0a335079e7be4c79ef57584e00819ba89678c\",\"param\":\"content[1].video_url.url\",\"type\":\"BadRequest\"}}"
+    }
+  },
+  "scenario_status": {
+    "VID-EDIT-03": "incomplete",
+    "VID-EDIT-04": "incomplete",
+    "VID-EDIT-05": "incomplete",
+    "VID-EDIT-06": "incomplete",
+    "VID-EDIT-08": "incomplete"
+  }
+}

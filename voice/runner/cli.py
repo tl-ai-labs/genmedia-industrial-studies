@@ -180,6 +180,32 @@ def _run_per_scenario(args: argparse.Namespace) -> int:
 # run
 # --------------------------------------------------------------------------
 
+def _parse_provider_caps(pairs) -> dict[str, float]:
+    """`--budget-provider openai=80` -> {"openai": 80.0}.
+
+    Every malformed form raises rather than being dropped: a cap someone is
+    relying on must never silently not exist.
+    """
+    caps: dict[str, float] = {}
+    for raw in pairs or []:
+        provider, sep, amount = raw.partition("=")
+        provider = provider.strip()
+        if not sep or not provider:
+            raise SystemExit(f"--budget-provider expects PROVIDER=USD, got {raw!r}")
+        try:
+            usd = float(amount)
+        except ValueError:
+            raise SystemExit(
+                f"--budget-provider {provider}: {amount!r} is not a number") from None
+        if usd <= 0:
+            raise SystemExit(
+                f"--budget-provider {provider}: cap must be greater than 0, got {usd}")
+        if provider in caps:
+            raise SystemExit(f"--budget-provider {provider}: given twice")
+        caps[provider] = usd
+    return caps
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     """
     ONE SCENARIO, ONE RUN (default).
@@ -273,6 +299,24 @@ def cmd_run(args: argparse.Namespace) -> int:
         "".join(s.scenario_hash for s in scenarios).encode()
     ).hexdigest()
 
+    # A cap naming a provider that is not running protects nothing. That is a
+    # typo, not a preference, so it is refused here rather than ignored - the
+    # whole point of the flag is that someone is relying on it.
+    provider_caps = _parse_provider_caps(getattr(args, "budget_provider", []))
+    known = {m.provider for m in models}
+    if registry.asr is not None:
+        known.add(registry.asr.provider)
+    unknown = sorted(set(provider_caps) - known)
+    if unknown:
+        print(
+            f"\nRefusing to start: --budget-provider names no provider in this "
+            f"run: {', '.join(unknown)} (running: {', '.join(sorted(known))})."
+        )
+        return 2
+    if provider_caps:
+        print("CAPS    " + ", ".join(
+            f"{p} <= ${c:.2f}" for p, c in sorted(provider_caps.items())))
+
     manifest = {
         "run_id": run_id,
         "modality": args.modality,
@@ -329,6 +373,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         "mos": {"predictor": registry.mos.predictor, "configured": registry.mos.model_path},
         "mos_fallback_reason": mos_fallback,
         "budget_usd": args.budget,
+        "budget_by_provider": provider_caps or None,
         "preflight_estimate_micro_usd": est,
         "skipped": [
             {"scenario_id": s.scenario_id, "model_id": s.model_id, "reason": s.reason} for s in mx.skipped
@@ -337,7 +382,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     write_manifest(paths, manifest)
 
     print(f"\nRUN     {run_id}")
-    budget = Budget(args.budget)
+    budget = Budget(args.budget, provider_caps)
     asr = Asr(registry.asr) if registry.asr else None
     outcomes = run_generation(
         mx, paths, tel, asr, predictor, budget, workers=args.workers, timeout_s=args.timeout
@@ -659,7 +704,13 @@ def main(argv: list[str] | None = None) -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("run", help="generate + deterministic checks + measurements")
-    r.add_argument("--budget", type=float, default=5.0, help="hard cap in USD")
+    r.add_argument("--budget", type=float, default=5.0,
+                   help="hard cap in USD across every provider together")
+    r.add_argument("--budget-provider", action="append", default=[],
+                   metavar="PROVIDER=USD", dest="budget_provider",
+                   help="hard USD cap for ONE provider, repeatable. Checked "
+                        "independently of --budget, for when generation and "
+                        "ASR bill different accounts.")
     r.add_argument("--models", help="comma-separated model ids (default: every enabled one)")
     r.add_argument("--workers", type=int, default=4)
     r.add_argument("--timeout", type=float, default=180.0)
@@ -717,6 +768,10 @@ def main(argv: list[str] | None = None) -> int:
 
     al = sub.add_parser("all", help="run + judge + report + dashboard, in one command")
     al.add_argument("--budget", type=float, default=5.0, help="hard cap for GENERATION, in USD")
+    al.add_argument("--budget-provider", action="append", default=[],
+                    metavar="PROVIDER=USD", dest="budget_provider",
+                    help="hard USD cap for ONE provider during generation, "
+                         "repeatable. Checked independently of --budget.")
     al.add_argument("--judge-budget", type=float, default=2.0, dest="judge_budget",
                     help="hard cap for JUDGING, in USD")
     al.add_argument("--models", help="comma-separated model ids (default: every enabled one)")

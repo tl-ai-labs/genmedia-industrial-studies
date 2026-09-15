@@ -14,7 +14,7 @@
   <span class="t">GenMedia comparison</span>
   <span class="m">{{ manifest.run_id }}</span>
   <nav>
-    <a href="#summary">Summary</a>
+    <a href="#overall">Summary</a>
     <a href="#evidence">Scenarios</a>
     <a href="#footnotes">Footnotes</a>
   </nav>
@@ -27,16 +27,25 @@
       {{ agg.tasks.values()|map(attribute='models')|map('length')|max }} models · blind-judged</h1>
   <div class="meta">
     <span>state <b>{{ manifest.state }}</b></span>
-    <span>created <b>{{ manifest.created }}</b></span>
+    <span>report generated <b>{{ generated }}</b></span>
+    <span>run created <b>{{ manifest.created }}</b></span>
     {% if manifest.git_sha %}<span>runner <b>{{ manifest.git_sha[:10] }}</b></span>{% endif %}
     <span>scenario set <b>{{ manifest.scenario_set_hash[:12] }}</b></span>
     {% if manifest.budget_usd and not CLIENT %}<span>budget <b>${{ manifest.budget_usd }}</b></span>{% endif %}
   </div>
 </header>
 
-{{ sec.duel_strip({'duel': duel, 'vendors': vendors}) }}
+<h2 id="overall" class="sumh">Overall summary</h2>
+{{ sec.scenario_tally({'tally': tally, 'model_order': model_order}) }}
+{{ sec.duel_strip({'duel': duel, 'vendors': vendors},
+                  ((duel.task|tasktitle) ~ ' only — every task has its own table below')
+                  if duel and agg.tasks|length > 1 else None) }}
+{% if duel %}<ul class="tnote sumnote">
+  <li>Reliability is the model's lowest rating on any single scenario — its worst result. Higher is
+  better: it shows how bad an output can get, not just the average.</li>
+</ul>{% endif %}
 {{ sec.banners({'manifest': manifest, 'estimates': estimates}) }}
-{{ sec.task_tables({'agg': agg, 'model_order': model_order, 'vendors': vendors}) }}
+{{ sec.task_tables({'agg': agg, 'model_order': model_order, 'vendors': vendors, 'manifest': manifest}) }}
 {{ sec.families_table({'families': families, 'family_models': family_models}) }}
 {{ sec.industries_table({'industries': industries, 'family_models': family_models,
                          'hidden_industries': hidden_industries}) }}

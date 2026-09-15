@@ -7,16 +7,18 @@ are four separate columns — never one blended number.
 from __future__ import annotations
 
 import base64
+import datetime as _dt
 import io
 import json
 import re as _re
+import shutil
 import webbrowser
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .generate import Manifest, _find_existing_output
-from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate
+from .scoring import MEAN_GAP_DOOR, TIE_BAND, aggregate, is_tie, pairwise_verdict
 from .telemetry import RunFiles
 
 THUMB_MAX_PX = 800
@@ -64,7 +66,7 @@ PREVIEW_CRF = 28
 PREVIEW_DIRNAME = "previews"
 
 
-def _build_previews(paths: list, run_dir: Path) -> dict:
+def _build_previews(paths: list, run_dir: Path, crf: int = PREVIEW_CRF) -> dict:
     """src mp4 -> compact preview mp4 (same resolution, same duration, audio
     kept). Returns {} if ffmpeg is missing or any clip fails, so the caller
     falls back to path references rather than shipping a half-empty page."""
@@ -76,10 +78,10 @@ def _build_previews(paths: list, run_dir: Path) -> dict:
     out_dir.mkdir(exist_ok=True)
     made = {}
     for src in paths:
-        dst = out_dir / f"{src.parent.name}--{src.stem}.mp4"
+        dst = out_dir / f"{src.parent.name}--{src.stem}-crf{crf}.mp4"
         if not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime:
             cmd = ["ffmpeg", "-v", "error", "-y", "-i", str(src),
-                   "-c:v", "libx264", "-crf", str(PREVIEW_CRF),
+                   "-c:v", "libx264", "-crf", str(crf),
                    "-preset", "veryfast", "-pix_fmt", "yuv420p",
                    "-movflags", "+faststart", "-c:a", "aac", "-b:a", "96k",
                    str(dst)]
@@ -107,27 +109,59 @@ def _env(names: dict | None = None, client: bool = False) -> Environment:
 
     def _q(v, short: bool = False) -> str:
         """A quality score: one 0-10 number in the audience's units. Client
-        means keep a decimal — whole numbers would hide gaps smaller than the
-        tie band and leave the delta column disagreeing with the values."""
+        means keep a decimal — whole numbers would hide small gaps and leave
+        the delta column disagreeing with the values. Short (per-scenario)
+        badges drop only trailing zeros: any difference decides a scenario, so
+        two different scores must never print alike ("91% vs 91%" for 90.75
+        vs 91.0 would show a winner between equal-looking numbers)."""
         if v is None:
             return "—"
         if client:
-            return f"{v * 10:.0f}%" if short else f"{v * 10:.1f}%"
-        return f"{v:.1f}" if short else f"{v:.2f}"
+            return (f"{v * 10:.2f}".rstrip("0").rstrip(".") + "%") if short \
+                else f"{v * 10:.1f}%"
+        return f"{v:.3f}".rstrip("0").rstrip(".") if short else f"{v:.2f}"
 
-    def _qd(v) -> str:
-        """A quality GAP: points internally, percentage points for the client."""
+    def _qd(v, short: bool = False) -> str:
+        """A quality GAP: points internally, percentage points for the client.
+        Short (one scenario's margin) is exact to match the short badges beside
+        it: 90.75% vs 100% reads +9.25 pp, not a rounded +9.2."""
         if v is None:
             return "—"
+        if short:
+            return (f"{v * 10:+.2f}".rstrip("0").rstrip(".") + " pp") if client \
+                else f"{v:+.3f}".rstrip("0").rstrip(".")
         return f"{v * 10:+.1f} pp" if client else f"{v:+.2f}"
 
     env.filters["q"] = _q
     env.filters["qd"] = _qd
     env.globals["CLIENT"] = client
-    env.globals["TIE_BAND"] = TIE_BAND                 # 0.5 points, 0-10 scale
-    env.globals["TIE_BAND_PP"] = int(TIE_BAND * 10)    # the same band as 5%
-    env.globals["TIE_BAND_FRAC"] = f"{TIE_BAND / 10:g}"  # ... and as 0.05
+    env.globals["TIE_BAND"] = TIE_BAND                 # 0.0: only identical scores tie
     return env
+
+
+def _finish_rollup(row: dict) -> None:
+    """Close one family / industry row: each model's quality mean, its win
+    percentage, and which model leads the row, so the table can tag it.
+
+    Win % is wins over the scenarios in the row that BOTH models completed —
+    the only ones a win was possible on. Dividing by every scenario would
+    count a rival's failure as a loss for the model that delivered."""
+    for m in row["models"].values():
+        m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
+        m["n"] = len(m["scores"])
+        # one decimal: whole numbers would round 5/8 and 3/8 in opposite
+        # directions (62 and 38) and hide small-row differences
+        m["win_pct"] = (round(100 * m["wins"] / row["compared"], 1)
+                        if row.get("compared") else None)
+    ms = row["models"]
+    top_mean = max((m["mean"] for m in ms.values()), default=None)
+    top_wins = max((m["wins"] for m in ms.values()), default=0)
+    lead_mean = [mid for mid, m in ms.items() if m["mean"] == top_mean]
+    lead_wins = [mid for mid, m in ms.items() if m["wins"] == top_wins]
+    # a shared top is not a lead: two equal means tag nobody
+    row["lead_mean"] = lead_mean[0] if len(ms) > 1 and len(lead_mean) == 1 else None
+    row["lead_wins"] = (lead_wins[0] if len(ms) > 1 and len(lead_wins) == 1
+                        and top_wins > 0 else None)
 
 
 def _client_prose(text: str) -> str:
@@ -143,6 +177,76 @@ def _client_prose(text: str) -> str:
     band = f"{int(MEAN_GAP_DOOR * 10)} pp"
     return (text.replace(f"< {MEAN_GAP_DOOR}", f"< {band}")
                 .replace(f">= {MEAN_GAP_DOOR}", f">= {band}"))
+
+
+# --------------------------------------------------------------------------
+# Why a scenario has no result — in words a reader outside the team can use.
+#
+# A raw provider code is not an answer. "OutputAudioSensitiveContentDetected"
+# tells a buyer nothing; "it generated the clip, then blocked its own
+# soundtrack" tells them what they would hit with their own footage. These
+# refusals are the main product difference between the two arms, so they are
+# reported, not hidden — and OUR OWN defects are labelled as ours rather than
+# charged to a model that did nothing wrong.
+# --------------------------------------------------------------------------
+
+_FAILURE_KINDS = (
+    ("OutputAudioSensitiveContentDetected", {
+        "outcome": "Blocked after generating",
+        "stage": "audio filter, ~4-5 min in",
+        "client": ("Generated the full clip, then blocked its own soundtrack: "
+                   "with audio enabled it invented a backing track and its "
+                   "copyright filter judged that audio too close to protected "
+                   "material. The video was made and then withheld. Nothing we "
+                   "supplied was copyrighted."),
+        "ours": False}),
+    ("InputVideoSensitiveContentDetected", {
+        "outcome": "Declined before starting",
+        "stage": "privacy filter, within seconds",
+        "client": ("Refused to accept the source footage: its privacy filter "
+                   "detected an identifiable face and will not edit that clip. "
+                   "Declined in seconds, before any generation. Turning audio "
+                   "off does not change it — we tested that directly."),
+        "ours": False}),
+    ("recitation", {
+        "outcome": "Declined to return output",
+        "stage": "recitation filter, 3 attempts",
+        "client": ("Generated the clip but declined to return it: its "
+                   "recitation filter judged the result too close a reproduction "
+                   "of the source footage. Tried three times, declined each time."),
+        "ours": False}),
+    ("exceeds maximum duration", {
+        "outcome": "Source too long",
+        "stage": "length limit, on submission",
+        "client": ("Rejected the source for length: this model edits clips of "
+                   "at most 10 seconds. The source has since been re-cut under "
+                   "that limit."),
+        "ours": False}),
+    ("resource not found", {
+        "outcome": "Not completed — our error",
+        "stage": "our defect — no charge",
+        "client": ("Not completed for a reason on our side, not the model's: "
+                   "the source file was published at a location this run pointed "
+                   "past. No charge, and no reflection on the model."),
+        "ours": True}),
+    ("could not reach the asset url", {
+        "outcome": "Not completed — our error",
+        "stage": "our defect — no charge",
+        "client": ("Not completed for a reason on our side, not the model's: a "
+                   "transient network failure while publishing the source. No "
+                   "charge, and no reflection on the model."),
+        "ours": True}),
+)
+
+
+def _explain_failure(error: str) -> dict:
+    e = str(error or "")
+    for needle, info in _FAILURE_KINDS:
+        if needle.lower() in e.lower():
+            return dict(info, internal=e[:300])
+    return {"outcome": "Did not complete", "stage": "unknown",
+            "client": "Did not return a usable clip.", "ours": False,
+            "internal": e[:300]}
 
 
 def _gemini_first(model_ids, vendors: dict | None = None) -> list:
@@ -201,6 +305,10 @@ def _metric_rows(models: dict, order: list) -> list:
         row("mean", "Rating", "higher", "score", lambda m: m["mean"], hi=True),
         row("worst", "Reliability (worst scenario rating)", "higher", "score", lambda m: m["worst"]),
         row("wtl", "W–T–L", None, "text", lambda m: m["wtl"]),
+        # client-facing: W-T-L only counts scenarios both arms delivered, so
+        # without this row the table silently drops every refusal
+        row("failed", "Failed", None, "text",
+            lambda m: f'{m["failed"]} of {m["eligible"]}'),
         row("judged", "Judged", None, "text",
             lambda m: f'{m["judged_n"]}/{m["eligible"]}'),
         row("below_5", "<5", "lower", "int", lambda m: m["below_5"]),
@@ -208,6 +316,8 @@ def _metric_rows(models: dict, order: list) -> list:
             lambda m: round(m["gen_cost_per_scenario_usd"] * 1e6)),
         row("judge_cost", "Judge cost/scen", "lower", "usd_micro",
             lambda m: round(m["judge_cost_per_scenario_usd"] * 1e6)),
+        row("lat_min", "Latency min", "lower", "ms",
+            lambda m: m["latency_min_ms"]),
         row("lat_p50", "Latency p50", "lower", "ms",
             lambda m: m["latency_p50_ms"], hi=True),
         row("lat_max", "Latency max", "lower", "ms",
@@ -219,8 +329,87 @@ def _metric_rows(models: dict, order: list) -> list:
     ]
 
 
+def merge_runs(run_dirs: list, out_dir: Path,
+               task_groups: dict | None = None) -> Path:
+    """Fold several runs into one run folder so they report as a single study.
+
+    A pair has to live in one run on one source, so re-running a scenario
+    means a new run — and the edits ended up spread over four of them. That
+    is a bookkeeping artefact, not a boundary anyone reading the report cares
+    about, and `build_combined_report` deliberately will not merge across
+    tabs ("each lane keeps its own models, costs and verdict").
+
+    Merging is safe here precisely because the run files are append-only and
+    aggregate() already takes the LATEST row per cell. Concatenating the JSONL
+    in chronological run order therefore gives exactly the intended answer:
+    the most recent attempt at each scenario x model wins, and earlier
+    attempts stay in the record as history. Outputs are copied in the same
+    order so the file at a given relative path belongs to the row that won.
+
+    The merged folder is derived, never authoritative. The original runs stay
+    immutable and are listed in the merged manifest as `merged_from`.
+    """
+    out_dir = Path(out_dir)
+    (out_dir / "scenarios").mkdir(parents=True, exist_ok=True)
+    runs = [Path(d) for d in run_dirs]
+
+    merged: dict = {}
+    for rd in runs:                                   # chronological order
+        mf = json.loads((rd / "manifest.json").read_text())
+        if not merged:
+            merged = {k: v for k, v in mf.items() if k != "cells"}
+            merged["cells"] = {}
+            merged["models"] = list(mf.get("models", []))
+        merged["cells"].update(mf.get("cells", {}))
+        merged.setdefault("rubric_hashes", {}).update(mf.get("rubric_hashes", {}))
+        merged.setdefault("effective_weights", {}).update(mf.get("effective_weights", {}))
+        merged.setdefault("inputs", {}).update(mf.get("inputs", {}))
+        seen = {m["id"] for m in merged["models"]}
+        for m in mf.get("models", []):
+            if m["id"] not in seen:
+                merged["models"].append(m); seen.add(m["id"])
+        for name in ("telemetry", "checks", "judge", "scores"):
+            src = rd / f"{name}.jsonl"
+            if src.exists():
+                with (out_dir / f"{name}.jsonl").open("a") as fh:
+                    fh.write(src.read_text())
+        for sub in ("outputs", "inputs"):
+            if (rd / sub).exists():
+                shutil.copytree(rd / sub, out_dir / sub, dirs_exist_ok=True)
+        for f in (rd / "scenarios").glob("*.yaml"):
+            shutil.copy2(f, out_dir / "scenarios" / f.name)
+
+    merged["run_id"] = out_dir.name
+    merged["state"] = "scored"
+    merged["merged_from"] = [r.name for r in runs]
+
+    # Report-side task grouping. A task is a real property of a scenario — it
+    # selects the rubric, the checks and the required inputs — so the SCENARIO
+    # is never edited and the original runs are untouched. But a lane holding
+    # one scenario gets the same visual weight in a report as a lane holding
+    # seven, which misleads by layout rather than by number. VID-AD-09 is ad
+    # row 9 of the sheet and belongs with the ads; it is text_to_video only
+    # because testing "does the text survive a camera push" cannot start from
+    # a supplied still. Regrouping is recorded here so it is never silent.
+    if task_groups:
+        moved = {}
+        for cell in merged["cells"].values():
+            new = task_groups.get(cell["task"])
+            if new:
+                moved.setdefault(cell["scenario_id"], (cell["task"], new))
+                cell["task"] = new
+        merged["task_grouping"] = {
+            "map": dict(task_groups),
+            "scenarios": {sid: {"actual": was, "reported_under": now}
+                          for sid, (was, now) in sorted(moved.items())}}
+    (out_dir / "manifest.json").write_text(json.dumps(merged, indent=2, default=str))
+    return out_dir
+
+
 def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
-                 hide_industries: tuple = (), self_contained: bool = False) -> Path:
+                 hide_industries: tuple = (), self_contained: bool = False,
+                 complete_only: bool = False,
+                 preview_crf: int = PREVIEW_CRF) -> Path:
     """Writes BOTH deliverables from ONE context, every time:
 
         report.html         internal — summary tiles, cost, every diagnostic
@@ -231,7 +420,9 @@ def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
     is no flag to forget. Returns the internal path (the caller's contract)."""
     run_dir = Path(run_dir)
     ctx = _build_context(project_root, run_dir, hide_industries=hide_industries,
-                         self_contained=self_contained)
+                         self_contained=self_contained,
+                         complete_only=complete_only,
+                         preview_crf=preview_crf)
     out = run_dir / "report.html"
     out.write_text(_env(ctx["names"]).get_template("report.html.j2").render(**ctx))
     client = run_dir / "report-client.html"
@@ -301,10 +492,11 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
         label_vendor: dict = {}
         for e in merged_evidence:
             families.setdefault(e["family"], {"n": 0, "models": {}})["n"] += 1
-            ind = industries.setdefault(e["industry"], {"n": 0, "models": {}}) \
+            ind = industries.setdefault(e["industry"], {"n": 0, "compared": 0, "models": {}}) \
                 if e["industry"] else None
             if ind:
                 ind["n"] += 1
+                ind["compared"] += e.get("margin") is not None
             for card in e["cards"]:
                 lbl = base_label(card["model_id"])
                 groups.setdefault(lbl, set()).add(
@@ -316,9 +508,7 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                     if e["winner"] == lbl:
                         m["wins"] += 1
         for ind in industries.values():
-            for m in ind["models"].values():
-                m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-                m["n"] = len(m["scores"])
+            _finish_rollup(ind)
 
         mixed = {k: sorted(v) for k, v in groups.items() if len(v) > 1}
         # brief mode groups arms by DISPLAY label, so order by the label's
@@ -346,11 +536,39 @@ def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
 
 def _build_context(project_root: Path, run_dir: Path,
                    hide_industries: tuple = (),
-                   self_contained: bool = False) -> dict:
+                   self_contained: bool = False,
+                   complete_only: bool = False,
+                   preview_crf: int = PREVIEW_CRF) -> dict:
     run_dir = Path(run_dir)
     manifest = Manifest(run_dir)
     files = RunFiles(run_dir)
     agg = aggregate(run_dir)
+
+    if complete_only:
+        # Report quality over the scenarios EVERY arm actually completed.
+        # Otherwise the means compare different scenario sets: on 2026-09-10
+        # Seedance refused two ads, so Omni's mean covered 10 scenarios and
+        # Seedance's 8, printed side by side as though they measured the same
+        # thing — and dropping those two moves Omni from ahead to behind.
+        # The excluded scenarios are not hidden: they stay in the reliability
+        # figures (failed / refused / unjudged) and in the evidence list,
+        # because a refusal is a product fact, not missing data.
+        for task, t in agg.get("tasks", {}).items():
+            for m in t["models"].values():
+                m["mean"] = m.get("mean_complete")
+                m["worst"] = m.get("worst_complete")
+                m["judged_n"] = m.get("complete_n", 0)
+                m["below_5"] = sum(1 for v in m.get("numeric_complete", []) if v < 5)
+            # The verdict has to be re-taken on the same means the table now
+            # shows. aggregate() decided it on each arm's OWN scenarios: on the
+            # 2026-09-11 edits that set Omni's EDIT-01/03/05/07 against
+            # Seedance's EDIT-03/05/06/07 and printed a 13.5 pp gap under a
+            # table reading 96.7% vs 94.0% — a 2.7 pp tie on the same three.
+            mids = sorted(t["models"])
+            t["pairs"] = [pairwise_verdict(task, a, b, t["models"], t["scenarios"])
+                          for i, a in enumerate(mids) for b in mids[i + 1:]]
+            for p in t["pairs"]:
+                p["means_over_compared"] = True
     telemetry = files.read("telemetry")
     judge_rows = files.read("judge")
     scores = files.read("scores")
@@ -447,12 +665,20 @@ def _build_context(project_root: Path, run_dir: Path,
             cell["model_id"])
         if p is not None and p.suffix.lower() == ".mp4":
             video_paths.append(p)
+    # An edit's SOURCE is evidence too: "everything else unchanged" is not
+    # checkable without seeing what it started from. Source clips therefore
+    # share the inline budget and the preview pass with the outputs.
+    for rows in manifest.data.get("inputs", {}).values():
+        for row in rows:
+            sp = run_dir / row["path"]
+            if sp.suffix.lower() == ".mp4" and sp.exists():
+                video_paths.append(sp)
     total_video_bytes = sum(p.stat().st_size for p in video_paths)
     videos_inline = 0 < total_video_bytes <= VIDEO_INLINE_TOTAL_MAX
     videos_transcoded = False
     preview_of: dict = {}
     if self_contained and video_paths and not videos_inline:
-        preview_of = _build_previews(video_paths, run_dir)
+        preview_of = _build_previews(video_paths, run_dir, preview_crf)
         if preview_of:
             videos_inline = True
             videos_transcoded = True
@@ -477,6 +703,12 @@ def _build_context(project_root: Path, run_dir: Path,
                 "latency_ms": (trow or {}).get("latency_ms"),
                 "model_id": mid, "state": cell["state"],
                 "reason": cell.get("reason", ""),
+                # the same plain-English explanation the journeys table uses:
+                # a raw provider payload in an evidence card tells a reader
+                # nothing and looks like a crash
+                "why": (_explain_failure(cell.get("reason", ""))
+                        if cell["state"] in ("failed", "invalid", "unjudged")
+                        else None),
                 "thumb": _thumb_data_uri(path) if path else None,
                 "mini": _mini_data_uri(path) if path else None,
                 "video": (_video_src(preview_of.get(path, path), run_dir,
@@ -497,10 +729,21 @@ def _build_context(project_root: Path, run_dir: Path,
         sources = []
         for row in manifest.data.get("inputs", {}).get(sid, []):
             spath = run_dir / row["path"]
-            sources.append({"role": row["role"], "sha256": row["sha256"],
-                            "path": row["path"],
-                            "thumb": _thumb_data_uri(spath) if spath.exists() else None,
-                            "mini": _mini_data_uri(spath) if spath.exists() else None})
+            is_clip = spath.suffix.lower() == ".mp4"
+            sources.append({
+                "role": row["role"], "sha256": row["sha256"],
+                "path": row["path"],
+                # PIL cannot open an mp4, so an edit's source silently rendered
+                # as nothing at all until 2026-09-11 — the one clip a reader
+                # most needs in order to judge "was only the requested thing
+                # changed". Clips now get a real <video> like the outputs do.
+                "video": (_video_src(preview_of.get(spath, spath), run_dir,
+                                     videos_inline)
+                          if is_clip and spath.exists() else None),
+                "thumb": (None if is_clip
+                          else (_thumb_data_uri(spath) if spath.exists() else None)),
+                "mini": (None if is_clip
+                         else (_mini_data_uri(spath) if spath.exists() else None))})
 
         # a hidden industry is a display choice, not a data change: the
         # scenario stays, filed under its next industry from the sheet's
@@ -515,8 +758,8 @@ def _build_context(project_root: Path, run_dir: Path,
         winner = margin = None
         if len(scored_cards) >= 2:
             top = sorted(scored_cards, key=lambda c: -c["score"])
-            margin = round(top[0]["score"] - top[1]["score"], 2)
-            if margin > TIE_BAND:                 # same tie band as the verdict
+            margin = round(top[0]["score"] - top[1]["score"], 3)
+            if not is_tie(top[0]["score"] - top[1]["score"]):   # same rule as the verdict
                 winner = top[0]["model_id"]
         # Gemini-first everywhere the cards are shown: media figures, the
         # diagnostic columns, the summary score run, the mini thumbs
@@ -543,20 +786,24 @@ def _build_context(project_root: Path, run_dir: Path,
 
     # per-family rollup (a scenario's first tag names its use-case family)
     families: dict = {}
+    # with complete_only, the rollups average only compared scenarios too —
+    # otherwise this table reprints the unequal-set means the task table fixed
+    def _counts(e, c):
+        return c["score"] is not None and not (complete_only and e["margin"] is None)
+
     for e in evidence:
-        fam = families.setdefault(e["family"], {"n": 0, "models": {}})
+        fam = families.setdefault(e["family"], {"n": 0, "compared": 0, "models": {}})
         fam["n"] += 1
+        fam["compared"] += e["margin"] is not None
         for c in e["cards"]:
-            if c["score"] is not None:
+            if _counts(e, c):
                 m = fam["models"].setdefault(c["model_id"],
                                              {"scores": [], "wins": 0})
                 m["scores"].append(c["score"])
                 if e["winner"] == c["model_id"]:
                     m["wins"] += 1
     for fam in families.values():
-        for m in fam["models"].values():
-            m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-            m["n"] = len(m["scores"])
+        _finish_rollup(fam)
     _fam_ids = {mid for fam in families.values() for mid in fam["models"]}
     family_models = [mid for mid in model_order if mid in _fam_ids]
 
@@ -565,18 +812,17 @@ def _build_context(project_root: Path, run_dir: Path,
     for e in evidence:
         if not e["industry"]:
             continue
-        ind = industries.setdefault(e["industry"], {"n": 0, "models": {}})
+        ind = industries.setdefault(e["industry"], {"n": 0, "compared": 0, "models": {}})
         ind["n"] += 1
+        ind["compared"] += e["margin"] is not None
         for c in e["cards"]:
-            if c["score"] is not None:
+            if _counts(e, c):
                 m = ind["models"].setdefault(c["model_id"], {"scores": [], "wins": 0})
                 m["scores"].append(c["score"])
                 if e["winner"] == c["model_id"]:
                     m["wins"] += 1
     for ind in industries.values():
-        for m in ind["models"].values():
-            m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-            m["n"] = len(m["scores"])
+        _finish_rollup(ind)
 
     # head-to-head duel strip (exactly two scored models). Slot a is the
     # Gemini arm, so the reader always finds it on the same side.
@@ -644,8 +890,37 @@ def _build_context(project_root: Path, run_dir: Path,
         "judge_micro": sum(r.get("cost", {}).get("micro_usd", 0) for r in judge_rows),
     }
 
+    # Every scenario on the page, accounted for once: compared (won / tied)
+    # or not compared, with who failed. The hero states this so the counts
+    # further down — W-T-L, chips, verdicts — visibly add up to the total.
+    tally = {"n": len(evidence), "compared": 0, "ties": 0,
+             "wins": {mid: 0 for mid in model_order},
+             "only_missing": {mid: 0 for mid in model_order},
+             "all_missing": 0, "some_missing": 0, "all_failed": True}
+    for e in evidence:
+        if e["margin"] is not None:
+            tally["compared"] += 1
+            if e["winner"]:
+                tally["wins"][e["winner"]] = tally["wins"].get(e["winner"], 0) + 1
+            else:
+                tally["ties"] += 1
+        gone = [c for c in e["cards"] if c["score"] is None]
+        if not gone or e["margin"] is not None:
+            continue
+        # disjoint groups, so the not-compared part adds up by itself
+        tally["all_failed"] &= all(c["state"] == "failed" for c in gone)
+        if len(gone) == len(e["cards"]):
+            tally["all_missing"] += 1
+        elif len(gone) == 1:
+            mid = gone[0]["model_id"]
+            tally["only_missing"][mid] = tally["only_missing"].get(mid, 0) + 1
+        else:
+            tally["some_missing"] += 1
+    tally["not_compared"] = tally["n"] - tally["compared"]
+
     from .summary import completion_counts
     return dict(
+        tally=tally,
         completion=completion_counts(manifest.data),
         manifest=manifest.data, agg=agg, evidence=evidence, totals=totals,
         families=families, family_models=family_models, model_order=model_order,
@@ -655,4 +930,7 @@ def _build_context(project_root: Path, run_dir: Path,
         has_videos=bool(video_paths), videos_inline=videos_inline,
         videos_transcoded=videos_transcoded,
         params_unsupported=params_unsupported, estimates=estimates,
-        judge_meta=judge_meta, judge_version=judge_version, voice_maps=voice_maps)
+        judge_meta=judge_meta, judge_version=judge_version, voice_maps=voice_maps,
+        # when THIS file was rendered — distinct from the run's own created
+        # time, since a re-render (a new rule, a layout change) is a new report
+        generated=_dt.datetime.now().astimezone().strftime("%d %b %Y, %H:%M %Z"))

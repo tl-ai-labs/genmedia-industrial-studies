@@ -1,0 +1,1757 @@
+[
+ {
+  "run_id": "2026-08-31_182420_image",
+  "state": "rejected",
+  "tasks": [
+   "text_to_image"
+  ],
+  "completion": {
+   "total": 3,
+   "in_progress": 3
+  },
+  "scenario_status": {
+   "img-001": "in_progress",
+   "img-002": "in_progress",
+   "img-003": "in_progress"
+  },
+  "models": {
+   "gemini-3-1-flash-image": {
+    "usage": {},
+    "statuses": {},
+    "errors": {},
+    "eligible": 3,
+    "ok": 0,
+    "rating": null,
+    "latency": null,
+    "mean_attempts_to_success": null,
+    "success_rate": 0.0,
+    "gen_cost_usd": 0.0
+   },
+   "gpt-image-1-medium": {
+    "usage": {},
+    "statuses": {},
+    "errors": {},
+    "eligible": 3,
+    "ok": 0,
+    "rating": null,
+    "latency": null,
+    "mean_attempts_to_success": null,
+    "success_rate": 0.0,
+    "gen_cost_usd": 0.0
+   }
+  },
+  "scenario_latency": {},
+  "judge_cost_usd": 0.0
+ },
+ {
+  "run_id": "2026-09-01_125249_image",
+  "state": "reported",
+  "tasks": [
+   "text_to_image"
+  ],
+  "completion": {
+   "total": 3,
+   "completed": 3
+  },
+  "scenario_status": {
+   "img-001": "completed",
+   "img-002": "completed",
+   "img-003": "completed"
+  },
+  "models": {
+   "gemini-3-1-flash-image-vertex": {
+    "usage": {
+     "images": 3,
+     "prompt_token_count": 170,
+     "candidates_token_count": 3360,
+     "total_token_count": 3530
+    },
+    "statuses": {
+     "rate_limited": 7,
+     "ok": 3
+    },
+    "errors": {
+     "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': ": 7
+    },
+    "eligible": 3,
+    "ok": 3,
+    "rating": {
+     "mean": 9.93,
+     "min": 9.8,
+     "max": 10.0,
+     "n": 3
+    },
+    "latency": {
+     "avg_ms": 12351,
+     "min_ms": 11420,
+     "max_ms": 12962,
+     "p50_ms": 12672,
+     "n": 3
+    },
+    "mean_attempts_to_success": 1.33,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.201
+   }
+  },
+  "scenario_latency": {
+   "img-001": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 12672
+    },
+    "avg_ms": 12672,
+    "min_ms": 12672,
+    "max_ms": 12672
+   },
+   "img-002": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 11420
+    },
+    "avg_ms": 11420,
+    "min_ms": 11420,
+    "max_ms": 11420
+   },
+   "img-003": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 12962
+    },
+    "avg_ms": 12962,
+    "min_ms": 12962,
+    "max_ms": 12962
+   }
+  },
+  "judge_cost_usd": 0.0052
+ },
+ {
+  "run_id": "2026-09-01_163810_image",
+  "state": "reported",
+  "tasks": [
+   "text_to_image"
+  ],
+  "completion": {
+   "total": 3,
+   "completed": 3
+  },
+  "scenario_status": {
+   "img-001": "completed",
+   "img-002": "completed",
+   "img-003": "completed"
+  },
+  "models": {
+   "gemini-3-1-flash-image-vertex": {
+    "usage": {
+     "images": 3,
+     "prompt_token_count": 170,
+     "candidates_token_count": 3360,
+     "total_token_count": 3530
+    },
+    "statuses": {
+     "ok": 3
+    },
+    "errors": {},
+    "eligible": 3,
+    "ok": 3,
+    "rating": {
+     "mean": 9.77,
+     "min": 9.3,
+     "max": 10.0,
+     "n": 3
+    },
+    "latency": {
+     "avg_ms": 11955,
+     "min_ms": 10846,
+     "max_ms": 13056,
+     "p50_ms": 11964,
+     "n": 3
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.201
+   },
+   "gemini-3-pro-image-vertex": {
+    "usage": {
+     "images": 3,
+     "prompt_token_count": 170,
+     "candidates_token_count": 3360,
+     "total_token_count": 4109
+    },
+    "statuses": {
+     "ok": 3
+    },
+    "errors": {},
+    "eligible": 3,
+    "ok": 3,
+    "rating": {
+     "mean": 9.97,
+     "min": 9.9,
+     "max": 10.0,
+     "n": 3
+    },
+    "latency": {
+     "avg_ms": 19207,
+     "min_ms": 18609,
+     "max_ms": 20287,
+     "p50_ms": 18725,
+     "n": 3
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.402
+   }
+  },
+  "scenario_latency": {
+   "img-001": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 11964,
+     "gemini-3-pro-image-vertex": 18725
+    },
+    "avg_ms": 15344,
+    "min_ms": 11964,
+    "max_ms": 18725
+   },
+   "img-002": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 10846,
+     "gemini-3-pro-image-vertex": 20287
+    },
+    "avg_ms": 15566,
+    "min_ms": 10846,
+    "max_ms": 20287
+   },
+   "img-003": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 13056,
+     "gemini-3-pro-image-vertex": 18609
+    },
+    "avg_ms": 15832,
+    "min_ms": 13056,
+    "max_ms": 18609
+   }
+  },
+  "judge_cost_usd": 0.0103
+ },
+ {
+  "run_id": "2026-09-01_192948_image",
+  "state": "reported",
+  "tasks": [
+   "text_to_image"
+  ],
+  "completion": {
+   "total": 2,
+   "completed": 2
+  },
+  "scenario_status": {
+   "IMG-TXT-01": "completed",
+   "IMG-UI-01": "completed"
+  },
+  "models": {
+   "gemini-3-1-flash-image-vertex": {
+    "usage": {
+     "images": 2,
+     "prompt_token_count": 112,
+     "candidates_token_count": 2240,
+     "total_token_count": 2352
+    },
+    "statuses": {
+     "ok": 2
+    },
+    "errors": {},
+    "eligible": 2,
+    "ok": 2,
+    "rating": {
+     "mean": 9.74,
+     "min": 9.48,
+     "max": 10.0,
+     "n": 2
+    },
+    "latency": {
+     "avg_ms": 10704,
+     "min_ms": 10395,
+     "max_ms": 11012,
+     "p50_ms": 11012,
+     "n": 2
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.134
+   },
+   "gemini-3-pro-image-vertex": {
+    "usage": {
+     "images": 2,
+     "prompt_token_count": 112,
+     "candidates_token_count": 2240,
+     "total_token_count": 3163
+    },
+    "statuses": {
+     "rate_limited": 1,
+     "ok": 2
+    },
+    "errors": {
+     "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to ": 1
+    },
+    "eligible": 2,
+    "ok": 2,
+    "rating": {
+     "mean": 9.57,
+     "min": 9.13,
+     "max": 10.0,
+     "n": 2
+    },
+    "latency": {
+     "avg_ms": 26723,
+     "min_ms": 19357,
+     "max_ms": 34089,
+     "p50_ms": 34089,
+     "n": 2
+    },
+    "mean_attempts_to_success": 1.5,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.268
+   }
+  },
+  "scenario_latency": {
+   "IMG-TXT-01": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 10395,
+     "gemini-3-pro-image-vertex": 34089
+    },
+    "avg_ms": 22242,
+    "min_ms": 10395,
+    "max_ms": 34089
+   },
+   "IMG-UI-01": {
+    "models": {
+     "gemini-3-1-flash-image-vertex": 11012,
+     "gemini-3-pro-image-vertex": 19357
+    },
+    "avg_ms": 15184,
+    "min_ms": 11012,
+    "max_ms": 19357
+   }
+  },
+  "judge_cost_usd": 0.0069
+ },
+ {
+  "run_id": "2026-09-01_193618_image",
+  "state": "reported",
+  "tasks": [
+   "text_to_image"
+  ],
+  "completion": {
+   "total": 2,
+   "completed": 2
+  },
+  "scenario_status": {
+   "IMG-TXT-01": "completed",
+   "IMG-UI-01": "completed"
+  },
+  "models": {
+   "gpt-image-2-medium": {
+    "usage": {
+     "images": 2,
+     "input_tokens": 116,
+     "output_tokens": 2744,
+     "total_tokens": 2860
+    },
+    "statuses": {
+     "ok": 2
+    },
+    "errors": {},
+    "eligible": 2,
+    "ok": 2,
+    "rating": {
+     "mean": 9.51,
+     "min": 9.02,
+     "max": 10.0,
+     "n": 2
+    },
+    "latency": {
+     "avg_ms": 41857,
+     "min_ms": 37137,
+     "max_ms": 46577,
+     "p50_ms": 46577,
+     "n": 2
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.0832
+   },
+   "gemini-3-1-flash-image-vertex": {
+    "usage": {
+     "images": 2,
+     "prompt_token_count": 112,
+     "candidates_token_count": 2339,
+     "total_token_count": 2451
+    },
+    "statuses": {
+     "ok": 2
+    },
+    "errors": {},
+    "eligible": 2,
+    "ok": 2,
+    "rating": {
+     "mean": 9.9,
+     "min": 9.8,
+     "max": 10.0,
+     "n": 2
+    },
+    "latency": {
+     "avg_ms": 10576,
+     "min_ms": 10194,
+     "max_ms": 10958,
+     "p50_ms": 10958,
+     "n": 2
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.134
+   },
+   "gemini-3-pro-image-vertex": {
+    "usage": {
+     "images": 2,
+     "prompt_token_count": 112,
+     "candidates_token_count": 2240,
+     "total_token_count": 2774
+    },
+    "statuses": {
+     "ok": 2
+    },
+    "errors": {},
+    "eligible": 2,
+    "ok": 2,
+    "rating": {
+     "mean": 10.0,
+     "min": 10.0,
+     "max": 10.0,
+     "n": 2
+    },
+    "latency": {
+     "avg_ms": 38156,
+     "min_ms": 38104,
+     "max_ms": 38207,
+     "p50_ms": 38207,
+     "n": 2
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 0.268
+   }
+  },
+  "scenario_latency": {
+   "IMG-TXT-01": {
+    "models": {
+     "gpt-image-2-medium": 46577,
+     "gemini-3-1-flash-image-vertex": 10958,
+     "gemini-3-pro-image-vertex": 38207
+    },
+    "avg_ms": 31914,
+    "min_ms": 10958,
+    "max_ms": 46577
+   },
+   "IMG-UI-01": {
+    "models": {
+     "gpt-image-2-medium": 37137,
+     "gemini-3-1-flash-image-vertex": 10194,
+     "gemini-3-pro-image-vertex": 38104
+    },
+    "avg_ms": 28478,
+    "min_ms": 10194,
+    "max_ms": 38104
+   }
+  },
+  "judge_cost_usd": 0.0106
+ },
+ {
+  "run_id": "2026-09-01_224335_image",
+  "state": "reported",
+  "tasks": [
+   "text_to_image"
+  ],
+  "completion": {
+   "total": 14,
+   "completed": 14
+  },
+  "scenario_status": {
+   "IMG-TXT-01": "completed",
+   "IMG-TXT-02": "completed",
+   "IMG-TXT-03": "completed",
+   "IMG-TXT-04": "completed",
+   "IMG-TXT-05": "completed",
+   "IMG-TXT-06": "completed",
+   "IMG-TXT-07": "completed",
+   "IMG-UI-01": "completed",
+   "IMG-UI-02": "completed",
+   "IMG-UI-03": "completed",
+   "IMG-UI-07": "completed",
+   "IMG-UI-08": "completed",
+   "IMG-UI-09": "completed",
+   "IMG-UI-10": "completed"
+  },
+  "models": {
+   "gpt-image-2-high": {
+    "usage": {
+     "images": 14,
+     "input_tokens": 633,
+     "output_tokens": 78368,
+     "total_tokens": 79001
+    },
+    "statuses": {
+     "ok": 14
+    },
+    "errors": {},
+    "eligible": 14,
+    "ok": 14,
+    "rating": {
+     "mean": 9.81,
+     "min": 8.5,
+     "max": 10.0,
+     "n": 14
+    },
+    "latency": {
+     "avg_ms": 88458,
+     "min_ms": 69056,
+     "max_ms": 108877,
+     "p50_ms": 89183,
+     "n": 14
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 2.3561
+   },
+   "gemini-3-pro-image-vertex": {
+    "usage": {
+     "images": 14,
+     "prompt_token_count": 561,
+     "candidates_token_count": 15680,
+     "total_token_count": 20555
+    },
+    "statuses": {
+     "ok": 14,
+     "rate_limited": 10
+    },
+    "errors": {
+     "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': ": 10
+    },
+    "eligible": 14,
+    "ok": 14,
+    "rating": {
+     "mean": 9.73,
+     "min": 7.79,
+     "max": 10.0,
+     "n": 14
+    },
+    "latency": {
+     "avg_ms": 23372,
+     "min_ms": 16847,
+     "max_ms": 62253,
+     "p50_ms": 19304,
+     "n": 14
+    },
+    "mean_attempts_to_success": 1.71,
+    "success_rate": 1.0,
+    "gen_cost_usd": 1.876
+   }
+  },
+  "scenario_latency": {
+   "IMG-TXT-01": {
+    "models": {
+     "gpt-image-2-high": 108877,
+     "gemini-3-pro-image-vertex": 27256
+    },
+    "avg_ms": 68066,
+    "min_ms": 27256,
+    "max_ms": 108877
+   },
+   "IMG-TXT-02": {
+    "models": {
+     "gpt-image-2-high": 99287,
+     "gemini-3-pro-image-vertex": 29364
+    },
+    "avg_ms": 64326,
+    "min_ms": 29364,
+    "max_ms": 99287
+   },
+   "IMG-TXT-03": {
+    "models": {
+     "gpt-image-2-high": 75947,
+     "gemini-3-pro-image-vertex": 19304
+    },
+    "avg_ms": 47626,
+    "min_ms": 19304,
+    "max_ms": 75947
+   },
+   "IMG-TXT-04": {
+    "models": {
+     "gpt-image-2-high": 77747,
+     "gemini-3-pro-image-vertex": 17830
+    },
+    "avg_ms": 47788,
+    "min_ms": 17830,
+    "max_ms": 77747
+   },
+   "IMG-TXT-05": {
+    "models": {
+     "gpt-image-2-high": 89183,
+     "gemini-3-pro-image-vertex": 20880
+    },
+    "avg_ms": 55032,
+    "min_ms": 20880,
+    "max_ms": 89183
+   },
+   "IMG-TXT-06": {
+    "models": {
+     "gpt-image-2-high": 69056,
+     "gemini-3-pro-image-vertex": 17258
+    },
+    "avg_ms": 43157,
+    "min_ms": 17258,
+    "max_ms": 69056
+   },
+   "IMG-TXT-07": {
+    "models": {
+     "gpt-image-2-high": 99612,
+     "gemini-3-pro-image-vertex": 62253
+    },
+    "avg_ms": 80932,
+    "min_ms": 62253,
+    "max_ms": 99612
+   },
+   "IMG-UI-01": {
+    "models": {
+     "gpt-image-2-high": 95412,
+     "gemini-3-pro-image-vertex": 17379
+    },
+    "avg_ms": 56396,
+    "min_ms": 17379,
+    "max_ms": 95412
+   },
+   "IMG-UI-02": {
+    "models": {
+     "gpt-image-2-high": 96119,
+     "gemini-3-pro-image-vertex": 25479
+    },
+    "avg_ms": 60799,
+    "min_ms": 25479,
+    "max_ms": 96119
+   },
+   "IMG-UI-03": {
+    "models": {
+     "gpt-image-2-high": 78520,
+     "gemini-3-pro-image-vertex": 16847
+    },
+    "avg_ms": 47684,
+    "min_ms": 16847,
+    "max_ms": 78520
+   },
+   "IMG-UI-07": {
+    "models": {
+     "gpt-image-2-high": 79563,
+     "gemini-3-pro-image-vertex": 17022
+    },
+    "avg_ms": 48292,
+    "min_ms": 17022,
+    "max_ms": 79563
+   },
+   "IMG-UI-08": {
+    "models": {
+     "gpt-image-2-high": 104438,
+     "gemini-3-pro-image-vertex": 17450
+    },
+    "avg_ms": 60944,
+    "min_ms": 17450,
+    "max_ms": 104438
+   },
+   "IMG-UI-09": {
+    "models": {
+     "gpt-image-2-high": 86192,
+     "gemini-3-pro-image-vertex": 18780
+    },
+    "avg_ms": 52486,
+    "min_ms": 18780,
+    "max_ms": 86192
+   },
+   "IMG-UI-10": {
+    "models": {
+     "gpt-image-2-high": 78465,
+     "gemini-3-pro-image-vertex": 20106
+    },
+    "avg_ms": 49286,
+    "min_ms": 20106,
+    "max_ms": 78465
+   }
+  },
+  "judge_cost_usd": 0.048
+ },
+ {
+  "run_id": "2026-09-02_001256_image",
+  "state": "generated",
+  "tasks": [
+   "image_edit"
+  ],
+  "completion": {
+   "total": 46,
+   "awaiting_judgement": 32,
+   "incomplete": 14
+  },
+  "scenario_status": {
+   "IMG-BRAND-01": "awaiting_judgement",
+   "IMG-BRAND-02": "awaiting_judgement",
+   "IMG-BRAND-03": "incomplete",
+   "IMG-BRAND-04": "incomplete",
+   "IMG-BRAND-05": "awaiting_judgement",
+   "IMG-BRAND-06": "awaiting_judgement",
+   "IMG-BRAND-07": "awaiting_judgement",
+   "IMG-BRAND-08": "awaiting_judgement",
+   "IMG-BRAND-09": "incomplete",
+   "IMG-BRAND-10": "awaiting_judgement",
+   "IMG-CHAR-01": "awaiting_judgement",
+   "IMG-CHAR-02": "awaiting_judgement",
+   "IMG-CHAR-03": "awaiting_judgement",
+   "IMG-CHAR-04": "awaiting_judgement",
+   "IMG-CHAR-05": "awaiting_judgement",
+   "IMG-CHAR-06": "awaiting_judgement",
+   "IMG-CHAR-07": "awaiting_judgement",
+   "IMG-CHAR-08": "awaiting_judgement",
+   "IMG-CHAR-09": "awaiting_judgement",
+   "IMG-CHAR-10": "awaiting_judgement",
+   "IMG-LE-01": "incomplete",
+   "IMG-LE-02": "incomplete",
+   "IMG-LE-03": "incomplete",
+   "IMG-LE-04": "incomplete",
+   "IMG-LE-05": "incomplete",
+   "IMG-LE-06": "incomplete",
+   "IMG-LE-07": "awaiting_judgement",
+   "IMG-LE-08": "incomplete",
+   "IMG-LE-09": "incomplete",
+   "IMG-LE-10": "incomplete",
+   "IMG-STY-01": "awaiting_judgement",
+   "IMG-STY-02": "awaiting_judgement",
+   "IMG-STY-03": "awaiting_judgement",
+   "IMG-STY-04": "awaiting_judgement",
+   "IMG-STY-05": "awaiting_judgement",
+   "IMG-STY-06": "awaiting_judgement",
+   "IMG-STY-07": "awaiting_judgement",
+   "IMG-STY-08": "awaiting_judgement",
+   "IMG-STY-09": "awaiting_judgement",
+   "IMG-STY-10": "awaiting_judgement",
+   "IMG-TXT-08": "awaiting_judgement",
+   "IMG-TXT-09": "incomplete",
+   "IMG-TXT-10": "incomplete",
+   "IMG-UI-04": "awaiting_judgement",
+   "IMG-UI-05": "awaiting_judgement",
+   "IMG-UI-06": "awaiting_judgement"
+  },
+  "models": {
+   "gpt-image-2-medium": {
+    "usage": {
+     "images": 59,
+     "input_tokens": 73729,
+     "output_tokens": 103604,
+     "total_tokens": 177333
+    },
+    "statuses": {
+     "ok": 59
+    },
+    "errors": {},
+    "eligible": 46,
+    "ok": 59,
+    "rating": null,
+    "latency": {
+     "avg_ms": 45476,
+     "min_ms": 34708,
+     "max_ms": 59057,
+     "p50_ms": 44822,
+     "n": 59
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.2826,
+    "gen_cost_usd": 3.698
+   },
+   "gemini-3-pro-image-vertex": {
+    "usage": {
+     "images": 47,
+     "prompt_token_count": 32135,
+     "candidates_token_count": 52640,
+     "total_token_count": 96851
+    },
+    "statuses": {
+     "ok": 47,
+     "rate_limited": 43
+    },
+    "errors": {
+     "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': ": 43
+    },
+    "eligible": 46,
+    "ok": 47,
+    "rating": null,
+    "latency": {
+     "avg_ms": 24375,
+     "min_ms": 16783,
+     "max_ms": 48834,
+     "p50_ms": 21589,
+     "n": 47
+    },
+    "mean_attempts_to_success": 1.91,
+    "success_rate": 1.0217,
+    "gen_cost_usd": 6.298
+   }
+  },
+  "scenario_latency": {
+   "IMG-BRAND-01": {
+    "models": {
+     "gpt-image-2-medium": 36955,
+     "gemini-3-pro-image-vertex": 32982
+    },
+    "avg_ms": 34968,
+    "min_ms": 32982,
+    "max_ms": 36955
+   },
+   "IMG-BRAND-02": {
+    "models": {
+     "gpt-image-2-medium": 42678,
+     "gemini-3-pro-image-vertex": 17714
+    },
+    "avg_ms": 30196,
+    "min_ms": 17714,
+    "max_ms": 42678
+   },
+   "IMG-BRAND-03": {
+    "models": {
+     "gpt-image-2-medium": 36030,
+     "gemini-3-pro-image-vertex": 20122
+    },
+    "avg_ms": 28076,
+    "min_ms": 20122,
+    "max_ms": 36030
+   },
+   "IMG-BRAND-04": {
+    "models": {
+     "gpt-image-2-medium": 40306,
+     "gemini-3-pro-image-vertex": 18545
+    },
+    "avg_ms": 29426,
+    "min_ms": 18545,
+    "max_ms": 40306
+   },
+   "IMG-BRAND-05": {
+    "models": {
+     "gpt-image-2-medium": 45845,
+     "gemini-3-pro-image-vertex": 37960
+    },
+    "avg_ms": 41902,
+    "min_ms": 37960,
+    "max_ms": 45845
+   },
+   "IMG-BRAND-06": {
+    "models": {
+     "gpt-image-2-medium": 40325,
+     "gemini-3-pro-image-vertex": 20197
+    },
+    "avg_ms": 30261,
+    "min_ms": 20197,
+    "max_ms": 40325
+   },
+   "IMG-BRAND-07": {
+    "models": {
+     "gpt-image-2-medium": 48174,
+     "gemini-3-pro-image-vertex": 19178
+    },
+    "avg_ms": 33676,
+    "min_ms": 19178,
+    "max_ms": 48174
+   },
+   "IMG-BRAND-08": {
+    "models": {
+     "gpt-image-2-medium": 37897,
+     "gemini-3-pro-image-vertex": 20190
+    },
+    "avg_ms": 29044,
+    "min_ms": 20190,
+    "max_ms": 37897
+   },
+   "IMG-BRAND-09": {
+    "models": {
+     "gpt-image-2-medium": 40954,
+     "gemini-3-pro-image-vertex": 20209
+    },
+    "avg_ms": 30582,
+    "min_ms": 20209,
+    "max_ms": 40954
+   },
+   "IMG-BRAND-10": {
+    "models": {
+     "gpt-image-2-medium": 36177,
+     "gemini-3-pro-image-vertex": 25752
+    },
+    "avg_ms": 30964,
+    "min_ms": 25752,
+    "max_ms": 36177
+   },
+   "IMG-CHAR-01": {
+    "models": {
+     "gpt-image-2-medium": 45914,
+     "gemini-3-pro-image-vertex": 20681
+    },
+    "avg_ms": 33298,
+    "min_ms": 20681,
+    "max_ms": 45914
+   },
+   "IMG-CHAR-02": {
+    "models": {
+     "gpt-image-2-medium": 48886,
+     "gemini-3-pro-image-vertex": 20686
+    },
+    "avg_ms": 34786,
+    "min_ms": 20686,
+    "max_ms": 48886
+   },
+   "IMG-CHAR-03": {
+    "models": {
+     "gpt-image-2-medium": 44256,
+     "gemini-3-pro-image-vertex": 20452
+    },
+    "avg_ms": 32354,
+    "min_ms": 20452,
+    "max_ms": 44256
+   },
+   "IMG-CHAR-04": {
+    "models": {
+     "gpt-image-2-medium": 43983,
+     "gemini-3-pro-image-vertex": 19506
+    },
+    "avg_ms": 31744,
+    "min_ms": 19506,
+    "max_ms": 43983
+   },
+   "IMG-CHAR-05": {
+    "models": {
+     "gpt-image-2-medium": 51724,
+     "gemini-3-pro-image-vertex": 28398
+    },
+    "avg_ms": 40061,
+    "min_ms": 28398,
+    "max_ms": 51724
+   },
+   "IMG-CHAR-06": {
+    "models": {
+     "gpt-image-2-medium": 42464,
+     "gemini-3-pro-image-vertex": 22710
+    },
+    "avg_ms": 32587,
+    "min_ms": 22710,
+    "max_ms": 42464
+   },
+   "IMG-CHAR-07": {
+    "models": {
+     "gpt-image-2-medium": 40120,
+     "gemini-3-pro-image-vertex": 25703
+    },
+    "avg_ms": 32912,
+    "min_ms": 25703,
+    "max_ms": 40120
+   },
+   "IMG-CHAR-08": {
+    "models": {
+     "gpt-image-2-medium": 50963,
+     "gemini-3-pro-image-vertex": 23750
+    },
+    "avg_ms": 37356,
+    "min_ms": 23750,
+    "max_ms": 50963
+   },
+   "IMG-CHAR-09": {
+    "models": {
+     "gpt-image-2-medium": 44843,
+     "gemini-3-pro-image-vertex": 31105
+    },
+    "avg_ms": 37974,
+    "min_ms": 31105,
+    "max_ms": 44843
+   },
+   "IMG-CHAR-10": {
+    "models": {
+     "gpt-image-2-medium": 48224,
+     "gemini-3-pro-image-vertex": 24566
+    },
+    "avg_ms": 36395,
+    "min_ms": 24566,
+    "max_ms": 48224
+   },
+   "IMG-LE-01": {
+    "models": {
+     "gpt-image-2-medium": 41884,
+     "gemini-3-pro-image-vertex": 21868
+    },
+    "avg_ms": 31876,
+    "min_ms": 21868,
+    "max_ms": 41884
+   },
+   "IMG-LE-02": {
+    "models": {
+     "gpt-image-2-medium": 41622,
+     "gemini-3-pro-image-vertex": 22347
+    },
+    "avg_ms": 31984,
+    "min_ms": 22347,
+    "max_ms": 41622
+   },
+   "IMG-LE-03": {
+    "models": {
+     "gpt-image-2-medium": 39767,
+     "gemini-3-pro-image-vertex": 18462
+    },
+    "avg_ms": 29114,
+    "min_ms": 18462,
+    "max_ms": 39767
+   },
+   "IMG-LE-04": {
+    "models": {
+     "gpt-image-2-medium": 50895,
+     "gemini-3-pro-image-vertex": 37803
+    },
+    "avg_ms": 44349,
+    "min_ms": 37803,
+    "max_ms": 50895
+   },
+   "IMG-LE-05": {
+    "models": {
+     "gpt-image-2-medium": 46915,
+     "gemini-3-pro-image-vertex": 22592
+    },
+    "avg_ms": 34754,
+    "min_ms": 22592,
+    "max_ms": 46915
+   },
+   "IMG-LE-06": {
+    "models": {
+     "gpt-image-2-medium": 44733,
+     "gemini-3-pro-image-vertex": 41012
+    },
+    "avg_ms": 42872,
+    "min_ms": 41012,
+    "max_ms": 44733
+   },
+   "IMG-LE-07": {
+    "models": {
+     "gpt-image-2-medium": 41308,
+     "gemini-3-pro-image-vertex": 20477
+    },
+    "avg_ms": 30892,
+    "min_ms": 20477,
+    "max_ms": 41308
+   },
+   "IMG-LE-08": {
+    "models": {
+     "gpt-image-2-medium": 49593,
+     "gemini-3-pro-image-vertex": 20135
+    },
+    "avg_ms": 34864,
+    "min_ms": 20135,
+    "max_ms": 49593
+   },
+   "IMG-LE-09": {
+    "models": {
+     "gpt-image-2-medium": 50283,
+     "gemini-3-pro-image-vertex": 21011
+    },
+    "avg_ms": 35647,
+    "min_ms": 21011,
+    "max_ms": 50283
+   },
+   "IMG-LE-10": {
+    "models": {
+     "gpt-image-2-medium": 54663,
+     "gemini-3-pro-image-vertex": 24728
+    },
+    "avg_ms": 39696,
+    "min_ms": 24728,
+    "max_ms": 54663
+   },
+   "IMG-STY-01": {
+    "models": {
+     "gpt-image-2-medium": 53416,
+     "gemini-3-pro-image-vertex": 24622
+    },
+    "avg_ms": 39019,
+    "min_ms": 24622,
+    "max_ms": 53416
+   },
+   "IMG-STY-02": {
+    "models": {
+     "gpt-image-2-medium": 54563,
+     "gemini-3-pro-image-vertex": 20218
+    },
+    "avg_ms": 37390,
+    "min_ms": 20218,
+    "max_ms": 54563
+   },
+   "IMG-STY-03": {
+    "models": {
+     "gpt-image-2-medium": 55247,
+     "gemini-3-pro-image-vertex": 23299
+    },
+    "avg_ms": 39273,
+    "min_ms": 23299,
+    "max_ms": 55247
+   },
+   "IMG-STY-04": {
+    "models": {
+     "gpt-image-2-medium": 59057,
+     "gemini-3-pro-image-vertex": 48834
+    },
+    "avg_ms": 53946,
+    "min_ms": 48834,
+    "max_ms": 59057
+   },
+   "IMG-STY-05": {
+    "models": {
+     "gpt-image-2-medium": 46941,
+     "gemini-3-pro-image-vertex": 19040
+    },
+    "avg_ms": 32990,
+    "min_ms": 19040,
+    "max_ms": 46941
+   },
+   "IMG-STY-06": {
+    "models": {
+     "gpt-image-2-medium": 44822,
+     "gemini-3-pro-image-vertex": 21459
+    },
+    "avg_ms": 33140,
+    "min_ms": 21459,
+    "max_ms": 44822
+   },
+   "IMG-STY-07": {
+    "models": {
+     "gpt-image-2-medium": 53494,
+     "gemini-3-pro-image-vertex": 25327
+    },
+    "avg_ms": 39410,
+    "min_ms": 25327,
+    "max_ms": 53494
+   },
+   "IMG-STY-08": {
+    "models": {
+     "gpt-image-2-medium": 56299,
+     "gemini-3-pro-image-vertex": 39267
+    },
+    "avg_ms": 47783,
+    "min_ms": 39267,
+    "max_ms": 56299
+   },
+   "IMG-STY-09": {
+    "models": {
+     "gpt-image-2-medium": 52746,
+     "gemini-3-pro-image-vertex": 37386
+    },
+    "avg_ms": 45066,
+    "min_ms": 37386,
+    "max_ms": 52746
+   },
+   "IMG-STY-10": {
+    "models": {
+     "gpt-image-2-medium": 52166,
+     "gemini-3-pro-image-vertex": 21732
+    },
+    "avg_ms": 36949,
+    "min_ms": 21732,
+    "max_ms": 52166
+   },
+   "IMG-TXT-08": {
+    "models": {
+     "gpt-image-2-medium": 34708,
+     "gemini-3-pro-image-vertex": 16783
+    },
+    "avg_ms": 25746,
+    "min_ms": 16783,
+    "max_ms": 34708
+   },
+   "IMG-TXT-09": {
+    "models": {
+     "gpt-image-2-medium": 44001,
+     "gemini-3-pro-image-vertex": 21245
+    },
+    "avg_ms": 32623,
+    "min_ms": 21245,
+    "max_ms": 44001
+   },
+   "IMG-TXT-10": {
+    "models": {
+     "gpt-image-2-medium": 44629,
+     "gemini-3-pro-image-vertex": 18949
+    },
+    "avg_ms": 31789,
+    "min_ms": 18949,
+    "max_ms": 44629
+   },
+   "IMG-UI-04": {
+    "models": {
+     "gpt-image-2-medium": 46723,
+     "gemini-3-pro-image-vertex": 21158
+    },
+    "avg_ms": 33940,
+    "min_ms": 21158,
+    "max_ms": 46723
+   },
+   "IMG-UI-05": {
+    "models": {
+     "gpt-image-2-medium": 42057,
+     "gemini-3-pro-image-vertex": 21032
+    },
+    "avg_ms": 31544,
+    "min_ms": 21032,
+    "max_ms": 42057
+   },
+   "IMG-UI-06": {
+    "models": {
+     "gpt-image-2-medium": 51902,
+     "gemini-3-pro-image-vertex": 22843
+    },
+    "avg_ms": 37372,
+    "min_ms": 22843,
+    "max_ms": 51902
+   }
+  },
+  "judge_cost_usd": 0.0
+ },
+ {
+  "run_id": "2026-09-02_011110_image",
+  "state": "reported",
+  "tasks": [
+   "image_edit"
+  ],
+  "completion": {
+   "total": 46,
+   "completed": 46
+  },
+  "scenario_status": {
+   "IMG-BRAND-01": "completed",
+   "IMG-BRAND-02": "completed",
+   "IMG-BRAND-03": "completed",
+   "IMG-BRAND-04": "completed",
+   "IMG-BRAND-05": "completed",
+   "IMG-BRAND-06": "completed",
+   "IMG-BRAND-07": "completed",
+   "IMG-BRAND-08": "completed",
+   "IMG-BRAND-09": "completed",
+   "IMG-BRAND-10": "completed",
+   "IMG-CHAR-01": "completed",
+   "IMG-CHAR-02": "completed",
+   "IMG-CHAR-03": "completed",
+   "IMG-CHAR-04": "completed",
+   "IMG-CHAR-05": "completed",
+   "IMG-CHAR-06": "completed",
+   "IMG-CHAR-07": "completed",
+   "IMG-CHAR-08": "completed",
+   "IMG-CHAR-09": "completed",
+   "IMG-CHAR-10": "completed",
+   "IMG-LE-01": "completed",
+   "IMG-LE-02": "completed",
+   "IMG-LE-03": "completed",
+   "IMG-LE-04": "completed",
+   "IMG-LE-05": "completed",
+   "IMG-LE-06": "completed",
+   "IMG-LE-07": "completed",
+   "IMG-LE-08": "completed",
+   "IMG-LE-09": "completed",
+   "IMG-LE-10": "completed",
+   "IMG-STY-01": "completed",
+   "IMG-STY-02": "completed",
+   "IMG-STY-03": "completed",
+   "IMG-STY-04": "completed",
+   "IMG-STY-05": "completed",
+   "IMG-STY-06": "completed",
+   "IMG-STY-07": "completed",
+   "IMG-STY-08": "completed",
+   "IMG-STY-09": "completed",
+   "IMG-STY-10": "completed",
+   "IMG-TXT-08": "completed",
+   "IMG-TXT-09": "completed",
+   "IMG-TXT-10": "completed",
+   "IMG-UI-04": "completed",
+   "IMG-UI-05": "completed",
+   "IMG-UI-06": "completed"
+  },
+  "models": {
+   "gpt-image-2-medium": {
+    "usage": {
+     "images": 46,
+     "input_tokens": 58502,
+     "output_tokens": 52663,
+     "total_tokens": 111165
+    },
+    "statuses": {
+     "ok": 46
+    },
+    "errors": {},
+    "eligible": 46,
+    "ok": 46,
+    "rating": {
+     "mean": 9.35,
+     "min": 4.8,
+     "max": 10.0,
+     "n": 46
+    },
+    "latency": {
+     "avg_ms": 34804,
+     "min_ms": 24535,
+     "max_ms": 45748,
+     "p50_ms": 34675,
+     "n": 46
+    },
+    "mean_attempts_to_success": 1.0,
+    "success_rate": 1.0,
+    "gen_cost_usd": 2.0479
+   },
+   "gemini-3-pro-image-vertex": {
+    "usage": {
+     "images": 46,
+     "prompt_token_count": 31544,
+     "candidates_token_count": 51520,
+     "total_token_count": 94715
+    },
+    "statuses": {
+     "ok": 46,
+     "rate_limited": 39
+    },
+    "errors": {
+     "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': ": 39
+    },
+    "eligible": 46,
+    "ok": 46,
+    "rating": {
+     "mean": 9.47,
+     "min": 7.02,
+     "max": 10.0,
+     "n": 46
+    },
+    "latency": {
+     "avg_ms": 26788,
+     "min_ms": 17201,
+     "max_ms": 59662,
+     "p50_ms": 22437,
+     "n": 46
+    },
+    "mean_attempts_to_success": 1.85,
+    "success_rate": 1.0,
+    "gen_cost_usd": 6.164
+   }
+  },
+  "scenario_latency": {
+   "IMG-BRAND-01": {
+    "models": {
+     "gpt-image-2-medium": 29059,
+     "gemini-3-pro-image-vertex": 24793
+    },
+    "avg_ms": 26926,
+    "min_ms": 24793,
+    "max_ms": 29059
+   },
+   "IMG-BRAND-02": {
+    "models": {
+     "gpt-image-2-medium": 30653,
+     "gemini-3-pro-image-vertex": 21094
+    },
+    "avg_ms": 25874,
+    "min_ms": 21094,
+    "max_ms": 30653
+   },
+   "IMG-BRAND-03": {
+    "models": {
+     "gpt-image-2-medium": 30515,
+     "gemini-3-pro-image-vertex": 47884
+    },
+    "avg_ms": 39200,
+    "min_ms": 30515,
+    "max_ms": 47884
+   },
+   "IMG-BRAND-04": {
+    "models": {
+     "gpt-image-2-medium": 30775,
+     "gemini-3-pro-image-vertex": 27437
+    },
+    "avg_ms": 29106,
+    "min_ms": 27437,
+    "max_ms": 30775
+   },
+   "IMG-BRAND-05": {
+    "models": {
+     "gpt-image-2-medium": 38783,
+     "gemini-3-pro-image-vertex": 33764
+    },
+    "avg_ms": 36274,
+    "min_ms": 33764,
+    "max_ms": 38783
+   },
+   "IMG-BRAND-06": {
+    "models": {
+     "gpt-image-2-medium": 31546,
+     "gemini-3-pro-image-vertex": 39520
+    },
+    "avg_ms": 35533,
+    "min_ms": 31546,
+    "max_ms": 39520
+   },
+   "IMG-BRAND-07": {
+    "models": {
+     "gpt-image-2-medium": 37292,
+     "gemini-3-pro-image-vertex": 51675
+    },
+    "avg_ms": 44484,
+    "min_ms": 37292,
+    "max_ms": 51675
+   },
+   "IMG-BRAND-08": {
+    "models": {
+     "gpt-image-2-medium": 28435,
+     "gemini-3-pro-image-vertex": 21099
+    },
+    "avg_ms": 24767,
+    "min_ms": 21099,
+    "max_ms": 28435
+   },
+   "IMG-BRAND-09": {
+    "models": {
+     "gpt-image-2-medium": 38291,
+     "gemini-3-pro-image-vertex": 20608
+    },
+    "avg_ms": 29450,
+    "min_ms": 20608,
+    "max_ms": 38291
+   },
+   "IMG-BRAND-10": {
+    "models": {
+     "gpt-image-2-medium": 37394,
+     "gemini-3-pro-image-vertex": 21391
+    },
+    "avg_ms": 29392,
+    "min_ms": 21391,
+    "max_ms": 37394
+   },
+   "IMG-CHAR-01": {
+    "models": {
+     "gpt-image-2-medium": 28910,
+     "gemini-3-pro-image-vertex": 59662
+    },
+    "avg_ms": 44286,
+    "min_ms": 28910,
+    "max_ms": 59662
+   },
+   "IMG-CHAR-02": {
+    "models": {
+     "gpt-image-2-medium": 34675,
+     "gemini-3-pro-image-vertex": 22437
+    },
+    "avg_ms": 28556,
+    "min_ms": 22437,
+    "max_ms": 34675
+   },
+   "IMG-CHAR-03": {
+    "models": {
+     "gpt-image-2-medium": 30266,
+     "gemini-3-pro-image-vertex": 21907
+    },
+    "avg_ms": 26086,
+    "min_ms": 21907,
+    "max_ms": 30266
+   },
+   "IMG-CHAR-04": {
+    "models": {
+     "gpt-image-2-medium": 29925,
+     "gemini-3-pro-image-vertex": 24113
+    },
+    "avg_ms": 27019,
+    "min_ms": 24113,
+    "max_ms": 29925
+   },
+   "IMG-CHAR-05": {
+    "models": {
+     "gpt-image-2-medium": 38156,
+     "gemini-3-pro-image-vertex": 26503
+    },
+    "avg_ms": 32330,
+    "min_ms": 26503,
+    "max_ms": 38156
+   },
+   "IMG-CHAR-06": {
+    "models": {
+     "gpt-image-2-medium": 31880,
+     "gemini-3-pro-image-vertex": 18530
+    },
+    "avg_ms": 25205,
+    "min_ms": 18530,
+    "max_ms": 31880
+   },
+   "IMG-CHAR-07": {
+    "models": {
+     "gpt-image-2-medium": 37303,
+     "gemini-3-pro-image-vertex": 23262
+    },
+    "avg_ms": 30282,
+    "min_ms": 23262,
+    "max_ms": 37303
+   },
+   "IMG-CHAR-08": {
+    "models": {
+     "gpt-image-2-medium": 37733,
+     "gemini-3-pro-image-vertex": 23584
+    },
+    "avg_ms": 30658,
+    "min_ms": 23584,
+    "max_ms": 37733
+   },
+   "IMG-CHAR-09": {
+    "models": {
+     "gpt-image-2-medium": 34263,
+     "gemini-3-pro-image-vertex": 34206
+    },
+    "avg_ms": 34234,
+    "min_ms": 34206,
+    "max_ms": 34263
+   },
+   "IMG-CHAR-10": {
+    "models": {
+     "gpt-image-2-medium": 37335,
+     "gemini-3-pro-image-vertex": 23149
+    },
+    "avg_ms": 30242,
+    "min_ms": 23149,
+    "max_ms": 37335
+   },
+   "IMG-LE-01": {
+    "models": {
+     "gpt-image-2-medium": 32908,
+     "gemini-3-pro-image-vertex": 42044
+    },
+    "avg_ms": 37476,
+    "min_ms": 32908,
+    "max_ms": 42044
+   },
+   "IMG-LE-02": {
+    "models": {
+     "gpt-image-2-medium": 32843,
+     "gemini-3-pro-image-vertex": 18533
+    },
+    "avg_ms": 25688,
+    "min_ms": 18533,
+    "max_ms": 32843
+   },
+   "IMG-LE-03": {
+    "models": {
+     "gpt-image-2-medium": 30646,
+     "gemini-3-pro-image-vertex": 19622
+    },
+    "avg_ms": 25134,
+    "min_ms": 19622,
+    "max_ms": 30646
+   },
+   "IMG-LE-04": {
+    "models": {
+     "gpt-image-2-medium": 33231,
+     "gemini-3-pro-image-vertex": 32614
+    },
+    "avg_ms": 32922,
+    "min_ms": 32614,
+    "max_ms": 33231
+   },
+   "IMG-LE-05": {
+    "models": {
+     "gpt-image-2-medium": 34772,
+     "gemini-3-pro-image-vertex": 17201
+    },
+    "avg_ms": 25986,
+    "min_ms": 17201,
+    "max_ms": 34772
+   },
+   "IMG-LE-06": {
+    "models": {
+     "gpt-image-2-medium": 32400,
+     "gemini-3-pro-image-vertex": 20652
+    },
+    "avg_ms": 26526,
+    "min_ms": 20652,
+    "max_ms": 32400
+   },
+   "IMG-LE-07": {
+    "models": {
+     "gpt-image-2-medium": 30127,
+     "gemini-3-pro-image-vertex": 17847
+    },
+    "avg_ms": 23987,
+    "min_ms": 17847,
+    "max_ms": 30127
+   },
+   "IMG-LE-08": {
+    "models": {
+     "gpt-image-2-medium": 31012,
+     "gemini-3-pro-image-vertex": 23537
+    },
+    "avg_ms": 27274,
+    "min_ms": 23537,
+    "max_ms": 31012
+   },
+   "IMG-LE-09": {
+    "models": {
+     "gpt-image-2-medium": 34310,
+     "gemini-3-pro-image-vertex": 18856
+    },
+    "avg_ms": 26583,
+    "min_ms": 18856,
+    "max_ms": 34310
+   },
+   "IMG-LE-10": {
+    "models": {
+     "gpt-image-2-medium": 43460,
+     "gemini-3-pro-image-vertex": 23413
+    },
+    "avg_ms": 33436,
+    "min_ms": 23413,
+    "max_ms": 43460
+   },
+   "IMG-STY-01": {
+    "models": {
+     "gpt-image-2-medium": 40359,
+     "gemini-3-pro-image-vertex": 19262
+    },
+    "avg_ms": 29810,
+    "min_ms": 19262,
+    "max_ms": 40359
+   },
+   "IMG-STY-02": {
+    "models": {
+     "gpt-image-2-medium": 41108,
+     "gemini-3-pro-image-vertex": 21344
+    },
+    "avg_ms": 31226,
+    "min_ms": 21344,
+    "max_ms": 41108
+   },
+   "IMG-STY-03": {
+    "models": {
+     "gpt-image-2-medium": 35311,
+     "gemini-3-pro-image-vertex": 20784
+    },
+    "avg_ms": 28048,
+    "min_ms": 20784,
+    "max_ms": 35311
+   },
+   "IMG-STY-04": {
+    "models": {
+     "gpt-image-2-medium": 45748,
+     "gemini-3-pro-image-vertex": 58614
+    },
+    "avg_ms": 52181,
+    "min_ms": 45748,
+    "max_ms": 58614
+   },
+   "IMG-STY-05": {
+    "models": {
+     "gpt-image-2-medium": 35462,
+     "gemini-3-pro-image-vertex": 23511
+    },
+    "avg_ms": 29486,
+    "min_ms": 23511,
+    "max_ms": 35462
+   },
+   "IMG-STY-06": {
+    "models": {
+     "gpt-image-2-medium": 37689,
+     "gemini-3-pro-image-vertex": 56998
+    },
+    "avg_ms": 47344,
+    "min_ms": 37689,
+    "max_ms": 56998
+   },
+   "IMG-STY-07": {
+    "models": {
+     "gpt-image-2-medium": 43787,
+     "gemini-3-pro-image-vertex": 19980
+    },
+    "avg_ms": 31884,
+    "min_ms": 19980,
+    "max_ms": 43787
+   },
+   "IMG-STY-08": {
+    "models": {
+     "gpt-image-2-medium": 39602,
+     "gemini-3-pro-image-vertex": 23182
+    },
+    "avg_ms": 31392,
+    "min_ms": 23182,
+    "max_ms": 39602
+   },
+   "IMG-STY-09": {
+    "models": {
+     "gpt-image-2-medium": 36708,
+     "gemini-3-pro-image-vertex": 20326
+    },
+    "avg_ms": 28517,
+    "min_ms": 20326,
+    "max_ms": 36708
+   },
+   "IMG-STY-10": {
+    "models": {
+     "gpt-image-2-medium": 38183,
+     "gemini-3-pro-image-vertex": 21854
+    },
+    "avg_ms": 30018,
+    "min_ms": 21854,
+    "max_ms": 38183
+   },
+   "IMG-TXT-08": {
+    "models": {
+     "gpt-image-2-medium": 24535,
+     "gemini-3-pro-image-vertex": 18842
+    },
+    "avg_ms": 21688,
+    "min_ms": 18842,
+    "max_ms": 24535
+   },
+   "IMG-TXT-09": {
+    "models": {
+     "gpt-image-2-medium": 32683,
+     "gemini-3-pro-image-vertex": 19830
+    },
+    "avg_ms": 26256,
+    "min_ms": 19830,
+    "max_ms": 32683
+   },
+   "IMG-TXT-10": {
+    "models": {
+     "gpt-image-2-medium": 31890,
+     "gemini-3-pro-image-vertex": 25900
+    },
+    "avg_ms": 28895,
+    "min_ms": 25900,
+    "max_ms": 31890
+   },
+   "IMG-UI-04": {
+    "models": {
+     "gpt-image-2-medium": 29152,
+     "gemini-3-pro-image-vertex": 19151
+    },
+    "avg_ms": 24152,
+    "min_ms": 19151,
+    "max_ms": 29152
+   },
+   "IMG-UI-05": {
+    "models": {
+     "gpt-image-2-medium": 40804,
+     "gemini-3-pro-image-vertex": 21767
+    },
+    "avg_ms": 31286,
+    "min_ms": 21767,
+    "max_ms": 40804
+   },
+   "IMG-UI-06": {
+    "models": {
+     "gpt-image-2-medium": 39043,
+     "gemini-3-pro-image-vertex": 19979
+    },
+    "avg_ms": 29511,
+    "min_ms": 19979,
+    "max_ms": 39043
+   }
+  },
+  "judge_cost_usd": 0.193
+ }
+]

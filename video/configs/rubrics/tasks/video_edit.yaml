@@ -1,0 +1,64 @@
+# Per-task rubric for video_edit (plan §5 pattern: per-task rubrics are
+# small, explicit files, not patches). Added 2026-09-09, when the Google
+# review scoped video to edits + ads.
+#
+# An edit is not a generation. The question is not "is this a good clip"
+# but "was the ONE requested change made, and was everything else left
+# alone" — so the two heaviest criteria are the change and the preservation,
+# and they are deliberately separate. A model that recolours the umbrella
+# and also shifts the background scores well on one and badly on the other,
+# which is the distinction the judge would otherwise blur into one number.
+#
+# The judge is shown the SOURCE clip first and the edited RESULT second
+# (runner/judge.py) — without the source, "everything else unchanged" is
+# not answerable. Weights sum to 1.0.
+criteria:
+  - name: edit_fidelity
+    weight: 0.30
+    judged_by: judge
+    description: >-
+      Was the requested change actually made, completely, and only as asked?
+      Read the brief clause by clause. 10 = the change is present in every
+      frame it should be, at the right extent. A change made in some frames
+      and not others, or made more broadly than asked, loses points. A
+      change not made at all is 0 — an untouched clip is not a pass.
+
+  - name: preservation
+    weight: 0.25
+    judged_by: judge
+    description: >-
+      Is everything the brief did NOT ask to change identical to the source?
+      Compare against the first clip. Losses: other objects recoloured or
+      moved, background altered, framing or crop shifted, colour grade or
+      exposure drifting, subjects re-posed, motion re-timed. 10 = a viewer
+      comparing the two clips can find no difference beyond the requested
+      edit.
+
+  - name: temporal_consistency
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Whether the edit holds steady across frames: the changed region
+      flickering, drifting, detaching from the object it belongs to, or
+      appearing and disappearing. An edit that is correct in a still frame
+      but unstable in motion fails here.
+
+  - name: visual_fidelity
+    weight: 0.15
+    judged_by: judge
+    description: >-
+      Per-frame quality of the result — sharpness, lighting, texture,
+      artefacts around the edited region, seams or haloing where the change
+      meets the rest of the frame. Would a frame pass as unedited footage?
+
+  - name: technical_compliance
+    weight: 0.15
+    judged_by: measured          # container headers, and the source comparison
+    description: >-
+      Measured by code from the mp4 container: clip duration within the
+      scenario's declared band and delivered resolution against the
+      requested one. Full spec maps to 10; shortfalls lose points linearly
+      (the mapping is fixed in scoring.py). Missing measurements drop the
+      criterion and redistribute its weight (recorded in the run manifest).
+      The edit check also records the source's own dimensions and duration,
+      and gates on framing being preserved.

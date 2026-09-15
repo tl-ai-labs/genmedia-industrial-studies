@@ -20,6 +20,7 @@ from each other.
 | `image/` | **complete**  | 60 scenarios (text-to-image + image editing), Gemini 3 Pro vs GPT Image 2, blind-judged |
 | `video/` | in progress   | text-to-video first (cinematic + physics families from the bank) |
 | `voice/` | **built**, bank partial | TTS / styled speech: ElevenLabs Multilingual v2 vs Gemini 3.1 Flash TTS — deterministic audio gates, ASR-verified WER, blind-judged. 8 scenarios of the bank so far |
+| `panel/` | **built**, no votes yet | Blind human panel across all three lanes — one page, a thumbs-up per pair, votes to a local JSONL — and the human-vs-judge correlation, per lane and overall |
 
 Shared across modules:
 

@@ -544,18 +544,26 @@ def test_expand_collapse_present_in_both_reports(scored_run):
         assert 'data-act="expand"' in html and 'data-act="collapse"' in html
 
 
-def test_win_threshold_is_stated_as_5_percent_and_0_05(scored_run):
-    """One threshold, shown in the caller's own terms: a win needs more than
-    5% of the rubric scale, which is 0.05 as a fraction and 0.5 of the 10
-    points. All three name the same number and must never disagree."""
+def test_win_rule_is_stated_as_any_difference(scored_run):
+    """The page states the rule it applies: any difference wins, only identical
+    scores tie — in each audience's own units, and no leftover band."""
     from runner.report import TIE_BAND
     _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
-    assert TIE_BAND == 0.5 and TIE_BAND / 10 == 0.05
+    assert TIE_BAND == 0.0
+    assert "99% vs 100%" in client and "100% vs 100%" in client
+    assert "9.9 vs 10" in internal and "10 vs 10" in internal
     for html in (internal, client):
-        assert "5%" in html
-        assert "0.05 of the rubric scale" in html
-    assert "0.5 of the 10 points" in internal      # points form: internal only
-    assert "0.5 of the 10 points" not in client
+        assert "tie band" not in html and "0.05 of the rubric scale" not in html
+
+
+def test_short_scores_never_print_alike_when_they_differ():
+    """With no tie band a 90.75% vs 91% scenario has a winner, so its badges
+    must not both read "91%"."""
+    from runner.report import _env
+    q = _env({}, client=True).filters["q"]
+    assert q(9.075, True) == "90.75%" and q(9.1, True) == "91%" and q(10.0, True) == "100%"
+    qi = _env({}, client=False).filters["q"]
+    assert qi(9.075, True) == "9.075" and qi(10.0, True) == "10"
 
 
 def test_win_counts_agree_across_every_surface(scored_run):
@@ -666,7 +674,7 @@ def test_client_only_difference_column_is_percentage_only(scored_run):
     assert ">Difference<" in client
     assert ">Difference<" not in internal
     assert 'class="num d' not in internal
-    body = client[client.index('<table class="mx">'):client.index("</table>")]
+    body = client[client.index('<table class="mx mx2">'):client.index("</table>")]
     # no bare point values leak into the column: every rendered delta is a %
     deltas = re.findall(r'<td class="num d[^"]*"><span class="dv">(.*?)</span>', body)
     assert deltas, "no difference cells rendered"
@@ -691,3 +699,660 @@ def test_relative_difference_is_computed_against_the_rival():
     zero = {r["key"]: r for r in
             _metric_rows({"g": m(8.0, 20000), "r": m(7.0, 0)}, ["g", "r"])}
     assert zero["lat_p50"]["delta_rel"] is None
+
+
+# --------------------------------------------------------------------------
+# asset-fed video tasks: the input must reach BOTH the model and the judge
+# --------------------------------------------------------------------------
+
+def _edit_project(project, tmp_path, task, role, asset_name, asset_bytes):
+    """A one-scenario bank for an asset-fed task, with the asset on disk."""
+    import yaml
+    (project / "assets").mkdir(exist_ok=True)
+    (project / "assets" / asset_name).write_bytes(asset_bytes)
+    bank = project / "scenarios-edit"
+    bank.mkdir()
+    (bank / "s1.yaml").write_text(yaml.safe_dump({
+        "id": "VID-X-01", "modality": "video", "task": task,
+        "title": "t", "prompt": "make the umbrella yellow, change nothing else",
+        "expected": "only the umbrella changes",
+        "inputs": {role: f"assets/{asset_name}"},
+        "params": {"duration_s": 4, "resolution": "720p", "aspect_ratio": "16:9"},
+        "checks": {"min_width": 1280, "min_height": 720},
+        "tags": ["conversational-local-video-editing"]}, sort_keys=False))
+    return bank
+
+
+def test_video_edit_sends_the_source_to_model_and_judge(project, fake_models_yaml,
+                                                        fake_env, monkeypatch,
+                                                        tmp_path):
+    """The source clip has to reach the adapter (or the model edits nothing)
+    AND the judge (or 'was everything else left alone' is unanswerable).
+    Both halves are asserted because either can break silently."""
+    source = minimal_mp4(duration_s=4.0, width=1280, height=720, payload_bytes=1024)
+    bank = _edit_project(project, tmp_path, "video_edit", "source",
+                         "clip.mp4", source)
+
+    fake_a, fake_b = _fakes()
+    judge = FakeJudgeAdapter(score=8.0)
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b,
+                                   "fake_judge": judge})
+    scenarios = load_scenarios(bank, modality="video")
+    models = enabled_models(load_models(fake_models_yaml), "video")
+    run_dir = run_generation(project, scenarios, models, "video", budget_usd=20.0)
+    judge_run(project, run_dir, fake_models_yaml)
+
+    # the adapter received the frozen source as a typed Asset — if this
+    # breaks, the model "edits" nothing and the run still looks successful
+    for req in fake_a.requests:
+        assert req.task == "video_edit"
+        assert [a.role for a in req.inputs] == ["source"]
+        assert req.inputs[0].path.read_bytes() == source
+        assert req.inputs[0].sha256 == hashlib.sha256(source).hexdigest()
+        assert req.inputs[0].mime == "video/mp4"
+    # the judge received TWO clips, source first, and was told which is which
+    for call in judge.calls:
+        assert call["n_media"] == 2, "judge got one clip — it cannot compare"
+        assert call["mimes"] == ["video/mp4", "video/mp4"]
+        assert call["media_bytes"][0] == source, "first clip is not the source"
+        assert "FIRST clip is the untouched SOURCE" in call["prompt"]
+        assert "everything else stayed identical" in call["prompt"]
+
+    # the source is frozen into the run and hashed, like every input
+    manifest = json.loads((run_dir / "manifest.json").read_text())
+    rows = manifest["inputs"]["VID-X-01"]
+    assert [r["role"] for r in rows] == ["source"]
+    assert rows[0]["sha256"] == hashlib.sha256(source).hexdigest()
+
+    # and the edit's own gates ran against it
+    crow = next(r for r in RunFiles(run_dir).read("checks"))
+    assert crow["measures"]["source_width"] == 1280
+    assert any(g["gate"] == "preserves_framing" for g in crow["gates"])
+
+
+def test_image_to_video_shows_the_reference_still_to_the_judge(
+        project, fake_models_yaml, fake_env, monkeypatch, tmp_path):
+    """For a product ad the clip must animate THE SUPPLIED product, so the
+    judge is shown the still first — otherwise reference_fidelity is guesswork."""
+    import io as _io
+
+    from PIL import Image
+    buf = _io.BytesIO()
+    Image.new("RGB", (64, 64), (200, 120, 60)).save(buf, format="PNG")
+    png = buf.getvalue()
+    bank = _edit_project(project, tmp_path, "image_to_video", "reference",
+                         "ref.png", png)
+
+    fake_a, fake_b = _fakes()
+    judge = FakeJudgeAdapter(score=8.0)
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b,
+                                   "fake_judge": judge})
+    scenarios = load_scenarios(bank, modality="video")
+    models = enabled_models(load_models(fake_models_yaml), "video")
+    run_dir = run_generation(project, scenarios, models, "video", budget_usd=20.0)
+    judge_run(project, run_dir, fake_models_yaml)
+
+    for call in judge.calls:
+        assert call["n_media"] == 2
+        assert call["mimes"][1] == "video/mp4"          # the generated clip
+        assert "REFERENCE STILL" in call["prompt"]
+        assert "same object as the still" in call["prompt"]
+
+
+# --------------------------------------------------------------------------
+# Per-provider budget caps
+#
+# A run bills two accounts at once — the Google arm on Vertex, the BytePlus
+# arm on a prepaid ModelArk balance. One combined --budget protects neither,
+# so each provider can carry its own cap. These pin both halves: the plan is
+# refused up front when it cannot fit, and the run aborts mid-flight when the
+# actual bills drift past the cap even though the estimates fitted.
+# --------------------------------------------------------------------------
+
+def _low_estimate_models_yaml(project, fake_models_yaml):
+    """model-a's estimate understates it 16x: est $0.10, actual 4s x $0.40.
+
+    The pre-flight therefore passes and only the mid-run guard can stop it,
+    which is the case a flat est_usd_per_call gets wrong for variable-length
+    clips (our edits run 5.65s to 19.2s against one flat figure).
+    """
+    text = fake_models_yaml.read_text().replace(
+        "usd: 0.40, est_usd_per_call: 1.60", "usd: 0.40, est_usd_per_call: 0.10")
+    path = project / "configs" / "models-fake-low-est.yaml"
+    path.write_text(text)
+    return path
+
+
+def test_provider_cap_refuses_a_plan_it_cannot_cover(project, fake_models_yaml,
+                                                     fake_env, monkeypatch):
+    """Pre-flight, per provider: 3 x $1.60 of prov_a cannot fit a $2 cap.
+
+    The total budget is deliberately generous, so a rejection can only have
+    come from the provider cap.
+    """
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    with pytest.raises(RunRejected, match="prov_a"):
+        run_generation(project, scenarios, models, "video", budget_usd=20.0,
+                       provider_caps={"prov_a": 2.00})
+    assert fake_a.calls == 0 and fake_b.calls == 0   # nothing was spent
+
+
+def test_provider_cap_aborts_mid_run_and_leaves_other_arms_alone(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """The cap binds prov_a alone; prov_b finishes its whole set.
+
+    prov_a bills $1.60 a call against a $2.50 cap: two calls land ($3.20 of
+    actual spend, since the guard tests the $0.10 estimate), the third is
+    refused. prov_b is uncapped and unaffected — that separation is the
+    entire point of the flag.
+    """
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    models_yaml = _low_estimate_models_yaml(project, fake_models_yaml)
+    scenarios, models = _load(project, models_yaml)
+    run_dir = run_generation(project, scenarios, models, "video",
+                             budget_usd=20.0, workers=1,
+                             provider_caps={"prov_a": 2.50})
+
+    assert fake_a.calls == 2, "prov_a should stop at its own cap"
+    assert fake_b.calls == 3, "prov_b is uncapped and must run its whole set"
+
+    manifest = json.loads((run_dir / "manifest.json").read_text())
+    assert manifest["state"] == "aborted"
+    assert manifest["budget_by_provider"] == {"prov_a": 2.50}
+
+    spent = {}
+    for row in RunFiles(run_dir).read("telemetry"):
+        if row.get("cost"):
+            spent[row["provider"]] = spent.get(row["provider"], 0) + row["cost"]["micro_usd"]
+    assert spent["prov_a"] == 3_200_000      # 2 x $1.60, stopped before a third
+    assert spent["prov_b"] == 1_200_000      # 3 x $0.40, untouched
+
+
+def test_provider_cap_counts_what_that_provider_already_spent_on_resume(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """Resume reads prior spend per provider, not just in total.
+
+    Without that, every resume would hand each provider a fresh full cap and
+    the balance this flag exists to protect would drain a batch at a time.
+    """
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    run_dir = run_generation(project, scenarios[:1], models, "video",
+                             budget_usd=20.0, provider_caps={"prov_a": 5.00})
+    assert fake_a.calls == 1                      # $1.60 of prov_a is now spent
+
+    # $1.60 already gone + $1.60 estimated for the next prov_a cell = $3.20,
+    # which no longer fits a $2.00 cap.
+    with pytest.raises(RunRejected, match="prov_a"):
+        run_generation(project, scenarios[:2], models, "video", budget_usd=20.0,
+                       run_id=run_dir.name, provider_caps={"prov_a": 2.00})
+    assert fake_a.calls == 1                      # and it did not pay again
+
+
+def test_a_cap_on_a_provider_that_is_not_running_is_refused(
+        project, fake_models_yaml, fake_env, monkeypatch):
+    """A typo'd provider name would protect nothing at all, silently."""
+    fake_a, fake_b = _fakes()
+    install_adapters(monkeypatch, {"fake_a": fake_a, "fake_b": fake_b})
+    scenarios, models = _load(project, fake_models_yaml)
+    with pytest.raises(RunRejected, match="byteplous"):
+        run_generation(project, scenarios, models, "video", budget_usd=20.0,
+                       provider_caps={"byteplous": 80.0})
+    assert fake_a.calls == 0 and fake_b.calls == 0
+
+
+@pytest.mark.parametrize("bad", ["byteplus", "=80", "byteplus=eighty",
+                                 "byteplus=0", "byteplus=-5"])
+def test_malformed_provider_cap_is_an_error_not_a_shrug(bad):
+    from runner.cli import _parse_provider_caps
+    with pytest.raises(ValueError):
+        _parse_provider_caps([bad])
+
+
+def test_provider_caps_parse_and_reject_duplicates():
+    from runner.cli import _parse_provider_caps
+    assert _parse_provider_caps(["byteplus=80", "google-vertex=30.5"]) == {
+        "byteplus": 80.0, "google-vertex": 30.5}
+    assert _parse_provider_caps([]) == {}
+    with pytest.raises(ValueError, match="twice"):
+        _parse_provider_caps(["byteplus=80", "byteplus=90"])
+
+
+# --------------------------------------------------------------------------
+# Blind judging: the container must not name the vendor
+#
+# Measured on the 2026-09-03 pilot outputs: Seedance stamps
+# "BytePlus_ModelArk" and the literal model id "dreamina-seedance-2-5" into
+# the mp4's C2PA box, Omni stamps "Google LLC" and encoder=Google. The judge
+# is a Gemini model reading mp4 natively, so an untouched container turns
+# blind judging into a labelled preference test.
+# --------------------------------------------------------------------------
+
+def _ffmpeg_or_skip():
+    import shutil
+    if shutil.which("ffmpeg") is None:
+        pytest.skip("ffmpeg not on PATH")
+
+
+def _mp4_stamped_with(tmp_path, tag: str):
+    """A real, decodable mp4 carrying `tag` in its container metadata."""
+    import subprocess
+    out = tmp_path / "stamped.mp4"
+    subprocess.run(
+        ["ffmpeg", "-nostdin", "-v", "error", "-y",
+         "-f", "lavfi", "-i", "testsrc=duration=1:size=64x64:rate=5",
+         "-f", "lavfi", "-i", "anullsrc=r=8000:cl=mono",
+         "-t", "1", "-c:v", "libx264", "-c:a", "aac",
+         "-metadata", f"comment={tag}", str(out)],
+        check=True, capture_output=True, timeout=120)
+    return out
+
+
+def test_the_judge_never_sees_the_vendor_stamped_in_the_container(tmp_path):
+    from runner.judge import blind_video_bytes
+    _ffmpeg_or_skip()
+    src = _mp4_stamped_with(tmp_path, "BytePlus_ModelArk_dreamina-seedance-2-5")
+    assert b"BytePlus_ModelArk" in src.read_bytes(), "fixture did not stamp the tag"
+
+    blinded, stripped = blind_video_bytes(src)
+    assert stripped is True
+    assert b"BytePlus_ModelArk" not in blinded
+    assert b"dreamina-seedance" not in blinded
+    assert src.read_bytes().count(b"BytePlus_ModelArk") == 1, "the original was modified"
+
+
+def test_blinding_keeps_every_stream_including_audio(tmp_path):
+    """Audio is ON for both arms in this run, so its presence is no longer a
+    tell — and dropping it would change what is being judged."""
+    import subprocess
+    from runner.judge import blind_video_bytes
+    _ffmpeg_or_skip()
+    src = _mp4_stamped_with(tmp_path, "anything")
+    blinded, stripped = blind_video_bytes(src)
+    assert stripped is True
+    out = tmp_path / "blinded.mp4"
+    out.write_bytes(blinded)
+    streams = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "stream=codec_type",
+         "-of", "csv=p=0", str(out)],
+        capture_output=True, text=True, timeout=60).stdout.split()
+    assert "video" in streams and "audio" in streams
+
+
+def test_blinding_falls_back_visibly_when_ffmpeg_is_missing(tmp_path, monkeypatch):
+    """No silent failure: without ffmpeg the clip still reaches the judge, but
+    `stripped` is False so the judge row records that it was not blinded."""
+    from runner import judge as judge_mod
+    raw = b"\x00\x00\x00\x18ftypisom-not-a-real-mp4"
+    path = tmp_path / "clip.mp4"
+    path.write_bytes(raw)
+    monkeypatch.setattr(judge_mod.shutil, "which", lambda _: None)
+    blinded, stripped = judge_mod.blind_video_bytes(path)
+    assert blinded == raw and stripped is False
+
+
+def test_blinding_falls_back_when_ffmpeg_cannot_read_the_file(tmp_path):
+    """A corrupt clip must not take the whole judging pass down with it."""
+    from runner.judge import blind_video_bytes
+    _ffmpeg_or_skip()
+    path = tmp_path / "broken.mp4"
+    path.write_bytes(b"not an mp4 at all")
+    blinded, stripped = blind_video_bytes(path)
+    assert blinded == b"not an mp4 at all" and stripped is False
+
+
+# --------------------------------------------------------------------------
+# The cap must hold under concurrency, and against per-task cost
+#
+# 2026-09-11: a $14 byteplus cap let $18.94 through. Two workers both passed
+# before_call while `spent` was still $0 — neither call had returned, so
+# neither had been recorded — and the flat $4.18 estimate was 2.7x under what
+# a Seedance edit actually bills. Both halves are pinned here.
+# --------------------------------------------------------------------------
+
+def test_a_reservation_blocks_a_second_concurrent_call():
+    """The failure mode exactly: two calls in flight, nothing settled yet."""
+    from runner.generate import BudgetGuard, BudgetExceeded
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 14 * M}, {})
+    g.before_call(8 * M, "byteplus")          # first worker, nothing spent yet
+    with pytest.raises(BudgetExceeded, match="in flight"):
+        g.before_call(8 * M, "byteplus")      # second must see the first's hold
+
+
+def test_settle_releases_the_hold_so_a_failed_call_costs_no_budget():
+    """A refusal bills nothing. If its reservation were not returned, the cap
+    would strangle work it should have allowed."""
+    from runner.generate import BudgetGuard
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 14 * M}, {})
+    g.before_call(8 * M, "byteplus")
+    g.settle(8 * M, 0, "byteplus")            # refused: actual is zero
+    assert g.reserved_by_provider["byteplus"] == 0
+    assert g.by_provider.get("byteplus", 0) == 0
+    g.before_call(8 * M, "byteplus")          # the headroom came back
+
+
+def test_settle_records_actual_not_the_estimate():
+    from runner.generate import BudgetGuard
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 100 * M}, {})
+    g.before_call(4 * M, "byteplus")
+    g.settle(4 * M, int(11.46 * M), "byteplus")   # billed far above its estimate
+    assert g.by_provider["byteplus"] == int(11.46 * M)
+    assert g.reserved_by_provider["byteplus"] == 0
+
+
+def test_the_estimate_is_task_aware():
+    """One flat figure cannot serve a lane whose tasks differ 3x in cost."""
+    from runner.cost import estimate_call_micro_usd
+    from runner.loaders import Price
+    p = Price(unit="per_token", usd_out_per_1m=10.70, est_usd_per_call=4.18,
+              est_usd_per_call_by_task={"video_edit": 20.0},
+              source="test", as_of="2026-09-11")
+    assert estimate_call_micro_usd(p, "text_to_video") == 4_180_000
+    assert estimate_call_micro_usd(p, "image_to_video") == 4_180_000
+    assert estimate_call_micro_usd(p, "video_edit") == 20_000_000
+    assert estimate_call_micro_usd(p) == 4_180_000        # no task: the default
+
+
+def test_the_2026_09_11_overspend_cannot_recur():
+    """Replayed with the real numbers. That day two edits billed $11.46 and
+    $7.48 against a $14 cap — $18.94 through — because the estimate said
+    $4.18 and nothing was reserved.
+
+    With the honest $20 per-task estimate the cap refuses the FIRST edit, not
+    the second: $14 never could cover an edit whose worst case is $20, and now
+    it says so before spending rather than after. Nothing is billed at all."""
+    from runner.generate import BudgetGuard, BudgetExceeded
+    M = 1_000_000
+    g = BudgetGuard(None, 0, {"byteplus": 14 * M}, {})
+    with pytest.raises(BudgetExceeded, match="byteplus"):
+        g.before_call(20 * M, "byteplus")      # the video_edit override
+    assert g.by_provider.get("byteplus", 0) == 0
+    assert g.reserved_by_provider.get("byteplus", 0) == 0
+
+    # and a cap that genuinely covers the worst case lets exactly one through
+    g = BudgetGuard(None, 0, {"byteplus": 25 * M}, {})
+    g.before_call(20 * M, "byteplus")
+    g.settle(20 * M, int(11.4621 * M), "byteplus")
+    with pytest.raises(BudgetExceeded):        # $11.46 spent + $20 held > $25
+        g.before_call(20 * M, "byteplus")
+    assert g.by_provider["byteplus"] / M == pytest.approx(11.4621, abs=0.001)
+
+
+def test_complete_only_scores_the_scenarios_every_arm_finished(scored_run):
+    """Means over different scenario sets are not comparable.
+
+    2026-09-10: Seedance refused two ads, so Omni's mean covered 10 scenarios
+    and Seedance's 8, printed side by side as though they measured the same
+    thing. Dropping the unpaired two moved Omni from ahead to behind."""
+    from runner.scoring import aggregate
+    agg = aggregate(scored_run["run_dir"])
+    for t in agg["tasks"].values():
+        arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+        for sid in t["complete_scenarios"]:
+            for mid in arms:
+                assert sid in t["models"][mid]["by_scenario"], (
+                    f"{sid} counted complete but {mid} has no score")
+        for sid in t["incomplete_scenarios"]:
+            assert any(sid not in t["models"][mid]["by_scenario"] for mid in arms)
+        for m in t["models"].values():
+            assert m["complete_n"] == len(m["numeric_complete"])
+            assert m["complete_n"] <= m["judged_n"]
+
+
+def test_complete_only_excludes_an_unpaired_scenario_from_the_mean():
+    """One arm refuses; the other must not keep averaging in a scenario its
+    rival never attempted."""
+    from runner.scoring import aggregate
+    import json, types
+    # a two-arm task where model-b has no score for scenario s3
+    t = {"models": {
+            "a": {"eligible": 3, "by_scenario": {"s1": 10.0, "s2": 8.0, "s3": 2.0}},
+            "b": {"eligible": 3, "by_scenario": {"s1": 9.0, "s2": 7.0}}},
+         "scenarios": {"s1", "s2", "s3"}}
+    arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+    complete = sorted(sid for sid in t["scenarios"]
+                      if all(sid in t["models"][m]["by_scenario"] for m in arms))
+    assert complete == ["s1", "s2"]
+    a = [t["models"]["a"]["by_scenario"][s] for s in complete]
+    b = [t["models"]["b"]["by_scenario"][s] for s in complete]
+    assert sum(a) / len(a) == 9.0          # not (10+8+2)/3 = 6.67
+    assert sum(b) / len(b) == 8.0
+
+
+def test_complete_only_never_hides_a_refusal(scored_run):
+    """The excluded scenarios are reliability, not missing data. They must
+    still be counted — a refusal is a product fact about that arm."""
+    from runner.scoring import aggregate
+    agg = aggregate(scored_run["run_dir"])
+    for t in agg["tasks"].values():
+        for m in t["models"].values():
+            # every eligible cell is accounted for somewhere, complete or not
+            assert m["eligible"] >= m["complete_n"]
+            assert {"failed", "invalid", "unjudged"} <= set(m)
+
+
+def test_task_regrouping_is_disclosed_not_silent(scored_run, tmp_path):
+    """A task is a real property of a scenario — it picks the rubric and the
+    required inputs. Reporting one task's scenarios under another is a layout
+    choice, so the page has to say so, and the merged manifest has to record
+    which scenario was actually what.
+
+    This also guards the call site: task_tables only sees the manifest because
+    it is passed explicitly, and a missing key renders as Undefined — silently
+    empty, exactly how the family_models chips once vanished."""
+    from runner.report import build_report, merge_runs
+    out = tmp_path / "merged"
+    merge_runs([scored_run["run_dir"]], out,
+               {"text_to_video": "image_to_video"})
+    mf = json.loads((out / "manifest.json").read_text())
+    assert mf["task_grouping"]["map"] == {"text_to_video": "image_to_video"}
+    assert mf["task_grouping"]["scenarios"], "nothing recorded as regrouped"
+    for sid, info in mf["task_grouping"]["scenarios"].items():
+        assert info["actual"] == "text_to_video"
+        assert info["reported_under"] == "image_to_video"
+    # and every regrouped cell now reports under the new task
+    assert all(c["task"] == "image_to_video" for c in mf["cells"].values())
+
+    build_report(scored_run["project"], out)
+    for name in ("report.html", "report-client.html"):
+        html = (out / name).read_text()
+        assert "grouped here so the set reads as one" in html, \
+            f"{name}: regrouping not disclosed to the reader"
+
+
+# ---- every scenario accounted for: compared + not compared = total ---------
+
+def _override_cell(run_dir, sid, mid, score=None,
+                   reason="refused: InputVideoSensitiveContentDetected"):
+    """Test-only: the latest score row wins, so appending one changes a cell's
+    outcome; score=None also marks the cell failed, as a refusal would."""
+    mf_path = run_dir / "manifest.json"
+    mf = json.loads(mf_path.read_text())
+    cell = next(c for c in mf["cells"].values()
+                if c["scenario_id"] == sid and c["model_id"] == mid)
+    if score is None:
+        cell["state"], cell["reason"] = "failed", reason
+        mf_path.write_text(json.dumps(mf))
+    with open(run_dir / "scores.jsonl", "a") as f:
+        f.write(json.dumps({"scenario_id": sid, "model_id": mid,
+                            "task": cell["task"],
+                            "status": "failed" if score is None else "scored",
+                            "score": score}) + "\n")
+
+
+def test_every_scenario_is_accounted_for_when_an_arm_fails(scored_run):
+    """2026-09-14: the merged video report read '8 + 3' against 18 scenarios.
+    W-T-L only counts scenarios both arms delivered, and the 'Ties' chip
+    swallowed the 7 that were never compared. Failures are a result: the
+    tally, the chips and the cards must each add up to the total."""
+    run_dir = scored_run["run_dir"]
+    s_one, s_both, s_ok = SCENARIO_IDS
+    _override_cell(run_dir, s_one, "model-b")              # one arm failed
+    _override_cell(run_dir, s_both, "model-a")             # both arms failed
+    _override_cell(run_dir, s_both, "model-b")
+
+    pair = next(iter(aggregate(run_dir)["tasks"].values()))["pairs"][0]
+    assert pair["n_scenarios"] == 3
+    assert pair["n_common"] + pair["not_compared"] == pair["n_scenarios"]
+    assert pair["wins_a"] + pair["ties"] + pair["wins_b"] == pair["n_common"] == 1
+    assert pair["missed"] == {"both": [s_both], "a": [], "b": [s_one]}
+    assert pair["missed_all_failed"] is True
+
+    _, internal, _, client = _both(scored_run["project"], run_dir)
+    for html in (internal, client):
+        cards = re.findall(r'data-win="([^"]+)"', html)
+        assert len(cards) == 3
+        assert cards.count("none") == 2 and cards.count("tie") == 1
+        chips = dict(re.findall(
+            r'data-dim="win" data-val="([^"]+)">[^<]*<span class="n">\((\d+)\)', html))
+        assert chips == {"tie": "1", "none": "2"}          # not 3 "ties"
+        assert sum(int(n) for n in chips.values()) == 3
+        assert 'class="tally hero-tally"' in html
+        assert "2 not compared" in html
+        assert "both failed on 1" in html
+        assert 'data-row="failed"' in html                 # client sees it too
+
+
+def test_complete_only_verdict_uses_the_means_the_table_shows(scored_run):
+    """2026-09-14: --complete-only fixed the table but not the verdict under
+    it, which still compared each arm's OWN scenarios — a '13.5 pp' gap
+    printed beneath a table reading 96.7% vs 94.0%."""
+    from runner.report import _build_context
+    run_dir = scored_run["run_dir"]
+    s1, s2, s3 = SCENARIO_IDS
+    _override_cell(run_dir, s1, "model-a", 10.0)
+    _override_cell(run_dir, s1, "model-b", 9.0)
+    _override_cell(run_dir, s2, "model-a", 2.0)            # rival never delivered
+    _override_cell(run_dir, s2, "model-b")
+
+    full = next(iter(aggregate(run_dir)["tasks"].values()))
+    assert full["pairs"][0]["mean_a"] != full["models"]["model-a"]["mean_complete"]
+
+    s3_a, s3_b = (full["models"][m]["by_scenario"][s3] for m in ("model-a", "model-b"))
+    ctx = _build_context(scored_run["project"], run_dir, complete_only=True)
+    t = next(iter(ctx["agg"]["tasks"].values()))
+    p = t["pairs"][0]
+    # both on s1 and s3 only — s2, which model-b never delivered, is out
+    assert p["mean_a"] == t["models"]["model-a"]["mean"] == round((10.0 + s3_a) / 2, 2)
+    assert p["mean_b"] == t["models"]["model-b"]["mean"] == round((9.0 + s3_b) / 2, 2)
+    assert p["means_over_compared"] is True
+    assert p["n_common"] + p["not_compared"] == p["n_scenarios"] == 3
+    # and the family / industry rollups agree with the task table
+    for f in list(ctx["families"].values()) + list(ctx["industries"].values()):
+        assert f["models"]["model-a"]["mean"] == p["mean_a"]
+        assert f["models"]["model-b"]["mean"] == p["mean_b"]
+
+
+def test_scenario_margin_is_exact_like_its_badges():
+    from runner.report import _env
+    qd = _env({}, client=True).filters["qd"]
+    assert qd(0.925, True) == "+9.25 pp" and qd(0.3, True) == "+3 pp"
+    assert qd(0.925) == "+9.2 pp" or qd(0.925) == "+9.3 pp"      # means keep one decimal
+    assert _env({}, client=False).filters["qd"](0.925, True) == "+0.925"
+
+
+# ---- client report layout, 2026-09-15 --------------------------------------
+
+def test_client_report_drops_the_verdict_but_internal_keeps_it(scored_run):
+    """The client reads the table and the evidence; who-wins-the-task and the
+    rule that decided it stay in the internal report."""
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    assert 'class="verdict"' in internal
+    assert 'class="verdict"' not in client
+    assert "no winner declared" not in client and "tie on quality" not in client
+    assert 'id="overall"' in client and ">Overall summary<" in client
+    assert 'class="h vs">vs<' in client                    # duel strip names
+    # table header: "vs" in its own column, and every body row keeps the grid
+    assert '<th class="vsc" aria-hidden="true"><span>vs</span></th>' in client
+    assert client.count('<td class="vsc"></td>') == client.count('class="mrow')
+    assert 'class="vsc"' not in internal
+    # reliability is explained once, under the Overall summary card, not under each table
+    assert client.count("Reliability is the model's lowest rating") == 1
+    assert (client.index('id="overall"') < client.index("Reliability is the model's lowest rating")
+            < client.index('class="mx'))
+
+
+def test_rollup_win_percent_counts_only_compared_scenarios():
+    """Win % is over scenarios both models completed: a rival's failure is
+    not a loss for the model that delivered, nor a win for anyone."""
+    from runner.report import _finish_rollup
+    row = {"n": 8, "compared": 3, "models": {
+        "g": {"scores": [10.0, 9.0, 10.0, 10.0], "wins": 1},
+        "r": {"scores": [10.0, 8.2, 10.0, 5.4], "wins": 0}}}
+    _finish_rollup(row)
+    assert row["models"]["g"]["win_pct"] == 33.3
+    assert row["models"]["r"]["win_pct"] == 0.0
+    assert row["lead_mean"] == "g" and row["lead_wins"] == "g"
+    # 5 of 8 and 3 of 8 must not round in opposite directions
+    row = {"n": 10, "compared": 8, "models": {
+        "g": {"scores": [9.0], "wins": 3}, "r": {"scores": [9.0], "wins": 5}}}
+    _finish_rollup(row)
+    assert (row["models"]["g"]["win_pct"], row["models"]["r"]["win_pct"]) == (37.5, 62.5)
+    assert row["lead_mean"] is None                        # equal means tag nobody
+    assert row["lead_wins"] == "r"
+    # nothing compared: no percentage, no fake 0%
+    row = {"n": 2, "compared": 0, "models": {"g": {"scores": [9.0], "wins": 0}}}
+    _finish_rollup(row)
+    assert row["models"]["g"]["win_pct"] is None and row["lead_wins"] is None
+
+
+def test_rollup_rows_filter_like_their_chips_and_tag_leaders():
+    """Every family / industry row carries the same dim/val as its chip, so a
+    click applies exactly that chip's filter; leaders are tagged."""
+    from runner.report import _env, _finish_rollup
+    rows = {"ads": {"n": 10, "compared": 8, "models": {
+                "g": {"scores": [9.16], "wins": 3}, "r": {"scores": [9.39], "wins": 5}}}}
+    for r in rows.values():
+        _finish_rollup(r)
+    env = _env({"g": "Gem", "r": "Rival"}, client=True)
+    macro = env.get_template("_sections.j2").module.rollup_table
+    html = str(macro(rows, ["g", "r"], "fam", "Family"))
+    assert 'class="frow" data-dim="fam" data-val="ads"' in html
+    assert ">Quality mean<" in html and ">Win %<" in html and "mean · wins" not in html
+    assert '<span class="tag lead"' in html and "93.9%" in html     # r leads quality
+    assert '<span class="tag win">5 wins</span>' in html
+    assert "62.5%" in html and "37.5%" in html
+    js = env.get_template("_assets.j2").module.js()
+    assert "table.roll .frow" in str(js) and "pickRow" in str(js)
+
+
+def test_latency_min_sits_beside_p50_and_max(scored_run):
+    """Latency is shown as a range: fastest, typical, slowest — in both reports."""
+    from runner.scoring import aggregate
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    m = next(iter(aggregate(scored_run["run_dir"])["tasks"].values()))["models"]["model-a"]
+    assert m["latency_min_ms"] <= m["latency_p50_ms"] <= m["latency_max_ms"]
+    for html in (internal, client):
+        i_min, i_p50, i_max = (html.index(f'data-row="{k}"') for k in ("lat_min", "lat_p50", "lat_max"))
+        assert i_min < i_p50 < i_max
+        assert "Latency min" in html
+
+
+def test_overall_summary_card_tags_the_better_value_not_the_tally_line(scored_run):
+    """The green tag marks the better value on each row of the summary card; the
+    tally sentence above it stays plain text."""
+    import re as _re
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    tally = _re.search(r'<p class="tally hero-tally">.*?</p>', client, _re.S).group(0)
+    assert "tag" not in tally
+    duel = _re.search(r'<div class="duel rev">.*?\n</div>', client, _re.S).group(0)
+    assert "✦" not in duel
+    assert _re.search(r'<span class="tag win" title="better on this row">[^<]+</span>', duel)
+
+
+def test_both_reports_state_when_they_were_generated(scored_run):
+    """A re-render is a new report: the header carries today's generation
+    date beside the run's own creation time, so two copies can be told apart."""
+    import datetime as _dt
+    _, internal, _, client = _both(scored_run["project"], scored_run["run_dir"])
+    today = _dt.datetime.now().astimezone().strftime("%d %b %Y")
+    for html in (internal, client):
+        assert f"report generated <b>{today}" in html
+        assert "run created <b>" in html

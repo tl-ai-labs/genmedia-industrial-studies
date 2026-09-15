@@ -1,0 +1,185 @@
+{
+  "run_id": "2026-09-11_094614_video",
+  "created": "2026-09-11T04:16:14.403Z",
+  "state": "reported",
+  "modality": "video",
+  "git_sha": "732805eefb52cbb98c753bc320805957ad0cea4d",
+  "budget_usd": 18.0,
+  "budget_by_provider": {
+    "byteplus": 14.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-11T04:16:14.423Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-11T04:16:14.439Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-11T04:16:15.675Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-11T04:24:45.291Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-11T04:31:19.993Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-11T04:31:20.010Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-11T04:31:31.677Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-11T04:43:15.724Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-11T05:36:45.992Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/video_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-EDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-03": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-07": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "8eff73d7f558e3f1a246ad218bab334f8fa41c9f221a873ee851aa715556f474",
+  "inputs": {
+    "VID-EDIT-01": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/VID-EDIT-01/VID-EDIT-01-source.mp4"
+      }
+    ],
+    "VID-EDIT-03": [
+      {
+        "role": "source",
+        "sha256": "9643c643abc6cb0194103d51d4f0d7b883b9044e17a31c512687231d295304ad",
+        "path": "inputs/VID-EDIT-03/VID-EDIT-03-source.mp4"
+      }
+    ],
+    "VID-EDIT-07": [
+      {
+        "role": "source",
+        "sha256": "c95a17f8de28a3928ffd215580636faef92937c1919af4a6e7e4e11e65ad27fa",
+        "path": "inputs/VID-EDIT-07/VID-EDIT-07-source.mp4"
+      }
+    ]
+  },
+  "cells": {
+    "VID-EDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-01::seedance-2-5": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "refused after 1 attempt(s): {\"error\":{\"code\":\"InputVideoSensitiveContentDetected.PrivacyInformation\",\"message\":\"The request failed because the input video 'content[1]' may contain real person. Request id: 021789100176095ba082e75ad6045f729531cc716e805eca2cef7\",\"param\":\"\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-03::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-03",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Editing duration 11.3333 exceeds maximum duration 10.', 'code': 'invalid_request'}}"
+    },
+    "VID-EDIT-03::seedance-2-5": {
+      "scenario_id": "VID-EDIT-03",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-07::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-07",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-07::seedance-2-5": {
+      "scenario_id": "VID-EDIT-07",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "VID-EDIT-01": "incomplete",
+    "VID-EDIT-03": "incomplete",
+    "VID-EDIT-07": "completed"
+  }
+}
