@@ -7,6 +7,7 @@ are four separate columns — never one blended number.
 from __future__ import annotations
 
 import base64
+import datetime as _dt
 import io
 import json
 import re as _re
@@ -929,4 +930,7 @@ def _build_context(project_root: Path, run_dir: Path,
         has_videos=bool(video_paths), videos_inline=videos_inline,
         videos_transcoded=videos_transcoded,
         params_unsupported=params_unsupported, estimates=estimates,
-        judge_meta=judge_meta, judge_version=judge_version, voice_maps=voice_maps)
+        judge_meta=judge_meta, judge_version=judge_version, voice_maps=voice_maps,
+        # when THIS file was rendered — distinct from the run's own created
+        # time, since a re-render (a new rule, a layout change) is a new report
+        generated=_dt.datetime.now().astimezone().strftime("%d %b %Y, %H:%M %Z"))
