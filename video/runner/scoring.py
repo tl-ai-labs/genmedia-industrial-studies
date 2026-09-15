@@ -8,7 +8,7 @@
 Verdict, per task (either door is enough, coverage >= 80% required):
     A beats B  <=>  mean(A) - mean(B) >= 0.5
                OR   A wins >= 70% of the DECIDED scenarios (ties excluded,
-                    tie = |delta| <= 0.5), sign test quoted when decided >= 10.
+                    tie = identical scores), sign test quoted when decided >= 10.
 
 Re-scoring from stored criterion scores is free: no regeneration, no
 re-judging. The rubric hash is stamped into every score row.
@@ -25,7 +25,19 @@ from .generate import Manifest
 from .loaders import Scenario, effective_criteria, load_rubric
 from .telemetry import RunFiles, utcnow
 
-TIE_BAND = 0.5          # |delta| <= 0.5 on the same scenario = tie
+# A scenario is a tie only when both arms score the same. Any difference wins:
+# 99% vs 100% is a win for the 100 (study lead, 2026-09-14; was a 0.5-point band,
+# which filed a 100% vs 97% scenario as a tie). SCORE_EPS only absorbs float
+# noise — scenario scores are weighted sums, so equal marks can differ at 1e-15.
+TIE_BAND = 0.0
+SCORE_EPS = 1e-9
+
+
+def is_tie(delta: float) -> bool:
+    """Same-scenario comparison: identical scores tie, anything else is decided."""
+    return abs(delta) <= TIE_BAND + SCORE_EPS
+
+
 MEAN_GAP_DOOR = 0.5
 WIN_RATE_DOOR = 0.70
 COVERAGE_FLOOR = 0.80
@@ -144,7 +156,15 @@ def score_run(project_root: Path, run_dir: Path) -> dict:
         if r.get("status") == "judged":
             judged_by_cell[(r["scenario_id"], r["model_id"])] = r
 
-    existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")}
+    # A stored `unjudged` row is a placeholder, not a result — it carries no
+    # score. If a judge record has since appeared (a --retry-unjudged pass
+    # after a transient 429, say), that cell must be allowed to score, or a
+    # momentary rate limit permanently discards a clip we already paid for.
+    # Rows that DO carry a score are never recomputed here; re-scoring appends
+    # and aggregate() takes the latest row per cell.
+    existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")
+                if r.get("status") != "unjudged"
+                or (r["scenario_id"], r["model_id"]) not in judged_by_cell}
     counts = {"scored": 0, "invalid": 0, "unjudged": 0, "other": 0}
 
     for key, cell in sorted(manifest.data["cells"].items()):
@@ -255,7 +275,7 @@ def aggregate(run_dir: Path) -> dict:
             "eligible": 0, "skipped": 0, "numeric": [], "scored": 0, "invalid": 0,
             "unjudged": 0, "failed": 0, "latencies": [], "attempts": [],
             "gen_micro": 0, "judge_micro": 0, "cost_estimated": False,
-            "refused": 0, "by_scenario": {}})
+            "refused": 0, "by_scenario": {}, "no_result": {}})
         if cell["state"] == "skipped":
             m["skipped"] += 1
             continue
@@ -267,6 +287,10 @@ def aggregate(run_dir: Path) -> dict:
             m[srow["status"]] += 1
         elif srow and srow["status"] == "unjudged" or cell["state"] == "unjudged":
             m["unjudged"] += 1
+        if cell["scenario_id"] not in m["by_scenario"]:
+            # why this arm has nothing to compare here — so a head-to-head
+            # can account for every scenario, not only the ones it paired
+            m["no_result"][cell["scenario_id"]] = cell["state"]
         if cell["state"] == "failed":
             m["failed"] += 1
             if "refused" in (cell.get("reason") or ""):
@@ -294,6 +318,27 @@ def aggregate(run_dir: Path) -> dict:
 
     # per-model summary + pairwise verdicts
     for task, t in tasks.items():
+        # Scenarios where EVERY eligible arm produced a score. Means taken over
+        # different scenario sets are not comparable: on 2026-09-10 Seedance
+        # refused two ads, so Omni's mean covered 10 scenarios and Seedance's 8
+        # — and the two were printed side by side as though they measured the
+        # same thing. `complete` is the set both arms actually attempted, and
+        # is what a head-to-head number must be built on. The excluded
+        # scenarios are NOT hidden: they are reliability, counted in failed /
+        # refused / unjudged and reported there.
+        arms = [mid for mid, m in t["models"].items() if m["eligible"]]
+        t["complete_scenarios"] = sorted(
+            sid for sid in t["scenarios"]
+            if arms and all(sid in t["models"][mid]["by_scenario"] for mid in arms))
+        t["incomplete_scenarios"] = sorted(set(t["scenarios"]) - set(t["complete_scenarios"]))
+        for mid, m in t["models"].items():
+            m["numeric_complete"] = [m["by_scenario"][sid]
+                                     for sid in t["complete_scenarios"]
+                                     if sid in m["by_scenario"]]
+            nc = m["numeric_complete"]
+            m["mean_complete"] = round(sum(nc) / len(nc), 2) if nc else None
+            m["worst_complete"] = round(min(nc), 2) if nc else None
+            m["complete_n"] = len(nc)
         for mid, m in t["models"].items():
             nums = m["numeric"]
             m["mean"] = round(sum(nums) / len(nums), 2) if nums else None
@@ -303,6 +348,7 @@ def aggregate(run_dir: Path) -> dict:
             m["coverage"] = len(nums) / m["eligible"] if m["eligible"] else 0.0
             m["latency_p50_ms"] = _p50(m["latencies"])
             m["latency_max_ms"] = max(m["latencies"]) if m["latencies"] else None
+            m["latency_min_ms"] = min(m["latencies"]) if m["latencies"] else None
             m["success_rate"] = ((m["eligible"] - m["failed"]) / m["eligible"]
                                  if m["eligible"] else None)
             m["mean_attempts"] = (round(sum(m["attempts"]) / len(m["attempts"]), 2)
@@ -315,18 +361,29 @@ def aggregate(run_dir: Path) -> dict:
         mids = sorted(t["models"])
         for i, a in enumerate(mids):
             for b in mids[i + 1:]:
-                t["pairs"].append(pairwise_verdict(task, a, b, t["models"]))
+                t["pairs"].append(pairwise_verdict(task, a, b, t["models"],
+                                                   t["scenarios"]))
         t["scenarios"] = sorted(t["scenarios"])
     return {"tasks": tasks}
 
 
-def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
+def pairwise_verdict(task: str, a: str, b: str, models: dict,
+                     scenarios=None) -> dict:
     ma, mb = models[a], models[b]
     common = sorted(set(ma["by_scenario"]) & set(mb["by_scenario"]))
+    # Every scenario in the task is accounted for: compared, or not compared
+    # because one arm or both have no score. A W-T-L over 8 of 10 scenarios
+    # read on its own looks like the whole task; the other 2 are a result too.
+    scen = sorted(scenarios if scenarios is not None
+                  else set(ma["by_scenario"]) | set(mb["by_scenario"]))
+    missing_a = [s for s in scen if s not in ma["by_scenario"]]
+    missing_b = [s for s in scen if s not in mb["by_scenario"]]
+    states = ([ma.get("no_result", {}).get(s) for s in missing_a]
+              + [mb.get("no_result", {}).get(s) for s in missing_b])
     wins_a = wins_b = ties = 0
     for sid in common:
         d = ma["by_scenario"][sid] - mb["by_scenario"][sid]
-        if abs(d) <= TIE_BAND:
+        if is_tie(d):
             ties += 1
         elif d > 0:
             wins_a += 1
@@ -342,7 +399,16 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
               "mean_gap": round(mean_gap, 3) if mean_gap is not None else None,
               "sign_test_p": (round(sign_test_p(max(wins_a, wins_b), decided), 5)
                               if decided >= SIGN_TEST_MIN_N else None),
-              "winner": None, "door": None, "note": ""}
+              "winner": None, "door": None, "note": "",
+              "n_scenarios": len(scen),
+              "not_compared": len(scen) - len(common),
+              "missed": {"both": sorted(set(missing_a) & set(missing_b)),
+                         "a": sorted(set(missing_a) - set(missing_b)),
+                         "b": sorted(set(missing_b) - set(missing_a))},
+              # "failed" only when every missing cell really failed; an
+              # unjudged or skipped cell is not a model failure
+              "missed_all_failed": bool(states) and all(st == "failed"
+                                                        for st in states)}
 
     if mean_gap is None or not common:
         result["note"] = "not comparable: missing scores"
@@ -389,11 +455,17 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict) -> dict:
     if ma["latency_p50_ms"] and mb["latency_p50_ms"] \
             and ma["latency_p50_ms"] != mb["latency_p50_ms"]:
         facts.append(f"faster p50: {a if ma['latency_p50_ms'] < mb['latency_p50_ms'] else b}")
-    tie_note = ("tie on quality (mean gap "
-                + (f"{abs(mean_gap):.2f}" if mean_gap is not None else "n/a")
-                + f" < {MEAN_GAP_DOOR}, no {WIN_RATE_DOOR:.0%} win rate). "
-                + ("Broken only by facts: " + "; ".join(facts) if facts
-                   else "Nothing separates them on these scenarios — "
-                        "they are equivalent here, which is itself a result."))
-    result["note"] = (result["note"] + " | " + tie_note) if result["note"] else tie_note
+    # A door that was cleared but blocked (coverage, contradiction) is already
+    # explained in the note. Appending "tie on quality (mean gap 1.35 < 0.5)"
+    # after it would be false, so a blocked verdict gets only the facts.
+    if result["note"]:
+        result["note"] += (". On the facts: " + "; ".join(facts) if facts
+                           else ". Nothing else separates them on these scenarios.")
+    else:
+        result["note"] = ("tie on quality (mean gap "
+                          + (f"{abs(mean_gap):.2f}" if mean_gap is not None else "n/a")
+                          + f" < {MEAN_GAP_DOOR}, no {WIN_RATE_DOOR:.0%} win rate). "
+                          + ("Broken only by facts: " + "; ".join(facts) if facts
+                             else "Nothing separates them on these scenarios — "
+                                  "they are equivalent here, which is itself a result."))
     return result

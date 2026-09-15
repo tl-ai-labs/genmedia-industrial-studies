@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-06 (sheet row 80) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: —)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Product reference; the 16:9 brief | source: Google Scanned Objects (CC BY 4.0) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-AD-06
+modality: video
+task: image_to_video
+title: Vertical variant
+prompt: Produce this same product concept in 9:16 vertical. The product must remain fully
+  in frame and the text must remain fully legible.
+inputs:
+  reference: assets/bank/VID-AD-06-reference.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '9:16'   # the brief asks for the vertical variant;
+                       # wired 16:9 until 2026-09-09, which made the
+                       # scenario unsatisfiable by construction
+  audio: true
+  seed: 20260910
+expected: 'Vertical variant. Capability under test: Reframing without loss. Adherence clauses,
+  check each: 1) 9:16 output  2) Product fully in frame  3) Text not cropped  4) Composition
+  adapted rather than centre-cropped'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets

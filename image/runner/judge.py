@@ -117,7 +117,8 @@ def parse_judge_response(text: str, expected_names: list[str]) -> dict:
     return {"criteria": seen, "overall_note": str(data.get("overall_note", "")).strip()}
 
 
-def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
+def judge_run(project_root: Path, run_dir: Path, models_path: Path,
+              retry_unjudged: bool = False) -> dict:
     project_root, run_dir = Path(project_root), Path(run_dir)
     from .loaders import load_models
     mf = load_models(models_path)
@@ -169,7 +170,15 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path) -> dict:
     # eligible: passed the gates, not yet judged (resume: never pay twice)
     by_scenario: dict[str, list[str]] = {}
     for key, cell in manifest.data["cells"].items():
-        if cell["state"] in ("measured", "judged"):  # judged = re-run for unscored
+        # `unjudged` is a terminal state on purpose — a cell the judge could not
+        # score is excluded from the mean, never given a 0. But the state does
+        # not distinguish "the judge refused this content" from "Vertex
+        # returned 429 RESOURCE_EXHAUSTED", and the second is a transient
+        # infrastructure failure that permanently costs a paid-for data point.
+        # Re-judging is free, so it is offered explicitly rather than silently:
+        # only --retry-unjudged reopens those cells.
+        eligible = ("measured", "judged") + (("unjudged",) if retry_unjudged else ())
+        if cell["state"] in eligible:  # judged = re-run for unscored
             if (cell["scenario_id"], cell["model_id"]) not in already:
                 by_scenario.setdefault(cell["scenario_id"], []).append(cell["model_id"])
 

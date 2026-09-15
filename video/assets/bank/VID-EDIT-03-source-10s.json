@@ -1,0 +1,21 @@
+{
+ "source": "Pexels Video",
+ "pexels_id": 7086113,
+ "page_url": "https://www.pexels.com/video/7086113/",
+ "file_url": "https://videos.pexels.com/video-files/7086113/7086113-hd_1280_720_30fps.mp4",
+ "licence": "Pexels License — free to use, commercial use permitted, no attribution required (https://www.pexels.com/license/)",
+ "scenario": "VID-EDIT-03",
+ "brief_need": "a person (background will be replaced)",
+ "parsed": {
+  "duration_s": 9.576233,
+  "width": 1280,
+  "height": 720
+ },
+ "bytes": 3807603,
+ "sha256": "74097dba39ae83ef8241397157edae093e7b7c55484739782ef477c76642419b",
+ "ts": "2026-09-11T04:54:14Z",
+ "match_note": "chosen by title from Pexels search; content not machine-verified — eyeball before a paid run",
+ "derived_from": "VID-EDIT-03-source.mp4",
+ "derived_from_sha256": "9643c643abc6cb0194103d51d4f0d7b883b9044e17a31c512687231d295304ad",
+ "derivation": "ffmpeg -t 9.5 -c copy: stream copy of the opening segment, NOT a re-encode — the pixels are the original's. Cut on 2026-09-11 because Omni refuses any edit longer than 10s (\"Editing duration 11.3333 exceeds maximum duration 10\"), which left this scenario unable to produce a pair. The brief's subject was confirmed present throughout the retained segment before cutting."
+}

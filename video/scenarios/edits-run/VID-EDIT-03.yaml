@@ -1,0 +1,29 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-03 (sheet row 107) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with a person | source: LOVEU-TGVE-2023 (CC, redistributable) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-03
+modality: video
+task: video_edit
+title: Background replacement
+prompt: Replace the background of this clip with a modern office interior. Keep the person,
+  their motion and the lighting on them exactly as they are.
+inputs:
+  source: assets/bank/VID-EDIT-03-source.mp4
+params:
+  resolution: 1080p
+  audio: true
+  seed: 20260910
+expected: 'Background replacement. Capability under test: Matting quality under motion. Adherence
+  clauses, check each: 1) Background replaced throughout  2) Subject edges clean, no fringing  3)
+  Subject motion unchanged  4) Subject lighting unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets

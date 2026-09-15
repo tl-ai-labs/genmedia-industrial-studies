@@ -3,7 +3,7 @@ import math
 import pytest
 
 from runner.matrix import build_matrix
-from runner.scoring import (measured_criterion_score, pairwise_verdict,
+from runner.scoring import (is_tie, measured_criterion_score, pairwise_verdict,
                             sign_test_p, technical_compliance_score)
 
 
@@ -76,13 +76,28 @@ def test_verdict_mean_gap_door():
 
 
 def test_verdict_tie_broken_only_by_facts():
-    a = {f"s{i}": 7.8 for i in range(10)}
-    b = {f"s{i}": 7.5 for i in range(10)}
-    models = {"a": _model(7.8, a, cost=3.2), "b": _model(7.5, b, cost=0.8)}
+    # a split 5-5 on scenarios and level on the mean: no door opens
+    a = {f"s{i}": (7.8 if i % 2 else 7.5) for i in range(10)}
+    b = {f"s{i}": (7.5 if i % 2 else 7.8) for i in range(10)}
+    models = {"a": _model(7.65, a, cost=3.2), "b": _model(7.65, b, cost=0.8)}
     v = pairwise_verdict("t", "a", "b", models)
     assert v["winner"] is None
     assert "tie on quality" in v["note"]
     assert "cheaper: b" in v["note"]
+
+
+def test_only_identical_scenario_scores_tie():
+    """Study lead, 2026-09-14: 100% vs 100% is a tie; 99% vs 100% is a win for
+    the 100. There is no tie band — float noise from the weighted sum is the
+    only thing absorbed."""
+    assert is_tie(0.0)
+    assert is_tie((0.1 + 0.2) - 0.3)                              # float noise
+    assert not is_tie(10.0 - 9.9)                                 # 100% vs 99%
+    assert not is_tie(10.0 - 9.7)                                 # was a "tie" at 0.5
+    models = {"a": _model(9.9, {"s0": 10.0, "s1": 9.9, "s2": 8.0}),
+              "b": _model(9.2, {"s0": 10.0, "s1": 10.0, "s2": 7.9})}
+    v = pairwise_verdict("t", "a", "b", models)
+    assert (v["wins_a"], v["ties"], v["wins_b"]) == (1, 1, 1)
 
 
 def test_verdict_coverage_floor_blocks_winner():
@@ -107,3 +122,27 @@ def test_matrix_filters_by_task_support():
     states = {(c.scenario_id, c.model_id): c.state for c in cells}
     assert states[("s1", "does-video")] == "planned"
     assert states[("s1", "cannot")] == "skipped"   # never attempted, n/a
+
+
+def test_a_blocked_door_is_not_restated_as_a_small_gap():
+    """A 2-point gap blocked by the coverage floor once printed as
+    '... no winner declared | tie on quality (mean gap 2.00 < 0.5 ...)' —
+    the second clause contradicting the first."""
+    models = {"a": _model(9.0, {f"s{i}": 9.0 for i in range(5)}, coverage=0.5),
+              "b": _model(7.0, {f"s{i}": 7.0 for i in range(5)}, coverage=1.0)}
+    v = pairwise_verdict("t", "a", "b", models)
+    assert "coverage" in v["note"]
+    assert "< 0.5" not in v["note"] and "tie on quality" not in v["note"]
+
+
+def test_the_tally_accounts_for_every_scenario():
+    a = _model(8.0, {"s1": 8.0, "s2": 8.0})
+    b = _model(8.0, {"s1": 8.0, "s3": 8.0})
+    a["no_result"] = {"s3": "failed", "s4": "unjudged"}
+    b["no_result"] = {"s2": "failed", "s4": "failed"}
+    v = pairwise_verdict("t", "a", "b", {"a": a, "b": b},
+                         {"s1", "s2", "s3", "s4"})
+    assert v["n_scenarios"] == 4 and v["n_common"] == 1 and v["not_compared"] == 3
+    assert v["missed"] == {"both": ["s4"], "a": ["s3"], "b": ["s2"]}
+    # an unjudged cell is not a model failure, so the word "failed" is withheld
+    assert v["missed_all_failed"] is False

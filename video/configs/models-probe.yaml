@@ -83,7 +83,11 @@ video:
 - adapter: seedance_video
   auth_env: ARK_API_KEY
   display: Seedance 2.5
-  enabled: true
+  # Disarmed 2026-09-10. This is a throwaway probe config from 2026-09-03 that
+  # was committed with a LIVE billable arm in it. Only reachable by pointing
+  # --models at this file, but that is a footgun, not a feature: a probe config
+  # should never be the thing that spends money by default.
+  enabled: false
   id: seedance-2-5
   limits:
     max_concurrency: 1
