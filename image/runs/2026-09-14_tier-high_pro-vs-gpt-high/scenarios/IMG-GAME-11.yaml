@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-11 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-urban.png — provenance in each sidecar .json
+id: IMG-GAME-11
+modality: image
+task: image_edit
+title: Turnaround generated from a single front view
+inputs:
+  source: assets/bank/IMG-GAME-base-urban.png
+params:
+  size: auto
+prompt: Using this front-facing reference, generate the matching three-quarter, side and back
+  views of the same person, arranged left to right in one image on a shared horizon line.
+  The cap, hairline, shirt cut and build must match the reference exactly and must be resolved
+  plausibly where the front view does not show them. Flat even lighting, plain light-grey
+  background.
+expected: 'Turnaround generated from a single front view. Capability under test: Coherent
+  extrapolation of unseen sides while holding the seen one. Adherence clauses, check each:
+  1) Three new views present — three-quarter, side and back  2) Cap, hairline, shirt cut and
+  build match the reference  3) Back view plausibly resolves what the front view hides  4)
+  All views equal height on one horizon line, plain background'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-high

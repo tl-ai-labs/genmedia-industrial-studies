@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-48 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+id: IMG-VIEW-48
+modality: image
+task: text_to_image
+title: Dutch angle at a specified tilt
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: A photorealistic shot of a lone figure at the end of a long hospital corridor at night,
+  taken at a dutch angle of exactly twenty degrees clockwise, so the corridor's floor and
+  ceiling lines run diagonally across the frame. Flickering strip lights, wet reflective floor,
+  deep perspective down the corridor. Nothing in the frame is upright. 16:9.
+expected: 'Dutch angle at a specified tilt. Capability under test: A numerically specified
+  camera roll applied to the whole frame. Adherence clauses, check each: 1) Whole frame rolled
+  roughly twenty degrees clockwise  2) Corridor floor and ceiling lines run diagonally  3)
+  Lone figure at the far end, deep corridor perspective  4) Nothing left accidentally upright,
+  16:9'
+checks:
+  min_width: 1000
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.35
+  visual_quality: 0.2
+  composition: 0.3
+  realism_style: 0.15
+tags:
+- camera-angle-from-scratch
+- scenario-bank-view
+- tier-medium

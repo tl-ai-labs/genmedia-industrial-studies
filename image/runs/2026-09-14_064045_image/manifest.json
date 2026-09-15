@@ -1,0 +1,1380 @@
+{
+  "run_id": "2026-09-14_064045_image",
+  "created": "2026-09-14T06:40:45.495Z",
+  "state": "reported",
+  "modality": "image",
+  "git_sha": "4e35177b1339d7a06f3d5ffe807d9598b2cb28f4",
+  "budget_usd": 20.0,
+  "events": [
+    {
+      "ts": "2026-09-14T06:40:45.548Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-14T06:40:54.606Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-14T06:41:08.060Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-14T07:18:59.928Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-14T07:25:42.567Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-14T07:26:02.463Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-14T07:36:56.995Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-14T08:00:44.845Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-14T08:00:46.642Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-14T08:01:53.071Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T08:58:06.162Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-image-2-high",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-pro-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3-pro-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b",
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ],
+    "text_to_image": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-BRAND-04": {
+      "edit_fidelity": 0.4,
+      "preservation": 0.1,
+      "visual_quality": 0.15,
+      "realism_style": 0.1,
+      "text_accuracy": 0.25
+    },
+    "IMG-BRAND-05": {
+      "edit_fidelity": 0.444444,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111,
+      "text_accuracy": 0.277778
+    },
+    "IMG-GAME-03": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-05": {
+      "prompt_adherence": 0.25,
+      "visual_quality": 0.15,
+      "composition": 0.25,
+      "realism_style": 0.05,
+      "text_accuracy": 0.3
+    },
+    "IMG-GAME-10": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-11": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-12": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-30": {
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.35
+    },
+    "IMG-GAME-35": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-38": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-41": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-42": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-44": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-49": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-50": {
+      "edit_fidelity": 0.4,
+      "preservation": 0.3,
+      "visual_quality": 0.15,
+      "realism_style": 0.15
+    },
+    "IMG-GAME-53": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GAME-56": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-LE-10": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-STY-03": {
+      "edit_fidelity": 0.45,
+      "visual_quality": 0.25,
+      "realism_style": 0.3
+    },
+    "IMG-STY-05": {
+      "edit_fidelity": 0.45,
+      "visual_quality": 0.25,
+      "realism_style": 0.3
+    },
+    "IMG-UI-06": {
+      "edit_fidelity": 0.4,
+      "visual_quality": 0.15,
+      "realism_style": 0.05,
+      "text_accuracy": 0.4
+    },
+    "IMG-VIEW-06": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-07": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-08": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-09": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-10": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-16": {
+      "edit_fidelity": 0.4,
+      "visual_quality": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.3
+    },
+    "IMG-VIEW-17": {
+      "edit_fidelity": 0.4,
+      "visual_quality": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.3
+    },
+    "IMG-VIEW-18": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-24": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-27": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-29": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-31": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-33": {
+      "edit_fidelity": 0.571429,
+      "visual_quality": 0.214286,
+      "realism_style": 0.214286
+    },
+    "IMG-VIEW-38": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-44": {
+      "edit_fidelity": 0.4,
+      "visual_quality": 0.15,
+      "realism_style": 0.15,
+      "text_accuracy": 0.3
+    },
+    "IMG-VIEW-46": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-51": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-53": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-54": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-56": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-58": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-VIEW-59": {
+      "edit_fidelity": 0.55,
+      "visual_quality": 0.15,
+      "realism_style": 0.3
+    }
+  },
+  "scenario_set_hash": "c76f16e02940afc56e3ad5dcd0cf2f11b6be2732c030c72194706307a9d43c01",
+  "inputs": {
+    "IMG-BRAND-04": [
+      {
+        "role": "source",
+        "sha256": "001688a604f834a0692a1867c73eef81a422b3364a6f33b8fa676886a67fcad2",
+        "path": "inputs/IMG-BRAND-04/IMG-BRAND-04-source.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "1ca0a0ec8e405459a14ebf2dcc7cfd1f9567247187d6082c6f3ccd8572b7e919",
+        "path": "inputs/IMG-BRAND-04/IMG-BRAND-04-reference.png"
+      }
+    ],
+    "IMG-BRAND-05": [
+      {
+        "role": "source",
+        "sha256": "238236dee9ad11ae740bebfc5b7830045f68e677dc22223de359fd9c1b79bb2c",
+        "path": "inputs/IMG-BRAND-05/IMG-BRAND-05-source.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "7d5938d90f834e84ad4ca74f252770c7380412a320efea43bd8b9110c370e776",
+        "path": "inputs/IMG-BRAND-05/IMG-BRAND-05-reference.png"
+      },
+      {
+        "role": "reference2",
+        "sha256": "e562decbcfb7ed77ef73707be4d81ee1ce4efacc2183d9421f0b3a9f30f0f191",
+        "path": "inputs/IMG-BRAND-05/IMG-BRAND-05-reference2.png"
+      }
+    ],
+    "IMG-GAME-03": [],
+    "IMG-GAME-05": [],
+    "IMG-GAME-10": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-10/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-GAME-11": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-11/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-12": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-12/IMG-GAME-base-urban.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "cfb3e6e6531a3d40023fa3668ad833a91a96c5d861eaf2e4a8b101e6f95eda1b",
+        "path": "inputs/IMG-GAME-12/IMG-GAME-base-arcanist.png"
+      },
+      {
+        "role": "reference2",
+        "sha256": "788946b654f3d7ba45f692d3d13de1f8461b39c7aa1067afad068fd6a0f5de3c",
+        "path": "inputs/IMG-GAME-12/IMG-GAME-base-ranger.png"
+      }
+    ],
+    "IMG-GAME-30": [],
+    "IMG-GAME-35": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-35/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-38": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-38/IMG-GAME-base-urban.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "59f1592d836aaa7e2e4901a9481c466bf083283842de9d72cb24732bbb6efa0d",
+        "path": "inputs/IMG-GAME-38/IMG-GAME-base-brute.png"
+      }
+    ],
+    "IMG-GAME-41": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-41/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-GAME-42": [
+      {
+        "role": "source",
+        "sha256": "847b46a893e45751d67e661a03e0cb529fcf3ceb76429f0785db1765011ee90c",
+        "path": "inputs/IMG-GAME-42/IMG-GAME-base-masked.png"
+      }
+    ],
+    "IMG-GAME-44": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-44/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-49": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-49/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-GAME-50": [
+      {
+        "role": "source",
+        "sha256": "941d4ecf6539d2ce7985e52aaab6fc91e9feac8511df375fc873746b052f3853",
+        "path": "inputs/IMG-GAME-50/IMG-GAME-base-heavy.png"
+      }
+    ],
+    "IMG-GAME-53": [
+      {
+        "role": "source",
+        "sha256": "847b46a893e45751d67e661a03e0cb529fcf3ceb76429f0785db1765011ee90c",
+        "path": "inputs/IMG-GAME-53/IMG-GAME-base-masked.png"
+      }
+    ],
+    "IMG-GAME-56": [
+      {
+        "role": "source",
+        "sha256": "906bfddfeb971b253b070a644eba26df40de6f8b8e1d3536156341f609646c22",
+        "path": "inputs/IMG-GAME-56/IMG-GAME-base-urban.png"
+      }
+    ],
+    "IMG-LE-10": [
+      {
+        "role": "source",
+        "sha256": "bcd9f0a100152533b5e7d752444ee05413355c401e631b8512b4c463b200d0a2",
+        "path": "inputs/IMG-LE-10/IMG-LE-10-source.png"
+      }
+    ],
+    "IMG-STY-03": [
+      {
+        "role": "source",
+        "sha256": "02a775aba0a77988b6c0651eef89bfa41e88e06f8038e20b1d3623e2cbcec2cf",
+        "path": "inputs/IMG-STY-03/IMG-STY-03-source.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "6438ece6f85595ef1952361b09a2ab2defad5c213a43d77d1f27232b77d2bb58",
+        "path": "inputs/IMG-STY-03/IMG-STY-03-reference.png"
+      }
+    ],
+    "IMG-STY-05": [
+      {
+        "role": "source",
+        "sha256": "2f2e0cdc9479ce436f9f0702be7f047853a4d7e886d45bb58d12ef5e0455764a",
+        "path": "inputs/IMG-STY-05/IMG-STY-05-source.png"
+      }
+    ],
+    "IMG-UI-06": [
+      {
+        "role": "source",
+        "sha256": "f7cc611409f1dc993221c06cfd26f1a7868e99e256a8c3ae9f14b3aba5c9797f",
+        "path": "inputs/IMG-UI-06/IMG-UI-06-source.png"
+      }
+    ],
+    "IMG-VIEW-06": [
+      {
+        "role": "source",
+        "sha256": "2d4080a76aeddd83149cac542c723680af13412dfc0901dd2b1176ac7954edbb",
+        "path": "inputs/IMG-VIEW-06/IMG-VIEW-base-room.png"
+      }
+    ],
+    "IMG-VIEW-07": [
+      {
+        "role": "source",
+        "sha256": "2d4080a76aeddd83149cac542c723680af13412dfc0901dd2b1176ac7954edbb",
+        "path": "inputs/IMG-VIEW-07/IMG-VIEW-base-room.png"
+      }
+    ],
+    "IMG-VIEW-08": [
+      {
+        "role": "source",
+        "sha256": "c3e61f19e32db12978ed031f7e77a2f78c5cbcb074f36a3b9aeb6e3c6e66ff2c",
+        "path": "inputs/IMG-VIEW-08/IMG-VIEW-base-facade.png"
+      }
+    ],
+    "IMG-VIEW-09": [
+      {
+        "role": "source",
+        "sha256": "92e8bee1e2866013d1df04d8f8dddcf0f1ded2c03678597153c0ca1d4a4804d3",
+        "path": "inputs/IMG-VIEW-09/IMG-VIEW-base-cafe.png"
+      }
+    ],
+    "IMG-VIEW-10": [
+      {
+        "role": "source",
+        "sha256": "2d4080a76aeddd83149cac542c723680af13412dfc0901dd2b1176ac7954edbb",
+        "path": "inputs/IMG-VIEW-10/IMG-VIEW-base-room.png"
+      }
+    ],
+    "IMG-VIEW-16": [
+      {
+        "role": "source",
+        "sha256": "1a6291b99b3bfec57a00aba34f1d8e6b26425d64e45b9a85521137240db0301b",
+        "path": "inputs/IMG-VIEW-16/IMG-VIEW-base-ui.png"
+      }
+    ],
+    "IMG-VIEW-17": [
+      {
+        "role": "source",
+        "sha256": "3087f5108e2844f5e226ef592fb8b4c17bc631fd4529cdf13084c31f3fb3b7e5",
+        "path": "inputs/IMG-VIEW-17/IMG-VIEW-base-notice.png"
+      }
+    ],
+    "IMG-VIEW-18": [
+      {
+        "role": "source",
+        "sha256": "c3e61f19e32db12978ed031f7e77a2f78c5cbcb074f36a3b9aeb6e3c6e66ff2c",
+        "path": "inputs/IMG-VIEW-18/IMG-VIEW-base-facade.png"
+      }
+    ],
+    "IMG-VIEW-24": [
+      {
+        "role": "source",
+        "sha256": "5991ff2f8f51c1fbd7a8a86bc27cddc87ead30911181e34836d3a2047e5262f1",
+        "path": "inputs/IMG-VIEW-24/IMG-VIEW-base-shoe.png"
+      }
+    ],
+    "IMG-VIEW-27": [
+      {
+        "role": "source",
+        "sha256": "e1730ed02dfb7f2cb8e873d3a09e1367c14b258ea5654985e2e724537c6e9a37",
+        "path": "inputs/IMG-VIEW-27/IMG-VIEW-base-laptop.png"
+      }
+    ],
+    "IMG-VIEW-29": [
+      {
+        "role": "source",
+        "sha256": "2f432cd63c71f9cc7f7b55005b8c4a8ccfb698647f25f4759baad31a73e6cf67",
+        "path": "inputs/IMG-VIEW-29/IMG-VIEW-base-kitchen.png"
+      }
+    ],
+    "IMG-VIEW-31": [
+      {
+        "role": "source",
+        "sha256": "c3e61f19e32db12978ed031f7e77a2f78c5cbcb074f36a3b9aeb6e3c6e66ff2c",
+        "path": "inputs/IMG-VIEW-31/IMG-VIEW-base-facade.png"
+      }
+    ],
+    "IMG-VIEW-33": [
+      {
+        "role": "source",
+        "sha256": "122df28927884cd7171093981d473158ee48d22164ae0423512179aa1856dd9a",
+        "path": "inputs/IMG-VIEW-33/IMG-VIEW-base-shelf.png"
+      }
+    ],
+    "IMG-VIEW-38": [
+      {
+        "role": "source",
+        "sha256": "a3028b280a969b3a5e2d9b067b60daf00209c350682f139ded800697ada49c1b",
+        "path": "inputs/IMG-VIEW-38/IMG-VIEW-base-group.png"
+      }
+    ],
+    "IMG-VIEW-44": [
+      {
+        "role": "source",
+        "sha256": "b932bae04c7022f88f0ee3abafb81d8b4e60f5a9b20ad5db7522d97c48ef407d",
+        "path": "inputs/IMG-VIEW-44/IMG-VIEW-base-floorplan.png"
+      }
+    ],
+    "IMG-VIEW-46": [
+      {
+        "role": "source",
+        "sha256": "734823b5f8c7970a00a6fda9816a2f3410331bbb4866dc4d7f3bfab22f0a0a0b",
+        "path": "inputs/IMG-VIEW-46/IMG-VIEW-base-wideroom.png"
+      }
+    ],
+    "IMG-VIEW-51": [
+      {
+        "role": "source",
+        "sha256": "8767e44fd39cabce319776cb61d2b10eb3fc2f0b755ffeae8f41cb030f451590",
+        "path": "inputs/IMG-VIEW-51/IMG-VIEW-base-hair.png"
+      }
+    ],
+    "IMG-VIEW-53": [
+      {
+        "role": "source",
+        "sha256": "2c75b3f128f6d36948de7067d62c833d6f43fceeecf2f543eedc3e4f9aa530de",
+        "path": "inputs/IMG-VIEW-53/IMG-VIEW-base-portrait.png"
+      }
+    ],
+    "IMG-VIEW-54": [
+      {
+        "role": "source",
+        "sha256": "6ac281f3c54929e0ab62c167b7c820f5a740862d16ad3d953e7c69e06e9daaea",
+        "path": "inputs/IMG-VIEW-54/IMG-VIEW-base-model.png"
+      }
+    ],
+    "IMG-VIEW-56": [
+      {
+        "role": "source",
+        "sha256": "92e8bee1e2866013d1df04d8f8dddcf0f1ded2c03678597153c0ca1d4a4804d3",
+        "path": "inputs/IMG-VIEW-56/IMG-VIEW-base-cafe.png"
+      }
+    ],
+    "IMG-VIEW-58": [
+      {
+        "role": "source",
+        "sha256": "a3028b280a969b3a5e2d9b067b60daf00209c350682f139ded800697ada49c1b",
+        "path": "inputs/IMG-VIEW-58/IMG-VIEW-base-group.png"
+      }
+    ],
+    "IMG-VIEW-59": [
+      {
+        "role": "source",
+        "sha256": "a3028b280a969b3a5e2d9b067b60daf00209c350682f139ded800697ada49c1b",
+        "path": "inputs/IMG-VIEW-59/IMG-VIEW-base-group.png"
+      }
+    ]
+  },
+  "cells": {
+    "IMG-BRAND-04::gpt-image-2-high": {
+      "scenario_id": "IMG-BRAND-04",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-04::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-BRAND-04",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-05::gpt-image-2-high": {
+      "scenario_id": "IMG-BRAND-05",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-BRAND-05::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-BRAND-05",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-03::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-03",
+      "model_id": "gpt-image-2-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-03::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-03",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-05::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-05",
+      "model_id": "gpt-image-2-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-05::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-05",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-10::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-10",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-10::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-10",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-11::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-11",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-11::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-11",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-12::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-12",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-12::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-12",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-30::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-30",
+      "model_id": "gpt-image-2-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-30::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-30",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-35::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-35",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-35::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-35",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-38::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-38",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-38::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-38",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-41::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-41",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-41::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-41",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-42::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-42",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-42::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-42",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-44::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-44",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-44::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-44",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-49::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-49",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-49::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-49",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-50::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-50",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": "failed gates: preservation"
+    },
+    "IMG-GAME-50::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-50",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": "failed gates: preservation"
+    },
+    "IMG-GAME-53::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-53",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-53::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-53",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-56::gpt-image-2-high": {
+      "scenario_id": "IMG-GAME-56",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GAME-56::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GAME-56",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-10::gpt-image-2-high": {
+      "scenario_id": "IMG-LE-10",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-LE-10::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-LE-10",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-03::gpt-image-2-high": {
+      "scenario_id": "IMG-STY-03",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-03::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-STY-03",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-05::gpt-image-2-high": {
+      "scenario_id": "IMG-STY-05",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-STY-05::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-STY-05",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-06::gpt-image-2-high": {
+      "scenario_id": "IMG-UI-06",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-UI-06::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-UI-06",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-06::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-06",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-06::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-06",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-07::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-07",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-07::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-07",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-08::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-08",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-08::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-08",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-09::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-09",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-09::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-09",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-10::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-10",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-10::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-10",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-16::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-16",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-16::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-16",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-17::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-17",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-17::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-17",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-18::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-18",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-18::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-18",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-24::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-24",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-24::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-24",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-27::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-27",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-27::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-27",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-29::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-29",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-29::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-29",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-31::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-31",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-31::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-31",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-33::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-33",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-33::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-33",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-38::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-38",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-38::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-38",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-44::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-44",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-44::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-44",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-46::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-46",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+    },
+    "IMG-VIEW-46::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-46",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-51::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-51",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-51::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-51",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-53::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-53",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-53::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-53",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-54::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-54",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-54::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-54",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-56::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-56",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-56::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-56",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-58::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-58",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-58::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-58",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-59::gpt-image-2-high": {
+      "scenario_id": "IMG-VIEW-59",
+      "model_id": "gpt-image-2-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-VIEW-59::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-VIEW-59",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "IMG-BRAND-04": "completed",
+    "IMG-BRAND-05": "completed",
+    "IMG-GAME-03": "completed",
+    "IMG-GAME-05": "completed",
+    "IMG-GAME-10": "completed",
+    "IMG-GAME-11": "completed",
+    "IMG-GAME-12": "completed",
+    "IMG-GAME-30": "completed",
+    "IMG-GAME-35": "completed",
+    "IMG-GAME-38": "completed",
+    "IMG-GAME-41": "completed",
+    "IMG-GAME-42": "completed",
+    "IMG-GAME-44": "completed",
+    "IMG-GAME-49": "completed",
+    "IMG-GAME-50": "incomplete",
+    "IMG-GAME-53": "completed",
+    "IMG-GAME-56": "completed",
+    "IMG-LE-10": "completed",
+    "IMG-STY-03": "completed",
+    "IMG-STY-05": "completed",
+    "IMG-UI-06": "completed",
+    "IMG-VIEW-06": "completed",
+    "IMG-VIEW-07": "completed",
+    "IMG-VIEW-08": "completed",
+    "IMG-VIEW-09": "completed",
+    "IMG-VIEW-10": "completed",
+    "IMG-VIEW-16": "completed",
+    "IMG-VIEW-17": "completed",
+    "IMG-VIEW-18": "completed",
+    "IMG-VIEW-24": "completed",
+    "IMG-VIEW-27": "completed",
+    "IMG-VIEW-29": "completed",
+    "IMG-VIEW-31": "completed",
+    "IMG-VIEW-33": "completed",
+    "IMG-VIEW-38": "completed",
+    "IMG-VIEW-44": "completed",
+    "IMG-VIEW-46": "completed",
+    "IMG-VIEW-51": "completed",
+    "IMG-VIEW-53": "completed",
+    "IMG-VIEW-54": "completed",
+    "IMG-VIEW-56": "completed",
+    "IMG-VIEW-58": "completed",
+    "IMG-VIEW-59": "completed"
+  }
+}

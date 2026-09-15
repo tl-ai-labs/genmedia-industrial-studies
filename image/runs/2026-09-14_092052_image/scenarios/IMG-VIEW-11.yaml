@@ -1,0 +1,40 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-11 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-plate.png — provenance in each sidecar .json
+id: IMG-VIEW-11
+modality: image
+task: image_edit
+title: Forty-five degree food shot to an overhead flat lay
+inputs:
+  source: assets/bank/IMG-VIEW-base-plate.png
+params:
+  size: auto
+prompt: Re-photograph this dish from directly overhead as a flat lay, looking straight down
+  at the plate so it reads as a full circle. The sandwich, the chips, the sauce pot and the
+  cutlery must stay in the same arrangement relative to each other, and the wooden table surface
+  must stay as it is.
+expected: 'Forty-five degree food shot to an overhead flat lay. Capability under test: Ninety-degree
+  elevation change with plated arrangement and props held. Adherence clauses, check each:
+  1) Directly overhead, plate reads as a full circle  2) Sandwich, chips and sauce pot in
+  the same arrangement  3) Cutlery still in its original position relative to the plate  4)
+  Wooden table surface and light direction preserved'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-food-&-fashion
+- scenario-bank-view
+- tier-medium

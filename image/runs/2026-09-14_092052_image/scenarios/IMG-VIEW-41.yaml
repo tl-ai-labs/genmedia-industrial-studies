@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-41 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: medium (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-fisheye.png — provenance in each sidecar .json
+# A lower-distortion photograph of the same room exists as ground truth (see the sheet); not fed to models.
+id: IMG-VIEW-41
+modality: image
+task: image_edit
+title: Remove fisheye barrel distortion
+inputs:
+  source: assets/bank/IMG-VIEW-base-fisheye.png
+params:
+  size: auto
+prompt: 'Correct the barrel distortion in this photograph so the image becomes rectilinear:
+  the door frame, furniture edges and skirting board must all read as straight lines rather
+  than curves. Keep every object in the room present and in the same position, keep the frame
+  rectangular with no curved black edges, and do not crop away the furniture at the edges.'
+expected: 'Remove fisheye barrel distortion. Capability under test: Radial distortion correction
+  — straight lines straight, content retained. Adherence clauses, check each: 1) Door frame,
+  furniture edges and skirting board all straight  2) Every object still present and in the
+  same position  3) Frame rectangular with no curved black edges  4) Edge furniture not cropped
+  away'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.55
+  visual_quality: 0.15
+  realism_style: 0.3
+tags:
+- technical-&-corrective
+- scenario-bank-view
+- tier-medium

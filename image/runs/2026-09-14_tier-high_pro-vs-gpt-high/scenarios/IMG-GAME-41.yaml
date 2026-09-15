@@ -1,0 +1,41 @@
+# Source: gaming-character-design-scenarios-v4.xlsx
+# Scenario bank row IMG-GAME-41 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-GAME-base-heavy.png — provenance in each sidecar .json
+id: IMG-GAME-41
+modality: image
+task: image_edit
+title: Gear detail callout sheet
+inputs:
+  source: assets/bank/IMG-GAME-base-heavy.png
+params:
+  size: auto
+prompt: 'Using this figure as the character reference, produce a detail callout sheet: the
+  full-body operator on the left, and on the right four enlarged detail panels showing the
+  helmet visor seal, the chest plate fastening, the glove cuff junction, and the boot and
+  shin plate overlap. Every detail must be consistent with what the full-body view shows,
+  invented only where the full view is ambiguous. Plain background, no text or labels.'
+expected: 'Gear detail callout sheet. Capability under test: Consistent magnification — detail
+  that agrees with the source rather than replacing it. Adherence clauses, check each: 1)
+  Full-body view plus exactly four enlarged detail panels  2) Details match the four named
+  areas  3) Each detail consistent with the full-body view, not a different design  4) Plain
+  background, no text, labels or leader lines'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- identity-&-consistency
+- scenario-bank-game
+- tier-high

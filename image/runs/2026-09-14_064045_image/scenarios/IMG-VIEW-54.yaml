@@ -1,0 +1,41 @@
+# Source: viewing-angle-scenarios-v3.xlsx
+# Scenario bank row IMG-VIEW-54 — prompt verbatim; runner fields from 'Runner mapping'.
+# Complexity tier: high (scenarios/tiers/scenario-tiers.csv).
+# Inputs: source = IMG-VIEW-base-model.png — provenance in each sidecar .json
+id: IMG-VIEW-54
+modality: image
+task: image_edit
+title: One person at three camera heights
+inputs:
+  source: assets/bank/IMG-VIEW-base-model.png
+params:
+  size: auto
+prompt: 'Using this photograph, show the same person three times in one row, photographed
+  from three camera heights: knee height looking up, chest height looking straight on, and
+  head height looking down. Her face, coat, footwear, pose and the setting must be identical
+  in all three; only the camera height changes, with the perspective and the horizon shifting
+  correctly each time.'
+expected: 'One person at three camera heights. Capability under test: Isolated camera-height
+  variation with everything else held fixed. Adherence clauses, check each: 1) Three panels
+  at knee, chest and head camera height  2) Same person, coat, footwear and pose in all three  3)
+  Horizon line and foreshortening shift correctly with each height  4) Same setting and lighting
+  throughout'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- people-single-and-group-viewpoints
+- scenario-bank-view
+- tier-high
