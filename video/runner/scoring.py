@@ -8,7 +8,7 @@
 Verdict, per task (either door is enough, coverage >= 80% required):
     A beats B  <=>  mean(A) - mean(B) >= 0.5
                OR   A wins >= 70% of the DECIDED scenarios (ties excluded,
-                    tie = |delta| <= 0.5), sign test quoted when decided >= 10.
+                    tie = identical scores), sign test quoted when decided >= 10.
 
 Re-scoring from stored criterion scores is free: no regeneration, no
 re-judging. The rubric hash is stamped into every score row.
@@ -25,7 +25,19 @@ from .generate import Manifest
 from .loaders import Scenario, effective_criteria, load_rubric
 from .telemetry import RunFiles, utcnow
 
-TIE_BAND = 0.5          # |delta| <= 0.5 on the same scenario = tie
+# A scenario is a tie only when both arms score the same. Any difference wins:
+# 99% vs 100% is a win for the 100 (study lead, 2026-09-14; was a 0.5-point band,
+# which filed a 100% vs 97% scenario as a tie). SCORE_EPS only absorbs float
+# noise — scenario scores are weighted sums, so equal marks can differ at 1e-15.
+TIE_BAND = 0.0
+SCORE_EPS = 1e-9
+
+
+def is_tie(delta: float) -> bool:
+    """Same-scenario comparison: identical scores tie, anything else is decided."""
+    return abs(delta) <= TIE_BAND + SCORE_EPS
+
+
 MEAN_GAP_DOOR = 0.5
 WIN_RATE_DOOR = 0.70
 COVERAGE_FLOOR = 0.80
@@ -336,6 +348,7 @@ def aggregate(run_dir: Path) -> dict:
             m["coverage"] = len(nums) / m["eligible"] if m["eligible"] else 0.0
             m["latency_p50_ms"] = _p50(m["latencies"])
             m["latency_max_ms"] = max(m["latencies"]) if m["latencies"] else None
+            m["latency_min_ms"] = min(m["latencies"]) if m["latencies"] else None
             m["success_rate"] = ((m["eligible"] - m["failed"]) / m["eligible"]
                                  if m["eligible"] else None)
             m["mean_attempts"] = (round(sum(m["attempts"]) / len(m["attempts"]), 2)
@@ -370,7 +383,7 @@ def pairwise_verdict(task: str, a: str, b: str, models: dict,
     wins_a = wins_b = ties = 0
     for sid in common:
         d = ma["by_scenario"][sid] - mb["by_scenario"][sid]
-        if abs(d) <= TIE_BAND:
+        if is_tie(d):
             ties += 1
         elif d > 0:
             wins_a += 1

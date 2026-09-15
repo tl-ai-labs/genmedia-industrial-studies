@@ -14,7 +14,7 @@
   <span class="t">GenMedia comparison</span>
   <span class="m">{{ manifest.run_id }}</span>
   <nav>
-    <a href="#summary">Summary</a>
+    <a href="#overall">Summary</a>
     <a href="#evidence">Scenarios</a>
     <a href="#footnotes">Footnotes</a>
   </nav>
@@ -34,10 +34,15 @@
   </div>
 </header>
 
+<h2 id="overall" class="sumh">Overall summary</h2>
 {{ sec.scenario_tally({'tally': tally, 'model_order': model_order}) }}
 {{ sec.duel_strip({'duel': duel, 'vendors': vendors},
                   ((duel.task|tasktitle) ~ ' only — every task has its own table below')
                   if duel and agg.tasks|length > 1 else None) }}
+{% if duel %}<ul class="tnote sumnote">
+  <li>Reliability is the model's lowest rating on any single scenario — its worst result. Higher is
+  better: it shows how bad an output can get, not just the average.</li>
+</ul>{% endif %}
 {{ sec.banners({'manifest': manifest, 'estimates': estimates}) }}
 {{ sec.task_tables({'agg': agg, 'model_order': model_order, 'vendors': vendors, 'manifest': manifest}) }}
 {{ sec.families_table({'families': families, 'family_models': family_models}) }}
