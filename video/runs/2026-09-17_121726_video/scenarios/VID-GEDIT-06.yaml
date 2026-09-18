@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-06 (Real Cricket 24, Video Editing). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.lumeflow.ai/ai-prompt/video-editing-prompts/
+# Test type: EDIT-17 Add an on-screen gauge that follows the action
+id: VID-GEDIT-06
+modality: video
+task: video_edit
+title: 'Add a bowling speed readout'
+prompt: 'Add a broadcast speed readout graphic. Display 141 km/h. Position bottom right. Fade in with 0.3-second ease-in at the moment the ball leaves the bowler''s hand, and keep the footage itself unchanged.'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-06-source.mp4
+params:
+  audio: false
+expected: 'Add a bowling speed readout. Capability under test: Add an on-screen gauge that follows the action. Adherence clauses, check each: 1) Speed box appears at release, not before  2) Reads exactly 141 km/h  3) Sits bottom right and does not cover the batter or stumps  4) Fades in smoothly  5) Footage otherwise identical to the input'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- video-editing

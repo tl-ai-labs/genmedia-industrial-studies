@@ -1,0 +1,240 @@
+# SAME as models-gen-inputs.yaml but billed to Vertex project temp-genmedia-study (Sai's
+# instruction, 2026-09-17), because ai-studies-console is CONSUMER_SUSPENDED for aiplatform.
+# GENERATION-ONLY config for the gaming pilot: makes the input stills for the Image-to-Video
+# and Image Editing cards (plan 5.2, "Generated"). Copied from models.yaml with only the enabled
+# flags changed. Nano Banana Flash on Vertex is NOT an arm under evaluation (the study runs Lite vs
+# gpt-image-2-low). GPT Image 2 was not used because the OpenAI credit is ~$0.50 (see models.yaml).
+# Same-family caveat (Gemini generates inputs that a Gemini arm later edits) is logged in the gap log.
+# Do not use for evaluation runs.
+# Usage (from image/): python -m runner.cli run --modality image \
+#   --scenarios scenarios/gen-inputs-gaming --models configs/models-gen-inputs.yaml --budget <approved>
+# The only file you edit to add/remove a model.
+# Adding a model  = one block here + `enabled: true`.
+# Adding a provider = one adapter class in runner/adapters/.
+# Every price carries unit + source + as_of. Cost is billed from returned
+# usage wherever the provider reports it; `est_usd_per_call` is used ONLY
+# for the pre-flight budget estimate, never for billing.
+version: 1
+
+image:
+  - id: gemini-3-1-flash-image
+    display: Gemini 3.1 Flash
+    enabled: false                   # parked: free-tier key has image quota 0
+    adapter: gemini_image            # -> runner/adapters/gemini_image.py
+    provider: google
+    provider_model: "gemini-3.1-flash-image"
+    auth_env: GEMINI_API_KEY
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 2}
+    params: {size: "1024x1024"}
+    price:
+      unit: per_image
+      usd: 0.067
+      tier: "1K"
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-08-31
+
+  - id: gpt-image-1-medium
+    display: GPT Image 1
+    enabled: false                   # superseded by gpt-image-2 below; kept for reference
+    adapter: openai_image            # -> runner/adapters/openai_image.py
+    provider: openai
+    provider_model: "gpt-image-1"
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_image, image_edit, inpaint_mask]
+    limits: {max_concurrency: 2, rpm: 8}
+    params: {size: "1024x1024", quality: medium}
+    price:
+      unit: per_token                # billed from returned usage, both sides
+      usd_in_per_1m: 10.00
+      usd_out_per_1m: 40.00
+      est_usd_per_call: 0.07         # OpenAI's own ~medium-square figure; pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-08-31
+
+  - id: gpt-image-2-medium           # OpenAI's latest image model
+    display: GPT Image 2 (medium)    # tier stated: an untiered name is
+                                     # what left the 46-scenario report
+                                     # ambiguous (2026-09-04 review §1)
+    enabled: false                   # Tier-medium done (55/55), 2026-09-14
+    adapter: openai_image            # same adapter — model swap is config only
+    provider: openai
+    provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_image, image_edit, inpaint_mask]
+    limits: {max_concurrency: 2, rpm: 8}
+    params: {size: "1024x1024", quality: medium}
+    price:
+      unit: per_token                # billed from returned usage, both sides
+      usd_in_per_1m: 8.00            # image input; text input is $5/1M (input tokens
+                                     # are billed at the image-in rate conservatively)
+      usd_out_per_1m: 30.00
+      est_usd_per_call: 0.05         # scaled from gpt-image-1's ~$0.07 medium; pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-09-02
+
+  - id: gpt-image-2-high             # the "most powerful" OpenAI arm: same
+    display: GPT Image 2 (high)
+    enabled: false                   # Tier-high done (43/43), 2026-09-14
+    adapter: openai_image
+    provider: openai
+    provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_image, image_edit, inpaint_mask]
+    limits: {max_concurrency: 2, rpm: 8}
+    params: {quality: high}          # size comes from each scenario
+    price:
+      unit: per_token
+      usd_in_per_1m: 8.00
+      usd_out_per_1m: 30.00
+      est_usd_per_call: 0.20         # high-quality portrait ~6k output tokens; pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-09-02
+
+  # Vertex twin of the Gemini model: same model, billed to the team's paid
+  # GCP project via ADC (gcloud auth application-default login) — no API key.
+  # Flip enabled here (and off above) to switch routes. Declared arm: the
+  # route is recorded in telemetry via adapter/provider fields.
+  - id: gemini-3-1-flash-image-vertex
+    display: Gemini 3.1 Flash
+    enabled: true                   # Tier-medium done (55/55), 2026-09-14
+    adapter: gemini_image
+    provider: google-vertex
+    provider_model: "gemini-3.1-flash-image"
+    vertex: {project: temp-genmedia-study, location: global}
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 1, rpm: 2}   # dry run 2026-09-01: parallel calls 429'd on this project's quota
+    params: {size: "1024x1024"}
+    price:
+      unit: per_image
+      usd: 0.067
+      tier: "1K"
+      source: cloud.google.com/vertex-ai/generative-ai/pricing
+      as_of: 2026-08-31
+
+  - id: gemini-3-pro-image-vertex    # Nano Banana Pro — the premium tier
+    display: Gemini 3 Pro
+    enabled: false                   # Tier-high done (43/43), 2026-09-14
+    adapter: gemini_image            # same adapter: adding a model = this block
+    provider: google-vertex
+    provider_model: "gemini-3-pro-image"
+    vertex: {project: temp-genmedia-study, location: global}
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 1, rpm: 2}   # same project quota as the flash twin
+    params: {size: "1024x1024"}
+    price:
+      unit: per_image
+      usd: 0.134
+      tier: "1K"                     # same price at 1K and 2K per the plan's table
+      source: cloud.google.com/vertex-ai/generative-ai/pricing
+      as_of: 2026-08-31
+
+  - id: gemini-3-1-flash-lite-image-vertex   # Nano Banana Lite — the entry tier
+    display: Gemini 3.1 Flash Lite
+    enabled: false                    # Tier-low run (36 scen), 2026-09-14
+    adapter: gemini_image
+    provider: google-vertex
+    provider_model: "gemini-3.1-flash-lite-image"   # id confirmed against Vertex
+                                     # models.list 2026-09-09; NOT "gemini-3-lite-image"
+    vertex: {project: temp-genmedia-study, location: global}
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 1, rpm: 2}   # same project quota as the flash/pro twins
+    params: {size: "1024x1024"}
+    price:
+      unit: per_image
+      usd: 0.0336
+      tier: "1K"                     # batch rate is 0.0168; we call standard
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-09
+
+  - id: gpt-image-2-low              # the entry OpenAI arm: same model, quality:low
+    display: GPT Image 2 (low)
+    enabled: false                    # Tier-low run (36 scen), 2026-09-14
+    adapter: openai_image
+    provider: openai
+    provider_model: "gpt-image-2-2026-04-21"   # dated snapshot, NOT the moving alias
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_image, image_edit, inpaint_mask]
+    limits: {max_concurrency: 2, rpm: 8}
+    params: {quality: low}           # size comes from each scenario
+    price:
+      unit: per_token                # billed from returned usage, same rates as
+      usd_in_per_1m: 8.00            # medium/high: quality changes tokens, not rates
+      usd_out_per_1m: 30.00
+      est_usd_per_call: 0.02         # ~2c/image quoted on the 2026-09-04 call; pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-09-02
+
+voice:                               # Phase 2 — configured, not yet enabled
+  - id: elevenlabs-flash-v2-5
+    enabled: false
+    adapter: elevenlabs_tts
+    provider: elevenlabs
+    provider_model: "eleven_flash_v2_5"
+    auth_env: ELEVENLABS_API_KEY
+    supports: [text_to_speech, styled_tts, cloned_voice_tts]
+    limits: {max_concurrency: 2}
+    voice_map: {female_mid_warm: "21m00Tcm4TlvDq8ikWAM"}
+    params: {output_format: "pcm_24000"}
+    price:
+      unit: per_1k_chars
+      usd: 0.05
+      source: elevenlabs.io/pricing/api
+      as_of: 2026-08-31
+
+  - id: gemini-3-1-flash-tts
+    enabled: false
+    adapter: gemini_tts
+    provider: google
+    provider_model: "gemini-3.1-flash-tts-preview"
+    auth_env: GEMINI_API_KEY
+    supports: [text_to_speech, styled_tts, multi_speaker]
+    limits: {max_concurrency: 2}
+    voice_map: {female_mid_warm: "Aoede"}
+    price:
+      unit: per_token
+      usd_in_per_1m: 1.00
+      usd_out_per_1m: 20.00
+      est_usd_per_call: 0.025        # ~32 audio tokens/s over a ~38 s clip; pre-flight only
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-08-31
+
+judge:
+  image:
+    adapter: gemini_text             # -> runner/adapters/gemini_text.py
+    provider: google-vertex
+    provider_model: "gemini-3-flash-preview"   # the plan's Gemini 3 Flash, as Vertex names it
+    vertex: {project: temp-genmedia-study, location: global}
+    temperature: 0
+    price:
+      unit: per_token
+      usd_in_per_1m: 0.50
+      usd_out_per_1m: 3.00
+      est_usd_per_call: 0.003        # pre-flight only
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-08-31
+  voice:
+    adapter: gemini_text
+    provider: google
+    provider_model: "gemini-3-flash"
+    auth_env: GEMINI_API_KEY
+    temperature: 0
+    price:
+      unit: per_token
+      usd_in_per_1m: 0.50
+      usd_audio_in_per_1m: 1.00
+      usd_out_per_1m: 3.00
+      est_usd_per_call: 0.003
+      source: ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-08-31
+
+asr:                                 # deterministic word-accuracy check, voice lane (Phase 2)
+  adapter: openai_transcribe
+  provider: openai
+  provider_model: "gpt-4o-mini-transcribe"
+  auth_env: OPENAI_API_KEY
+  price:
+    unit: per_minute
+    usd: 0.003
+    source: developers.openai.com/api/docs/pricing
+    as_of: 2026-08-31

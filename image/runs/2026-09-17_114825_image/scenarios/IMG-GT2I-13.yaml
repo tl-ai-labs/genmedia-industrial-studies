@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-13 (Real Cricket 24, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://easysailor.in/instagram-trending-ipl-batting-video-editing-full-guide-with-prompt/
+# Test type: T2I-04 Readable on-screen display in the right places
+id: IMG-GT2I-13
+modality: image
+task: text_to_image
+title: 'Broadcast frame from behind the bowler'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'Ultra-realistic T20-style live cricket broadcast frame during a night match in a packed stadium. Full body visible from head to shoes. A batsman at the striker end in an aggressive professional cricket stance, holding the bat ready to play a fast delivery. Wearing a modern red-and-blue professional cricket jersey, batting pads, gloves, trousers, and sports shoes with realistic fabric folds and sweat details. Official sports broadcast camera angle from behind the bowler, wide stadium view exactly like a televised cricket match. Visible pitch texture, crease lines, wicketkeeper behind stumps, fielders in background, umpire standing near stumps, cinematic floodlights, energetic crowd blur, realistic shadows and motion. Add authentic live broadcast graphics at bottom with over count, strike rate, score ticker, and team logos style. Sharp focus on batsman, ultra-detailed, cinematic sports photography, 16:9 aspect ratio.'
+expected: 'Broadcast frame from behind the bowler. Capability under test: Readable on-screen display in the right places. Adherence clauses, check each: 1) Camera is behind the bowler, high, as on TV  2) Keeper, umpire and fielders all present  3) Broadcast bar at the bottom with readable over count and score  4) 16:9 framing  5) No real player likeness or real team logo'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- text-to-image

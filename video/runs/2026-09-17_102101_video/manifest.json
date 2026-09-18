@@ -1,0 +1,133 @@
+{
+  "run_id": "2026-09-17_102101_video",
+  "created": "2026-09-17T04:51:01.512Z",
+  "state": "rejected",
+  "modality": "video",
+  "git_sha": null,
+  "budget_usd": 0.01,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-17T04:51:01.628Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-17T04:51:01.658Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-17T04:51:02.267Z",
+      "state": "rejected",
+      "reason": "pre-flight estimate 17.6000 USD exceeds budget 0.01"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522",
+    "image_to_video": "ee94b22672656a5016fd28884c8711cf4216f0ff8abb54448899852bd61997db"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/video_edit.yaml"
+    ],
+    "image_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/image_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-GEDIT-03": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GI2V-08": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "34c52f7723be31ee5723e029173246a46697a9955a006fca3ad0eb641ef455c0",
+  "inputs": {
+    "VID-GEDIT-03": [
+      {
+        "role": "source",
+        "sha256": "08a0a580cd39ecaa99ddc46166711210398643d9da75083821add5b550e6791b",
+        "path": "inputs/VID-GEDIT-03/VID-GEDIT-02-source.mp4"
+      }
+    ],
+    "VID-GI2V-08": [
+      {
+        "role": "photo",
+        "sha256": "a3e84cba68955c6d0866a9f98c88f01f9f5d371451de12e53fd5dd4416ad9e05",
+        "path": "inputs/VID-GI2V-08/standin-still.png"
+      }
+    ]
+  },
+  "cells": {
+    "VID-GEDIT-03::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-03",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-03::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-03",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-08::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-08",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-08::seedance-2-5": {
+      "scenario_id": "VID-GI2V-08",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

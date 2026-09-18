@@ -1,0 +1,41 @@
+# Gaming pilot scenario IMG-GT2I-07 (Real Cricket 24, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://geminiaiprompts.in/ipl-ai-photo-editing-prompt/
+# Test type: T2I-20 Text on an object spelt correctly
+id: IMG-GT2I-07
+modality: image
+task: text_to_image
+title: 'Name and number on the shirt'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'A high-quality sports poster featuring a young South Asian man with quiff-style hair, wearing rectangular black sunglasses. He is dressed in a yellow cricket jersey, seen from behind, with the name ''RIVERSIDE'' and the number ''18'' printed on the back in dark-green block capitals.'
+expected: 'Name and number on the shirt. Capability under test: Text on an object spelt correctly. Adherence clauses, check each: 1) Text reads exactly ''RIVERSIDE'' with no misspelling  2) Number reads exactly ''18''  3) Text follows the curve of the shirt  4) Helmet under one arm, bat in the other hand  5) No sponsor logos or extra text'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - 'RIVERSIDE'
+  - '18'
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- text-to-image

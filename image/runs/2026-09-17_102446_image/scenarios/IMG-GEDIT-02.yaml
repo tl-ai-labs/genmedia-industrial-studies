@@ -1,0 +1,40 @@
+# Gaming pilot scenario IMG-GEDIT-02 (BGMI, Image Editing). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://runware.ai/docs/models/runway-aleph-2-0/guides/editing-video
+# Test type: IEDIT-16 Change team colours or a car livery, everything else unchanged
+id: IMG-GEDIT-02
+modality: image
+task: image_edit
+title: 'Jeep gets a camo skin'
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-02-source.png
+params:
+  size: auto
+prompt: 'Change the jeep''s bodywork colour to a pink and light-blue camouflage pattern. Keep the wheels, mud, glass, headlights, road, and surroundings exactly as in the source.'
+expected: 'Jeep gets a camo skin. Capability under test: Change team colours or a car livery, everything else unchanged. Adherence clauses, check each: 1) Body is pink and light-blue camo  2) Wheels, tyres and mud unchanged  3) Shadows and reflections still match the scene  4) No paint on the windows or lights  5) Background untouched'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  preservation:
+    method: phash
+    max_distance: 12
+criteria:
+- edit_fidelity
+- preservation
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.333333
+  preservation: 0.388889
+  visual_quality: 0.166667
+  realism_style: 0.111111
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-editing

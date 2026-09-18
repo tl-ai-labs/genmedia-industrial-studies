@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-01 (BGMI, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-01-still.png
+id: GEN-VID-GI2V-01
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-01: Jeep over the rock, stop, smoke, revive'
+prompt: 'an olive-green open-top jeep on a wet, muddy dirt track with a large wet rock in the track just ahead of it, driving toward a low stone wall. Behind the wall a teammate lies knocked down. Grassland and a red-roofed farmhouse in the background, overcast light. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: an olive-green open-top jeep on a wet, muddy dirt track with a large wet rock in the track just ahead of it, driving toward a low stone wall. Behind the wall a teammate lies knocked down. Grassland and a red-roofed farmhouse in the background, overcast light.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

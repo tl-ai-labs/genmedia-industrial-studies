@@ -1,0 +1,38 @@
+# Gaming pilot scenario IMG-GT2I-11 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://newpromptai.com/gemini-prompts-for-pubg/
+# Test type: T2I-20 Text on an object spelt correctly
+id: IMG-GT2I-11
+modality: image
+task: text_to_image
+title: 'Profile card with name and level'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'A highly detailed cinematic poster showing a stylish gamer sitting confidently on a royal chair, holding a glacier-themed submachine gun glowing with icy blue-white energy. Beside him floats a digital profile card showing his name (TECHSMART✓), level 65, conqueror emblem, badges, stats, and 253k likes. Dark smoky background with blue glacial particles, dramatic lighting, and epic modern gamer atmosphere.'
+expected: 'Profile card with name and level. Capability under test: Text on an object spelt correctly. Adherence clauses, check each: 1) Card reads exactly ''TECHSMART'' with the tick  2) ''level 65'' and ''253k likes'' spelt and numbered correctly  3) Weapon glows icy blue-white  4) Card is a flat UI panel, not a physical object  5) Correct anatomy'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- gaming-pilot
+- bgmi
+- real
+- text-to-image

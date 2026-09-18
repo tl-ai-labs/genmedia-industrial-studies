@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-07 (Real Cricket 24, Video Editing). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://curiousrefuge.com/blog/9-ways-to-use-runway-aleph
+# Test type: EDIT-02 Change a character's outfit while they run and jump
+id: VID-GEDIT-07
+modality: video
+task: video_edit
+title: 'Recolour the batting kit on the run'
+prompt: 'replace both batters'' outfit with a yellow cricket kit with dark-green trim, across every shot of the clip'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-07-source.mp4
+params:
+  audio: false
+expected: 'Recolour the batting kit on the run. Capability under test: Change a character''s outfit while they run and jump. Adherence clauses, check each: 1) Kit is yellow and green in every frame on both batters  2) No blue left on shirts or trousers  3) Pads, gloves and helmets unchanged  4) Fabric folds move with the body, no sliding texture  5) No colour bleeding onto the grass or pads'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- video-editing

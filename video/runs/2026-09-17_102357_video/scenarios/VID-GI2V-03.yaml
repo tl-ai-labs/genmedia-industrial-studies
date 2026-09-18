@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-03 (BGMI, Image-to-Video). Built from
+# video/scenarios/bank-video-gaming/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://youmind.com/video-prompts/first-person-shooter-pov-scene-2738
+# Test type: I2V-11 Hands moving naturally, such as reloading a weapon in first person
+id: VID-GI2V-03
+modality: video
+task: image_to_video
+title: 'First-person rifle reload'
+prompt: 'First-person shooter, cinematic handheld POV. The player drops the empty magazine out of the rifle, pushes a fresh magazine in, pulls back and releases the charging handle, then lifts the rifle and looks through the scope. The view outside the window stays the same.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-03-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'First-person rifle reload. Capability under test: Hands moving naturally, such as reloading a weapon in first person. Adherence clauses, check each: 1) Reload steps happen in the right order  2) Hands keep five fingers throughout  3) Rifle does not change shape or lose its scope  4) Background does not drift  5) Motion is smooth, not jerky or smeared'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-to-video

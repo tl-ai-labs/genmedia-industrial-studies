@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GEDIT-11 (GTA V, Video Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GEDIT-11-source.mp4
+id: GEN-VID-GEDIT-11
+modality: video
+task: text_to_video
+title: 'Source clip for VID-GEDIT-11: Streetwear to a suit'
+prompt: 'the protagonist in a hoodie and jeans walks briskly along a city street and steps up a kerb. Realistic open-world console game render look, sharp, clean, no text, no logos, no watermark, no on-screen display, no touch controls, no virtual joystick, no buttons. Steady camera, continuous single shot.'
+params:
+  duration_s: 6
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'A clean source clip matching the card''s Input line: the protagonist in a hoodie and jeans walks briskly along a city street and steps up a kerb.'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gen-input
+- gaming-pilot
