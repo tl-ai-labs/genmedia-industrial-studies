@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-23
+# Game: Minecraft (Building sandbox); test type E-5 Add one thing that fits in.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Add one object with matching scale and light.
+# Inputs: source = IMG-GEDIT-23-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-23
+modality: image
+task: image_edit
+title: Sneaky mob behind a friend
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-23-source.png
+params:
+  size: auto
+prompt: Add a tall green mob with a grey-green pixel-speckled texture, four short legs, no arms and a
+  sad black face, standing on the stone ledge right behind the player as if sneaking up. Same block scale
+  as the player, feet on the stone, lit by the same low sunset light from the right, with a matching shadow.
+  Don't change anything else.
+expected: 'Sneaky mob behind a friend. Capability under test: Add one thing that fits in. Adherence clauses,
+  check each: 1) Feet sit on top of the stone ledge  2) Height about the same as the player  3) Pixel
+  texture at the same scale as the world  4) Lit from the right by the sunset, shadow consistent  5) Nothing
+  else changed'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-minecraft
+- test-e-5
+- scenario-bank-image-gaming
+- tier-low

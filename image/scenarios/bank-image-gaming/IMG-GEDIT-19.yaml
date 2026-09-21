@@ -1,0 +1,43 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-19
+# Game: Asphalt 9 (Arcade racing); test type E-17 Add one on-screen display element.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Add one flat overlay with one exact string.
+# Inputs: source = IMG-GEDIT-19-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-19
+modality: image
+task: image_edit
+title: Add the speedometer
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-19-source.png
+params:
+  size: auto
+prompt: 'Add a racing-game speedometer to the bottom-right corner of this picture: a semicircular dial
+  with the digital readout "312 km/h" in bold white italic numbers, and a blue nitro bar under it that
+  is two-thirds full. It should look like a flat on-screen display, not part of the 3D scene. Keep everything
+  else unchanged.'
+expected: 'Add the speedometer. Capability under test: Add one on-screen display element. Adherence clauses,
+  check each: 1) Dial sits in the bottom-right corner  2) ''312 km/h'' spelled exactly  3) Nitro bar about
+  two-thirds full  4) Looks like a flat overlay and doesn''t cover the car  5) Nothing else changed'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - 312 km/h
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+- text_accuracy
+weights:
+  edit_fidelity: 0.444444
+  visual_quality: 0.166667
+  realism_style: 0.111111
+  text_accuracy: 0.277778
+tags:
+- game-asphalt-9
+- test-e-17
+- scenario-bank-image-gaming
+- tier-low

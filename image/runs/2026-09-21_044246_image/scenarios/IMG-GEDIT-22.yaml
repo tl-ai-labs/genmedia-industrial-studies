@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-22
+# Game: Minecraft (Building sandbox); test type E-14 Make a low-resolution picture sharp.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). 4x restoration scored against a ground truth; hard edges must stay crisp.
+# Inputs: source = IMG-GEDIT-22-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+# Ground truth (NOT an input): assets/bank/gaming/image/IMG-GEDIT-22-groundtruth.png — the source is this image shrunk 4x; compare the output against it.
+id: IMG-GEDIT-22
+modality: image
+task: image_edit
+title: Sharpen a blurry build screenshot
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-22-source.png
+params:
+  size: auto
+prompt: 'Make this small, blurry screenshot sharp at four times the size. It comes from a blocky game:
+  every block edge must be a perfectly straight, crisp line and the textures on each block should be clean
+  square pixels, not smooth or painted. Don''t add or remove any blocks.'
+expected: 'Sharpen a blurry build screenshot. Capability under test: Make a low-resolution picture sharp.
+  Adherence clauses, check each: 1) Block edges straight and crisp  2) Textures made of square pixels,
+  not smooth or painted  3) Same count of blocks along a chosen wall as the ground truth  4) No invented
+  or missing blocks compared with the ground truth  5) Colours match the ground truth'
+checks:
+  min_width: 2000
+  min_height: 1000
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-minecraft
+- test-e-14
+- scenario-bank-image-gaming
+- tier-medium

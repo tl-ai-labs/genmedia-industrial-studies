@@ -72,11 +72,18 @@ def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
 def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                           open_browser: bool = False,
                           hide_industries: tuple = (),
-                          brief: bool = False) -> Path:
+                          brief: bool = False,
+                          complete_only: bool = False) -> Path:
     """One study across several runs — each run a tab (or, brief, stacked
     strips over one mixed scenario list). Writes <out>.html and
-    <out>-client.html. Cross-tab numbers are NOT merged."""
-    ctxs = [_build_context(project_root, Path(d), hide_industries=hide_industries)
+    <out>-client.html. Cross-tab numbers are NOT merged.
+
+    complete_only applies per tab, exactly as it does for a single run: a tab
+    whose arms completed different scenario sets would otherwise print two
+    means that do not measure the same thing.
+    """
+    ctxs = [_build_context(project_root, Path(d), hide_industries=hide_industries,
+                           complete_only=complete_only)
             for d in run_dirs]
     out = kit.render_study(LANE, ctxs, Path(out_path), brief=brief)
     if open_browser:

@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-16
+# Game: Clash of Clans (Strategy, top-down); test type E-20 Character from one picture into another scene.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Two-input composite: reference character placed at the right scale, light and shadow.
+# Inputs: source = IMG-GEDIT-16-source.png, reference = IMG-GEDIT-16-reference.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-16
+modality: image
+task: image_edit
+title: Queen joins the attack
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-16-source.png
+  reference: assets/bank/gaming/image/IMG-GEDIT-16-reference.png
+params:
+  size: auto
+prompt: Place the queen from the reference picture into this attack, standing on the grass in the lower-left
+  area near the destroyed walls, aiming her heart crossbow toward the town hall. Scale her to the size
+  of the other troops on the battlefield, match the lighting, and give her a shadow on the grass like
+  the troops around her. Keep her outfit, hair and weapon exactly as in the reference, and don't change
+  anything else in the screenshot.
+expected: 'Queen joins the attack. Capability under test: Character from one picture into another scene.
+  Adherence clauses, check each: 1) Queen matches the reference: purple bob, heart glasses, pink jacket,
+  heart crossbow  2) Scale matches the other troops  3) Shadow falls like the troops'' shadows  4) Stands
+  on the grass, not floating  5) Rest of the screenshot unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-clash-of-clans
+- test-e-20
+- scenario-bank-image-gaming
+- tier-high

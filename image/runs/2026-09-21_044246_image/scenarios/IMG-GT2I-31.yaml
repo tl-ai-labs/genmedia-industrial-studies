@@ -1,0 +1,43 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-31
+# Game: Street Fighter 6 (Fighting); test type T2I-1 Full-body character.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Full-body character with many specific outfit pieces.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-31-reference.png
+#   provenance in IMG-GT2I-31-reference.json. Why needed: A specific character design (Luke) must be matched piece by piece.
+id: IMG-GT2I-31
+modality: image
+task: text_to_image
+title: Cover fighter, full body
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: 'Full-body character shot from a 3D arcade fighting game: a muscular young fighter with spiky
+  brown hair shaved at the sides, a blue hooded jacket with white trim worn open over a white shirt with
+  a red star, red fingerless MMA gloves, a silver chain with dog tags, black cargo trousers and bare feet.
+  He stands in a boxing-style fighting stance, left foot forward, fists up at chin height. Plain training-room
+  floor with a faint grid, even studio lighting, stylised realistic 3D, no text.'
+expected: 'Cover fighter, full body. Capability under test: Full-body character. Adherence clauses, check
+  each: 1) Every listed outfit piece present and in the right colour  2) Full body in frame, head to bare
+  feet  3) Boxing stance: left foot forward, fists at chin height  4) Gloves are fingerless with visible
+  fingers  5) Plain grid floor, no text'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-street-fighter-6
+- test-t2i-1
+- scenario-bank-image-gaming
+- tier-medium

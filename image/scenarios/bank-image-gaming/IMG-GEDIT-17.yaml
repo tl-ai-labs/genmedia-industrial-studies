@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-17
+# Game: Asphalt 9 (Arcade racing); test type E-16 Change the car livery.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Livery repaint that must follow body geometry, rest of frame locked.
+# Inputs: source = IMG-GEDIT-17-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-17
+modality: image
+task: image_edit
+title: Club livery repaint
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-17-source.png
+params:
+  size: auto
+prompt: 'Repaint the green car in our club''s livery: gloss blue body with two white racing stripes running
+  from the front over the roof to the rear wing, and white mirror caps. Keep the car''s shape, the tyre
+  smoke, the other car, the track and every on-screen number exactly as they are.'
+expected: 'Club livery repaint. Capability under test: Change the car livery. Adherence clauses, check
+  each: 1) Stripes follow the body over the roof to the wing  2) Wheels, lights and windows unchanged  3)
+  Tyre smoke and the other car unchanged  4) HUD numbers (3/8, 180, 02:20:561) unchanged  5) Highlights
+  and reflections stay in the same places'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-asphalt-9
+- test-e-16
+- scenario-bank-image-gaming
+- tier-medium

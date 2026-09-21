@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-20
+# Game: Asphalt 9 (Arcade racing); test type E-6 Swap the background.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Background swap with five objects held identical and relit.
+# Inputs: source = IMG-GEDIT-20-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-20
+modality: image
+task: image_edit
+title: Five cars, new location
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-20-source.png
+params:
+  size: auto
+prompt: 'Take these five cars out of the hangar and put them on a cobbled street next to a huge ancient
+  stone amphitheatre at golden hour. Keep every car exactly the same: order, angle, paint, wheels and
+  badges. Add shadows under the tyres and let the warm new surroundings show in the reflections on the
+  paint.'
+expected: 'Five cars, new location. Capability under test: Swap the background. Adherence clauses, check
+  each: 1) All five cars present in the same order and angle  2) Paint colours unchanged  3) Shadows under
+  the tyres; cars sit on the road  4) Paint reflects the warm surroundings  5) Amphitheatre present, road
+  perspective matches the cars'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-asphalt-9
+- test-e-6
+- scenario-bank-image-gaming
+- tier-medium

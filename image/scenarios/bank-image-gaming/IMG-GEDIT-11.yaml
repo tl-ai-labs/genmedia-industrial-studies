@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-11
+# Game: BGMI (Battle royale, realistic); test type E-7 Change the season.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Seasonal restyle; outlines held.
+# Inputs: source = IMG-GEDIT-11-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-11
+modality: image
+task: image_edit
+title: Castle map to snow season
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-11-source.png
+params:
+  size: auto
+prompt: 'Turn this scene into deep winter: fresh snow on the castle roofs, battlements, the stone stairway
+  and the ground, snow on the branches of the red trees, frost along the wall edges, and light snow falling.
+  Don''t move, resize or reshape the castle, stairs, trees or the two fire bowls, and keep the caption
+  text and red frame as they are.'
+expected: 'Castle map to snow season. Capability under test: Change the season. Adherence clauses, check
+  each: 1) Snow covers roofs, stairs and ground consistently  2) Castle and tree outlines match the source
+  when laid over it  3) Red leaves still visible under the snow  4) Snow sits on top surfaces, not stuck
+  to vertical walls  5) Caption and red frame unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-bgmi
+- test-e-7
+- scenario-bank-image-gaming
+- tier-low

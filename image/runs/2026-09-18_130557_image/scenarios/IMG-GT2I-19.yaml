@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-19
+# Game: Clash of Clans (Strategy, top-down); test type T2I-5 Many small figures.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Exact counts of 32 small figures with no merges or duplicates.
+# No judging reference needed: A counting test (20 / 10 / 2); troop design is covered by the Barbarian portrait card.
+id: IMG-GT2I-19
+modality: image
+task: text_to_image
+title: Barbarian and archer wall push
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: An attack in progress in a cartoon mobile strategy game, isometric view from above. Exactly twenty
+  small barbarians with blond hair, big moustaches and swords charge a stone wall on the lower left, while
+  exactly ten pink-haired archers with bows shoot arrows from behind them. Two wall-breakers, small skeletons
+  carrying big round bombs, run ahead toward the wall. Inside the wall, a cannon and an archer tower fire
+  back. Every troop is a separate figure with its own shadow on the grass.
+expected: 'Barbarian and archer wall push. Capability under test: Many small figures. Adherence clauses,
+  check each: 1) 20 barbarians, 10 archers and 2 wall-breakers when counted  2) No merged bodies, extra
+  heads or copy-pasted clusters  3) Each troop has its own shadow  4) Troops outside the wall, defences
+  inside, cannon and tower visibly firing  5) Isometric cartoon style throughout'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-clash-of-clans
+- test-t2i-5
+- scenario-bank-image-gaming
+- tier-high

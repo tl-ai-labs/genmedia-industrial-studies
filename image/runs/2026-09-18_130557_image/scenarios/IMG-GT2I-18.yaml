@@ -1,0 +1,46 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-18
+# Game: Clash of Clans (Strategy, top-down); test type T2I-12 Top-down or isometric view of a base.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Exact counts of five building types inside two wall rings, isometric.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-18-reference.png
+#   provenance in IMG-GT2I-18-reference.json. Why needed: Buildings must look like the game's own town hall, cannons, towers and walls.
+id: IMG-GT2I-18
+modality: image
+task: text_to_image
+title: Town Hall war base layout
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A top-down isometric view of a complete village from a cartoon mobile strategy game, as shown
+  on the home screen. Green grass on a diamond-shaped grid. In the exact centre, a large stone-and-gold
+  town hall. Around it, two rings of stone walls divided into compartments. Inside the walls: four cannons,
+  three wooden archer towers, two mortars, one wizard tower with a purple roof and one tall air-defence
+  tower with a rocket launcher, spread evenly around the town hall. Outside the walls: pink elixir collectors,
+  gold mines with carts, army camps with campfires and a barracks. Chunky 3D cartoon style, bright daylight,
+  soft shadows, no on-screen display.'
+expected: 'Town Hall war base layout. Capability under test: Top-down or isometric view of a base. Adherence
+  clauses, check each: 1) True isometric view with the diamond grid visible  2) Town hall in the centre,
+  inside two wall rings with compartments  3) Counts correct: 4 cannons, 3 archer towers, 2 mortars, 1
+  wizard tower, 1 air defence  4) Resource buildings and army camps outside the walls  5) Walls are continuous
+  with no floating segments; cartoon style throughout'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-clash-of-clans
+- test-t2i-12
+- scenario-bank-image-gaming
+- tier-high

@@ -1,0 +1,43 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-17
+# Game: BGMI (Battle royale, realistic); test type T2I-14 Tall phone-shaped picture.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Single scene with a composition rule (clear middle third).
+# No judging reference needed: Judged on composition and listed elements; no game-specific design to match.
+id: IMG-GT2I-17
+modality: image
+task: text_to_image
+title: Airdrop phone wallpaper
+params:
+  size: 1024x1536
+  aspect_ratio: '9:16'
+prompt: A tall 9:16 phone wallpaper from a realistic battle-royale game. A supply crate hangs under a
+  large parachute near the top of the picture, drifting down over a green hillside, and thick red signal
+  smoke curls up from the spot where it will land. At the bottom, a player in a military helmet lies prone
+  in tall grass on a ridge, a bolt-action sniper rifle with a long scope pointed toward the smoke. Late-afternoon
+  golden light, soft haze. Keep the middle third of the picture mostly open sky so app icons can sit over
+  it. No text, no logos.
+expected: 'Airdrop phone wallpaper. Capability under test: Tall phone-shaped picture. Adherence clauses,
+  check each: 1) Portrait 9:16  2) Crate under a parachute at the top, red smoke rising from the ground  3)
+  Prone player at the bottom with a long-scoped bolt-action rifle aimed at the smoke  4) Middle third
+  mostly empty sky  5) No text or logos'
+checks:
+  min_width: 540
+  min_height: 1000
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-bgmi
+- test-t2i-14
+- scenario-bank-image-gaming
+- tier-low

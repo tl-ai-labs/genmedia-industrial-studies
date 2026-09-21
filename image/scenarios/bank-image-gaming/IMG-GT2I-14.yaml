@@ -1,0 +1,45 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-14
+# Game: BGMI (Battle royale, realistic); test type T2I-2 Wide shot of a named place.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Named-place layout with spatial relations plus small exact counts (4 freefallers, 2 chutes).
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-14-reference.png
+#   provenance in IMG-GT2I-14-reference.json. Why needed: Layout must match the real island map (town, bridges, military island, port).
+id: IMG-GT2I-14
+modality: image
+task: text_to_image
+title: Drop view over the island
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'Show what a player sees just after jumping out of the transport plane in a realistic battle-royale
+  game: looking down from high above a green, hilly island in late-morning light. In the middle of the
+  island is a walled town of old brick houses with red and grey roofs. At the bottom of the picture, two
+  long road bridges cross the water to a smaller island with a fenced military base and concrete hangars.
+  Along the left-hand coast there is a port with stacks of coloured shipping containers and cranes. Four
+  players in freefall are in the foreground with arms spread, and two parachutes have already opened below
+  them. Realistic game graphics, no text.'
+expected: 'Drop view over the island. Capability under test: Wide shot of a named place. Adherence clauses,
+  check each: 1) Layout is right: town in the middle, two bridges to a separate island with a base, container
+  port on the left coast  2) Exactly four freefalling players and two open parachutes  3) Height reads
+  as a skydive: roads and houses are small  4) Realistic game-graphics look, no cartoon style, no text'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-bgmi
+- test-t2i-2
+- scenario-bank-image-gaming
+- tier-medium

@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-25
+# Game: Street Fighter 6 (Fighting); test type E-11 Change expression or pose only.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Expression change only.
+# Inputs: source = IMG-GEDIT-25-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-25
+modality: image
+task: image_edit
+title: Snarl to cocky grin
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-25-source.png
+params:
+  size: auto
+prompt: 'Change only the face of the fighter in the blue hooded jacket: replace his focused glare with
+  a cocky, confident grin, one eyebrow raised, eyes still looking down at his opponent. Keep his head
+  angle, hair, body, gloves, the fighter in yellow, the energy trails and the alley exactly as they are.'
+expected: 'Snarl to cocky grin. Capability under test: Change expression or pose only. Adherence clauses,
+  check each: 1) Grin with one raised eyebrow reads clearly  2) Still recognisably the same face and hair  3)
+  Eyes still aimed down at the opponent  4) Everything outside the face unchanged  5) No blur or smear
+  around the face edges'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-street-fighter-6
+- test-e-11
+- scenario-bank-image-gaming
+- tier-low

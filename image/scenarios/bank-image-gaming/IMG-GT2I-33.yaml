@@ -1,0 +1,44 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-33
+# Game: Street Fighter 6 (Fighting); test type T2I-11 Action frozen mid-motion.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Inverted mid-air pose that must stay anatomically believable.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-33-reference.png
+#   provenance in IMG-GT2I-33-reference.json. Why needed: A specific character's outfit (Chun-Li) must be matched.
+id: IMG-GT2I-33
+modality: image
+task: text_to_image
+title: Upside-down spinning kick
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A frozen moment from a 3D arcade fighting game: a female kung-fu fighter spins upside down in
+  mid-air, supported on nothing, her legs split straight out to both sides like helicopter blades, arms
+  tucked. Her hair is in two buns wrapped in white ribbons; she wears a white and pale-blue tunic with
+  a long back panel lined in pink, and light-blue leggings. Motion streaks circle her legs. Stage: a busy
+  Chinese night market with red lanterns and a pagoda gate. Side-on camera, stylised realistic 3D, no
+  on-screen display.'
+expected: 'Upside-down spinning kick. Capability under test: Action frozen mid-motion. Adherence clauses,
+  check each: 1) Body is upside down with legs split horizontally  2) Pose is physically believable: hips
+  centred, no twisted limbs  3) Hair buns with white ribbons and the listed outfit colours  4) Motion
+  streaks follow the direction of spin  5) Red lanterns and pagoda gate behind'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-street-fighter-6
+- test-t2i-11
+- scenario-bank-image-gaming
+- tier-medium
