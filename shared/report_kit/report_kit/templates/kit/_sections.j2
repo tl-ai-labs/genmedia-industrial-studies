@@ -369,6 +369,20 @@ a tie{% endif %}, and every win count on this page uses that same rule.</p>
           {% set failed = c.gates | rejectattr('passed') | list %}
           {% if failed %}{% for g in failed %}<span class="pill bad">✗ {{ g.gate }}{% if g.detail %} · {{ g.detail }}{% endif %}</span>{% endfor %}
           {% else %}<span class="pill ok">✓ all gates</span>{% endif %}
+          {# An invalid cell is never judged, so it has no reasoning below.
+             Without a line here the reader is left with a 0 and no account
+             of it — the one number most likely to be challenged. #}
+          {% if failed and c.status == 'invalid' %}
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+            {% for g in failed %}
+              {%- if g.gate == 'dimensions' and s.requires and s.requires.min_width %}
+              The output was {{ g.detail }}, below the {{ s.requires.min_width }}x{{ s.requires.min_height }} this scenario requires.
+              {%- elif g.detail %} Failed <b>{{ g.gate }}</b>: {{ g.detail }}.{% endif %}
+            {%- endfor %}</div>
+          </div>
+          {% endif %}
         {% endif %}
         {{ lane.card_measures(s, c) }}
         {% if c.why %}<div class="crit r">

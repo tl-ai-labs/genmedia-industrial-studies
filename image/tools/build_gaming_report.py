@@ -108,14 +108,50 @@ def family_of(scn: dict) -> str:
     return "—"
 
 
+def explain_gates(check: dict, scn: dict) -> list[str]:
+    """Plain-English reasons a cell was ruled invalid.
+
+    An invalid cell never reaches the judge, so its card has no reasoning to
+    show. Without this the reader sees a 0 and no account of it — which is
+    exactly the number most likely to be challenged. State what the gate
+    wanted and what arrived.
+    """
+    want = scn.get("checks", {}) or {}
+    out = []
+    for g in (check or {}).get("gates", []):
+        if g.get("passed"):
+            continue
+        name, detail = g.get("gate"), g.get("detail", "")
+        if name == "dimensions":
+            need = f"{want.get('min_width', '?')}×{want.get('min_height', '?')}"
+            got = str(detail).replace("x", "×")
+            out.append(f"<b>Too small.</b> The image came back {got}; this scenario "
+                       f"requires at least {need}, so it was ruled invalid before "
+                       f"any judging.")
+        elif name == "format":
+            out.append(f"<b>Wrong file type.</b> {detail}.")
+        elif name == "not_blank":
+            out.append(f"<b>Blank image.</b> {detail}.")
+        elif name in ("required_text", "must_read_text", "text"):
+            out.append(f"<b>Required text missing.</b> OCR could not read it: {detail}.")
+        elif name == "decodes":
+            out.append(f"<b>Unreadable file.</b> It did not open as an image ({detail}).")
+        else:
+            out.append(f"<b>Failed the {name} gate.</b> {detail}.")
+    return out
+
+
 def collect(tier: dict, scenarios: dict) -> dict:
     """Merge every run of one tier into a single comparison."""
     scores, telemetry, judges, cells = [], [], [], {}
+    checks = {}
     for rid in tier["runs"]:
         d = RUNS / rid
         scores += jsonl(d / "scores.jsonl")
         telemetry += jsonl(d / "telemetry.jsonl")
         judges += jsonl(d / "judge.jsonl")
+        for c in jsonl(d / "checks.jsonl"):
+            checks[(c["scenario_id"], c["model_id"])] = c
         man = json.loads((d / "manifest.json").read_text())
         for k, v in man["cells"].items():
             cells[k] = {**v, "run": rid}
@@ -175,7 +211,7 @@ def collect(tier: dict, scenarios: dict) -> dict:
     tally = Counter(r["winner"] for r in comparable)
     return {"arms": arms, "rows": rows, "comparable": comparable,
             "stats": stats, "criteria": criteria, "tally": tally,
-            "judge_of": judge_of, "cells": cells}
+            "judge_of": judge_of, "cells": cells, "checks": checks}
 
 
 # ------------------------------------------------------------- images ----
@@ -434,11 +470,30 @@ def render_card(r, tier, data, names) -> str:
         img = (f"<img src='{uri}' alt='{e(names[mid]['name'])} output' loading='lazy'"
                f" data-cap='{e(r['id'])} · {e(names[mid]['name'])} · {e(label)}'>"
                if uri else f"<div class='fail'>{e(reason or 'no output')}</div>")
+
+        # A 0 or a missing score has no judge reasoning behind it — the judge
+        # was never called. Say why in the same slot, or the reader is left
+        # with an unexplained number.
+        if status == "scored":
+            body = ('<p>' + e(note) + '</p>' if note else '') + \
+                   ('<ul>' + why + '</ul>' if why else '')
+        elif status == "invalid":
+            gates = explain_gates(data["checks"].get((r["id"], mid)), scn)
+            body = ("<p class='verdict-why'><b>Scored 0 — not judged.</b> "
+                    "A failed gate makes the cell invalid, and the judge is "
+                    "never called for it.</p><ul>"
+                    + "".join(f"<li>{g}</li>" for g in gates or
+                              [e(reason or "gate failure not recorded")])
+                    + "</ul>")
+        else:
+            body = (f"<p class='verdict-why'><b>No score — not judged.</b> "
+                    f"The image was produced and passed its gates, but the "
+                    f"judge call did not return: {e(reason or status)}. It is "
+                    f"excluded from the mean rather than counted as 0.</p>")
         figs += f"""<figure class="fig"><div class="figbox">{img}</div>
 <div class="figcap"><span class="who {side}">{e(names[mid]['name'])}</span>
 <span class="{pill}">{e(label)}</span></div>
-<div class="why">{'<p>' + e(note) + '</p>' if note else ''}
-{'<ul>' + why + '</ul>' if why else ''}</div></figure>"""
+<div class="why">{body}</div></figure>"""
 
     game, fam = game_of(scn), family_of(scn)
     task = scn.get("task", "—")

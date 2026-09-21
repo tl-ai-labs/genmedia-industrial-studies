@@ -245,6 +245,9 @@ def _build_context(project_root: Path, run_dir: Path,
                          "prompt": smeta.get("prompt", ""),
                          "expected": smeta.get("expected", ""),
                          "task": smeta.get("task", ""),
+                         # what the gates demanded, so an invalid cell can say
+                         # what it missed and not just which gate it failed
+                         "requires": smeta.get("checks") or {},
                          "family": (smeta.get("tags") or ["-"])[0],
                          "industry": primary,
                          "industry_also": also,
