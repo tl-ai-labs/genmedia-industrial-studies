@@ -31,7 +31,12 @@ from .loaders import Scenario, effective_criteria, load_rubric
 from .telemetry import RunFiles, utcnow
 
 LABELS = "ABCDEFGH"
-JUDGE_TIMEOUT_S = 120
+# 120s judges every output in the bank so far. A large still (IMG-GEDIT-18's
+# 1847x851 on 2026-09-21) can outlast it and come back 504 DEADLINE_EXCEEDED
+# on every retry, which strands a paid-for, gate-passing image as `unjudged`.
+# Raise it for that cell rather than re-running the same call:
+#     GENMEDIA_JUDGE_TIMEOUT_S=300 python -m runner.cli judge --run <id> --retry-unjudged
+JUDGE_TIMEOUT_S = int(os.environ.get("GENMEDIA_JUDGE_TIMEOUT_S", "120"))
 API_RETRIES = 2      # after the first call
 REPAIR_RETRIES = 1   # one repair retry with the schema restated
 
