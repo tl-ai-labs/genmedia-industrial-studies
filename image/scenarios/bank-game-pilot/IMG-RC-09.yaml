@@ -1,0 +1,42 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: medium
+# Inputs: source = IMG-RC-base-stadium.png — provenance in sidecar .json
+id: IMG-RC-09
+modality: image
+task: image_edit
+title: Replace crowd with empty stands for a rain-delay scene
+inputs:
+  source: assets/bank/IMG-RC-base-stadium.png
+params:
+  size: auto
+prompt: 'Remove the crowd from the stadium stands and show them as empty plastic
+  seats in alternating blue and white rows. Add a light drizzle effect — fine rain
+  streaks visible against the dark parts of the image. Place a flat tarpaulin cover
+  over the pitch area, olive green in colour, with visible puddles of standing
+  water on top catching reflections. The floodlights, stadium structure, outfield
+  grass and boundary rope must all stay exactly as they are.'
+expected: 'Rain delay — empty stands and covered pitch. Capability under test:
+  Removing a complex region (crowd) and adding weather and surface effects.
+  Adherence clauses, check each: 1) Stands emptied to alternating blue and white
+  plastic seats  2) Fine rain streaks visible  3) Olive-green tarpaulin over the
+  pitch with puddles  4) Stadium structure, outfield and boundary unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.25
+  realism_style: 0.25
+tags:
+- environment-&-props
+- scenario-bank-game-pilot
+- rc24
+- tier-medium

@@ -1,0 +1,43 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: high
+id: IMG-BG-02
+modality: image
+task: text_to_image
+title: Four-player squad lineup with distinct battle-royale loadouts
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A four-player battle-royale squad standing shoulder to shoulder on a concrete
+  helipad, facing the camera. From left to right — an assault class in a green plate
+  carrier carrying a 5.56 rifle, a sniper class in a ghillie poncho with a bolt-action
+  rifle, a medic class with a red-cross armband and a submachine gun, and a support
+  class in heavy armour with a light machine gun. Each has a level-three military helmet
+  and a backpack. They cast hard midday shadows on the concrete. Photorealistic,
+  full body visible for all four, plain overcast sky behind them.
+expected: 'Four-player squad lineup. Capability under test: Four distinct characters
+  with role-specific loadouts in one frame. Adherence clauses, check each:
+  1) Exactly four figures, shoulder to shoulder, full body visible  2) Each has a
+  distinct loadout matching the described class  3) All wear level-three helmets
+  and backpacks  4) Concrete helipad setting, hard midday shadows, overcast sky'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- identity-&-consistency
+- scenario-bank-game-pilot
+- bgmi
+- tier-high

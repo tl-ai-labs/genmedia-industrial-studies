@@ -1,0 +1,46 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: medium
+id: IMG-GV-01
+modality: image
+task: text_to_image
+title: Loading screen — suited character with city skyline at dusk
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A stylised loading-screen illustration in the style of an open-world crime
+  game. A confident man in a tailored charcoal suit and open-collar white shirt
+  stands three-quarter view on the left of the frame, one hand in his pocket,
+  looking toward the camera with a slight smirk. Behind him, a sun-drenched city
+  skyline at golden hour — palm trees, glass towers, a distant freeway overpass.
+  The art style uses bold ink outlines with flat watercolour-like fills, warm
+  saturated colours and subtle halftone dot shading in the shadows. Wide
+  letterbox composition with negative space on the right. No text, no logos.
+expected: 'GTA-style loading screen. Capability under test: Reproducing a
+  specific illustration style (bold outlines, flat fills, halftone) with a
+  character and cityscape. Adherence clauses, check each: 1) Man in charcoal
+  suit, three-quarter view, hand in pocket, slight smirk  2) City skyline with
+  palm trees, glass towers and freeway at golden hour  3) Bold ink outlines with
+  flat watercolour fills and halftone dot shading  4) Letterbox composition,
+  no text or logos'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- style-&-art-direction
+- scenario-bank-game-pilot
+- gta-v
+- tier-medium

@@ -1,0 +1,166 @@
+{
+  "run_id": "2026-09-03_092448_video",
+  "created": "2026-09-03T03:54:48.228Z",
+  "state": "reported",
+  "modality": "video",
+  "git_sha": "6ec7f40e37fd886bdf0d9013715b5d5d1e160b0e",
+  "budget_usd": 13.0,
+  "events": [
+    {
+      "ts": "2026-09-03T03:54:48.349Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-03T03:54:48.359Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-03T03:54:50.160Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-03T03:58:34.663Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-03T04:00:07.850Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-03T04:00:07.864Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-03T04:00:24.746Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-03T04:10:33.526Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-03T04:15:05.077Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "veo-3-1-vertex",
+      "provider": "google-vertex",
+      "adapter": "veo_video",
+      "provider_model": "veo-3.1-generate-001",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    },
+    {
+      "id": "sora-2",
+      "provider": "openai",
+      "adapter": "openai_video",
+      "provider_model": "sora-2-2025-12-08",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390"
+  },
+  "rubric_files": {
+    "text_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "vid-001-dolly-in": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "vid-002-liquid-pour": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "vid-003-bouncing-ball": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "b5936719df0e0620729860fede1602fab1a442f24e9a348a144bef332d10529b",
+  "inputs": {
+    "vid-001-dolly-in": [],
+    "vid-002-liquid-pour": [],
+    "vid-003-bouncing-ball": []
+  },
+  "cells": {
+    "vid-001-dolly-in::veo-3-1-vertex": {
+      "scenario_id": "vid-001-dolly-in",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "vid-001-dolly-in::sora-2": {
+      "scenario_id": "vid-001-dolly-in",
+      "model_id": "sora-2",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "vid-002-liquid-pour::veo-3-1-vertex": {
+      "scenario_id": "vid-002-liquid-pour",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "vid-002-liquid-pour::sora-2": {
+      "scenario_id": "vid-002-liquid-pour",
+      "model_id": "sora-2",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "vid-003-bouncing-ball::veo-3-1-vertex": {
+      "scenario_id": "vid-003-bouncing-ball",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "vid-003-bouncing-ball::sora-2": {
+      "scenario_id": "vid-003-bouncing-ball",
+      "model_id": "sora-2",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "vid-001-dolly-in": "completed",
+    "vid-002-liquid-pour": "completed",
+    "vid-003-bouncing-ball": "completed"
+  }
+}

@@ -1,0 +1,23 @@
+# Smoke-test scenario (not from the scenario bank): a short cheap
+# clip for wiring checks and dry runs. Bank runs use
+# --scenarios scenarios/bank-video
+id: vid-002-liquid-pour
+modality: video
+task: text_to_video
+title: Liquid pour demo
+prompt: Water is poured from a glass jug into a clear tumbler until it is half full. The stream
+  is continuous and the water level rises as it is poured.
+params:
+  duration_s: 4
+  resolution: 720p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Liquid pour demo: every clause of the brief is visible in the clip, motion is continuous,
+  nothing pops in or out.'
+checks:
+  min_duration_s: 3.5
+  max_duration_s: 5.0
+  min_width: 640
+  min_height: 360
+tags:
+- smoke-test

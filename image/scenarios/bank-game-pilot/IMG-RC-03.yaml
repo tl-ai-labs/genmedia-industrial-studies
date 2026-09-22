@@ -1,0 +1,45 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: medium
+id: IMG-RC-03
+modality: image
+task: text_to_image
+title: Cricket pitch top-down view with fielding positions marked
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: A top-down tactical diagram of a cricket field on a grass-green oval. The
+  pitch strip runs vertically in the centre with batting and bowling creases marked
+  in white. Nine fielding positions are shown as small white circles with black
+  labels pointing to each — slip, gully, point, cover, mid-off, mid-on, square leg,
+  fine leg, third man. The bowler is a red dot at one end of the pitch and the
+  batsman is a blue dot at the other. Clean vector-illustration style with crisp
+  lines, flat colours, no shading, no perspective — a pure overhead tactical view
+  like a game's field-placement screen.
+expected: 'Fielding position diagram. Capability under test: Generating a labelled
+  tactical diagram with correct cricket field positions. Adherence clauses, check
+  each: 1) Top-down oval field with central pitch strip and creases  2) Nine
+  fielding positions as labelled white circles  3) Position names are real cricket
+  positions (slip, gully, point, etc.)  4) Clean flat vector style, pure overhead,
+  no perspective'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- text_accuracy
+weights:
+  prompt_adherence: 0.35
+  visual_quality: 0.15
+  composition: 0.2
+  text_accuracy: 0.3
+tags:
+- ui-overlay
+- scenario-bank-game-pilot
+- rc24
+- tier-medium

@@ -1,0 +1,44 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: medium
+# Inputs: source = IMG-BG-base-soldier.png — provenance in sidecar .json
+id: IMG-BG-08
+modality: image
+task: image_edit
+title: Battle-pass tier card from a soldier photograph
+inputs:
+  source: assets/bank/IMG-BG-base-soldier.png
+params:
+  size: auto
+prompt: 'Recompose this soldier into a vertical battle-pass reward card. Crop to
+  upper body, place on a dark gradient background with subtle gold particle effects.
+  Add an ornate gold card border with bevelled corners. At the top, a banner ribbon
+  reading TIER 47 in metallic gold text. At the bottom, a nameplate reading
+  DESERT PHANTOM in white capitals on a dark strip. The soldier should look like
+  a premium cosmetic unlock — dramatic rim lighting, slightly stylised but still
+  photorealistic.'
+expected: 'Battle-pass tier card. Capability under test: Recomposing a photograph
+  into a structured card layout with decorative elements and legible text.
+  Adherence clauses, check each: 1) Soldier cropped to upper body on a dark
+  gradient background  2) Gold ornate border with bevelled corners  3) TIER 47
+  banner ribbon at top, DESERT PHANTOM nameplate at bottom  4) Dramatic rim
+  lighting, gold particle effects'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- text_accuracy
+weights:
+  edit_fidelity: 0.35
+  visual_quality: 0.3
+  text_accuracy: 0.35
+tags:
+- e-commerce-&-store
+- scenario-bank-game-pilot
+- bgmi
+- tier-medium

@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-07 (Real Cricket 24, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://prompt-architects.com/blog/242-from-still-image-to-ai-video-handoff-prompts
+# Test type: I2V-17 Only the on-screen display animates, the scene stays still
+id: VID-GI2V-07
+modality: video
+task: image_to_video
+title: 'Score bar updates after a six'
+prompt: 'Move only the broadcast graphics. Nothing else in the frame changes, including the camera: the players, crowd, ball and stadium stay frozen as a paused replay. The score bar ticks up from 142 to 148, a ''SIX'' banner slides in from the left above the score bar, and a small wagon-wheel graphic appears in the corner and draws one line from the centre over the long-on boundary. Everything else is still.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-07-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Score bar updates after a six. Capability under test: Only the on-screen display animates, the scene stays still. Adherence clauses, check each: 1) Nothing in the scene moves  2) Score reads 148/3 at the end and overs still read 15.4  3) SIX banner is readable and spelt correctly  4) Wagon wheel draws exactly one line  5) Graphics stay in the broadcast style of the score bar'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- image-to-video
