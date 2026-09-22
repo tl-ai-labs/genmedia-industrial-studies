@@ -1,0 +1,253 @@
+{
+  "run_id": "2026-09-17_102357_video",
+  "created": "2026-09-17T04:53:57.593Z",
+  "state": "rejected",
+  "modality": "video",
+  "git_sha": null,
+  "budget_usd": 0.01,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-17T04:53:57.711Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-17T04:53:57.833Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-17T04:53:58.452Z",
+      "state": "rejected",
+      "reason": "pre-flight estimate 52.8000 USD exceeds budget 0.01"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522",
+    "image_to_video": "ee94b22672656a5016fd28884c8711cf4216f0ff8abb54448899852bd61997db"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/video_edit.yaml"
+    ],
+    "image_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/image_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-GEDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-03": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-04": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GI2V-03": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-08": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-09": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "d022cbf49617d7cafbaed8abbbb7d2f49c44da6d0af98e7721eaf4f6ff8effb2",
+  "inputs": {
+    "VID-GEDIT-01": [
+      {
+        "role": "source",
+        "sha256": "1974d8baaf62e8a9f2977947d6d6bbbdd4cf7fb94d2fc84f1bf7fea04436a45b",
+        "path": "inputs/VID-GEDIT-01/VID-GEDIT-01-source.mp4"
+      }
+    ],
+    "VID-GEDIT-03": [
+      {
+        "role": "source",
+        "sha256": "3062e6f189f2a3a2306da58ac5d05ce7ad0bb1e6e20b9ca0e6dd16ae52df4bb4",
+        "path": "inputs/VID-GEDIT-03/VID-GEDIT-03-source.mp4"
+      }
+    ],
+    "VID-GEDIT-04": [
+      {
+        "role": "source",
+        "sha256": "dae414949c2794295c4764449c180fe55d36621627b52ce905c14b2052d37d04",
+        "path": "inputs/VID-GEDIT-04/VID-GEDIT-04-source.mp4"
+      }
+    ],
+    "VID-GI2V-03": [
+      {
+        "role": "photo",
+        "sha256": "ad2887b010c14516c05963b0ae11f0ea7c49284823c855685844648444d4d9a2",
+        "path": "inputs/VID-GI2V-03/VID-GI2V-03-still.png"
+      }
+    ],
+    "VID-GI2V-08": [
+      {
+        "role": "photo",
+        "sha256": "8d8901b28ad84ed3d04cddd21b96422843ae94a3fb2a284d3cf7872a1177d2c8",
+        "path": "inputs/VID-GI2V-08/VID-GI2V-08-still.png"
+      }
+    ],
+    "VID-GI2V-09": [
+      {
+        "role": "photo",
+        "sha256": "6e3112bc99a550282b754108636b46dfd01c366a300a4c69057aea25c17f7f86",
+        "path": "inputs/VID-GI2V-09/VID-GI2V-09-still.png"
+      }
+    ]
+  },
+  "cells": {
+    "VID-GEDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-01::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-03::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-03",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-03::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-03",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-04::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-04",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-04::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-04",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-03::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-03",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-03::seedance-2-5": {
+      "scenario_id": "VID-GI2V-03",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-08::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-08",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-08::seedance-2-5": {
+      "scenario_id": "VID-GI2V-08",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-09::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-09",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-09::seedance-2-5": {
+      "scenario_id": "VID-GI2V-09",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

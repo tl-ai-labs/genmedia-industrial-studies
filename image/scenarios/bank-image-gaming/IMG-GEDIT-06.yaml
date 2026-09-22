@@ -1,0 +1,45 @@
+# Gaming pilot scenario IMG-GEDIT-06 (Real Cricket 24, Image Editing). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://wiro.ai/blog/nano-banana-vs-qwen-flux-kontext-pro-seededit/
+# Test type: IEDIT-12 Change only the text on screen
+id: IMG-GEDIT-06
+modality: image
+task: image_edit
+title: 'Update the score bar'
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-06-source.png
+params:
+  size: auto
+prompt: 'Change the text ''RIVERSIDE 142/3  15.4 OV  RR 9.16'' to ''RIVERSIDE 148/3  15.5 OV  RR 9.35'' on the score bar, keeping the same style, font, colours, size and position, and change nothing else in the picture.'
+expected: 'Update the score bar. Capability under test: Change only the text on screen. Adherence clauses, check each: 1) Bar reads exactly ''RIVERSIDE 148/3  15.5 OV  RR 9.35''  2) Font and colours match the original bar  3) Bar has not moved or resized  4) Team name unchanged  5) Scene above the bar identical'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  preservation:
+    method: phash
+    max_distance: 12
+  must_read_text:
+  - 'RIVERSIDE 142/3  15.4 OV  RR 9.16'
+  - 'RIVERSIDE 148/3  15.5 OV  RR 9.35'
+criteria:
+- edit_fidelity
+- preservation
+- visual_quality
+- realism_style
+- text_accuracy
+weights:
+  edit_fidelity: 0.25
+  preservation: 0.25
+  visual_quality: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.3
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- image-editing

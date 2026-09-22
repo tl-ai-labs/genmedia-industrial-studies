@@ -1,0 +1,605 @@
+{
+  "run_id": "2026-09-17_114825_image",
+  "created": "2026-09-17T06:18:25.124Z",
+  "state": "rejected",
+  "modality": "image",
+  "git_sha": null,
+  "budget_usd": 0.01,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-17T06:18:25.225Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-17T06:18:25.265Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-17T06:18:25.728Z",
+      "state": "rejected",
+      "reason": "pre-flight estimate 1.1256 USD exceeds budget 0.01"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-1-flash-lite-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-lite-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-09-09",
+      "voice_map": null
+    },
+    {
+      "id": "gpt-image-2-low",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b",
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/image/configs/rubrics/image.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/image/configs/rubrics/tasks/image_edit.yaml"
+    ],
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/image/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-GEDIT-01": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GEDIT-02": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GEDIT-03": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GEDIT-04": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GEDIT-05": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GEDIT-06": {
+      "edit_fidelity": 0.25,
+      "preservation": 0.25,
+      "visual_quality": 0.1,
+      "realism_style": 0.1,
+      "text_accuracy": 0.3
+    },
+    "IMG-GEDIT-07": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GEDIT-08": {
+      "edit_fidelity": 0.333333,
+      "preservation": 0.388889,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111
+    },
+    "IMG-GT2I-01": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-02": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-03": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-04": {
+      "prompt_adherence": 0.25,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1,
+      "text_accuracy": 0.45
+    },
+    "IMG-GT2I-05": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-06": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-07": {
+      "prompt_adherence": 0.25,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1,
+      "text_accuracy": 0.45
+    },
+    "IMG-GT2I-08": {
+      "prompt_adherence": 0.454545,
+      "visual_quality": 0.181818,
+      "composition": 0.181818,
+      "realism_style": 0.181818
+    },
+    "IMG-GT2I-09": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-10": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-11": {
+      "prompt_adherence": 0.454545,
+      "visual_quality": 0.181818,
+      "composition": 0.181818,
+      "realism_style": 0.181818
+    },
+    "IMG-GT2I-12": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    },
+    "IMG-GT2I-13": {
+      "prompt_adherence": 0.45,
+      "visual_quality": 0.2,
+      "composition": 0.15,
+      "realism_style": 0.2
+    }
+  },
+  "scenario_set_hash": "9262c9c205a13703af35820cf8ba1e97671787a9c70fe372f621111275862b79",
+  "inputs": {
+    "IMG-GEDIT-01": [
+      {
+        "role": "source",
+        "sha256": "a3e84cba68955c6d0866a9f98c88f01f9f5d371451de12e53fd5dd4416ad9e05",
+        "path": "inputs/IMG-GEDIT-01/IMG-GEDIT-01-source.png"
+      }
+    ],
+    "IMG-GEDIT-02": [
+      {
+        "role": "source",
+        "sha256": "435d9cb2212011b75a0bd2d7d8cd033a1f6b6a0e852faa20c699be4771ef39d2",
+        "path": "inputs/IMG-GEDIT-02/IMG-GEDIT-02-source.png"
+      }
+    ],
+    "IMG-GEDIT-03": [
+      {
+        "role": "source",
+        "sha256": "355cd2f5c23104fb58f5789591f1fb80d26f0b2be6cc35405e026d5d6533bc61",
+        "path": "inputs/IMG-GEDIT-03/IMG-GEDIT-03-source.png"
+      }
+    ],
+    "IMG-GEDIT-04": [
+      {
+        "role": "source",
+        "sha256": "0bf8f3ca86fa3a957574da5c17a3da99f477c16d6ac9f1dbb550ea761f1934e8",
+        "path": "inputs/IMG-GEDIT-04/IMG-GEDIT-04-source.png"
+      }
+    ],
+    "IMG-GEDIT-05": [
+      {
+        "role": "source",
+        "sha256": "28e0b219484b27f5796347e78cc70f5780e939cc1e9f87480a0cbd3820254bb4",
+        "path": "inputs/IMG-GEDIT-05/IMG-GEDIT-05-source.png"
+      }
+    ],
+    "IMG-GEDIT-06": [
+      {
+        "role": "source",
+        "sha256": "2cc570d015e7af39961082f2b3671fb1546b24a619f14da3e23ffdd8e07b2c0a",
+        "path": "inputs/IMG-GEDIT-06/IMG-GEDIT-06-source.png"
+      }
+    ],
+    "IMG-GEDIT-07": [
+      {
+        "role": "source",
+        "sha256": "50032872ff5ed2574ebd3e5e91d29e88734e92da77d702be847cc469e3fc1afb",
+        "path": "inputs/IMG-GEDIT-07/IMG-GEDIT-07-source.png"
+      }
+    ],
+    "IMG-GEDIT-08": [
+      {
+        "role": "source",
+        "sha256": "d44b845498143faef2b4104fb2ac5de0f10654f907d349475eb5e4fdba661a47",
+        "path": "inputs/IMG-GEDIT-08/IMG-GEDIT-08-source.png"
+      }
+    ],
+    "IMG-GT2I-01": [],
+    "IMG-GT2I-02": [],
+    "IMG-GT2I-03": [],
+    "IMG-GT2I-04": [],
+    "IMG-GT2I-05": [],
+    "IMG-GT2I-06": [],
+    "IMG-GT2I-07": [],
+    "IMG-GT2I-08": [],
+    "IMG-GT2I-09": [],
+    "IMG-GT2I-10": [],
+    "IMG-GT2I-11": [],
+    "IMG-GT2I-12": [],
+    "IMG-GT2I-13": []
+  },
+  "cells": {
+    "IMG-GEDIT-01::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-01",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-01::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-01",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-02::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-02",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-02::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-02",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-03::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-03",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-03::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-03",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-04::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-04",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-04::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-04",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-05::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-05",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-05::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-05",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-06::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-06",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-06::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-06",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-07::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-07",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-07::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-07",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-08::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-08",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GEDIT-08::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-08",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-01::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-01",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-01::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-01",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-02::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-02",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-02::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-02",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-03::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-03",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-03::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-03",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-04::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-04",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-04::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-04",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-05::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-05",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-05::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-05",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-06::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-06",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-06::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-06",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-07::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-07",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-07::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-07",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-08::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-08",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-08::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-08",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-09::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-09",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-09::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-09",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-10::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-10",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-10::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-10",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-11::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-11",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-11::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-11",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-12::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-12",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-12::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-12",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-13::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-13",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    },
+    "IMG-GT2I-13::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-13",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

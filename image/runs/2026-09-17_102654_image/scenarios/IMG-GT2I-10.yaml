@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-10 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://www.bizzbuzz.news/technology/ai/10-pubg-inspired-gemini-ai-photo-editing-prompts-for-boys-create-epic-battle-ready-portraits-in-seconds-1380365
+# Test type: T2I-07 A vehicle with correct shape, wheels, windows and paint
+id: IMG-GT2I-10
+modality: image
+task: text_to_image
+title: 'Motorcycle escape'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'A motorcycle escape moment. Outfit: white shirt, loosened tie, rolled sleeves, fingerless gloves, aviator goggles. Pose: riding a rugged bike with motion blur, dust and smoke trails. DSLR 35mm tracking shot. Add sparks and cinematic streaks.'
+expected: 'Motorcycle escape. Capability under test: A vehicle with correct shape, wheels, windows and paint. Adherence clauses, check each: 1) Motorcycle has two wheels and correct proportions  2) Rider''s outfit matches: white shirt, tie, goggles  3) Motion blur on background, rider sharp  4) Dust and smoke trail behind  5) Correct anatomy'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- bgmi
+- real
+- text-to-image

@@ -1,0 +1,21 @@
+# Input asset generator for pilot card IMG-GEDIT-01 (BGMI, Image Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/image/IMG-GEDIT-01-source.png
+id: GEN-IMG-GEDIT-01
+modality: image
+task: text_to_image
+title: 'Input still for IMG-GEDIT-01: Rifle becomes crossbow'
+prompt: 'a player in military gear aims a wooden-stock assault rifle from a standing position beside a tree. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a player in military gear aims a wooden-stock assault rifle from a standing position beside a tree.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

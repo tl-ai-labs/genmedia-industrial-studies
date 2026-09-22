@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-03 (BGMI, Video Editing). Built from
+# video/scenarios/bank-video-gaming/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://curiousrefuge.com/blog/9-ways-to-use-runway-aleph
+# Test type: EDIT-08 Change time of day or weather with correct light on people and objects
+id: VID-GEDIT-03
+modality: video
+task: video_edit
+title: 'Coastal drive turned to sunset'
+prompt: 'change the lighting in this scene to sunset'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-03-source.mp4
+params:
+  audio: false
+expected: 'Coastal drive turned to sunset. Capability under test: Change time of day or weather with correct light on people and objects. Adherence clauses, check each: 1) Sky reads as sunset in every frame  2) Shadows are long and point away from the sun  3) Car and road geometry unchanged  4) Car colour not shifted beyond the new light  5) No flicker in the lighting'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real
+- video-editing

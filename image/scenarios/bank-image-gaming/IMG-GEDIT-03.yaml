@@ -1,0 +1,40 @@
+# Gaming pilot scenario IMG-GEDIT-03 (BGMI, Image Editing). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://runware.ai/docs/models/runway-aleph-2-0/guides/editing-video
+# Test type: IEDIT-06 Swap the background or map while the character stays exactly the same
+id: IMG-GEDIT-03
+modality: image
+task: image_edit
+title: 'Grassland to snow map'
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-03-source.png
+params:
+  size: auto
+prompt: 'Replace the grassland setting with a snow-covered landscape, a stone castle on a hill in the background and a pale winter sky. Keep the player exactly as they are, same pose and outfit, with light snow on the boots and cool light on them.'
+expected: 'Grassland to snow map. Capability under test: Swap the background or map while the character stays exactly the same. Adherence clauses, check each: 1) Snow landscape with a castle present, farmhouse gone  2) Player''s pose and outfit identical  3) Light on the player matches the winter scene  4) Feet meet the snow with no gap or floating  5) Edges around the player are clean'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  preservation:
+    method: phash
+    max_distance: 12
+criteria:
+- edit_fidelity
+- preservation
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.333333
+  preservation: 0.388889
+  visual_quality: 0.166667
+  realism_style: 0.111111
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-editing

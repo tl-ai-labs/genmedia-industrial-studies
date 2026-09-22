@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-09 (Real Cricket 24, Image-to-Video). Built from
+# video/scenarios/bank-video-gaming/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://www.freepressjournal.in/lifestyle/viral-ipl-broadcast-trend-heres-how-to-create-your-ai-video-in-the-stadium-using-gemini-prompt
+# Test type: I2V-12 Close-up of a face and hair moving (talking, wind, turning)
+id: VID-GI2V-09
+modality: video
+task: image_to_video
+title: 'Fan in the stands, mid-clap'
+prompt: 'Person sitting in a live T20 cricket stadium crowd at night, same face shape and facial structure preserved. Hands raised in a natural clap gesture, caught mid-motion by a broadcast camera. Wearing a yellow team jersey. Packed stadium crowd behind the subject, energetic night atmosphere, LED stadium glow, shallow depth of field with crowd softly blurred. Authentic broadcast overlay graphics: scoreboard top left, broadcaster logo top right. Telephoto zoom lens, cinematic compression, slight motion blur on hands, sharp focus on face, documentary realism, candid fan-cam style. Photorealistic.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-09-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Fan in the stands, mid-clap. Capability under test: Close-up of a face and hair moving (talking, wind, turning). Adherence clauses, check each: 1) Face stays the same person throughout  2) Clap motion is natural, hands keep five fingers  3) Overlay graphics do not drift or change  4) Crowd blur stays consistent  5) No extra people appear in the foreground'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- image-to-video

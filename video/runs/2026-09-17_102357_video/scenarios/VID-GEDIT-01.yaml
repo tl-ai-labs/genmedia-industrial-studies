@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-01 (BGMI, Video Editing). Built from
+# video/scenarios/bank-video-gaming/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://curiousrefuge.com/blog/9-ways-to-use-runway-aleph
+# Test type: EDIT-01 Swap the object in a character's hands, with the hands adjusting
+id: VID-GEDIT-01
+modality: video
+task: video_edit
+title: 'Rifle becomes frying pan'
+prompt: 'swap the rifle for a frying pan'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-01-source.mp4
+params:
+  audio: false
+expected: 'Rifle becomes frying pan. Capability under test: Swap the object in a character''s hands, with the hands adjusting. Adherence clauses, check each: 1) Frying pan present in every frame, rifle absent in every frame  2) Hands hold the pan believably  3) Run cycle unchanged  4) Nothing else in the frame changed  5) No flicker on the swapped item'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- video-editing
