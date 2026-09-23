@@ -1,0 +1,42 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: medium
+# Inputs: source = IMG-RC-base-stadium.png — provenance in sidecar .json
+id: IMG-RC-07
+modality: image
+task: image_edit
+title: Day match to night match under floodlights
+inputs:
+  source: assets/bank/IMG-RC-base-stadium.png
+params:
+  size: auto
+prompt: 'Convert this daytime cricket stadium scene into a night match under
+  floodlights. The sky should be deep dark blue, the pitch and outfield lit by
+  bright white floodlight towers casting sharp pools of light with soft falloff.
+  The stands should glow with the warm tones of a packed night crowd. Keep the
+  stadium architecture, pitch markings, players and every structural element
+  exactly the same — only the lighting and sky change.'
+expected: 'Day to night relighting. Capability under test: Global illumination
+  change while preserving all structural detail. Adherence clauses, check each:
+  1) Sky changed to deep dark blue  2) Pitch lit by floodlight towers with sharp
+  light pools  3) Stands glow with warm crowd tones  4) Stadium architecture,
+  pitch markings and players unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.25
+  realism_style: 0.25
+tags:
+- lighting-&-environment
+- scenario-bank-game-pilot
+- rc24
+- tier-medium

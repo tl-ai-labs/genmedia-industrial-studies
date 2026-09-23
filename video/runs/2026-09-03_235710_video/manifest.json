@@ -1,0 +1,111 @@
+{
+  "run_id": "2026-09-03_235710_video",
+  "created": "2026-09-03T18:27:10.988Z",
+  "state": "generated",
+  "modality": "video",
+  "git_sha": null,
+  "budget_usd": null,
+  "events": [
+    {
+      "ts": "2026-09-03T18:27:11.014Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-03T18:27:11.019Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-03T18:27:11.827Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-03T18:28:41.369Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390"
+  },
+  "rubric_files": {
+    "text_to_video": [
+      "/private/tmp/claude-501/genmedia-video-mirror/configs/rubrics/video.yaml",
+      "/private/tmp/claude-501/genmedia-video-mirror/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "vid-001-dolly-in": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "vid-002-liquid-pour": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "vid-003-bouncing-ball": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "b5936719df0e0620729860fede1602fab1a442f24e9a348a144bef332d10529b",
+  "inputs": {
+    "vid-001-dolly-in": [],
+    "vid-002-liquid-pour": [],
+    "vid-003-bouncing-ball": []
+  },
+  "cells": {
+    "vid-001-dolly-in::omni-flash-vertex": {
+      "scenario_id": "vid-001-dolly-in",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    },
+    "vid-002-liquid-pour::omni-flash-vertex": {
+      "scenario_id": "vid-002-liquid-pour",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    },
+    "vid-003-bouncing-ball::omni-flash-vertex": {
+      "scenario_id": "vid-003-bouncing-ball",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "vid-001-dolly-in": "awaiting_judgement",
+    "vid-002-liquid-pour": "awaiting_judgement",
+    "vid-003-bouncing-ball": "awaiting_judgement"
+  }
+}

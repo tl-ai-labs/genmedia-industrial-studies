@@ -1,0 +1,46 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: high
+# Inputs: source = IMG-BG-base-soldier.png — provenance in sidecar .json
+id: IMG-BG-07
+modality: image
+task: image_edit
+title: Add kill-feed overlay and minimap HUD to a gameplay frame
+inputs:
+  source: assets/bank/IMG-BG-base-soldier.png
+params:
+  size: auto
+prompt: 'Overlay battle-royale HUD elements onto this image without changing the
+  underlying photograph. Top right: a kill feed showing three lines of text —
+  Player_Alpha [M416] Player_Bravo, Player_Charlie [Kar98k] Player_Delta,
+  You [Pan] Player_Echo — in a small semi-transparent dark panel with white text.
+  Bottom left: a circular minimap with a green triangle for the player, white dots
+  for squad-mates, a blue circle for the safe zone, and terrain contours. Bottom
+  centre: a health bar at 74% in green and a thin blue boost bar beneath it. All
+  HUD elements must have semi-transparent dark backgrounds and look like an in-game
+  screenshot overlay.'
+expected: 'HUD overlay on gameplay frame. Capability under test: Compositing
+  multiple UI panels with legible text at specific screen positions. Adherence
+  clauses, check each: 1) Kill feed top-right with three player-name lines and
+  weapon names in brackets  2) Circular minimap bottom-left with green triangle,
+  white dots and blue zone circle  3) Health bar at 74% bottom-centre with boost
+  bar  4) All HUD elements semi-transparent, underlying image unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- text_accuracy
+weights:
+  edit_fidelity: 0.35
+  visual_quality: 0.2
+  text_accuracy: 0.45
+tags:
+- ui-overlay
+- scenario-bank-game-pilot
+- bgmi
+- tier-high

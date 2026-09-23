@@ -1,0 +1,41 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: medium
+# Inputs: source = IMG-BG-base-vest.png — provenance in sidecar .json
+id: IMG-BG-06
+modality: image
+task: image_edit
+title: Swap rifle for a cast-iron frying pan
+inputs:
+  source: assets/bank/IMG-BG-base-vest.png
+params:
+  size: auto
+prompt: 'Replace the rifle this soldier is holding with a large cast-iron frying pan
+  held in the same grip position. The pan should look like a heavy, well-used kitchen
+  skillet with a riveted handle — the iconic melee weapon from a battle-royale game.
+  The hand position and grip must look natural on the pan handle. Keep the soldier''s
+  face, uniform, plate carrier and everything else exactly as they are.'
+expected: 'Frying pan weapon swap. Capability under test: Object replacement in a
+  hand grip with plausible contact. Adherence clauses, check each: 1) Rifle fully
+  replaced by a cast-iron frying pan  2) Hand grip looks natural on the pan handle
+  3) Pan has a heavy, well-used skillet appearance  4) Soldier uniform, face and
+  background unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- object-replacement
+- scenario-bank-game-pilot
+- bgmi
+- tier-medium

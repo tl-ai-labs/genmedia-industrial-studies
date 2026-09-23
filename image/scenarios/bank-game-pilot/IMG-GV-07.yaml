@@ -1,0 +1,44 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: high
+# Inputs: source = IMG-GV-base-man.png — provenance in sidecar .json
+id: IMG-GV-07
+modality: image
+task: image_edit
+title: Add a WANTED poster with star rating and cash bounty
+inputs:
+  source: assets/bank/IMG-GV-base-man.png
+params:
+  size: auto
+prompt: 'Create a WANTED poster featuring this person. Replace the background with
+  an aged, yellowed paper texture with torn edges and coffee stains. At the top,
+  large bold serif text reading WANTED. Below that, the person''s face cropped as
+  a rough mugshot-style portrait, centred. Below the portrait, text reading
+  DEAD OR ALIVE. Below that, a bounty amount $500,000 in large bold numerals.
+  At the bottom, a row of five star icons — three filled solid (gold) and two
+  hollow outlines — representing a three-star wanted level. The overall look
+  should be a weathered Old West poster with a modern crime-game twist.'
+expected: 'WANTED poster with star rating. Capability under test: Recomposing a
+  portrait into a structured poster with specific text, icons and a textured
+  background. Adherence clauses, check each: 1) WANTED in large serif at the top
+  2) Person''s face as a mugshot-style portrait on yellowed paper  3) DEAD OR ALIVE
+  and $500,000 text legible  4) Five stars — three gold filled, two hollow outlines'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- text_accuracy
+weights:
+  edit_fidelity: 0.3
+  visual_quality: 0.25
+  text_accuracy: 0.45
+tags:
+- marketing-&-key-art
+- scenario-bank-game-pilot
+- gta-v
+- tier-high

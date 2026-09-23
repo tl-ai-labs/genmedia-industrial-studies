@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-13 (GTA V, Image-to-Video). Second attempt: the first
+# output carried real brand, team or player names. Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-13-still.png
+id: GEN-VID-GI2V-13-v2
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-13 (v2, no real names): Heist getaway out of the bank'
+prompt: 'Low tracking view: three masked robbers in tracksuits frozen mid-stride at the doorway of a bank on a sunlit city street, the sign above the door reads only the word BANK, a muscle car waiting at the kerb with its doors open, loose banknotes in the air. No real bank or company names, no real logos, no on-screen display, no other text. Realistic mobile-game render look, sharp, clean, no watermark.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still with no real brand, team, bank or player names: Heist getaway out of the bank'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

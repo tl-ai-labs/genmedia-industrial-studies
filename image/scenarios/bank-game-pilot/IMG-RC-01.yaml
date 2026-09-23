@@ -1,0 +1,44 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: medium
+id: IMG-RC-01
+modality: image
+task: text_to_image
+title: T20 match poster with stadium floodlights and team crests
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: A T20 cricket match-day poster, portrait orientation. A floodlit cricket
+  stadium at night fills the background, with bright white floodlight towers at each
+  corner and a packed crowd. In the foreground, two circular team crests face each
+  other — the left crest shows a blue lion on a gold shield, the right crest shows
+  a red eagle on a silver shield. Between them, large bold text reads THUNDER vs
+  PHOENIX. Below, smaller text reads FRIDAY 20:00 IST — EDEN GARDENS. A horizontal
+  bar at the bottom shows the T20 SUPER LEAGUE logo in white on a dark navy strip.
+  Cinematic lighting, dramatic colour grading.
+expected: 'T20 match poster. Capability under test: Sports poster layout with team
+  crests, legible multi-line text and a stadium backdrop. Adherence clauses, check
+  each: 1) Floodlit stadium at night with crowd visible  2) Two circular team crests
+  — blue lion left, red eagle right  3) THUNDER vs PHOENIX text and FRIDAY 20:00
+  IST — EDEN GARDENS legible  4) T20 SUPER LEAGUE logo bar at the bottom'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- text_accuracy
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.2
+  composition: 0.2
+  text_accuracy: 0.3
+tags:
+- marketing-&-key-art
+- scenario-bank-game-pilot
+- rc24
+- tier-medium

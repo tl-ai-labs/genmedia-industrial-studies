@@ -1,0 +1,496 @@
+{
+  "run_id": "2026-09-03_225111_video",
+  "created": "2026-09-03T17:21:11.856Z",
+  "state": "reported",
+  "modality": "video",
+  "git_sha": "6ec7f40e37fd886bdf0d9013715b5d5d1e160b0e",
+  "budget_usd": 41.0,
+  "events": [
+    {
+      "ts": "2026-09-03T17:21:11.942Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-03T17:21:11.953Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-03T17:21:13.031Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-03T17:48:51.379Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-03T17:48:52.508Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-03T18:11:17.863Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-03T18:26:11.052Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-03T18:26:11.107Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-03T18:26:34.424Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T03:33:55.343Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:02:08.477Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:10:03.203Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:11:43.675Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:13:43.660Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:19:45.161Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:22:28.439Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:24:55.382Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:40:57.225Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:43:07.829Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-04T06:50:24.839Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390"
+  },
+  "rubric_files": {
+    "text_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-CIN-01": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-CIN-02": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-CIN-03": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-CIN-04": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-01": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-02": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-03": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-04": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-05": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-06": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-07": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-08": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-09": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-PHY-10": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "014fcb84e51fdff6e01cdd50bd31dc1e350a0b12843a113dfedd4ba36711024a",
+  "inputs": {
+    "VID-CIN-01": [],
+    "VID-CIN-02": [],
+    "VID-CIN-03": [],
+    "VID-CIN-04": [],
+    "VID-PHY-01": [],
+    "VID-PHY-02": [],
+    "VID-PHY-03": [],
+    "VID-PHY-04": [],
+    "VID-PHY-05": [],
+    "VID-PHY-06": [],
+    "VID-PHY-07": [],
+    "VID-PHY-08": [],
+    "VID-PHY-09": [],
+    "VID-PHY-10": []
+  },
+  "cells": {
+    "VID-CIN-01::omni-flash-vertex": {
+      "scenario_id": "VID-CIN-01",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-01::seedance-2-5": {
+      "scenario_id": "VID-CIN-01",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-02::omni-flash-vertex": {
+      "scenario_id": "VID-CIN-02",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-02::seedance-2-5": {
+      "scenario_id": "VID-CIN-02",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-03::omni-flash-vertex": {
+      "scenario_id": "VID-CIN-03",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-03::seedance-2-5": {
+      "scenario_id": "VID-CIN-03",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-04::omni-flash-vertex": {
+      "scenario_id": "VID-CIN-04",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-CIN-04::seedance-2-5": {
+      "scenario_id": "VID-CIN-04",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-01::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-01",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-01::seedance-2-5": {
+      "scenario_id": "VID-PHY-01",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-02::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-02",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-02::seedance-2-5": {
+      "scenario_id": "VID-PHY-02",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-03::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-03",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-03::seedance-2-5": {
+      "scenario_id": "VID-PHY-03",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-04::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-04",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-04::seedance-2-5": {
+      "scenario_id": "VID-PHY-04",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-05::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-05",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-05::seedance-2-5": {
+      "scenario_id": "VID-PHY-05",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-06::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-06",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-06::seedance-2-5": {
+      "scenario_id": "VID-PHY-06",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-07::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-07",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-07::seedance-2-5": {
+      "scenario_id": "VID-PHY-07",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-08::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-08",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-08::seedance-2-5": {
+      "scenario_id": "VID-PHY-08",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-09::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-09",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-09::seedance-2-5": {
+      "scenario_id": "VID-PHY-09",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-10::omni-flash-vertex": {
+      "scenario_id": "VID-PHY-10",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-PHY-10::seedance-2-5": {
+      "scenario_id": "VID-PHY-10",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "VID-CIN-01": "completed",
+    "VID-CIN-02": "completed",
+    "VID-CIN-03": "completed",
+    "VID-CIN-04": "completed",
+    "VID-PHY-01": "completed",
+    "VID-PHY-02": "completed",
+    "VID-PHY-03": "completed",
+    "VID-PHY-04": "completed",
+    "VID-PHY-05": "completed",
+    "VID-PHY-06": "completed",
+    "VID-PHY-07": "completed",
+    "VID-PHY-08": "completed",
+    "VID-PHY-09": "completed",
+    "VID-PHY-10": "completed"
+  }
+}

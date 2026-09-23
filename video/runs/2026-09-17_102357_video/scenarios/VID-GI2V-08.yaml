@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-08 (Real Cricket 24, Image-to-Video). Built from
+# video/scenarios/bank-video-gaming/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://easysailor.in/instagram-trending-ipl-batting-video-editing-full-guide-with-prompt/
+# Test type: I2V-01 One character does one action
+id: VID-GI2V-08
+modality: video
+task: image_to_video
+title: 'Batsman hits the ball out of the boundary'
+prompt: 'batsman hits the ball and ball moves out of boundary'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-08-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Batsman hits the ball out of the boundary. Capability under test: One character does one action. Adherence clauses, check each: 1) Bat contacts the ball before the ball changes direction  2) Ball rises and leaves the field over the boundary  3) Batter keeps two arms, two legs, one bat  4) Stumps untouched  5) Kit and helmet unchanged'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- image-to-video

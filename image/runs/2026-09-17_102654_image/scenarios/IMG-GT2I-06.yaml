@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-06 (Real Cricket 24, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://kshare.in/prompt/ipl-2026-ai-photo-editing-prompts
+# Test type: T2I-09 A named time of day or lighting mood
+id: IMG-GT2I-06
+modality: image
+task: text_to_image
+title: 'Night match stadium under floodlights'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'T20 night match stadium, glowing floodlights, full crowd, vibrant atmosphere, ultra-realistic wide shot, cinematic composition, 16:9 aspect ratio, 4K'
+expected: 'Night match stadium under floodlights. Capability under test: A named time of day or lighting mood. Adherence clauses, check each: 1) Clearly night, floodlights on  2) Stands are full  3) Pitch and creases visible in the middle  4) Wide shot, 16:9  5) No readable text or logos on boards'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- text-to-image

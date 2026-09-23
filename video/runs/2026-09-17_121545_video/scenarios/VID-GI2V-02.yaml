@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-02 (BGMI, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://ulazai.com/directory/prompt/15a00c69-0a17-491f-bacd-35a930357aa5/
+# Test type: I2V-09 A big effect over the whole scene while a character does something
+id: VID-GI2V-02
+modality: video
+task: image_to_video
+title: 'Airdrop lands, sniper crawls'
+prompt: 'The supply crate drops the last few metres under its parachute and lands with a loud thud on the grass; the parachute folds over it. Red smoke pours from the crate and spreads across the whole field on the wind. The prone player in the grass suit crawls slowly forward toward the crate, keeping low. Action gritty sequence, realistic, soft daylight.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-02-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Airdrop lands, sniper crawls. Capability under test: A big effect over the whole scene while a character does something. Adherence clauses, check each: 1) Crate lands and stops moving  2) Red smoke keeps flowing and drifts in one wind direction  3) Player crawls, never stands  4) Grass suit still looks like grass at the end  5) No new objects appear'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-to-video

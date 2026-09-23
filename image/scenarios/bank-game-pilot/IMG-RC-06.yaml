@@ -1,0 +1,45 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: high
+# Inputs: source = IMG-RC-base-stadium.png — provenance in sidecar .json
+id: IMG-RC-06
+modality: image
+task: image_edit
+title: Add broadcast scoreboard overlay with team, overs and run rate
+inputs:
+  source: assets/bank/IMG-RC-base-stadium.png
+params:
+  size: auto
+prompt: 'Overlay a live-broadcast cricket scoreboard onto this stadium image without
+  changing the underlying photograph. Place a horizontal scoreboard bar across the
+  bottom edge of the frame. The bar should have a dark navy background with white
+  text. Left side: team abbreviation IND in bold, then the score 186/4 in large
+  numerals. Centre: overs reading (18.2), required run rate RRR 9.8. Right side:
+  LIVE in a red pill badge and the text T20 SUPER LEAGUE in smaller caps. The bar
+  must look like a real television broadcast graphic — clean edges, consistent font
+  weight, semi-transparent so a sliver of the stadium shows through.'
+expected: 'Broadcast scoreboard overlay. Capability under test: Compositing a
+  structured data bar with multiple text fields and a badge. Adherence clauses,
+  check each: 1) Horizontal bar at bottom with dark navy background  2) IND and
+  186/4 on the left, (18.2) and RRR 9.8 in the centre  3) LIVE red badge and
+  T20 SUPER LEAGUE text on the right  4) Bar is semi-transparent, stadium image
+  unchanged beneath'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- text_accuracy
+weights:
+  edit_fidelity: 0.3
+  visual_quality: 0.2
+  text_accuracy: 0.5
+tags:
+- ui-overlay
+- scenario-bank-game-pilot
+- rc24
+- tier-high

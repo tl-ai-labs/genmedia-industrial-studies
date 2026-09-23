@@ -1,0 +1,43 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: medium
+id: IMG-BG-01
+modality: image
+task: text_to_image
+title: Airdrop crate on open field with red smoke and parachute
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A military supply crate sitting in an open grassy field, red smoke billowing
+  from a canister attached to it, a deflated white parachute draped over one side and
+  trailing into the grass. The crate is olive drab with yellow stencilled text reading
+  SUPPLY DROP and a caution stripe along the bottom edge. Late afternoon light, long
+  shadows, an empty treeline in the distance. No people, no UI elements, photorealistic
+  style.
+expected: 'Airdrop crate on an open field. Capability under test: Generating a
+  recognisable battle-royale supply drop scene with specific prop details.
+  Adherence clauses, check each: 1) Olive drab crate with yellow SUPPLY DROP
+  stencil and caution stripe  2) Red smoke billowing from an attached canister
+  3) White parachute deflated and draped over the crate  4) Open grassy field,
+  late afternoon light, no people or UI'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- environment-&-props
+- scenario-bank-game-pilot
+- bgmi
+- tier-medium

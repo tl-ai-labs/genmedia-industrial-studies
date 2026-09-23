@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-10 (GTA V, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-10-still.png
+id: GEN-VID-GI2V-10
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-10: Character intro push-in at dusk'
+prompt: 'a protagonist in designer streetwear standing still on a neon-lit, palm-lined city boulevard at dusk, glowing club signs behind, light rain in the air. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a protagonist in designer streetwear standing still on a neon-lit, palm-lined city boulevard at dusk, glowing club signs behind, light rain in the air.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

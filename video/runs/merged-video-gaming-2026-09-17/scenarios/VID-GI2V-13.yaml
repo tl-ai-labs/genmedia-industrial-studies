@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-13 (GTA V, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.getstarrd.app/blog/gta-6-ai-prompts
+# Test type: I2V-02 A sequence of actions in the right order
+id: VID-GI2V-13
+modality: video
+task: image_to_video
+title: 'Heist getaway out of the bank'
+prompt: 'Cinematic open-world crime game style trailer shot. Three masked robbers in tracksuits sprint out of a bank onto a sunlit city street toward a waiting muscle car with its doors open and engine running, loose banknotes tumbling through the air behind them. Handheld low tracking shot, dust and heat haze, warm high-contrast grade, photorealistic, film grain, tense and kinetic, 16:9. No on-screen text. No real logos, no brand marks, no watermark.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-13-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Heist getaway out of the bank. Capability under test: A sequence of actions in the right order. Adherence clauses, check each: 1) Order is exit, run, reach the car  2) Exactly three robbers throughout  3) Banknotes fall and tumble naturally  4) Car stays at the kerb with doors open until they arrive  5) No text'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- gta-v
+- real-based
+- image-to-video

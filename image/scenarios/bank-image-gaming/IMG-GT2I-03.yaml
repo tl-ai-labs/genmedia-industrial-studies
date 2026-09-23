@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-03 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://prompthero.com/prompt/7ac7c714b35
+# Test type: T2I-13 First-person view with hands and weapon in the frame
+id: IMG-GT2I-03
+modality: image
+task: text_to_image
+title: 'First-person bridge overwatch'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'screenshot of a first person shooter game on unreal engine 5, a rooftop edge overlooking a long two-lane bridge that crosses the sea to an island with a military base, gloved hands holding a wooden-stock bolt-action rifle with a long 8x scope resting on the concrete edge, an olive-green open-top jeep driving across the bridge, late afternoon light, no on-screen display, photorealistic'
+expected: 'First-person bridge overwatch. Capability under test: First-person view with hands and weapon in the frame. Adherence clauses, check each: 1) Hands have five fingers each and hold the rifle correctly  2) Rifle is bolt-action with a wooden stock and a long scope  3) Bridge spans water to an island  4) Exactly one jeep on the bridge  5) No HUD elements'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- text-to-image

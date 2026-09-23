@@ -1,0 +1,21 @@
+# Input asset generator for pilot card IMG-GEDIT-07 (Real Cricket 24, Image Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/image/IMG-GEDIT-07-source.png
+id: GEN-IMG-GEDIT-07
+modality: image
+task: text_to_image
+title: 'Input still for IMG-GEDIT-07: Standing batter to century celebration'
+prompt: 'a batter in green kit stands upright at the crease with the bat resting on the ground and helmet on, looking straight ahead. Crowd in the stands behind. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a batter in green kit stands upright at the crease with the bat resting on the ground and helmet on, looking straight ahead. Crowd in the stands behind.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

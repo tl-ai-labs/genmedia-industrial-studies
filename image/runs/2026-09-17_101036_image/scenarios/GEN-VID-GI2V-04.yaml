@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-04 (BGMI, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-04-still.png
+id: GEN-VID-GI2V-04
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-04: Mass jump from the plane'
+prompt: 'a large grey cargo plane in flight with about twenty small figures falling away from its rear door at different distances, three parachutes already open. Far below, an island coastline and a small town. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a large grey cargo plane in flight with about twenty small figures falling away from its rear door at different distances, three parachutes already open. Far below, an island coastline and a small town.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

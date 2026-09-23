@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-09 (Real Cricket 24, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-09-still.png
+id: GEN-VID-GI2V-09-v2
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-09: Fan in the stands, mid-clap'
+prompt: 'Cricket T20 night match. of one spectator in a yellow team jersey seated in packed night-match stands, hands raised as if about to clap, crowd blurred behind. Use a team member''s own photo with their consent, or a generated picture; never a real fan''s photo. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: of one spectator in a yellow team jersey seated in packed night-match stands, hands raised as if about to clap, crowd blurred behind. Use a team member''s own photo with their consent, or a generated picture; never a real fan''s photo.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

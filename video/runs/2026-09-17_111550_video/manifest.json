@@ -1,0 +1,123 @@
+{
+  "run_id": "2026-09-17_111550_video",
+  "created": "2026-09-17T05:45:50.262Z",
+  "state": "rejected",
+  "modality": "video",
+  "git_sha": null,
+  "budget_usd": 0.01,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-17T05:45:50.370Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-17T05:45:50.378Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-17T05:45:50.833Z",
+      "state": "rejected",
+      "reason": "pre-flight estimate 12.8000 USD exceeds budget 0.01"
+    }
+  ],
+  "models": [
+    {
+      "id": "veo-3-1-vertex",
+      "provider": "google-vertex",
+      "adapter": "veo_video",
+      "provider_model": "veo-3.1-generate-001",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390"
+  },
+  "rubric_files": {
+    "text_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "GEN-VID-GEDIT-09": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "GEN-VID-GEDIT-10": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "GEN-VID-GEDIT-11": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "GEN-VID-GEDIT-12": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "1006802ab912eee3222219ae2cf021d5bd76d927ea44aad9c6babd8a167113ab",
+  "inputs": {
+    "GEN-VID-GEDIT-09": [],
+    "GEN-VID-GEDIT-10": [],
+    "GEN-VID-GEDIT-11": [],
+    "GEN-VID-GEDIT-12": []
+  },
+  "cells": {
+    "GEN-VID-GEDIT-09::veo-3-1-vertex": {
+      "scenario_id": "GEN-VID-GEDIT-09",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "GEN-VID-GEDIT-10::veo-3-1-vertex": {
+      "scenario_id": "GEN-VID-GEDIT-10",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "GEN-VID-GEDIT-11::veo-3-1-vertex": {
+      "scenario_id": "GEN-VID-GEDIT-11",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "GEN-VID-GEDIT-12::veo-3-1-vertex": {
+      "scenario_id": "GEN-VID-GEDIT-12",
+      "model_id": "veo-3-1-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

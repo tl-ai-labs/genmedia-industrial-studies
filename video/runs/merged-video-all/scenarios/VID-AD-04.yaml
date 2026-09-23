@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-04 (sheet row 78) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: —)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Product reference | source: Google Scanned Objects (CC BY 4.0) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-AD-04
+modality: video
+task: image_to_video
+title: Before and after transition
+prompt: A dull kitchen worktop transitions to a clean one across the shot, with the supplied
+  cleaning product visible throughout. Smooth transition, product unchanged.
+inputs:
+  reference: assets/bank/VID-AD-04-reference.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: true
+  seed: 20260910
+expected: 'Before and after transition. Capability under test: Controlled two-state change.
+  Adherence clauses, check each: 1) Clear before and after states  2) Transition is gradual  3)
+  Product visible and unaltered throughout  4) Worktop geometry unchanged'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets

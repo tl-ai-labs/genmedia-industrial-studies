@@ -1,0 +1,18 @@
+# Handle probe A — the prompt EXACTLY as the bank has it, no @Video1.
+# Question: does each model bind the supplied source clip without a handle?
+id: PROBE-NOHANDLE
+modality: video
+task: video_edit
+title: Recolour one object (no handle)
+prompt: In this clip, change the colour of the red umbrella to yellow. Everything else in
+  the shot must stay exactly as it is.
+inputs:
+  source: assets/bank/VID-EDIT-01-source.mp4
+params:
+  audio: false
+expected: 'The umbrella is yellow; nothing else in the shot changes.'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing

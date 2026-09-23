@@ -1,0 +1,99 @@
+{
+  "run_id": "2026-09-11_113421_video",
+  "created": "2026-09-11T06:04:21.652Z",
+  "state": "rejected",
+  "modality": "video",
+  "git_sha": "dc756d41a8f13df5cddf958c01cea481419d8eb2",
+  "budget_usd": 12.0,
+  "budget_by_provider": {
+    "byteplus": 11.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-11T06:04:21.673Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-11T06:04:21.680Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-11T06:04:22.309Z",
+      "state": "rejected",
+      "reason": "pre-flight estimate 12.2000 USD exceeds budget 12.00"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/video_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-EDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "04455d854cfb6992ae88bd6e3c276600cd24438c30d884544969a37d5b226f7e",
+  "inputs": {
+    "VID-EDIT-01": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/VID-EDIT-01/VID-EDIT-01-source.mp4"
+      }
+    ]
+  },
+  "cells": {
+    "VID-EDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-EDIT-01::seedance-2-5": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

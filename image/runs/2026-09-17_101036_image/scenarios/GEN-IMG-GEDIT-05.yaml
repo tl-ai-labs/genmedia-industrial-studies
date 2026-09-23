@@ -1,0 +1,21 @@
+# Input asset generator for pilot card IMG-GEDIT-05 (Real Cricket 24, Image Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/image/IMG-GEDIT-05-source.png
+id: GEN-IMG-GEDIT-05
+modality: image
+task: text_to_image
+title: 'Input still for IMG-GEDIT-05: White ball to pink ball'
+prompt: 'a bowler at the point of release with a white ball clearly visible in the hand, batter in stance at the far end. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a bowler at the point of release with a white ball clearly visible in the hand, batter in stance at the far end.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

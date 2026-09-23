@@ -1,0 +1,45 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: high
+id: IMG-GV-02
+modality: image
+task: text_to_image
+title: Three-character lineup in open-world crime game art style
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: Three characters standing in a row against a plain off-white background,
+  drawn in an open-world crime game loading-screen style — bold black ink outlines,
+  flat colour fills, subtle halftone shading. Left — a heavy-set man in a Hawaiian
+  shirt, cargo shorts and flip-flops, arms crossed, menacing scowl. Centre — a
+  lean man in a tailored navy suit and sunglasses, hands clasped in front, calm
+  expression. Right — a young man in a green hoodie, backwards cap and low-slung
+  jeans, one hand gesturing. Each character has a distinct silhouette and body
+  language. Full body visible, no overlap between figures, even spacing.
+expected: 'Three-character lineup in GTA style. Capability under test: Three
+  distinct characters in a consistent illustration style with correct silhouettes.
+  Adherence clauses, check each: 1) Three full-body characters in a row, no overlap
+  2) Bold ink outlines, flat fills, halftone shading — consistent style across all
+  three  3) Each matches their description (Hawaiian shirt, navy suit, green hoodie)
+  4) Distinct body types and expressions per character'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- identity-&-consistency
+- scenario-bank-game-pilot
+- gta-v
+- tier-high

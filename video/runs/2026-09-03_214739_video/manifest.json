@@ -1,0 +1,75 @@
+{
+  "run_id": "2026-09-03_214739_video",
+  "created": "2026-09-03T16:17:39.923Z",
+  "state": "generated",
+  "modality": "video",
+  "git_sha": "6ec7f40e37fd886bdf0d9013715b5d5d1e160b0e",
+  "budget_usd": 1.5,
+  "events": [
+    {
+      "ts": "2026-09-03T16:17:39.941Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-03T16:17:39.946Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-03T16:17:40.066Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-03T16:17:52.832Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390"
+  },
+  "rubric_files": {
+    "text_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "vid-001-dolly-in": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "95a7b5f2ecfb28e6758040e556d46855397f9584287404123234c0150e28d708",
+  "inputs": {
+    "vid-001-dolly-in": []
+  },
+  "cells": {
+    "vid-001-dolly-in::seedance-2-5": {
+      "scenario_id": "vid-001-dolly-in",
+      "model_id": "seedance-2-5",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): QuotaExceeded: Your account 3004401410 has exhausted its free trial quota for the dreamina-seedance-2-5-260628 model. Request id: 02178845226259000000000000000000000ffffc0a89d00bd5e6b"
+    }
+  },
+  "scenario_status": {
+    "vid-001-dolly-in": "incomplete"
+  }
+}

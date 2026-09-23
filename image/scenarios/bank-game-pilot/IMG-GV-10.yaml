@@ -1,0 +1,45 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: high
+# Inputs: source = IMG-GV-base-street.png — provenance in sidecar .json
+id: IMG-GV-10
+modality: image
+task: image_edit
+title: Remove pedestrians and add police helicopter searchlight
+inputs:
+  source: assets/bank/IMG-GV-base-street.png
+params:
+  size: auto
+prompt: 'Make two changes to this street scene. First, remove any visible
+  pedestrians and reconstruct the pavement and building facades behind them so
+  the street looks deserted — no ghosting, no smearing, continuous surfaces.
+  Second, add a police helicopter hovering in the upper right of the frame, its
+  searchlight casting a bright white cone of light down onto the street below,
+  illuminating a circular patch of pavement. The searchlight cone should have
+  visible volumetric haze. Keep all buildings, vehicles, road markings and the
+  rest of the scene exactly as they are.'
+expected: 'Pedestrian removal and helicopter addition. Capability under test:
+  Object removal with clean inpainting plus adding a new element with correct
+  lighting interaction. Adherence clauses, check each: 1) All pedestrians removed,
+  pavement and facades reconstructed cleanly  2) Police helicopter in the upper
+  right of the frame  3) Searchlight cone with volumetric haze illuminating a
+  patch of pavement  4) Buildings, vehicles and road unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.25
+  realism_style: 0.25
+tags:
+- object-replacement
+- scenario-bank-game-pilot
+- gta-v
+- tier-high

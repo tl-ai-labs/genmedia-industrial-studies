@@ -1,0 +1,43 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: medium
+# Inputs: source = IMG-GV-base-street.png — provenance in sidecar .json
+id: IMG-GV-05
+modality: image
+task: image_edit
+title: Day street to neon-lit night with sodium lamp pools
+inputs:
+  source: assets/bank/IMG-GV-base-street.png
+params:
+  size: auto
+prompt: 'Convert this daytime street scene into a night scene lit by sodium street
+  lamps and neon signs. The sky should be deep dark blue, nearly black. Street lamps
+  cast warm orange pools of light on the pavement with visible falloff between them.
+  Add two or three neon signs on building facades — a pink BAR sign, a blue OPEN
+  sign, and a green pharmacy cross. Wet pavement reflecting the neon colours in
+  long streaks. Keep all buildings, vehicles, road layout and structural elements
+  exactly the same — only the lighting, sky and added neon signs change.'
+expected: 'Day to night with neon. Capability under test: Global relighting plus
+  adding light-emitting objects with correct reflections. Adherence clauses, check
+  each: 1) Sky changed to deep dark blue  2) Sodium street lamps with warm orange
+  pools and falloff  3) Neon signs added (BAR pink, OPEN blue, pharmacy cross green)
+  4) Wet pavement reflecting neon, all structural elements unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.25
+  realism_style: 0.25
+tags:
+- lighting-&-environment
+- scenario-bank-game-pilot
+- gta-v
+- tier-medium

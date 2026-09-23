@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-05 (Real Cricket 24, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-05-still.png
+id: GEN-VID-GI2V-05
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-05: Ball in the air, boundary catch'
+prompt: 'a white ball high in the night sky, a deep fielder in blue kit a few metres inside the LED boundary rope looking up with both hands starting to rise. Floodlights, packed stands and a big screen behind. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a white ball high in the night sky, a deep fielder in blue kit a few metres inside the LED boundary rope looking up with both hands starting to rise. Floodlights, packed stands and a big screen behind.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-02 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://imaginewithrashid.com/17-midjourney-prompts-for-aerial-photography/
+# Test type: T2I-02 A wide shot of a named place with the right layout and landmarks
+id: IMG-GT2I-02
+modality: image
+task: text_to_image
+title: 'Hillside town from the air'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'Aerial photography of a picturesque countryside with patchwork fields of different crops, farmhouses, and a small hillside town: about thirty two-storey houses with red and grey pitched roofs, a small church with a tower near the centre, dirt roads winding between them, and a walled school compound with a courtyard on the edge of town. Grass, hedges and a few pine trees around. Soft overcast daylight, realistic game render, no people.'
+expected: 'Hillside town from the air. Capability under test: A wide shot of a named place with the right layout and landmarks. Adherence clauses, check each: 1) Houses are two-storey with red and grey pitched roofs  2) A church tower is visible  3) A walled compound with a courtyard is at the edge  4) Roads are dirt, not asphalt  5) Layout reads as one coherent town from above'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- text-to-image

@@ -1,0 +1,33 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-AD-07 (sheet row 81) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: —)
+# Sheet run settings: '6-8s; 1080p; 3 seeds; product reference required'.
+# Input assets required: Product reference | source: Google Scanned Objects (CC BY 4.0) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-AD-07
+modality: video
+task: image_to_video
+title: Product against moving background
+prompt: The supplied product remains static and sharp in the centre while a colourful abstract
+  background moves behind it. Clean edges, no fringing.
+inputs:
+  reference: assets/bank/VID-AD-07-reference.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: true
+  seed: 20260910
+expected: 'Product against moving background. Capability under test: Edge quality under motion.
+  Adherence clauses, check each: 1) Product static and sharp  2) Background in motion  3)
+  No edge fringing or halo  4) Product unaltered'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- advertising-product-video
+- scenario-bank
+- pending-assets
