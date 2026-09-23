@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-32
+# Game: Genshin Impact (Adventure role-playing, anime); test type E-4 Remove one thing and fill the gap.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Remove a partly occluded object and rebuild the door and steps behind it.
+# Inputs: source = IMG-GEDIT-32-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-32
+modality: image
+task: image_edit
+title: Remove the little snowman
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-32-source.png
+params:
+  size: auto
+prompt: Remove the small snowman with twig arms standing behind the snow creatures near the door, and
+  fill the space with the steps, door frame and snow that would be behind it. Keep the three snow creatures,
+  the slime-shaped lantern and the hut exactly as they are.
+expected: 'Remove the little snowman. Capability under test: Remove one thing and fill the gap. Adherence
+  clauses, check each: 1) Snowman fully gone, including twig arms  2) Door frame and steps continue naturally  3)
+  Creatures'' outlines untouched where they overlapped  4) Warm light from the door stays consistent  5)
+  No smudge or repeated texture'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-genshin-impact
+- test-e-4
+- scenario-bank-image-gaming
+- tier-medium

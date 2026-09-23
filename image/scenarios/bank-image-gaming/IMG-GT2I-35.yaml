@@ -1,0 +1,41 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-35
+# Game: Genshin Impact (Adventure role-playing, anime); test type T2I-8 Close-up of an item.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Single item close-up.
+# Judging reference needed but not yet captured: No official close-up of a Vision found in store galleries. Capture in-game: open an Anemo character's Attributes screen, or screenshot a character close-up where the Vision is visible.
+id: IMG-GT2I-35
+modality: image
+task: text_to_image
+title: Wind Vision close-up
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: 'A close-up product-style shot of a magical charm from an anime-style open-world adventure game:
+  a palm-sized gold frame with wing-like curls on both sides holding a round glass gem that glows teal-green,
+  with a swirling wind symbol inside. It hangs from a leather belt by a short gold chain with a small
+  tassel. Soft glow on the belt, dark blurred background, cel-shaded anime rendering.'
+expected: 'Wind Vision close-up. Capability under test: Close-up of an item. Adherence clauses, check
+  each: 1) Frame symmetrical, wing curls match on both sides  2) Gem round, glowing teal-green  3) Wind
+  swirl symbol clear inside the gem  4) Chain links and tassel attach believably  5) Anime cel-shaded,
+  not photoreal'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-genshin-impact
+- test-t2i-8
+- scenario-bank-image-gaming
+- tier-low

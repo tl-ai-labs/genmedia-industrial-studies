@@ -1,0 +1,44 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-28
+# Game: Minecraft (Building sandbox); test type T2I-9 Named time of day or lighting mood.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Stepped block lighting plus exact small-icon counts (9 slots, 10 hearts, 10 food).
+# No judging reference needed: A lighting-mood test; item bar, hearts and food counts are stated in the prompt.
+id: IMG-GT2I-28
+modality: image
+task: text_to_image
+title: First night outside the shelter
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'Night in a blocky sandbox game, seen in first person from the doorway of a tiny dirt-and-wood
+  shelter on a hillside. A square white moon and square pixel stars. The land is dark blue except for
+  warm light around two torches stuck in the ground outside the door; the light fades in steps, block
+  by block. At the edge of the light stand a tall green four-legged mob with no arms and a frowning face,
+  and a skeleton holding a bow. The player''s blocky arm holds a stone sword at the bottom right. At the
+  bottom of the screen: a nine-slot item bar with ten hearts and ten food icons above it.'
+expected: 'First night outside the shelter. Capability under test: Named time of day or lighting mood.
+  Adherence clauses, check each: 1) Square moon and pixel stars  2) Torchlight fades in steps, block by
+  block, not as a smooth gradient  3) Both mobs recognisable at the edge of the light  4) Blocky arm with
+  a stone sword at the bottom right; nine slots, ten hearts, ten food icons  5) Reads as night, not as
+  a darkened daytime picture'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-minecraft
+- test-t2i-9
+- scenario-bank-image-gaming
+- tier-high

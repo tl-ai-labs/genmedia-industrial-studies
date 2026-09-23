@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-12
+# Game: BGMI (Battle royale, realistic); test type E-13 Blur player names, chat or kill feed.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Blur one name tag while nearby labels stay sharp.
+# Inputs: source = IMG-GEDIT-12-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-12
+modality: image
+task: image_edit
+title: Blur the player name
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-12-source.png
+params:
+  size: auto
+prompt: Blur the player name tag floating in the middle of the picture, next to the small winged badge,
+  together with the badge, so the name can't be read. Leave everything else sharp and unchanged, including
+  the item names and prices above the figures, the character, and the caption text.
+expected: 'Blur the player name. Capability under test: Blur player names, chat or kill feed. Adherence
+  clauses, check each: 1) ''bgmingle109'' is unreadable  2) Item names and prices still sharp and readable  3)
+  Blur limited to the name area, not a large smear  4) Character and background unchanged  5) Caption
+  unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-bgmi
+- test-e-13
+- scenario-bank-image-gaming
+- tier-low

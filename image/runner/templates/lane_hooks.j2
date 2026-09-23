@@ -1,0 +1,65 @@
+{#- Image lane hooks — the only image-specific markup in the report.
+    Contract: shared/report_kit/report_kit/templates/kit/lane_hooks_default.j2 -#}
+
+{% macro extra_css() %}{% endmacro %}
+
+{% macro summary_thumbs(s) %}
+{%- for src in s.sources or [] %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% endif %}{% endfor %}
+{%- for c in s.cards %}{% if c.mini %}<img src="{{ c.mini }}" alt="">{% endif %}{% endfor %}
+{%- endmacro %}
+
+{% macro source_media(s, src) %}
+{% if src.thumb %}
+<figure class="shot src">
+  <div class="frame">
+    <img class="out" src="{{ src.thumb }}" alt="original {{ src.role }}"
+         data-sid="{{ s.id }}" data-mid="ORIGINAL ({{ src.role }})"
+         data-cap="{{ s.id }} · original input ({{ src.role }}) · sha256 {{ src.sha256[:16] }}…">
+  </div>
+  <figcaption>
+    <span class="who accent">original · {{ src.role }}</span>
+    <span class="subcap" title="{{ src.path }}">sha {{ src.sha256[:10] }}…</span>
+  </figcaption>
+</figure>
+{% endif %}
+{% endmacro %}
+
+{% macro card_media(s, c) %}
+<div class="frame">
+  {% if c.thumb %}<img class="out" src="{{ c.thumb }}" alt="{{ c.model_id|disp }} output"
+       data-sid="{{ s.id }}" data-mid="{{ c.model_id|disp }}"
+       data-cap="{{ s.id }} · {{ c.model_id|disp }}">{% endif %}
+  {% if c.score is not none %}
+    <span class="badge {{ 'win' if s.winner == c.model_id }}">{{ c.score|q(true) }}</span>
+  {% elif c.state == 'skipped' %}<span class="badge">n/a</span>
+  {% else %}<span class="badge bad">{{ c.status }}</span>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro media_note(ctx, s) %}
+{% if s.sources %}<p class="hint">Click any image, then flip with the chips or ←/→ — original ↔ edited in place.</p>{% endif %}
+{% endmacro %}
+
+{% macro evidence_hint(ctx) %}; click an image to zoom, then flip between models (and the original, for edits) with ←/→{% endmacro %}
+
+{% macro card_measures(s, c) %}
+{% if c.measures and c.measures.width %}<span class="pill">{{ c.measures.width }}×{{ c.measures.height }}</span>{% endif %}
+{% if c.measures and c.measures.preservation_phash_distance is defined %}
+  <span class="pill {{ 'ok' if c.measures.preservation_phash_distance <= c.measures.preservation_phash_max else 'bad' }}">pHash {{ c.measures.preservation_phash_distance }}/{{ c.measures.preservation_phash_max }}</span>{% endif %}
+{% if c.measures and c.measures.ocr_match is defined %}
+  <span class="pill {{ 'ok' if c.measures.ocr_match >= 0.85 else 'est' }}">OCR {{ '%.2f'|format(c.measures.ocr_match) }}</span>{% endif %}
+{% endmacro %}
+
+{% macro card_diagnostics(s, c) %}
+{% if c.measures and c.measures.ocr_match_per_item is defined %}
+  <div class="r"><span class="src">ocr per string</span> —
+    {% for item, v in c.measures.ocr_match_per_item.items() %}
+      <span class="pill {{ 'ok' if v >= 0.85 else 'bad' }}">{{ item }} {{ '%.2f'|format(v) }}</span>
+    {% endfor %}</div>{% endif %}
+{% endmacro %}
+
+{% macro scenario_extra(ctx, s) %}{% endmacro %}
+{% macro after_summary(ctx) %}{% endmacro %}
+{% macro after_tables(ctx) %}{% endmacro %}
+{% macro after_evidence(ctx) %}{% endmacro %}
+{% macro footnote_lines(ctx) %}{% endmacro %}

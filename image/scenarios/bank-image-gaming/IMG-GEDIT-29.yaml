@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-29
+# Game: Genshin Impact (Adventure role-playing, anime); test type E-9 Change the whole art style.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Global restyle of a photo with layout held.
+# Inputs: source = IMG-GEDIT-29-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-29
+modality: image
+task: image_edit
+title: Real karst river to game style
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-29-source.png
+params:
+  size: auto
+prompt: 'Repaint this photo in the style of an anime open-world adventure game: cel-shaded mountains with
+  soft gradients, painterly clouds, clean outlines, stylised trees and water. Keep the same layout: the
+  same peaks in the same places, the river''s curve, the fields and the camera angle.'
+expected: 'Real karst river to game style. Capability under test: Change the whole art style. Adherence
+  clauses, check each: 1) Every area is cel-shaded; no photographic texture left  2) Peaks in the same
+  places and silhouettes  3) River keeps its curve  4) Fields and river banks still where they were  5)
+  Colours bright and painterly like the game'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-genshin-impact
+- test-e-9
+- scenario-bank-image-gaming
+- tier-low

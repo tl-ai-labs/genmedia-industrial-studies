@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-26
+# Game: Street Fighter 6 (Fighting); test type E-16 Change team colours or costume colours.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Recolour one garment inside a frame full of saturated paint colours.
+# Inputs: source = IMG-GEDIT-26-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-26
+modality: image
+task: image_edit
+title: Alternate colour for the jacket
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-26-source.png
+params:
+  size: auto
+prompt: Change the colour of the striking fighter's hooded jacket from blue and white to matte black with
+  gold trim, like an alternate costume colour. Keep every paint splash, the other fighter, his skin, gloves
+  and trousers, and the alley exactly as they are.
+expected: 'Alternate colour for the jacket. Capability under test: Change team colours or costume colours.
+  Adherence clauses, check each: 1) Jacket is matte black with gold trim, folds and shading kept  2) Magenta,
+  cyan and yellow paint unchanged  3) Skin, gloves and trousers unchanged  4) Other fighter unchanged  5)
+  No black or gold leaking onto nearby paint'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-street-fighter-6
+- test-e-16
+- scenario-bank-image-gaming
+- tier-medium

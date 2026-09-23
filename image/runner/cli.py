@@ -142,7 +142,8 @@ def cmd_report(args) -> int:
         out = build_combined_report(PROJECT_ROOT, dirs, out_path,
                                     open_browser=args.open,
                                     hide_industries=hide,
-                                    brief=args.brief)
+                                    brief=args.brief,
+                                    complete_only=getattr(args, "complete_only", False))
         print(f"report: {out}")
         print(f"client: {out.with_name(out.stem + '-client.html')}")
         return 0

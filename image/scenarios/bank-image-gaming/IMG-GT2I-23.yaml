@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-23
+# Game: Asphalt 9 (Arcade racing); test type T2I-17 Reflections and wet surfaces.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Reflections must match light sources above; two cars kept distinct.
+# No judging reference needed: Reflections and colours are checked against the image itself.
+id: IMG-GT2I-23
+modality: image
+task: text_to_image
+title: Rain-soaked neon city race
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: A night race in a neon-lit Asian megacity from an arcade racing game. A white hypercar leads a
+  black and red hypercar down a soaked, multi-lane elevated highway between glowing skyscrapers, including
+  a tall tower shaped like a needle with large spheres along it. The wet road mirrors the pink, blue and
+  purple neon signs above, the cars' red tail lights leave long streaks across the wet road surface, and
+  water sprays up behind the tyres. Low chase camera.
+expected: 'Rain-soaked neon city race. Capability under test: Reflections and wet surfaces. Adherence
+  clauses, check each: 1) Road reflections match the colours and positions of the neon above  2) Tail-light
+  streaks and tyre spray present  3) Two distinct cars: white in front, black and red behind  4) Needle-and-sphere
+  tower in the skyline  5) Car bodies also show reflections'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-asphalt-9
+- test-t2i-17
+- scenario-bank-image-gaming
+- tier-medium

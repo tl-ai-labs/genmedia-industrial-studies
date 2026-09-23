@@ -1,0 +1,53 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-15
+# Game: BGMI (Battle royale, realistic); test type T2I-4 Readable on-screen display.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Seven display elements in fixed positions plus four exact strings on one screen.
+# No judging reference needed: Every display element, position and string is spelled out in the prompt.
+id: IMG-GT2I-15
+modality: image
+task: text_to_image
+title: Final-circle HUD screenshot
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'Create a third-person gameplay screenshot from a realistic mobile battle-royale shooter. A player
+  in a level-3 military helmet and tactical vest crouches behind an old grey four-by-four jeep in a sandy
+  desert with rocky mesas. Behind them, a translucent blue energy wall, the edge of the shrinking safe
+  zone, crosses the desert. On-screen display: a square minimap in the top-right corner with a white circle
+  drawn on it; a compass strip across the top centre showing the number 240; next to the minimap the text
+  "Alive 7" and "Kills 4"; a white health bar at the bottom centre; the ammo count "30 / 120" above a
+  round fire button on the right; a two-line kill feed with made-up player names on the left; a movement
+  joystick at the bottom left. All text sharp and readable.'
+expected: 'Final-circle HUD screenshot. Capability under test: Readable on-screen display. Adherence clauses,
+  check each: 1) Each display element is in its stated place (minimap top-right, compass top centre, health
+  bar bottom centre, joystick bottom-left)  2) ''Alive 7'', ''Kills 4'', ''30 / 120'' and ''240'' are
+  spelled exactly  3) Translucent blue zone wall visible behind the player  4) Over-the-shoulder third-person
+  framing, player behind the jeep  5) The display sits flat on top of the scene, not painted into it'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - Alive 7
+  - Kills 4
+  - 30 / 120
+  - '240'
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.15
+  composition: 0.15
+  realism_style: 0.1
+  text_accuracy: 0.3
+tags:
+- game-bgmi
+- test-t2i-4
+- scenario-bank-image-gaming
+- tier-high

@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-31
+# Game: Genshin Impact (Adventure role-playing, anime); test type E-10 Same scene from a different angle.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Rotate a character 90 degrees to an unseen side view.
+# Inputs: source = IMG-GEDIT-31-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-31
+modality: image
+task: image_edit
+title: Ice dancer from the side
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-31-source.png
+params:
+  size: auto
+prompt: Show this same dancer and pose from her left side, a full 90 degrees round, on the same frozen
+  lake. Keep her costume, hair, the raised-arms pose and the lighting exactly the same; the ice cliffs
+  should now be seen from the new angle.
+expected: 'Ice dancer from the side. Capability under test: Same scene from a different angle. Adherence
+  clauses, check each: 1) Clearly a side view, about 90 degrees round  2) Same raised-arms pose seen from
+  the side  3) Costume details consistent: ribbon tails, bodice, sandals  4) Hair colour and ornaments
+  unchanged  5) Frozen lake and ice cliffs consistent'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-genshin-impact
+- test-e-10
+- scenario-bank-image-gaming
+- tier-medium

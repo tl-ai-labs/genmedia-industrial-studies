@@ -34,14 +34,13 @@ rebuild.
 
 ## The one scripted exception (2026-09-14)
 
-The page committed on 14 September carries two additions made by
-`scratch/patch_committed_report.py` rather than by a re-export, because the
-runs were on another machine that day: a *Where each model was served from*
-table (from `configs/models.yaml`, labelled as read back from the config) and
-a *How the two latencies are measured* block (the template's own
-`_streaming_how.j2`). Neither adds a number a run did not produce. The next
-`client-report --out dashboard` regenerates both from the templates and
-replaces the patch; the script refuses to run twice on the same page.
+The page committed on 14 September carries two additions made by a scratch
+patch script rather than by a re-export, because the runs were on another
+machine that day. That script has been retired: since 2026-09-15 every voice
+page is rendered by the shared report kit (`../../shared/report_kit`), so the
+committed page is in the pre-kit design until the next
+`client-report --out dashboard`, which regenerates it in the kit's layout with
+both additions built in.
 
 ## What is here
 

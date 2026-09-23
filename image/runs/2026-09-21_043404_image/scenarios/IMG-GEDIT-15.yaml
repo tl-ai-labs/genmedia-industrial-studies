@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-15
+# Game: Clash of Clans (Strategy, top-down); test type E-10 Same scene from a different angle.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Isometric village reprojected to a ground-level view it never shows.
+# Inputs: source = IMG-GEDIT-15-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-15
+modality: image
+task: image_edit
+title: Village from ground level
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-15-source.png
+params:
+  size: auto
+prompt: Show this same village from a low camera on the grass just outside the bottom wall, looking up
+  toward the town hall as if you were a troop about to attack. Keep every building, its design and its
+  position relative to the others the same, only seen from this new angle. Leave out the editor buttons,
+  the building tray and the caption. Same cartoon style.
+expected: 'Village from ground level. Capability under test: Same scene from a different angle. Adherence
+  clauses, check each: 1) Camera clearly at ground level; sky visible  2) Gold storages and walls in front,
+  town hall behind them  3) Building designs and colours match the source  4) Relative positions of buildings
+  preserved  5) Cartoon style unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-clash-of-clans
+- test-e-10
+- scenario-bank-image-gaming
+- tier-high

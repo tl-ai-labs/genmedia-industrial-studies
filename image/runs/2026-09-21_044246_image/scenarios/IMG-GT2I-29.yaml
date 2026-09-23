@@ -1,0 +1,41 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-29
+# Game: Minecraft (Building sandbox); test type T2I-18 Clear depth.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Exact portal size plus three depth layers with consistent scale.
+# No judging reference needed: Portal size and depth layers are fully specified in the prompt.
+id: IMG-GT2I-29
+modality: image
+task: text_to_image
+title: Nether portal above the valley
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: A wide view in a blocky sandbox game with clear depth. In the foreground, a portal frame of black-purple
+  obsidian blocks, four blocks wide and five tall, filled with a swirling purple surface, with two sheep
+  grazing beside it. In the middle distance, a river valley with a birch forest and a small village. Far
+  away, snow-capped blocky mountains fade into light-blue haze.
+expected: 'Nether portal above the valley. Capability under test: Clear depth. Adherence clauses, check
+  each: 1) Portal frame is 4 blocks wide and 5 tall, with a purple fill  2) Three separate layers: near,
+  middle, far  3) Haze increases with distance  4) Blocks get smaller with distance at a steady rate  5)
+  Sheep in proportion to the portal'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-minecraft
+- test-t2i-18
+- scenario-bank-image-gaming
+- tier-medium

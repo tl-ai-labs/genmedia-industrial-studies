@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-34
+# Game: Genshin Impact (Adventure role-playing, anime); test type T2I-10 Weather in the scene.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Single weather scene.
+# No judging reference needed: A weather test; rain, lightning and reflections are checkable on their own.
+id: IMG-GT2I-34
+modality: image
+task: text_to_image
+title: Thunderstorm over the sakura isle
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A scene from an anime-style open-world adventure game: a Japanese-inspired island under a violent
+  thunderstorm. Purple lightning forks down into the sea, heavy rain falls in slanted streaks, and a giant
+  glowing pink sakura tree stands on a hill above a shrine with red gates. In the foreground a young traveller
+  with long blond hair in a braid walks up a wet stone path that reflects the pink and purple light. Cel-shaded
+  anime rendering, painterly clouds.'
+expected: 'Thunderstorm over the sakura isle. Capability under test: Weather in the scene. Adherence clauses,
+  check each: 1) Lightning is purple, not white or yellow  2) Rain streaks slant the same way everywhere  3)
+  Path shows reflections of the pink and purple light  4) Cel-shaded anime look, no photoreal surfaces  5)
+  Sakura tree and red gates present'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-genshin-impact
+- test-t2i-10
+- scenario-bank-image-gaming
+- tier-low

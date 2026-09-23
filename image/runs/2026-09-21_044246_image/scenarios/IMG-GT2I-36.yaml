@@ -1,0 +1,44 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-36
+# Game: Genshin Impact (Adventure role-playing, anime); test type T2I-3 Exact art style.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Style lock across characters and landscape with several named elements.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-36-reference.png
+#   provenance in IMG-GT2I-36-reference.json. Why needed: The test is matching the game's real anime cel-shaded style.
+id: IMG-GT2I-36
+modality: image
+task: text_to_image
+title: Gliding over the city of wind
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'An anime-style open-world adventure game scene: seen from behind, a young traveller with a long
+  blond braid glides through the air on a pair of fabric wings, with a small floating girl in white with
+  a starry cape and a halo beside him. Below: a walled European city on an island in a lake, connected
+  by a long stone bridge, with windmills turning on green hills and a cathedral spire. Cel-shaded characters,
+  painterly sky with soft clouds, bright saturated colours. Everything, including the water and grass,
+  must stay in the same anime style: no photoreal textures.'
+expected: 'Gliding over the city of wind. Capability under test: Exact art style. Adherence clauses, check
+  each: 1) Whole image is cel-shaded anime, no photoreal areas  2) Traveller seen from behind on fabric
+  glider wings  3) Floating companion with starry cape and halo  4) Lake city with a long bridge and windmills  5)
+  Consistent outline thickness and shading across characters'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-genshin-impact
+- test-t2i-3
+- scenario-bank-image-gaming
+- tier-medium

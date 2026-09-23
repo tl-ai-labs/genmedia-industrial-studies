@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-18
+# Game: Asphalt 9 (Arcade racing); test type E-8 Change the time of day.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Day-to-night relight with light sources acting on nearby surfaces.
+# Inputs: source = IMG-GEDIT-18-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-18
+modality: image
+task: image_edit
+title: Day race to night race
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-18-source.png
+params:
+  size: auto
+prompt: 'Turn this daytime race into a night race: dark blue night sky with stars, the Sphinx and pyramids
+  lit by warm floodlights, the car''s headlights and red tail lights on, and the nitro flame lighting
+  up the rear bumper and the road around it. Nothing moves: same car, same position, same camera, and
+  the on-screen display unchanged.'
+expected: 'Day race to night race. Capability under test: Change the time of day. Adherence clauses, check
+  each: 1) Sky is clearly night  2) Nitro flame lights the bumper and road around it  3) Tail lights glow  4)
+  Car, Sphinx, pyramids and road line up with the source  5) HUD unchanged (213 km/h, 02:38:573)'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-asphalt-9
+- test-e-8
+- scenario-bank-image-gaming
+- tier-medium

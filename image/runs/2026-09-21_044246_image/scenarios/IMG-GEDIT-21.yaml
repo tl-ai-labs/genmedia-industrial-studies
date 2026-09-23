@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-21
+# Game: Minecraft (Building sandbox); test type E-9 Change the whole art style.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Photo rebuilt from cubes with window and floor layout held.
+# Inputs: source = IMG-GEDIT-21-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-21
+modality: image
+task: image_edit
+title: Real house to block build
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-21-source.png
+params:
+  size: auto
+prompt: 'Turn this photo into a build from a blocky sandbox game: the house, the neighbouring houses,
+  the windows, shutters, door curtain, roof tiles and the paved street all made of one-metre cubes with
+  pixel textures. Keep the same layout: the same number of floors and windows, the door position, the
+  neighbours on each side, and the same straight-on camera angle.'
+expected: 'Real house to block build. Capability under test: Change the whole art style. Adherence clauses,
+  check each: 1) Two floors; windows and door in the same positions as the photo  2) Blue house with pink
+  and red neighbours kept  3) Everything is cubic, no photographic areas left  4) Pixel scale consistent
+  across the image  5) Camera still straight-on'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-minecraft
+- test-e-9
+- scenario-bank-image-gaming
+- tier-medium

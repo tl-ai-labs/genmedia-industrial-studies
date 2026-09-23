@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-28
+# Game: Street Fighter 6 (Fighting); test type E-15 Extend the picture.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Outpainting both sides with perspective lines continuous across seams.
+# Inputs: source = IMG-GEDIT-28-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-28
+modality: image
+task: image_edit
+title: Ultrawide city wallpaper
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-28-source.png
+params:
+  size: auto
+  aspect_ratio: '21:9'
+prompt: Extend this picture to a 21:9 ultrawide image by adding more of the street on the left and right
+  sides. Continue the skyscrapers, billboards, pavements and road so the new parts match the perspective,
+  the light and the style. Don't change anything in the original area.
+expected: 'Ultrawide city wallpaper. Capability under test: Extend the picture. Adherence clauses, check
+  each: 1) Output is 21:9  2) Original area unchanged  3) Road edges and building lines continue straight
+  across the seams  4) New billboards look like the same city, no garbled giant text  5) Lighting direction
+  matches (sun from the upper left)'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-street-fighter-6
+- test-e-15
+- scenario-bank-image-gaming
+- tier-medium

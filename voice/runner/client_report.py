@@ -18,6 +18,10 @@ one surface where a reader cannot check our working. So: `load_runs`,
 `rollup_models`, `_duel`, `_scenario_blocks` and `WIN_GAP` come from
 `runner.dashboard`, and this file only arranges them.
 
+ONE PAGE, TWO AUDIENCES. The page is the shared report kit's (shared/report_kit),
+rendered for the client from the same context runner.kit_context builds for
+the internal board. `build()` below stays as the numbers API the tests hold.
+
 WHAT IT STILL SAYS OUT LOUD. Everything that qualifies a number. The judge is a
 Google model and it is uncalibrated; the headline is currently against the
 Google arm; four of five decided scenarios sit inside their own noise. A client
@@ -31,6 +35,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from . import _report_kit as kit
 from .audio import (clip_bytes, clip_data_uri, fmt_size, guard_size,
                     safe_name)
 from .dashboard import (WIN_GAP, _bar_widths, _duel, _overall, _scenario_blocks,
@@ -453,7 +458,9 @@ def render_client_report(runs_root: Path, modality: str = "voice",
     gitignored, the same seam `apps/dashboard/public/data` uses in the study
     console.
     """
-    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    from urllib.parse import unquote
+
+    from .kit_context import render, study_context
 
     if inline:
         if out_dir is not None:
@@ -471,32 +478,33 @@ def render_client_report(runs_root: Path, modality: str = "voice",
         for stale in audio_dir.glob("*.mp3"):
             stale.unlink()
 
-    ctx = build(runs_root, modality, quality, audio_dir, review_path)
-    env = Environment(
-        loader=FileSystemLoader(str(Path(__file__).resolve().parent / "templates")),
-        autoescape=select_autoescape(["html", "j2"]),
-    )
-    env.filters["pct1"] = lambda v: "—" if v is None else f"{v:.1f}%"
-    env.filters["pct0"] = lambda v: "—" if v is None else f"{v:.0f}%"
-    env.filters["usd4"] = lambda v: "—" if v is None else f"${v / 1e6:,.4f}"
-    env.filters["secs"] = lambda v: "—" if not v else f"{float(v) / 1000:.1f}s"
-    env.filters["ms"] = lambda v: "—" if not v else f"{int(v)} ms"
+    written: list[str] = []
 
-    # LSTRIP: Jinja's macro definitions at the top of the template each leave a
-    # newline behind, so the document opened with blank lines before its
-    # doctype - which is enough to drop a browser into quirks mode.
-    html = env.get_template("client.html.j2").render(**ctx).lstrip()
+    def client_audio(clip: dict[str, Any], sid: str, mid: str) -> str | None:
+        """Where the client page plays this clip from - encoded here, once."""
+        rel = clip.get("audio_rel")
+        path = Path(runs_root) / unquote(rel) if rel else None
+        if not path or not path.exists():
+            return None
+        written.append(rel)
+        if audio_dir is None:
+            return clip_data_uri(path, quality)
+        name = safe_name(sid, mid, clip.get("variant") or "", clip.get("run_label") or "") + ".mp3"
+        (audio_dir / name).write_bytes(clip_bytes(path, quality))
+        return f"audio/{name}"
+
+    ctx = study_context(Path(runs_root), modality, review_path, client_audio=client_audio)
+    html = render(ctx, client=True)
     data = html.encode("utf-8")
-    guard_size(len(data), out)
-    out.write_bytes(data)
+    kit.write_page(html, out, guard=guard_size)
 
+    n_clips = len(written)
     if audio_dir is None:
-        print(f"client report: {out} ({fmt_size(len(data))}, "
-              f"{ctx['n_clips']} clips inlined)")
+        print(f"client report: {out} ({fmt_size(len(data))}, {n_clips} clips inlined)")
     else:
         audio_bytes = sum(f.stat().st_size for f in audio_dir.glob("*.mp3"))
         print(f"client report: {out} (page {fmt_size(len(data))}, "
-              f"{ctx['n_clips']} clips in audio/ = {fmt_size(audio_bytes)}, "
+              f"{n_clips} clips in audio/ = {fmt_size(audio_bytes)}, "
               f"{fmt_size(len(data) + audio_bytes)} total)")
         print(f"  share the whole {out_dir.name}/ folder - the page reads audio/ beside it")
     return out

@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-14
+# Game: Clash of Clans (Strategy, top-down); test type E-12 Change only the text on screen.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). In-place text replacement matching the game font and outline.
+# Inputs: source = IMG-GEDIT-14-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-14
+modality: image
+task: image_edit
+title: Rename the clan on the war map
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-14-source.png
+params:
+  size: auto
+prompt: Change the clan name 'ATN.aTTaX' at the top to 'NIGHT FURY'. Match the game's white font, size
+  and dark outline exactly. Don't change anything else, including the other clan's name, the star counts,
+  member names and the caption.
+expected: 'Rename the clan on the war map. Capability under test: Change only the text on screen. Adherence
+  clauses, check each: 1) ''NIGHT FURY'' spelled exactly  2) Same font, size and dark outline as the original  3)
+  Fits the banner without overflowing  4) ''QueeN Walkers'' and every number unchanged  5) Map unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - NIGHT FURY
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+- text_accuracy
+weights:
+  edit_fidelity: 0.444444
+  visual_quality: 0.166667
+  realism_style: 0.111111
+  text_accuracy: 0.277778
+tags:
+- game-clash-of-clans
+- test-e-12
+- scenario-bank-image-gaming
+- tier-medium

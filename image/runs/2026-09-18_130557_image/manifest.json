@@ -1,0 +1,191 @@
+{
+  "run_id": "2026-09-18_130557_image",
+  "created": "2026-09-18T13:05:57.252Z",
+  "state": "generated",
+  "modality": "image",
+  "git_sha": "94ee1f7cae7a572e0bdfd4c7f55096e3e2a6b523",
+  "budget_usd": 5.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-18T13:05:57.340Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-18T13:05:58.581Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-18T13:06:09.409Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-18T13:09:10.060Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-pro-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3-pro-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e",
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ],
+    "image_edit": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-GT2I-15": {
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.15,
+      "composition": 0.15,
+      "realism_style": 0.1,
+      "text_accuracy": 0.3
+    },
+    "IMG-GEDIT-15": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-16": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-18": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-19": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-28": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-30": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    }
+  },
+  "scenario_set_hash": "ac1bdd83ce63bf1c3396161e41629c85c8a70c5dd316f6e2296c8ff6589f7a0e",
+  "inputs": {
+    "IMG-GT2I-15": [],
+    "IMG-GEDIT-15": [
+      {
+        "role": "source",
+        "sha256": "24bc6ff4c79932264e3fb7136c0823b8ddaef43fb9b45d8373f67a23178b9667",
+        "path": "inputs/IMG-GEDIT-15/IMG-GEDIT-15-source.png"
+      }
+    ],
+    "IMG-GEDIT-16": [
+      {
+        "role": "source",
+        "sha256": "9726e73841be801ada9983e50e6cea02676fed411ea61c1a6080fe57b554d4fd",
+        "path": "inputs/IMG-GEDIT-16/IMG-GEDIT-16-source.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "777ead08d26dab8491172193a4da9629ddc384aa6b435d47cee30628a395d4b2",
+        "path": "inputs/IMG-GEDIT-16/IMG-GEDIT-16-reference.png"
+      }
+    ],
+    "IMG-GT2I-18": [],
+    "IMG-GT2I-19": [],
+    "IMG-GT2I-28": [],
+    "IMG-GT2I-30": []
+  },
+  "cells": {
+    "IMG-GT2I-15::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GT2I-15",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'containerInfo': 'projects/ai-studies-console', 'consumer': 'projects/5671916058', 'service': 'aiplatform.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    },
+    "IMG-GEDIT-15::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GEDIT-15",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'consumer': 'projects/5671916058', 'containerInfo': 'projects/ai-studies-console', 'service': 'aiplatform.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    },
+    "IMG-GEDIT-16::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GEDIT-16",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'service': 'aiplatform.googleapis.com', 'consumer': 'projects/5671916058', 'containerInfo': 'projects/ai-studies-console'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    },
+    "IMG-GT2I-18::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GT2I-18",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'consumer': 'projects/5671916058', 'containerInfo': 'projects/ai-studies-console', 'service': 'aiplatform.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    },
+    "IMG-GT2I-19::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GT2I-19",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'containerInfo': 'projects/ai-studies-console', 'service': 'aiplatform.googleapis.com', 'consumer': 'projects/5671916058'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    },
+    "IMG-GT2I-28::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GT2I-28",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'consumer': 'projects/5671916058', 'service': 'aiplatform.googleapis.com', 'containerInfo': 'projects/ai-studies-console'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    },
+    "IMG-GT2I-30::gemini-3-pro-image-vertex": {
+      "scenario_id": "IMG-GT2I-30",
+      "model_id": "gemini-3-pro-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\", 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'CONSUMER_SUSPENDED', 'domain': 'googleapis.com', 'metadata': {'service': 'aiplatform.googleapis.com', 'containerInfo': 'projects/ai-studies-console', 'consumer': 'projects/5671916058'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': \"Permission denied: Consumer 'projects/ai-studies-console' has been suspended.\"}]}}"
+    }
+  },
+  "scenario_status": {
+    "IMG-GEDIT-15": "incomplete",
+    "IMG-GEDIT-16": "incomplete",
+    "IMG-GT2I-15": "incomplete",
+    "IMG-GT2I-18": "incomplete",
+    "IMG-GT2I-19": "incomplete",
+    "IMG-GT2I-28": "incomplete",
+    "IMG-GT2I-30": "incomplete"
+  }
+}

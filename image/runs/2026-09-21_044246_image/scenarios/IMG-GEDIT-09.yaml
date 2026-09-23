@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-09
+# Game: BGMI (Battle royale, realistic); test type E-1 Swap the object in the hands.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Object swap in a raised hand with finger re-pose; chain and beam must also go.
+# Inputs: source = IMG-GEDIT-09-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-09
+modality: image
+task: image_edit
+title: Grappling hook swapped for the pan
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-09-source.png
+params:
+  size: auto
+prompt: Replace the grappling hook in the player's raised right hand with a black cast-iron frying pan,
+  held by its handle and raised the same way. Remove the hook's chain and the blue light beam coming from
+  it. Re-pose the fingers so they wrap the pan handle naturally. Keep the player's face, vest, the slung
+  rifle, the castle, the red trees and the caption text exactly the same.
+expected: 'Grappling hook swapped for the pan. Capability under test: Swap the object in the hands. Adherence
+  clauses, check each: 1) No hook, chain or beam left anywhere  2) Round black pan held by its handle
+  in the raised right hand  3) Fingers wrap the handle: five fingers, no melted hand  4) Face, vest, rifle
+  and background unchanged  5) Caption ''MASTER THE GRAPPLING HOOK'' unchanged and readable'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-bgmi
+- test-e-1
+- scenario-bank-image-gaming
+- tier-medium

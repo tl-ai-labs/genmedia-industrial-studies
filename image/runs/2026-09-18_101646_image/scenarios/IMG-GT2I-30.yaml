@@ -1,0 +1,43 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-30
+# Game: Street Fighter 6 (Fighting); test type T2I-19 Correct hands.
+# Complexity tier: high — run with Gemini 3 Pro (Nano Banana Pro) | GPT Image 2 high (tiers/gaming-high.txt). Close two-hand anatomy in a specific gesture, five-digit accuracy under scrutiny.
+# No judging reference needed: A hand-anatomy test; pose and outfit are fully described.
+id: IMG-GT2I-30
+modality: image
+task: text_to_image
+title: Fireball launch, both palms
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A side-on shot from a 3D arcade fighting game: a bearded martial artist in a white gi with torn-off
+  sleeves, a red headband, a worn black belt and bare feet thrusts both hands forward at chest height,
+  wrists pressed together, palms open and facing forward, fingers slightly curled, launching a glowing
+  blue ball of energy from between his palms. Each hand has five clearly separated fingers and the thumbs
+  point up. Behind him, a mountain temple courtyard with cherry blossoms and a red shrine gate, softly
+  blurred. Stylised realistic 3D graphics, no on-screen display.'
+expected: 'Fireball launch, both palms. Capability under test: Correct hands. Adherence clauses, check
+  each: 1) Each hand has five fingers, thumbs up, no fused or extra fingers  2) Wrists together, palms
+  facing forward, energy ball between them  3) White sleeveless gi, red headband, black belt, bare feet  4)
+  Cherry blossoms and a red shrine gate behind  5) No on-screen display'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-street-fighter-6
+- test-t2i-19
+- scenario-bank-image-gaming
+- tier-high

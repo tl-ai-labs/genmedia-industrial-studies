@@ -3,23 +3,28 @@
 Images inlined as data URIs so the file opens from the run folder with no
 server and can be mailed to anyone. Quality, cost, latency and reliability
 are four separate columns — never one blended number.
+
+Presentation — layout, sections, styling, number formats, file names — is the
+shared report kit (shared/report_kit). This module only gathers the image
+lane's data into the kit's context; image markup lives in
+templates/lane_hooks.j2.
 """
 from __future__ import annotations
 
 import base64
 import io
-import json
-import re as _re
 import webbrowser
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-
+from . import _report_kit as kit
 from .generate import Manifest, _find_existing_output
 from .scoring import TIE_BAND, aggregate
 from .telemetry import RunFiles
 
 THUMB_MAX_PX = 800
+
+LANE = kit.LaneProfile(key="image", unit="image", media="image",
+                       templates=Path(__file__).parent / "templates")
 
 
 def _thumb_data_uri(path: Path, max_px: int = THUMB_MAX_PX, quality: int = 82) -> str | None:
@@ -40,159 +45,24 @@ def _mini_data_uri(path: Path) -> str | None:
     return _thumb_data_uri(path, max_px=140, quality=70)
 
 
-def _env(names: dict | None = None, client: bool = False) -> Environment:
-    """One template set, two audiences. `client=True` switches quality into
-    percentages and lets macros drop internal-only rows via the CLIENT global —
-    the audience is a property of the render, not of the data, so it lives here
-    rather than being threaded through every macro call site."""
-    env = Environment(loader=FileSystemLoader(Path(__file__).parent / "templates"),
-                      autoescape=select_autoescape(["html", "j2"]))
-    env.filters["usd"] = lambda micro: f"${micro / 1e6:,.4f}"
-    env.filters["s"] = lambda ms: f"{ms / 1000:.1f}s" if ms is not None else "—"
-    nm = names or {}
-    env.filters["disp"] = lambda mid: nm.get(mid, mid)
-    # "text_to_video" -> "Text to video": the task key is a data
-    # identifier, not a heading a reader should have to decode
-    env.filters["tasktitle"] = lambda t: (
-        str(t).replace("_", " ").capitalize() if t else "")
-
-    def _q(v, short: bool = False) -> str:
-        """A quality score: one 0-10 number in the audience's units. Client
-        means keep a decimal — whole numbers would hide small gaps that still
-        decide a win and leave the delta column disagreeing with the values."""
-        if v is None:
-            return "—"
-        if client:
-            return f"{v * 10:.0f}%" if short else f"{v * 10:.1f}%"
-        return f"{v:.1f}" if short else f"{v:.2f}"
-
-    def _qd(v) -> str:
-        """A quality GAP: points internally, percentage points for the client."""
-        if v is None:
-            return "—"
-        return f"{v * 10:+.1f} pp" if client else f"{v:+.2f}"
-
-    env.filters["q"] = _q
-    env.filters["qd"] = _qd
-    env.globals["CLIENT"] = client
-    env.globals["TIE_BAND"] = TIE_BAND                 # 0.0: only an identical score ties
-    return env
+def _env(names: dict | None = None, client: bool = False):
+    """The kit's Jinja environment for this lane (kept for callers and tests)."""
+    return kit.make_env(LANE, names, client=client)
 
 
-def _client_prose(text: str) -> str:
-    """Verdict prose for the client report. The stored verdict is untouched —
-    this is a presentation copy that restates the mean gap in the percentage
-    points the rest of that report uses. Cost tie-breakers are kept: the client
-    report shows a cost row, so hiding "cheaper: X" would be inconsistent, and
-    that fact does not always favour the Gemini arm."""
-    if not text:
-        return text
-    return _re.sub(r"\bgap (\d+(?:\.\d+)?)",
-                   lambda m: f"gap {float(m.group(1)) * 10:.1f} pp", text)
-
-
-def _all_scored(e: dict) -> int:
-    """1 when every model in the scenario has a score (the scenario could be
-    won by either side), else 0. Win % counts wins out of these scenarios only,
-    so a failed generation does not read as a loss."""
-    cards = e["cards"]
-    return int(len(cards) >= 2 and all(c["score"] is not None for c in cards))
-
-
-def _gemini_first(model_ids, vendors: dict | None = None) -> list:
-    """Presentation order: the Google/Gemini arm first, the rest alphabetical.
-    Ids stay the keys everywhere data is stored — this is column order, nothing
-    more. With no Google arm the result is plain alphabetical, so ordering
-    never becomes a hidden dependency."""
-    vd = vendors or {}
-
-    def rank(mid: str):
-        google = vd.get(mid) == "Google" or "gemini" in mid.lower()
-        return (0 if google else 1, mid)
-
-    return sorted(model_ids, key=rank)
-
-
-# Rows the client deliverable does not carry: internal diagnostics only.
-# Generation cost per image IS client-facing (study lead's call, 2026-09-04);
-# judging cost is ours, not theirs, so it stays internal.
-_INTERNAL_ROWS = {"judged", "below_5", "judge_cost", "success", "attempts"}
-
-
-def _metric_rows(models: dict, order: list) -> list:
-    """Metrics as ROWS, models as COLUMNS — the reader compares down a column
-    instead of across a row. `delta` is Gemini minus competitor in the metric's
-    own units and `better` says which sign is good, so latency and cost read
-    the right way round. Two-model lanes only; otherwise there is no delta."""
-    cols = [mid for mid in order if mid in models]
-
-    def row(key, label, better, unit, get, hi=False):
-        vals = []
-        for mid in cols:
-            try:
-                vals.append(get(models[mid]))
-            except (KeyError, TypeError):
-                vals.append(None)
-        r = {"key": key, "label": label, "unit": unit, "hi": hi, "better": better,
-             "internal_only": key in _INTERNAL_ROWS,
-             "cells": [{"mid": mid, "v": v} for mid, v in zip(cols, vals)],
-             "delta": None, "delta_class": "", "delta_pct": 0,
-             "delta_rel": None}
-        if better and len(vals) == 2 and None not in vals:
-            d = vals[0] - vals[1]
-            hi_abs = max(abs(vals[0]), abs(vals[1])) or 1
-            good = (d > 0) if better == "higher" else (d < 0)
-            r["delta"] = d
-            r["delta_class"] = "" if abs(d) < 1e-9 else ("up" if good else "down")
-            r["delta_pct"] = min(100, round(abs(d) / hi_abs * 100, 1))
-            # the client report states every difference as a percentage:
-            # score rows in percentage points, the rest relative to the rival
-            if vals[1]:
-                r["delta_rel"] = round(d / abs(vals[1]) * 100, 1)
-        return r
-
-    return [
-        row("mean", "Rating", "higher", "score", lambda m: m["mean"], hi=True),
-        row("worst", "Reliability (worst scenario rating)", "higher", "score", lambda m: m["worst"]),
-        row("wtl", "W–T–L", None, "text", lambda m: m["wtl"]),
-        row("judged", "Judged", None, "text",
-            lambda m: f'{m["judged_n"]}/{m["eligible"]}'),
-        row("below_5", "<5", "lower", "int", lambda m: m["below_5"]),
-        row("gen_cost", "Cost per image", "lower", "usd_micro",
-            lambda m: round(m["gen_cost_per_scenario_usd"] * 1e6)),
-        row("judge_cost", "Judge cost/scen", "lower", "usd_micro",
-            lambda m: round(m["judge_cost_per_scenario_usd"] * 1e6)),
-        row("lat_min", "Latency min", "lower", "ms",
-            lambda m: m["latency_min_ms"]),
-        row("lat_p50", "Latency p50", "lower", "ms",
-            lambda m: m["latency_p50_ms"], hi=True),
-        row("lat_max", "Latency max", "lower", "ms",
-            lambda m: m["latency_max_ms"]),
-        row("success", "Success", "higher", "ratio",
-            lambda m: m["success_rate"]),
-        row("attempts", "Attempts", "lower", "num",
-            lambda m: m["mean_attempts"]),
-    ]
+def _is_tie(diff: float) -> bool:
+    """Same rule as the verdict: compared at two decimals, only identical ties."""
+    return abs(round(diff, 2)) <= TIE_BAND
 
 
 def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
                  hide_industries: tuple = (), complete_only: bool = False) -> Path:
-    """Writes BOTH deliverables from ONE context, every time:
-
-        report.html         internal — summary tiles, cost, every diagnostic
-        report-client.html  the client deliverable — percentages, no cost,
-                            no internal metrics
-
-    One context means the two files can never disagree on a number, and there
-    is no flag to forget. Returns the internal path (the caller's contract)."""
+    """Writes report.html (internal) and report-client.html from ONE context.
+    Returns the internal path."""
     run_dir = Path(run_dir)
     ctx = _build_context(project_root, run_dir, hide_industries=hide_industries,
                          complete_only=complete_only)
-    out = run_dir / "report.html"
-    out.write_text(_env(ctx["names"]).get_template("report.html.j2").render(**ctx))
-    client = run_dir / "report-client.html"
-    client.write_text(_env(ctx["names"], client=True)
-                      .get_template("report-client.html.j2").render(**ctx))
+    out = kit.render_run(LANE, ctx, run_dir)
     Manifest(run_dir).set_run_state("reported")
     if open_browser:
         webbrowser.open(out.as_uri())
@@ -202,124 +72,23 @@ def build_report(project_root: Path, run_dir: Path, open_browser: bool = False,
 def build_combined_report(project_root: Path, run_dirs: list, out_path: Path,
                           open_browser: bool = False,
                           hide_industries: tuple = (),
-                          brief: bool = False) -> Path:
-    """One dashboard across several runs — each run becomes a tab (its task
-    lane), with a combined overview on top. Cross-tab numbers are NOT merged:
-    each lane keeps its own models, costs and verdict.
+                          brief: bool = False,
+                          complete_only: bool = False) -> Path:
+    """One study across several runs — each run a tab (or, brief, stacked
+    strips over one mixed scenario list). Writes <out>.html and
+    <out>-client.html. Cross-tab numbers are NOT merged.
 
-    brief=True: executive summary — lanes stacked on one page (no tabs), only
-    duel strip + verdict + industries per lane; no per-scenario evidence."""
-    ctxs = [_build_context(project_root, Path(d), hide_industries=hide_industries)
+    complete_only applies per tab, exactly as it does for a single run: a tab
+    whose arms completed different scenario sets would otherwise print two
+    means that do not measure the same thing.
+    """
+    ctxs = [_build_context(project_root, Path(d), hide_industries=hide_industries,
+                           complete_only=complete_only)
             for d in run_dirs]
-    names: dict = {}
-    vendors: dict = {}
-    for c in ctxs:
-        names.update(c["names"])
-        vendors.update(c.get("vendors") or {})
-    # Tab label: name the COMPARISON, not the task. Every lane in a tier study
-    # runs the same task, so a task-named tab reads "image edit" three times.
-    # A parenthesised tier is compressed ("GPT Image 2 (high)" -> "GPT high")
-    # so three comparisons fit on one row; the full names stay on the cards.
-    def _short(name: str) -> str:
-        m = _re.match(r"^(\S+).*\((.+)\)\s*$", name)
-        return f"{m.group(1)} {m.group(2)}" if m else name
-
-    for c in ctxs:
-        mids = []
-        for t in c["agg"]["tasks"].values():
-            mids = _gemini_first(t["models"], vendors)
-            break
-        c["tab_label"] = " vs ".join(_short(names.get(m, m)) for m in mids)
-
-    overview = {
-        "n_scenarios": sum(len(c["evidence"]) for c in ctxs),
-        "gen_micro": sum(c["totals"]["gen_micro"] for c in ctxs),
-        "judge_micro": sum(c["totals"]["judge_micro"] for c in ctxs),
-        "rows": [],
-    }
-    for c in ctxs:
-        for task, t in c["agg"]["tasks"].items():
-            for p in t["pairs"]:
-                overview["rows"].append({
-                    "run_id": c["manifest"]["run_id"], "task": task,
-                    "n": len(c["evidence"]),
-                    "completed": c["completion"].get("completed", 0),
-                    "verdict": (names.get(p["winner"], p["winner"]) + " wins")
-                               if p["winner"] else "tie",
-                    "detail": p.get("door") or "decided on cost / latency facts",
-                    "models": [names.get(m, m) for m
-                               in _gemini_first(t["models"], vendors)]})
-    # brief mode: one mixed scenario list + one industry table across lanes.
-    # Model arms that differ only by tier are grouped under one label (the
-    # parenthetical is dropped) and the grouping is stated on the page.
-    merged = None
-    if brief:
-        def base_label(mid: str) -> str:
-            return names.get(mid, mid).split(" (")[0]
-
-        merged_evidence = []
-        for c in ctxs:
-            for e in c["evidence"]:
-                e = dict(e)
-                if e["winner"]:
-                    e["winner"] = base_label(e["winner"])
-                merged_evidence.append(e)
-        merged_evidence.sort(key=lambda e: e["id"])
-
-        industries: dict = {}
-        families: dict = {}
-        groups: dict = {}
-        label_vendor: dict = {}
-        for e in merged_evidence:
-            fam = families.setdefault(e["family"], {"n": 0, "n_both": 0, "models": {}})
-            fam["n"] += 1
-            fam["n_both"] += _all_scored(e)
-            ind = industries.setdefault(e["industry"], {"n": 0, "n_both": 0, "models": {}}) \
-                if e["industry"] else None
-            if ind:
-                ind["n"] += 1
-                ind["n_both"] += _all_scored(e)
-            for card in e["cards"]:
-                lbl = base_label(card["model_id"])
-                groups.setdefault(lbl, set()).add(
-                    names.get(card["model_id"], card["model_id"]))
-                label_vendor.setdefault(lbl, vendors.get(card["model_id"]))
-                if ind and card["score"] is not None:
-                    m = ind["models"].setdefault(lbl, {"scores": [], "wins": 0})
-                    m["scores"].append(card["score"])
-                    if e["winner"] == lbl:
-                        m["wins"] += 1
-        for ind in industries.values():
-            for m in ind["models"].values():
-                m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-                m["n"] = len(m["scores"])
-
-        mixed = {k: sorted(v) for k, v in groups.items() if len(v) > 1}
-        # brief mode groups arms by DISPLAY label, so order by the label's
-        # vendor rather than by model id — Gemini stays on the left here too
-        merged_order = sorted(
-            groups, key=lambda l: (0 if label_vendor.get(l) == "Google" else 1, l))
-        merged = {
-            "evidence": merged_evidence, "industries": industries,
-            "families": families,
-            "family_models": merged_order, "model_order": merged_order,
-            "hidden_industries": ctxs[0]["hidden_industries"],
-            "merged_note": ("Grouped columns: " + "; ".join(
-                f"{k} covers {' and '.join(v)}" for k, v in mixed.items()) +
-                " — per-lane tiers are on each scenario card.") if mixed else "",
-        }
-
-    out_path = Path(out_path)
-    # Both audiences from ONE context, so they cannot disagree — the same rule
-    # build_report() follows for a single run.
-    for client, path in ((False, out_path),
-                         (True, out_path.with_name(out_path.stem + "-client.html"))):
-        html = _env(names, client=client).get_template("combined.html.j2").render(
-            runs=ctxs, overview=overview, brief=brief, merged=merged)
-        path.write_text(html)
+    out = kit.render_study(LANE, ctxs, Path(out_path), brief=brief)
     if open_browser:
-        webbrowser.open(out_path.resolve().as_uri())
-    return out_path
+        webbrowser.open(out.resolve().as_uri())
+    return out
 
 
 def _build_context(project_root: Path, run_dir: Path,
@@ -349,10 +118,6 @@ def _build_context(project_root: Path, run_dir: Path,
     judge_rows = files.read("judge")
     scores = files.read("scores")
     checks = files.read("checks")
-    telemetry = files.read("telemetry")
-    judge_rows = files.read("judge")
-    scores = files.read("scores")
-    checks = files.read("checks")
 
     score_by_cell = {(r["scenario_id"], r["model_id"]): r for r in scores}
     checks_by_cell = {(r["scenario_id"], r["model_id"]): r for r in checks}
@@ -362,38 +127,20 @@ def _build_context(project_root: Path, run_dir: Path,
     # vendor attribution — say plainly which arm is the Google/Gemini side and
     # which is the rival, in the tiles, the tables, the duel strip and the
     # footnotes. Computed early because presentation ORDER depends on it.
-    def _vendor(provider: str) -> str:
-        p = (provider or "").lower()
-        if p.startswith("google"):
-            return "Google"
-        if p.startswith("openai"):
-            return "OpenAI"
-        if p.startswith(("byteplus", "bytedance")):
-            return "ByteDance"
-        return provider or "?"
-
-    vendors = {m["id"]: _vendor(m.get("provider", ""))
+    vendors = {m["id"]: kit.vendor_of(m.get("provider", ""))
                for m in manifest.data.get("models", [])}
     # one presentation order, used by every table, tile, card and duel slot.
     # Any model that scored but is missing from the manifest still gets a
     # column — a column must never vanish because of an ordering list.
     _all_ids = {m["id"] for m in manifest.data.get("models", [])}
     _all_ids |= {mid for t in agg["tasks"].values() for mid in t["models"]}
-    model_order = _gemini_first(_all_ids, vendors)
+    model_order = kit.gemini_first(_all_ids, vendors)
     _rank = {mid: i for i, mid in enumerate(model_order)}
 
     # per-model W-T-L rollup within each task, plus the transposed metric rows
     for task, t in agg["tasks"].items():
-        for mid, m in t["models"].items():
-            w = l = ti = 0
-            for p in t["pairs"]:
-                if p["a"] == mid:
-                    w, l, ti = w + p["wins_a"], l + p["wins_b"], ti + p["ties"]
-                elif p["b"] == mid:
-                    w, l, ti = w + p["wins_b"], l + p["wins_a"], ti + p["ties"]
-            m["wtl"] = f"{w}-{ti}-{l}"
-        # rides through ctx.agg, so every existing call site gets it for free
-        t["metric_rows"] = _metric_rows(t["models"], model_order)
+        kit.wtl_rollup(t)
+        t["metric_rows"] = kit.metric_rows(t["models"], model_order, LANE.unit)
 
     # evidence blocks
     import yaml as _yaml
@@ -432,9 +179,6 @@ def _build_context(project_root: Path, run_dir: Path,
                 if p.get(key):
                     for k, v in names.items():
                         p[key] = p[key].replace(k, v)
-            # the same verdict, told without cost, for the client report
-            p["door_client"] = _client_prose(p.get("door"))
-            p["note_client"] = _client_prose(p.get("note"))
 
     evidence = []
     for sid in sorted(scenarios_meta):
@@ -487,13 +231,7 @@ def _build_context(project_root: Path, run_dir: Path,
         also = [x for x in (ind.get("also") or []) if x not in hidden]
         if primary in hidden:
             primary = also.pop(0) if also else ""
-        scored_cards = [c for c in cards if c["score"] is not None]
-        winner = margin = None
-        if len(scored_cards) >= 2:
-            top = sorted(scored_cards, key=lambda c: -c["score"])
-            margin = round(top[0]["score"] - top[1]["score"], 2)
-            if margin > TIE_BAND:                 # same rule as the verdict: any gap wins
-                winner = top[0]["model_id"]
+        winner, margin = kit.scenario_result(cards, _is_tie)
         # Gemini-first everywhere the cards are shown: media figures, the
         # diagnostic columns, the summary score run, the mini thumbs
         cards.sort(key=lambda c: _rank.get(c["model_id"], len(_rank)))
@@ -507,6 +245,9 @@ def _build_context(project_root: Path, run_dir: Path,
                          "prompt": smeta.get("prompt", ""),
                          "expected": smeta.get("expected", ""),
                          "task": smeta.get("task", ""),
+                         # what the gates demanded, so an invalid cell can say
+                         # what it missed and not just which gate it failed
+                         "requires": smeta.get("checks") or {},
                          "family": (smeta.get("tags") or ["-"])[0],
                          "industry": primary,
                          "industry_also": also,
@@ -517,107 +258,11 @@ def _build_context(project_root: Path, run_dir: Path,
                                  else None),
                          "sources": sources, "cards": cards})
 
-    # overall summary line: which scenarios were compared head-to-head, and
-    # why the rest were not (a failed or skipped output leaves nothing to judge)
-    summary = None
-    if len(model_order) == 2:
-        a_id, b_id = model_order
-        summary = {"n": len(evidence), "a": a_id, "b": b_id, "compared": 0,
-                   "wins_a": 0, "wins_b": 0, "ties": 0,
-                   "both_failed": 0, "only_a_failed": 0, "only_b_failed": 0}
-        for e in evidence:
-            got = {c["model_id"]: c["score"] is not None for c in e["cards"]}
-            ok_a, ok_b = got.get(a_id, False), got.get(b_id, False)
-            if ok_a and ok_b:
-                summary["compared"] += 1
-                if e["winner"] == a_id:
-                    summary["wins_a"] += 1
-                elif e["winner"] == b_id:
-                    summary["wins_b"] += 1
-                else:
-                    summary["ties"] += 1
-            elif ok_a:
-                summary["only_b_failed"] += 1
-            elif ok_b:
-                summary["only_a_failed"] += 1
-            else:
-                summary["both_failed"] += 1
-        summary["not_compared"] = summary["n"] - summary["compared"]
-
-    # per-family rollup (a scenario's first tag names its use-case family)
-    families: dict = {}
-    for e in evidence:
-        fam = families.setdefault(e["family"], {"n": 0, "n_both": 0, "models": {}})
-        fam["n"] += 1
-        fam["n_both"] += _all_scored(e)
-        for c in e["cards"]:
-            if c["score"] is not None:
-                m = fam["models"].setdefault(c["model_id"],
-                                             {"scores": [], "wins": 0})
-                m["scores"].append(c["score"])
-                if e["winner"] == c["model_id"]:
-                    m["wins"] += 1
-    for fam in families.values():
-        for m in fam["models"].values():
-            m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-            m["n"] = len(m["scores"])
+    families = kit.rollup(evidence, "family")
     _fam_ids = {mid for fam in families.values() for mid in fam["models"]}
     family_models = [mid for mid in model_order if mid in _fam_ids]
-
-    # per-industry rollup (primary industry from the sheet's mapping)
-    industries: dict = {}
-    for e in evidence:
-        if not e["industry"]:
-            continue
-        ind = industries.setdefault(e["industry"], {"n": 0, "n_both": 0, "models": {}})
-        ind["n"] += 1
-        ind["n_both"] += _all_scored(e)
-        for c in e["cards"]:
-            if c["score"] is not None:
-                m = ind["models"].setdefault(c["model_id"], {"scores": [], "wins": 0})
-                m["scores"].append(c["score"])
-                if e["winner"] == c["model_id"]:
-                    m["wins"] += 1
-    for ind in industries.values():
-        for m in ind["models"].values():
-            m["mean"] = round(sum(m["scores"]) / len(m["scores"]), 2)
-            m["n"] = len(m["scores"])
-
-    # head-to-head duel strip (exactly two scored models). Slot a is the
-    # Gemini arm, so the reader always finds it on the same side.
-    duel = None
-    for task, t in agg["tasks"].items():
-        ms = [(mid, t["models"][mid]) for mid in model_order
-              if mid in t["models"] and t["models"][mid]["mean"] is not None]
-        if len(ms) != 2:
-            continue
-        (aid, a), (bid, b) = ms
-
-        def metric(key, label, av, bv, fmt, better, client_label=None):
-            hi = max(av, bv) or 1
-            win = None
-            if abs(av - bv) > 1e-9:
-                win = ("a" if av > bv else "b") if better == "higher" \
-                    else ("a" if av < bv else "b")
-            return {"key": key, "label": label,
-                    "client_label": client_label or label,
-                    "internal_only": key in _INTERNAL_ROWS,
-                    "a": fmt.format(av), "b": fmt.format(bv),
-                    "a_pct": f"{av * 10:.1f}%", "b_pct": f"{bv * 10:.1f}%",
-                    "aw": round(av / hi * 100, 1), "bw": round(bv / hi * 100, 1),
-                    "win": win}
-
-        duel = {"task": task, "a": aid, "b": bid, "metrics": [
-            metric("mean", "Quality — mean", a["mean"], b["mean"], "{:.2f}",
-                   "higher", client_label="Quality — mean rating"),
-            metric("worst", "Reliability (worst scenario rating)", a["worst"] or 0, b["worst"] or 0,
-                   "{:.1f}", "higher"),
-            metric("gen_cost", "Cost per image", a["gen_cost_per_scenario_usd"],
-                   b["gen_cost_per_scenario_usd"], "${:.3f}", "lower"),
-            metric("lat_p50", "Latency p50", (a["latency_p50_ms"] or 0) / 1000,
-                   (b["latency_p50_ms"] or 0) / 1000, "{:.1f}s", "lower"),
-        ]}
-        break
+    industries = kit.rollup(evidence, "industry")
+    duel = kit.build_duel(agg["tasks"], model_order, LANE.unit)
 
     # footnotes
     params_unsupported = sorted({
@@ -629,20 +274,9 @@ def _build_context(project_root: Path, run_dir: Path,
     judge_meta = next((r.get("judge") for r in judge_rows if r.get("judge")), None)
     judge_version = next((r.get("judge_provider_version") for r in judge_rows
                           if r.get("judge_provider_version")), None)
-    voice_maps = {m["id"]: m.get("voice_map") for m in manifest.data.get("models", [])
-                  if m.get("voice_map")}
 
-    _family = {"Google": "Google — Gemini/DeepMind family",
-               "OpenAI": "OpenAI — maker of GPT/ChatGPT",
-               "ByteDance": "ByteDance — the Seedance family, via BytePlus ModelArk"}
-    vendor_lines = [
-        f"{names.get(m['id'], m['id'])} = {m['provider_model']} "
-        f"({_family.get(vendors[m['id']], vendors[m['id']])}; "
-        f"{'Vertex AI, ADC' if 'vertex' in (m.get('provider') or '') else 'API-key route'})"
-        for m in manifest.data.get("models", [])]
-    if judge_meta and str(judge_meta.get("provider_model", "")).startswith("gemini"):
-        vendor_lines.append(
-            f"judge {judge_meta['provider_model']} (Google — Gemini family)")
+    vendor_lines = kit.vendor_lines(manifest.data.get("models", []), names, vendors,
+                                    judge_meta)
 
     totals = {
         "gen_micro": sum(r.get("cost", {}).get("micro_usd", 0) for r in telemetry),
@@ -655,6 +289,7 @@ def _build_context(project_root: Path, run_dir: Path,
         manifest=manifest.data, agg=agg, evidence=evidence, totals=totals,
         families=families, family_models=family_models, model_order=model_order,
         industries=industries, hidden_industries=sorted(hide_industries),
-        names=names, duel=duel, summary=summary, vendors=vendors, vendor_lines=vendor_lines,
+        names=names, duel=duel, tally=kit.tally(evidence, model_order),
+        vendors=vendors, vendor_lines=vendor_lines,
         params_unsupported=params_unsupported, estimates=estimates,
-        judge_meta=judge_meta, judge_version=judge_version, voice_maps=voice_maps)
+        judge_meta=judge_meta, judge_version=judge_version)

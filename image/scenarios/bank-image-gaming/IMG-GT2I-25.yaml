@@ -1,0 +1,46 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-25
+# Game: Asphalt 9 (Arcade racing); test type T2I-20 Text on an object in the scene.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Two exact strings wrapped on curved bodywork.
+# No judging reference needed: Exact text and decal wrapping are checkable from the prompt.
+id: IMG-GT2I-25
+modality: image
+task: text_to_image
+title: Club livery with race number
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A promo shot for a club event in an arcade racing game: a matte black hypercar parked at dusk
+  on a desert road with three great pyramids behind it. The car wears a custom livery: a white number
+  "27" inside a white circle on the door, the word "NOVA" in big red block capitals along the side skirt,
+  and one thin red stripe over the bonnet. Every letter and number spelled exactly and following the curve
+  of the bodywork. No other text.'
+expected: 'Club livery with race number. Capability under test: Text on an object in the scene. Adherence
+  clauses, check each: 1) ''27'' and ''NOVA'' spelled exactly  2) Decals follow the body''s curves, not
+  pasted flat  3) Three pyramids and desert road behind  4) Dusk light on the paint  5) No other text'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - '27'
+  - NOVA
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.15
+  composition: 0.15
+  realism_style: 0.1
+  text_accuracy: 0.3
+tags:
+- game-asphalt-9
+- test-t2i-20
+- scenario-bank-image-gaming
+- tier-medium

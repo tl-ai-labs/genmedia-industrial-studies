@@ -1,0 +1,869 @@
+{
+  "run_id": "2026-09-21_044246_image",
+  "created": "2026-09-21T04:42:46.464Z",
+  "state": "scored",
+  "modality": "image",
+  "git_sha": "94ee1f7cae7a572e0bdfd4c7f55096e3e2a6b523",
+  "budget_usd": 8.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-21T04:42:46.515Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-21T04:42:52.035Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-21T04:43:25.588Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-21T05:08:37.877Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-21T05:31:10.808Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-21T05:31:12.084Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-21T05:37:59.197Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-21T05:38:36.206Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-21T05:38:48.292Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-21T05:38:48.389Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-21T05:50:44.902Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-21T05:57:34.314Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-21T05:57:57.095Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-21T07:21:46.145Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-21T07:21:46.455Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-image-2-medium",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    },
+    {
+      "id": "gemini-3-1-flash-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b",
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ],
+    "text_to_image": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-GEDIT-09": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-10": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-14": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-16": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GEDIT-13": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-14": {
+      "edit_fidelity": 0.444444,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111,
+      "text_accuracy": 0.277778
+    },
+    "IMG-GT2I-21": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GEDIT-17": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-18": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-20": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-22": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-23": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-25": {
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.15,
+      "composition": 0.15,
+      "realism_style": 0.1,
+      "text_accuracy": 0.3
+    },
+    "IMG-GEDIT-21": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-22": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-26": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-27": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-29": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GEDIT-26": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-27": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-28": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-31": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-32": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-33": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GEDIT-30": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-31": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-32": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-36": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    }
+  },
+  "scenario_set_hash": "878258715f57820be8fbe53ecd967a52f4384cc52609eed456623cf61c3052b6",
+  "inputs": {
+    "IMG-GEDIT-09": [
+      {
+        "role": "source",
+        "sha256": "244cd2166ad9ed703d9d1e76c3cac8691c3b1ec858a680b79e3f0ee142d97e41",
+        "path": "inputs/IMG-GEDIT-09/IMG-GEDIT-09-source.png"
+      }
+    ],
+    "IMG-GEDIT-10": [
+      {
+        "role": "source",
+        "sha256": "1fc0f1b73dbeffb942d35a7f85fe993d75ec490310936587519fe7ff72412044",
+        "path": "inputs/IMG-GEDIT-10/IMG-GEDIT-10-source.png"
+      }
+    ],
+    "IMG-GT2I-14": [],
+    "IMG-GT2I-16": [],
+    "IMG-GEDIT-13": [
+      {
+        "role": "source",
+        "sha256": "6fe45196e6921626503bb2e4ae568daa28dbb3841069be1405aa008ec9a3a596",
+        "path": "inputs/IMG-GEDIT-13/IMG-GEDIT-13-source.png"
+      }
+    ],
+    "IMG-GEDIT-14": [
+      {
+        "role": "source",
+        "sha256": "70233b997f73ebd695a61158a79adbb4388c4049a2a0c4e8630d2aadfc268497",
+        "path": "inputs/IMG-GEDIT-14/IMG-GEDIT-14-source.png"
+      }
+    ],
+    "IMG-GT2I-21": [],
+    "IMG-GEDIT-17": [
+      {
+        "role": "source",
+        "sha256": "9ea833b61a0bedd9632f8022b0cc500964e015c8ee9b537be4cc1c7aa7265688",
+        "path": "inputs/IMG-GEDIT-17/IMG-GEDIT-17-source.png"
+      }
+    ],
+    "IMG-GEDIT-18": [
+      {
+        "role": "source",
+        "sha256": "8935ccdab0baa3042f3ceab1d9e516380c821002aae719a80b1ae8556b3ba100",
+        "path": "inputs/IMG-GEDIT-18/IMG-GEDIT-18-source.png"
+      }
+    ],
+    "IMG-GEDIT-20": [
+      {
+        "role": "source",
+        "sha256": "fabc319da19503af09af5bcfd0a7ead298dff3643d1571bf668bd336cb6c4c54",
+        "path": "inputs/IMG-GEDIT-20/IMG-GEDIT-20-source.png"
+      }
+    ],
+    "IMG-GT2I-22": [],
+    "IMG-GT2I-23": [],
+    "IMG-GT2I-25": [],
+    "IMG-GEDIT-21": [
+      {
+        "role": "source",
+        "sha256": "2e112587f6d2563d3451a08124d53e50141b45d91512773d86f37190ef14a7bd",
+        "path": "inputs/IMG-GEDIT-21/IMG-GEDIT-21-source.png"
+      }
+    ],
+    "IMG-GEDIT-22": [
+      {
+        "role": "source",
+        "sha256": "9f8382ee4cd31bd9673267c29250115139980bfb0ff737ad9c8a35a7dea6d87f",
+        "path": "inputs/IMG-GEDIT-22/IMG-GEDIT-22-source.png"
+      }
+    ],
+    "IMG-GT2I-26": [],
+    "IMG-GT2I-27": [],
+    "IMG-GT2I-29": [],
+    "IMG-GEDIT-26": [
+      {
+        "role": "source",
+        "sha256": "fff3c731f077cfebb4f172e291a1d4d64258793b329ba9645e87cb5f7f87694f",
+        "path": "inputs/IMG-GEDIT-26/IMG-GEDIT-26-source.png"
+      }
+    ],
+    "IMG-GEDIT-27": [
+      {
+        "role": "source",
+        "sha256": "a4e0c01b82f781d0777e49520a0b139665ca3bfe93df1280cc097ac85da9fdbc",
+        "path": "inputs/IMG-GEDIT-27/IMG-GEDIT-27-source.png"
+      }
+    ],
+    "IMG-GEDIT-28": [
+      {
+        "role": "source",
+        "sha256": "c5551706cdcd043bef32f53db43462f727e7e0d9a5f405246853addd4d7af23c",
+        "path": "inputs/IMG-GEDIT-28/IMG-GEDIT-28-source.png"
+      }
+    ],
+    "IMG-GT2I-31": [],
+    "IMG-GT2I-32": [],
+    "IMG-GT2I-33": [],
+    "IMG-GEDIT-30": [
+      {
+        "role": "source",
+        "sha256": "f23ae1aa75768eda039eadec928d6b2725caee146e48a51e6342612d80b65d46",
+        "path": "inputs/IMG-GEDIT-30/IMG-GEDIT-30-source.png"
+      }
+    ],
+    "IMG-GEDIT-31": [
+      {
+        "role": "source",
+        "sha256": "fa1f60edbe40d0157f999b5aef7980510272c672c17cb642a129e33693067d63",
+        "path": "inputs/IMG-GEDIT-31/IMG-GEDIT-31-source.png"
+      }
+    ],
+    "IMG-GEDIT-32": [
+      {
+        "role": "source",
+        "sha256": "26d1551895bd75b09ae1c740606e60e706b2f9f1c4962fba2003cb581de9cbae",
+        "path": "inputs/IMG-GEDIT-32/IMG-GEDIT-32-source.png"
+      }
+    ],
+    "IMG-GT2I-36": []
+  },
+  "cells": {
+    "IMG-GEDIT-09::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-09",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-09::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-09",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-10::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-10",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-10::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-10",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-14::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-14",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-14::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-14",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-16::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-16",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-16::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-16",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-13::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-13",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-13::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-13",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-14::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-14",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-14::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-14",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-21::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-21",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-21::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-21",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-17::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-17",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-17::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-17",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-18::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-18",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "IMG-GEDIT-18::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-18",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-20::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-20",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-20::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-20",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-22::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-22",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-22::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-22",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-23::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-23",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-23::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-23",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-25::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-25",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-25::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-25",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-21::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-21",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-21::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-21",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-22::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-22",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": "failed gates: dimensions"
+    },
+    "IMG-GEDIT-22::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-22",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": "failed gates: dimensions"
+    },
+    "IMG-GT2I-26::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-26",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-26::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-26",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-27::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-27",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-27::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-27",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-29::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-29",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-29::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-29",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-26::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-26",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-26::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-26",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-27::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-27",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-27::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-27",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-28::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-28",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-28::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-28",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": ""
+    },
+    "IMG-GT2I-31::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-31",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-31::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-31",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-32::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-32",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-32::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-32",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-33::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-33",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-33::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-33",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-30::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-30",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-30::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-30",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-31::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-31",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-31::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-31",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-32::gpt-image-2-medium": {
+      "scenario_id": "IMG-GEDIT-32",
+      "model_id": "gpt-image-2-medium",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-32::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GEDIT-32",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-36::gpt-image-2-medium": {
+      "scenario_id": "IMG-GT2I-36",
+      "model_id": "gpt-image-2-medium",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-36::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "IMG-GT2I-36",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "IMG-GEDIT-09": "completed",
+    "IMG-GEDIT-10": "completed",
+    "IMG-GEDIT-13": "completed",
+    "IMG-GEDIT-14": "completed",
+    "IMG-GEDIT-17": "completed",
+    "IMG-GEDIT-18": "completed",
+    "IMG-GEDIT-20": "completed",
+    "IMG-GEDIT-21": "completed",
+    "IMG-GEDIT-22": "incomplete",
+    "IMG-GEDIT-26": "completed",
+    "IMG-GEDIT-27": "completed",
+    "IMG-GEDIT-28": "incomplete",
+    "IMG-GEDIT-30": "completed",
+    "IMG-GEDIT-31": "completed",
+    "IMG-GEDIT-32": "completed",
+    "IMG-GT2I-14": "completed",
+    "IMG-GT2I-16": "completed",
+    "IMG-GT2I-21": "completed",
+    "IMG-GT2I-22": "completed",
+    "IMG-GT2I-23": "completed",
+    "IMG-GT2I-25": "completed",
+    "IMG-GT2I-26": "completed",
+    "IMG-GT2I-27": "completed",
+    "IMG-GT2I-29": "completed",
+    "IMG-GT2I-31": "completed",
+    "IMG-GT2I-32": "completed",
+    "IMG-GT2I-33": "completed",
+    "IMG-GT2I-36": "completed"
+  }
+}
