@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-07 (Real Cricket 24, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-07-still.png
+id: GEN-VID-GI2V-07
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-07: Score bar updates after a six'
+prompt: 'the batter has finished a lofted shot and fielders look up at the sky. Along the bottom is a broadcast score bar reading ''RIVERSIDE 142/3  15.4 OV''. The stadium and players are frozen. Realistic mobile-game render look, sharp, clean, no watermark.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: the batter has finished a lofted shot and fielders look up at the sky. Along the bottom is a broadcast score bar reading ''RIVERSIDE 142/3  15.4 OV''. The stadium and players are frozen.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

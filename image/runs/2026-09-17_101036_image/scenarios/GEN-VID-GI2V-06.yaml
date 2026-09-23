@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-06 (Real Cricket 24, Image-to-Video).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-06-still.png
+id: GEN-VID-GI2V-06
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-06: Wicket celebration huddle'
+prompt: 'the bowler has just bowled the batter and is mid-stride with arms spreading wide. The stumps behind the batter are broken. Two fielders are running in from either side. Realistic mobile-game render look, sharp, clean, no text, no logos, no watermark, no on-screen display unless stated.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: the bowler has just bowled the batter and is mid-stride with arms spreading wide. The stumps behind the batter are broken. Two fielders are running in from either side.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

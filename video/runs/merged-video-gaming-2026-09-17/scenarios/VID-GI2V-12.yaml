@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-12 (GTA V, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.getstarrd.app/blog/gta-6-ai-prompts
+# Test type: I2V-09 A big effect over the whole scene while a character does something
+id: VID-GI2V-12
+modality: video
+task: image_to_video
+title: 'Helicopter searchlight on the rooftop'
+prompt: 'Cinematic open-world crime game style night pursuit. A police helicopter sweeps its searchlight across a city rooftop as a figure runs along the edge, rotor downwash rippling puddles and clothing, city neon far below, strobing blue and red from the street. Wide aerial shot circling the rooftop, hard spotlight against deep shadow, cool blue grade with warm neon accents, photorealistic, film grain, 16:9. No on-screen text, no HUD. No real logos, no brand marks, no watermark.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-12-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Helicopter searchlight on the rooftop. Capability under test: A big effect over the whole scene while a character does something. Adherence clauses, check each: 1) Searchlight moves across the roof as one beam  2) Figure runs without leaving the roof edge  3) Puddles and clothing react to downwash  4) Camera circles smoothly  5) No HUD or text'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- gta-v
+- real-based
+- image-to-video

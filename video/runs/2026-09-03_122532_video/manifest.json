@@ -1,0 +1,75 @@
+{
+  "run_id": "2026-09-03_122532_video",
+  "created": "2026-09-03T06:55:32.806Z",
+  "state": "generated",
+  "modality": "video",
+  "git_sha": "6ec7f40e37fd886bdf0d9013715b5d5d1e160b0e",
+  "budget_usd": 1.0,
+  "events": [
+    {
+      "ts": "2026-09-03T06:55:32.842Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-03T06:55:32.848Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-03T06:55:34.135Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-03T06:56:01.909Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390"
+  },
+  "rubric_files": {
+    "text_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "vid-001-dolly-in": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "95a7b5f2ecfb28e6758040e556d46855397f9584287404123234c0150e28d708",
+  "inputs": {
+    "vid-001-dolly-in": []
+  },
+  "cells": {
+    "vid-001-dolly-in::omni-flash-vertex": {
+      "scenario_id": "vid-001-dolly-in",
+      "model_id": "omni-flash-vertex",
+      "task": "text_to_video",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "vid-001-dolly-in": "awaiting_judgement"
+  }
+}

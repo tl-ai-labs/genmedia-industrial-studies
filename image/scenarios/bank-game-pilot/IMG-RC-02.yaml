@@ -1,0 +1,44 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: high
+id: IMG-RC-02
+modality: image
+task: text_to_image
+title: Player stats card with strike rate and batting average
+params:
+  size: 896x1280
+  aspect_ratio: '3:4'
+prompt: A collectible cricket player card, portrait orientation, on a dark navy
+  background. The card has a gold metallic border and rounded corners. Upper half —
+  a dramatic portrait of a cricket batsman in a blue helmet and batting gloves,
+  holding a bat over the shoulder, dramatic studio lighting. A banner across the
+  chest reads VIRAJ KOHLI in white capitals. Lower half — a stats panel with four
+  rows, each with a label on the left and a value on the right, separated by thin
+  gold lines. The rows read — Matches 187, Runs 7,432, Strike Rate 139.2,
+  Average 48.6. At the bottom, a rarity badge reads LEGENDARY in gold on a dark
+  strip. Clean, sharp, game-UI style.
+expected: 'Player stats card. Capability under test: Structured card with a portrait,
+  multiple specific numbers and decorative framing. Adherence clauses, check each:
+  1) Gold-bordered card with a batsman portrait in blue helmet  2) VIRAJ KOHLI name
+  banner across the chest  3) Four stats rows with correct labels and numbers
+  (Matches 187, Runs 7,432, Strike Rate 139.2, Average 48.6)  4) LEGENDARY rarity
+  badge at the bottom'
+checks:
+  min_width: 600
+  min_height: 850
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- text_accuracy
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.2
+  text_accuracy: 0.5
+tags:
+- e-commerce-&-store
+- scenario-bank-game-pilot
+- rc24
+- tier-high

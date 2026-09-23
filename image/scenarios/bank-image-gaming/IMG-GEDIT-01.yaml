@@ -1,0 +1,40 @@
+# Gaming pilot scenario IMG-GEDIT-01 (BGMI, Image Editing). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://curiousrefuge.com/blog/9-ways-to-use-runway-aleph
+# Test type: IEDIT-01 Swap the object in a character's hands, with the hands adjusting
+id: IMG-GEDIT-01
+modality: image
+task: image_edit
+title: 'Rifle becomes crossbow'
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-01-source.png
+params:
+  size: auto
+prompt: 'swap the rifle for a crossbow'
+expected: 'Rifle becomes crossbow. Capability under test: Swap the object in a character''s hands, with the hands adjusting. Adherence clauses, check each: 1) Crossbow present, rifle absent  2) Hands grip the crossbow believably with five fingers  3) Body pose unchanged  4) Background pixel-identical apart from the swap area  5) Crossbow lit like the rest of the scene'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  preservation:
+    method: phash
+    max_distance: 12
+criteria:
+- edit_fidelity
+- preservation
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.333333
+  preservation: 0.388889
+  visual_quality: 0.166667
+  realism_style: 0.111111
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-editing

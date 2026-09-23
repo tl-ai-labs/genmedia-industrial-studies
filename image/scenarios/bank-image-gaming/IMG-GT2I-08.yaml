@@ -1,0 +1,38 @@
+# Gaming pilot scenario IMG-GT2I-08 (Real Cricket 24, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.imagine.art/blogs/world-cup-2026-ai-prompts
+# Test type: T2I-12 A top-down or isometric view of a base, board or map
+id: IMG-GT2I-08
+modality: image
+task: text_to_image
+title: 'Field-setting screen from above'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'Clean cricket field-setting graphic in the style of a cricket game''s field-setting screen: a green oval field with a brown pitch rectangle in the centre and a white boundary line, eleven player positions as small white dots, each with a short label: WICKETKEEPER, SLIP, POINT, COVER, MID-OFF, MID-ON, MIDWICKET, SQUARE LEG, FINE LEG, THIRD MAN, LONG-ON. Dark game-menu border, modern sports data visualization, minimalist and precise. No other text.'
+expected: 'Field-setting screen from above. Capability under test: A top-down or isometric view of a base, board or map. Adherence clauses, check each: 1) Exactly eleven fielder dots  2) All eleven labels present and spelt correctly  3) Labels are on the correct sides (off side and leg side not mixed)  4) Pitch is in the centre of the oval  5) Diagram is flat and top-down, not a 3D view'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- text-to-image

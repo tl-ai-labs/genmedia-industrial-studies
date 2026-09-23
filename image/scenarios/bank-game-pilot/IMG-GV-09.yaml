@@ -1,0 +1,43 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: low
+# Inputs: source = IMG-GV-base-man.png — provenance in sidecar .json
+id: IMG-GV-09
+modality: image
+task: image_edit
+title: Convert photograph to GTA loading-screen art style
+inputs:
+  source: assets/bank/IMG-GV-base-man.png
+params:
+  size: auto
+prompt: 'Convert this photograph into the art style of an open-world crime game
+  loading screen. Replace the photographic rendering with bold black ink outlines
+  on every contour, flat watercolour-like colour fills with visible brush texture,
+  and subtle halftone dot shading in the shadow areas. Simplify small details but
+  keep the face, clothing, pose and proportions recognisable. The background should
+  become a flat warm peach tone. The result should look hand-illustrated, not
+  filtered — as if an artist redrew the photograph in that specific style.'
+expected: 'GTA art style transfer. Capability under test: Stylistic conversion
+  from photorealism to a specific illustration style while preserving identity.
+  Adherence clauses, check each: 1) Bold black ink outlines on all contours
+  2) Flat watercolour fills with visible brush texture  3) Halftone dot shading
+  in shadows  4) Face, clothing and pose recognisable, flat peach background'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.4
+  visual_quality: 0.3
+  realism_style: 0.3
+tags:
+- style-&-art-direction
+- scenario-bank-game-pilot
+- gta-v
+- tier-low

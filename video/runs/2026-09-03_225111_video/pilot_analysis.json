@@ -1,0 +1,887 @@
+{
+ "run_id": "2026-09-03_225111_video",
+ "mean": {
+  "gemini": 9.255357142857141,
+  "rival": 9.271428571428572
+ },
+ "wins": {
+  "gemini": 3,
+  "rival": 4,
+  "ties": 7
+ },
+ "criteria": {
+  "motion_coherence": {
+   "gemini": 8.71,
+   "rival": 8.89
+  },
+  "physics_plausibility": {
+   "gemini": 9.21,
+   "rival": 8.86
+  },
+  "prompt_adherence": {
+   "gemini": 9.61,
+   "rival": 9.07
+  },
+  "technical_compliance": {
+   "gemini": 10.0,
+   "rival": 10.0
+  },
+  "temporal_consistency": {
+   "gemini": 8.54,
+   "rival": 9.82
+  },
+  "visual_fidelity": {
+   "gemini": 9.36,
+   "rival": 9.43
+  }
+ },
+ "families": {
+  "cinematic-hero-shot": {
+   "n": 4,
+   "g": 9.12,
+   "r": 9.89,
+   "wins": 0
+  },
+  "physics-action": {
+   "n": 10,
+   "g": 9.31,
+   "r": 9.02,
+   "wins": 3
+  }
+ },
+ "totals": {
+  "gemini_cost": 11.35,
+  "rival_cost": 26.02,
+  "judge_cost": 0.0494,
+  "gemini_latency_mean_s": 36.7,
+  "rival_latency_mean_s": 277.8
+ },
+ "rows": [
+  {
+   "id": "VID-CIN-01",
+   "title": "Slow dolly-in",
+   "family": "cinematic-hero-shot",
+   "prompt": "A slow dolly-in on a woman reading at a wooden table by a window. Soft daylight. The camera moves steadily forward for the full duration. No cuts.",
+   "capability": "Camera move accuracy and temporal stability",
+   "clauses": "1) Camera moves forward, not zoom  2) Movement steady, no stutter  3) Single continuous take  4) Subject stays framed",
+   "industry": "Micro-drama & entertainment",
+   "gemini": {
+    "status": "scored",
+    "score": 7.45,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 4.0,
+     "motion_coherence": 5.0,
+     "physics_plausibility": 5.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows all instructions in the brief: it features a slow dolly-in (not a zoom) on a woman reading at a wooden table by a window with soft daylight, in a single continuous take.",
+     "visual_fidelity": "The per-frame quality is excellent, with realistic textures on the woman's sweater, the wooden table, and the background elements. The lighting is soft and natural.",
+     "temporal_consistency": "There is significant morphing and flickering when the woman turns the page. The paper and her fingers lose their shape and blend into each other during the action.",
+     "motion_coherence": "While the camera motion is smooth and steady, the character's hand movement is very poor. The fingers do not move naturally, and the page turning is a series of visual glitches rather than a coherent motion.",
+     "physics_plausibility": "The physics of the book pages are incorrect; they clip through the woman's hand and each other, appearing to liquefy rather than fold like paper.",
+     "technical_compliance": ""
+    },
+    "note": "The video excels at the camera movement and environmental aesthetics requested in the prompt, but fails significantly in the temporal consistency and physical realism of the character's interaction with the book.",
+    "cost_usd": 0.81088,
+    "latency_s": 30.602,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows all instructions: a woman reading at a wooden table by a window with soft daylight, featuring a steady, continuous dolly-in camera movement with no cuts.",
+     "visual_fidelity": "The image quality is outstanding, with sharp details on the subject's hair and skin, realistic textures on the wooden table, and excellent lighting that mimics soft daylight.",
+     "temporal_consistency": "The video is perfectly stable throughout the duration; there is no flickering, and all objects, including the background elements and the subject's features, remain consistent.",
+     "motion_coherence": "The camera's forward motion is smooth and steady. The subject's action of turning the page is fluid and natural, with no glitches or unnatural movements.",
+     "physics_plausibility": "The physics are entirely realistic, from the way the paper of the book bends as it is turned to the way the subject's clothing reacts to her movement.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality generation that meets every requirement of the brief with cinematic fidelity and perfect technical execution.",
+    "cost_usd": 1.85859,
+    "latency_s": 149.701,
+    "reason": ""
+   },
+   "delta": -2.55,
+   "winner": "seedance-2-5"
+  },
+  {
+   "id": "VID-CIN-02",
+   "title": "Golden hour consistency",
+   "family": "cinematic-hero-shot",
+   "prompt": "A man walking along a coastal path at golden hour. Warm low sun from behind. The light direction and colour must stay consistent for the whole shot.",
+   "capability": "Lighting stability over time",
+   "clauses": "1) Warm low-angle light  2) Light direction constant  3) Colour temperature stable  4) Subject motion continuous",
+   "industry": "Micro-drama & entertainment",
+   "gemini": {
+    "status": "scored",
+    "score": 9.475,
+    "criteria": {
+     "prompt_adherence": 8.5,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 9.5,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video captures all elements of the prompt: a man walking on a coastal path during golden hour with warm, low-angle lighting. However, the prompt refers to 'the whole shot' in the singular, whereas the video is a montage of five distinct shots, which simplifies the task of maintaining consistency compared to a single continuous take.",
+     "visual_fidelity": "The visual quality is exceptional. Textures on the man's jacket, the rocky path, and the ocean waves are sharp and realistic. The lighting and color grading are professional and consistent with a high-end cinematic look.",
+     "temporal_consistency": "The character's appearance, clothing, and the environment remain perfectly consistent across the multiple cuts. There is no flickering or morphing of features.",
+     "motion_coherence": "The man's walking gait is natural and fluid. His feet make solid contact with the uneven ground, and his body weight shifts realistically with each step.",
+     "physics_plausibility": "The physics of the scene are flawless. The movement of the ocean waves, the interaction of the man's boots with the dirt and pebbles, and the behavior of light and shadows all follow real-world physics.",
+     "technical_compliance": ""
+    },
+    "note": "The video is of extremely high quality, effectively indistinguishable from professional cinematography. While it uses a montage format rather than a single continuous shot as implied by the prompt, the consistency across those shots is excellent.",
+    "cost_usd": 0.81088,
+    "latency_s": 34.962,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 9.85,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.5,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 9.5,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly matches the brief: a man is walking along a coastal path during golden hour with the sun positioned behind him. The lighting direction and color temperature are consistent throughout the shot.",
+     "visual_fidelity": "The visual quality is very high, with realistic textures on the grass and clothing, and a sophisticated rendering of lens flares and backlighting that looks like professional cinematography.",
+     "temporal_consistency": "The lighting is remarkably stable, which was the primary goal of the brief. There is no flickering, and the environment remains consistent as the camera moves.",
+     "motion_coherence": "The man's gait is natural and continuous. His feet plant firmly on the ground without sliding, and his body weight shifts realistically with each step.",
+     "physics_plausibility": "The physics of the scene are sound; the clothing moves naturally with the man's stride, and the light interacts correctly with the subject's silhouette.",
+     "technical_compliance": ""
+    },
+    "note": "This is an excellent video that demonstrates high technical proficiency in maintaining lighting stability and realistic human motion. It adheres perfectly to all aspects of the prompt.",
+    "cost_usd": 1.85859,
+    "latency_s": 577.791,
+    "reason": ""
+   },
+   "delta": -0.38,
+   "winner": "tie"
+  },
+  {
+   "id": "VID-CIN-03",
+   "title": "Handheld documentary",
+   "family": "cinematic-hero-shot",
+   "prompt": "Handheld documentary-style shot following a chef through a busy kitchen. Natural camera shake. Subject stays in frame throughout.",
+   "capability": "Deliberate instability without artefacts",
+   "clauses": "1) Handheld character present  2) Subject remains in frame  3) Shake reads as camera, not as artefact  4) No frame tearing or warping",
+   "industry": "Micro-drama & entertainment",
+   "gemini": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows the brief: it is a handheld, documentary-style shot following a chef through a busy kitchen. The subject remains in frame throughout, and the camera shake feels natural and intentional.",
+     "visual_fidelity": "The visual quality is excellent, with sharp details, realistic lighting, and no visible artifacts. It looks like professional broadcast footage.",
+     "temporal_consistency": "The video is perfectly consistent. Characters, background elements, and the chef's appearance (including the embroidery on his jacket) remain stable throughout the entire clip.",
+     "motion_coherence": "Movement is completely natural and plausible. The chef's gait, the background activity, and the camera movement all align with real-world physics and human behavior.",
+     "physics_plausibility": "All physical interactions, including the fire flare-up on the stove, the handling of the plate, and the movement of clothing, are entirely realistic.",
+     "technical_compliance": ""
+    },
+    "note": "This video appears to be real-world footage. It perfectly adheres to the prompt and exhibits no flaws in visual quality, consistency, or physics.",
+    "cost_usd": 0.81088,
+    "latency_s": 32.752,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 9.7,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 9.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly captures the handheld documentary style, following the chef through a kitchen with natural camera shake while keeping him centered in the frame as requested.",
+     "visual_fidelity": "The image is sharp with realistic lighting and textures on the stainless steel surfaces and the chef's clothing. There are no significant compression artifacts or blurring.",
+     "temporal_consistency": "The kitchen environment, the chef's uniform, and the background characters remain very stable throughout the entire duration of the clip with no morphing or flickering.",
+     "motion_coherence": "The chef's walking motion and the camera's tracking movement are fluid and realistic. The background chefs also exhibit plausible, albeit simple, movements.",
+     "physics_plausibility": "The steam from the pots behaves realistically, rising and dissipating naturally. The interaction between the chef and the heavy pot shows proper weight and gravity.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality generation that perfectly meets the brief. The handheld camera movement is very convincing and adds to the documentary feel without introducing any warping or digital artifacts.",
+    "cost_usd": 1.85859,
+    "latency_s": 371.795,
+    "reason": ""
+   },
+   "delta": 0.3,
+   "winner": "tie"
+  },
+  {
+   "id": "VID-CIN-04",
+   "title": "Rack focus",
+   "family": "cinematic-hero-shot",
+   "prompt": "A static shot of a coffee cup in the foreground and a person in the background. Focus starts on the cup and shifts to the person halfway through.",
+   "capability": "Depth control across the shot",
+   "clauses": "1) Focus starts on foreground  2) Shifts to background  3) Transition is gradual  4) Camera itself stays static",
+   "industry": "Micro-drama & entertainment",
+   "gemini": {
+    "status": "scored",
+    "score": 9.55,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 9.0,
+     "motion_coherence": 9.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows the brief: it is a static shot with a coffee cup in the foreground and a person in the background. The focus starts on the cup and shifts smoothly to the person around the 3-4 second mark.",
+     "visual_fidelity": "The image quality is very high, with realistic lighting, textures on the sweater, and a convincing depth-of-field effect. There are no significant artifacts.",
+     "temporal_consistency": "The scene is very stable. The man's features, the latte art, and the background environment remain consistent throughout the entire clip.",
+     "motion_coherence": "The man's movements—typing, reaching for his cup, and drinking—are fluid and natural. The rack focus transition is also very smooth.",
+     "physics_plausibility": "The physics of the scene are entirely plausible, including the way the man interacts with the cup and the subtle movement of steam.",
+     "technical_compliance": ""
+    },
+    "note": "This video is an excellent execution of the requested rack focus technique. It meets all prompt requirements with high visual quality and consistent motion.",
+    "cost_usd": 0.81088,
+    "latency_s": 40.241,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows all instructions: it starts with a sharp focus on a coffee cup in the foreground, then performs a smooth rack focus transition to a man sitting in the background halfway through the clip. The camera remains static throughout.",
+     "visual_fidelity": "The image quality is excellent, resembling a professional cinematic shot. Lighting, textures, and the bokeh effect are all rendered with high fidelity and no visible artifacts.",
+     "temporal_consistency": "The scene is perfectly stable. There is no flickering, texture crawling, or morphing of the subjects as the focus shifts.",
+     "motion_coherence": "The focus pull is smooth and natural. The slight movement of the person in the background is realistic and continuous.",
+     "physics_plausibility": "The depth of field behaves exactly as it would with a real camera lens, and the environment follows standard physical laws.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptional example of a rack focus shot. It meets every requirement of the brief with high technical quality and no discernible AI-related flaws.",
+    "cost_usd": 1.85859,
+    "latency_s": 231.047,
+    "reason": ""
+   },
+   "delta": -0.45,
+   "winner": "tie"
+  },
+  {
+   "id": "VID-PHY-01",
+   "title": "Weighted fall",
+   "family": "physics-action",
+   "prompt": "A cast-iron pan falls from a counter onto a tiled floor. It must fall with correct weight, land once, and settle without bouncing unrealistically.",
+   "capability": "Gravity and impact realism",
+   "clauses": "1) Fall accelerates under gravity  2) Impact is heavy, minimal bounce  3) Pan does not deform  4) Settles in a stable position",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 7.75,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 6.0,
+     "temporal_consistency": 5.0,
+     "motion_coherence": 6.0,
+     "physics_plausibility": 8.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video depicts a cast-iron pan falling from a counter to a tiled floor, exhibiting weight and settling as requested. All specific elements of the brief are present.",
+     "visual_fidelity": "The video contains a jarring jump cut between the counter and the floor. Additionally, a crack pattern appears on the floor tiles upon impact that looks like a poorly integrated 2D overlay rather than a natural part of the environment.",
+     "temporal_consistency": "The pan's geometry changes between shots; specifically, the shape of the hole in the handle changes from a teardrop to a more rounded oval. The lighting and texture of the pan also shift significantly after the cut.",
+     "motion_coherence": "The motion is not continuous due to the jump cut, preventing a view of the full trajectory. However, the motion during the impact and the subsequent wobbling is smooth and believable.",
+     "physics_plausibility": "The physics of the impact are excellent. The pan feels heavy, and the way it bounces and settles captures the specific resonance and weight of cast iron very effectively.",
+     "technical_compliance": ""
+    },
+    "note": "The video successfully captures the physical properties of a heavy cast-iron pan during impact, but it suffers from a lack of continuity. The jump cut between the counter and the floor leads to a change in the object's model and a break in the action, and the floor-cracking visual effect is poorly rendered.",
+    "cost_usd": 0.81088,
+    "latency_s": 43.624,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 9.25,
+    "criteria": {
+     "prompt_adherence": 9.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 9.0,
+     "physics_plausibility": 8.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video captures all elements of the brief: a cast-iron pan falling from a granite counter onto a tiled floor. It lands once and settles without bouncing. The only minor issue is that the fall occurs in slow-motion, which slightly affects the perception of 'correct weight' as requested.",
+     "visual_fidelity": "The visual quality is exceptional. The texture of the cast iron, the reflections on the granite countertop, and the grout lines on the tile floor are all photorealistic. There are no visible AI artifacts.",
+     "temporal_consistency": "The pan maintains its shape, handle orientation, and surface texture perfectly throughout the fall and across the camera cuts. The background environment is also completely stable.",
+     "motion_coherence": "The motion is smooth and continuous. The pan rotates realistically as it leaves the counter. The impact is very sudden, stopping instantly, which aligns with the 'minimal bounce' instruction, though it feels a bit stiff.",
+     "physics_plausibility": "The primary issue is the speed of gravity; the pan falls much slower than it would in real life (taking nearly 2 seconds to fall a few feet). However, the collision is solid, the pan does not deform, and it settles into a stable position as expected.",
+     "technical_compliance": ""
+    },
+    "note": "The video is visually stunning and follows the prompt's instructions for a stable, non-bouncing landing perfectly. Its only significant flaw is the slow-motion timing of the fall, which makes the gravity feel unrealistic for a heavy object.",
+    "cost_usd": 1.85859,
+    "latency_s": 363.261,
+    "reason": ""
+   },
+   "delta": -1.5,
+   "winner": "seedance-2-5"
+  },
+  {
+   "id": "VID-PHY-02",
+   "title": "Liquid pour",
+   "family": "physics-action",
+   "prompt": "Water is poured from a jug into a clear glass until it is about two-thirds full. The stream must be continuous and the level must rise correspondingly.",
+   "capability": "Fluid behaviour",
+   "clauses": "1) Continuous stream while pouring  2) Level rises in proportion to what is poured  3) No liquid appearing or vanishing  4) Stops at roughly two-thirds",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 9.4,
+    "criteria": {
+     "prompt_adherence": 8.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video follows almost all instructions: water is poured from a jug into a clear glass with a continuous stream and a corresponding rise in level. However, the glass is filled to approximately 80-85% capacity, which is significantly more than the requested 'two-thirds full'.",
+     "visual_fidelity": "The visual quality is exceptional. Lighting, textures (glass, water, wood), and depth of field are all highly realistic. Refractions through the water and glass are perfectly rendered.",
+     "temporal_consistency": "The video is perfectly consistent across frames. There is no flickering, no morphing of objects, and the background remains stable.",
+     "motion_coherence": "The motion of the jug and the flow of the liquid are smooth and natural. The hand holding the jug moves realistically as the pouring concludes.",
+     "physics_plausibility": "Fluid dynamics are handled perfectly, including the way bubbles form and rise, the surface ripples, and the way the stream thins as the jug is tilted back. Gravity and object interactions are flawless.",
+     "technical_compliance": ""
+    },
+    "note": "The video is of extremely high quality, appearing indistinguishable from a real-world recording. It perfectly captures complex fluid behaviors and refractions. The only minor issue is the final water level, which exceeds the 'two-thirds' specified in the prompt.",
+    "cost_usd": 0.81088,
+    "latency_s": 39.233,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows the brief: water is poured from a jug into a clear glass in a continuous stream, the level rises as expected, and it stops when the glass is approximately two-thirds full.",
+     "visual_fidelity": "The image quality is exceptional, with realistic lighting, sharp details on the glass and water droplets, and no visible artifacts. It looks like a high-quality photographic recording.",
+     "temporal_consistency": "The scene is perfectly stable. There is no flickering, and the objects (glass, jug, background) maintain their appearance and position throughout the clip.",
+     "motion_coherence": "The motion of the pouring water and the rising level is smooth and natural. The movement of the jug tilting back at the end is also very realistic.",
+     "physics_plausibility": "The fluid dynamics are highly realistic, including the way the water splashes, the formation of bubbles, and the refraction of light through the liquid and glass.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality video that perfectly demonstrates realistic fluid behavior and adheres to every detail of the prompt. It is indistinguishable from a real video recording.",
+    "cost_usd": 1.85859,
+    "latency_s": 289.857,
+    "reason": ""
+   },
+   "delta": -0.6,
+   "winner": "seedance-2-5"
+  },
+  {
+   "id": "VID-PHY-03",
+   "title": "Cloth in wind",
+   "family": "physics-action",
+   "prompt": "A linen curtain moves in a steady breeze at an open window. Movement must be continuous and consistent with a light fabric.",
+   "capability": "Soft-body dynamics",
+   "clauses": "1) Fabric moves continuously  2) Motion consistent with light cloth, not rigid  3) No clipping through the window frame  4) No tearing or geometry breakage",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 8.8,
+    "criteria": {
+     "prompt_adherence": 8.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 8.0,
+     "physics_plausibility": 8.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video features a linen curtain at an open window with a steady breeze. However, it fails the 'no clipping' clause as the fabric clearly intersects and passes through the frame of the open window pane around the 0:03 mark.",
+     "visual_fidelity": "The visual quality is excellent, with highly realistic linen textures, natural lighting, and sharp details that look like a professional film shoot.",
+     "temporal_consistency": "The scene is very stable across the various cuts. The window hardware, wall textures, and lighting remain perfectly consistent throughout the clip.",
+     "motion_coherence": "The movement of the cloth is very fluid and captures the weight of light linen well. However, the motion is marred by the curtain clipping through the solid window frame and glass.",
+     "physics_plausibility": "While the billowing motion is physically convincing for fabric in wind, the curtain passing through the solid structure of the window pane is a significant physical error.",
+     "technical_compliance": ""
+    },
+    "note": "The video is visually stunning and captures the requested aesthetic perfectly. The soft-body dynamics of the linen are very well-rendered, but the clip suffers from noticeable geometry clipping where the fabric passes through the open window frame, violating a specific requirement of the brief.",
+    "cost_usd": 0.81088,
+    "latency_s": 42.88,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly captures a linen curtain swaying in a light breeze by an open window, fulfilling all requirements of the brief including the specific material and setting.",
+     "visual_fidelity": "The image quality is exceptional, with realistic textures on the linen and wood, and beautiful, consistent golden hour lighting. The presence of dust motes in the air adds to the realism.",
+     "temporal_consistency": "The video is perfectly stable with no flickering, texture swimming, or lighting shifts throughout the duration.",
+     "motion_coherence": "The movement of the curtain is smooth and natural, accurately reflecting the behavior of light fabric in a gentle breeze without any jitter or sudden jumps.",
+     "physics_plausibility": "The cloth dynamics are excellent; the fabric folds and sways as expected, and there is no clipping through the window frame or unnatural geometry breakage.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality generation that meets all technical and creative requirements of the brief with high realism and no visible artifacts.",
+    "cost_usd": 1.85859,
+    "latency_s": 578.904,
+    "reason": ""
+   },
+   "delta": -1.2,
+   "winner": "seedance-2-5"
+  },
+  {
+   "id": "VID-PHY-04",
+   "title": "Collision",
+   "family": "physics-action",
+   "prompt": "One billiard ball rolls across a table and strikes a second stationary ball. The second ball must move off in a plausible direction and the first must slow.",
+   "capability": "Momentum transfer",
+   "clauses": "1) Contact occurs  2) Second ball moves only after contact  3) Directions consistent with the strike angle  4) First ball decelerates",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 9.25,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 7.0,
+     "motion_coherence": 9.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video accurately depicts a white billiard ball rolling and striking a stationary red ball. The red ball moves off in a plausible direction, and the white ball slows down significantly upon impact, fulfilling all requirements of the brief.",
+     "visual_fidelity": "The visual quality is excellent, with sharp details on the felt, realistic lighting, and clear reflections on the surface of the billiard balls.",
+     "temporal_consistency": "There is a sharp jump cut at the 3-second mark to a different camera angle and a new strike. While each segment is internally consistent, the cut creates a narrative discontinuity.",
+     "motion_coherence": "The motion of the balls is smooth and continuous. The rolling animation is convincing, and there are no visible artifacts or glitches during the movement.",
+     "physics_plausibility": "The momentum transfer during the collision is highly realistic. The striking ball loses energy as expected, and the stationary ball reacts instantly and moves in a direction consistent with the angle of impact.",
+     "technical_compliance": ""
+    },
+    "note": "The video provides a very high-quality and physically accurate representation of the requested billiard ball collision, though it presents the action in two distinct, non-continuous shots.",
+    "cost_usd": 0.81088,
+    "latency_s": 37.603,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 8.8,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 7.0,
+     "temporal_consistency": 9.0,
+     "motion_coherence": 7.0,
+     "physics_plausibility": 9.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video accurately depicts the requested scene: a red ball rolls and strikes a stationary blue ball. The blue ball moves off in a plausible direction, and the red ball slows down significantly after the impact, fulfilling all clauses of the brief.",
+     "visual_fidelity": "While the foreground balls and cloth are sharp, the background tables are highly distorted with 'melted' legs and nonsensical geometry. Additionally, the white highlights on the balls are static textures that do not shift or warp as the balls move.",
+     "temporal_consistency": "The objects maintain their identity and properties throughout the clip. There is no flickering or sudden morphing of the balls or the table surface.",
+     "motion_coherence": "The balls move smoothly across the surface. However, because the highlights on the balls are static and do not rotate, the balls appear to be sliding across the felt rather than rolling. The camera zoom is also somewhat abrupt and digital.",
+     "physics_plausibility": "The collision physics are excellent. The momentum transfer is handled realistically, with the blue ball accelerating away at an angle consistent with the point of impact, and the red ball losing most of its kinetic energy as expected.",
+     "technical_compliance": ""
+    },
+    "note": "The video successfully demonstrates the requested physics of momentum transfer during a collision. Its main weaknesses are the lack of true rolling motion (due to static textures) and the distorted AI-generated background elements.",
+    "cost_usd": 1.85859,
+    "latency_s": 138.706,
+    "reason": ""
+   },
+   "delta": 0.45,
+   "winner": "tie"
+  },
+  {
+   "id": "VID-PHY-05",
+   "title": "Walking gait",
+   "family": "physics-action",
+   "prompt": "A person walks across the frame from left to right at a natural pace. Correct gait, correct foot contact with the ground, no sliding.",
+   "capability": "Human locomotion",
+   "clauses": "1) Natural walking pace  2) Feet contact the ground without sliding  3) Correct limb count throughout  4) Stride length consistent with speed",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly captures the requested action: a person walking from left to right at a natural pace. The gait is correct, and the foot contact with the ground is solid with no sliding.",
+     "visual_fidelity": "The visual quality is exceptional, indistinguishable from high-quality professional video footage. Textures on the denim jacket, the hair bun, and the pavement are sharp and realistic.",
+     "temporal_consistency": "The video is perfectly consistent throughout its duration. There is no flickering, morphing of features, or texture crawling; the subject and environment remain stable.",
+     "motion_coherence": "The walking motion is fluid and anatomically correct. The weight shift and limb movement are natural, and the feet plant firmly on the ground without any sliding or 'moonwalking' effects.",
+     "physics_plausibility": "The physics of the scene are entirely realistic, including the interaction between the feet and the ground, the movement of the clothing, and the consistent lighting and shadows.",
+     "technical_compliance": ""
+    },
+    "note": "This video is of exceptional quality and perfectly adheres to the brief. It exhibits no visible artifacts or inconsistencies, appearing to be real-world footage.",
+    "cost_usd": 0.81088,
+    "latency_s": 37.576,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows the prompt: a person walks from left to right at a natural pace with a correct gait and no foot sliding.",
+     "visual_fidelity": "The image quality is excellent, with sharp details, realistic lighting, and no visible artifacts. It looks like high-quality cinematic footage.",
+     "temporal_consistency": "The video is perfectly stable across frames; the person's appearance, clothing, and the background remain consistent throughout the entire clip.",
+     "motion_coherence": "The walking motion is very realistic, with correct limb movement and perfect foot-to-ground contact without any sliding or weightlessness.",
+     "physics_plausibility": "The physics are entirely plausible, including the movement of clothing, the interaction of feet with the pavement, and the behavior of shadows.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality generation that is indistinguishable from real video footage. It meets all the requirements of the brief perfectly with no detectable flaws.",
+    "cost_usd": 1.85859,
+    "latency_s": 257.834,
+    "reason": ""
+   },
+   "delta": 0.0,
+   "winner": "tie"
+  },
+  {
+   "id": "VID-PHY-06",
+   "title": "Bouncing ball",
+   "family": "physics-action",
+   "prompt": "A rubber ball is dropped onto concrete and bounces several times, each bounce lower than the last, until it comes to rest.",
+   "capability": "Energy decay",
+   "clauses": "1) Multiple bounces  2) Each bounce lower than the previous  3) Decay looks physically plausible  4) Ball comes to rest",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 8.95,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 6.0,
+     "motion_coherence": 7.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video fulfills all requirements of the brief: a blue rubber ball is dropped onto concrete, bounces multiple times with clear energy decay (each bounce is lower), and eventually comes to rest. The presence of a hand dropping the ball is a natural part of the action.",
+     "visual_fidelity": "The visual quality is exceptional, indistinguishable from high-quality real-world footage. Textures on the concrete and the ball are sharp, lighting is natural and consistent, and there are no visible compression artifacts or AI-typical distortions.",
+     "temporal_consistency": "There is a significant continuity break at approximately the 3-second mark. The ball is in the middle of a bounce sequence when it suddenly disappears and is replaced by a hand dropping the ball again from the top of the frame. This 'reset' of the action is a major flaw in temporal consistency.",
+     "motion_coherence": "Within each of the two segments (before and after the 3-second mark), the motion is perfectly coherent and realistic. However, the transition between them is a non-physical jump where the ball teleports back to the starting position, which breaks the overall motion flow.",
+     "physics_plausibility": "The physics of the bouncing ball are perfectly modeled. The gravity, the collision with the ground, and specifically the energy decay (the height of each successive bounce) are all physically accurate and plausible.",
+     "technical_compliance": ""
+    },
+    "note": "The video shows near-perfect visual quality and physical simulation of a bouncing ball. However, it is marred by a significant continuity error where the action restarts abruptly at the 3-second mark, suggesting a failure to generate a single continuous sequence or a poor edit of real footage.",
+    "cost_usd": 0.81088,
+    "latency_s": 32.519,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 5.05,
+    "criteria": {
+     "prompt_adherence": 2.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 3.0,
+     "physics_plausibility": 1.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The ball never actually makes contact with the concrete surface, instead oscillating in mid-air. It also fails to come to a rest within the duration of the clip, missing the final state requested in the brief.",
+     "visual_fidelity": "The image quality is high, with realistic lighting on the ball and a detailed concrete texture that looks like a clean photographic plate.",
+     "temporal_consistency": "The ball and background remain perfectly consistent throughout the video with no flickering, texture crawl, or shape-shifting.",
+     "motion_coherence": "The motion is smooth, but it does not represent a bounce; the ball reverses direction in mid-air without any impact or squash/stretch, looking more like it is suspended on an invisible string.",
+     "physics_plausibility": "The ball defies gravity and the laws of collision by 'bouncing' off thin air several inches above the ground, which is physically impossible.",
+     "technical_compliance": ""
+    },
+    "note": "The video fails the primary task of showing a ball bouncing on concrete. While the visual quality and consistency are excellent, the physics are completely broken as the ball oscillates in mid-air without ever touching the surface.",
+    "cost_usd": 1.85859,
+    "latency_s": 155.355,
+    "reason": ""
+   },
+   "delta": 3.9,
+   "winner": "omni-flash-vertex"
+  },
+  {
+   "id": "VID-PHY-07",
+   "title": "Fire and smoke",
+   "family": "physics-action",
+   "prompt": "A candle burns on a table. The flame flickers naturally and a thin wisp of smoke rises from it. Continuous throughout.",
+   "capability": "Emergent media behaviour",
+   "clauses": "1) Flame present and flickering  2) Smoke rises upward  3) Behaviour continuous, no popping  4) Flame stays attached to the wick",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 9.4,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 9.0,
+     "physics_plausibility": 8.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly captures all elements of the brief: a candle on a wooden table, a flickering flame, and a continuous wisp of smoke rising from it.",
+     "visual_fidelity": "The visual quality is excellent, with realistic textures on the candle wax and the wooden table, and very clean lighting and shadows.",
+     "temporal_consistency": "The scene is highly stable over the 8-second duration. There are no sudden jumps, pops, or changes in the environment.",
+     "motion_coherence": "The motion of the flame and the smoke is smooth and continuous. The camera zoom is also very steady.",
+     "physics_plausibility": "The smoke behaves realistically in terms of rising and swirling, although it is unusually thick and white for a candle that is still actively burning; typically, this volume of smoke is seen only after the flame is extinguished.",
+     "technical_compliance": ""
+    },
+    "note": "A very high-quality generation that adheres strictly to the prompt. The only minor physical inaccuracy is the density of the smoke while the flame is still lit, which feels slightly stylized.",
+    "cost_usd": 0.81088,
+    "latency_s": 52.895,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 8.5,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 8.0,
+     "temporal_consistency": 9.0,
+     "motion_coherence": 7.0,
+     "physics_plausibility": 6.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video depicts a candle on a table with a flickering flame and rising smoke, fulfilling all requirements of the brief.",
+     "visual_fidelity": "The lighting and textures are very realistic. However, around the 3-second mark, a sharp, needle-like vertical artifact appears in the smoke, which detracts from the photographic quality.",
+     "temporal_consistency": "The flame flicker is consistent throughout the clip, and the camera zoom is smooth without any popping or sudden changes in the environment.",
+     "motion_coherence": "The camera movement is fluid. The smoke wisp starts naturally but then turns into a rigid, straight line moving upward, which lacks the fluid motion expected of smoke.",
+     "physics_plausibility": "The flame behaves correctly, staying attached to the wick. However, the smoke forms a perfectly straight, thin vertical line that extends off-screen, which is physically impossible for smoke in a real-world environment.",
+     "technical_compliance": ""
+    },
+    "note": "The video is visually impressive with great lighting and texture, but the smoke simulation fails significantly halfway through, producing a rigid vertical artifact that breaks the realism.",
+    "cost_usd": 1.85859,
+    "latency_s": 155.957,
+    "reason": ""
+   },
+   "delta": 0.9,
+   "winner": "omni-flash-vertex"
+  },
+  {
+   "id": "VID-PHY-08",
+   "title": "Object permanence",
+   "family": "physics-action",
+   "prompt": "A person walks behind a pillar and emerges on the other side. They must be the same person, same clothing, moving in the same direction.",
+   "capability": "Occlusion handling",
+   "clauses": "1) Person disappears behind the pillar  2) Re-emerges on the correct side  3) Same identity and clothing  4) Motion direction unchanged",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows all instructions: the woman walks behind the pillar, emerges on the other side, maintains her identity and clothing, and continues in the same direction.",
+     "visual_fidelity": "The image quality is excellent, with sharp details on the concrete pillar, realistic fabric textures, and consistent lighting and shadows throughout the scene.",
+     "temporal_consistency": "There is no flickering or morphing; the character and environment remain perfectly stable throughout the entire clip, including the transition behind the pillar.",
+     "motion_coherence": "The walking gait is natural and fluid, with no sliding or clipping, and the character's weight and momentum are well-conveyed.",
+     "physics_plausibility": "Object permanence is perfectly maintained as the woman passes behind the pillar, and the interaction of light, shadows, and cloth movement is physically accurate.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality video that demonstrates perfect occlusion handling and temporal stability, meeting all requirements of the brief with high realism.",
+    "cost_usd": 0.81088,
+    "latency_s": 29.623,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video follows every instruction in the brief: a woman in a black coat walks behind a large pillar and emerges on the other side, maintaining her identity, clothing, and direction of travel.",
+     "visual_fidelity": "The image quality is excellent, with realistic lighting, sharp textures on the floor and pillars, and no visible AI artifacts.",
+     "temporal_consistency": "The subject's appearance is perfectly consistent before and after the occlusion. The environment remains stable throughout the clip.",
+     "motion_coherence": "The walking gait is natural and fluid. The timing of the woman's reappearance from behind the pillar perfectly matches her walking speed.",
+     "physics_plausibility": "The video demonstrates perfect object permanence. Lighting, shadows, and reflections on the floor behave realistically as the subject moves.",
+     "technical_compliance": ""
+    },
+    "note": "This is a perfect execution of the prompt, demonstrating high-quality rendering and flawless handling of occlusion and object permanence.",
+    "cost_usd": 1.85859,
+    "latency_s": 159.696,
+    "reason": ""
+   },
+   "delta": 0.0,
+   "winner": "tie"
+  },
+  {
+   "id": "VID-PHY-09",
+   "title": "Grasp and lift",
+   "family": "physics-action",
+   "prompt": "A hand reaches for an apple on a table, grasps it, and lifts it. The grip must be plausible and the apple must move with the hand.",
+   "capability": "Hand-object interaction",
+   "clauses": "1) Reach, grasp and lift all occur in order  2) Fingers close around the object  3) Apple moves with the hand, no slipping through  4) Five fingers throughout",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 9.55,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.0,
+     "temporal_consistency": 9.0,
+     "motion_coherence": 9.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video follows all instructions in the brief: the hand reaches for the apple, grasps it with fingers closing around it, and lifts it. The apple moves perfectly in sync with the hand.",
+     "visual_fidelity": "The image quality is excellent, with realistic lighting, detailed textures on the apple skin and wooden table, and a natural-looking hand.",
+     "temporal_consistency": "The objects and textures remain stable throughout the clip. There is no flickering or morphing of the hand or the apple.",
+     "motion_coherence": "The movement is smooth and plausible. The hand-object interaction is well-executed, though there is a very slight sliding of the thumb on the apple's surface during the lift.",
+     "physics_plausibility": "The physics are handled very well; the apple shows appropriate weight and the contact points between the fingers and the fruit are convincing.",
+     "technical_compliance": ""
+    },
+    "note": "This is an exceptionally high-quality generation that meets all the requirements of the brief with high visual realism and consistent motion.",
+    "cost_usd": 0.81088,
+    "latency_s": 28.484,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 8.8,
+    "criteria": {
+     "prompt_adherence": 6.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video shows the hand reaching for and grasping the apple, but it fails to perform the final action of lifting the apple off the table as requested in the brief.",
+     "visual_fidelity": "The image quality is excellent, with realistic skin textures, lighting, and a sharp focus on the subject. It looks like a high-quality cinematic shot.",
+     "temporal_consistency": "The video is perfectly stable throughout its duration, with no flickering, texture swimming, or morphing of the hand or apple.",
+     "motion_coherence": "The movement of the hand is smooth and natural. The interaction between the fingers and the surface of the apple is very convincing.",
+     "physics_plausibility": "The collision between the hand and the apple follows real-world physics, and the object remains solid and stationary as expected when grasped.",
+     "technical_compliance": ""
+    },
+    "note": "The video is technically flawless in terms of visual quality and consistency, but it fails to complete the full sequence of actions requested by the prompt, specifically the lifting of the apple.",
+    "cost_usd": 1.85859,
+    "latency_s": 300.285,
+    "reason": ""
+   },
+   "delta": 0.75,
+   "winner": "omni-flash-vertex"
+  },
+  {
+   "id": "VID-PHY-10",
+   "title": "Wheel rotation",
+   "family": "physics-action",
+   "prompt": "A bicycle rides past the camera from left to right. Wheel rotation speed must match the forward speed — no sliding, no reversed spin.",
+   "capability": "Rolling-motion consistency",
+   "clauses": "1) Bicycle moves left to right  2) Wheels rotate forward  3) Rotation rate consistent with translation  4) No wheel-slip appearance",
+   "industry": "Gaming",
+   "gemini": {
+    "status": "scored",
+    "score": 10.0,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 10.0,
+     "temporal_consistency": 10.0,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows the prompt. The bicycle moves from the left side of the frame to the right, and the wheel rotation is exactly synchronized with the forward speed, showing no sliding or stroboscopic reversal.",
+     "visual_fidelity": "The visual quality is indistinguishable from real-world footage. Sharpness, lighting, and textures on the bike, rider, and asphalt are all high-fidelity with no visible artifacts.",
+     "temporal_consistency": "The video is perfectly consistent. There is no flickering, and all objects (bicycle, rider, background elements) maintain their shape and detail throughout the entire duration.",
+     "motion_coherence": "The motion is entirely natural. The rider's pedaling, the bike's slight turn, and the interaction between the tires and the ground are all fluid and realistic.",
+     "physics_plausibility": "The physics are flawless. The weight of the rider on the bike, the momentum of the turn, and the consistent contact with the ground all follow real-world physical laws.",
+     "technical_compliance": ""
+    },
+    "note": "This video appears to be real-world footage. It meets every requirement of the prompt with perfect technical execution and no observable flaws.",
+    "cost_usd": 0.81088,
+    "latency_s": 30.354,
+    "reason": ""
+   },
+   "rival": {
+    "status": "scored",
+    "score": 9.85,
+    "criteria": {
+     "prompt_adherence": 10.0,
+     "visual_fidelity": 9.5,
+     "temporal_consistency": 9.5,
+     "motion_coherence": 10.0,
+     "physics_plausibility": 10.0,
+     "technical_compliance": 10.0
+    },
+    "reasoning": {
+     "prompt_adherence": "The video perfectly follows the brief: the bicycle moves from left to right, and the wheel rotation is accurately synchronized with the forward speed without any sliding or stroboscopic reverse-spin effects.",
+     "visual_fidelity": "The visual quality is excellent, featuring cinematic lighting, realistic textures on the road and palm trees, and a high level of detail on the bicycle and rider.",
+     "temporal_consistency": "The clip is very stable; the bicycle's geometry remains consistent, and the rider's appearance does not morph or flicker as she moves through the scene.",
+     "motion_coherence": "The motion is exceptionally smooth and coherent. The pedaling action matches the bike's velocity, and the wheels maintain perfect contact with the ground.",
+     "physics_plausibility": "The physics are highly plausible, with the rider's hair and dress reacting naturally to the wind and the bicycle exhibiting realistic momentum and weight.",
+     "technical_compliance": ""
+    },
+    "note": "This is an outstanding generation that handles the difficult task of rolling-motion consistency perfectly while maintaining high aesthetic and technical standards.",
+    "cost_usd": 1.85859,
+    "latency_s": 158.486,
+    "reason": ""
+   },
+   "delta": 0.15,
+   "winner": "tie"
+  }
+ ]
+}

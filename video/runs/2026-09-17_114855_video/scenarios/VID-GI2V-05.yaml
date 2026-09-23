@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-05 (Real Cricket 24, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://techmitra.in/viral-gemini-ai-prompts-for-t20-world-cup/
+# Test type: I2V-03 Something already flying in the picture keeps flying correctly
+id: VID-GI2V-05
+modality: video
+task: image_to_video
+title: 'Ball in the air, boundary catch'
+prompt: 'Show the ball high in the air growing larger as it drops toward the fielder, the hands coming up to catch it, and the tumble to the ground as the catch is completed, adding realistic camera shake. Broadcast look, floodlit night; the crowd, the boundary rope and the stadium stay in place.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-05-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Ball in the air, boundary catch. Capability under test: Something already flying in the picture keeps flying correctly. Adherence clauses, check each: 1) One ball, continuous arc, no teleport or second ball  2) Catch completes in the hands, not on the ground  3) Fielder identity and kit unchanged  4) Rope, crowd and stadium fixed  5) Camera shake mild, no cuts'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- image-to-video

@@ -1,0 +1,42 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: low
+id: IMG-RC-04
+modality: image
+task: text_to_image
+title: Victory celebration with confetti and trophy lift
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A T20 cricket victory celebration on a floodlit pitch at night. A group of
+  cricket players in matching blue jerseys celebrate — one player in the centre lifts
+  a silver trophy cup above his head with both hands, others jump and cheer around
+  him. Gold and blue confetti fills the air. The stadium lights create lens flares.
+  A packed crowd in the stands waves flags. The pitch surface shows white crease
+  markings. Photorealistic, wide shot, joyful energy.
+expected: 'Victory celebration. Capability under test: Multi-figure celebratory
+  scene with props and atmosphere effects. Adherence clauses, check each:
+  1) Group of players in blue jerseys on a floodlit pitch  2) Centre player lifts
+  a silver trophy with both hands  3) Gold and blue confetti in the air
+  4) Stadium crowd, lens flares, white crease markings visible'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- concept-&-ideation
+- scenario-bank-game-pilot
+- rc24
+- tier-low

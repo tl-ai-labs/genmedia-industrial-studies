@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-09 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://www.bizzbuzz.news/technology/ai/10-pubg-inspired-gemini-ai-photo-editing-prompts-for-boys-create-epic-battle-ready-portraits-in-seconds-1380365
+# Test type: T2I-11 An action frozen mid-motion with believable body position
+id: IMG-GT2I-09
+modality: image
+task: text_to_image
+title: 'Looting the airdrop'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'A player kneeling next to a red-and-blue airdrop crate, lifting the lid while grabbing a Level 3 helmet. Add flare smoke glow and golden-hour lighting. DSLR 50mm lens.'
+expected: 'Looting the airdrop. Capability under test: An action frozen mid-motion with believable body position. Adherence clauses, check each: 1) Player is kneeling with one hand on the lid  2) Crate is red and blue  3) Helmet is a full-face military helmet  4) Flare smoke glows in the light  5) Correct anatomy, five fingers per hand'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- bgmi
+- real
+- text-to-image

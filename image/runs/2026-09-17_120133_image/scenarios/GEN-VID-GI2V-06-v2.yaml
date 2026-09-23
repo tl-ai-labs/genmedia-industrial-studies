@@ -1,0 +1,21 @@
+# Input asset generator for pilot card VID-GI2V-06 (Real Cricket 24, Image-to-Video). Second attempt: the first
+# output carried real brand, team or player names. Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GI2V-06-still.png
+id: GEN-VID-GI2V-06-v2
+modality: image
+task: text_to_image
+title: 'Input still for VID-GI2V-06 (v2, no real names): Dugout celebrates a wicket'
+prompt: 'T20 cricket night match, broadcast telephoto view: the dugout of a fictional team called RIVERSIDE, four players in matching plain teal kit with the word RIVERSIDE on the chest, seated on bench seats, a fictional live score bar along the top reading ''RIVERSIDE 142/3  15.4 OV'' with a LIVE tag, packed crowd behind. No real team, no real player names, no sponsor logos, no brand logos, no advertising boards with brand names, no other text. Realistic mobile-game render look, sharp, clean, no watermark.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still with no real brand, team, bank or player names: Dugout celebrates a wicket'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

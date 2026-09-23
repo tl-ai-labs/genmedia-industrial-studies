@@ -1,0 +1,40 @@
+# Gaming pilot scenario IMG-GEDIT-04 (BGMI, Image Editing). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.getstarrd.app/blog/gta-6-ai-prompts
+# Test type: IEDIT-17 Add one on-screen display element in the right place
+id: IMG-GEDIT-04
+modality: image
+task: image_edit
+title: 'Add the minimap'
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-04-source.png
+params:
+  size: auto
+prompt: 'Overlay an invented mobile battle-royale game HUD element in the style of the genre: a square minimap in the top-right corner showing a satellite-style map of a green island with a white circle, a smaller blue circle inside it, and a straight white line for the plane''s path. Change nothing else.'
+expected: 'Add the minimap. Capability under test: Add one on-screen display element in the right place. Adherence clauses, check each: 1) Minimap is in the top-right corner  2) It shows a white circle, a smaller blue circle and a straight line  3) It has a clear square border  4) Rest of the frame unchanged  5) Minimap is sharp and not blended into the scene'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  preservation:
+    method: phash
+    max_distance: 12
+criteria:
+- edit_fidelity
+- preservation
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.333333
+  preservation: 0.388889
+  visual_quality: 0.166667
+  realism_style: 0.111111
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-editing

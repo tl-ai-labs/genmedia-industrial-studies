@@ -1,0 +1,18 @@
+# Handle probe B — identical brief with the ModelArk @Video1 handle added,
+# per the Seedance 2.5 API reference's own edit example.
+id: PROBE-HANDLE
+modality: video
+task: video_edit
+title: Recolour one object (with @Video1 handle)
+prompt: In @Video1, change the colour of the red umbrella to yellow. Everything else in
+  the shot must stay exactly as it is.
+inputs:
+  source: assets/bank/VID-EDIT-01-source.mp4
+params:
+  audio: false
+expected: 'The umbrella is yellow; nothing else in the shot changes.'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing

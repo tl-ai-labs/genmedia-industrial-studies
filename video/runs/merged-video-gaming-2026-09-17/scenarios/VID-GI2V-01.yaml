@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-01 (BGMI, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://ulazai.com/directory/prompt/450e5e46-d16c-4cc4-a903-92a5acee779c/
+# Test type: I2V-02 A sequence of actions in the right order
+id: VID-GI2V-01
+modality: video
+task: image_to_video
+title: 'Jeep over the rock, stop, smoke, revive'
+prompt: 'A hyper-realistic, dynamic shot of the open-top jeep navigating the muddy, rutted track. Its front tyre struggles for grip and climbs over a large wet rock; the suspension articulates, the tyres spin and slip, kicking up rooster tails of mud and water, and the body rocks and lurches with the effort. Once over the rock it brakes hard and skids to a stop beside the stone wall. Both doors open and two players in military gear jump out. One throws a smoke grenade that bursts into thick grey smoke. The other kneels beside the knocked-down teammate and begins to revive them. Camera stays behind the jeep.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-01-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Jeep over the rock, stop, smoke, revive. Capability under test: A sequence of actions in the right order. Adherence clauses, check each: 1) Order holds: rock, stop, exit, smoke, revive  2) Jeep does not clip through the rock or wall  3) Exactly two players exit and the knocked teammate stays down until the revive  4) Smoke spreads from one point  5) Camera stays behind the jeep, no cuts'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-to-video

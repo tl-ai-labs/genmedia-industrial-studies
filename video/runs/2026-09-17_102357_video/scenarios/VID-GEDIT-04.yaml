@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-04 (BGMI, Video Editing). Built from
+# video/scenarios/bank-video-gaming/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://picsart.com/ai-models/runway-aleph-2-0/
+# Test type: EDIT-04 Remove one moving thing
+id: VID-GEDIT-04
+modality: video
+task: video_edit
+title: 'Remove the buggy in the final circle'
+prompt: 'remove the car'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-04-source.mp4
+params:
+  audio: false
+expected: 'Remove the buggy in the final circle. Capability under test: Remove one moving thing. Adherence clauses, check each: 1) No trace of the buggy or dust in any frame  2) Filled-in background matches the surrounding grass  3) Prone players untouched  4) No smearing or ghosting along the buggy''s path  5) Grass still sways naturally'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real
+- video-editing

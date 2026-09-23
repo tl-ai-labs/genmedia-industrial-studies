@@ -1,0 +1,44 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: medium
+id: IMG-BG-04
+modality: image
+task: text_to_image
+title: Loot table — helmet, vest, backpack and first-aid kit
+params:
+  size: 1024x1024
+  aspect_ratio: '1:1'
+prompt: A flat-lay product photograph of four battle-royale loot items arranged on
+  a worn wooden floor, seen from directly above. Top left — a level-three spetsnaz
+  helmet, matte black with a visor. Top right — a level-three military vest, olive
+  drab with ceramic plate inserts visible. Bottom left — a level-three backpack, large
+  and dark grey with MOLLE webbing. Bottom right — a red first-aid kit box with a
+  white cross on the lid. Each item casts a soft shadow. Even overhead lighting,
+  photorealistic, no text, no UI.
+expected: 'Loot table with four items. Capability under test: Four distinct objects
+  in a flat-lay grid with correct spatial arrangement. Adherence clauses, check each:
+  1) Exactly four items in a 2x2 grid on a wooden floor  2) Top left helmet, top
+  right vest, bottom left backpack, bottom right first-aid kit  3) Each item matches
+  its description (level-three style, colours correct)  4) Overhead view, soft
+  shadows, no text or UI'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- environment-&-props
+- scenario-bank-game-pilot
+- bgmi
+- tier-medium

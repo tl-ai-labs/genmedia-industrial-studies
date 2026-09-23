@@ -1,0 +1,86 @@
+{
+  "run_id": "2026-09-17_115818_image",
+  "created": "2026-09-17T06:28:18.260Z",
+  "state": "generated",
+  "modality": "image",
+  "git_sha": null,
+  "budget_usd": 1.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-17T06:28:18.363Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-17T06:28:18.367Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-17T06:28:19.201Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-17T06:29:30.274Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-1-flash-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-08-31",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/image/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "GEN-VID-GI2V-01": {
+      "prompt_adherence": 0.411765,
+      "visual_quality": 0.235294,
+      "composition": 0.176471,
+      "realism_style": 0.176471
+    },
+    "GEN-VID-GI2V-05": {
+      "prompt_adherence": 0.411765,
+      "visual_quality": 0.235294,
+      "composition": 0.176471,
+      "realism_style": 0.176471
+    }
+  },
+  "scenario_set_hash": "f4589d605a549564e00fb0e8796c81ba1ded3bd3513f4680be83cb0a3c563943",
+  "inputs": {
+    "GEN-VID-GI2V-01": [],
+    "GEN-VID-GI2V-05": []
+  },
+  "cells": {
+    "GEN-VID-GI2V-01::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "GEN-VID-GI2V-01",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "generated",
+      "reason": ""
+    },
+    "GEN-VID-GI2V-05::gemini-3-1-flash-image-vertex": {
+      "scenario_id": "GEN-VID-GI2V-05",
+      "model_id": "gemini-3-1-flash-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "generated",
+      "reason": ""
+    }
+  }
+}

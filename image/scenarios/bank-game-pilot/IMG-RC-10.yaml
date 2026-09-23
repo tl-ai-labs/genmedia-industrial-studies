@@ -1,0 +1,43 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: high
+# Inputs: source = IMG-RC-base-bowler.png — provenance in sidecar .json
+id: IMG-RC-10
+modality: image
+task: image_edit
+title: Bowler delivery freeze with speed readout overlay
+inputs:
+  source: assets/bank/IMG-RC-base-bowler.png
+params:
+  size: auto
+prompt: 'Add a broadcast-style speed readout graphic to this bowling action shot.
+  Bottom right of the frame: a semi-transparent dark rounded-rectangle panel showing
+  the speed 148.3 KM/H in large white digits and a smaller label RELEASE SPEED below
+  in grey. Top left: a small semi-transparent panel showing the bowler''s name
+  A. KUMAR and match figures 3/42 (8.4 ov) in white text. Add a subtle motion blur
+  trail behind the ball if one is visible, suggesting extreme pace. The bowler, pitch,
+  background and all other elements must remain unchanged.'
+expected: 'Speed readout overlay. Capability under test: Precise text overlay at
+  specific screen positions with numeric data. Adherence clauses, check each:
+  1) Speed panel bottom-right showing 148.3 KM/H and RELEASE SPEED  2) Name panel
+  top-left showing A. KUMAR and 3/42 (8.4 ov)  3) Motion blur trail behind the
+  ball  4) Bowler, pitch and background unchanged'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- text_accuracy
+weights:
+  edit_fidelity: 0.3
+  visual_quality: 0.2
+  text_accuracy: 0.5
+tags:
+- ui-overlay
+- scenario-bank-game-pilot
+- rc24
+- tier-high

@@ -1,0 +1,46 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: high
+id: IMG-GV-04
+modality: image
+task: text_to_image
+title: Heist planning board — map, mugshots, getaway route and loot split
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A heist planning board pinned to a garage wall, photographed straight on.
+  The board is a large corkboard covered with items pinned or taped to it. Centre —
+  a printed street map of a coastal city with a red marker line tracing a getaway
+  route from a bank building (circled in red) to a dock (circled in green). Top left
+  — three small polaroid-style mugshot photos of crew members, each with a name
+  written below in marker (DRIVER, HACKER, MUSCLE). Top right — a handwritten
+  note reading TAKE 4.2M — SPLIT 40/30/30 in black marker. Bottom — a taped
+  photograph of a white panel van and another of a speedboat. Red string connects
+  several pins. Dim garage lighting, photorealistic.
+expected: 'Heist planning board. Capability under test: A complex prop with
+  multiple pinned elements, handwritten text and a map with route markings.
+  Adherence clauses, check each: 1) Corkboard with a city map showing a red
+  route from bank to dock  2) Three polaroid mugshots labelled DRIVER, HACKER,
+  MUSCLE  3) Handwritten note reading TAKE 4.2M — SPLIT 40/30/30  4) Photos
+  of a van and speedboat, red string connecting pins'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- text_accuracy
+weights:
+  prompt_adherence: 0.3
+  visual_quality: 0.2
+  composition: 0.2
+  text_accuracy: 0.3
+tags:
+- environment-&-props
+- scenario-bank-game-pilot
+- gta-v
+- tier-high

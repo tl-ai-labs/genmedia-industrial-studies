@@ -1,0 +1,41 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: low
+# Inputs: source = IMG-BG-base-soldier.png — provenance in sidecar .json
+id: IMG-BG-05
+modality: image
+task: image_edit
+title: Re-skin soldier to desert camo with matching helmet cover
+inputs:
+  source: assets/bank/IMG-BG-base-soldier.png
+params:
+  size: auto
+prompt: 'Change this soldier''s uniform and gear to a desert camouflage pattern:
+  tan and sandy brown digital camo on every fabric surface including the helmet
+  cover, plate carrier and trousers. Replace any green or woodland tones with the
+  desert palette. Keep the face, pose, body proportions, weapon and background
+  exactly as they are. No other changes.'
+expected: 'Desert camo re-skin. Capability under test: Uniform-wide colour and
+  pattern replacement while preserving identity and equipment. Adherence clauses,
+  check each: 1) All fabric surfaces converted to tan/sandy digital camo
+  2) Helmet cover matches the uniform pattern  3) Face, pose and weapon unchanged
+  4) No green or woodland tones remain on the uniform'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- variants-&-progression
+- scenario-bank-game-pilot
+- bgmi
+- tier-low

@@ -1,0 +1,45 @@
+# Gaming pilot — RC24 (Real Cricket 24)
+# Complexity tier: medium
+# Inputs: source = IMG-RC-base-batsman.png — provenance in sidecar .json
+id: IMG-RC-08
+modality: image
+task: image_edit
+title: Collectible player card with stats frame and rarity border
+inputs:
+  source: assets/bank/IMG-RC-base-batsman.png
+params:
+  size: auto
+prompt: 'Recompose this batsman into a collectible portrait player card. Crop to
+  upper body and centre the figure. Replace the background with a gradient from
+  deep purple at the top to dark blue at the bottom. Add a holographic-style
+  rainbow card border that shimmers. At the top, a ribbon reading ALL-ROUNDER in
+  white on purple. At the bottom, a stats strip with three columns: BAT 94 in
+  gold, BOWL 78 in silver, FIELD 86 in bronze. Below the stats, a rarity tag
+  reading EPIC in purple capitals. The card should look like a premium mobile
+  game collectible.'
+expected: 'Player card with stats. Capability under test: Recomposing a photo
+  into a structured card with layered decorative elements and numeric text.
+  Adherence clauses, check each: 1) Batsman cropped to upper body on purple-blue
+  gradient  2) Holographic rainbow border effect  3) ALL-ROUNDER ribbon at top,
+  three stats (BAT 94, BOWL 78, FIELD 86) at bottom  4) EPIC rarity tag in
+  purple below stats'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- text_accuracy
+weights:
+  edit_fidelity: 0.3
+  visual_quality: 0.3
+  text_accuracy: 0.4
+tags:
+- e-commerce-&-store
+- scenario-bank-game-pilot
+- rc24
+- tier-medium

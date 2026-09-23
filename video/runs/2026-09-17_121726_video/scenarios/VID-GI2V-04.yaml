@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-04 (BGMI, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://ulazai.com/directory/prompt/c97e0ad9-6964-44b6-ad2b-75655226c248/
+# Test type: I2V-05 Many small figures moving at once without merging or multiplying
+id: VID-GI2V-04
+modality: video
+task: image_to_video
+title: 'Mass jump from the plane'
+prompt: 'A hyper-realistic, wide-angle aerial video: the cargo plane keeps flying straight across the frame while about twenty players, each equipped with a parachute rig, freefall away from it through a bright blue sky with fluffy white clouds. Their parachutes open one after another at different heights and they steer apart, drifting down toward the town. Far below, an island coastline with a small town is visible. The camera slowly pulls back, emphasizing the vastness of the landscape. Every figure stays separate.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-04-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Mass jump from the plane. Capability under test: Many small figures moving at once without merging or multiplying. Adherence clauses, check each: 1) Count of figures at the end matches the start  2) No two figures merge into one  3) Parachutes open at different moments, not all at once  4) Plane keeps a straight, steady path  5) Ground does not warp'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- image-to-video

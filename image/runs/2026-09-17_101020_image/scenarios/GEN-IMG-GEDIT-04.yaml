@@ -1,0 +1,21 @@
+# Input asset generator for pilot card IMG-GEDIT-04 (BGMI, Image Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/image/IMG-GEDIT-04-source.png
+id: GEN-IMG-GEDIT-04
+modality: image
+task: text_to_image
+title: 'Input still for IMG-GEDIT-04: Add the minimap'
+prompt: 'a clean gameplay frame with no on-screen display, third-person view of a player running through a town street. Realistic mobile-game render look, sharp, clean, no watermark.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: a clean gameplay frame with no on-screen display, third-person view of a player running through a town street.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot
