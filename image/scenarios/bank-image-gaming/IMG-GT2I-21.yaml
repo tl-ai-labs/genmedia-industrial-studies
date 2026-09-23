@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-21
+# Game: Clash of Clans (Strategy, top-down); test type T2I-16 Big effects frozen in place.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Effects frozen over a subject that must stay readable, with small exact counts.
+# No judging reference needed: Judged on counts and readability of the effects, all stated in the prompt.
+id: IMG-GT2I-21
+modality: image
+task: text_to_image
+title: Lightning spells on air defence
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: One frame from an attack in a cartoon mobile strategy game, isometric view. Three bright blue-white
+  lightning bolts strike down from a dark storm cloud onto an air-defence tower (a tall tower with a rocket
+  launcher on top) inside a walled compartment, while a brown ring-shaped earthquake shockwave spreads
+  across the ground beneath it and cracks the nearby walls. Sparks and small debris fly outward. Three
+  dragons fly in from the right edge. The tower must stay clearly visible through the effects.
+expected: 'Lightning spells on air defence. Capability under test: Big effects frozen in place. Adherence
+  clauses, check each: 1) Exactly three bolts, all hitting the tower  2) Earthquake ring on the ground
+  with cracked walls  3) Tower shape still readable through the effects  4) Three dragons at the right
+  edge  5) Isometric cartoon style'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-clash-of-clans
+- test-t2i-16
+- scenario-bank-image-gaming
+- tier-medium

@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-05 (Real Cricket 24, Video Editing). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://picsart.com/blog/ai-video-editing-prompts/
+# Test type: EDIT-11 Slow motion at the moment of impact, then back to normal
+id: VID-GEDIT-05
+modality: video
+task: video_edit
+title: 'Slow-motion edge to slip'
+prompt: 'Keep this shot at normal speed until the moment the ball touches the edge of the bat, then hold that impact in smooth slow motion for two seconds before returning to normal speed. Preserve the subject, the lighting, and the framing exactly. The camera path stays as filmed, and the transition in and out of slow motion should be seamless.'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-05-source.mp4
+params:
+  audio: false
+expected: 'Slow-motion edge to slip. Capability under test: Slow motion at the moment of impact, then back to normal. Adherence clauses, check each: 1) Slow motion begins at bat contact, not before  2) Slow section lasts about two seconds  3) Motion in the slow section is smooth, not stuttering  4) Speed returns to normal after the catch  5) No frames are duplicated or skipped visibly'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- video-editing

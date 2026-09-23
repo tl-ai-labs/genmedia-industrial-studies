@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-06 (Real Cricket 24, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://praveenbhat.net/ai-cricket-broadcast-prompt-photo-video-thumbnail/
+# Test type: I2V-16 Two characters interacting
+id: VID-GI2V-06
+modality: video
+task: image_to_video
+title: 'Dugout celebrates a wicket'
+prompt: 'Create a realistic 8-second T20 cricket live broadcast video based on the reference image. Keep the same framing, characters, dugout setup, jerseys, stadium lighting, scoreboard graphics, and crowded night-match atmosphere. The scene should feel like an authentic live sports telecast moment captured by a distant stadium broadcast camera during a tense final-over chase. Add high-energy excitement. The main characters in the dugout are celebrating after a big boundary or wicket, surrounded by teammates clapping, shouting, smiling, and rising from their seats. One character raises both fists in excitement while smiling broadly. Another claps intensely and turns slightly toward the field with an energetic expression. Background teammates react naturally with cheering, hand gestures, pointing, and body movement. Use subtle live-broadcast camera movement: slight handheld stadium-camera shake, gentle telephoto zoom-in, minor focus breathing, soft TV sharpness, mild motion blur, compression artifacts, LED flicker, stadium haze, and uneven floodlight lighting. Keep everything realistic and candid, not cinematic. Broadcast Style: Maintain the fictional live score overlay, LIVE tag, channel watermark, ticker, and scoreboard throughout. Make it look like a real T20 cricket telecast with slightly imperfect live-TV quality.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-06-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Dugout celebrates a wicket. Capability under test: Two characters interacting. Adherence clauses, check each: 1) At least two players interact (clap, turn to each other, raise fists) without passing through each other  2) Identities and kit unchanged  3) Score overlay and LIVE tag stay fixed and readable  4) Camera zoom is gentle, no cuts  5) No new people appear'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- image-to-video

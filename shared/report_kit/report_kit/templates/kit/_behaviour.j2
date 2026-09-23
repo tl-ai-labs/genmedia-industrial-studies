@@ -1,0 +1,213 @@
+{# The kit's page behaviour: reveal, tabs, lightbox, filter chips, rollup rows, sort. #}
+{% macro js() %}
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      document.documentElement.classList.add('ready');
+    });
+  });
+
+  function revealAll(scope) {
+    (scope || document).querySelectorAll('.rev').forEach(function (el) {
+      el.classList.add('vis');
+    });
+  }
+  if (!reduced && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rev').forEach(function (el) { io.observe(el); });
+  } else {
+    revealAll();
+  }
+
+  // tabs (combined report)
+  var tabbar = document.querySelector('.tabbar');
+  if (tabbar) tabbar.addEventListener('click', function (e) {
+    var b = e.target.closest('.tabbtn'); if (!b) return;
+    tabbar.querySelectorAll('.tabbtn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    document.querySelectorAll('.runpanel').forEach(function (p) {
+      p.classList.toggle('on', p.dataset.tab === b.dataset.tab);
+      if (p.dataset.tab === b.dataset.tab) revealAll(p);
+    });
+  });
+
+  // lightbox with in-place model switching, scoped to the panel
+  // the page always carries #lb (kit/run.html.j2, kit/combined.html.j2)
+  var lb = document.getElementById('lb'), lbi = lb.querySelector('img'),
+      cap = lb.querySelector('.cap'), sw = lb.querySelector('.sw');
+  var current = { list: [], idx: 0 };
+  function openLb(img) {
+    var scope = img.closest('.runpanel') || document;
+    current.list = Array.prototype.slice.call(
+      scope.querySelectorAll('img.out[data-sid="' + CSS.escape(img.dataset.sid) + '"]'));
+    current.idx = Math.max(0, current.list.indexOf(img));
+    renderLb(); lb.classList.add('show');
+  }
+  function renderLb() {
+    var im = current.list[current.idx]; if (!im) return;
+    lbi.src = im.src;
+    cap.textContent = im.dataset.cap + '   (chips or ←/→ to flip)';
+    sw.innerHTML = '';
+    current.list.forEach(function (m, i) {
+      var b = document.createElement('button');
+      b.className = 'swb' + (i === current.idx ? ' on' : '');
+      b.textContent = m.dataset.mid;
+      b.addEventListener('click', function (e) {
+        e.stopPropagation(); current.idx = i; renderLb();
+      });
+      sw.appendChild(b);
+    });
+  }
+  function applyChip(chip) {
+    var chips = chip.closest('.chips');
+    chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+    chip.classList.add('on');
+    var scope = chip.closest('.runpanel') || document;
+    // AND-combine the active selection of every chip dimension
+    // (industry, winner, family)
+    var active = {};
+    scope.querySelectorAll('.chips .chip.on').forEach(function (c) {
+      if (c.dataset.dim) active[c.dataset.dim] = c.dataset.val;
+    });
+    // keep the breakdown-table rows in step with the chips
+    scope.querySelectorAll('table.roll .frow').forEach(function (r) {
+      r.classList.toggle('on', active[r.dataset.dim] === r.dataset.val);
+    });
+    var dets = scope.querySelectorAll('details.scn');
+    dets.forEach(function (d) {
+      var show = true;
+      if (active.fam && active.fam !== '__all' && d.dataset.fam !== active.fam) show = false;
+      if (active.ind && active.ind !== '__all' && d.dataset.ind !== active.ind) show = false;
+      if (active.win && active.win !== '__all' && d.dataset.win !== active.win) show = false;
+      if (active.task && active.task !== '__all' && d.dataset.task !== active.task) show = false;
+      d.style.display = show ? '' : 'none';
+    });
+    // faceted counts: each chip shows how many scenarios IT would yield
+    // under the other rows' current selections
+    scope.querySelectorAll('.chips .chip').forEach(function (c) {
+      var dim = c.dataset.dim, span = c.querySelector('.n');
+      if (!dim || !span) return;
+      var n = 0;
+      dets.forEach(function (d) {
+        var ok = true;
+        ['fam', 'ind', 'win', 'task'].forEach(function (k) {
+          var v = (k === dim) ? c.dataset.val : active[k];
+          if (v && v !== '__all' && d.dataset[k] !== v) ok = false;
+        });
+        if (ok) n++;
+      });
+      span.textContent = '(' + n + ')';
+      c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.tagName === 'IMG' && t.classList.contains('out')) { openLb(t); return; }
+    if (e.target === lb || e.target === lbi) lb.classList.remove('show');
+    var g = t.closest && t.closest('.gallery .g');
+    if (g) {
+      var d = document.getElementById(g.dataset.target);
+      if (d) { d.style.display = ''; d.open = true; d.classList.add('vis');
+        d.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
+      return;
+    }
+    // a family / industry row is a shortcut for its chip
+    var frow = t.closest && t.closest('table.roll .frow');
+    if (frow) { pickRow(frow); return; }
+    var chip = t.closest && t.closest('.chips .chip');
+    if (chip) { applyChip(chip); return; }
+    var ctl = t.closest && t.closest('.ctl');
+    if (ctl) {
+      var scope2 = ctl.closest('.runpanel') || document;
+      scope2.querySelectorAll('details.scn').forEach(function (d) {
+        if (ctl.dataset.act === 'expand') {
+          if (d.style.display !== 'none') { d.open = true; d.classList.add('vis'); }
+        } else { d.open = false; }
+      });
+    }
+  });
+
+  // Clicking the active row shows all again; the list is brought into view.
+  function pickRow(r) {
+    var scope = r.closest('.runpanel') || document;
+    var sel = '.chips .chip[data-dim="' + r.dataset.dim + '"]';
+    var target = r.classList.contains('on')
+      ? scope.querySelector(sel + '[data-val="__all"]')
+      : scope.querySelector(sel + '[data-val="' + CSS.escape(r.dataset.val) + '"]');
+    if (!target) return;
+    applyChip(target);
+    if (!r.classList.contains('on')) return;
+    target.closest('.chips').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var r = e.target.closest && e.target.closest('table.roll .frow');
+    if (r) { e.preventDefault(); pickRow(r); }
+  });
+
+  // only one clip plays at a time (video and audio lanes)
+  document.addEventListener('play', function (e) {
+    document.querySelectorAll('audio, video').forEach(function (m) {
+      if (m !== e.target && !m.paused) m.pause();
+    });
+  }, true);
+
+  // Sort by: reorders the scenario nodes. Filtering only toggles
+  // display, so the two compose — neither reads the other's state.
+  function applySort(sel) {
+    var scope = sel.closest('.runpanel') || document;
+    var list = scope.querySelector('.scnlist');
+    if (!list) return;
+    var parts = String(sel.value).split('-');
+    var key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
+    var items = Array.prototype.slice.call(list.children).filter(function (n) {
+      return n.classList && n.classList.contains('scn');
+    });
+    items.sort(function (x, y) {
+      var xi = +x.dataset.i, yi = +y.dataset.i;
+      if (key === 'id') return xi - yi;
+      var a = parseFloat(x.dataset[key]), b = parseFloat(y.dataset[key]);
+      var an = isNaN(a), bn = isNaN(b);
+      if (an && bn) return xi - yi;        // unscored keep their id order …
+      if (an) return 1;                    // … and always sink to the bottom
+      if (bn) return -1;
+      if (a === b) return xi - yi;         // stable: equal scores never shuffle
+      return (a < b ? -1 : 1) * dir;
+    });
+    items.forEach(function (d) { list.appendChild(d); });
+    // keep the gallery strip in step with the list it indexes
+    var gal = scope.querySelector('.gallery');
+    if (gal) {
+      var pos = {};
+      items.forEach(function (d, i) { pos[d.id] = i; });
+      Array.prototype.slice.call(gal.querySelectorAll('.g')).sort(function (x, y) {
+        var px = pos[x.dataset.target], py = pos[y.dataset.target];
+        return (px === undefined ? 1e9 : px) - (py === undefined ? 1e9 : py);
+      }).forEach(function (g) { gal.appendChild(g); });
+    }
+  }
+
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest && e.target.closest('[data-sort]');
+    if (sel) applySort(sel);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('show')) return;
+    if (e.key === 'Escape') lb.classList.remove('show');
+    if (e.key === 'ArrowRight' && current.list.length > 1) {
+      current.idx = (current.idx + 1) % current.list.length; renderLb(); }
+    if (e.key === 'ArrowLeft' && current.list.length > 1) {
+      current.idx = (current.idx - 1 + current.list.length) % current.list.length; renderLb(); }
+  });
+})();
+</script>
+{% endmacro %}

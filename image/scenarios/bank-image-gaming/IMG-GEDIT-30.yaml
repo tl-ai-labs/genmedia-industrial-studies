@@ -1,0 +1,37 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-30
+# Game: Genshin Impact (Adventure role-playing, anime); test type E-3 Change the colour of one object.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Recolour one red item while other reds in the frame stay red.
+# Inputs: source = IMG-GEDIT-30-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-30
+modality: image
+task: image_edit
+title: Wolf's bandana to blue
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-30-source.png
+params:
+  size: auto
+prompt: Change only the wolf's red bandana to deep royal blue, keeping its folds, pattern and shading.
+  The red details on the character's coat and belt stay red.
+expected: 'Wolf''s bandana to blue. Capability under test: Change the colour of one object. Adherence
+  clauses, check each: 1) Bandana is deep royal blue  2) Bandana folds and pattern kept  3) Red details
+  on the character''s coat still red  4) Wolf and background unchanged  5) No blue bleeding into the fur'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-genshin-impact
+- test-e-3
+- scenario-bank-image-gaming
+- tier-medium

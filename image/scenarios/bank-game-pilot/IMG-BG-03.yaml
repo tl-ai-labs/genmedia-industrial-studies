@@ -1,0 +1,45 @@
+# Gaming pilot — BGMI (Battlegrounds Mobile India)
+# Complexity tier: high
+id: IMG-BG-03
+modality: image
+task: text_to_image
+title: Season key art with shrinking blue zone over a battle-royale island
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A dramatic aerial key-art poster for a battle-royale game season. A large
+  island seen from a steep angle, green rural terrain with scattered towns and a
+  military base near the coast. A translucent electric-blue energy wall forms a
+  shrinking circle across the island, glowing at the edges. Inside the circle the
+  landscape is vivid; outside it is desaturated and crackling with static. At the
+  top, bold condensed text reads SEASON 12 SURVIVAL. At the bottom, smaller text
+  reads DROP IN — LOOT — SURVIVE. Cinematic colour grading, warm golden-hour light
+  inside the zone, cold blue outside.
+expected: 'Season key art with blue zone. Capability under test: Compositing a
+  game-specific visual effect (the shrinking zone) onto a landscape with legible
+  text. Adherence clauses, check each: 1) Aerial view of an island with towns
+  and a military base  2) Translucent blue energy wall forming a visible circle
+  3) Vivid inside vs desaturated outside the zone  4) SEASON 12 SURVIVAL and
+  DROP IN — LOOT — SURVIVE text legible'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- text_accuracy
+weights:
+  prompt_adherence: 0.35
+  visual_quality: 0.2
+  composition: 0.2
+  text_accuracy: 0.25
+tags:
+- marketing-&-key-art
+- scenario-bank-game-pilot
+- bgmi
+- tier-high

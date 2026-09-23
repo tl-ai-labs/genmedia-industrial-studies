@@ -1,0 +1,40 @@
+# Gaming pilot scenario IMG-GEDIT-08 (Real Cricket 24, Image Editing). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://curiousrefuge.com/blog/9-ways-to-use-runway-aleph
+# Test type: IEDIT-08 Change time of day or weather with correct light on people and objects
+id: IMG-GEDIT-08
+modality: image
+task: image_edit
+title: 'Sunny match converted to a rainy day'
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-08-source.png
+params:
+  size: auto
+prompt: 'convert this scene to a rainy day'
+expected: 'Sunny match converted to a rainy day. Capability under test: Change time of day or weather with correct light on people and objects. Adherence clauses, check each: 1) Sky is grey and rain is visible  2) Hard shadows are gone  3) Outfield and pitch show a wet sheen  4) Players in the same places and poses  5) Kit colours not washed out incorrectly'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  preservation:
+    method: phash
+    max_distance: 12
+criteria:
+- edit_fidelity
+- preservation
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.333333
+  preservation: 0.388889
+  visual_quality: 0.166667
+  realism_style: 0.111111
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- image-editing

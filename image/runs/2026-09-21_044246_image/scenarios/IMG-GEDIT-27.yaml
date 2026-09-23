@@ -1,0 +1,40 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-27
+# Game: Street Fighter 6 (Fighting); test type E-6 Swap the background.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Background swap with two fighters and an effect held, relit.
+# Inputs: source = IMG-GEDIT-27-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-27
+modality: image
+task: image_edit
+title: Temple duel moved downtown
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-27-source.png
+params:
+  size: auto
+prompt: 'Move this fight to a different stage: replace the temple, cherry tree and shrine gate with a
+  neon-lit downtown street at night, with tall billboards and a wet road. Keep both fighters, their poses,
+  clothes and the lightning between them exactly the same, and relight them with the colours of the neon
+  signs.'
+expected: 'Temple duel moved downtown. Capability under test: Swap the background. Adherence clauses,
+  check each: 1) No temple, cherry blossom or shrine gate left  2) Both fighters'' poses match the source  3)
+  Lightning effect kept between them  4) Neon colours visible on the fighters  5) Feet grounded on the
+  wet street, reflections present'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-street-fighter-6
+- test-e-6
+- scenario-bank-image-gaming
+- tier-medium

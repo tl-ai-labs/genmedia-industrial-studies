@@ -1,0 +1,65 @@
+{#- Video lane hooks — the only video-specific markup in the report.
+    Contract: shared/report_kit/report_kit/templates/kit/lane_hooks_default.j2 -#}
+
+{% macro extra_css() %}{% endmacro %}
+
+{% macro summary_thumbs(s) %}
+{%- for src in s.sources or [] %}{% if src.mini %}<img class="srcth" src="{{ src.mini }}" alt="original" title="original input"> {% elif src.video %}<span class="srcth srcclip" title="original input clip ({{ src.role }})">▶ src</span> {% endif %}{% endfor %}
+{%- for c in s.cards %}{% if c.mini %}<img src="{{ c.mini }}" alt="">{% endif %}{% endfor %}
+{%- endmacro %}
+
+{% macro source_media(s, src) %}
+{% if src.thumb or src.video %}
+<figure class="shot src">
+  <div class="frame">
+    {% if src.video %}<video class="out" controls muted loop playsinline preload="metadata"
+         src="{{ src.video }}" title="{{ s.id }} · original input ({{ src.role }})"></video>
+    {% else %}<img class="out" src="{{ src.thumb }}" alt="original {{ src.role }}"
+         data-sid="{{ s.id }}" data-mid="ORIGINAL ({{ src.role }})"
+         data-cap="{{ s.id }} · original input ({{ src.role }}) · sha256 {{ src.sha256[:16] }}…">
+    {% endif %}
+  </div>
+  <figcaption>
+    <span class="who accent">original · {{ src.role }}</span>
+    <span class="subcap" title="{{ src.path }}">sha {{ src.sha256[:10] }}…</span>
+  </figcaption>
+</figure>
+{% endif %}
+{% endmacro %}
+
+{% macro card_media(s, c) %}
+<div class="frame">
+  {% if c.video %}<video class="out" controls muted loop playsinline preload="metadata"
+       src="{{ c.video }}" title="{{ s.id }} · {{ c.model_id|disp }}"></video>
+  {% elif c.thumb %}<img class="out" src="{{ c.thumb }}" alt="{{ c.model_id|disp }} output"
+       data-sid="{{ s.id }}" data-mid="{{ c.model_id|disp }}"
+       data-cap="{{ s.id }} · {{ c.model_id|disp }}">{% endif %}
+  {% if c.score is not none %}
+    <span class="badge {{ 'win' if s.winner == c.model_id }}">{{ c.score|q(true) }}</span>
+  {% elif c.state == 'skipped' %}<span class="badge">n/a</span>
+  {% else %}<span class="badge bad">{{ c.status }}</span>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro media_note(ctx, s) %}
+{% if ctx.has_videos and not ctx.videos_inline %}<p class="hint">Clips are referenced by path to
+keep this file small — open report.html from inside the run folder to play them (the mp4s live
+under outputs/video/).</p>{% endif %}
+{% if ctx.videos_transcoded %}<p class="hint">Clips play from inside this file so it can be
+shared on its own. They are re-encoded previews at the original resolution, frame rate and
+duration — smaller files, slightly softer detail. The untouched originals stay in the run
+folder.</p>{% endif %}
+{% endmacro %}
+
+{% macro evidence_hint(ctx) %}; clips play in place, and edits show the original source clip first{% endmacro %}
+
+{% macro card_measures(s, c) %}
+{% if c.measures and c.measures.width %}<span class="pill">{{ c.measures.width }}×{{ c.measures.height }}</span>{% endif %}
+{% endmacro %}
+
+{% macro card_diagnostics(s, c) %}{% endmacro %}
+{% macro scenario_extra(ctx, s) %}{% endmacro %}
+{% macro after_summary(ctx) %}{% endmacro %}
+{% macro after_tables(ctx) %}{% endmacro %}
+{% macro after_evidence(ctx) %}{% endmacro %}
+{% macro footnote_lines(ctx) %}{% endmacro %}

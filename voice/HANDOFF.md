@@ -338,6 +338,13 @@ runs/*/  ──►  load_runs()  ──►  rollup_models()  ──►  _scenari
               (internal: everything)            (client: simplified)
 ```
 
+**Both pages are one study in two audiences.** `runner/kit_context.py`
+builds one context from `dashboard.py`'s numbers, and the shared report kit
+(`../shared/report_kit`) renders it — internal for `runs/index.html`, client
+for `runs/client-report/`. Voice-only markup is in
+`runner/templates/lane_hooks.j2`; layout, styling and number formats are the
+kit's and match the image and video lanes.
+
 **The client report imports its numbers from** `dashboard.py`**.** It computes no
 arithmetic of its own. That is the rule that keeps the two from disagreeing —
 and it was learned by watching a report deciding at 0.5 and a board deciding
@@ -658,7 +665,7 @@ Asked for by Ravi on 14 September, built the same day on
    `voice/review/human-review.yaml` (schema in `voice/review/README.md`) holds
    *observations* — what a listener heard, case by case — and *corrections* —
    automated results a listener found wrong. Observations render in a dashed
-   *Human review* block on each card and in their own section (client) / tab
+   *Human review* block on each card and in their own section on both pages
    (internal); **they never enter a score, a gate rate, a spread or a winner**.
    Corrections are applied to the loaded cells by `runner/review.py` through
    the one shared loader (`dashboard.load_runs_reviewed`), so both boards

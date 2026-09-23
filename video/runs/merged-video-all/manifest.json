@@ -1,0 +1,770 @@
+{
+  "run_id": "merged-video-all",
+  "created": "2026-09-10T09:27:14.320Z",
+  "state": "reported",
+  "modality": "video",
+  "git_sha": "a92dc5562c07a502783a33fbf95bf3ee10065cc7",
+  "budget_usd": 110.0,
+  "budget_by_provider": {
+    "byteplus": 85.0
+  },
+  "events": [
+    {
+      "ts": "2026-09-10T09:27:14.338Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-10T09:27:14.417Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-10T09:27:18.194Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-10T09:48:07.047Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-10T09:48:07.925Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-10T10:08:17.065Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-10T11:01:02.477Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-10T11:01:02.524Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-10T11:02:03.158Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-10T12:30:31.976Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-10T12:31:49.638Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-10T12:32:54.414Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-09-11T04:31:30.944Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-11T05:36:44.613Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-11T06:46:31.407Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T04:53:08.228Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T04:53:26.138Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T04:54:39.395Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T04:57:56.970Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T04:59:46.398Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T09:02:53.546Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-14T09:03:55.503Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T04:50:08.580Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T04:51:41.863Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T05:09:08.230Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T05:10:15.396Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T05:17:55.313Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T05:25:35.034Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T05:26:21.749Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T05:29:08.399Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-09-15T06:33:58.559Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_to_video": "ee94b22672656a5016fd28884c8711cf4216f0ff8abb54448899852bd61997db",
+    "text_to_video": "e67e7bb9f6a87894c35ba978849046dfe9b916193e6d13cd6a39464bc9cb1390",
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "image_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/image_to_video.yaml"
+    ],
+    "text_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/text_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-AD-01": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-02": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-03": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-04": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-05": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-06": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-07": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-08": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-09": {
+      "prompt_adherence": 0.3,
+      "visual_fidelity": 0.15,
+      "temporal_consistency": 0.15,
+      "motion_coherence": 0.15,
+      "physics_plausibility": 0.15,
+      "technical_compliance": 0.1
+    },
+    "VID-AD-10": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-EDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-03": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-07": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-04": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-05": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-06": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-08": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-EDIT-09": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "c1cde1913837a4ddcccca8eababd547b162da365e26eb827d1ebeac194495ba3",
+  "inputs": {
+    "VID-AD-01": [
+      {
+        "role": "reference",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-01/VID-AD-01-reference.png"
+      }
+    ],
+    "VID-AD-02": [
+      {
+        "role": "reference",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-02/VID-AD-02-reference.png"
+      }
+    ],
+    "VID-AD-03": [
+      {
+        "role": "reference",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-03/VID-AD-03-reference.png"
+      }
+    ],
+    "VID-AD-04": [
+      {
+        "role": "reference",
+        "sha256": "e8ae9bd871243c5cd884d677bc7b22c23a39ec683f7e656bc92b76757445054b",
+        "path": "inputs/VID-AD-04/VID-AD-04-reference.png"
+      }
+    ],
+    "VID-AD-05": [
+      {
+        "role": "logo",
+        "sha256": "1ca0a0ec8e405459a14ebf2dcc7cfd1f9567247187d6082c6f3ccd8572b7e919",
+        "path": "inputs/VID-AD-05/VID-AD-05-logo.png"
+      }
+    ],
+    "VID-AD-06": [
+      {
+        "role": "reference",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-06/VID-AD-06-reference.png"
+      }
+    ],
+    "VID-AD-07": [
+      {
+        "role": "reference",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-07/VID-AD-07-reference.png"
+      }
+    ],
+    "VID-AD-08": [
+      {
+        "role": "reference1",
+        "sha256": "b5df093cd27395bbf64f2163632ae479f973edf3c749a6a86e0837faa19955f2",
+        "path": "inputs/VID-AD-08/VID-AD-08-reference1.png"
+      },
+      {
+        "role": "reference2",
+        "sha256": "7d5938d90f834e84ad4ca74f252770c7380412a320efea43bd8b9110c370e776",
+        "path": "inputs/VID-AD-08/VID-AD-08-reference2.png"
+      },
+      {
+        "role": "reference3",
+        "sha256": "28e45c85261ee3092e61c9e9697b2cd7be4079a6065c846a3718e19608e0ef68",
+        "path": "inputs/VID-AD-08/VID-AD-08-reference3.png"
+      }
+    ],
+    "VID-AD-09": [],
+    "VID-AD-10": [
+      {
+        "role": "reference",
+        "sha256": "54672711bb8455d407a853bab0aa21cbc5efe566f431c63227c8993122d49f52",
+        "path": "inputs/VID-AD-10/VID-AD-10-reference.png"
+      },
+      {
+        "role": "logo",
+        "sha256": "1ca0a0ec8e405459a14ebf2dcc7cfd1f9567247187d6082c6f3ccd8572b7e919",
+        "path": "inputs/VID-AD-10/VID-AD-10-logo.png"
+      }
+    ],
+    "VID-EDIT-01": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/VID-EDIT-01/VID-EDIT-01-source.mp4"
+      }
+    ],
+    "VID-EDIT-03": [
+      {
+        "role": "source",
+        "sha256": "74097dba39ae83ef8241397157edae093e7b7c55484739782ef477c76642419b",
+        "path": "inputs/VID-EDIT-03/VID-EDIT-03-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-07": [
+      {
+        "role": "source",
+        "sha256": "c95a17f8de28a3928ffd215580636faef92937c1919af4a6e7e4e11e65ad27fa",
+        "path": "inputs/VID-EDIT-07/VID-EDIT-07-source.mp4"
+      }
+    ],
+    "VID-EDIT-04": [
+      {
+        "role": "source",
+        "sha256": "d9102f7cc1fa6eae6e1e7a1e951592a8b12ae9055bcb99139fd2b184a298cce9",
+        "path": "inputs/VID-EDIT-04/VID-EDIT-04-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-05": [
+      {
+        "role": "source",
+        "sha256": "90112680b16aa2d106e7a7029a93eb8228c8ffd4e4ec181d475e371f49fd0291",
+        "path": "inputs/VID-EDIT-05/VID-EDIT-05-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-06": [
+      {
+        "role": "source",
+        "sha256": "ff2225284b2432a51ca6312570929fad28343491f63232bc2c7dd8d94cd262c0",
+        "path": "inputs/VID-EDIT-06/VID-EDIT-06-source.mp4"
+      }
+    ],
+    "VID-EDIT-08": [
+      {
+        "role": "source",
+        "sha256": "d8a591c3234c6ae6f81fa7c8804d4651e9b76db696273cdf93312f5ba79bc86a",
+        "path": "inputs/VID-EDIT-08/VID-EDIT-08-source-10s.mp4"
+      }
+    ],
+    "VID-EDIT-09": [
+      {
+        "role": "source",
+        "sha256": "6fb95c6e89417dadc65a1861fe3d5835df84e0da04fcb8c006600932f6efcc25",
+        "path": "inputs/VID-EDIT-09/VID-EDIT-09-source-10s.mp4"
+      }
+    ]
+  },
+  "scenario_status": {
+    "VID-AD-01": "completed",
+    "VID-AD-02": "completed",
+    "VID-AD-03": "completed",
+    "VID-AD-04": "completed",
+    "VID-AD-05": "incomplete",
+    "VID-AD-06": "incomplete",
+    "VID-AD-07": "completed",
+    "VID-AD-08": "incomplete",
+    "VID-AD-09": "completed",
+    "VID-AD-10": "completed"
+  },
+  "cells": {
+    "VID-AD-01::omni-flash-vertex": {
+      "scenario_id": "VID-AD-01",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-01::seedance-2-5": {
+      "scenario_id": "VID-AD-01",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-02::omni-flash-vertex": {
+      "scenario_id": "VID-AD-02",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-02::seedance-2-5": {
+      "scenario_id": "VID-AD-02",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-03::omni-flash-vertex": {
+      "scenario_id": "VID-AD-03",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-03::seedance-2-5": {
+      "scenario_id": "VID-AD-03",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-04::omni-flash-vertex": {
+      "scenario_id": "VID-AD-04",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-04::seedance-2-5": {
+      "scenario_id": "VID-AD-04",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-05::omni-flash-vertex": {
+      "scenario_id": "VID-AD-05",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-05::seedance-2-5": {
+      "scenario_id": "VID-AD-05",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "failed",
+      "reason": "refused after 1 attempt(s): OutputAudioSensitiveContentDetected.PolicyViolation: The request failed because the output audio may be related to copyright restrictions. Request id: 02178903399533700000000000000000000ffffc0a87febb4bcdb"
+    },
+    "VID-AD-06::omni-flash-vertex": {
+      "scenario_id": "VID-AD-06",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-06::seedance-2-5": {
+      "scenario_id": "VID-AD-06",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-07::omni-flash-vertex": {
+      "scenario_id": "VID-AD-07",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-07::seedance-2-5": {
+      "scenario_id": "VID-AD-07",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": "RateLimited: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    "VID-AD-08::omni-flash-vertex": {
+      "scenario_id": "VID-AD-08",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-08::seedance-2-5": {
+      "scenario_id": "VID-AD-08",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "failed",
+      "reason": "refused after 1 attempt(s): OutputAudioSensitiveContentDetected.PolicyViolation: The request failed because the output audio may be related to copyright restrictions. Request id: 02178903426603100000000000000000000ffffc0a89d11f995ce"
+    },
+    "VID-AD-09::omni-flash-vertex": {
+      "scenario_id": "VID-AD-09",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-09::seedance-2-5": {
+      "scenario_id": "VID-AD-09",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-10::omni-flash-vertex": {
+      "scenario_id": "VID-AD-10",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-AD-10::seedance-2-5": {
+      "scenario_id": "VID-AD-10",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-01::seedance-2-5": {
+      "scenario_id": "VID-EDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "refused after 1 attempt(s): {\"error\":{\"code\":\"InputVideoSensitiveContentDetected.PrivacyInformation\",\"message\":\"The request failed because the input video 'content[1]' may contain real person. Request id: 0217891066690488fef509893d762bd38fa7b39384b5467b556bb\",\"param\":\"\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-03::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-03",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-03::seedance-2-5": {
+      "scenario_id": "VID-EDIT-03",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-07::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-07",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-07::seedance-2-5": {
+      "scenario_id": "VID-EDIT-07",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-04::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-04",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-04::seedance-2-5": {
+      "scenario_id": "VID-EDIT-04",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content[1].video_url.url` specified in the request is not valid: resource not found. Request id: 021789103530463df1fe1cc6cb558c8468775817e951d5d6fa0cd\",\"param\":\"content[1].video_url.url\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-05::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-05",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-05::seedance-2-5": {
+      "scenario_id": "VID-EDIT-05",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-06::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-06",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-06::seedance-2-5": {
+      "scenario_id": "VID-EDIT-06",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "scored",
+      "reason": ""
+    },
+    "VID-EDIT-08::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-08",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-08::seedance-2-5": {
+      "scenario_id": "VID-EDIT-08",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 400: {\"error\":{\"code\":\"InvalidParameter\",\"message\":\"The parameter `content[1].video_url.url` specified in the request is not valid: resource not found. Request id: 021789104110658c0a335079e7be4c79ef57584e00819ba89678c\",\"param\":\"content[1].video_url.url\",\"type\":\"BadRequest\"}}"
+    },
+    "VID-EDIT-09::omni-flash-vertex": {
+      "scenario_id": "VID-EDIT-09",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 3 attempt(s): Error code: 400 - {'error': {'message': 'Unable to show the generated video. The model could not generate the video based on the prompt provided. Try rephrasing the prompt. If you think this was an error, send feedback.', 'code': 'recitation'}}"
+    },
+    "VID-EDIT-09::seedance-2-5": {
+      "scenario_id": "VID-EDIT-09",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "refused after 1 attempt(s): {\"error\":{\"code\":\"InputVideoSensitiveContentDetected.PrivacyInformation\",\"message\":\"The request failed because the input video 'content[1]' may contain real person. Request id: 0217891059309454e5823ec317b6ea9d3f5e181cf6332a5de9e85\",\"param\":\"\",\"type\":\"BadRequest\"}}"
+    }
+  },
+  "merged_from": [
+    "2026-09-10_145714_video",
+    "2026-09-10_170453_video",
+    "2026-09-11_094614_video",
+    "2026-09-11_103922_video",
+    "2026-09-11_105822_video",
+    "2026-09-11_112029_video",
+    "2026-09-11_113427_video"
+  ],
+  "task_grouping": {
+    "map": {
+      "text_to_video": "image_to_video"
+    },
+    "scenarios": {
+      "VID-AD-09": {
+        "actual": "text_to_video",
+        "reported_under": "image_to_video"
+      }
+    }
+  }
+}

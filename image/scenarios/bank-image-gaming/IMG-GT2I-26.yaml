@@ -1,0 +1,43 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-26
+# Game: Minecraft (Building sandbox); test type T2I-3 Exact art style.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Strict style lock across every object in a busy scene.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-26-reference.png
+#   provenance in IMG-GT2I-26-reference.json. Why needed: The whole test is matching the game's real blocky style and texture scale.
+id: IMG-GT2I-26
+modality: image
+task: text_to_image
+title: Village sunrise, pure blocks
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A scene from a blocky sandbox game where the whole world is built from one-metre cubes with 16x16
+  pixel textures: a small village of oak-plank houses on cobblestone foundations, a wheat farm in rows
+  beside straight water channels, a cobblestone well in the middle, villagers in brown robes with big
+  noses, and a square yellow sun rising. Everything, including the trees, clouds, water, people and animals,
+  is made of cubes and flat pixel textures: no curves, no smooth shading, no realistic grass.'
+expected: 'Village sunrise, pure blocks. Capability under test: Exact art style. Adherence clauses, check
+  each: 1) Every object is made of cubes, no curved surfaces  2) Pixel size is the same on every texture  3)
+  Clouds flat and blocky, sun square  4) Villagers blocky, with big noses and robes  5) No realistic lighting,
+  grass or people anywhere'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-minecraft
+- test-t2i-3
+- scenario-bank-image-gaming
+- tier-medium

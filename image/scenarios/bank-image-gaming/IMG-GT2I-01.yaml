@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-01 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://www.bizzbuzz.news/technology/ai/10-pubg-inspired-gemini-ai-photo-editing-prompts-for-boys-create-epic-battle-ready-portraits-in-seconds-1380365
+# Test type: T2I-01 A full-body character with the right outfit details, weapon and pose
+id: IMG-GT2I-01
+modality: image
+task: text_to_image
+title: 'Ghillie sniper prone in fog'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'A sniper hidden in tall grasslands. Outfit: a full green ghillie suit. Pose: lying prone with a bolt-action sniper rifle aligned to the scope. Scene: a foggy field with depth haze. Telephoto 200mm shot.'
+expected: 'Ghillie sniper prone in fog. Capability under test: A full-body character with the right outfit details, weapon and pose. Adherence clauses, check each: 1) Character is prone, not crouched or standing  2) Suit reads as grass camouflage  3) Rifle is a bolt-action with a scope at the eye  4) Fog gives visible depth  5) Realistic look, correct anatomy'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- bgmi
+- real
+- text-to-image

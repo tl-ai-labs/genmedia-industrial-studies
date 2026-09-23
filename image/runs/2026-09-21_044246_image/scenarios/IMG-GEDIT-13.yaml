@@ -1,0 +1,39 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GEDIT-13
+# Game: Clash of Clans (Strategy, top-down); test type E-4 Remove one thing and fill the gap.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Large removal with trees and the diagonal divider rebuilt behind it.
+# Inputs: source = IMG-GEDIT-13-source.png — real public images, provenance (URL, page, licence, sha256) in each sidecar .json.
+id: IMG-GEDIT-13
+modality: image
+task: image_edit
+title: Remove the guide from the shot
+inputs:
+  source: assets/bank/gaming/image/IMG-GEDIT-13-source.png
+params:
+  size: auto
+prompt: Remove the red-haired guide character and her 'Build Your Village' speech bubble from the lower
+  left of this screenshot, and fill the space with the same grass and pine trees so it looks like they
+  were never there. Keep every building, wall, button and the 'BUILD' title exactly as it is.
+expected: 'Remove the guide from the shot. Capability under test: Remove one thing and fill the gap. Adherence
+  clauses, check each: 1) Guide and speech bubble fully gone  2) Filled area continues the grass and pine
+  trees naturally  3) The white diagonal divider continues through the filled area  4) Nothing else removed
+  or moved  5) No smudge or blurred patch'
+checks:
+  min_width: 700
+  min_height: 700
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- edit_fidelity
+- visual_quality
+- realism_style
+weights:
+  edit_fidelity: 0.5
+  visual_quality: 0.2
+  realism_style: 0.3
+tags:
+- game-clash-of-clans
+- test-e-4
+- scenario-bank-image-gaming
+- tier-medium

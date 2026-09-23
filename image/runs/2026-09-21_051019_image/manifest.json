@@ -1,0 +1,432 @@
+{
+  "run_id": "2026-09-21_051019_image",
+  "created": "2026-09-21T05:10:19.830Z",
+  "state": "scored",
+  "modality": "image",
+  "git_sha": "94ee1f7cae7a572e0bdfd4c7f55096e3e2a6b523",
+  "budget_usd": 3.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-21T05:10:19.889Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-21T05:10:22.154Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-21T05:10:36.346Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-21T05:22:10.870Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-09-21T05:30:09.288Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-09-21T05:30:09.983Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-1-flash-lite-image-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-3.1-flash-lite-image",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-09-09",
+      "voice_map": null
+    },
+    {
+      "id": "gpt-image-2-low",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2-2026-04-21",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-09-02",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "c167920ed4b6d9b0a2c775768852e943cf611eebdfd198bd0145857e02bd382b",
+    "text_to_image": "cc3c08543ff6be61ef17493d6e88ae6471f6353f03d3b3b3181654ea041f530e"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ],
+    "text_to_image": [
+      "/mnt/c/Users/SangeethaS/Desktop/TL ai labs/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMG-GEDIT-11": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-12": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-17": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-20": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GEDIT-19": {
+      "edit_fidelity": 0.444444,
+      "visual_quality": 0.166667,
+      "realism_style": 0.111111,
+      "text_accuracy": 0.277778
+    },
+    "IMG-GT2I-24": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GEDIT-23": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-24": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-25": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GEDIT-29": {
+      "edit_fidelity": 0.5,
+      "visual_quality": 0.2,
+      "realism_style": 0.3
+    },
+    "IMG-GT2I-34": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-35": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMG-GT2I-37": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    }
+  },
+  "scenario_set_hash": "682336bdca9012bf5768f64d9f4b7006edc0bb2a2133fea5c2dcf9f3595613cc",
+  "inputs": {
+    "IMG-GEDIT-11": [
+      {
+        "role": "source",
+        "sha256": "2cc08589b6a9e283a3f82fd4f7b875a792e6dd923d93caf1a18259a5e5563470",
+        "path": "inputs/IMG-GEDIT-11/IMG-GEDIT-11-source.png"
+      }
+    ],
+    "IMG-GEDIT-12": [
+      {
+        "role": "source",
+        "sha256": "420b8c58b783b3779e3f6728991be1c2a60608400de46493d18550901b43e625",
+        "path": "inputs/IMG-GEDIT-12/IMG-GEDIT-12-source.png"
+      }
+    ],
+    "IMG-GT2I-17": [],
+    "IMG-GT2I-20": [],
+    "IMG-GEDIT-19": [
+      {
+        "role": "source",
+        "sha256": "39c058d66736f9f69d257550ae4317e60e2493a195d4d43f8d5eecbc1a986db8",
+        "path": "inputs/IMG-GEDIT-19/IMG-GEDIT-19-source.png"
+      }
+    ],
+    "IMG-GT2I-24": [],
+    "IMG-GEDIT-23": [
+      {
+        "role": "source",
+        "sha256": "96523db0f72a9431b513ef08a78b04d8bc3eca59869f999e4290389a7758727d",
+        "path": "inputs/IMG-GEDIT-23/IMG-GEDIT-23-source.png"
+      }
+    ],
+    "IMG-GEDIT-24": [
+      {
+        "role": "source",
+        "sha256": "6510969062d6e527a1b1e412cfc5a992371019a0a7eb6c20da79ca823471d62d",
+        "path": "inputs/IMG-GEDIT-24/IMG-GEDIT-24-source.png"
+      }
+    ],
+    "IMG-GEDIT-25": [
+      {
+        "role": "source",
+        "sha256": "82d0f8f7a251cf0706cdbb6f53089b4adf9ed72a1d26e7c765628b08467af1ff",
+        "path": "inputs/IMG-GEDIT-25/IMG-GEDIT-25-source.png"
+      }
+    ],
+    "IMG-GEDIT-29": [
+      {
+        "role": "source",
+        "sha256": "0c65098a49346a1b4afc87d9127beb0d5dc7cacd164eae2b705d356405309e19",
+        "path": "inputs/IMG-GEDIT-29/IMG-GEDIT-29-source.png"
+      }
+    ],
+    "IMG-GT2I-34": [],
+    "IMG-GT2I-35": [],
+    "IMG-GT2I-37": []
+  },
+  "cells": {
+    "IMG-GEDIT-11::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-11",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-11::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-11",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-12::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-12",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-12::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-12",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-17::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-17",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-17::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-17",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-20::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-20",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-20::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-20",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-19::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-19",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-19::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-19",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-24::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-24",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-24::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-24",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-23::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-23",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "invalid",
+      "reason": "failed gates: dimensions"
+    },
+    "IMG-GEDIT-23::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-23",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-24::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-24",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-24::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-24",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-25::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-25",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-25::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-25",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-29::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GEDIT-29",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GEDIT-29::gpt-image-2-low": {
+      "scenario_id": "IMG-GEDIT-29",
+      "model_id": "gpt-image-2-low",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-34::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-34",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-34::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-34",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-35::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-35",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-35::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-35",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-37::gemini-3-1-flash-lite-image-vertex": {
+      "scenario_id": "IMG-GT2I-37",
+      "model_id": "gemini-3-1-flash-lite-image-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMG-GT2I-37::gpt-image-2-low": {
+      "scenario_id": "IMG-GT2I-37",
+      "model_id": "gpt-image-2-low",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "IMG-GEDIT-11": "completed",
+    "IMG-GEDIT-12": "completed",
+    "IMG-GEDIT-19": "completed",
+    "IMG-GEDIT-23": "incomplete",
+    "IMG-GEDIT-24": "completed",
+    "IMG-GEDIT-25": "completed",
+    "IMG-GEDIT-29": "completed",
+    "IMG-GT2I-17": "completed",
+    "IMG-GT2I-20": "completed",
+    "IMG-GT2I-24": "completed",
+    "IMG-GT2I-34": "completed",
+    "IMG-GT2I-35": "completed",
+    "IMG-GT2I-37": "completed"
+  }
+}

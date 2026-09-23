@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-24
+# Game: Asphalt 9 (Arcade racing); test type T2I-7 Vehicle with correct shape.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Single vehicle on a turntable.
+# No judging reference needed: Car anatomy (wheels, doors, reflection) is checkable without a reference.
+id: IMG-GT2I-24
+modality: image
+task: text_to_image
+title: Garage unlock reveal
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'The car garage screen of an arcade racing game: a dark showroom with a glossy floor and blue
+  rim lighting. A newly unlocked yellow hypercar sits on a round turntable, seen from the front three-quarter
+  angle: a low wedge nose, scissor doors raised straight up, large side air intakes, four black wheels
+  with yellow brake calipers and a big fixed rear wing. The car is reflected in the floor. No logos, no
+  text.'
+expected: 'Garage unlock reveal. Capability under test: Vehicle with correct shape. Adherence clauses,
+  check each: 1) Four round wheels, correctly placed, front and rear pairs matching  2) Scissor doors
+  hinge at the front and rise upward, both sides the same  3) Yellow calipers visible behind the spokes  4)
+  Floor reflection mirrors the car correctly  5) No logos or text'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-asphalt-9
+- test-t2i-7
+- scenario-bank-image-gaming
+- tier-low

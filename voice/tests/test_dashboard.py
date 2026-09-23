@@ -169,7 +169,10 @@ def test_the_rendered_mean_always_carries_its_denominator(tmp_path):
     _write_run(root, "2026-09-01_110000_voice-b", [
         {"model": "alpha", "status": "invalid", "score": 0.0, "passed": False, "wer": 0.9}])
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
-    assert "(1 of 2)" in html
+    # On the model's card, and in the metric table's Judged row.
+    assert "1 of 2 clips scored" in html
+    judged = re.search(r'<tr data-row="judged".*?</tr>', html, re.S).group(0)
+    assert ">1/2</td>" in judged
 
 
 def test_a_gap_inside_the_band_names_no_winner(tmp_path):
@@ -224,18 +227,20 @@ def test_a_decided_gap_smaller_than_its_own_noise_says_so(tmp_path):
     assert "re-run can move or invert it" in html
 
 
-def test_every_tab_panel_is_populated(runs_root):
+def test_every_kit_section_is_populated(runs_root):
+    """
+    CHANGED 2026-09-15: the board's five tabs became the shared report kit's
+    sections, the same ones the image and video reports carry. What the tabs
+    held is still on the one page - summary, metric table, industries, the
+    scenarios with their clips, where each model ran, every run.
+    """
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panels = ("t-scenarios", "t-models", "t-repeats", "t-runs", "t-review")
-    for pid in panels:
-        assert f'data-tab="{pid}"' in html
+    for marker in ('id="overall"', '<table class="mx">', 'class="duel', 'id="evidence"',
+                   'id="served"', 'id="runs"', 'id="footnotes"'):
+        assert marker in html, marker
     assert html.count("<audio") >= 1
-    assert html.count('class="runpanel') == len(panels)
-    # Exactly one tab selected and exactly one panel visible on load.
-    selected = re.findall(r'role="tab" aria-selected="(\w+)"', html)
-    assert selected.count("true") == 1 and len(selected) == len(panels)
-    # Exactly one panel visible on load; the rest carry `hidden`.
-    assert len(re.findall(r'<section class="runpanel" data-tab="[\w-]+" hidden>', html)) == len(panels) - 1
+    assert html.count('<details class="scn rev"') == 1, "one scenario, one card"
+    assert 'class="runpanel' not in html, "no tabs: one page, the kit's order"
 
 
 def test_audio_paths_are_relative_to_the_runs_root(runs_root):
@@ -246,7 +251,7 @@ def test_audio_paths_are_relative_to_the_runs_root(runs_root):
 
 def test_uncalibrated_runs_badge_every_quality_figure(runs_root):
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    assert "pill-warning" in html and ">unc<" in html
+    assert 'class="pill est"' in html and ">unc<" in html
 
 
 def test_signal_predictor_is_never_called_a_mos(runs_root):
@@ -272,11 +277,11 @@ def test_clips_live_in_the_model_column_the_verdict_compares(runs_root):
 
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
     assert "t-evidence" not in html, "the Evidence tab is gone"
-    panel = re.search(r'data-tab="t-scenarios">(.*?)</section>', html, re.S).group(1)
-    cols = panel.split('<div class="col ')[1:]
+    panel = html[html.index('id="evidence"'):html.index('id="footnotes"')]
+    cols = [c.split("</figure>")[0] for c in panel.split('<figure class="shot">')[1:]]
     assert len(cols) == 2, "one column per model"
     for col in cols:
-        lead = col.split('<details class="more"')[0]
+        lead = col.split('<details class="disc more"')[0]
         assert lead.count("<audio") == 1, "one lead clip in the column head"
         assert col.count("<audio") == 2, "the repeat is still on the page"
     assert "more clip" in panel
@@ -290,13 +295,13 @@ def test_the_representative_clip_is_the_median_not_the_best(runs_root):
     import re
 
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    panel = re.search(r'data-tab="t-scenarios">(.*?)</section>', html, re.S).group(1)
+    panel = html[html.index('id="evidence"'):html.index('id="footnotes"')]
     # alpha scored 9.0 (r1) and 9.1 (r2); the median of two takes the upper
     # index, so r2 leads - but the point is it is chosen by rank, not by max,
     # and it carries a label saying so.
     assert panel.count("median take") == 2, "one per model column"
-    for col in panel.split('<div class="col')[1:]:
-        assert "median take" in col.split('<details class="more"')[0]
+    for col in panel.split('<figure class="shot">')[1:]:
+        assert "median take" in col.split('<details class="disc more"')[0]
 
 
 # --------------------------------------------------------------------------
@@ -411,8 +416,9 @@ def test_the_repeats_tab_excludes_a_stale_definition_and_says_so(tmp_path):
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
     assert "different version" in html
     # The excluded run's score must not appear as a repeat column.
-    panel = html.split('data-tab="t-repeats"')[1].split("</section>")[0]
-    assert "9.000" not in panel
+    panel = re.search(r'<table class="runs">.*?</table>', html, re.S).group(0)
+    assert "9.00" not in panel and "8.00" not in panel
+    assert panel.count('<th class="num">') == 3, "two passes and the spread, not three passes"
 
 
 def test_two_runs_sharing_a_label_are_not_collapsed_into_one_column(tmp_path):
@@ -456,20 +462,23 @@ def test_a_tie_is_never_dressed_as_a_win(tmp_path):
                                {"model": "other-y", "status": "scored", "score": b}],
                    scenario_hash="h")
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
-    # Scoped to the CARDS - the filter chips carry data-res too, and matching
+    # Scoped to the CARDS - the filter chips carry data-val too, and matching
     # those would make this assertion pass no matter how a scenario ended.
-    cards = re.findall(r'<article class="scard" data-ind="[^"]*" data-res="(\w+)"', html)
+    cards = re.findall(r'<details class="scn rev"[^>]*data-win="([\w-]+)"', html)
     # mean gap 0.005, inside the 0.05 band, so no winner.
     assert cards == ["tie"], cards
-    assert "wins</span>" not in html.split('class="wbadge')[1][:90]
+    summary = html.split('<details class="scn rev"')[1].split("</summary>")[0]
+    assert "winner:" not in summary
+    assert 'data-val="gemini-x">' not in html, "no win chip for a scenario nobody won"
 
 
 def test_every_scenario_card_carries_its_industry_and_prompt(runs_root):
     html = render_dashboard(runs_root, "voice").read_text(encoding="utf-8")
-    assert 'class="scard"' in html
-    assert 'data-ind=' in html and 'data-res=' in html
+    assert '<details class="scn rev"' in html
+    assert 'data-ind="Other"' in html and 'data-win=' in html
+    assert "Brief (verbatim):" in html
     # The filter bar offers both axes.
-    assert 'data-ind="all"' in html and 'data-res="gemini"' in html
+    assert 'data-dim="ind" data-val="__all"' in html and 'data-dim="win" data-val="__all"' in html
 
 
 # --------------------------------------------------------------------------
@@ -533,9 +542,9 @@ def test_a_variant_scenario_is_one_card_that_still_shows_both_models(variant_roo
     the two model columns belong.
     """
     html = render_dashboard(variant_root, "voice").read_text(encoding="utf-8")
-    assert html.count('class="scard"') == 1, "two variants are one scenario"
-    panel = re.search(r'data-tab="t-scenarios">(.*?)</section>', html, re.S).group(1)
-    assert len(panel.split('<div class="col ')[1:]) == 2, "both models have a column"
+    assert html.count('<details class="scn rev"') == 1, "two variants are one scenario"
+    panel = html[html.index('id="evidence"'):html.index('id="footnotes"')]
+    assert len(panel.split('<figure class="shot">')[1:]) == 2, "both models have a column"
     assert "<audio" in panel
 
 
@@ -604,7 +613,9 @@ def test_the_latency_column_is_a_real_median_not_a_mean(tmp_path):
     assert m.mean_latency == 2500, "the mean is still available for the duel strip"
     assert m.p95_latency == pytest.approx(6100)
     html = render_dashboard(root, "voice").read_text(encoding="utf-8")
-    assert "Latency p50 / p95" in html
+    p50 = re.search(r'<tr data-row="lat_p50".*?</tr>', html, re.S).group(0)
+    assert ">1.0s</td>" in p50
+    assert re.search(r'<tr data-row="lat_p95".*?>6.1s</td>', html, re.S)
     assert "2.5s" not in html, "the mean must not appear under a p50 heading"
 
 

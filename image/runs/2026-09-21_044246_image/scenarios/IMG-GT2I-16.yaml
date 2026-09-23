@@ -1,0 +1,44 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-16
+# Game: BGMI (Battle royale, realistic); test type T2I-13 First-person view with hands and weapon.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Two-hand grip with finger placement and three named rifle attachments.
+# No judging reference needed: Judged on hands, rifle attachments and framing, all stated in the prompt.
+id: IMG-GT2I-16
+modality: image
+task: text_to_image
+title: First-person window hold
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: First-person view from the upstairs room of an abandoned two-storey brick house in a realistic
+  battle-royale game. The player's two gloved hands hold an assault rifle fitted with a red-dot sight,
+  a vertical foregrip and a suppressor, aimed through a broken window at a village street with a parked
+  old four-door sedan and red-roofed houses opposite. The left hand wraps the foregrip; the right index
+  finger rests straight along the trigger guard. Peeling wallpaper, a wooden floor with an empty ammo
+  box. Afternoon sunlight. No on-screen display.
+expected: 'First-person window hold. Capability under test: First-person view with hands and weapon. Adherence
+  clauses, check each: 1) Two hands with five fingers each, left on the foregrip, right index finger along
+  the trigger guard  2) Rifle has red dot, vertical grip and suppressor, straight and in proportion  3)
+  Eye-level first-person framing, rifle entering from the lower right  4) Sedan and red-roofed houses
+  visible through the window  5) No on-screen display'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-bgmi
+- test-t2i-13
+- scenario-bank-image-gaming
+- tier-medium

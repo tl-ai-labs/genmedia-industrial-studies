@@ -1,0 +1,21 @@
+# Input asset generator for pilot card IMG-GEDIT-06 (Real Cricket 24, Image Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/image/IMG-GEDIT-06-source.png
+id: GEN-IMG-GEDIT-06
+modality: image
+task: text_to_image
+title: 'Input still for IMG-GEDIT-06: Update the score bar'
+prompt: 'broadcast view with a score bar along the bottom reading ''RIVERSIDE 142/3  15.4 OV  RR 9.16''. Realistic mobile-game render look, sharp, clean, no watermark.'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+expected: 'A clean input still matching the card''s Input line: broadcast view with a score bar along the bottom reading ''RIVERSIDE 142/3  15.4 OV  RR 9.16''.'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+tags:
+- gen-input
+- gaming-pilot

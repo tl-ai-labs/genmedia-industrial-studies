@@ -1,0 +1,41 @@
+# Gaming pilot scenario IMG-GT2I-04 (BGMI, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://morphic.com/resources/how-to/chatgpt-images-2.0-prompts
+# Test type: T2I-04 Readable on-screen display in the right places
+id: IMG-GT2I-04
+modality: image
+task: text_to_image
+title: 'Full HUD behind a wall'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'In-game screenshot from a mobile battle-royale game, detailed third-person view, close but slightly wide framing, a player crouched behind a low brick wall with an assault rifle, authentic-looking game UI: a square minimap in the top-right with a white circle, a smaller blue circle and a straight white plane line; a compass strip along the top-centre; a kill feed with four lines of text in the top-left; a green health bar at the bottom-centre with a thin boost meter above it; an ammo counter reading ''30 / 90'' in the bottom-right; and an alive counter reading ''12'' next to the minimap. Feels captured mid-gameplay rather than staged cinematic. Clean, sharp, readable.'
+expected: 'Full HUD behind a wall. Capability under test: Readable on-screen display in the right places. Adherence clauses, check each: 1) All six HUD elements present and in the stated corners  2) Ammo counter reads exactly ''30 / 90''  3) Alive counter reads ''12''  4) Minimap has two circles and a straight line  5) HUD is sharp and readable, scene is realistic'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+  must_read_text:
+  - '30 / 90'
+  - '12'
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+- text_accuracy
+weights:
+  prompt_adherence: 0.25
+  visual_quality: 0.1
+  composition: 0.1
+  realism_style: 0.1
+  text_accuracy: 0.45
+tags:
+- gaming-pilot
+- bgmi
+- real-based
+- text-to-image

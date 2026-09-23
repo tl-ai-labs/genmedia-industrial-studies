@@ -20,11 +20,20 @@ VIRTUAL_ENV=$PWD/.venv uv pip install -e '.[google,dev]'    # or '.[openai,dev]'
 `run`, `judge` and `report` are separate commands on purpose: re-judging must
 never re-generate audio, and a report tweak must cost nothing.
 
-`report` renders ONE run — its clips, gates and judge reasoning — and is what
-makes a run folder self-contained enough to zip and mail. `dashboard` renders
+`report` renders ONE run — its clips, gates and judge reasoning — as
+`report.html` (internal) and `report-client.html`, and is what makes a run
+folder self-contained enough to zip and mail. `dashboard` renders
 `runs/index.html` ACROSS every run, which is where run-to-run spread becomes
 visible; a single run cannot show you how much a number moves, and that is
-usually the first thing worth knowing.
+usually the first thing worth knowing. `client-report` renders the client
+audience of that same cross-run study.
+
+**Every page is the shared report kit's** (`../shared/report_kit`): the same
+layout, sections, styling and number formats as the image and video lanes.
+Voice-only content — players, the median take, transcripts, set verdicts,
+time to first audio, human review, where each model ran — lives in
+`runner/templates/lane_hooks.j2`; `runner/kit_context.py` arranges the numbers
+`runner/dashboard.py` computes. Change a format in the kit, not here.
 
 **Voice runs as its own process.** `--modality voice` filters the scenarios,
 the models and the output directory, so it can run at the same time as an

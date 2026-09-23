@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-08 (Real Cricket 24, Video Editing). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.lumeflow.ai/ai-prompt/video-editing-prompts/
+# Test type: EDIT-13 Make a choppy phone recording smooth
+id: VID-GEDIT-08
+modality: video
+task: video_edit
+title: 'Smooth a choppy six'
+prompt: 'Keep the clip at normal speed. Use motion interpolation to avoid frame stutter across the whole clip, so the bat swing, the ball''s flight and the camera pan flow smoothly. Do not change what happens, the colours or the framing.'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-08-source.mp4
+params:
+  audio: false
+expected: 'Smooth a choppy six. Capability under test: Make a choppy phone recording smooth. Adherence clauses, check each: 1) Ball flight looks continuous, no jumps  2) Camera pan is smooth  3) No ghost or double images around the bat or ball  4) Crowd detail is not smeared  5) Clip length unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- real-cricket-24
+- real-based
+- video-editing

@@ -1,0 +1,44 @@
+# Gaming pilot — GTA V (Grand Theft Auto V)
+# Complexity tier: medium
+id: IMG-GV-03
+modality: image
+task: text_to_image
+title: Muscle car on a hillside with city lights below at night
+params:
+  size: 1280x896
+  aspect_ratio: '16:9'
+prompt: A classic American muscle car — a 1969 Dodge Charger in matte black with
+  chrome bumpers — parked on a dirt overlook above a sprawling city at night. The
+  city below glows with thousands of warm lights, neon signs and the red-white
+  streaks of freeway traffic. The car is lit by the amber glow of a single
+  streetlight behind it, casting a long shadow toward the viewpoint. Stars visible
+  in the clear dark sky above the city haze. The scene feels like a quiet moment
+  before a heist. Photorealistic, cinematic colour grading, wide shot.
+expected: 'Muscle car overlooking city at night. Capability under test: Combining
+  a specific vehicle with a complex nighttime cityscape. Adherence clauses, check
+  each: 1) 1969 Dodge Charger in matte black with chrome bumpers  2) Parked on a
+  dirt overlook above a glowing city  3) City lights, neon, freeway traffic streaks
+  visible below  4) Amber streetlight behind the car, stars in the sky, cinematic
+  grading'
+checks:
+  min_width: 850
+  min_height: 600
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- environment-&-props
+- scenario-bank-game-pilot
+- gta-v
+- tier-medium

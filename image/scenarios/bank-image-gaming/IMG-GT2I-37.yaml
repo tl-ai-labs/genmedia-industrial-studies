@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-37
+# Game: Genshin Impact (Adventure role-playing, anime); test type T2I-14 Tall phone-shaped picture.
+# Complexity tier: low — run with Gemini 3.1 Flash Lite | GPT Image 2 low (tiers/gaming-low.txt). Single character portrait wallpaper.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-37-reference.png
+#   provenance in IMG-GT2I-37-reference.json. Why needed: A specific character design (Zhongli) must be recognisable.
+id: IMG-GT2I-37
+modality: image
+task: text_to_image
+title: Geo archon phone wallpaper
+params:
+  size: 1024x1536
+  aspect_ratio: '9:16'
+prompt: 'A tall 9:16 phone wallpaper in the style of an anime open-world adventure game: a tall, calm
+  man with long dark-brown hair tied low, the ends glowing amber, amber eyes and a single tassel earring,
+  wearing a long dark-brown coat with gold trim and black gloves. He stands with his hands behind his
+  back while golden hexagonal stone pillars rise around him. Behind him, a Chinese-style harbour city
+  with lanterns at dusk. Leave the top quarter as open sky for the clock. Cel-shaded, no text.'
+expected: 'Geo archon phone wallpaper. Capability under test: Tall phone-shaped picture. Adherence clauses,
+  check each: 1) Portrait 9:16  2) Amber-tipped hair, tassel earring, gold-trimmed coat  3) Hexagonal
+  golden pillars  4) Top quarter mostly sky  5) Cel-shaded anime style, no text'
+checks:
+  min_width: 540
+  min_height: 1000
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-genshin-impact
+- test-t2i-14
+- scenario-bank-image-gaming
+- tier-low

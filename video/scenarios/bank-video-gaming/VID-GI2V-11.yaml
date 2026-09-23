@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-11 (GTA V, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real-based.
+# Prompt source: https://www.getstarrd.app/blog/gta-6-ai-prompts
+# Test type: I2V-08 Non-stop forward travel with new scenery appearing
+id: VID-GI2V-11
+modality: video
+task: image_to_video
+title: 'First-person night chase on foot'
+prompt: 'First-person POV chase in the style of an open-world crime game gameplay trailer. Sprinting through a rain-slicked city alley at night, neon reflections on wet pavement, police lights strobing blue and red behind, palm trees and motel signs blurring past. Handheld camera shake, motion blur, cinematic teal-and-magenta grade, photorealistic, 24fps film look, tense and kinetic. 16:9. No UI overlay, no on-screen text. No real logos, no brand marks, no watermark.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-11-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'First-person night chase on foot. Capability under test: Non-stop forward travel with new scenery appearing. Adherence clauses, check each: 1) Motion is a continuous forward run with no cut  2) New scenery arrives plausibly from the vanishing point  3) Police lights stay behind, not ahead  4) No UI or text appears  5) No hands or objects morph'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- gta-v
+- real-based
+- image-to-video

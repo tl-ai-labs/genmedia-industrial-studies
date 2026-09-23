@@ -13,7 +13,8 @@ rubrics and industry mappings come from the shared scenario-bank workbook in
 
 Each modality is an independent, self-contained module — its own adapters,
 checks, rubrics, scenario bank, tests and run folders. Modules do not import
-from each other.
+from each other. The one thing they share is how reports are presented:
+`shared/report_kit` (see below).
 
 | Module   | Status        | Scope |
 |----------|---------------|-------|
@@ -23,6 +24,12 @@ from each other.
 | `panel/` | **built**, no votes yet | Blind human panel across all three lanes — one page, a thumbs-up per pair, votes to a local JSONL — and the human-vs-judge correlation, per lane and overall |
 
 Shared across modules:
+
+- `shared/report_kit/` — the **one presentation layer** for every report:
+  layout, sections, styling, number formats, internal vs client rules and file
+  names. Lanes supply data and media only. A formatting change is made there
+  once and applies to image, video and voice. Rules for changing reports:
+  [shared/report_kit/RULES.md](shared/report_kit/RULES.md)
 
 - `assets/` — the scenario-bank workbook (scenarios, rubrics, industry
   mappings) and synthetic source assets

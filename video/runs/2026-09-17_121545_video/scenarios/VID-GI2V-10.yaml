@@ -1,0 +1,28 @@
+# Gaming pilot scenario VID-GI2V-10 (GTA V, Image-to-Video). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://www.getstarrd.app/blog/gta-6-ai-prompts
+# Test type: I2V-07 Camera and subject both move
+id: VID-GI2V-10
+modality: video
+task: image_to_video
+title: 'Character intro push-in at dusk'
+prompt: 'Animate the picture into an open-world crime game style trailer moment starring the character in it. Keep the character''s face and likeness accurate for the whole shot. The character stands on a neon-lit, palm-lined city boulevard at dusk as the camera slowly pushes in, palm trees and glowing signs behind them, light rain and lens flares in the air, and they turn slowly and confidently toward camera. 1980s synthwave color grade in magenta and orange, photorealistic, film grain, cinematic slow motion. 16:9. No on-screen text. No real logos, no brand marks, no watermark.'
+inputs:
+  photo: assets/bank/gaming/video/VID-GI2V-10-still.png
+params:
+  duration_s: 8
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Character intro push-in at dusk. Capability under test: Camera and subject both move. Adherence clauses, check each: 1) Camera visibly pushes in  2) Character turns toward camera without changing identity  3) Rain and flares move naturally  4) Signs and palms stay in place  5) No text or logos appear'
+checks:
+  min_duration_s: 4.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- gta-v
+- real
+- image-to-video

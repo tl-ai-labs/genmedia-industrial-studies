@@ -1,0 +1,132 @@
+{
+  "run_id": "2026-09-09_155106_video",
+  "created": "2026-09-09T10:21:06.324Z",
+  "state": "generated",
+  "modality": "video",
+  "git_sha": "79787bc8126109cc5cc3db87f25be37192bc658b",
+  "budget_usd": 6.0,
+  "events": [
+    {
+      "ts": "2026-09-09T10:21:06.342Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-09T10:21:06.352Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-09T10:21:08.109Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-09-09T10:25:07.058Z",
+      "state": "generated"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/video/configs/rubrics/tasks/video_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "PROBE-HANDLE": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "PROBE-NOHANDLE": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    }
+  },
+  "scenario_set_hash": "7fb4b33af09dc381657b81f10f51515eb86dbd74d3f866e9ad1900e0457e6111",
+  "inputs": {
+    "PROBE-HANDLE": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/PROBE-HANDLE/VID-EDIT-01-source.mp4"
+      }
+    ],
+    "PROBE-NOHANDLE": [
+      {
+        "role": "source",
+        "sha256": "5cde75d7f122ed3e8081ca9cafe9978965745ac232c0a36e6a8164cc878147b5",
+        "path": "inputs/PROBE-NOHANDLE/VID-EDIT-01-source.mp4"
+      }
+    ]
+  },
+  "cells": {
+    "PROBE-HANDLE::omni-flash-vertex": {
+      "scenario_id": "PROBE-HANDLE",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    },
+    "PROBE-HANDLE::seedance-2-5": {
+      "scenario_id": "PROBE-HANDLE",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403: {\"error\":{\"code\":\"AccountOverdueError\",\"message\":\"The request failed because your account has an overdue balance. Request id: 0217889492684569953a9193bc3926b190298875f636f3e850eb9\",\"param\":\"\",\"type\":\"Forbidden\"}}"
+    },
+    "PROBE-NOHANDLE::omni-flash-vertex": {
+      "scenario_id": "PROBE-NOHANDLE",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "measured",
+      "reason": ""
+    },
+    "PROBE-NOHANDLE::seedance-2-5": {
+      "scenario_id": "PROBE-NOHANDLE",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): 403: {\"error\":{\"code\":\"AccountOverdueError\",\"message\":\"The request failed because your account has an overdue balance. Request id: 0217889492687154d21f3e3e165e25fcf12f86815b4407f3b0bc7\",\"param\":\"\",\"type\":\"Forbidden\"}}"
+    }
+  },
+  "scenario_status": {
+    "PROBE-HANDLE": "incomplete",
+    "PROBE-NOHANDLE": "incomplete"
+  }
+}

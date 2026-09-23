@@ -1,0 +1,36 @@
+# Gaming pilot scenario IMG-GT2I-12 (Real Cricket 24, Text-to-Image). Built from
+# docs/sheets/gaming-scenarios-image.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://kshare.in/prompt/ipl-2026-ai-photo-editing-prompts
+# Test type: T2I-08 A close-up of a weapon or item with correct parts and proportions
+id: IMG-GT2I-12
+modality: image
+task: text_to_image
+title: 'Helmet close-up with visor reflection'
+params:
+  size: 1536x1024
+  aspect_ratio: '3:2'
+prompt: 'Close-up of a T20 batsman wearing helmet, reflection of stadium lights on visor, ultra-detailed face, shallow depth of field, cinematic 4K HDR'
+expected: 'Helmet close-up with visor reflection. Capability under test: A close-up of a weapon or item with correct parts and proportions. Adherence clauses, check each: 1) Helmet has a cricket face grille, not a motorbike visor  2) Stadium lights reflect on it  3) Face is detailed and correct  4) Background is blurred  5) No real player likeness'
+checks:
+  min_width: 1200
+  min_height: 800
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.45
+  visual_quality: 0.2
+  composition: 0.15
+  realism_style: 0.2
+tags:
+- gaming-pilot
+- real-cricket-24
+- real
+- text-to-image

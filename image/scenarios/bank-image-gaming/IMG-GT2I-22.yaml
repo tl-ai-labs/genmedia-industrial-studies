@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-22
+# Game: Asphalt 9 (Arcade racing); test type T2I-11 Action frozen mid-motion.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Mid-air roll with believable body orientation and selective motion blur.
+# No judging reference needed: Judged on the stunt pose, blur and flame; the track details are described.
+id: IMG-GT2I-22
+modality: image
+task: text_to_image
+title: Barrel roll off a ramp
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A frozen moment from an arcade racing game: a low, wedge-shaped orange hypercar hangs upside
+  down in mid-air, halfway through a barrel roll after launching off a ramp on a mountain road high among
+  snowy peaks, with strings of colourful prayer flags crossing above the road. Bright blue nitro flame
+  blasts from the exhausts. Chase camera from behind and slightly to the side. The car and wheels are
+  sharp; the road and mountains are blurred with speed. No on-screen display.'
+expected: 'Barrel roll off a ramp. Capability under test: Action frozen mid-motion. Adherence clauses,
+  check each: 1) Car clearly mid-roll (upside down or on its side), not flying flat  2) Ramp behind and
+  a believable height above the road  3) Prayer flags and snowy peaks present  4) Car sharp with four
+  wheels, background blurred  5) Blue flame coming from the exhausts'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-asphalt-9
+- test-t2i-11
+- scenario-bank-image-gaming
+- tier-medium

@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-10 (GTA V, Video Editing). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://picsart.com/blog/ai-video-editing-prompts/
+# Test type: EDIT-04 Remove one moving thing
+id: VID-GEDIT-10
+modality: video
+task: video_edit
+title: 'Remove the pedestrian'
+prompt: 'Remove the person walking through the right side of the background and rebuild the wall and pavement behind them so the scene reads as continuous and unoccupied. The reconstruction must stay stable across every frame with no shimmering or warping. Keep the main subject, wardrobe, lighting, framing, camera movement, and timing exactly as filmed.'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-10-source.mp4
+params:
+  audio: false
+expected: 'Remove the pedestrian. Capability under test: Remove one moving thing. Adherence clauses, check each: 1) No trace of the background pedestrian in any frame  2) Rebuilt wall and pavement stable, no shimmer  3) Protagonist untouched  4) Camera and timing unchanged  5) Other pedestrians untouched'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- gta-v
+- real
+- video-editing

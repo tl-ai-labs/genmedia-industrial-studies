@@ -1,0 +1,823 @@
+{
+  "run_id": "2026-09-17_121607_video",
+  "created": "2026-09-17T06:46:07.000Z",
+  "state": "running",
+  "modality": "video",
+  "git_sha": null,
+  "budget_usd": 220.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-09-17T06:46:07.104Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-09-17T06:46:07.388Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-09-17T06:46:08.198Z",
+      "state": "running"
+    }
+  ],
+  "models": [
+    {
+      "id": "omni-flash-vertex",
+      "provider": "google-vertex",
+      "adapter": "omni_video",
+      "provider_model": "gemini-omni-1.1-flash-preview",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-10",
+      "voice_map": null
+    },
+    {
+      "id": "seedance-2-5",
+      "provider": "byteplus",
+      "adapter": "seedance_video",
+      "provider_model": "dreamina-seedance-2-5-260628",
+      "supports": [
+        "text_to_video",
+        "image_to_video",
+        "video_edit"
+      ],
+      "price_as_of": "2026-09-03",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "video_edit": "1b7f21d52843b390b64c339c883251e5c6f43b86b6ccdb6f55b3d7831164b522",
+    "image_to_video": "ee94b22672656a5016fd28884c8711cf4216f0ff8abb54448899852bd61997db"
+  },
+  "rubric_files": {
+    "video_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/video_edit.yaml"
+    ],
+    "image_to_video": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/video.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/.claude/worktrees/gaming-scenarios-videos-77569a/video/configs/rubrics/tasks/image_to_video.yaml"
+    ]
+  },
+  "effective_weights": {
+    "VID-GEDIT-01": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-02": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-03": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-04": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-05": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-06": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-07": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-08": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-09": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-10": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-11": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GEDIT-12": {
+      "edit_fidelity": 0.4,
+      "temporal_consistency": 0.2,
+      "visual_fidelity": 0.2,
+      "technical_compliance": 0.2
+    },
+    "VID-GI2V-01": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-02": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-03": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-04": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-05": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-06": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-07": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-08": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-09": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-10": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-11": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-12": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    },
+    "VID-GI2V-13": {
+      "reference_fidelity": 0.3,
+      "prompt_adherence": 0.25,
+      "motion_coherence": 0.15,
+      "temporal_consistency": 0.1,
+      "visual_fidelity": 0.1,
+      "technical_compliance": 0.1
+    }
+  },
+  "scenario_set_hash": "a2636a14d9b8e50beaf410608886ffdf0bd82c7c7573c2bec07817df6d87ff7c",
+  "inputs": {
+    "VID-GEDIT-01": [
+      {
+        "role": "source",
+        "sha256": "1974d8baaf62e8a9f2977947d6d6bbbdd4cf7fb94d2fc84f1bf7fea04436a45b",
+        "path": "inputs/VID-GEDIT-01/VID-GEDIT-01-source.mp4"
+      }
+    ],
+    "VID-GEDIT-02": [
+      {
+        "role": "source",
+        "sha256": "08a0a580cd39ecaa99ddc46166711210398643d9da75083821add5b550e6791b",
+        "path": "inputs/VID-GEDIT-02/VID-GEDIT-02-source.mp4"
+      }
+    ],
+    "VID-GEDIT-03": [
+      {
+        "role": "source",
+        "sha256": "3062e6f189f2a3a2306da58ac5d05ce7ad0bb1e6e20b9ca0e6dd16ae52df4bb4",
+        "path": "inputs/VID-GEDIT-03/VID-GEDIT-03-source.mp4"
+      }
+    ],
+    "VID-GEDIT-04": [
+      {
+        "role": "source",
+        "sha256": "dae414949c2794295c4764449c180fe55d36621627b52ce905c14b2052d37d04",
+        "path": "inputs/VID-GEDIT-04/VID-GEDIT-04-source.mp4"
+      }
+    ],
+    "VID-GEDIT-05": [
+      {
+        "role": "source",
+        "sha256": "f3ccee17fad369a135c44b9dbadc6964a18124fed76753de4970c383c3594c85",
+        "path": "inputs/VID-GEDIT-05/VID-GEDIT-05-source.mp4"
+      }
+    ],
+    "VID-GEDIT-06": [
+      {
+        "role": "source",
+        "sha256": "c36da7b714f23e3255977f6cfc28287ac2ee99c70571002892abbcd2298bed5d",
+        "path": "inputs/VID-GEDIT-06/VID-GEDIT-06-source.mp4"
+      }
+    ],
+    "VID-GEDIT-07": [
+      {
+        "role": "source",
+        "sha256": "e9f91edd4e80f39afb3fb03d3fef4189e7c8fd9aafac43df31ca4723a47c2b6e",
+        "path": "inputs/VID-GEDIT-07/VID-GEDIT-07-source.mp4"
+      }
+    ],
+    "VID-GEDIT-08": [
+      {
+        "role": "source",
+        "sha256": "0dc1b298009b8f9b132fb116481fdd2fa5b79c88eb97ab802bf475d3fdcd3f54",
+        "path": "inputs/VID-GEDIT-08/VID-GEDIT-08-source.mp4"
+      }
+    ],
+    "VID-GEDIT-09": [
+      {
+        "role": "source",
+        "sha256": "fd46f40c5e5a9ec49aa85159759374133e22fd526c8a7a3da466bc9b8b9261b8",
+        "path": "inputs/VID-GEDIT-09/VID-GEDIT-09-source.mp4"
+      }
+    ],
+    "VID-GEDIT-10": [
+      {
+        "role": "source",
+        "sha256": "c203faa85344e9abcd5daa795698fbfec7f7bdb501c73c35400a941c2a151e7f",
+        "path": "inputs/VID-GEDIT-10/VID-GEDIT-10-source.mp4"
+      }
+    ],
+    "VID-GEDIT-11": [
+      {
+        "role": "source",
+        "sha256": "54a45470111607e74f3f2cbc2c9d3bfa46adc64d6e3c177076c46c9237c7b9f5",
+        "path": "inputs/VID-GEDIT-11/VID-GEDIT-11-source.mp4"
+      }
+    ],
+    "VID-GEDIT-12": [
+      {
+        "role": "source",
+        "sha256": "86a95b550cb79cda8248abe05af5faca996c83af6580f4b5ea9476c9f4bae406",
+        "path": "inputs/VID-GEDIT-12/VID-GEDIT-12-source.mp4"
+      }
+    ],
+    "VID-GI2V-01": [
+      {
+        "role": "photo",
+        "sha256": "743a5ddfb221200a476310eb37768bf14ec269f0ba225859004e6033360b9748",
+        "path": "inputs/VID-GI2V-01/VID-GI2V-01-still.png"
+      }
+    ],
+    "VID-GI2V-02": [
+      {
+        "role": "photo",
+        "sha256": "bfaa26f1f5e002c38bd1963c927bba9365d35a39c3c1bd1446eb99a1cb5ae6eb",
+        "path": "inputs/VID-GI2V-02/VID-GI2V-02-still.png"
+      }
+    ],
+    "VID-GI2V-03": [
+      {
+        "role": "photo",
+        "sha256": "ad2887b010c14516c05963b0ae11f0ea7c49284823c855685844648444d4d9a2",
+        "path": "inputs/VID-GI2V-03/VID-GI2V-03-still.png"
+      }
+    ],
+    "VID-GI2V-04": [
+      {
+        "role": "photo",
+        "sha256": "90210abb62859c4521a0d49b383aea9d1eb672435d7c97b11a31de5355975363",
+        "path": "inputs/VID-GI2V-04/VID-GI2V-04-still.png"
+      }
+    ],
+    "VID-GI2V-05": [
+      {
+        "role": "photo",
+        "sha256": "ea37e5cf2c3e02bb56d4ba4e494f5896487b30b74d269ee5a9c294ac9588c415",
+        "path": "inputs/VID-GI2V-05/VID-GI2V-05-still.png"
+      }
+    ],
+    "VID-GI2V-06": [
+      {
+        "role": "photo",
+        "sha256": "91cd22fa33824fec8cb354cad50d0b98dea7f9e905bb1137e8462b48cdf598a5",
+        "path": "inputs/VID-GI2V-06/VID-GI2V-06-still.png"
+      }
+    ],
+    "VID-GI2V-07": [
+      {
+        "role": "photo",
+        "sha256": "7e89973f21b8eb4b2ff5d1bb5087686f54b794e9d2f4d43d5fd803f2f54082a7",
+        "path": "inputs/VID-GI2V-07/VID-GI2V-07-still.png"
+      }
+    ],
+    "VID-GI2V-08": [
+      {
+        "role": "photo",
+        "sha256": "8d8901b28ad84ed3d04cddd21b96422843ae94a3fb2a284d3cf7872a1177d2c8",
+        "path": "inputs/VID-GI2V-08/VID-GI2V-08-still.png"
+      }
+    ],
+    "VID-GI2V-09": [
+      {
+        "role": "photo",
+        "sha256": "f6c742bf1285e63146827ffd31e52582c991b0dbc0f55bc5b48f4cb1a61e39bb",
+        "path": "inputs/VID-GI2V-09/VID-GI2V-09-still.png"
+      }
+    ],
+    "VID-GI2V-10": [
+      {
+        "role": "photo",
+        "sha256": "cd67b7b3bdfe04cb8adb56ecc9ad0fb6843af29374b0d5dfb57aa6c7607c1fc5",
+        "path": "inputs/VID-GI2V-10/VID-GI2V-10-still.png"
+      }
+    ],
+    "VID-GI2V-11": [
+      {
+        "role": "photo",
+        "sha256": "625aebf89a2ddd0e40a37dac464254202835ab8f65326a271a30366ed73a6a66",
+        "path": "inputs/VID-GI2V-11/VID-GI2V-11-still.png"
+      }
+    ],
+    "VID-GI2V-12": [
+      {
+        "role": "photo",
+        "sha256": "83a34b5187e62f1e7e5cf8bb644f16ddb39096ab000dac6e905cee235490f95c",
+        "path": "inputs/VID-GI2V-12/VID-GI2V-12-still.png"
+      }
+    ],
+    "VID-GI2V-13": [
+      {
+        "role": "photo",
+        "sha256": "93ecb7103dddf481e0b0d4b1d2434f3f3f565ad3432151984150cb75b9312b39",
+        "path": "inputs/VID-GI2V-13/VID-GI2V-13-still.png"
+      }
+    ]
+  },
+  "cells": {
+    "VID-GEDIT-01::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-01",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-01::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-01",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): asset url https://raw.githubusercontent.com/tl-ai-labs/genmedia-industrial-studies/df9811d7f44262a9a58cca3aabfbf270a8795a38/video/assets/bank/VID-GEDIT-01-source.mp4 returned HTTP 404. ModelArk fetches this itself, so the run would fail. If the file exists locally, ARK_ASSET_BASE_URL is pinned to a commit that predates it — repin it to a pushed commit containing the asset."
+    },
+    "VID-GEDIT-02::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-02",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-02::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-02",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): asset url https://raw.githubusercontent.com/tl-ai-labs/genmedia-industrial-studies/df9811d7f44262a9a58cca3aabfbf270a8795a38/video/assets/bank/VID-GEDIT-02-source.mp4 returned HTTP 404. ModelArk fetches this itself, so the run would fail. If the file exists locally, ARK_ASSET_BASE_URL is pinned to a commit that predates it — repin it to a pushed commit containing the asset."
+    },
+    "VID-GEDIT-03::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-03",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-03::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-03",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "failed",
+      "reason": "provider_error after 1 attempt(s): asset url https://raw.githubusercontent.com/tl-ai-labs/genmedia-industrial-studies/df9811d7f44262a9a58cca3aabfbf270a8795a38/video/assets/bank/VID-GEDIT-03-source.mp4 returned HTTP 404. ModelArk fetches this itself, so the run would fail. If the file exists locally, ARK_ASSET_BASE_URL is pinned to a commit that predates it — repin it to a pushed commit containing the asset."
+    },
+    "VID-GEDIT-04::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-04",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-04::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-04",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-05::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-05",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-05::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-05",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-06::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-06",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-06::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-06",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-07::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-07",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-07::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-07",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-08::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-08",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-08::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-08",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-09::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-09",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-09::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-09",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-10::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-10",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-10::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-10",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-11::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-11",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-11::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-11",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-12::omni-flash-vertex": {
+      "scenario_id": "VID-GEDIT-12",
+      "model_id": "omni-flash-vertex",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GEDIT-12::seedance-2-5": {
+      "scenario_id": "VID-GEDIT-12",
+      "model_id": "seedance-2-5",
+      "task": "video_edit",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-01::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-01",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-01::seedance-2-5": {
+      "scenario_id": "VID-GI2V-01",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-02::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-02",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-02::seedance-2-5": {
+      "scenario_id": "VID-GI2V-02",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-03::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-03",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-03::seedance-2-5": {
+      "scenario_id": "VID-GI2V-03",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-04::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-04",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-04::seedance-2-5": {
+      "scenario_id": "VID-GI2V-04",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-05::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-05",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-05::seedance-2-5": {
+      "scenario_id": "VID-GI2V-05",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-06::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-06",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-06::seedance-2-5": {
+      "scenario_id": "VID-GI2V-06",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-07::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-07",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-07::seedance-2-5": {
+      "scenario_id": "VID-GI2V-07",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-08::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-08",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-08::seedance-2-5": {
+      "scenario_id": "VID-GI2V-08",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-09::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-09",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-09::seedance-2-5": {
+      "scenario_id": "VID-GI2V-09",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-10::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-10",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-10::seedance-2-5": {
+      "scenario_id": "VID-GI2V-10",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-11::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-11",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-11::seedance-2-5": {
+      "scenario_id": "VID-GI2V-11",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-12::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-12",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-12::seedance-2-5": {
+      "scenario_id": "VID-GI2V-12",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-13::omni-flash-vertex": {
+      "scenario_id": "VID-GI2V-13",
+      "model_id": "omni-flash-vertex",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    },
+    "VID-GI2V-13::seedance-2-5": {
+      "scenario_id": "VID-GI2V-13",
+      "model_id": "seedance-2-5",
+      "task": "image_to_video",
+      "modality": "video",
+      "state": "planned",
+      "reason": ""
+    }
+  }
+}

@@ -212,9 +212,9 @@ def test_metrics_are_rows_and_models_are_columns_with_a_difference(root):
     assert "gemini-3-1-flash-tts" in head and "elevenlabs-multilingual-v2" in head
     # Gemini's column comes first.
     assert head.index("gemini-3-1-flash-tts") < head.index("elevenlabs-multilingual-v2")
-    for metric in ("Quality", "Gates passed", "Run-to-run spread", "Cost per clip",
-                   "Latency, median"):
-        assert f">{metric}" in html
+    for metric in ("Rating", "Gates passed", "Run-to-run spread", "Cost per clip",
+                   "Latency p50"):
+        assert f"<td>{metric} " in html
 
 
 def test_scores_render_as_percentages(root):
@@ -236,16 +236,18 @@ def test_the_google_judge_and_the_calibration_gap_are_disclosed(root):
     assert "gemini-2.5-flash" in flat, "the judge is named"
     assert "Google model" in flat, "and identified as a Google model"
     assert "calibrated against human listeners" in flat, "and as uncalibrated"
-    head = flat[:flat.index("Every metric, both models")]
+    head = flat[:flat.index('<table class="mx">')]
     assert "gemini-2.5-flash" in head and "Google model" in head, (
         "the disclosure sits above the numbers, not buried in the footer")
 
 
 def test_sort_and_expand_controls_exist(root):
     html = render_client_report(root, "voice").read_text(encoding="utf-8")
-    for opt in ("gem-desc", "gem-asc", "oth-desc", "oth-asc", "gap-desc", "gap-asc"):
+    # The shared kit's controls: g = the Gemini arm, c = the other, d = the gap.
+    for opt in ("g-desc", "g-asc", "c-desc", "c-asc", "d-desc", "d-asc"):
         assert f'value="{opt}"' in html
-    assert 'id="expand"' in html and 'id="collapse"' in html
+    assert 'data-act="expand"' in html and 'data-act="collapse"' in html
+    assert html.index("gemini-3-1-flash-tts rating") < html.index("elevenlabs-multilingual-v2 rating")
 
 
 def test_an_unscored_scenario_carries_no_sort_key(tmp_path):

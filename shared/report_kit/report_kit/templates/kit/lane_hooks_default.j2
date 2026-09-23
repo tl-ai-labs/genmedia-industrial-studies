@@ -1,0 +1,50 @@
+{#- The lane hook contract.
+
+    Every lane keeps ONE file, runner/templates/lane_hooks.j2, that defines
+    EVERY macro below with exactly these names and arguments. Copy this file to
+    start; an empty macro is a valid "nothing to add". The kit calls the hooks
+    at fixed places, so a lane can add content but never reorder, restyle or
+    rename a kit section. report_kit's tests fail if a hook is missing.
+
+    Hooks may use the kit's CSS classes and tokens (kit/_styles.j2). Lane CSS
+    (extra_css) is for lane media only, and uses var(--…) tokens — no colours.
+
+      s    one scenario from ctx.evidence
+      c    one card (one model's output) from s.cards
+      src  one source input from s.sources
+-#}
+
+{# <style> rules for the lane's media components, using kit tokens only #}
+{% macro extra_css() %}{% endmacro %}
+
+{# small previews inside the collapsed scenario row #}
+{% macro summary_thumbs(s) %}{% endmacro %}
+
+{# a <figure class="shot src"> for one source input (edit tasks) #}
+{% macro source_media(s, src) %}{% endmacro %}
+
+{# the <div class="frame"> inside a card's <figure class="shot">: image, video or audio, plus the score badge #}
+{% macro card_media(s, c) %}{% endmacro %}
+
+{# a <p class="hint"> under the media row, e.g. how to zoom or where clips live #}
+{% macro media_note(ctx, s) %}{% endmacro %}
+
+{# text appended to "Click a scenario to expand" — start with "; " #}
+{% macro evidence_hint(ctx) %}{% endmacro %}
+
+{# lane measures as pills, after the gate pills (e.g. pHash, OCR, WER) #}
+{% macro card_measures(s, c) %}{% endmacro %}
+
+{# extra lines inside "Judge reasoning" (e.g. per-string OCR, transcript) #}
+{% macro card_diagnostics(s, c) %}{% endmacro %}
+
+{# after a scenario's per-model columns (e.g. set verdicts, human review) #}
+{% macro scenario_extra(ctx, s) %}{% endmacro %}
+
+{# lane sections, at fixed points of the page; each starts with its own <h2> #}
+{% macro after_summary(ctx) %}{% endmacro %}
+{% macro after_tables(ctx) %}{% endmacro %}
+{% macro after_evidence(ctx) %}{% endmacro %}
+
+{# extra footnote lines, each ending in <br> #}
+{% macro footnote_lines(ctx) %}{% endmacro %}

@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-27
+# Game: Minecraft (Building sandbox); test type T2I-6 Two characters interacting.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Two figures in contact with blocky proportions and hit effects.
+# Judging reference (NOT an input, never sent to the model): assets/bank/gaming/image/IMG-GT2I-27-reference.png
+#   provenance in IMG-GT2I-27-reference.json. Why needed: Mob and armour proportions must match the real game designs.
+id: IMG-GT2I-27
+modality: image
+task: text_to_image
+title: Diamond sword hits a zombie
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'Third-person view in a blocky sandbox game at dusk: a blocky player in full shiny diamond armour
+  swings a diamond sword that lands on a green-skinned blocky zombie in a teal shirt and dark purple-blue
+  trousers. The zombie flashes red and is knocked backwards, and a white sweep arc of particles hangs
+  in the air between them. Grassy plains, a half-built oak house behind.'
+expected: 'Diamond sword hits a zombie. Capability under test: Two characters interacting. Adherence clauses,
+  check each: 1) Sword makes contact with the zombie  2) Zombie tinted red and leaning or moving away  3)
+  Both figures fully blocky with the right proportions  4) Diamond armour in its light-blue colour  5)
+  Sweep particles between them'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-minecraft
+- test-t2i-6
+- scenario-bank-image-gaming
+- tier-medium

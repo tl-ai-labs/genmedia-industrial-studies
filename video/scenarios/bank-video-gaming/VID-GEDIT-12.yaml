@@ -1,0 +1,23 @@
+# Gaming pilot scenario VID-GEDIT-12 (GTA V, Video Editing). Built from
+# docs/sheets/gaming-scenarios-video.xlsx.
+# Prompt origin: Real.
+# Prompt source: https://picsart.com/blog/ai-video-editing-prompts/
+# Test type: EDIT-07 Change the season (summer to snow) without changing shapes
+id: VID-GEDIT-12
+modality: video
+task: video_edit
+title: 'Summer street to holiday snow'
+prompt: 'Convert this summer street scene to deep winter. Bare branches, snow settled on parked cars and pavement edges, breath visible in the cold air, flat overcast light. Keep the subject, the wardrobe, the building layout, and the camera movement identical. Snow coverage stays consistent from frame to frame with no melting or shifting.'
+inputs:
+  source: assets/bank/gaming/video/VID-GEDIT-12-source.mp4
+params:
+  audio: false
+expected: 'Summer street to holiday snow. Capability under test: Change the season (summer to snow) without changing shapes. Adherence clauses, check each: 1) Snow on cars and pavement in every frame  2) Trees bare  3) Snow does not shift or melt between frames  4) Buildings and cars in the same places  5) Subject and wardrobe unchanged'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- gaming-pilot
+- gta-v
+- real
+- video-editing

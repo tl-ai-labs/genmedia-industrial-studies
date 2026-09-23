@@ -1,0 +1,23 @@
+# Smoke-test scenario (not from the scenario bank): a short cheap
+# clip for wiring checks and dry runs. Bank runs use
+# --scenarios scenarios/bank-video
+id: vid-001-dolly-in
+modality: video
+task: text_to_video
+title: Slow dolly-in demo
+prompt: A slow dolly-in on a ceramic teapot on a wooden table by a window. Soft daylight.
+  The camera moves steadily forward for the full duration. No cuts.
+params:
+  duration_s: 4
+  resolution: 720p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'Slow dolly-in demo: every clause of the brief is visible in the clip, motion is
+  continuous, nothing pops in or out.'
+checks:
+  min_duration_s: 3.5
+  max_duration_s: 5.0
+  min_width: 640
+  min_height: 360
+tags:
+- smoke-test

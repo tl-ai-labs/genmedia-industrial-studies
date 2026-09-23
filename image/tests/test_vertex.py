@@ -34,7 +34,12 @@ def test_judge_auth_route_validated():
 def test_shipped_vertex_twin_parses():
     mf = load_models(REPO_ROOT / "configs" / "models.yaml")
     twin = next(m for m in mf.image if m.id == "gemini-3-1-flash-image-vertex")
-    assert twin.vertex.project == "ai-studies-console"   # enabled flag varies per comparison
+    # A project must be named, but WHICH project is an account detail, not a
+    # contract: ai-studies-console was suspended on 2026-09-21 and every arm
+    # moved to temp-genmedia-study. Pinning the name only fails the suite for
+    # a legitimate billing change. The route is what matters — Vertex via ADC,
+    # so no API key env var.  (enabled flag varies per comparison)
+    assert twin.vertex.project
     assert twin.auth_env is None
 
 

@@ -1,0 +1,42 @@
+# Source: gaming-scenarios-image-6-games.xlsx (sheets/), row IMG-GT2I-32
+# Game: Street Fighter 6 (Fighting); test type T2I-16 Big effects frozen in place.
+# Complexity tier: medium — run with Gemini 3.1 Flash | GPT Image 2 medium (tiers/gaming-medium.txt). Translucent effect with correct contact point, both bodies visible.
+# Judging reference needed but not yet captured: No official still of Drive Parry found (official site and Steam images checked; Steam's embedded clips could not be frame-grabbed here). Capture in Training Mode: record a Drive Parry and screenshot the frame where the green bubble is fully formed.
+id: IMG-GT2I-32
+modality: image
+task: text_to_image
+title: Drive Parry bubble
+params:
+  size: 1536x1024
+  aspect_ratio: '16:9'
+prompt: 'A frozen frame from a 3D arcade fighting game: a fighter crouches inside a translucent bright-green
+  sphere of swirling energy while the opponent''s roundhouse kick lands against the outside of the sphere,
+  throwing off a ring of green sparks at the point of contact. Both fighters stay clearly visible through
+  the effect. The stage is a neon-lit downtown street at night with a wet road. Side-on camera, stylised
+  realistic 3D, no on-screen display.'
+expected: 'Drive Parry bubble. Capability under test: Big effects frozen in place. Adherence clauses,
+  check each: 1) Green sphere is translucent: the defender is visible inside it  2) Kick meets the sphere''s
+  surface, not the defender''s body  3) Spark ring sits exactly at the point of contact  4) Side-on fighting-game
+  camera, both full bodies in frame  5) No on-screen display'
+checks:
+  min_width: 1000
+  min_height: 540
+  formats:
+  - png
+  - jpeg
+  not_blank: true
+criteria:
+- prompt_adherence
+- visual_quality
+- composition
+- realism_style
+weights:
+  prompt_adherence: 0.4
+  visual_quality: 0.25
+  composition: 0.2
+  realism_style: 0.15
+tags:
+- game-street-fighter-6
+- test-t2i-16
+- scenario-bank-image-gaming
+- tier-medium

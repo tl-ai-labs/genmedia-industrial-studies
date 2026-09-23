@@ -1,0 +1,35 @@
+# Source: genmedia_validation_rubrics_with_industry_mappings.xlsx
+# Scenario bank row VID-EDIT-05 (sheet row 109) — prompt verbatim.
+# Industry: Ecommerce & Retail (also: Micro-drama & entertainment)
+# Sheet run settings: 'Source clip required; edits applied via follow-up turns; 3 seeds'.
+# Input assets required: Source clip with a table | source: TGVE+ (adds removal / addition) | link: open
+# Runnable: YES as of 2026-09-09 — task built out after the 4 Sep Google
+# review scoped video to edits + ads. Assets are frozen into the run.
+id: VID-EDIT-05
+modality: video
+task: video_edit
+title: Add a physically correct object
+prompt: Add a ceramic vase to the empty end of the table in this clip. It must sit correctly
+  on the surface, cast a matching shadow, and stay fixed as the camera moves.
+inputs:
+  # Re-cut 16.80s -> 9.60s on 2026-09-11. Omni refuses any edit
+  # longer than 10s ("Editing duration 11.3333 exceeds maximum duration
+  # 10"), which left this scenario unable to produce a pair at all.
+  # Stream copy, not a re-encode: the pixels are the original's. The
+  # full-length source stays at VID-EDIT-05-source.mp4 and the run record
+  # names whichever was used.
+  source: assets/bank/VID-EDIT-05-source-10s.mp4
+params:
+  resolution: 1080p
+  audio: true
+  seed: 20260910
+expected: 'Add a physically correct object. Capability under test: Insertion with scene interaction.
+  Adherence clauses, check each: 1) Vase present throughout  2) Sits on the surface, not floating  3)
+  Shadow matches scene lighting  4) Stays locked to the table under camera motion'
+checks:
+  min_width: 1280
+  min_height: 720
+tags:
+- conversational-local-video-editing
+- scenario-bank
+- pending-assets
