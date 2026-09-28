@@ -353,11 +353,11 @@ def test_the_manifest_records_region_for_every_arm_the_judge_and_the_asr():
             continue
         assert m.region and m.region_note, f"{m.id} has no region on record"
         assert m.served_from
-    assert reg.judges["voice"].region == "us-central1"
+    assert reg.judges["voice"].region == "global"
+    assert reg.judges["voice"].served_from == "Vertex AI · global"
     assert reg.asr.region == "local" and "no region" in reg.asr.served_from
     live = [m for m in reg.models if m.enabled and m.modality == "voice"]
-    assert {m.served_from for m in live} == {"Vertex AI · us-central1",
-                                              "ElevenLabs direct API · us"}
+    assert {m.served_from for m in live} == {"Gemini API · no region choice"}
     # And the manifest writer carries all three.
     src = (Path(__file__).resolve().parent.parent / "runner" / "cli.py").read_text()
     assert src.count('"served_from"') >= 3

@@ -10,11 +10,13 @@
 # reason recorded, rather than deleted - the block IS the documentation of
 # how to turn them on.
 #
-# WHICH ARMS ARE LIVE HERE, AND WHY (updated 2026-09-09 for the v3 re-run).
-# The matrix is deliberately two arms:
+# WHICH ARMS ARE LIVE HERE, AND WHY (updated 2026-09-28 for the 3.8 run).
+# This run is ONE arm - Gemini 3.8 Flash TTS over the 23-scenario bank:
 #
-#     gemini-3-1-flash-tts        LIVE  - the chosen Google arm (Vertex)
-#     elevenlabs-v3               LIVE  - the ElevenLabs arm (direct API)
+#     gemini-3-8-flash-tts        LIVE  - Gemini API (3.8 is not on Vertex yet)
+#     gemini-3-8-flash-lite-tts   off   - the cheaper 3.8 tier, same adapter
+#     gemini-3-1-flash-tts        off   - previous Google arm (Vertex)
+#     elevenlabs-v3               off   - its v3 run stands; not re-run here
 #     elevenlabs-multilingual-v2  off   - SUPERSEDED by v3; v2 numbers withdrawn
 #
 # Everything else is reachable-and-configured but out of this matrix on
@@ -123,7 +125,8 @@ voice:
   # is NOT the same cost per second. Worth knowing before reading the numbers.
   # ---------------------------------------------------------------------
   - id: gemini-3-1-flash-tts
-    enabled: true
+    enabled: false
+    disabled_reason: "not in the 2026-09-28 run - that run is Gemini 3.8 Flash TTS only. Its Vertex project (ai-studies-console) is suspended; flip back only on a working Vertex project"
     adapter: gemini_tts
     provider: google
     provider_model: "gemini-3.1-flash-tts-preview"
@@ -156,6 +159,93 @@ voice:
       est_audio_tokens_per_second: 50.0
       source: https://ai.google.dev/gemini-api/docs/pricing
       as_of: 2026-09-01
+
+  # ---------------------------------------------------------------------
+  # Gemini 3.8 Flash TTS - GA 2026-09-23. Served by the GEMINI API, not
+  # Vertex: Google Cloud's Gemini-TTS docs (updated 2026-09-24) list no 3.8
+  # TTS model, so this arm has its own adapter (gemini_api_tts) and its own
+  # doorway. Do NOT put its cost next to a Vertex arm's as like-for-like -
+  # the two doorways are priced separately.
+  #
+  # REQUEST SHAPE CHANGED FROM 3.1. The text is a verbatim transcript; the
+  # style goes in speech_metadata.style (a preamble would be spoken aloud).
+  # No inline vocal tags are sent - same plain input as every other arm.
+  #
+  # AUTH. The Gemini API refuses service-account OAuth tokens (403 "Access to
+  # Gemini API is restricted with service accounts", live probe 2026-09-28),
+  # so ADC cannot call it. The credential is an authorization key bound to
+  # studies-runner, read from Secret Manager at start-up. auth_env holds the
+  # secret's RESOURCE NAME, never the key:
+  #   GEMINI_API_KEY_SECRET=projects/temp-genmedia-study/secrets/gemini-tts-key/versions/latest
+  # When 3.8 TTS reaches Vertex: switch to `adapter: gemini_tts` with
+  # GOOGLE_APPLICATION_CREDENTIALS and delete the key.
+  # ---------------------------------------------------------------------
+  - id: gemini-3-8-flash-tts
+    enabled: true
+    adapter: gemini_api_tts
+    provider: google
+    provider_model: "gemini-3.8-flash-tts"
+    auth_env: GEMINI_API_KEY_SECRET
+    region: global
+    region_note: "Served by the Gemini API (generativelanguage.googleapis.com), which takes no region parameter - Google routes the call. Not Vertex AI: 3.8 TTS was not offered on Vertex when this ran."
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 10}
+    voice_map:
+      # Same prebuilt voices as the 3.1 arm - all still valid on 3.8
+      # (speech-generation docs, 2026-09-28), so voice is not a new variable.
+      female_mid_warm: "Aoede"
+      male_mid_neutral: "Charon"
+      npc_quartermaster: "Charon"    # informative, steady
+      npc_scout: "Leda"              # youthful
+      npc_handler: "Kore"            # firm
+      npc_medic: "Aoede"             # breezy, warm
+      npc_engineer: "Puck"           # upbeat, dry
+      npc_trader: "Fenrir"           # excitable
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: tokens
+      # Standard paid tier through 2026-12-31; Google doubles every 3.8 TTS
+      # rate from 2027-01-01. Re-read before any run after that date.
+      usd_in_per_1m: 0.50
+      usd_audio_out_per_1m: 9.00
+      est_chars_per_input_token: 4.0
+      est_audio_tokens_per_second: 25.0
+      source: https://ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-27
+
+  # ---------------------------------------------------------------------
+  # Gemini 3.8 Flash-Lite TTS - the cheaper 3.8 tier. Same API schema and
+  # adapter as 3.8 Flash; configured so the cost/quality curve is one flip.
+  # ---------------------------------------------------------------------
+  - id: gemini-3-8-flash-lite-tts
+    enabled: false
+    disabled_reason: "not in the 2026-09-28 run - Flash only. Reachable on the same adapter; flip to true to add the cost tier"
+    adapter: gemini_api_tts
+    provider: google
+    provider_model: "gemini-3.8-flash-lite-tts"
+    auth_env: GEMINI_API_KEY_SECRET
+    region: global
+    region_note: "Served by the Gemini API (generativelanguage.googleapis.com), which takes no region parameter - Google routes the call. Not Vertex AI: 3.8 TTS was not offered on Vertex when this ran."
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 10}
+    voice_map:
+      female_mid_warm: "Aoede"
+      male_mid_neutral: "Charon"
+      npc_quartermaster: "Charon"
+      npc_scout: "Leda"
+      npc_handler: "Kore"
+      npc_medic: "Aoede"
+      npc_engineer: "Puck"
+      npc_trader: "Fenrir"
+    params: {format: wav, sample_rate: 24000}
+    price:
+      unit: tokens
+      usd_in_per_1m: 0.50
+      usd_audio_out_per_1m: 6.00
+      est_chars_per_input_token: 4.0
+      est_audio_tokens_per_second: 25.0
+      source: https://ai.google.dev/gemini-api/docs/pricing
+      as_of: 2026-09-27
 
   # ---------------------------------------------------------------------
   # ElevenLabs Multilingual v2 - the QUALITY tier, and the right competitor
@@ -235,7 +325,8 @@ voice:
   #    difference, footnoted, nothing more.
   # ---------------------------------------------------------------------
   - id: elevenlabs-v3
-    enabled: true
+    enabled: false
+    disabled_reason: "not in the 2026-09-28 run - that run is Gemini 3.8 Flash TTS only; the v3 results from 2026-09-09 stand. Flip to true to re-run this arm"
     adapter: elevenlabs_tts
     provider: elevenlabs
     provider_model: "eleven_v3"
@@ -371,8 +462,8 @@ judge:
     provider: google
     provider_model: "gemini-2.5-flash"
     auth_env: GOOGLE_APPLICATION_CREDENTIALS
-    region: us-central1
-    region_note: "The judge listens through Vertex AI at us-central1, the same regional endpoint as the Gemini arm - stated so a reader can see the judge and one arm share a vendor AND a region."
+    region: global
+    region_note: "The judge listens through Vertex AI at the global endpoint (the runbook's location for temp-genmedia-study). It shares a VENDOR with the Gemini arm, not a doorway: the 3.8 arm is served by the Gemini API."
     temperature: 0
     price:
       unit: tokens

@@ -81,7 +81,7 @@ class ModelSpec:
 
     @property
     def served_from(self) -> str:
-        return served_from_label(self.provider, self.region)
+        return served_from_label(self.provider, self.region, self.adapter)
 
     def supports_task(self, task: str) -> bool:
         return task in self.supports
@@ -146,14 +146,17 @@ class ServiceSpec:
         return bool(os.environ.get(self.auth_env))
 
 
-def served_from_label(provider: str, region: str | None) -> str:
+def served_from_label(provider: str, region: str | None, adapter: str = "") -> str:
     """
     One short phrase per arm: the doorway and the region, as the board prints
     it. The provider decides the doorway - Google arms here go through Vertex
-    AI at a named location; every other vendor is its own direct API, where
-    the region is the vendor's default rather than a parameter we set.
+    AI at a named location, except the Gemini API adapter, which has no
+    location to choose; every other vendor is its own direct API, where the
+    region is the vendor's default rather than a parameter we set.
     """
     prov = (provider or "").lower()
+    if prov == "google" and adapter == "gemini_api_tts":
+        return "Gemini API · no region choice"
     if prov == "google":
         return f"Vertex AI · {region or 'us-central1'}"
     if prov == "local":

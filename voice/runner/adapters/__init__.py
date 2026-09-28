@@ -61,12 +61,19 @@ def _gemini_tts():
     return GeminiTtsAdapter
 
 
+def _gemini_api_tts():
+    from .gemini_api_tts import GeminiApiTtsAdapter
+
+    return GeminiApiTtsAdapter
+
+
 # name in models.yaml -> loader. The image lane adds its entries here and
 # changes nothing else.
 _REGISTRY: dict[str, Callable[[], type]] = {
     "openai_tts": _openai_tts,
     "elevenlabs_tts": _elevenlabs_tts,
     "gemini_tts": _gemini_tts,
+    "gemini_api_tts": _gemini_api_tts,
 }
 
 
