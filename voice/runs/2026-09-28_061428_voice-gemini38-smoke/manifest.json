@@ -1,0 +1,113 @@
+{
+  "run_id": "2026-09-28_061428_voice-gemini38-smoke",
+  "modality": "voice",
+  "started_at": "2026-09-28T06:14:28-0700",
+  "git_sha": "fb1d0c5",
+  "plan_version": "1.2",
+  "scenario_count": 1,
+  "scenario_set_hash": "7802dceef4b984c4ad1999b1a5aef7d5fe005fc4e9787c15d258fc93ff962daf",
+  "scenarios": [
+    {
+      "id": "vr-drama-04",
+      "task": "styled_tts",
+      "hash": "5ce6551ea6eff04ccaf0e7509df15077a8e410b42f1c8d6b9f1029f5ae9db999",
+      "source": "scenarios/real-use-cases/vr-drama-04-dub-to-shot-timing.yaml",
+      "source_format": "yaml"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-8-flash-tts",
+      "adapter": "gemini_api_tts",
+      "provider": "google",
+      "provider_model": "gemini-3.8-flash-tts",
+      "supports": [
+        "text_to_speech",
+        "styled_tts"
+      ],
+      "region": "global",
+      "region_note": "Served by the Gemini API (generativelanguage.googleapis.com), which takes no region parameter - Google routes the call. Not Vertex AI: 3.8 TTS was not offered on Vertex when this ran.",
+      "served_from": "Gemini API · no region choice",
+      "voice_map": {
+        "female_mid_warm": "Aoede",
+        "male_mid_neutral": "Charon",
+        "npc_quartermaster": "Charon",
+        "npc_scout": "Leda",
+        "npc_handler": "Kore",
+        "npc_medic": "Aoede",
+        "npc_engineer": "Puck",
+        "npc_trader": "Fenrir"
+      },
+      "limits": {
+        "max_concurrency": 2,
+        "rpm": 10
+      },
+      "price": {
+        "unit": "tokens",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "as_of": "2026-09-27",
+        "usd_in_per_1m": 0.5,
+        "usd_audio_out_per_1m": 9.0,
+        "est_chars_per_input_token": 4.0,
+        "est_audio_tokens_per_second": 25.0
+      }
+    }
+  ],
+  "rubrics": {
+    "styled_tts": {
+      "hash": "c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c",
+      "sources": [
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/voice.yaml",
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/tasks/styled_tts.yaml"
+      ]
+    }
+  },
+  "asr": {
+    "provider_model": "medium",
+    "price": {
+      "unit": "per_minute",
+      "source": "local model, no API - faster-whisper on CPU",
+      "as_of": "2026-09-03",
+      "usd": 0.0
+    },
+    "region": "local",
+    "region_note": "Runs on the machine that ran the study (faster-whisper on CPU). No network, no region.",
+    "served_from": "local machine · no region"
+  },
+  "judge": {
+    "provider_model": "gemini-2.5-flash",
+    "temperature": 0.0,
+    "region": "global",
+    "region_note": "The judge listens through Vertex AI at the global endpoint (the runbook's location for temp-genmedia-study). It shares a VENDOR with the Gemini arm, not a doorway: the 3.8 arm is served by the Gemini API.",
+    "served_from": "Vertex AI · global"
+  },
+  "mos": {
+    "predictor": "signal",
+    "configured": "models/dnsmos_p808.onnx"
+  },
+  "mos_fallback_reason": null,
+  "budget_usd": 0.25,
+  "budget_by_provider": null,
+  "preflight_estimate_micro_usd": 2080,
+  "skipped": [],
+  "calibration": {
+    "passed": false,
+    "reason": "calibration was measured against judge 'gemini-2.5-flash', this run used 'unknown'",
+    "rubric_hash": "c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c",
+    "judge_model": "unknown",
+    "source": "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/calibration/voice.yaml",
+    "thresholds": {
+      "max_mean_abs_diff": 1.0,
+      "min_rank_correlation": 0.9,
+      "required_reviewers": 2,
+      "required_clips": 5
+    },
+    "reviewers": []
+  },
+  "cost_totals_micro_usd": {
+    "gen": 3554,
+    "asr": 0,
+    "judge": 0,
+    "all": 3554
+  }
+}

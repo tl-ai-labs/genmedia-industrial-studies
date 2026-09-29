@@ -1,0 +1,196 @@
+{
+  "run_id": "2026-09-28_073403_voice-gemini38-p2",
+  "modality": "voice",
+  "started_at": "2026-09-28T07:34:03-0700",
+  "git_sha": "fb1d0c5",
+  "scenario_set_hash": "52c0d88f19e3ce78412b5237599c288434491bcba2e0227454889e4f6ff0f961",
+  "rubrics": {
+    "styled_tts": {
+      "hash": "c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c",
+      "sources": [
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/voice.yaml",
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/tasks/styled_tts.yaml"
+      ]
+    },
+    "text_to_speech": {
+      "hash": "b740e35278609356915aa2193bdbb39356fb5fb27560c70ab1765aa4da219e5f",
+      "sources": [
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/voice.yaml"
+      ]
+    }
+  },
+  "judge": {
+    "provider_model": "gemini-2.5-flash",
+    "temperature": 0.0,
+    "region": "global",
+    "region_note": "The judge listens through Vertex AI at the global endpoint (the runbook's location for temp-genmedia-study). It shares a VENDOR with the Gemini arm, not a doorway: the 3.8 arm is served by the Gemini API.",
+    "served_from": "Vertex AI \u00b7 global"
+  },
+  "asr": "medium",
+  "mos_predictor": "signal",
+  "mos_fallback_reason": null,
+  "calibration": {
+    "passed": false,
+    "reason": "calibration gate NOT passed: reviewer-1: scored 0 clips that this run also judged; the gate needs 5; reviewer-2: scored 0 clips that this run also judged; the gate needs 5",
+    "rubric_hash": "c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c",
+    "judge_model": "gemini-2.5-flash",
+    "source": "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/calibration/voice.yaml",
+    "thresholds": {
+      "max_mean_abs_diff": 1.0,
+      "min_rank_correlation": 0.9,
+      "required_reviewers": 2,
+      "required_clips": 5
+    },
+    "reviewers": [
+      {
+        "reviewer": "reviewer-1",
+        "n": 0,
+        "mean_abs_diff": NaN,
+        "rank_correlation": NaN,
+        "passed": false,
+        "reason": "scored 0 clips that this run also judged; the gate needs 5"
+      },
+      {
+        "reviewer": "reviewer-2",
+        "n": 0,
+        "mean_abs_diff": NaN,
+        "rank_correlation": NaN,
+        "passed": false,
+        "reason": "scored 0 clips that this run also judged; the gate needs 5"
+      }
+    ]
+  },
+  "counts": {
+    "scenarios": 29,
+    "models": 1,
+    "cells_expected": 29,
+    "cells_generated": 29,
+    "cells_scored": 29,
+    "scenarios_complete": 29,
+    "scenarios_incomplete": 0
+  },
+  "incomplete_scenarios": [],
+  "failures": [],
+  "models": [
+    {
+      "model_id": "gemini-3-8-flash-tts",
+      "provider": "google",
+      "provider_model": "gemini-3.8-flash-tts",
+      "adapter": "gemini_api_tts",
+      "voice_map": {
+        "female_mid_warm": "Aoede",
+        "male_mid_neutral": "Charon",
+        "npc_quartermaster": "Charon",
+        "npc_scout": "Leda",
+        "npc_handler": "Kore",
+        "npc_medic": "Aoede",
+        "npc_engineer": "Puck",
+        "npc_trader": "Fenrir"
+      },
+      "price": {
+        "unit": "tokens",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "as_of": "2026-09-27",
+        "usd_in_per_1m": 0.5,
+        "usd_audio_out_per_1m": 9.0,
+        "est_chars_per_input_token": 4.0,
+        "est_audio_tokens_per_second": 25.0
+      },
+      "rating": {
+        "mean": 4.6179,
+        "min": 0.0,
+        "max": 9.8528,
+        "spread": 9.8528,
+        "scored": 29,
+        "attempted": 29,
+        "unjudged": 0,
+        "invalid": 15,
+        "below_5": 15,
+        "calibration_trusted": false,
+        "per_criterion_avg": {
+          "audio_quality": 8.6289,
+          "clarity": 9.9643,
+          "naturalness": 9.6071,
+          "pronunciation": 10.0,
+          "style_adherence": 9.7778,
+          "text_accuracy": 9.4356
+        }
+      },
+      "latency_ms": {
+        "n": 29,
+        "avg": 7053.6897,
+        "min": 3279.0,
+        "max": 16297.0,
+        "spread": 13018.0
+      },
+      "audio_duration_s": {
+        "n": 29,
+        "avg": 13.7917,
+        "min": 3.16,
+        "max": 40.72,
+        "spread": 37.56
+      },
+      "normalized_wer": {
+        "n": 29,
+        "avg": 0.0218,
+        "min": 0.0,
+        "max": 0.1831,
+        "spread": 0.1831
+      },
+      "audio_quality_1_5": {
+        "n": 29,
+        "avg": 3.9343,
+        "min": 3.669,
+        "max": 4.215,
+        "spread": 0.546
+      },
+      "cost_micro_usd": {
+        "generation": 123958,
+        "asr": 0,
+        "judge": 17481,
+        "total": 141439,
+        "per_scenario": 4877,
+        "all_exact": true
+      },
+      "throughput": {
+        "n_clips": 29,
+        "measured": true,
+        "audio_seconds": 399.96,
+        "audio_minutes": 6.666,
+        "cost_micro_usd_per_audio_minute": 18596,
+        "generation_seconds_serial": 204.56,
+        "realtime_factor": 1.955,
+        "clips_per_generation_minute": 8.51,
+        "audio_seconds_per_clip": {
+          "n": 29,
+          "avg": 13.7917,
+          "min": 3.16,
+          "max": 40.72,
+          "spread": 37.56
+        }
+      },
+      "reliability": {
+        "cells_ok": 29,
+        "cells_attempted": 29,
+        "success_after_retries": 1.0,
+        "attempts_to_success": {
+          "n": 29,
+          "avg": 1.0,
+          "min": 1.0,
+          "max": 1.0,
+          "spread": 0.0
+        },
+        "gate_failures": {
+          "ttfa_within_max": 9,
+          "trimmed_duration_in_range": 2,
+          "must_say[fourteen Bengaluru branches]": 1,
+          "wer_within_max": 2,
+          "peak_below_max": 1,
+          "alnum_exact": 1,
+          "must_say[14 to 14]": 1
+        }
+      }
+    }
+  ],
+  "cost_micro_usd_total": 141439
+}

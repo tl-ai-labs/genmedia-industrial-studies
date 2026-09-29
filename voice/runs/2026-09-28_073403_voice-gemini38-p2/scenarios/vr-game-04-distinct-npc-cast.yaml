@@ -1,0 +1,103 @@
+# VR-GAME-04 - Six distinct NPC voices (Gaming)
+#
+# REAL APPLICATION. Fortnite began adding AI voices to NPCs in July 2026 - 36
+# skins carry AI voices from independent professionals who consented,
+# available to UEFN creators from 30 July. Epic's framing: instead of
+# authoring dialogue trees, an NPC becomes an AI character capable of
+# unscripted dialogue as a quest giver or narrator.
+#   Source: Epic Games announcement via VGC, July 2026.
+#
+# THE SALES CLAIM:
+#   "Six distinguishable NPCs from one provider, so creators get variety
+#    without cloning anyone's voice."
+# The consent angle is the point: a cast drawn from a licensed catalogue has
+# nobody to obtain permission from, which is the union and disclosure problem
+# avoided entirely.
+#
+# ============================================================
+# THIS IS NOT THE WORKBOOK'S SCENARIO, AND THE DIFFERENCE MATTERS.
+# ============================================================
+# The workbook asks for six voices built "from written persona briefs alone,
+# no reference audio". Neither arm can do that as configured, and the reason
+# is not a harness gap:
+#
+#   ElevenLabs takes NO free-text style directive - identity comes entirely
+#     from voice_id, so six briefs over one id return six clips of one voice
+#     (measured: cosine 0.97).
+#   Gemini takes style as a delivery preamble, which changes HOW a line is
+#     read, not WHO reads it.
+#
+# Six persona briefs over two logical voices would therefore fail the
+# distinctness gate on BOTH models, and the failure would measure our voice
+# map rather than either model. So the scenario asks the question a studio
+# actually faces: given this provider, can I ship six NPCs an ear can tell
+# apart? Each variant is pinned to a DIFFERENT catalogue voice, chosen for
+# spread across age, gender and register, and verified live on 2026-09-03.
+#
+# THE CAPABILITY GAP IS A SEPARATE, REAL FINDING, and it goes against Google.
+# ElevenLabs exposes /v1/text-to-voice, which designs a voice from a text
+# description - the workbook's literal ask. Gemini has no equivalent; its
+# catalogue is fixed. That difference needs no run to establish and should be
+# reported alongside this scenario, not folded into it.
+
+id: vr-game-04
+modality: voice
+task: styled_tts
+title: "Six distinct NPC voices - Gaming"
+
+expected: |
+  1) Six characters an ear can tell apart, no pair confusable
+  2) Each voice plausibly matching the role it was cast for
+  3) The line intelligible in every voice - a distinctive NPC that cannot be
+     understood mid-firefight is not shippable
+
+params:
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+checks:
+  duration_s: {min: 1.5, max: 14.0}
+  max_silence_s: 1.2
+  no_clipping: true
+  max_wer: 0.10
+  # The gate. Read on the CLOSEST pair: a cast of six containing one
+  # confusable pair is a cast of five, and a mean would hide it. The ceiling
+  # is set against measured values, not intuition - two clips of the SAME
+  # voice score ~0.97 here and two genuinely different models ~0.64-0.78, so
+  # the scale is compressed and 0.80 sits below the different-voice floor.
+  speaker_distinct: {max_cosine: 0.80}
+
+variants:
+  - id: quartermaster
+    params: {voice: npc_quartermaster}
+    style: "weary quartermaster, past caring about rank"
+    script: |
+      Supplies are short and the gate closes at dusk. Take what you need and be quick about it.
+  - id: scout
+    params: {voice: npc_scout}
+    style: "young scout, clipped and alert"
+    script: |
+      Movement on the ridge. Two of them, maybe three. I am not waiting to find out which.
+  - id: handler
+    params: {voice: npc_handler}
+    style: "mission handler over comms, firm and unhurried"
+    script: |
+      Hold your position, Raider. Extraction is nine minutes out and the corridor is not clear.
+  - id: medic
+    params: {voice: npc_medic}
+    style: "field medic, warm and steady under pressure"
+    script: |
+      Sit down and let me look at it. You are not walking anywhere on that leg, so stop arguing.
+  - id: engineer
+    params: {voice: npc_engineer}
+    style: "station engineer, dry and matter of fact"
+    script: |
+      The coupling is fine. The problem is whoever wired the relay backwards, and it was not me.
+  - id: trader
+    params: {voice: npc_trader}
+    style: "market trader, bright and quick, always selling"
+    script: |
+      Good salvage, that. I will give you four hundred for it, and we both know it is worth three.
+
+tags: [gaming, npc, cast, speaker-distinctness, consent-safe, vr-game-04]

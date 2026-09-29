@@ -270,6 +270,13 @@ class GeminiAudioJudge:
                 http_options=_types.HttpOptions(timeout=120_000),
                 credentials=vertex_credentials(),
             )
+        elif spec.auth_env == "GOOGLE_APPLICATION_CREDENTIALS":
+            # That variable holds a credentials FILE PATH, not a key - handing
+            # it to the API-key doorway fails with a misleading 400.
+            raise RuntimeError(
+                "the judge is configured for Vertex (ADC) but neither GCP_PROJECT_ID "
+                "nor GOOGLE_CLOUD_PROJECT is set - add the project id to voice/.env"
+            )
         else:
             self._client = genai.Client(api_key=os.environ[spec.auth_env])
 

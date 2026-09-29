@@ -1,0 +1,5294 @@
+<!doctype html><html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMedia comparison · voice — 2026-09-28_073403_voice-gemini38-p2</title>
+
+
+
+
+
+<script>document.documentElement.classList.add('js');</script>
+<style>
+:root{
+  --paper:#f6f8f8; --card:#ffffff; --ink:#171d20; --muted:#5a686d; --faint:#8a979c;
+  --rule:#e1e8e8; --accent:#0c7d6a; --accent-soft:#e3f2ee; --accent-ink:#0a5f51;
+  --warn:#96590f; --warn-soft:#fbf0dd; --bad:#b3352a; --bad-soft:#f9e9e7;
+  /* the rival arm's colour. Deliberately NOT --warn: amber is this report's
+     warning ink, and once the b-slot is always the competitor, amber would
+     read as a thumb on the scale in a document whose value is impartiality. */
+  --rival:#4a5b8c;
+  --shadow:0 1px 2px rgba(20,30,30,.05),0 4px 16px rgba(20,30,30,.06);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#101617; --card:#171f21; --ink:#e5ecec; --muted:#9fb0b3; --faint:#6f8085;
+    --rule:#263235; --accent:#43c0a8; --accent-soft:#12312b; --accent-ink:#67d6c0;
+    --warn:#dfa856; --warn-soft:#2c2214; --bad:#e58d82; --bad-soft:#301d1a;
+    --rival:#93a4d6;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 18px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+.topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.topbar .in{max-width:1140px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;gap:18px;flex-wrap:wrap}
+.topbar .t{font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.topbar .m{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.topbar nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+.topbar nav a{font-size:12.5px;color:var(--muted);text-decoration:none;
+  padding:5px 10px;border-radius:20px;transition:background .15s,color .15s}
+.topbar nav a:hover{background:var(--accent-soft);color:var(--accent-ink)}
+
+header.hero{padding:42px 0 8px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin:0 0 10px;
+  text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 20px;font-family:var(--mono);font-size:11px;
+  color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.meta b{color:var(--ink);font-weight:600}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:14px 16px;box-shadow:var(--shadow)}
+.tile .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)}
+.tile .val{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:2px;
+  font-variant-numeric:tabular-nums}
+.tile .sub{font-size:12px;color:var(--faint)}
+
+/* tabs (combined report) */
+.tabbar{display:flex;gap:8px;margin:26px 0 6px;border-bottom:2px solid var(--rule);
+  flex-wrap:wrap}
+.tabbtn{font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--muted);
+  background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;
+  cursor:pointer;margin-bottom:-2px;transition:color .15s,border-color .15s}
+.tabbtn:hover{color:var(--accent-ink)}
+.tabbtn.on{color:var(--accent-ink);border-bottom-color:var(--accent)}
+.tabbtn .cnt{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:6px}
+.runpanel{display:none}
+.runpanel.on{display:block}
+@media (prefers-reduced-motion:no-preference){
+  .runpanel.on{animation:panelin .25s ease}
+  @keyframes panelin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+
+.duel{background:linear-gradient(135deg,var(--accent-soft),var(--card));
+  border:1px solid var(--rule);border-radius:14px;
+  padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.duel .heads{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}
+.duel .heads .h{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.02em}
+.duel .heads .h.a{color:var(--accent-ink)}
+.duel .heads .h.b{color:var(--rival)}
+.duel .heads{align-items:center}
+.duel .heads .vsx{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+.duel .wtag{display:inline-block;padding:3px 11px;border-radius:14px;white-space:nowrap;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+.duel .dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
+.duel .m{margin:12px 0}
+.duel .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:4px}
+.duel .pair{display:grid;grid-template-columns:56px 1fr 1fr 56px;gap:8px;align-items:center}
+.duel .val{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.duel .val.r{text-align:right}
+.duel .track{height:8px;border-radius:5px;background:var(--rule);overflow:hidden;position:relative}
+.duel .track .fill{position:absolute;top:0;bottom:0;border-radius:5px}
+.duel .track.a .fill{right:0;background:var(--accent);opacity:.35}
+.duel .track.b .fill{left:0;background:var(--rival);opacity:.35}
+.duel .track.win .fill{opacity:1}
+/* bars are statically filled; the grow-in is a JS-gated enhancement so any
+   viewer without scripts or attribute-selector support still shows values */
+@media (prefers-reduced-motion:no-preference){
+  html.js:not(.ready) .duel .fill{width:0 !important}
+  html.js .duel .fill{transition:width .8s cubic-bezier(.2,.7,.3,1) .2s}
+}
+
+.gallery{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 14px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.gallery::-webkit-scrollbar{height:8px}
+.gallery::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
+.gallery .g{flex:0 0 auto;scroll-snap-align:start;width:108px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:10px;background:var(--card);
+  padding:6px;transition:transform .18s ease,border-color .18s ease}
+.gallery .g:hover{transform:translateY(-3px);border-color:var(--accent)}
+.gallery .g img{width:94px;height:70px;object-fit:cover;border-radius:6px;display:block}
+.gallery .g .gid{font-family:var(--mono);font-size:9.5px;color:var(--muted);
+  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gallery .g .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  margin-right:4px;background:var(--faint)}
+.gallery .g .dot.w{background:var(--accent)}
+
+@media (prefers-reduced-motion:no-preference){
+  .rev{opacity:0;transform:translateY(10px);
+    transition:opacity .45s ease,transform .45s ease}
+  .rev.vis{opacity:1;transform:none}
+}
+
+.ctl{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--rule);
+  background:var(--card);color:var(--muted);cursor:pointer;transition:border-color .15s}
+.ctl:hover{border-color:var(--accent);color:var(--accent-ink)}
+.srt{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.srt select{font-family:var(--sans);font-size:12px;padding:5px 10px;border-radius:20px;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink);cursor:pointer;
+  transition:border-color .15s}
+.srt select:hover{border-color:var(--accent)}
+.scnlist{display:block}
+
+h2{font-size:20px;margin:46px 0 12px;letter-spacing:-.015em;scroll-margin-top:70px}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:var(--card);
+  margin:14px 0;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{background:color-mix(in srgb,var(--card) 60%,var(--paper));font-family:var(--mono);
+  font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.dash{color:var(--faint)}
+/* metrics-as-rows comparison table: read DOWN a model's column */
+table.mx td:first-child{font-weight:600}
+table.mx th.g{color:var(--accent-ink)}
+table.mx .vd{font-family:var(--sans);font-size:9.5px;font-weight:400;
+  text-transform:none;letter-spacing:0;color:var(--faint)}
+table.mx .mrow.hi td{background:color-mix(in srgb,var(--accent-soft) 45%,transparent)}
+table.mx td.d{border-left:1px solid var(--rule)}
+table.mx td.d .dv{font-weight:700}
+table.mx td.d.up .dv{color:var(--accent-ink)}
+table.mx td.d.down .dv{color:var(--bad)}
+.tnote{font-size:12.5px;color:var(--muted);margin:8px 2px 0}
+/* the raw task key, kept beside the heading in the internal report only */
+h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint);
+  letter-spacing:0;vertical-align:middle;margin-left:8px}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  padding:2px 8px;border-radius:20px;background:color-mix(in srgb,var(--paper) 70%,var(--card));
+  color:var(--muted);margin:1px 3px 1px 0;border:1px solid var(--rule)}
+.pill.ok{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
+.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.pill.est{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+
+.banner{border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:11px 15px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14px}
+.verdict{background:linear-gradient(135deg,var(--accent-soft),var(--card));
+  border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:12px;
+  padding:16px 20px;margin:16px 0;font-size:15px;box-shadow:var(--shadow)}
+.verdict b.win{color:var(--accent-ink)}
+.verdict .sub{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;align-items:center;scroll-margin-top:70px}
+.chip{font-size:12.5px;padding:6px 14px;border-radius:20px;border:1px solid var(--rule);
+  background:var(--card);color:var(--muted);cursor:pointer;user-select:none;
+  transition:background .15s,color .15s,border-color .15s}
+.chip:hover{border-color:var(--accent)}
+.chip .n{opacity:.75}
+.chip.zero{opacity:.4}
+/* family / industry rollup tables: grouped per model, leaders tagged, rows filter */
+table.roll th{vertical-align:bottom}
+table.roll th.grp{text-align:center;letter-spacing:.08em}
+table.roll th.grp.a{color:var(--accent-ink)}
+table.roll th.grp.b{color:var(--rival)}
+table.roll th.grp,table.roll .sep{border-left:1px solid var(--rule)}
+table.roll td{vertical-align:middle}
+table.roll tbody tr:last-child td{border-bottom:0}
+table.roll .frow{cursor:pointer;transition:background .15s}
+table.roll .frow:hover td{background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
+table.roll .frow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+table.roll .frow.on td{background:var(--accent-soft)}
+table.roll .frow.on .fname{color:var(--accent-ink);font-weight:600}
+table.roll .fname{text-decoration:underline dashed;text-decoration-color:var(--faint);
+  text-underline-offset:4px}
+table.roll .tag{display:inline-block;padding:3px 11px;border-radius:14px;
+  border:1px solid var(--rule);white-space:nowrap}
+table.roll .tag.zero{color:var(--faint)}
+table.roll .tag.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+table.roll td.lead{color:var(--accent-ink);font-weight:700}
+table.roll .tag.win{font-weight:700;color:var(--ink);border-color:var(--faint)}
+table.roll .tag.win.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink)}
+ul.tnote{margin:4px 0 12px;padding-left:20px}
+ul.tnote li{margin:2px 0}
+td .vs{font-size:10px;letter-spacing:.06em;color:var(--faint);padding:0 4px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.chip.on{color:#08211c}}
+
+details.scn{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  margin:12px 0;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+details.scn:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--rule))}
+details.scn>summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+  gap:14px;padding:13px 18px;flex-wrap:wrap}
+details.scn>summary::-webkit-details-marker{display:none}
+.scn .sid{font-family:var(--mono);font-size:12px;color:var(--accent-ink);font-weight:600;
+  white-space:nowrap}
+.scn .stitle{font-weight:600;font-size:14.5px;flex:1 1 200px}
+.scn .thumbs{display:flex;gap:6px}
+.scn .thumbs img{width:52px;height:52px;object-fit:cover;border-radius:8px;
+  border:1px solid var(--rule)}
+.scn .thumbs img.srcth{border:2px solid var(--accent)}
+/* per-scenario run scores: the left number is always the Gemini arm */
+.scn .scores{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;
+  display:inline-flex;align-items:baseline;gap:5px}
+.scn .scores .sc{font-size:14px;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.scn .scores .sc:first-child{color:var(--accent-ink)}
+.scn .scores .sc.win{color:var(--accent-ink)}
+.scn .scores .vs{font-size:10px;letter-spacing:.06em;color:var(--faint);
+  text-transform:uppercase}
+/* generation time, called out rather than buried in the caption. Neutral by
+   design: it is a fact, not a verdict — the table's delta column says who is
+   faster, and a green chip on the slower model would quietly imply otherwise. */
+.shot .lat{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink);
+  background:var(--rule);border-radius:20px;padding:2px 8px;white-space:nowrap}
+.scn .chev{width:22px;height:22px;flex:none;color:var(--faint);transition:transform .25s ease}
+details[open].scn .chev{transform:rotate(180deg)}
+.scn .body{padding:4px 18px 20px;border-top:1px dashed var(--rule)}
+@media (prefers-reduced-motion:no-preference){
+  details[open].scn .body{animation:reveal .3s ease}
+  @keyframes reveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+}
+.briefs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin:12px 0 4px}
+.brief{color:var(--muted);font-size:13px;white-space:pre-wrap;
+  background:color-mix(in srgb,var(--paper) 70%,var(--card));border-radius:10px;padding:10px 14px}
+.brief b{color:var(--ink)}
+
+.media{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0 6px}
+.shot{margin:0}
+.shot .frame{position:relative;height:290px;border:1px solid var(--rule);border-radius:12px;
+  background:color-mix(in srgb,var(--paper) 55%,var(--card));display:flex;align-items:center;
+  justify-content:center;overflow:hidden}
+.shot.src .frame{border-style:dashed;border-color:color-mix(in srgb,var(--accent) 60%,var(--rule))}
+.shot .frame img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;
+  transition:transform .2s ease}
+.shot .frame img:hover{transform:scale(1.015)}
+.shot .badge{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:13px;
+  font-weight:700;padding:4px 10px;border-radius:20px;background:color-mix(in srgb,var(--card) 82%,transparent);
+  backdrop-filter:blur(4px);border:1px solid var(--rule)}
+.shot .badge.win{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.shot .badge.win{color:#08211c}}
+.shot .badge.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.shot figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  padding:7px 4px 0;flex-wrap:wrap}
+.shot .who{font-family:var(--mono);font-size:11.5px;font-weight:600;word-break:break-all}
+.shot .who.accent{color:var(--accent-ink)}
+.shot .subcap{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap}
+
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-top:12px}
+.dcol{border:1px solid var(--rule);border-radius:12px;padding:12px 14px;background:var(--paper)}
+.dcol .mid{font-family:var(--mono);font-size:11.5px;color:var(--muted);word-break:break-all;
+  margin-bottom:8px}
+.disc{margin-top:9px;border-top:1px dashed var(--rule);padding-top:8px}
+.disc>summary{cursor:pointer;font-size:12px;color:var(--accent-ink);list-style:none;user-select:none}
+.disc>summary::-webkit-details-marker{display:none}
+.disc>summary::before{content:'▸ ';font-size:10px}
+.disc[open]>summary::before{content:'▾ '}
+.disc .inner{padding-top:6px}
+
+.crit{font-size:12.5px;margin-top:10px;border-top:1px dashed var(--rule);padding-top:10px}
+.crit .row{display:grid;grid-template-columns:112px 1fr 34px;gap:8px;align-items:center;
+  margin:5px 0 1px}
+.crit .nm{font-weight:600;font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crit .track{height:6px;border-radius:4px;background:var(--rule);overflow:hidden}
+.crit .bar{height:100%;border-radius:4px;background:var(--accent)}
+.crit .bar.lo{background:var(--bad)}
+.crit .bar.md{background:var(--warn)}
+@media (prefers-reduced-motion:no-preference){
+  html.js details.scn:not([open]) .crit .bar{width:0 !important}
+  html.js details[open].scn .crit .bar{transition:width .6s cubic-bezier(.2,.7,.3,1) .12s}
+}
+.crit .v{font-family:var(--mono);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums}
+.crit .r{color:var(--muted);margin:2px 0 7px;font-size:12px;line-height:1.5}
+.crit .src{font-family:var(--mono);font-size:9.5px;color:var(--faint);
+  text-transform:uppercase;letter-spacing:.05em}
+
+#lb{position:fixed;inset:0;background:rgba(10,14,15,.88);display:none;z-index:100;
+  align-items:center;justify-content:center;padding:30px;cursor:zoom-out}
+#lb.show{display:flex}
+#lb img{max-width:94vw;max-height:88vh;border-radius:10px;box-shadow:0 12px 60px rgba(0,0,0,.5)}
+#lb .cap{position:fixed;bottom:14px;left:0;right:0;text-align:center;color:#cfe0dd;
+  font-family:var(--mono);font-size:12px}
+#lb .sw{position:fixed;top:16px;left:0;right:0;display:flex;gap:8px;
+  justify-content:center;flex-wrap:wrap}
+#lb .sw .swb{font-family:var(--mono);font-size:11.5px;padding:6px 14px;border-radius:20px;
+  border:1px solid #3c4a4a;background:rgba(20,28,28,.8);color:#b9cbc8;cursor:pointer}
+#lb .sw .swb.on{background:var(--accent);border-color:var(--accent);color:#06211c}
+@media (prefers-reduced-motion:no-preference){
+  #lb.show img{animation:pop .18s ease}
+  @keyframes pop{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}
+}
+
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:11.5px;line-height:1.8;color:var(--faint)}
+a{color:var(--accent-ink)}
+
+/* scenario accounting: a scenario missing a result is "not compared", never a tie */
+.tally{font-size:13.5px;margin-top:8px;line-height:1.55}
+.tally .nc{color:var(--warn)}
+.pill.nc{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.scn .scores .sc.fl,.scn .scores .sc.fl:first-child{color:var(--warn);font-size:12px;font-weight:600}
+/* why an output is missing, in words, with the raw provider text kept internal */
+.crit.r .wo{display:block;color:var(--bad);font-size:12.5px;margin-bottom:3px}
+.crit.r .wt{color:var(--muted);font-size:12px;line-height:1.5}
+.rawerr{margin-top:6px}
+.rawerr summary{font-size:11px;color:var(--faint);cursor:pointer}
+.rawerr code{display:block;margin-top:4px;font-size:10.5px;color:var(--faint);word-break:break-all;line-height:1.4}
+/* media frames hold whatever the lane shows: an image, a video, an audio player */
+.shot .frame video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;display:block}
+.shot .frame.audio{height:auto;min-height:0;padding:14px;display:block}
+.shot .frame audio{width:100%;display:block}
+.srcth{border:2px solid var(--accent)}
+.scn .thumbs .srcclip{display:inline-block;padding:1px 5px;border-radius:3px;background:var(--accent);
+  color:#fff;font-size:10px;vertical-align:middle}
+.hint{font-size:12px;color:var(--faint);margin:2px 4px 0}
+.note{font-size:12.5px;color:var(--muted)}
+</style>
+
+
+<style>
+/* audio evidence: a player where the image lanes have a picture */
+.clip{padding:8px 0;border-top:1px dashed var(--rule)}
+.clip:first-child{border-top:0;padding-top:0}
+.clip .top{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin-bottom:6px}
+.clip .rl{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+.clip .meta{display:flex;flex-wrap:wrap;gap:2px 12px;font-family:var(--mono);font-size:11px;
+  color:var(--muted);margin-top:4px}
+.clip .meta b{color:var(--ink)}
+.clip .tx{font-size:12px;color:var(--muted);margin-top:6px;white-space:pre-wrap}
+.clip .was{font-size:12px;color:var(--warn);background:var(--warn-soft);border-radius:8px;
+  padding:6px 9px;margin-top:6px}
+.clip .was.dimmed{color:var(--muted);background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+.pill.corr{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.shot .frame.audio{height:auto;align-items:stretch;justify-content:flex-start;flex-direction:column;
+  padding:12px 14px;overflow:visible}
+.shot .frame.audio .badge{position:static;align-self:flex-end;margin-bottom:6px}
+/* the word-level transcript diff: what the WER gate actually compared */
+.wdiff{font-family:var(--mono);font-size:12px;line-height:1.9;padding:8px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+.wdiff .missing{background:var(--bad-soft);color:var(--bad);text-decoration:line-through;padding:0 2px}
+.wdiff .added{background:var(--accent-soft);color:var(--accent-ink);padding:0 2px}
+.wdiff .same{color:var(--muted)}
+/* human review, beside the automated result and never inside it */
+.human{border:1px dashed var(--warn);border-radius:12px;padding:10px 14px;margin-top:12px}
+.human .ob{border-top:1px dashed var(--rule);padding-top:8px;margin-top:8px}
+.human .ob:first-of-type{border-top:0;margin-top:4px}
+.human .obn{margin:4px 0;font-size:13.5px}
+/* the streaming explainer's drawing */
+.how .tl{width:100%;max-width:760px;height:auto;display:block;margin:10px 0}
+.how .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:10px 0}
+.how .q{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;font-size:13.5px}
+</style>
+
+</head>
+<body>
+
+<div class="topbar"><div class="in">
+  <span class="t">GenMedia comparison</span>
+  <span class="m">voice · 2026-09-28_073403_voice-gemini38-p2</span>
+  <nav>
+    <a href="#overall">Summary</a>
+    <a href="#evidence">Scenarios</a>
+    <a href="#footnotes">Footnotes</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+
+<header class="hero" id="summary">
+  <p class="kicker">quality · latency · reliability — blind-judged, one run per scenario</p>
+  <h1>29 scenarios ·
+      1 models · blind-judged</h1>
+  <div class="meta">
+    
+    <span>report generated <b>28 Sep 2026, 07:45 PDT</b></span>
+    <span>run created <b>2026-09-28T07:34:03-0700</b></span>
+    <span>runner <b>fb1d0c5</b></span>
+    <span>scenario set <b>52c0d88f19e3</b></span>
+    
+  </div>
+  
+</header>
+
+
+
+<h2 id="overall">Overall summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="banner"><b>Judge:</b> <code>gemini-2.5-flash</code> never calibrated against human listeners.
+  The measured figures — word errors, timing, cost, gate rate — do not depend on it.</div>
+
+
+<div class="banner"><b>Judge uncalibrated.</b> calibration gate NOT passed: reviewer-1: scored 0 clips that this run also judged; the gate needs 5; reviewer-2: scored 0 clips that this run also judged; the gate needs 5</div>
+
+<ul class="tnote">
+  <li><b>How a voice scenario is decided.</b> A model wins a scenario only when its quality gap
+  clears the 0.5 pp decision band (0.05 on the 10-point scale).</li>
+  
+</ul>
+
+
+
+
+
+
+
+<h2>Styled tts</h2>
+<div class="tw"><table class="mx">
+<thead><tr><th>Metric</th>
+<th class="num g">gemini-3-8-flash-tts<br><span class="vd">Google</span></th>
+
+</tr></thead>
+<tbody>
+
+<tr data-row="mean" class="mrow hi">
+  <td>Rating <span class="pill">higher is better</span></td>
+  <td class="num">56.7%</td>
+  
+</tr>
+
+<tr data-row="worst" class="mrow">
+  <td>Reliability (worst scenario rating) <span class="pill">higher is better</span></td>
+  <td class="num">0.0%</td>
+  
+</tr>
+
+<tr data-row="wtl" class="mrow">
+  <td>W–T–L</td>
+  <td class="num">0-0-0</td>
+  
+</tr>
+
+<tr data-row="gen_cost" class="mrow">
+  <td>Cost per clip <span class="pill">lower is better</span></td>
+  <td class="num">$0.0047</td>
+  
+</tr>
+
+<tr data-row="lat_min" class="mrow">
+  <td>Latency min <span class="pill">lower is better</span></td>
+  <td class="num">3.5s</td>
+  
+</tr>
+
+<tr data-row="lat_p50" class="mrow hi">
+  <td>Latency p50 <span class="pill">lower is better</span></td>
+  <td class="num">6.5s</td>
+  
+</tr>
+
+<tr data-row="lat_max" class="mrow">
+  <td>Latency max <span class="pill">lower is better</span></td>
+  <td class="num">11.4s</td>
+  
+</tr>
+
+</tbody></table></div>
+
+
+
+
+
+<h2>Text to speech</h2>
+<div class="tw"><table class="mx">
+<thead><tr><th>Metric</th>
+<th class="num g">gemini-3-8-flash-tts<br><span class="vd">Google</span></th>
+
+</tr></thead>
+<tbody>
+
+<tr data-row="mean" class="mrow hi">
+  <td>Rating <span class="pill">higher is better</span></td>
+  <td class="num">34.9%</td>
+  
+</tr>
+
+<tr data-row="worst" class="mrow">
+  <td>Reliability (worst scenario rating) <span class="pill">higher is better</span></td>
+  <td class="num">0.0%</td>
+  
+</tr>
+
+<tr data-row="wtl" class="mrow">
+  <td>W–T–L</td>
+  <td class="num">0-0-0</td>
+  
+</tr>
+
+<tr data-row="gen_cost" class="mrow">
+  <td>Cost per clip <span class="pill">lower is better</span></td>
+  <td class="num">$0.0051</td>
+  
+</tr>
+
+<tr data-row="lat_min" class="mrow">
+  <td>Latency min <span class="pill">lower is better</span></td>
+  <td class="num">3.3s</td>
+  
+</tr>
+
+<tr data-row="lat_p50" class="mrow hi">
+  <td>Latency p50 <span class="pill">lower is better</span></td>
+  <td class="num">5.6s</td>
+  
+</tr>
+
+<tr data-row="lat_max" class="mrow">
+  <td>Latency max <span class="pill">lower is better</span></td>
+  <td class="num">16.3s</td>
+  
+</tr>
+
+</tbody></table></div>
+
+
+
+
+
+
+<h2>By use-case family</h2>
+
+<div class="tw"><table class="roll">
+<thead>
+<tr><th rowspan="2">Family</th><th class="num" rowspan="2">Scenarios</th>
+<th class="grp a" colspan="3">gemini-3-8-flash-tts</th>
+</tr>
+<tr><th class="num sep">Quality mean</th><th class="num">Wins</th><th class="num">Win %</th></tr>
+</thead>
+<tbody>
+
+<tr class="frow" data-dim="fam" data-val="ads" tabindex="0" title="Show only ads scenarios">
+  <td><span class="fname">ads</span></td><td class="num">3</td>
+  
+  
+  <td class="num sep">60.5%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="fam" data-val="ecommerce" tabindex="0" title="Show only ecommerce scenarios">
+  <td><span class="fname">ecommerce</span></td><td class="num">8</td>
+  
+  
+  <td class="num sep">49.0%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="fam" data-val="gaming" tabindex="0" title="Show only gaming scenarios">
+  <td><span class="fname">gaming</span></td><td class="num">10</td>
+  
+  
+  <td class="num sep">76.6%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="fam" data-val="micro-drama" tabindex="0" title="Show only micro-drama scenarios">
+  <td><span class="fname">micro-drama</span></td><td class="num">3</td>
+  
+  
+  <td class="num sep">0.0%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="fam" data-val="telephony" tabindex="0" title="Show only telephony scenarios">
+  <td><span class="fname">telephony</span></td><td class="num">5</td>
+  
+  
+  <td class="num sep">0.0%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+</tbody></table></div>
+
+<ul class="tnote">
+  <li><b>Quality mean</b> is the average rating across the row's scenarios. <b>Wins</b> are
+  scenarios the model won under the rule stated above the scenario list.</li>
+  <li><b>Win %</b> is wins out of the scenarios in that row both models completed. Green tags
+  mark the row's leader.</li>
+  <li>Click a row to show only its scenarios in the list below; click it again to show all.</li>
+</ul>
+
+
+
+
+<h2>By target industry</h2>
+
+<div class="tw"><table class="roll">
+<thead>
+<tr><th rowspan="2">Industry (primary)</th><th class="num" rowspan="2">Scenarios</th>
+<th class="grp a" colspan="3">gemini-3-8-flash-tts</th>
+</tr>
+<tr><th class="num sep">Quality mean</th><th class="num">Wins</th><th class="num">Win %</th></tr>
+</thead>
+<tbody>
+
+<tr class="frow" data-dim="ind" data-val="Ads" tabindex="0" title="Show only Ads scenarios">
+  <td><span class="fname">Ads</span></td><td class="num">3</td>
+  
+  
+  <td class="num sep">60.5%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Ecommerce &amp; Retail" tabindex="0" title="Show only Ecommerce &amp; Retail scenarios">
+  <td><span class="fname">Ecommerce &amp; Retail</span></td><td class="num">7</td>
+  
+  
+  <td class="num sep">56.0%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Gaming" tabindex="0" title="Show only Gaming scenarios">
+  <td><span class="fname">Gaming</span></td><td class="num">10</td>
+  
+  
+  <td class="num sep">76.6%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Micro-drama &amp; entertainment" tabindex="0" title="Show only Micro-drama &amp; entertainment scenarios">
+  <td><span class="fname">Micro-drama &amp; entertainment</span></td><td class="num">3</td>
+  
+  
+  <td class="num sep">0.0%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Other" tabindex="0" title="Show only Other scenarios">
+  <td><span class="fname">Other</span></td><td class="num">6</td>
+  
+  
+  <td class="num sep">0.0%</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+</tbody></table></div>
+
+<p class="note">Industries come from each scenario id&#39;s prefix (vr-ecom, vr-drama, vr-game, vr-ads), one industry per scenario. Click a row to show only its
+scenarios below.</p>
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="evidence">Per-scenario evidence</h2>
+
+<div class="gallery">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chips">
+  
+  <span class="chip on" data-dim="ind" data-val="__all">All industries</span>
+  <span class="chip" data-dim="ind" data-val="Ads">Ads <span class="n">(3)</span></span><span class="chip" data-dim="ind" data-val="Ecommerce &amp; Retail">Ecommerce &amp; Retail <span class="n">(7)</span></span><span class="chip" data-dim="ind" data-val="Gaming">Gaming <span class="n">(10)</span></span><span class="chip" data-dim="ind" data-val="Micro-drama &amp; entertainment">Micro-drama &amp; entertainment <span class="n">(3)</span></span><span class="chip" data-dim="ind" data-val="Other">Other <span class="n">(6)</span></span>
+  
+  <span style="flex:1"></span>
+  
+  
+  <button class="ctl" data-act="expand" type="button">Expand all</button>
+  <button class="ctl" data-act="collapse" type="button">Collapse all</button>
+</div>
+<div class="chips">
+  <span class="chip on" data-dim="win" data-val="__all">All results</span>
+  
+    
+    
+  
+  
+  
+  
+  
+  
+  <span class="chip" data-dim="win" data-val="none">Not compared <span class="n">(29)</span></span>
+</div>
+
+<div class="chips">
+  <span class="chip on" data-dim="fam" data-val="__all">All families</span>
+  <span class="chip" data-dim="fam" data-val="ads">ads <span class="n">(3)</span></span><span class="chip" data-dim="fam" data-val="ecommerce">ecommerce <span class="n">(8)</span></span><span class="chip" data-dim="fam" data-val="gaming">gaming <span class="n">(10)</span></span><span class="chip" data-dim="fam" data-val="micro-drama">micro-drama <span class="n">(3)</span></span><span class="chip" data-dim="fam" data-val="telephony">telephony <span class="n">(5)</span></span>
+</div>
+
+<p class="note">Click a scenario to expand; press play on any clip — one plays at a time.
+A scenario is won only when the quality gap clears the 0.5 pp decision band. A closer gap is recorded as a tie, and every win count on this page uses that same rule.</p>
+
+
+<div class="scnlist">
+
+<details class="scn rev" id="scn-voi-ret-01" data-fam="ecommerce"
+         data-ind="Other" data-win="none"
+         data-task="text_to_speech" data-i="0"
+         data-g="0.0"
+         data-c=""
+         data-d="" open>
+  <summary>
+    <span class="sid">voi-ret-01</span>
+    <span class="stitle">Conversational product recommendation - E-commerce / Retail</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> I found two options that match your requirements for a lightweight laptop under seventy-five thousand rupees. The ASUS Vivobook S 14 has sixteen gigabytes of RAM, a five-hundred-and-twelve-gigabyte SSD, and a fourteen-inch OLED display. It is currently priced at sixty-nine thousand nine hundred and ninety-nine rupees. If you prefer a larger screen, the Lenovo IdeaPad Slim 5 has sixteen gigabytes of RAM, a one-terabyte SSD, and a sixteen-inch display for seventy-two thousand four hundred and ninety rupees. Both models are available for delivery by Friday, and the Lenovo includes a three-year extended warranty. Based on your preference for battery life and a larger display, I would recommend the Lenovo.</div>
+      <div class="brief"><b>Expected:</b> 1) Product names pronounced clearly and consistently
+2) RAM, SSD, screen sizes and storage capacities verbalised correctly
+3) All prices stated with the correct rupee amounts
+4) No omission or substitution of product attributes
+5) Delivery date stated clearly
+6) Warranty duration stated correctly
+7) Recommendation delivered naturally and conversationally
+8) Unhurried shopping-assistant pace with every commercially relevant
+   number, product attribute and qualification distinctly intelligible.</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/voi-ret-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>16.3s</b></span>
+    
+    <span>length <b>38.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">16.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 1797 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 1797 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.11/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-01" data-fam="telephony"
+         data-ind="Other" data-win="none"
+         data-task="text_to_speech" data-i="1"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-01</span>
+    <span class="stitle">Order number readback - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your order number is 4471 8802 3915.</div>
+      <div class="brief"><b>Expected:</b> 1) All twelve digits correct and in order  2) Grouped into readable chunks
+3) No digits merged or dropped  4) Clear at telephony bandwidth Delivered
+at an unhurried telephony pace, every digit distinct.</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/voi-tel-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.2s</b></span>
+    
+    <span>length <b>6.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.2s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 1622 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 1622 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.933/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-02" data-fam="telephony"
+         data-ind="Other" data-win="none"
+         data-task="text_to_speech" data-i="2"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-02</span>
+    <span class="stitle">Currency confirmation - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The amount is four thousand two hundred and fifty rupees and seventy-five paise.</div>
+      <div class="brief"><b>Expected:</b> 1) Whole amount correct  2) Fractional amount correct  3) Currency unit
+stated correctly  4) Natural verbalisation Delivered at an unhurried
+telephony pace, every digit distinct.</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/voi-tel-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 2798 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 2798 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.669/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-06" data-fam="telephony"
+         data-ind="Other" data-win="none"
+         data-task="text_to_speech" data-i="3"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-06</span>
+    <span class="stitle">Phone number readback - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your number is 98450 12345.</div>
+      <div class="brief"><b>Expected:</b> 1) All ten digits correct  2) Grouped 5 and 5  3) No digits transposed  4)
+Clear at telephony bandwidth Delivered at an unhurried telephony pace,
+every digit distinct.</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/voi-tel-06/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.3s</b></span>
+    
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">5.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 1895 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 1895 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.956/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-08" data-fam="telephony"
+         data-ind="Other" data-win="none"
+         data-task="text_to_speech" data-i="4"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-08</span>
+    <span class="stitle">OTP digit sequence - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your one-time code is 7 3 9 1 5 2.</div>
+      <div class="brief"><b>Expected:</b> 1) All six digits correct in order  2) Read individually, not as a number
+3) Audible pause between digits  4) No repetition Delivered at an
+unhurried telephony pace, every digit distinct.</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/voi-tel-08/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.0s</b></span>
+    
+    <span>length <b>5.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 1964 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 1964 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.787/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-09" data-fam="telephony"
+         data-ind="Other" data-win="none"
+         data-task="text_to_speech" data-i="5"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-09</span>
+    <span class="stitle">Card last-four confirmation - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your card ending in 4419 has been confirmed.</div>
+      <div class="brief"><b>Expected:</b> 1) Digits 4419 correct  2) Only the last four spoken  3) No full number
+generated  4) Phrasing appropriate to a payment context Delivered at an
+unhurried telephony pace, every digit distinct.</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/voi-tel-09/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.3s</b></span>
+    
+    <span>length <b>3.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 2109 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 2109 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.966/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ads-02" data-fam="ads"
+         data-ind="Ads" data-win="none"
+         data-task="styled_tts" data-i="6"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ads-02</span>
+    <span class="stitle">Fifteen-second broadcast spot, exact duration - Ads</span>
+    <span class="pill" title="also relevant to: —">Ads</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Monsoon&#39;s here. So is the Kalyani Motors service camp. Free twenty-one point inspection, wiper and brake-pad check, up to thirty percent off parts. Three days only, at all fourteen Bengaluru branches. Kalyani Motors. Drive the monsoon, don&#39;t dread it.</div>
+      <div class="brief"><b>Expected:</b> 1) Trimmed read within 0.1s of 15.0 seconds
+2) No audible time-stretching or rate artefacts used to get there
+3) &#34;Kalyani Motors&#34; and &#34;Bengaluru&#34; pronounced as an Indian listener expects
+4) The three offer terms - inspection, discount, branch count - all
+   distinctly intelligible at pace
+5) Brand name lands cleanly in the sign-off, not swallowed by the tag line</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ads-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>7.5s</b></span>
+    
+    <span>length <b>16.1s</b></span>
+    <span>word errors <b>4.7%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">7.5s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ trimmed_duration_in_range · 15.400s trimmed vs [14.9, 15.1] (raw 16.080s, lead 0.28 trail 0.40)</span><span class="pill bad">✗ must_say[fourteen Bengaluru branches] · looked for &#39;fourteen bengaluru branches&#39; as whole words</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>trimmed_duration_in_range</b>: 15.400s trimmed vs [14.9, 15.1] (raw 16.080s, lead 0.28 trail 0.40). Failed <b>must_say[fourteen Bengaluru branches]</b>: looked for &#39;fourteen bengaluru branches&#39; as whole words.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 4.7%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.968/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ads-05" data-fam="ads"
+         data-ind="Ads" data-win="none"
+         data-task="styled_tts" data-i="7"
+         data-g="8.971"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ads-05</span>
+    <span class="stitle">Brand name pronunciation, no markup permitted - Ads</span>
+    <span class="pill" title="also relevant to: —">Ads</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">89.71%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> This season, Nykaa brings you three days of beauty. Save up to forty percent at Nykaa, plus an extra ten percent with Jio Pay. Discover Kaya Clinic favourites, Cetaphil essentials, and the full Nykaa Naturals range. Nykaa. Three days only. Kaya, Cetaphil and Jio Pay offers apply while stocks last.</div>
+      <div class="brief"><b>Expected:</b> 1) &#34;Nykaa&#34; pronounced NY-kaa consistently on all four mentions - the
+   counter-intuitive one, and the client&#39;s own name
+2) &#34;Kaya&#34;, &#34;Cetaphil&#34; and &#34;Jio Pay&#34; each pronounced as the brand does
+3) No mention slurred or swallowed at pace
+4) Consistent across mentions - the same name twice, the same way
+5) Bright retail energy without distortion</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">89.71%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">89.71%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ads-05/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.0s</b></span>
+    
+    <span>length <b>18.3s</b></span>
+    <span>word errors <b>6.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">8.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 6.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.112/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar md"
+                    style="width: 70.0%"></span></span>
+              <span class="v">70%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 86.4%"></span></span>
+              <span class="v">86.4%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All brand names, including &#39;Nykaa&#39;, &#39;Kaya&#39;, &#39;Cetaphil&#39;, and &#39;Jio Pay&#39;, were pronounced correctly and consistently with the expected en-IN brand pronunciations.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The prosody and pacing were natural for a retail advertisement, delivering the script smoothly without sounding robotic or over-acted, despite the quick pace.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“The speaker maintained excellent clarity throughout the clip; every word was intelligible, with no mumbling, slurring, or swallowed word endings.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio quality was clean with no audible glitches, clipping, abrupt cuts, or processing damage detected.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery perfectly matched the &#39;bright retail beauty read, warm and quick&#39; directive, conveying an energetic and inviting tone at a fast pace.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">this season nykaa brings you three days of beauty save up to forty percent at nykaa plus an extra ten percent with jio pay discover kaya clinic</span> <span class="missing">favourites</span> <span class="added">favorites</span> <span class="same">cetaphil essentials and the full nykaa naturals range nykaa three days only kaya cetaphil and jio pay</span> <span class="missing">offers apply</span> <span class="added">offer supply</span> <span class="same">while stocks last</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ads-06" data-fam="ads"
+         data-ind="Ads" data-win="none"
+         data-task="styled_tts" data-i="8"
+         data-g="9.183987499999999"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ads-06</span>
+    <span class="stitle">Compliance disclaimer at broadcast pace - Ads</span>
+    <span class="pill" title="also relevant to: —">Ads</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">91.84%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Credit is subject to status and affordability checks. Representative APR twenty-four point nine percent variable. Minimum repayment two thousand five hundred rupees per month over thirty-six months. Missing payments may affect your credit rating. Terms, conditions and eligibility criteria apply. Kalyani Finance is a registered non-banking financial company.</div>
+      <div class="brief"><b>Expected:</b> 1) Delivered at disclaimer pace, not conversational pace
+2) Every numeric condition - APR, repayment, term - fully intelligible
+3) &#34;non-banking financial company&#34; articulated, not slurred into one word
+4) Flat and even: no sales inflection on legal copy
+5) Word endings preserved at speed - the first thing lost when a model
+   is pushed and the first thing a regulator notices</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">91.84%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">91.84%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ads-06/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.1s</b></span>
+    
+    <span>length <b>14.6s</b></span>
+    <span>word errors <b>3.9%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">8.1s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 3.9%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.129/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 80.4%"></span></span>
+              <span class="v">80.39%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 86.6%"></span></span>
+              <span class="v">86.61%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All targeted items, including &#39;APR&#39;, &#39;twenty-four point nine percent&#39;, &#39;two thousand five hundred rupees&#39;, &#39;thirty-six months&#39;, and &#39;Kalyani Finance&#39;, were pronounced clearly and correctly.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The delivery maintains a natural, professional tone appropriate for a fast disclaimer, avoiding both robotic stiffness and over-acting.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“The speech is highly intelligible at speed, with no mumbling, slurring, or swallowed word endings, ensuring all information is clear.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean with no audible artefacts, glitches, abrupt cuts, or processing damage.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery perfectly matches the &#39;fast statutory disclaimer read, flat and even, fully articulated&#39; directive, with all numeric conditions intelligible and no sales inflection.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">credit is subject to status and affordability checks representative apr twenty four point nine percent variable minimum repayment two thousand five hundred rupees per month over thirty six months missing payments may affect your credit rating terms conditions and eligibility criteria apply</span> <span class="missing">kalyani</span> <span class="added">call yanni</span> <span class="same">finance is a registered non banking financial company</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-drama-01" data-fam="micro-drama"
+         data-ind="Micro-drama &amp; entertainment" data-win="none"
+         data-task="styled_tts" data-i="9"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-drama-01</span>
+    <span class="stitle">Episodic narration, voice held across sessions - Micro-drama</span>
+    <span class="pill" title="also relevant to: —">Micro-drama &amp; entertainment</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The lamps along the causeway came on one at a time, the way they always did, and Sarala counted them without meaning to. Eleven, twelve, thirteen. By the fourteenth she had reached the turning, and by the fifteenth she had decided. She would not go back to the house tonight. She would walk until the road ran out, and then she would see what the sea had to say about it.</div>
+      <div class="brief"><b>Expected:</b> 1) One narrator identity, unchanged from the first line to the last
+2) The same identity when this scenario is run again in a later session
+3) Storytelling warmth sustained rather than decaying into list-reading
+4) The counted numbers read as narration, not as a list</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-drama-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>10.9s</b></span>
+    
+    <span>length <b>26.3s</b></span>
+    <span>word errors <b>18.3%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">10.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ wer_within_max · normalized WER 0.1831 vs max 0.06</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>wer_within_max</b>: normalized WER 0.1831 vs max 0.06.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 18.3%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.768/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-drama-02" data-fam="micro-drama"
+         data-ind="Micro-drama &amp; entertainment" data-win="none"
+         data-task="text_to_speech" data-i="10"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-drama-02</span>
+    <span class="stitle">Narration to ACX submission spec - Micro-drama &amp; entertainment</span>
+    <span class="pill" title="also relevant to: —">Micro-drama &amp; entertainment</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The harbour at Vathy had been awake for an hour before Ilse reached it. She came down the cut between the chandlery and the ice house with her collar turned up, counting the boats as she always did, and found the Kerensa gone from her mooring. Nobody had thought to telephone. The berth held nothing but a coil of blue rope and the flat grey water closing over where the hull had been. Ilse stood there long enough for the light to change. Then she walked back up the cut, past the chandlery, past the ice house, and knocked on a door she had promised herself she would never knock on again.</div>
+      <div class="brief"><b>Expected:</b> 1) Consistent narrative voice throughout, no drift in pace or register
+2) &#34;Vathy&#34;, &#34;Ilse&#34; and &#34;Kerensa&#34; pronounced consistently on every mention
+3) Sentence-final falls that let the prose breathe; no list-reading cadence
+4) Nothing clipped, no artefacts at sentence joins
+5) Output inside the ACX loudness, peak and noise-floor windows without
+   any mastering</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-drama-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>15.4s</b></span>
+    
+    <span>length <b>40.7s</b></span>
+    <span>word errors <b>4.5%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">15.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ peak_below_max · peak -1.32 dBFS vs max -3.0 dBFS</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>peak_below_max</b>: peak -1.32 dBFS vs max -3.0 dBFS.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 4.5%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.725/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-drama-04" data-fam="micro-drama"
+         data-ind="Micro-drama &amp; entertainment" data-win="none"
+         data-task="styled_tts" data-i="11"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-drama-04</span>
+    <span class="stitle">Dubbed line fitted to an 11.0s shot - Micro-drama &amp; entertainment</span>
+    <span class="pill" title="also relevant to: —">Micro-drama &amp; entertainment</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> You said you would come back before the monsoon. I waited. The house is still standing, and so am I. But do not mistake that for forgiveness.</div>
+      <div class="brief"><b>Expected:</b> 1) Trimmed length within 0.15s of the 11.0s shot
+2) No audible time-stretching or rate artefacts to achieve it
+3) The four sentences land as four beats, with the pause before
+   &#34;But do not mistake that for forgiveness&#34; carrying the turn
+4) Anger held under the surface - clipped consonants, not volume
+5) Every word intelligible despite the restraint</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-drama-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>6.5s</b></span>
+    
+    <span>length <b>12.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">6.5s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ trimmed_duration_in_range · 11.960s trimmed vs [10.85, 11.15] (raw 12.680s, lead 0.34 trail 0.38)</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>trimmed_duration_in_range</b>: 11.960s trimmed vs [10.85, 11.15] (raw 12.680s, lead 0.34 trail 0.38).</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.947/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-01" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="text_to_speech" data-i="12"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-01</span>
+    <span class="stitle">WISMO order status readback - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Thank you for holding. I have found your order. The reference is 4 8 1 9 0 2 7 7 3 1 5 4. Your parcel left our Bhiwandi facility this morning and is with Blue Dart. Delivery is scheduled for Thursday the fourteenth, between two and four in the afternoon. Shall I send the confirmation to your registered mobile ending 6 3 0 2?</div>
+      <div class="brief"><b>Expected:</b> 1) Every one of the twelve reference digits spoken correctly and in order
+2) Digits delivered at a pace a caller could write down
+3) &#34;Bhiwandi&#34; and &#34;Blue Dart&#34; pronounced as an Indian customer would expect
+4) Date and time window unambiguous
+5) Partial mobile number correct, and no other long digit run invented
+6) Unhurried service pace throughout; no rushing of the reference</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>11.3s</b></span>
+    
+    <span>length <b>24.4s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">11.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 1884 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 1884 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 1.5%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.706/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-02" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="13"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-02</span>
+    <span class="stitle">Cart-recovery call, agent turn only - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Hi, this is Meera calling from Urban Ladder. I noticed you were looking at the Fenton three-seater sofa but did not complete your order, and I wanted to check whether something got in the way. If it was the delivery timeline, we can get it to you in nine days rather than the fourteen shown at checkout. And your cart is still saved. Would it help if I sent the checkout link to your registered number?</div>
+      <div class="brief"><b>Expected:</b> 1) &#34;Urban Ladder&#34; and &#34;Fenton three-seater&#34; stated intact
+2) Both delivery figures correct and clearly distinguished
+3) Warm and consultative - a person checking in, not closing
+4) The closing question sounds like a question, not a script beat
+5) No pushy sales inflection; this is the difference that gets an
+   outbound call tolerated rather than hung up on</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>11.4s</b></span>
+    
+    <span>length <b>24.6s</b></span>
+    <span>word errors <b>1.3%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">11.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 2136 ms vs a 1000 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 2136 ms vs a 1000 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 1.3%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.808/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-03" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="text_to_speech" data-i="14"
+         data-g="9.8528125"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-03</span>
+    <span class="stitle">Refund confirmation in Indian numbering - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">98.53%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your refund has been approved. The full amount of Rs 2,50,000 will be credited to the UPI account ending 4 4 1 9 within seven working days. Your reference number for this refund is 9 0 3 7 6 2. If the amount has not appeared after seven working days, please call us back and quote that reference.</div>
+      <div class="brief"><b>Expected:</b> 1) Rs 2,50,000 spoken in the Indian system - lakh, not hundred-thousand
+2) The currency named as rupees
+3) UPI account last-four correct, and no longer digit run invented
+4) Reference number 903762 correct and separable from the account digits
+5) Policy window stated exactly as written, not paraphrased
+6) Calm, factual refund-desk delivery</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">98.53%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">98.53%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-03/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.7s</b></span>
+    
+    <span>length <b>20.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">9.7s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.215/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.30">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 90.2%"></span></span>
+              <span class="v">90.19%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“The amount &#39;2,50,000&#39; was correctly pronounced as &#39;two lakh fifty thousand rupees&#39; in the Indian system, and all digit strings and the acronym &#39;UPI&#39; were clear and accurate.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.20</span><br>“The delivery is calm, factual, and professional, perfectly matching the requested refund-desk style without being robotic or over-acted.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.15</span><br>“The speech is exceptionally clear and intelligible at a normal volume, with no mumbling, slurring, or swallowed word endings.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“There are no audible artefacts, glitches, abrupt cuts, or processing damage present in the clip.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">your refund has been approved the full amount of two lakh fifty thousand rupees will be credited to the upi account ending four four one nine within seven working days your reference number for this refund is nine zero three seven six two if the amount has not appeared after seven working days please call us back and quote that reference</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-04" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="text_to_speech" data-i="15"
+         data-g="9.8035"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-04</span>
+    <span class="stitle">After-hours booking readback - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">98.03%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Lovely, that is all confirmed. Let me read it back to you. A table for seven, on Saturday the twenty-second of November, at eight in the evening, under the name Raghavan. We will hold the table for fifteen minutes past the booking time. If anything changes, call us on 9 8 4 5 0 2 7 7 1 6. We look forward to seeing you.</div>
+      <div class="brief"><b>Expected:</b> 1) Party size, date, time and name all stated correctly
+2) The ten-digit callback number read digit by digit, correctly
+3) &#34;Raghavan&#34; pronounced as an Indian customer would expect
+4) The fifteen-minute hold condition stated, not paraphrased away
+5) Warm front-of-house manner, unhurried enough to write down</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">98.03%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">98.03%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.3s</b></span>
+    
+    <span>length <b>21.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">9.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.952/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.30">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 86.9%"></span></span>
+              <span class="v">86.9%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“The Indian name &#34;Raghavan&#34; is pronounced correctly with an appropriate Indian accent, and the phone number digits are clearly articulated individually.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.20</span><br>“The speaker maintains a warm and unhurried front-of-house manner, with natural prosody and pacing suitable for conveying booking details.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.15</span><br>“The speech is highly intelligible with no mumbling, slurring, or swallowed word endings, making all information easy to understand.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean and free from any audible artefacts, glitches, abrupt cuts, or processing damage.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">lovely that is all confirmed let me read it back to you a table for seven on saturday the twenty second of november at eight in the evening under the name raghavan we will hold the table for fifteen minutes past the booking time if anything changes call us on nine eight four five zero two seven seven one six we look forward to seeing you</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-06#bare" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="text_to_speech" data-i="16"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-06#bare</span>
+    <span class="stitle">bare readback, no clarifiers</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your verification reference is B 8 Q O Z 2 G 6. Please also confirm the card ending 4 4 1 9.</div>
+      <div class="brief"><b>Expected:</b> 1) Every confusable pair distinguishable by ear - B/8, Q/O, Z/2, G/6
+2) The card last-four correct, and no longer digit run produced
+3) Unhurried verification pace - a caller is writing this down
+4) Each character given its own space; no run-together</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-06%23bare/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>6.0s</b></span>
+    
+    <span>length <b>10.8s</b></span>
+    <span>word errors <b>4.5%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">6.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ alnum_exact · expected &#39;b8qoz2g6&#39;, transcript yielded &#39;b8q0z2g64419&#39; - 7/8 characters, errors: o-&gt;0 (qo)</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>alnum_exact</b>: expected &#39;b8qoz2g6&#39;, transcript yielded &#39;b8q0z2g64419&#39; - 7/8 characters, errors: o-&gt;0 (qo).</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 4.5%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.034/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-06#nato" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="text_to_speech" data-i="17"
+         data-g="9.8385625"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-06#nato</span>
+    <span class="stitle">with NATO clarifiers</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">98.39%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your verification reference is Bravo, eight, Quebec, Oscar, Zulu, two, Golf, six. Please also confirm the card ending 4 4 1 9.</div>
+      <div class="brief"><b>Expected:</b> 1) Every confusable pair distinguishable by ear - B/8, Q/O, Z/2, G/6
+2) The card last-four correct, and no longer digit run produced
+3) Unhurried verification pace - a caller is writing this down
+4) Each character given its own space; no run-together</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">98.39%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">98.39%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-06%23nato/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.8s</b></span>
+    
+    <span>length <b>12.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">5.8s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.139/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.30">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 89.2%"></span></span>
+              <span class="v">89.24%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All phonetic alphabet words and digits were clearly articulated, ensuring confusable pairs like B/8 and Q/O were easily distinguishable.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.20</span><br>“The pacing was unhurried and deliberate, allowing sufficient time for a listener to note down the reference, with each character clearly separated.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.15</span><br>“The speech was highly intelligible with no mumbling, slurring, or run-together words, making all characters and digits easy to understand.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio was free of any audible artefacts, glitches, or abrupt cuts, presenting a clean and consistent sound.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">your verification reference is bravo eight quebec oscar zulu two golf six please also confirm the card ending four four one nine</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-07" data-fam="ecommerce"
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="text_to_speech" data-i="18"
+         data-g="9.696375"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-07</span>
+    <span class="stitle">Cost per finished minute at volume - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">96.96%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Thank you for calling. Your order is confirmed and will arrive on Thursday. Is there anything else I can help you with today?</div>
+      <div class="brief"><b>Expected:</b> 1) A representative single support turn, read at service pace
+2) Cost, latency and finished duration recorded for the cost model
+3) Quality high enough that the cost comparison is like-for-like</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">96.96%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">96.96%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-ecom-07/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    
+    <span>length <b>6.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.914/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.30">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 86.4%"></span></span>
+              <span class="v">86.42%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words are pronounced clearly with an appropriate en-IN accent, matching how a competent native speaker would articulate them.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.20</span><br>“The prosody, pacing, and emotional register are natural and fitting for a customer service interaction, avoiding any robotic or over-acted delivery.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.15</span><br>“The speech is highly intelligible at normal volume, with no mumbling, slurring, or swallowed word endings detected.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“There are no audible artefacts, glitches, abrupt cuts, or processing damage present in the clip.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">thank you for calling your order is confirmed and will arrive on thursday is there anything else i can help you with today</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-01" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="19"
+         data-g="9.674875"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-01</span>
+    <span class="stitle">Mission briefing with item and danger callouts - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">96.75%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Raider, listen up. Extraction point is grid 7 4 2 9, north face of the Speranza Dam. You are carrying one Kestrel-pattern rebreather and three units of refined cobalt. Do not drop them. ARC patrols are heaviest between the silos, so move along the eastern wall instead. The storm front closes that corridor in nine minutes. If you miss the window, fall back to Cache Delta and hold for the next rotation. Good luck out there.</div>
+      <div class="brief"><b>Expected:</b> 1) Grid reference 7429 spoken digit by digit and correct
+2) &#34;Speranza&#34;, &#34;Kestrel-pattern rebreather&#34; and &#34;Cache Delta&#34; pronounced
+   clearly and plausibly on first encounter - no dictionary to fall back on
+3) &#34;refined cobalt&#34; and the nine-minute window stated exactly
+4) Handler register: clipped, urgent, controlled - not narrated
+5) Every callout intelligible at speed; no swallowed word endings</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">96.75%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">96.75%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.9s</b></span>
+    
+    <span>length <b>23.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">9.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.866/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 83.3%"></span></span>
+              <span class="v">83.32%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“The grid reference &#39;7 4 2 9&#39; was spoken digit by digit, and &#39;Speranza&#39;, &#39;Kestrel-pattern rebreather&#39;, and &#39;Cache Delta&#39; were all pronounced clearly and plausibly.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The pacing is appropriately urgent yet controlled, with natural prosody and emphasis on critical information, avoiding any robotic or over-acted delivery.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“Every word is highly intelligible at speed, with no mumbling, slurring, or swallowed word endings, ensuring all instructions are perfectly clear.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean with no discernible artifacts, glitches, abrupt cuts, or audible processing damage.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery perfectly matches the &#39;clipped military handler over comms, urgent but controlled&#39; directive, conveying authority and urgency without panic.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">raider listen up extraction point is grid seven four two nine north face of the speranza dam you are carrying one kestrel pattern rebreather and three units of refined cobalt do not drop them arc patrols are heaviest between the silos so move along the eastern wall instead the storm front closes that corridor in nine minutes if you miss the window fall back to cache delta and hold for the next rotation good luck out there</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-02" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="20"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-02</span>
+    <span class="stitle">Announcer escalation across five energy beats - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> We&#39;re level at 14 to 14, ninety seconds on the clock. Vasquez has the cash box and she&#39;s moving. Kowalski is cutting the angle, he&#39;s going to catch her at the bridge. Oh, she jukes! She&#39;s through! Vasquez is through and the platform is lighting up! That is the steal of the tournament, and Ironhaus take it, 18 to 14!</div>
+      <div class="brief"><b>Expected:</b> 1) Energy escalates across the five beats - level call, build, near-miss,
+   break, climax - and is audibly different at the end from the start
+2) &#34;Vasquez&#34;, &#34;Kowalski&#34; and &#34;Ironhaus&#34; correct and consistent
+3) Both scores stated correctly, final score 18 to 14
+4) No dead air; commentary keeps pace with the described action
+5) Excitement carried by pace and pitch rather than distortion - the
+   climax must not clip</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.6s</b></span>
+    
+    <span>length <b>18.0s</b></span>
+    <span>word errors <b>12.5%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">8.6s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ wer_within_max · normalized WER 0.1250 vs max 0.09</span><span class="pill bad">✗ must_say[14 to 14] · looked for &#39;fourteen to fourteen&#39; as whole words</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>wer_within_max</b>: normalized WER 0.1250 vs max 0.09. Failed <b>must_say[14 to 14]</b>: looked for &#39;fourteen to fourteen&#39; as whole words.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 12.5%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.919/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-03" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="21"
+         data-g="0.0"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-03</span>
+    <span class="stitle">Real-time NPC response, time to first audio - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">0%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> You should not have come this far alone, Raider. Turn back to the ridge and I will cover you.</div>
+      <div class="brief"><b>Expected:</b> 1) First audio inside the 300ms immersion threshold game teams cite
+2) The line delivered in character, not read
+3) Latency stable under twenty concurrent sessions</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">0%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-03/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.5s</b></span>
+    
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.5s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          <span class="pill bad">invalid — earned 0</span>
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max · first audio at 1790 ms vs a 300 ms ceiling</span>
+          
+          
+          
+          <div class="crit r"><b class="wo">Scored 0 — not judged.</b>
+            <div class="wt">A failed gate makes the cell invalid, and the judge is never
+            called for it, so there is no reasoning to show.
+             Failed <b>ttfa_within_max</b>: first audio at 1790 ms vs a 300 ms ceiling.</div>
+          </div>
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.757/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04#engineer" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="22"
+         data-g="8.801012499999999"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04#engineer</span>
+    <span class="stitle">Six distinct NPC voices - Gaming — engineer</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">88.01%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The coupling is fine. The problem is whoever wired the relay backwards, and it was not me.</div>
+      <div class="brief"><b>Expected:</b> 1) Six characters an ear can tell apart, no pair confusable
+2) Each voice plausibly matching the role it was cast for
+3) The line intelligible in every voice - a distinctive NPC that cannot be
+   understood mid-firefight is not shippable</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">88.01%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">88.01%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-04%23engineer/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.0s</b></span>
+    
+    <span>length <b>6.7s</b></span>
+    <span>word errors <b>5.9%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 5.9%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.927/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar md"
+                    style="width: 70.6%"></span></span>
+              <span class="v">70.59%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 84.1%"></span></span>
+              <span class="v">84.09%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 90.0%"></span></span>
+              <span class="v">90%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words in the script are pronounced clearly and correctly, with no mispronunciations of any specific terms or general vocabulary.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The pacing and prosody are natural, with appropriate pauses and intonation that avoid sounding robotic or over-acted.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“Every word is perfectly intelligible with no mumbling, slurring, or swallowed word endings, even at normal listening volume.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean with no audible glitches, abrupt cuts, or processing artifacts that detract from the listening experience.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery is dry and matter-of-fact, fitting the &#39;station engineer&#39; persona well without being overly emotional or dramatic.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">the coupling</span> <span class="missing">is</span> <span class="added">s</span> <span class="same">fine the problem is whoever wired the relay backwards and it was not me</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04#handler" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="23"
+         data-g="9.7080625"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04#handler</span>
+    <span class="stitle">Six distinct NPC voices - Gaming — handler</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">97.08%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Hold your position, Raider. Extraction is nine minutes out and the corridor is not clear.</div>
+      <div class="brief"><b>Expected:</b> 1) Six characters an ear can tell apart, no pair confusable
+2) Each voice plausibly matching the role it was cast for
+3) The line intelligible in every voice - a distinctive NPC that cannot be
+   understood mid-firefight is not shippable</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">97.08%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">97.08%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-04%23handler/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.0s</b></span>
+    
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">5.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.043/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 85.5%"></span></span>
+              <span class="v">85.54%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words, including &#39;Raider&#39; and &#39;nine&#39;, are pronounced clearly and correctly as a competent native speaker would.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The prosody and pacing are natural, with appropriate pauses and a human-like delivery that avoids sounding robotic or over-acted.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“Every word is perfectly intelligible at normal volume, with no mumbling, slurring, or swallowed word endings.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The clip is free of any audible artifacts, glitches, abrupt cuts, or processing damage.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery perfectly matches the &#39;mission handler over comms&#39; style, being both firm and unhurried, conveying authority without rushing.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">hold your position raider extraction is nine minutes out and the corridor is not clear</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04#medic" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="24"
+         data-g="9.631375"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04#medic</span>
+    <span class="stitle">Six distinct NPC voices - Gaming — medic</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">96.31%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Sit down and let me look at it. You are not walking anywhere on that leg, so stop arguing.</div>
+      <div class="brief"><b>Expected:</b> 1) Six characters an ear can tell apart, no pair confusable
+2) Each voice plausibly matching the role it was cast for
+3) The line intelligible in every voice - a distinctive NPC that cannot be
+   understood mid-firefight is not shippable</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">96.31%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">96.31%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-04%23medic/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    
+    <span>length <b>5.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.834/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 85.4%"></span></span>
+              <span class="v">85.43%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words in the script are pronounced clearly and correctly, with no mispronounced items or unusual inflections.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The prosody and pacing are very natural, avoiding any robotic or over-acted delivery. The emotional register feels authentic for the context.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“Every word is perfectly intelligible with no mumbling, slurring, or swallowed word endings, even at a normal listening volume.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“There are no audible artifacts, glitches, abrupt cuts, or signs of processing damage present in the clip.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery perfectly embodies a &#39;field medic&#39; with a warm, authoritative tone, and maintains a steady, calm demeanor under pressure.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">sit down and let me look at it you are not walking anywhere on that leg so stop arguing</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04#quartermaster" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="25"
+         data-g="9.7136875"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04#quartermaster</span>
+    <span class="stitle">Six distinct NPC voices - Gaming — quartermaster</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">97.14%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Supplies are short and the gate closes at dusk. Take what you need and be quick about it.</div>
+      <div class="brief"><b>Expected:</b> 1) Six characters an ear can tell apart, no pair confusable
+2) Each voice plausibly matching the role it was cast for
+3) The line intelligible in every voice - a distinctive NPC that cannot be
+   understood mid-firefight is not shippable</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">97.14%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">97.14%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-04%23quartermaster/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.4s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.873/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 85.9%"></span></span>
+              <span class="v">85.91%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words are pronounced clearly and correctly, with no mispronunciations or unusual inflections for standard English.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The delivery exhibits natural prosody and pacing, conveying a weary and resigned tone without sounding artificial or over-acted.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“Each word is distinctly articulated and easily understood at a normal listening volume, with no instances of mumbling or slurring.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean with no audible artefacts, glitches, abrupt cuts, or processing damage detected.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The speaker&#39;s slow, gruff pacing and resigned tone perfectly embody the &#34;weary quartermaster, past caring about rank&#34; directive.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">supplies are short and the gate closes at dusk take what you need and be quick about it</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04#scout" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="26"
+         data-g="9.7245625"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04#scout</span>
+    <span class="stitle">Six distinct NPC voices - Gaming — scout</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">97.25%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Movement on the ridge. Two of them, maybe three. I am not waiting to find out which.</div>
+      <div class="brief"><b>Expected:</b> 1) Six characters an ear can tell apart, no pair confusable
+2) Each voice plausibly matching the role it was cast for
+3) The line intelligible in every voice - a distinctive NPC that cannot be
+   understood mid-firefight is not shippable</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">97.25%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">97.25%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-04%23scout/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.6s</b></span>
+    
+    <span>length <b>5.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.6s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 3.931/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 86.6%"></span></span>
+              <span class="v">86.64%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words are pronounced clearly and correctly, with no mispronunciations of standard English words.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The prosody and pacing are natural and convey a sense of urgency appropriate for the situation. It avoids sounding robotic or over-acted.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“The speech is exceptionally clear, with no mumbling, slurring, or swallowed word endings, making every word easily understood.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean with no discernible artefacts, glitches, abrupt cuts, or audible processing damage.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery is quick, urgent, and clipped, perfectly matching the &#34;young scout, clipped and alert&#34; style directive.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">movement on the ridge two of them maybe three i am not waiting to find out which</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04#trader" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="27"
+         data-g="9.5914375"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04#trader</span>
+    <span class="stitle">Six distinct NPC voices - Gaming — trader</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">95.91%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Good salvage, that. I will give you four hundred for it, and we both know it is worth three.</div>
+      <div class="brief"><b>Expected:</b> 1) Six characters an ear can tell apart, no pair confusable
+2) Each voice plausibly matching the role it was cast for
+3) The line intelligible in every voice - a distinctive NPC that cannot be
+   understood mid-firefight is not shippable</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">95.91%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">95.91%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-04%23trader/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.4s</b></span>
+    
+    <span>length <b>5.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.021/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.25">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.10">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 82.8%"></span></span>
+              <span class="v">82.76%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">style_adherence</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words, including the digit strings &#39;four hundred&#39; and &#39;three&#39;, are pronounced clearly and correctly as a native English speaker would.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.15</span><br>“The prosody and pacing are natural and engaging, avoiding any robotic or overly dramatic delivery, fitting the conversational tone of a negotiation.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.10</span><br>“The speech is perfectly intelligible at a normal volume, with no mumbling, slurring, or swallowed word endings.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“There are no audible artifacts, glitches, abrupt cuts, or processing damage detected in the clip.”</div>
+          
+            <div class="r"><b>style_adherence</b> <span class="src">judge · w 0.15</span><br>“The delivery is bright and quick, with an energetic, persuasive tone that strongly matches the &#39;market trader, bright and quick, always selling&#39; directive.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">good salvage that i will give you four hundred for it and we both know it is worth three</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-07" data-fam="gaming"
+         data-ind="Gaming" data-win="none"
+         data-task="text_to_speech" data-i="28"
+         data-g="9.7288125"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-07</span>
+    <span class="stitle">Placeholder VO line, batch throughput - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">97.29%</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Hold this position until the extraction window opens.</div>
+      <div class="brief"><b>Expected:</b> 1) Usable placeholder quality - intelligible, correctly paced
+2) One of two hundred delivered in a single batch
+3) Throughput and cost recorded rather than beauty</div>
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">97.29%</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    
+    
+    
+    <span class="pill">97.29%</span>
+    
+  </div>
+  <audio controls preload="none" src="outputs/voice/vr-game-07/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.4s</b></span>
+    
+    <span>length <b>3.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  
+  
+  
+</div>
+
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">1 of 1 clip scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+  <span class="pill">audio 4.087/5</span>
+  <span class="pill est" title="signal metrics, not a perceptual MOS">not a MOS</span>
+
+
+
+        
+        
+        <div class="crit" style="border-top:0;padding-top:2px">
+          
+            <div class="row">
+              <span class="nm" title="measured · weight 0.30">text_accuracy</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">pronunciation</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.20">naturalness</span>
+              <span class="track"><span class="bar "
+                    style="width: 95.0%"></span></span>
+              <span class="v">95%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">clarity</span>
+              <span class="track"><span class="bar "
+                    style="width: 100.0%"></span></span>
+              <span class="v">100%</span>
+            </div>
+          
+            <div class="row">
+              <span class="nm" title="judge · weight 0.15">audio_quality</span>
+              <span class="track"><span class="bar "
+                    style="width: 88.6%"></span></span>
+              <span class="v">88.59%</span>
+            </div>
+          
+          
+        </div>
+        <details class="disc"><summary>Judge reasoning — why these scores</summary>
+          <div class="inner crit" style="border-top:0">
+          
+            <div class="r"><b>pronunciation</b> <span class="src">judge · w 0.20</span><br>“All words are pronounced clearly and consistently with a standard en-GB accent, with no mispronounced items.”</div>
+          
+            <div class="r"><b>naturalness</b> <span class="src">judge · w 0.20</span><br>“The pacing and intonation are natural and appropriate for the instructional tone of the sentence, without sounding robotic or over-acted.”</div>
+          
+            <div class="r"><b>clarity</b> <span class="src">judge · w 0.15</span><br>“The speech is highly intelligible with no signs of mumbling, slurring, or indistinct word endings.”</div>
+          
+            <div class="r"><b>audio_quality</b> <span class="src">judge · w 0.15</span><br>“The audio is clean with no audible artefacts, glitches, abrupt cuts, or processing damage.”</div>
+          
+          
+
+<div class="r"><b>Transcript vs script</b> <span class="src">normalized — what the WER gate compared</span>
+  <div class="wdiff"><span class="same">hold this position until the extraction window opens</span> </div></div>
+
+
+          
+          </div>
+        </details>
+        
+        
+      </div>
+    
+    </div>
+    
+
+
+
+  </div>
+</details>
+
+</div>
+
+
+
+
+
+
+
+
+<div class="foot" id="footnotes">
+  <b>Footnotes — what was assumed (2026-09-28_073403_voice-gemini38-p2).</b><br>
+  
+  Ratings are a percentage of the 10-point rubric — 100% is a perfect score
+  on every weighted criterion. Latency is wall-clock time to generate one output, and cost is
+  the provider's own billed generation cost for one clip at the settings used here — list
+  price at the time of the run, exclusive of tax.<br>
+  Models: gemini-3-8-flash-tts (Google).<br>
+  Judge: gemini-2.5-flash
+  (temperature 0)
+  — same judge, same rubric, blind shuffled labels for every output.<br>
+  
+
+
+Judge failure is recorded as unjudged and excluded from the mean — never scored 0. Audio is re-encoded
+before judging so no provider metadata reaches the judge.<br>
+
+Voices are a declared difference — one voice pinned per provider:
+gemini-3-8-flash-tts: female_mid_warm → Aoede; gemini-3-8-flash-tts: male_mid_neutral → Charon; gemini-3-8-flash-tts: npc_quartermaster → Charon; gemini-3-8-flash-tts: npc_scout → Leda; gemini-3-8-flash-tts: npc_handler → Kore; gemini-3-8-flash-tts: npc_medic → Aoede; gemini-3-8-flash-tts: npc_engineer → Puck; gemini-3-8-flash-tts: npc_trader → Fenrir.<br>
+
+
+These models are non-deterministic; the winner threshold is 0.05, set for this study, so a verdict inside it can change on a re-run.<br>
+
+
+  
+  Every output was generated once, scored blind by the same judge against the same rubric,
+  and is shown above exactly as the model returned it. Outputs are immutable — a correction
+  is a new run.
+  
+</div>
+
+
+</div>
+
+<div id="lb"><div class="sw"></div><img alt=""><div class="cap"></div></div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      document.documentElement.classList.add('ready');
+    });
+  });
+
+  function revealAll(scope) {
+    (scope || document).querySelectorAll('.rev').forEach(function (el) {
+      el.classList.add('vis');
+    });
+  }
+  if (!reduced && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rev').forEach(function (el) { io.observe(el); });
+  } else {
+    revealAll();
+  }
+
+  // tabs (combined report)
+  var tabbar = document.querySelector('.tabbar');
+  if (tabbar) tabbar.addEventListener('click', function (e) {
+    var b = e.target.closest('.tabbtn'); if (!b) return;
+    tabbar.querySelectorAll('.tabbtn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    document.querySelectorAll('.runpanel').forEach(function (p) {
+      p.classList.toggle('on', p.dataset.tab === b.dataset.tab);
+      if (p.dataset.tab === b.dataset.tab) revealAll(p);
+    });
+  });
+
+  // lightbox with in-place model switching, scoped to the panel
+  // the page always carries #lb (kit/run.html.j2, kit/combined.html.j2)
+  var lb = document.getElementById('lb'), lbi = lb.querySelector('img'),
+      cap = lb.querySelector('.cap'), sw = lb.querySelector('.sw');
+  var current = { list: [], idx: 0 };
+  function openLb(img) {
+    var scope = img.closest('.runpanel') || document;
+    current.list = Array.prototype.slice.call(
+      scope.querySelectorAll('img.out[data-sid="' + CSS.escape(img.dataset.sid) + '"]'));
+    current.idx = Math.max(0, current.list.indexOf(img));
+    renderLb(); lb.classList.add('show');
+  }
+  function renderLb() {
+    var im = current.list[current.idx]; if (!im) return;
+    lbi.src = im.src;
+    cap.textContent = im.dataset.cap + '   (chips or ←/→ to flip)';
+    sw.innerHTML = '';
+    current.list.forEach(function (m, i) {
+      var b = document.createElement('button');
+      b.className = 'swb' + (i === current.idx ? ' on' : '');
+      b.textContent = m.dataset.mid;
+      b.addEventListener('click', function (e) {
+        e.stopPropagation(); current.idx = i; renderLb();
+      });
+      sw.appendChild(b);
+    });
+  }
+  function applyChip(chip) {
+    var chips = chip.closest('.chips');
+    chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+    chip.classList.add('on');
+    var scope = chip.closest('.runpanel') || document;
+    // AND-combine the active selection of every chip dimension
+    // (industry, winner, family)
+    var active = {};
+    scope.querySelectorAll('.chips .chip.on').forEach(function (c) {
+      if (c.dataset.dim) active[c.dataset.dim] = c.dataset.val;
+    });
+    // keep the breakdown-table rows in step with the chips
+    scope.querySelectorAll('table.roll .frow').forEach(function (r) {
+      r.classList.toggle('on', active[r.dataset.dim] === r.dataset.val);
+    });
+    var dets = scope.querySelectorAll('details.scn');
+    dets.forEach(function (d) {
+      var show = true;
+      if (active.fam && active.fam !== '__all' && d.dataset.fam !== active.fam) show = false;
+      if (active.ind && active.ind !== '__all' && d.dataset.ind !== active.ind) show = false;
+      if (active.win && active.win !== '__all' && d.dataset.win !== active.win) show = false;
+      if (active.task && active.task !== '__all' && d.dataset.task !== active.task) show = false;
+      d.style.display = show ? '' : 'none';
+    });
+    // faceted counts: each chip shows how many scenarios IT would yield
+    // under the other rows' current selections
+    scope.querySelectorAll('.chips .chip').forEach(function (c) {
+      var dim = c.dataset.dim, span = c.querySelector('.n');
+      if (!dim || !span) return;
+      var n = 0;
+      dets.forEach(function (d) {
+        var ok = true;
+        ['fam', 'ind', 'win', 'task'].forEach(function (k) {
+          var v = (k === dim) ? c.dataset.val : active[k];
+          if (v && v !== '__all' && d.dataset[k] !== v) ok = false;
+        });
+        if (ok) n++;
+      });
+      span.textContent = '(' + n + ')';
+      c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.tagName === 'IMG' && t.classList.contains('out')) { openLb(t); return; }
+    if (e.target === lb || e.target === lbi) lb.classList.remove('show');
+    var g = t.closest && t.closest('.gallery .g');
+    if (g) {
+      var d = document.getElementById(g.dataset.target);
+      if (d) { d.style.display = ''; d.open = true; d.classList.add('vis');
+        d.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
+      return;
+    }
+    // a family / industry row is a shortcut for its chip
+    var frow = t.closest && t.closest('table.roll .frow');
+    if (frow) { pickRow(frow); return; }
+    var chip = t.closest && t.closest('.chips .chip');
+    if (chip) { applyChip(chip); return; }
+    var ctl = t.closest && t.closest('.ctl');
+    if (ctl) {
+      var scope2 = ctl.closest('.runpanel') || document;
+      scope2.querySelectorAll('details.scn').forEach(function (d) {
+        if (ctl.dataset.act === 'expand') {
+          if (d.style.display !== 'none') { d.open = true; d.classList.add('vis'); }
+        } else { d.open = false; }
+      });
+    }
+  });
+
+  // Clicking the active row shows all again; the list is brought into view.
+  function pickRow(r) {
+    var scope = r.closest('.runpanel') || document;
+    var sel = '.chips .chip[data-dim="' + r.dataset.dim + '"]';
+    var target = r.classList.contains('on')
+      ? scope.querySelector(sel + '[data-val="__all"]')
+      : scope.querySelector(sel + '[data-val="' + CSS.escape(r.dataset.val) + '"]');
+    if (!target) return;
+    applyChip(target);
+    if (!r.classList.contains('on')) return;
+    target.closest('.chips').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var r = e.target.closest && e.target.closest('table.roll .frow');
+    if (r) { e.preventDefault(); pickRow(r); }
+  });
+
+  // only one clip plays at a time (video and audio lanes)
+  document.addEventListener('play', function (e) {
+    document.querySelectorAll('audio, video').forEach(function (m) {
+      if (m !== e.target && !m.paused) m.pause();
+    });
+  }, true);
+
+  // Sort by: reorders the scenario nodes. Filtering only toggles
+  // display, so the two compose — neither reads the other's state.
+  function applySort(sel) {
+    var scope = sel.closest('.runpanel') || document;
+    var list = scope.querySelector('.scnlist');
+    if (!list) return;
+    var parts = String(sel.value).split('-');
+    var key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
+    var items = Array.prototype.slice.call(list.children).filter(function (n) {
+      return n.classList && n.classList.contains('scn');
+    });
+    items.sort(function (x, y) {
+      var xi = +x.dataset.i, yi = +y.dataset.i;
+      if (key === 'id') return xi - yi;
+      var a = parseFloat(x.dataset[key]), b = parseFloat(y.dataset[key]);
+      var an = isNaN(a), bn = isNaN(b);
+      if (an && bn) return xi - yi;        // unscored keep their id order …
+      if (an) return 1;                    // … and always sink to the bottom
+      if (bn) return -1;
+      if (a === b) return xi - yi;         // stable: equal scores never shuffle
+      return (a < b ? -1 : 1) * dir;
+    });
+    items.forEach(function (d) { list.appendChild(d); });
+    // keep the gallery strip in step with the list it indexes
+    var gal = scope.querySelector('.gallery');
+    if (gal) {
+      var pos = {};
+      items.forEach(function (d, i) { pos[d.id] = i; });
+      Array.prototype.slice.call(gal.querySelectorAll('.g')).sort(function (x, y) {
+        var px = pos[x.dataset.target], py = pos[y.dataset.target];
+        return (px === undefined ? 1e9 : px) - (py === undefined ? 1e9 : py);
+      }).forEach(function (g) { gal.appendChild(g); });
+    }
+  }
+
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest && e.target.closest('[data-sort]');
+    if (sel) applySort(sel);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('show')) return;
+    if (e.key === 'Escape') lb.classList.remove('show');
+    if (e.key === 'ArrowRight' && current.list.length > 1) {
+      current.idx = (current.idx + 1) % current.list.length; renderLb(); }
+    if (e.key === 'ArrowLeft' && current.list.length > 1) {
+      current.idx = (current.idx - 1 + current.list.length) % current.list.length; renderLb(); }
+  });
+})();
+</script>
+
+</body>
+</html>
