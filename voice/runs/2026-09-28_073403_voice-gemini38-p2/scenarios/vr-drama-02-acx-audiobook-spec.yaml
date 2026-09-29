@@ -1,0 +1,76 @@
+# VR-DRAMA-02 - Narration to Audible/ACX technical spec (Micro-drama)
+#
+# REAL APPLICATION. Audible and ACX now permit AI-narrated audiobooks
+# provided they meet strict technical standards and are disclosed as
+# AI-generated at upload. Spotify, the second-largest audiobook provider,
+# partnered with ElevenLabs for AI narration.
+#   Source: ACX 2026 submission requirements; TechCrunch on Audible's
+#   AI-narrated expansion; Spotify-ElevenLabs partnership.
+#
+# WHY THIS ONE IS WORTH MEASURING. Every threshold below is PUBLISHED by the
+# platform. There is no taste in it and no judge involved: the raw output
+# either lands inside the spec or a mastering pass has to put it there. That
+# makes it one of the few voice scenarios with a genuinely objective verdict,
+# and the difference it exposes is production cost, not beauty.
+#
+# THE SALES CLAIM:
+#   "Our output lands inside Audible's technical spec with less
+#    post-processing, so your production pipeline is shorter."
+# Only claimable if the gates below actually pass. If a model needs
+# normalisation to reach -18 dBFS, say so - "one mastering pass" is a
+# perfectly sellable answer and a false "no post-processing" is not.
+#
+# EXPECT THESE GATES TO BE HARD. TTS output is not mastered, and the RMS
+# window is five decibels wide. A model that fails is not broken; the
+# MEASUREMENT is the deliverable - how far outside spec, in which direction,
+# and therefore how much of a mastering step the pipeline still needs.
+#
+# WHAT THIS SCENARIO DOES NOT COVER. ACX also requires human review, a
+# maximum 120 minutes per file, and AI disclosure at upload. None of those
+# are audio properties and none are measured here. The passage is a
+# representative segment, not a full chapter - the thresholds apply per file
+# and are meaningful on any continuous segment, but the source scenario
+# specifies five minutes and this is under two, to stay inside the character
+# budget. See ../README.md.
+
+id: vr-drama-02
+modality: voice
+task: text_to_speech
+title: "Narration to ACX submission spec - Micro-drama & entertainment"
+
+input:
+  script: |
+    The harbour at Vathy had been awake for an hour before Ilse reached it. She came down the cut between the chandlery and the ice house with her collar turned up, counting the boats as she always did, and found the Kerensa gone from her mooring. Nobody had thought to telephone. The berth held nothing but a coil of blue rope and the flat grey water closing over where the hull had been. Ilse stood there long enough for the light to change. Then she walked back up the cut, past the chandlery, past the ice house, and knocked on a door she had promised herself she would never knock on again.
+  language: en-GB
+  style: "measured literary narration, third person, unhurried"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Consistent narrative voice throughout, no drift in pace or register
+  2) "Vathy", "Ilse" and "Kerensa" pronounced consistently on every mention
+  3) Sentence-final falls that let the prose breathe; no list-reading cadence
+  4) Nothing clipped, no artefacts at sentence joins
+  5) Output inside the ACX loudness, peak and noise-floor windows without
+     any mastering
+
+checks:
+  duration_s: {min: 30.0, max: 100.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  max_wer: 0.05
+  # --- the published ACX submission thresholds, verbatim ---
+  rms_dbfs: {min: -23.0, max: -18.0}
+  peak_dbfs_max: -3.0
+  noise_floor_dbfs_max: -60.0
+  # NO must_say on "Vathy"/"Kerensa". First run, 2026-09-03: both models read
+  # them plausibly and the ASR wrote "Vathi", "Corenza", "Correnza". A coined
+  # name has no spelling a transcriber owes us, so this gate measured the ASR.
+  # Pronunciation is a JUDGE criterion in configs/rubrics/voice.yaml, which is
+  # the right instrument - the judge hears the clip.
+
+tags: [micro-drama, audiobook, acx, mastering-spec, narration, vr-drama-02]

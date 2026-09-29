@@ -1,0 +1,75 @@
+# VR-GAME-01 - Mission briefing and item/danger callouts (Gaming)
+#
+# REAL APPLICATION. ARC Raiders (Embark Studios) uses TTS trained on
+# contracted actors for NPC interactions, in-game pings, item and area
+# callouts, danger warnings and mission briefings. It shipped 10 million
+# copies in under two months. The stated reason is post-launch scale: every
+# new item needs a callout without booking a session.
+#   Source: GameSpot and Windows Central coverage, Nov 2025; Nexon shipment
+#   figure, Jan 2026; Embark's own Steam AI disclosure.
+#
+# WHY THIS ONE IS WORTH MEASURING. A briefing is dense with invented proper
+# nouns, and invented nouns are where TTS pronunciation actually breaks -
+# there is no dictionary entry to fall back on. It is also the case with the
+# clearest commercial logic: the studio's alternative is booking a session
+# for every content drop.
+#
+# THE SALES CLAIM:
+#   "Our model produces a full callout set in one pass that stays
+#    intelligible - and stays the same voice across post-launch drops."
+# The SECOND half of that claim is NOT tested here. Voice consistency across
+# a batch needs speaker-embedding cosine, which this harness does not have.
+# Claim only the first half from this scenario. See ../README.md.
+#
+# WHAT THIS SCENARIO DOES NOT COVER. The source specifies mixing the callouts
+# under a combat audio bed and measuring WER through the mix. There is no
+# mixing stage here, so intelligibility is measured clean - a ceiling.
+
+id: vr-game-01
+modality: voice
+task: styled_tts
+title: "Mission briefing with item and danger callouts - Gaming"
+
+input:
+  script: |
+    Raider, listen up. Extraction point is grid 7 4 2 9, north face of the Speranza Dam. You are carrying one Kestrel-pattern rebreather and three units of refined cobalt. Do not drop them. ARC patrols are heaviest between the silos, so move along the eastern wall instead. The storm front closes that corridor in nine minutes. If you miss the window, fall back to Cache Delta and hold for the next rotation. Good luck out there.
+  language: en-GB
+  style: "clipped military handler over comms, urgent but controlled"
+
+params:
+  voice: male_mid_neutral
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Grid reference 7429 spoken digit by digit and correct
+  2) "Speranza", "Kestrel-pattern rebreather" and "Cache Delta" pronounced
+     clearly and plausibly on first encounter - no dictionary to fall back on
+  3) "refined cobalt" and the nine-minute window stated exactly
+  4) Handler register: clipped, urgent, controlled - not narrated
+  5) Every callout intelligible at speed; no swallowed word endings
+
+checks:
+  duration_s: {min: 18.0, max: 45.0}
+  # A briefing with a two-second hole in it is a broken asset.
+  max_silence_s: 1.5
+  no_clipping: true
+  max_wer: 0.06
+  must_say_digits: "7429"
+  must_say:
+    - "rebreather"
+    - "refined cobalt"
+    - "nine minutes"
+  # The invented nouns, as alternations. Learned from vr-game-02's first run
+  # before spending a single character here: a correct reading of a coined
+  # name has no canonical spelling, so demanding one tests the transcriber.
+  must_say_any:
+    - ["Speranza", "Esperanza"]
+    - ["Kestrel", "Kestral"]
+    # "Cache" and "cash" are homophones. First run: ElevenLabs read it
+    # correctly, the ASR wrote "cash Delta", and the cell scored 0.0 -
+    # a model failure invented by the transcriber's word choice.
+    - ["Cache Delta", "Cash Delta"]
+
+tags: [gaming, npc, callouts, briefing, invented-nouns, vr-game-01]

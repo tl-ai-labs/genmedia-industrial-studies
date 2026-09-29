@@ -1,0 +1,74 @@
+# VR-ADS-02 - Exact-duration broadcast spot (Ads)
+#
+# REAL APPLICATION. Broadcast and platform ad slots are fixed. A read that
+# misses the slot has to be re-recorded, which removes the reason for
+# generating it. Top gaming advertisers now ship 2,400-2,600 creative
+# variants per quarter, so a re-record is not one re-record.
+#   Source: standard broadcast practice; AppsFlyer 2026 State of Gaming for
+#   Marketers; Segwise creative-testing analysis, June 2026.
+#
+# WHY THIS ONE IS WORTH MEASURING. Fifteen seconds is fifteen seconds. This
+# is the hardest binary line in the bank and it needs no judge, no rubric and
+# no opinion - the read either fits the slot or the spot cannot air.
+#
+# THE SALES CLAIM:
+#   "Fifteen seconds means fifteen seconds - your spot fits the slot
+#    without a re-record."
+#
+# EXPECT THIS TO BE HARD, and read the measurement either way. The tolerance
+# is the +/-0.1s the source scenario specifies. Neither live arm exposes rate
+# control through this harness (only the OpenAI adapter honours params.speed),
+# so this measures natural delivery length against a slot. If both models
+# miss, the finding is "copy has to be written to each model's rate", which
+# is a real production constraint worth knowing - and the signed deviation in
+# measurements.trimmed_duration_s still ranks them.
+#
+# THE TARGET IS DERIVED: 43 words after normalisation at a 172 wpm brisk
+# retail read = 15.0s. The assumption is stated so a disagreement is about
+# the number rather than about where it came from. Note the count is the
+# NORMALISED one - "twenty-one" is two spoken words - because that is what
+# the rate measurement uses.
+#
+# WHY TRIMMED DURATION. Raw file length would let a model pass the slot by
+# padding with silence. tests/test_checks.py pins that it cannot.
+
+id: vr-ads-02
+modality: voice
+task: styled_tts
+title: "Fifteen-second broadcast spot, exact duration - Ads"
+
+input:
+  script: |
+    Monsoon's here. So is the Kalyani Motors service camp. Free twenty-one point inspection, wiper and brake-pad check, up to thirty percent off parts. Three days only, at all fourteen Bengaluru branches. Kalyani Motors. Drive the monsoon, don't dread it.
+  language: en-IN
+  style: "upbeat retail radio read, warm but brisk"
+
+params:
+  voice: female_mid_warm
+  format: wav
+  sample_rate: 24000
+  speed: 1.0
+
+expected: |
+  1) Trimmed read within 0.1s of 15.0 seconds
+  2) No audible time-stretching or rate artefacts used to get there
+  3) "Kalyani Motors" and "Bengaluru" pronounced as an Indian listener expects
+  4) The three offer terms - inspection, discount, branch count - all
+     distinctly intelligible at pace
+  5) Brand name lands cleanly in the sign-off, not swallowed by the tag line
+
+checks:
+  # The slot.
+  trimmed_duration_s: {min: 14.9, max: 15.1}
+  duration_s: {min: 8.0, max: 25.0}
+  # A radio read does not pause for a second in the middle.
+  max_silence_s: 1.0
+  no_clipping: true
+  max_wer: 0.06
+  must_say:
+    - "Kalyani Motors"
+    - "twenty-one point inspection"
+    - "thirty percent"
+    - "fourteen Bengaluru branches"
+
+tags: [ads, broadcast, duration, slot, india, vr-ads-02]
