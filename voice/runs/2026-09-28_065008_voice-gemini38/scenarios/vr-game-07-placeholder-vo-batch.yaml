@@ -1,0 +1,49 @@
+# VR-GAME-07 - Placeholder VO during production
+#
+#
+# HOW IT IS RUN, AND WHY THE SAMPLE SIZE IS ON THE PAGE.
+# Issued as a batch with `--repeat N`, which sends the same turn N times in
+# one run so throughput and cost have more than one sample to divide. The
+# workbook asks for 200 placeholder lines; N here is smaller, because 200 placeholder lines on the
+# character-billed arm would consume most of a month's quota for a number
+# that is a RATE - and a rate estimated from a few dozen clips is the same
+# rate with wider error bars.
+#
+# That is only honest while the denominator travels with the number, so
+# summary.json carries `n_clips` beside every rate and the board shows it.
+# Never quote "cost per finished minute" from this scenario without it.
+#
+# WHAT IS MEASURED, all of it already recorded per call and only divided here:
+#   cost per finished audio minute   - what a buyer compares across vendors
+#   realtime factor                  - audio seconds produced per second spent
+#   clips per generation minute      - throughput
+#   failure count                    - a batch that needs retries is dearer
+#
+# `generation_seconds_serial` is the SUM of per-call latency, not elapsed
+# time: the runner works provider lanes concurrently, so elapsed would
+# measure our own concurrency rather than the provider's speed.
+#
+# REAL APPLICATION. Studios use AI voice for placeholder audio during greybox
+# and pre-production, iterating character voices as the story evolves, then
+# either shipping them or using them as briefs for human actors.
+#   Source: Althera Games studio workflow post, May 2026; Fish Audio guide.
+# CLAIM IF IT PASSES: "Two hundred greybox lines in one pass, so your
+#   prototype has voice from week one instead of week twelve."
+id: vr-game-07
+modality: voice
+task: text_to_speech
+title: "Placeholder VO line, batch throughput - Gaming"
+input:
+  script: |
+    Hold this position until the extraction window opens.
+  language: en-GB
+params: {voice: male_mid_neutral, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) Usable placeholder quality - intelligible, correctly paced
+  2) One of two hundred delivered in a single batch
+  3) Throughput and cost recorded rather than beauty
+checks:
+  duration_s: {min: 1.5, max: 12.0}
+  no_clipping: true
+  max_wer: 0.06
+tags: [gaming, placeholder-vo, throughput, throughput, vr-game-07]

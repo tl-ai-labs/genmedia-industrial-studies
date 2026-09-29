@@ -1,0 +1,61 @@
+# VR-GAME-03 - Real-time conversational NPC
+# UNBLOCKED 2026-09-03. Both arms stream, and the first chunk carrying
+# audio is timed by the adapter holding the socket. Verified before building:
+# Gemini 151 chunks TTFA 2616 ms / whole 4691 ms; ElevenLabs 55 chunks TTFA
+# 1626 ms / whole 1838 ms. TTFA well under whole-response time on both, which
+# is what proves these are streams and not buffered replies.
+#
+# TTFA IS NOT latency_ms, and the harness keeps them apart deliberately. Every
+# run in this project before today recorded whole-call latency; reporting that
+# as TTFA would be the single most flattering error available here, so an
+# unstreamed call reports the number as UNMEASURED rather than substituting.
+#
+# ONE SAMPLE IS WORTHLESS. On the same line, Gemini 3.1 returned 2616 ms and
+# then 775 ms - a 3.4x swing. That is why the source scenario asks for p50,
+# p95 and p99 over twenty runs, and why this is issued with --repeat.
+#
+# THE ARMS HERE ARE THE QUALITY TIERS, AND THAT UNDERSTATES WHAT IS POSSIBLE.
+# Measured on the same line from the same machine:
+#     elevenlabs flash v2.5        414 ms      <- the tier Fortnite used
+#     elevenlabs multilingual v2  1291 ms      <- the arm in this bank
+#     gemini 3.1 flash tts    775-2616 ms      <- the arm in this bank
+#     gemini 2.5 flash tts        2337 ms
+# Network is not the story: TCP connect is 31-42 ms to both hosts, so these
+# are generation times. A seller comparing real-time viability should know
+# that ElevenLabs ships a latency tier that nearly clears the bar and that
+# this bank is not measuring it - reporting only the two quality arms would
+# say "neither is viable" while one vendor has a product that nearly is.
+#   harness for the 20-session variant.
+#
+# THIS IS THE MOST VALUABLE BLOCKED SCENARIO IN THE BANK. Fortnite's AI Darth
+# Vader (May 2025) used Gemini 2.0 Flash for responses with ElevenLabs Flash
+# v2.5 for voice, with the James Earl Jones estate's permission - the largest
+# shipped example of real-time conversational NPCs already runs on a Google
+# model. That is a reference a seller can name, and this is the scenario that
+# would put a number behind it.
+#   Source: Epic Games announcement; GamesRadar, May 2025. Note SAG-AFTRA
+#   filed an unfair labour practice charge over it.
+# CLAIM IF IT PASSES: "Google's model already powers the largest shipped
+#   example of this - and here is the latency measurement to back it."
+id: vr-game-03
+modality: voice
+task: styled_tts
+title: "Real-time NPC response, time to first audio - Gaming"
+input:
+  script: |
+    You should not have come this far alone, Raider. Turn back to the ridge and I will cover you.
+  language: en-GB
+  style: "in-world NPC, urgent, spoken mid-action"
+params: {voice: male_mid_neutral, format: wav, sample_rate: 24000, speed: 1.0}
+expected: |
+  1) First audio inside the 300ms immersion threshold game teams cite
+  2) The line delivered in character, not read
+  3) Latency stable under twenty concurrent sessions
+checks:
+  # The immersion threshold game audio teams cite. A hard line, not a taste.
+  max_ttfa_ms: 300
+  duration_s: {min: 2.0, max: 14.0}
+  max_silence_s: 1.0
+  no_clipping: true
+  max_wer: 0.06
+tags: [gaming, npc, realtime, latency, ttfa, latency, ttfa, streaming, vr-game-03]

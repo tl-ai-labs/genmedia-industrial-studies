@@ -1,0 +1,160 @@
+{
+  "run_id": "2026-09-28_061428_voice-gemini38-smoke",
+  "modality": "voice",
+  "started_at": "2026-09-28T06:14:28-0700",
+  "git_sha": "fb1d0c5",
+  "scenario_set_hash": "7802dceef4b984c4ad1999b1a5aef7d5fe005fc4e9787c15d258fc93ff962daf",
+  "rubrics": {
+    "styled_tts": {
+      "hash": "c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c",
+      "sources": [
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/voice.yaml",
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/tasks/styled_tts.yaml"
+      ]
+    }
+  },
+  "judge": {
+    "provider_model": "gemini-2.5-flash",
+    "temperature": 0.0,
+    "region": "global",
+    "region_note": "The judge listens through Vertex AI at the global endpoint (the runbook's location for temp-genmedia-study). It shares a VENDOR with the Gemini arm, not a doorway: the 3.8 arm is served by the Gemini API.",
+    "served_from": "Vertex AI \u00b7 global"
+  },
+  "asr": "medium",
+  "mos_predictor": "signal",
+  "mos_fallback_reason": null,
+  "calibration": {
+    "passed": false,
+    "reason": "calibration was measured against judge 'gemini-2.5-flash', this run used 'unknown'",
+    "rubric_hash": "c2bfed4a389bdd8be7160dda025a52e2d8a982e44b4d49d1f3ff6c6ce4b0542c",
+    "judge_model": "unknown",
+    "source": "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/calibration/voice.yaml",
+    "thresholds": {
+      "max_mean_abs_diff": 1.0,
+      "min_rank_correlation": 0.9,
+      "required_reviewers": 2,
+      "required_clips": 5
+    },
+    "reviewers": []
+  },
+  "counts": {
+    "scenarios": 1,
+    "models": 1,
+    "cells_expected": 1,
+    "cells_generated": 1,
+    "cells_scored": 1,
+    "scenarios_complete": 1,
+    "scenarios_incomplete": 0
+  },
+  "incomplete_scenarios": [],
+  "failures": [],
+  "models": [
+    {
+      "model_id": "gemini-3-8-flash-tts",
+      "provider": "google",
+      "provider_model": "gemini-3.8-flash-tts",
+      "adapter": "gemini_api_tts",
+      "voice_map": {
+        "female_mid_warm": "Aoede",
+        "male_mid_neutral": "Charon",
+        "npc_quartermaster": "Charon",
+        "npc_scout": "Leda",
+        "npc_handler": "Kore",
+        "npc_medic": "Aoede",
+        "npc_engineer": "Puck",
+        "npc_trader": "Fenrir"
+      },
+      "price": {
+        "unit": "tokens",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "as_of": "2026-09-27",
+        "usd_in_per_1m": 0.5,
+        "usd_audio_out_per_1m": 9.0,
+        "est_chars_per_input_token": 4.0,
+        "est_audio_tokens_per_second": 25.0
+      },
+      "rating": {
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "spread": 0.0,
+        "scored": 1,
+        "attempted": 1,
+        "unjudged": 0,
+        "invalid": 1,
+        "below_5": 1,
+        "calibration_trusted": true,
+        "per_criterion_avg": {}
+      },
+      "latency_ms": {
+        "n": 1,
+        "avg": 7768.0,
+        "min": 7768.0,
+        "max": 7768.0,
+        "spread": 0.0
+      },
+      "audio_duration_s": {
+        "n": 1,
+        "avg": 12.28,
+        "min": 12.28,
+        "max": 12.28,
+        "spread": 0.0
+      },
+      "normalized_wer": {
+        "n": 1,
+        "avg": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "spread": 0.0
+      },
+      "audio_quality_1_5": {
+        "n": 1,
+        "avg": 4.008,
+        "min": 4.008,
+        "max": 4.008,
+        "spread": 0.0
+      },
+      "cost_micro_usd": {
+        "generation": 3554,
+        "asr": 0,
+        "judge": 0,
+        "total": 3554,
+        "per_scenario": 3554,
+        "all_exact": true
+      },
+      "throughput": {
+        "n_clips": 1,
+        "measured": true,
+        "audio_seconds": 12.28,
+        "audio_minutes": 0.2047,
+        "cost_micro_usd_per_audio_minute": 17365,
+        "generation_seconds_serial": 7.77,
+        "realtime_factor": 1.581,
+        "clips_per_generation_minute": 7.72,
+        "audio_seconds_per_clip": {
+          "n": 1,
+          "avg": 12.28,
+          "min": 12.28,
+          "max": 12.28,
+          "spread": 0.0
+        }
+      },
+      "reliability": {
+        "cells_ok": 1,
+        "cells_attempted": 1,
+        "success_after_retries": 1.0,
+        "attempts_to_success": {
+          "n": 1,
+          "avg": 1.0,
+          "min": 1.0,
+          "max": 1.0,
+          "spread": 0.0
+        },
+        "gate_failures": {
+          "trimmed_duration_in_range": 1
+        }
+      }
+    }
+  ],
+  "cost_micro_usd_total": 3554
+}

@@ -1,0 +1,5148 @@
+<!doctype html><html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMedia comparison · voice — 23 scenarios · 59 clips · 3 runs</title>
+
+
+
+
+
+<script>document.documentElement.classList.add('js');</script>
+<style>
+:root{
+  --paper:#f6f8f8; --card:#ffffff; --ink:#171d20; --muted:#5a686d; --faint:#8a979c;
+  --rule:#e1e8e8; --accent:#0c7d6a; --accent-soft:#e3f2ee; --accent-ink:#0a5f51;
+  --warn:#96590f; --warn-soft:#fbf0dd; --bad:#b3352a; --bad-soft:#f9e9e7;
+  /* the rival arm's colour. Deliberately NOT --warn: amber is this report's
+     warning ink, and once the b-slot is always the competitor, amber would
+     read as a thumb on the scale in a document whose value is impartiality. */
+  --rival:#4a5b8c;
+  --shadow:0 1px 2px rgba(20,30,30,.05),0 4px 16px rgba(20,30,30,.06);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#101617; --card:#171f21; --ink:#e5ecec; --muted:#9fb0b3; --faint:#6f8085;
+    --rule:#263235; --accent:#43c0a8; --accent-soft:#12312b; --accent-ink:#67d6c0;
+    --warn:#dfa856; --warn-soft:#2c2214; --bad:#e58d82; --bad-soft:#301d1a;
+    --rival:#93a4d6;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 18px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+.topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.topbar .in{max-width:1140px;margin:0 auto;padding:10px 20px;display:flex;
+  align-items:center;gap:18px;flex-wrap:wrap}
+.topbar .t{font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.topbar .m{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.topbar nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+.topbar nav a{font-size:12.5px;color:var(--muted);text-decoration:none;
+  padding:5px 10px;border-radius:20px;transition:background .15s,color .15s}
+.topbar nav a:hover{background:var(--accent-soft);color:var(--accent-ink)}
+
+header.hero{padding:42px 0 8px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+h1{font-size:clamp(24px,3.6vw,34px);line-height:1.1;letter-spacing:-.02em;margin:0 0 10px;
+  text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 20px;font-family:var(--mono);font-size:11px;
+  color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.meta b{color:var(--ink);font-weight:600}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:14px 16px;box-shadow:var(--shadow)}
+.tile .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)}
+.tile .val{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:2px;
+  font-variant-numeric:tabular-nums}
+.tile .sub{font-size:12px;color:var(--faint)}
+
+/* tabs (combined report) */
+.tabbar{display:flex;gap:8px;margin:26px 0 6px;border-bottom:2px solid var(--rule);
+  flex-wrap:wrap}
+.tabbtn{font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--muted);
+  background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;
+  cursor:pointer;margin-bottom:-2px;transition:color .15s,border-color .15s}
+.tabbtn:hover{color:var(--accent-ink)}
+.tabbtn.on{color:var(--accent-ink);border-bottom-color:var(--accent)}
+.tabbtn .cnt{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:6px}
+.runpanel{display:none}
+.runpanel.on{display:block}
+@media (prefers-reduced-motion:no-preference){
+  .runpanel.on{animation:panelin .25s ease}
+  @keyframes panelin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+
+.duel{background:linear-gradient(135deg,var(--accent-soft),var(--card));
+  border:1px solid var(--rule);border-radius:14px;
+  padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.duel .heads{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}
+.duel .heads .h{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.02em}
+.duel .heads .h.a{color:var(--accent-ink)}
+.duel .heads .h.b{color:var(--rival)}
+.duel .heads{align-items:center}
+.duel .heads .vsx{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+.duel .wtag{display:inline-block;padding:3px 11px;border-radius:14px;white-space:nowrap;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+.duel .dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
+.duel .m{margin:12px 0}
+.duel .lab{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:4px}
+.duel .pair{display:grid;grid-template-columns:56px 1fr 1fr 56px;gap:8px;align-items:center}
+.duel .val{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.duel .val.r{text-align:right}
+.duel .track{height:8px;border-radius:5px;background:var(--rule);overflow:hidden;position:relative}
+.duel .track .fill{position:absolute;top:0;bottom:0;border-radius:5px}
+.duel .track.a .fill{right:0;background:var(--accent);opacity:.35}
+.duel .track.b .fill{left:0;background:var(--rival);opacity:.35}
+.duel .track.win .fill{opacity:1}
+/* bars are statically filled; the grow-in is a JS-gated enhancement so any
+   viewer without scripts or attribute-selector support still shows values */
+@media (prefers-reduced-motion:no-preference){
+  html.js:not(.ready) .duel .fill{width:0 !important}
+  html.js .duel .fill{transition:width .8s cubic-bezier(.2,.7,.3,1) .2s}
+}
+
+.gallery{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 14px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.gallery::-webkit-scrollbar{height:8px}
+.gallery::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
+.gallery .g{flex:0 0 auto;scroll-snap-align:start;width:108px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:10px;background:var(--card);
+  padding:6px;transition:transform .18s ease,border-color .18s ease}
+.gallery .g:hover{transform:translateY(-3px);border-color:var(--accent)}
+.gallery .g img{width:94px;height:70px;object-fit:cover;border-radius:6px;display:block}
+.gallery .g .gid{font-family:var(--mono);font-size:9.5px;color:var(--muted);
+  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gallery .g .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  margin-right:4px;background:var(--faint)}
+.gallery .g .dot.w{background:var(--accent)}
+
+@media (prefers-reduced-motion:no-preference){
+  .rev{opacity:0;transform:translateY(10px);
+    transition:opacity .45s ease,transform .45s ease}
+  .rev.vis{opacity:1;transform:none}
+}
+
+.ctl{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--rule);
+  background:var(--card);color:var(--muted);cursor:pointer;transition:border-color .15s}
+.ctl:hover{border-color:var(--accent);color:var(--accent-ink)}
+.srt{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.srt select{font-family:var(--sans);font-size:12px;padding:5px 10px;border-radius:20px;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink);cursor:pointer;
+  transition:border-color .15s}
+.srt select:hover{border-color:var(--accent)}
+.scnlist{display:block}
+
+h2{font-size:20px;margin:46px 0 12px;letter-spacing:-.015em;scroll-margin-top:70px}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:var(--card);
+  margin:14px 0;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{background:color-mix(in srgb,var(--card) 60%,var(--paper));font-family:var(--mono);
+  font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono);font-size:12.5px;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.dash{color:var(--faint)}
+/* metrics-as-rows comparison table: read DOWN a model's column */
+table.mx td:first-child{font-weight:600}
+table.mx th.g{color:var(--accent-ink)}
+table.mx .vd{font-family:var(--sans);font-size:9.5px;font-weight:400;
+  text-transform:none;letter-spacing:0;color:var(--faint)}
+table.mx .mrow.hi td{background:color-mix(in srgb,var(--accent-soft) 45%,transparent)}
+table.mx td.d{border-left:1px solid var(--rule)}
+table.mx td.d .dv{font-weight:700}
+table.mx td.d.up .dv{color:var(--accent-ink)}
+table.mx td.d.down .dv{color:var(--bad)}
+.tnote{font-size:12.5px;color:var(--muted);margin:8px 2px 0}
+/* the raw task key, kept beside the heading in the internal report only */
+h2 .tid{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--faint);
+  letter-spacing:0;vertical-align:middle;margin-left:8px}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  padding:2px 8px;border-radius:20px;background:color-mix(in srgb,var(--paper) 70%,var(--card));
+  color:var(--muted);margin:1px 3px 1px 0;border:1px solid var(--rule)}
+.pill.ok{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
+.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.pill.est{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+
+.banner{border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:11px 15px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14px}
+.verdict{background:linear-gradient(135deg,var(--accent-soft),var(--card));
+  border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:12px;
+  padding:16px 20px;margin:16px 0;font-size:15px;box-shadow:var(--shadow)}
+.verdict b.win{color:var(--accent-ink)}
+.verdict .sub{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;align-items:center;scroll-margin-top:70px}
+.chip{font-size:12.5px;padding:6px 14px;border-radius:20px;border:1px solid var(--rule);
+  background:var(--card);color:var(--muted);cursor:pointer;user-select:none;
+  transition:background .15s,color .15s,border-color .15s}
+.chip:hover{border-color:var(--accent)}
+.chip .n{opacity:.75}
+.chip.zero{opacity:.4}
+/* family / industry rollup tables: grouped per model, leaders tagged, rows filter */
+table.roll th{vertical-align:bottom}
+table.roll th.grp{text-align:center;letter-spacing:.08em}
+table.roll th.grp.a{color:var(--accent-ink)}
+table.roll th.grp.b{color:var(--rival)}
+table.roll th.grp,table.roll .sep{border-left:1px solid var(--rule)}
+table.roll td{vertical-align:middle}
+table.roll tbody tr:last-child td{border-bottom:0}
+table.roll .frow{cursor:pointer;transition:background .15s}
+table.roll .frow:hover td{background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
+table.roll .frow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+table.roll .frow.on td{background:var(--accent-soft)}
+table.roll .frow.on .fname{color:var(--accent-ink);font-weight:600}
+table.roll .fname{text-decoration:underline dashed;text-decoration-color:var(--faint);
+  text-underline-offset:4px}
+table.roll .tag{display:inline-block;padding:3px 11px;border-radius:14px;
+  border:1px solid var(--rule);white-space:nowrap}
+table.roll .tag.zero{color:var(--faint)}
+table.roll .tag.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+table.roll td.lead{color:var(--accent-ink);font-weight:700}
+table.roll .tag.win{font-weight:700;color:var(--ink);border-color:var(--faint)}
+table.roll .tag.win.lead{border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:var(--accent-soft);color:var(--accent-ink)}
+ul.tnote{margin:4px 0 12px;padding-left:20px}
+ul.tnote li{margin:2px 0}
+td .vs{font-size:10px;letter-spacing:.06em;color:var(--faint);padding:0 4px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.chip.on{color:#08211c}}
+
+details.scn{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  margin:12px 0;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+details.scn:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--rule))}
+details.scn>summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+  gap:14px;padding:13px 18px;flex-wrap:wrap}
+details.scn>summary::-webkit-details-marker{display:none}
+.scn .sid{font-family:var(--mono);font-size:12px;color:var(--accent-ink);font-weight:600;
+  white-space:nowrap}
+.scn .stitle{font-weight:600;font-size:14.5px;flex:1 1 200px}
+.scn .thumbs{display:flex;gap:6px}
+.scn .thumbs img{width:52px;height:52px;object-fit:cover;border-radius:8px;
+  border:1px solid var(--rule)}
+.scn .thumbs img.srcth{border:2px solid var(--accent)}
+/* per-scenario run scores: the left number is always the Gemini arm */
+.scn .scores{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;
+  display:inline-flex;align-items:baseline;gap:5px}
+.scn .scores .sc{font-size:14px;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.scn .scores .sc:first-child{color:var(--accent-ink)}
+.scn .scores .sc.win{color:var(--accent-ink)}
+.scn .scores .vs{font-size:10px;letter-spacing:.06em;color:var(--faint);
+  text-transform:uppercase}
+/* generation time, called out rather than buried in the caption. Neutral by
+   design: it is a fact, not a verdict — the table's delta column says who is
+   faster, and a green chip on the slower model would quietly imply otherwise. */
+.shot .lat{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink);
+  background:var(--rule);border-radius:20px;padding:2px 8px;white-space:nowrap}
+.scn .chev{width:22px;height:22px;flex:none;color:var(--faint);transition:transform .25s ease}
+details[open].scn .chev{transform:rotate(180deg)}
+.scn .body{padding:4px 18px 20px;border-top:1px dashed var(--rule)}
+@media (prefers-reduced-motion:no-preference){
+  details[open].scn .body{animation:reveal .3s ease}
+  @keyframes reveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+}
+.briefs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin:12px 0 4px}
+.brief{color:var(--muted);font-size:13px;white-space:pre-wrap;
+  background:color-mix(in srgb,var(--paper) 70%,var(--card));border-radius:10px;padding:10px 14px}
+.brief b{color:var(--ink)}
+
+.media{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0 6px}
+.shot{margin:0}
+.shot .frame{position:relative;height:290px;border:1px solid var(--rule);border-radius:12px;
+  background:color-mix(in srgb,var(--paper) 55%,var(--card));display:flex;align-items:center;
+  justify-content:center;overflow:hidden}
+.shot.src .frame{border-style:dashed;border-color:color-mix(in srgb,var(--accent) 60%,var(--rule))}
+.shot .frame img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;
+  transition:transform .2s ease}
+.shot .frame img:hover{transform:scale(1.015)}
+.shot .badge{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:13px;
+  font-weight:700;padding:4px 10px;border-radius:20px;background:color-mix(in srgb,var(--card) 82%,transparent);
+  backdrop-filter:blur(4px);border:1px solid var(--rule)}
+.shot .badge.win{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.shot .badge.win{color:#08211c}}
+.shot .badge.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.shot figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  padding:7px 4px 0;flex-wrap:wrap}
+.shot .who{font-family:var(--mono);font-size:11.5px;font-weight:600;word-break:break-all}
+.shot .who.accent{color:var(--accent-ink)}
+.shot .subcap{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap}
+
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-top:12px}
+.dcol{border:1px solid var(--rule);border-radius:12px;padding:12px 14px;background:var(--paper)}
+.dcol .mid{font-family:var(--mono);font-size:11.5px;color:var(--muted);word-break:break-all;
+  margin-bottom:8px}
+.disc{margin-top:9px;border-top:1px dashed var(--rule);padding-top:8px}
+.disc>summary{cursor:pointer;font-size:12px;color:var(--accent-ink);list-style:none;user-select:none}
+.disc>summary::-webkit-details-marker{display:none}
+.disc>summary::before{content:'▸ ';font-size:10px}
+.disc[open]>summary::before{content:'▾ '}
+.disc .inner{padding-top:6px}
+
+.crit{font-size:12.5px;margin-top:10px;border-top:1px dashed var(--rule);padding-top:10px}
+.crit .row{display:grid;grid-template-columns:112px 1fr 34px;gap:8px;align-items:center;
+  margin:5px 0 1px}
+.crit .nm{font-weight:600;font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crit .track{height:6px;border-radius:4px;background:var(--rule);overflow:hidden}
+.crit .bar{height:100%;border-radius:4px;background:var(--accent)}
+.crit .bar.lo{background:var(--bad)}
+.crit .bar.md{background:var(--warn)}
+@media (prefers-reduced-motion:no-preference){
+  html.js details.scn:not([open]) .crit .bar{width:0 !important}
+  html.js details[open].scn .crit .bar{transition:width .6s cubic-bezier(.2,.7,.3,1) .12s}
+}
+.crit .v{font-family:var(--mono);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums}
+.crit .r{color:var(--muted);margin:2px 0 7px;font-size:12px;line-height:1.5}
+.crit .src{font-family:var(--mono);font-size:9.5px;color:var(--faint);
+  text-transform:uppercase;letter-spacing:.05em}
+
+#lb{position:fixed;inset:0;background:rgba(10,14,15,.88);display:none;z-index:100;
+  align-items:center;justify-content:center;padding:30px;cursor:zoom-out}
+#lb.show{display:flex}
+#lb img{max-width:94vw;max-height:88vh;border-radius:10px;box-shadow:0 12px 60px rgba(0,0,0,.5)}
+#lb .cap{position:fixed;bottom:14px;left:0;right:0;text-align:center;color:#cfe0dd;
+  font-family:var(--mono);font-size:12px}
+#lb .sw{position:fixed;top:16px;left:0;right:0;display:flex;gap:8px;
+  justify-content:center;flex-wrap:wrap}
+#lb .sw .swb{font-family:var(--mono);font-size:11.5px;padding:6px 14px;border-radius:20px;
+  border:1px solid #3c4a4a;background:rgba(20,28,28,.8);color:#b9cbc8;cursor:pointer}
+#lb .sw .swb.on{background:var(--accent);border-color:var(--accent);color:#06211c}
+@media (prefers-reduced-motion:no-preference){
+  #lb.show img{animation:pop .18s ease}
+  @keyframes pop{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}
+}
+
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:11.5px;line-height:1.8;color:var(--faint)}
+a{color:var(--accent-ink)}
+
+/* scenario accounting: a scenario missing a result is "not compared", never a tie */
+.tally{font-size:13.5px;margin-top:8px;line-height:1.55}
+.tally .nc{color:var(--warn)}
+.pill.nc{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.scn .scores .sc.fl,.scn .scores .sc.fl:first-child{color:var(--warn);font-size:12px;font-weight:600}
+/* why an output is missing, in words, with the raw provider text kept internal */
+.crit.r .wo{display:block;color:var(--bad);font-size:12.5px;margin-bottom:3px}
+.crit.r .wt{color:var(--muted);font-size:12px;line-height:1.5}
+.rawerr{margin-top:6px}
+.rawerr summary{font-size:11px;color:var(--faint);cursor:pointer}
+.rawerr code{display:block;margin-top:4px;font-size:10.5px;color:var(--faint);word-break:break-all;line-height:1.4}
+/* media frames hold whatever the lane shows: an image, a video, an audio player */
+.shot .frame video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;display:block}
+.shot .frame.audio{height:auto;min-height:0;padding:14px;display:block}
+.shot .frame audio{width:100%;display:block}
+.srcth{border:2px solid var(--accent)}
+.scn .thumbs .srcclip{display:inline-block;padding:1px 5px;border-radius:3px;background:var(--accent);
+  color:#fff;font-size:10px;vertical-align:middle}
+.hint{font-size:12px;color:var(--faint);margin:2px 4px 0}
+.note{font-size:12.5px;color:var(--muted)}
+</style>
+
+
+<style>
+/* audio evidence: a player where the image lanes have a picture */
+.clip{padding:8px 0;border-top:1px dashed var(--rule)}
+.clip:first-child{border-top:0;padding-top:0}
+.clip .top{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin-bottom:6px}
+.clip .rl{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+.clip .meta{display:flex;flex-wrap:wrap;gap:2px 12px;font-family:var(--mono);font-size:11px;
+  color:var(--muted);margin-top:4px}
+.clip .meta b{color:var(--ink)}
+.clip .tx{font-size:12px;color:var(--muted);margin-top:6px;white-space:pre-wrap}
+.clip .was{font-size:12px;color:var(--warn);background:var(--warn-soft);border-radius:8px;
+  padding:6px 9px;margin-top:6px}
+.clip .was.dimmed{color:var(--muted);background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+.pill.corr{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.shot .frame.audio{height:auto;align-items:stretch;justify-content:flex-start;flex-direction:column;
+  padding:12px 14px;overflow:visible}
+.shot .frame.audio .badge{position:static;align-self:flex-end;margin-bottom:6px}
+/* the word-level transcript diff: what the WER gate actually compared */
+.wdiff{font-family:var(--mono);font-size:12px;line-height:1.9;padding:8px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+.wdiff .missing{background:var(--bad-soft);color:var(--bad);text-decoration:line-through;padding:0 2px}
+.wdiff .added{background:var(--accent-soft);color:var(--accent-ink);padding:0 2px}
+.wdiff .same{color:var(--muted)}
+/* human review, beside the automated result and never inside it */
+.human{border:1px dashed var(--warn);border-radius:12px;padding:10px 14px;margin-top:12px}
+.human .ob{border-top:1px dashed var(--rule);padding-top:8px;margin-top:8px}
+.human .ob:first-of-type{border-top:0;margin-top:4px}
+.human .obn{margin:4px 0;font-size:13.5px}
+/* the streaming explainer's drawing */
+.how .tl{width:100%;max-width:760px;height:auto;display:block;margin:10px 0}
+.how .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:10px 0}
+.how .q{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:10px 14px;font-size:13.5px}
+</style>
+
+</head>
+<body>
+
+<div class="topbar"><div class="in">
+  <span class="t">GenMedia comparison</span>
+  <span class="m">voice · 23 scenarios · 59 clips · 3 runs</span>
+  <nav>
+    <a href="#overall">Summary</a>
+    <a href="#evidence">Scenarios</a>
+    <a href="#footnotes">Footnotes</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+
+<header class="hero" id="summary">
+  <p class="kicker">quality · cost · latency · reliability — four columns, never one number</p>
+  <h1>23 scenarios ·
+      1 models · blind-judged</h1>
+  <div class="meta">
+    <span>state <b>reported</b></span>
+    <span>report generated <b>28 Sep 2026, 07:45 PDT</b></span>
+    <span>run created <b>2026-09-28T07:34:03-0700</b></span>
+    <span>runner <b>fb1d0c5</b></span>
+    
+    
+  </div>
+  
+  <div class="tiles">
+    <div class="tile"><div class="lab">Generation cost</div>
+      <div class="val">$0.2512</div>
+      <div class="sub">billed from returned usage</div></div>
+    <div class="tile"><div class="lab">Judging cost</div>
+      <div class="val">$0.0336</div>
+      <div class="sub">kept separate, always</div></div>
+    
+    <div class="tile"><div class="lab">Scenarios completed</div>
+      <div class="val">0/23</div>
+      <div class="sub">complete = every required model scored</div></div>
+    
+    
+    
+    <div class="tile"><div class="lab">gemini-3-8-flash-tts · Google</div>
+      <div class="val">9.58</div>
+      <div class="sub">mean · 0-0-0 W-T-L · judged 27/59</div></div>
+    
+  </div>
+  
+</header>
+
+
+
+<h2 id="overall">Overall summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+<p class="tally"><b>23 scenarios</b> =
+  <b>0 compared</b>
+  (gemini-3-8-flash-tts 0 wins · 0 ties) + <b class="nc">23 not compared</b> (all had no result on 14)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="banner"><b>Single model.</b> Nothing to compare.</div>
+
+
+<div class="banner"><b>Judge:</b> <code>gemini-2.5-flash</code> — a Google model scoring a comparison with a Google arm in it, and never calibrated against human listeners.
+  The measured figures — word errors, timing, cost, gate rate — do not depend on it.</div>
+
+
+<ul class="tnote">
+  <li><b>How a voice scenario is decided.</b> A model wins a scenario only when its quality gap
+  clears the 0.5 pp decision band (0.05 on the 10-point scale)
+  and it cleared no fewer gates; closer gaps are a tie, and "better on quality, worse on delivery"
+  is a split.</li>
+  <li><b>Quality is averaged over scored clips only</b>, and every mean carries its
+  denominator; a gate failure counts against the gate rate, never as a zero.</li>
+</ul>
+
+<p class="note"><b>Served from:</b>
+  <code>gemini-3-8-flash-tts</code> — Gemini API · no region choice.
+  Detail under <a href="#served">where each model was served from</a>.</p>
+
+
+
+
+
+
+
+<h2>Styled tts <span class="tid">styled_tts</span></h2>
+<div class="tw"><table class="mx">
+<thead><tr><th>Metric</th>
+<th class="num g">gemini-3-8-flash-tts<br><span class="vd">Google</span></th>
+
+</tr></thead>
+<tbody>
+
+<tr data-row="mean" class="mrow hi">
+  <td>Rating <span class="pill">higher is better</span></td>
+  <td class="num">9.58</td>
+  
+</tr>
+
+<tr data-row="worst" class="mrow">
+  <td>Reliability (worst scenario rating) <span class="pill">higher is better</span></td>
+  <td class="num">8.80</td>
+  
+</tr>
+
+<tr data-row="wtl" class="mrow">
+  <td>W–T–L</td>
+  <td class="num">0-0-0</td>
+  
+</tr>
+
+<tr data-row="judged" class="mrow">
+  <td>Judged</td>
+  <td class="num">27/59</td>
+  
+</tr>
+
+<tr data-row="below_5" class="mrow">
+  <td>&lt;5 <span class="pill">lower is better</span></td>
+  <td class="num">0</td>
+  
+</tr>
+
+<tr data-row="gen_cost" class="mrow">
+  <td>Cost per clip <span class="pill">lower is better</span></td>
+  <td class="num">$0.0048</td>
+  
+</tr>
+
+<tr data-row="judge_cost" class="mrow">
+  <td>Judge cost/scen <span class="pill">lower is better</span></td>
+  <td class="num">$0.0012</td>
+  
+</tr>
+
+<tr data-row="lat_min" class="mrow">
+  <td>Latency min <span class="pill">lower is better</span></td>
+  <td class="num">3.3s</td>
+  
+</tr>
+
+<tr data-row="lat_p50" class="mrow hi">
+  <td>Latency p50 <span class="pill">lower is better</span></td>
+  <td class="num">5.8s</td>
+  
+</tr>
+
+<tr data-row="lat_max" class="mrow">
+  <td>Latency max <span class="pill">lower is better</span></td>
+  <td class="num">16.3s</td>
+  
+</tr>
+
+<tr data-row="success" class="mrow">
+  <td>Success <span class="pill">higher is better</span></td>
+  <td class="num">100%</td>
+  
+</tr>
+
+<tr data-row="attempts" class="mrow">
+  <td>Attempts <span class="pill">lower is better</span></td>
+  <td class="num">1</td>
+  
+</tr>
+
+<tr data-row="gates" class="mrow">
+  <td>Gates passed <span class="pill">higher is better</span></td>
+  <td class="num">46%</td>
+  
+</tr>
+
+<tr data-row="spread" class="mrow">
+  <td>Run-to-run spread <span class="pill">lower is better</span></td>
+  <td class="num">0.78</td>
+  
+</tr>
+
+<tr data-row="worst_wer" class="mrow">
+  <td>Worst word error rate <span class="pill">lower is better</span></td>
+  <td class="num">18.3%</td>
+  
+</tr>
+
+<tr data-row="cost_min" class="mrow">
+  <td>Cost per audio minute <span class="pill">lower is better</span></td>
+  <td class="num">$0.0211</td>
+  
+</tr>
+
+<tr data-row="lat_p95" class="mrow">
+  <td>Latency p95 <span class="pill">lower is better</span></td>
+  <td class="num">14.7s</td>
+  
+</tr>
+
+<tr data-row="ttfa_p50" class="mrow">
+  <td>Time to first audio p50 <span class="pill">lower is better</span></td>
+  <td class="num">2.0s</td>
+  
+</tr>
+
+</tbody></table></div>
+
+
+
+
+
+
+
+
+
+<h2>By target industry</h2>
+
+<div class="tw"><table class="roll">
+<thead>
+<tr><th rowspan="2">Industry (primary)</th><th class="num" rowspan="2">Scenarios</th>
+<th class="grp a" colspan="3">gemini-3-8-flash-tts</th>
+</tr>
+<tr><th class="num sep">Quality mean</th><th class="num">Wins</th><th class="num">Win %</th></tr>
+</thead>
+<tbody>
+
+<tr class="frow" data-dim="ind" data-val="Ads" tabindex="0" title="Show only Ads scenarios">
+  <td><span class="fname">Ads</span></td><td class="num">3</td>
+  
+  
+  <td class="num sep">9.32</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Ecommerce &amp; Retail" tabindex="0" title="Show only Ecommerce &amp; Retail scenarios">
+  <td><span class="fname">Ecommerce &amp; Retail</span></td><td class="num">6</td>
+  
+  
+  <td class="num sep">9.79</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Gaming" tabindex="0" title="Show only Gaming scenarios">
+  <td><span class="fname">Gaming</span></td><td class="num">5</td>
+  
+  
+  <td class="num sep">9.64</td>
+  <td class="num"><span class="tag zero">0 wins</span></td>
+  <td class="num">—</td>
+  
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Micro-drama &amp; entertainment" tabindex="0" title="Show only Micro-drama &amp; entertainment scenarios">
+  <td><span class="fname">Micro-drama &amp; entertainment</span></td><td class="num">3</td>
+  
+  <td class="num sep"><span class="dash">—</span></td><td class="num"><span class="dash">—</span></td><td class="num"><span class="dash">—</span></td>
+  
+</tr>
+
+<tr class="frow" data-dim="ind" data-val="Other" tabindex="0" title="Show only Other scenarios">
+  <td><span class="fname">Other</span></td><td class="num">6</td>
+  
+  <td class="num sep"><span class="dash">—</span></td><td class="num"><span class="dash">—</span></td><td class="num"><span class="dash">—</span></td>
+  
+</tr>
+
+</tbody></table></div>
+
+<p class="note">Industries come from each scenario id&#39;s prefix (vr-ecom, vr-drama, vr-game, vr-ads), one industry per scenario. Click a row to show only its
+scenarios below.</p>
+
+
+
+
+
+
+
+<h2 id="ttfa">Time to first audio</h2>
+<p class="note"> Every streamed clip on both arms missed its ceiling, so neither is real-time by this study's bar - the number is the finding, not a pass.</p>
+<div class="tw"><table>
+  <thead><tr><th>Model</th><th class="num">Streamed clips</th><th class="num">First audio, median</th>
+    <th class="num">Range, min–95th</th><th class="num">Whole call, median</th><th class="num">Cleared its ceiling</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td><td class="num">18</td><td class="num">1984 ms</td>
+    <td class="num">1622–2297 ms</td><td class="num">4.2s</td>
+    <td class="num">0 / 18</td></tr>
+  
+  </tbody></table></div>
+<div class="tw"><table>
+  <thead><tr><th>Scenario</th><th class="num">Ceiling</th>
+    <th class="num">gemini-3-8-flash-tts</th></tr></thead>
+  <tbody>
+  
+  <tr><td><code>voi-ret-01</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">1797 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>voi-tel-01</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">1622 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>voi-tel-02</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">1984 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>voi-tel-06</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">1863 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>voi-tel-08</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">1964 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>voi-tel-09</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">2109 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>vr-ecom-01</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">1884 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>vr-ecom-02</code></td><td class="num">1000 ms</td>
+    
+    <td class="num">2102 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  <tr><td><code>vr-game-03</code></td><td class="num">300 ms</td>
+    
+    <td class="num">1790 ms <span class="pill est">over</span></td>
+    </tr>
+  
+  </tbody></table></div>
+<p class="tnote">Time to the first audio chunk, not whole-call latency. Only scenarios that set a
+first-audio ceiling are streamed, so only those appear here.</p>
+<div class="how" id="how-latency">
+  <h3>Two stopwatches, two different questions</h3>
+  <p>Every clip on this page was timed. The scenarios where a quick reply matters were timed
+  <b>twice</b>, because "how fast is the model" is two questions, and they have very
+  different answers.</p>
+
+  <svg class="tl" viewBox="0 0 760 118" role="img"
+       aria-label="A timeline from the request being sent to the finished file arriving. First audio is the short interval to the first sound; whole call is the full interval to the finished file.">
+    <line x1="40" y1="30" x2="720" y2="30" stroke-width="2" style="stroke:var(--rule)"/>
+    <circle cx="40" cy="30" r="5" style="fill:var(--ink)"/>
+    <text x="40" y="16" text-anchor="middle" font-size="11" style="fill:var(--muted);font-family:var(--mono)">request sent</text>
+    <circle cx="250" cy="30" r="5" style="fill:var(--accent)"/>
+    <text x="250" y="16" text-anchor="middle" font-size="11" style="fill:var(--accent);font-family:var(--mono)">first word heard</text>
+    <circle cx="720" cy="30" r="5" style="fill:var(--rival)"/>
+    <text x="720" y="16" text-anchor="end" font-size="11" style="fill:var(--rival);font-family:var(--mono)">finished file back</text>
+    <rect x="40" y="52" width="210" height="14" rx="4" style="fill:var(--accent)"/>
+    <text x="258" y="63" font-size="12" font-weight="600" style="fill:var(--accent);font-family:var(--sans)">first audio — what a caller on the phone waits for</text>
+    <rect x="40" y="84" width="680" height="14" rx="4" style="fill:var(--rival)"/>
+    <text x="40" y="113" font-size="12" font-weight="600" style="fill:var(--rival);font-family:var(--sans)">whole call — what a batch job waits for</text>
+  </svg>
+
+  <div class="two">
+    <div class="q">
+      <b>Whole call</b> asks: <i>how long until the finished audio file is back?</i>
+      Like downloading a song before you can press play. This is the <b>Latency</b> row in the
+      metric table, and every clip in the study has it.
+    </div>
+    <div class="q">
+      <b>First audio</b> asks: <i>how long until the listener hears the first word?</i>
+      Like a phone call: the person on the line hears you start speaking; they do not wait for you
+      to finish. This is the panel above, and it exists for the scenarios that need a quick reply.
+    </div>
+  </div>
+
+  
+  
+  <p class="note"><b>On this page:</b>
+    <code>gemini-3-8-flash-tts</code> says its first word after a median <b>1984 ms</b> and hands back the finished clip after <b>4.2 s</b>.
+    No streamed clip on either model reached the first word inside its
+    scenario's ceiling.</p>
+  
+
+  <h4>How we measured it</h4>
+  <ol class="steps">
+    <li><b>Same script, same voice, same model.</b> For the 9
+    scenarios that need a quick reply, we asked each model to <b>stream</b>: send sound as soon as
+    it has some, instead of the whole file at the end. Nothing else about the request changed.</li>
+    <li><b>The clock starts when we send the request</b>, before the connection is even open, so
+    the network and the server's thinking time are all inside the number.</li>
+    <li><b>The clock stops at the first piece of actual sound</b>, not at a header or an empty
+    message that arrives first.</li>
+    <li><b>We keep listening until the clip ends</b>, so the same clip also has a whole-call time.
+    The two are stored side by side and never overwrite each other.</li>
+    <li><b>Each of these scenarios sets a ceiling</b> — 300 ms for the game line, 1000 ms for the
+    conversational ones. A clip over its ceiling fails that gate like any other gate.</li>
+    <li><b>Measured the same way on both models, from the same machine.</b> This is the ordinary
+    HTTP stream. It is not ElevenLabs' WebSocket real-time product, so the sub-second figures
+    ElevenLabs publishes for that product are not what this panel measures.</li>
+  </ol>
+</div>
+
+
+
+<h2 id="served">Where each model was served from</h2>
+<div class="tw"><table>
+  <thead><tr><th>Model</th><th>Served from</th><th>Region</th><th>What that means</th><th>Source</th></tr></thead>
+  <tbody>
+  
+  <tr><td><code>gemini-3-8-flash-tts</code></td>
+    <td><b>Gemini API · no region choice</b></td>
+    <td><code>global</code></td><td class="note">Served by the Gemini API (generativelanguage.googleapis.com), which takes no region parameter - Google routes the call. Not Vertex AI: 3.8 TTS was not offered on Vertex when this ran.</td>
+    <td class="note">run manifest</td></tr>
+  
+  
+  <tr><td>judge <code>gemini-2.5-flash</code></td><td><b>Vertex AI · global</b></td>
+    <td><code>global</code></td><td class="note">The judge listens through Vertex AI at the global endpoint (the runbook&#39;s location for temp-genmedia-study). It shares a VENDOR with the Gemini arm, not a doorway: the 3.8 arm is served by the Gemini API.</td>
+    <td class="note">run manifest</td></tr>
+  
+  <tr><td>transcriber <code>medium</code></td><td><b>local machine · no region</b></td>
+    <td><code>local</code></td><td class="note">Runs on the machine that ran the study (faster-whisper on CPU). No network, no region.</td>
+    <td class="note">run manifest</td></tr>
+  
+  </tbody></table></div>
+<p class="tnote">Recorded in each run's own manifest at the time it ran.</p>
+
+
+
+<h2 id="evidence">Per-scenario evidence</h2>
+
+<div class="gallery">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chips">
+  
+  <span class="chip on" data-dim="ind" data-val="__all">All industries</span>
+  <span class="chip" data-dim="ind" data-val="Ads">Ads <span class="n">(3)</span></span><span class="chip" data-dim="ind" data-val="Ecommerce &amp; Retail">Ecommerce &amp; Retail <span class="n">(6)</span></span><span class="chip" data-dim="ind" data-val="Gaming">Gaming <span class="n">(5)</span></span><span class="chip" data-dim="ind" data-val="Micro-drama &amp; entertainment">Micro-drama &amp; entertainment <span class="n">(3)</span></span><span class="chip" data-dim="ind" data-val="Other">Other <span class="n">(6)</span></span>
+  
+  <span style="flex:1"></span>
+  
+  
+  <button class="ctl" data-act="expand" type="button">Expand all</button>
+  <button class="ctl" data-act="collapse" type="button">Collapse all</button>
+</div>
+<div class="chips">
+  <span class="chip on" data-dim="win" data-val="__all">All results</span>
+  
+    
+    
+  
+  
+  
+  
+  
+  
+  
+  <span class="chip" data-dim="win" data-val="none">Not compared <span class="n">(23)</span></span>
+</div>
+
+<p class="note">Click a scenario to expand; press play on any clip — one plays at a time.
+A scenario is won only when the quality gap clears the 0.05 decision band on the 10-point scale and it cleared no fewer gates; better on quality but worse on delivery is a split. A closer gap is recorded as a tie, and every win count on this page uses that same rule.</p>
+
+
+<div class="scnlist">
+
+<details class="scn rev" id="scn-voi-ret-01" data-fam=""
+         data-ind="Other" data-win="none"
+         data-task="styled_tts" data-i="0"
+         data-g=""
+         data-c=""
+         data-d="" open>
+  <summary>
+    <span class="sid">voi-ret-01</span>
+    <span class="stitle">Conversational product recommendation - E-commerce / Retail</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> I found two options that match your requirements for a lightweight laptop under seventy-five thousand rupees. The ASUS Vivobook S 14 has sixteen gigabytes of RAM, a five-hundred-and-twelve-gigabyte SSD, and a fourteen-inch OLED display. It is currently priced at sixty-nine thousand nine hundred and ninety-nine rupees. If you prefer a larger screen, the Lenovo IdeaPad Slim 5 has sixteen gigabytes of RAM, a one-terabyte SSD, and a sixteen-inch display for seventy-two thousand four hundred and ninety rupees. Both models are available for delivery by Friday, and the Lenovo includes a three-year extended warranty. Based on your preference for battery life and a larger display, I would recommend the Lenovo.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/voi-ret-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>16.3s</b></span>
+    <span>first audio <b>1797 ms</b></span>
+    <span>length <b>38.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">I found two options that match your requirements for a lightweight laptop under 75,000 rupees.  The Asus Vivobook S14 has 16GB of RAM, a 512GB SSD, and a 14-inch OLED display.  It is currently priced at 69,999 rupees. If you prefer a larger screen, the Lenovo IdeaPad Slim  5 has 16GB of RAM, a 1TB SSD, and a 16-inch display for 72,490 rupees.  Both models are available for delivery by Friday, and the Lenovo includes a three-year extended warranty.  Based on your preference for battery life and a larger display, I would recommend the Lenovo.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/voi-ret-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>15.9s</b></span>
+    <span>first audio <b>2004 ms</b></span>
+    <span>length <b>37.2s</b></span>
+    <span>word errors <b>0.8%</b></span>
+  </div>
+  <div class="tx">I found two options that match your requirements for a lightweight laptop under 75,000 rupees.  The ASUS VivoBook S14 has 16GB of RAM, a 512GB SSD, and a 14-inch OLED display. It is currently  priced at 69,999 rupees. If you prefer a larger screen, the Lenovo IdeaPad Slim 5  has 16GB of RAM, a 1TB SSD, and a 16-inch display for 72,490 rupees. Both models  Those are available for delivery by Friday, and the Lenovo includes a 3-year extended  warranty.  Based on your preference for battery life and a larger display, I would recommend the  Lenovo.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">16.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 0.8%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[ASUS Vivobook S 14]</span><span class="pill ok">must_say[Lenovo IdeaPad Slim 5]</span><span class="pill ok">must_say[battery life and a larger di]</span><span class="pill ok">must_say[five-hundred-and-twelve-giga]</span><span class="pill ok">must_say[fourteen-inch OLED display]</span><span class="pill ok">must_say[one-terabyte SSD]</span><span class="pill ok">must_say[seventy-two thousand four hu]</span><span class="pill ok">must_say[sixteen gigabytes of RAM]</span><span class="pill ok">must_say[sixteen-inch display]</span><span class="pill ok">must_say[sixty-nine thousand nine hun]</span><span class="pill ok">must_say[three-year extended warranty]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 1900 ms</td>
+    <td class="note">95th 1994 ms · range 1797–2004 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-01" data-fam=""
+         data-ind="Other" data-win="none"
+         data-task="styled_tts" data-i="1"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-01</span>
+    <span class="stitle">Order number readback - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your order number is 4471 8802 3915.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/voi-tel-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.2s</b></span>
+    <span>first audio <b>1622 ms</b></span>
+    <span>length <b>6.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your order number is 4471-8802-3915.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/voi-tel-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.7s</b></span>
+    <span>first audio <b>1713 ms</b></span>
+    <span>length <b>5.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your order number is 4471-8802-3915.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.2s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 1668 ms</td>
+    <td class="note">95th 1708 ms · range 1622–1713 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-02" data-fam=""
+         data-ind="Other" data-win="none"
+         data-task="styled_tts" data-i="2"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-02</span>
+    <span class="stitle">Currency confirmation - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The amount is four thousand two hundred and fifty rupees and seventy-five paise.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/voi-tel-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    <span>first audio <b>2798 ms</b></span>
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">The amount is 4,250 rupees and 75 paise.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/voi-tel-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.8s</b></span>
+    <span>first audio <b>1984 ms</b></span>
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>7.1%</b></span>
+  </div>
+  <div class="tx">The amount is 4,250 rupees and 75 paisei.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ must_say[four thousand two hundred an]</span><span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 7.1%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill bad">must_say[four thousand two hundred an]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 2391 ms</td>
+    <td class="note">95th 2757 ms · range 1984–2798 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-06" data-fam=""
+         data-ind="Other" data-win="none"
+         data-task="styled_tts" data-i="3"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-06</span>
+    <span class="stitle">Phone number readback - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your number is 98450 12345.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/voi-tel-06/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.3s</b></span>
+    <span>first audio <b>1895 ms</b></span>
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your number is 98450-12345.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/voi-tel-06/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.9s</b></span>
+    <span>first audio <b>1863 ms</b></span>
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your number is 98450-12345.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">5.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 1879 ms</td>
+    <td class="note">95th 1893 ms · range 1863–1895 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-08" data-fam=""
+         data-ind="Other" data-win="none"
+         data-task="styled_tts" data-i="4"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-08</span>
+    <span class="stitle">OTP digit sequence - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your one-time code is 7 3 9 1 5 2.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/voi-tel-08/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.0s</b></span>
+    <span>first audio <b>1964 ms</b></span>
+    <span>length <b>5.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your one-time code is 739152.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/voi-tel-08/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    <span>first audio <b>2007 ms</b></span>
+    <span>length <b>8.4s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your one-time code is 739152.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 1986 ms</td>
+    <td class="note">95th 2005 ms · range 1964–2007 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-voi-tel-09" data-fam=""
+         data-ind="Other" data-win="none"
+         data-task="styled_tts" data-i="5"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">voi-tel-09</span>
+    <span class="stitle">Card last-four confirmation - Transactional / telephony</span>
+    <span class="pill" title="also relevant to: —">Other</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your card ending in 4419 has been confirmed.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/voi-tel-09/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.3s</b></span>
+    <span>first audio <b>2109 ms</b></span>
+    <span>length <b>3.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your card ending in 4419 has been confirmed.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/voi-tel-09/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.6s</b></span>
+    <span>first audio <b>2151 ms</b></span>
+    <span>length <b>4.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your card ending in 4419 has been confirmed.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">no_overlong_digit_run</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 2130 ms</td>
+    <td class="note">95th 2149 ms · range 2109–2151 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ads-02" data-fam=""
+         data-ind="Ads" data-win="none"
+         data-task="styled_tts" data-i="6"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ads-02</span>
+    <span class="stitle">Fifteen-second broadcast spot, exact duration - Ads</span>
+    <span class="pill" title="also relevant to: —">Ads</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Monsoon&#39;s here. So is the Kalyani Motors service camp. Free twenty-one point inspection, wiper and brake-pad check, up to thirty percent off parts. Three days only, at all fourteen Bengaluru branches. Kalyani Motors. Drive the monsoon, don&#39;t dread it.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ads-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>7.5s</b></span>
+    
+    <span>length <b>16.1s</b></span>
+    <span>word errors <b>4.7%</b></span>
+  </div>
+  <div class="tx">Monsoon&#39;s here! So is the Kalyani Motor Service Camp.  Free 21-point inspection, wiper and brake pad check, up to 30% off parts.  Three days only at all 14 Bangaluru branches.  Kalyani Motors. Drive the monsoon. Don&#39;t dread it.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ads-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.3s</b></span>
+    
+    <span>length <b>16.1s</b></span>
+    <span>word errors <b>4.7%</b></span>
+  </div>
+  <div class="tx">Monsoons here. So is the Kalyani Motors Service Camp. Free 21-point inspection, wiper and brake pad check, up to 30% off parts, 3 days only at all 14 Bengaluru branches.  Kalyani Motors. Drive the Monsoon. Don&#39;t dread it.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">7.5s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ must_say[fourteen Bengaluru branches]</span><span class="pill bad">✗ trimmed_duration_in_range</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 4.7%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[Kalyani Motors]</span><span class="pill bad">must_say[fourteen Bengaluru branches]</span><span class="pill ok">must_say[thirty percent]</span><span class="pill ok">must_say[twenty-one point inspection]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">trimmed_duration_in_range</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ads-05" data-fam=""
+         data-ind="Ads" data-win="none"
+         data-task="styled_tts" data-i="7"
+         data-g="9.2149"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ads-05</span>
+    <span class="stitle">Brand name pronunciation, no markup permitted - Ads</span>
+    <span class="pill" title="also relevant to: —">Ads</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.215</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> This season, Nykaa brings you three days of beauty. Save up to forty percent at Nykaa, plus an extra ten percent with Jio Pay. Discover Kaya Clinic favourites, Cetaphil essentials, and the full Nykaa Naturals range. Nykaa. Three days only. Kaya, Cetaphil and Jio Pay offers apply while stocks last.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.215</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.459</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ads-05/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.0s</b></span>
+    
+    <span>length <b>18.7s</b></span>
+    <span>word errors <b>2.0%</b></span>
+  </div>
+  <div class="tx">This season, Nykaa brings you three days of beauty.  Save up to 40% at Nykaa, plus an extra 10% with Jio Pay.  Discover Kaya Clinic favorites, Cetaphil Essentials,  and the full Nykaa Naturals range.  Nykaa, three days only.  Kaya, Cetaphil, and Jio Pay offers apply while stocks last.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">8.971</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ads-05/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.0s</b></span>
+    
+    <span>length <b>18.3s</b></span>
+    <span>word errors <b>6.0%</b></span>
+  </div>
+  <div class="tx">This season, Nykaa brings you 3 days of beauty.  Save up to 40% at Nykaa, plus an extra 10% with Jio Pay.  Discover Kaya Clinic favorites, Cetaphil Essentials, and the full Nykaa Naturals range.  Nykaa.  3 days only.  Kaya, Cetaphil, and Jio Pay offer supply while stocks last.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">9.0s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">2 of 2 clips scored</span>
+<span class="pill">worst word errors 6.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[forty percent]</span><span class="pill ok">must_say[ten percent]</span><span class="pill ok">must_say_any[Cetaphil|Setaphil|Cetafil|]</span><span class="pill ok">must_say_any[Jio Pay|Geo Pay|JioPay|Geo]</span><span class="pill ok">must_say_any[Kaya Clinic|Kaia Clinic|Ka]</span><span class="pill ok">must_say_any[Nykaa|Nykka|Nyka|Naika|NiK]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.46</td><td class="num">8.97</td>
+    <td class="num">±0.49</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ads-06" data-fam=""
+         data-ind="Ads" data-win="none"
+         data-task="styled_tts" data-i="8"
+         data-g="9.426649999999999"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ads-06</span>
+    <span class="stitle">Compliance disclaimer at broadcast pace - Ads</span>
+    <span class="pill" title="also relevant to: —">Ads</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.427</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Credit is subject to status and affordability checks. Representative APR twenty-four point nine percent variable. Minimum repayment two thousand five hundred rupees per month over thirty-six months. Missing payments may affect your credit rating. Terms, conditions and eligibility criteria apply. Kalyani Finance is a registered non-banking financial company.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.427</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.669</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ads-06/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>6.5s</b></span>
+    
+    <span>length <b>12.8s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Credit is subject to status and affordability checks.  Representative APR 24.9% variable.  Minimum repayment, 2,500 rupees per month over 36 months.  Missing payments may affect your credit rating.  Terms, conditions, and eligibility criteria apply.  Kalyani Finance is a registered  non-banking financial company.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.184</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ads-06/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.1s</b></span>
+    
+    <span>length <b>14.6s</b></span>
+    <span>word errors <b>3.9%</b></span>
+  </div>
+  <div class="tx">Credit is subject to status and affordability checks.  Representative APR 24.9% variable.  Minimum repayment, 2,500 rupees per month over 36 months.  Missing payments may affect your credit rating.  Terms, conditions, and eligibility criteria apply.  Call Yanni Finance is a registered non-banking financial company.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">6.5s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">2 of 2 clips scored</span>
+<span class="pill">worst word errors 3.9%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[non-banking financial compan]</span><span class="pill ok">must_say[thirty-six months]</span><span class="pill ok">must_say[twenty-four point nine perce]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">speech_rate_in_range</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.67</td><td class="num">9.18</td>
+    <td class="num">±0.49</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-drama-01" data-fam=""
+         data-ind="Micro-drama &amp; entertainment" data-win="none"
+         data-task="styled_tts" data-i="9"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-drama-01</span>
+    <span class="stitle">Episodic narration, voice held across sessions - Micro-drama</span>
+    <span class="pill" title="also relevant to: —">Micro-drama &amp; entertainment</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The lamps along the causeway came on one at a time, the way they always did, and Sarala counted them without meaning to. Eleven, twelve, thirteen. By the fourteenth she had reached the turning, and by the fifteenth she had decided. She would not go back to the house tonight. She would walk until the road ran out, and then she would see what the sea had to say about it.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-drama-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>10.9s</b></span>
+    
+    <span>length <b>26.3s</b></span>
+    <span>word errors <b>18.3%</b></span>
+  </div>
+  <div class="tx">The lamps along the causeway came on one at a time, the way they always did.  And Sarla counted them without meaning to, 11, 12, 13.  By the 14th, she had reached the turning, and by the 15th, she had decided.  She would not go back to the house tonight.  She would walk until the road ran out, and  then she would see what the sea had to say about it.  Thank you very much.  Thank you.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-drama-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.8s</b></span>
+    
+    <span>length <b>25.8s</b></span>
+    <span>word errors <b>8.5%</b></span>
+  </div>
+  <div class="tx">The lamps along the causeway came on one at a time, the way they always did.  And Sarala counted them without meaning to, 11, 12, 13.  By the 14th, she had reached the turning, and by the 15th, she had decided.  She would not go back to the house tonight.  She would walk until the road ran out, and  then she would see what the sea had to say about it.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">10.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ wer_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 18.3%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  <tr><td>Set verdict · speaker_consistency_across_runs</td><td>gemini-3-8-flash-tts</td>
+    <td><span class="pill ok">pass</span></td>
+    <td class="note">not evaluated - no earlier run of &#39;vr-drama-01&#39; at this exact scenario hash produced a gemini-3-8-flash-tts clip. This run is the baseline; holding a voice cannot be shown by the first time we ask for it.</td></tr>
+  
+  <tr><td>Set verdict · speaker_consistency_across_runs</td><td>gemini-3-8-flash-tts</td>
+    <td><span class="pill ok">pass</span></td>
+    <td class="note">vs run 2026-09-28_065008_voice-gemini38 - lowest pair earlier (voice-gemini38) vs this run at 0.9559 against a floor of 0.9 (mean 0.9559 over 1 pairs)</td></tr>
+  
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-drama-02" data-fam=""
+         data-ind="Micro-drama &amp; entertainment" data-win="none"
+         data-task="styled_tts" data-i="10"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-drama-02</span>
+    <span class="stitle">Narration to ACX submission spec - Micro-drama &amp; entertainment</span>
+    <span class="pill" title="also relevant to: —">Micro-drama &amp; entertainment</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> The harbour at Vathy had been awake for an hour before Ilse reached it. She came down the cut between the chandlery and the ice house with her collar turned up, counting the boats as she always did, and found the Kerensa gone from her mooring. Nobody had thought to telephone. The berth held nothing but a coil of blue rope and the flat grey water closing over where the hull had been. Ilse stood there long enough for the light to change. Then she walked back up the cut, past the chandlery, past the ice house, and knocked on a door she had promised herself she would never knock on again.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-drama-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>15.4s</b></span>
+    
+    <span>length <b>40.7s</b></span>
+    <span>word errors <b>4.5%</b></span>
+  </div>
+  <div class="tx">The harbor at Vathi had been awake for an hour before Ilsa reached it.  She came down the cut, between the chandlery and the ice house,  with her collar turned up, counting the boats as she always did.  And found the carenza gone from her mooring.  Nobody had thought to telephone.  The berth held nothing but a coil of blue rope and  the flat gray water closing over where the hole had been.  Ilsa stood there long enough for the light to change.  Then she walked back up the cut, past the chandlery, past the ice house, and  knocked on a door she had promised herself she would never knock on again.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-drama-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>14.6s</b></span>
+    
+    <span>length <b>39.8s</b></span>
+    <span>word errors <b>4.5%</b></span>
+  </div>
+  <div class="tx">The harbor at Vathi had been awake for an hour before Ilsa reached it. She came down the cut between the chandlery and the ice house,  with her collar turned up, counting the boats, as she always did. And found the carensa gone from her mooring. Nobody had thought to telephone. The berth held nothing but a coil of blue rope and  the flat gray water closing over where the hole had been. Ilsa stood there long enough for the light to change. Then she walked back up the cut, past the chandlery, past the ice house, and  knocked on a door she had promised herself she would never knock on again.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">15.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ peak_below_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 4.5%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">noise_floor_below_max</span><span class="pill ok">not_silent</span><span class="pill bad">peak_below_max</span><span class="pill ok">rms_in_range</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-drama-04" data-fam=""
+         data-ind="Micro-drama &amp; entertainment" data-win="none"
+         data-task="styled_tts" data-i="11"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-drama-04</span>
+    <span class="stitle">Dubbed line fitted to an 11.0s shot - Micro-drama &amp; entertainment</span>
+    <span class="pill" title="also relevant to: —">Micro-drama &amp; entertainment</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> You said you would come back before the monsoon. I waited. The house is still standing, and so am I. But do not mistake that for forgiveness.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-drama-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.8s</b></span>
+    
+    <span>length <b>10.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">You said you would come back before the monsoon.  I waited.  The house is still standing and so am I.  But do not mistake that for forgiveness.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>2 more clips — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-smoke</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_061428_voice-gemini38-smoke/outputs/voice/vr-drama-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>7.8s</b></span>
+    
+    <span>length <b>12.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">You said you would come back before the monsoon I  waited  The house is still standing and so am I  But do not mistake that for forgiveness</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-drama-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>6.5s</b></span>
+    
+    <span>length <b>12.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">You said you would come back before the monsoon.  I waited.  The house is still standing, and so am I.  But do not mistake that for forgiveness.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">5.8s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ trimmed_duration_in_range</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 3 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">trimmed_duration_in_range</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+
+
+
+<p class="note"><b>No score.</b> Ran 3 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-01" data-fam=""
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="12"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-01</span>
+    <span class="stitle">WISMO order status readback - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Thank you for holding. I have found your order. The reference is 4 8 1 9 0 2 7 7 3 1 5 4. Your parcel left our Bhiwandi facility this morning and is with Blue Dart. Delivery is scheduled for Thursday the fourteenth, between two and four in the afternoon. Shall I send the confirmation to your registered mobile ending 6 3 0 2?</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>11.3s</b></span>
+    <span>first audio <b>1884 ms</b></span>
+    <span>length <b>24.4s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+  <div class="tx">Thank you for holding. I have found your order. The reference is 481-902-773154.  Your parcel left our Bwandi facility this morning and is with Blue Dart.  Delivery is scheduled for Thursday the 14th between 2 and 4 in the afternoon.  Shall I send the confirmation to your registered mobile ending 6302?</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>10.2s</b></span>
+    <span>first audio <b>2297 ms</b></span>
+    <span>length <b>21.4s</b></span>
+    <span>word errors <b>1.5%</b></span>
+  </div>
+  <div class="tx">Thank you for holding. I have found your order. The reference is 481-902-77-3154.  Your parcel left our Bwandi facility this morning and is with Blue Dart.  Delivery is scheduled for Thursday the 14th between 2 and 4 in the afternoon.  Shall I send the confirmation to your registered mobile ending 6302?</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">11.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 1.5%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[6302]</span><span class="pill ok">must_say_any[Blue Dart|Bluedart|BlueDar]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 2090 ms</td>
+    <td class="note">95th 2276 ms · range 1884–2297 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-02" data-fam=""
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="13"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-02</span>
+    <span class="stitle">Cart-recovery call, agent turn only - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Hi, this is Meera calling from Urban Ladder. I noticed you were looking at the Fenton three-seater sofa but did not complete your order, and I wanted to check whether something got in the way. If it was the delivery timeline, we can get it to you in nine days rather than the fourteen shown at checkout. And your cart is still saved. Would it help if I sent the checkout link to your registered number?</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>11.4s</b></span>
+    <span>first audio <b>2136 ms</b></span>
+    <span>length <b>24.6s</b></span>
+    <span>word errors <b>1.3%</b></span>
+  </div>
+  <div class="tx">Hi, this is Mira calling from Urban Ladder.  I noticed you were looking at the Fenton three-seater sofa, but did not complete your order, and  I wanted to check whether something got in the way.  If it was the delivery timeline, we can get it to you in nine days, rather than the  14 shown at checkout.  And your cart is still saved.  Would it help if I sent the checkout link to your registered number?</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>14.1s</b></span>
+    <span>first audio <b>2102 ms</b></span>
+    <span>length <b>25.1s</b></span>
+    <span>word errors <b>1.3%</b></span>
+  </div>
+  <div class="tx">Hi, this is Mira calling from Urban Ladder.  I noticed you were looking at the Fenton three-seater sofa but did not complete your order, and  I wanted to check whether something got in the way.  If it was the delivery timeline, we can get it to you in nine days rather than the  14 shown at checkout.  And your cart is still saved.  Would it help if I sent the checkout link to your registered number?</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">11.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 1.3%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[Urban Ladder]</span><span class="pill ok">must_say[fourteen]</span><span class="pill ok">must_say[nine days]</span><span class="pill ok">must_say_any[Fenton|Fentin|Fenten]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 2119 ms</td>
+    <td class="note">95th 2134 ms · range 2102–2136 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-03" data-fam=""
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="14"
+         data-g="9.8528"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-03</span>
+    <span class="stitle">Refund confirmation in Indian numbering - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.853</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Your refund has been approved. The full amount of Rs 2,50,000 will be credited to the UPI account ending 4 4 1 9 within seven working days. Your reference number for this refund is 9 0 3 7 6 2. If the amount has not appeared after seven working days, please call us back and quote that reference.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.853</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.853</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-03/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.7s</b></span>
+    
+    <span>length <b>20.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your refund has been approved. The full amount of 250,000 rupees will be credited to the UPI account ending 4419 within seven working days.  Your reference number for this refund is 903762.  If the amount has not appeared after seven working days, please call us back and quote that reference.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-03/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>10.6s</b></span>
+    
+    <span>length <b>23.9s</b></span>
+    <span>word errors <b>3.3%</b></span>
+  </div>
+  <div class="tx">Your refund has been approved.  The full amount of $2,050,000 will be credited to the UPI account ending 4419 within 7 working days.  Your reference number for this refund is 903762.  If the amount has not appeared after 7 working days, please call us back and quote that reference.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">9.7s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ must_say[lakh]</span>
+          
+          
+          
+        
+        
+<span class="pill">1 of 2 clips scored</span>
+<span class="pill">worst word errors 3.3%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_not_say[250 thousand]</span><span class="pill ok">must_not_say[two hundred and fifty th]</span><span class="pill ok">must_not_say[two hundred fifty thousa]</span><span class="pill ok">must_say[903762]</span><span class="pill bad">must_say[lakh]</span><span class="pill ok">must_say[seven working days]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">—</td><td class="num">9.85</td>
+    <td class="num"><span class="dash">not measured</span></td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-04" data-fam=""
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="15"
+         data-g="9.8033"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-04</span>
+    <span class="stitle">After-hours booking readback - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.803</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Lovely, that is all confirmed. Let me read it back to you. A table for seven, on Saturday the twenty-second of November, at eight in the evening, under the name Raghavan. We will hold the table for fifteen minutes past the booking time. If anything changes, call us on 9 8 4 5 0 2 7 7 1 6. We look forward to seeing you.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.803</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.803</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.3s</b></span>
+    
+    <span>length <b>21.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Lovely! That is all confirmed. Let me read it back to you.  A table for 7 on Saturday, the 22nd of November at 8 in the evening under the name Raghavan.  We will hold the table for 15 minutes past the booking time.  If anything changes, call us on 98-4502-7716. We look forward to seeing you.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.803</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-04/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.8s</b></span>
+    
+    <span>length <b>21.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Lovely. That is all confirmed. Let me read it back to you.  A table for seven on Saturday the 22nd of November at eight in the evening under the  name Raghavan. We will hold the table for fifteen minutes past the booking time. If  anything changes, call us on 984-502-7716. We look forward to seeing you.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">9.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">2 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[fifteen minutes]</span><span class="pill ok">must_say_any[table for seven|table for ]</span><span class="pill ok">must_say_any[twenty-second|22nd]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.80</td><td class="num">9.80</td>
+    <td class="num">±0.00</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-06" data-fam=""
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="16"
+         data-g="9.8413"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-06</span>
+    <span class="stitle">KYC readback, confusable characters - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.841</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> 2 variants
+bare (bare readback, no clarifiers): Your verification reference is B 8 Q O Z 2 G 6. Please also confirm the card ending 4 4 1 9.
+nato (with NATO clarifiers): Your verification reference is Bravo, eight, Quebec, Oscar, Zulu, two, Golf, six. Please also confirm the card ending 4 4 1 9.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.841</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">nato</span>
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.839</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-06%23nato/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.8s</b></span>
+    
+    <span>length <b>12.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your verification reference is Bravo 8 Quebec Oscar Zulu 2 Golf 6.  Please also confirm the card ending 4419.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>3 more clips — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">bare</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-06%23bare/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.3s</b></span>
+    
+    <span>length <b>9.9s</b></span>
+    <span>word errors <b>4.5%</b></span>
+  </div>
+  <div class="tx">Your verification reference is B8 Q0 Z2 G6. Please also confirm the card ending 4419.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">bare</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-06%23bare/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>6.0s</b></span>
+    
+    <span>length <b>10.8s</b></span>
+    <span>word errors <b>4.5%</b></span>
+  </div>
+  <div class="tx">Your verification reference is B-8-Q-0-Z-2-G-6.  Please also confirm the card ending 4419.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">nato</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.844</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-06%23nato/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>7.2s</b></span>
+    
+    <span>length <b>13.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Your verification reference is  Bravo, 8, Quebec, Oscar, Zulu, 2, Golf, 6.  Please also confirm the card ending 4419.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">5.8s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ alnum_exact</span>
+          
+          
+          
+        
+        
+<span class="pill">2 of 4 clips scored</span>
+<span class="pill">worst word errors 4.5%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill bad">alnum_exact</span><span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">no_overlong_digit_run</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.84</td><td class="num">9.84</td>
+    <td class="num">±0.01</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-ecom-07" data-fam=""
+         data-ind="Ecommerce &amp; Retail" data-win="none"
+         data-task="styled_tts" data-i="17"
+         data-g="9.665"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-ecom-07</span>
+    <span class="stitle">Cost per finished minute at volume - Ecommerce &amp; Retail</span>
+    <span class="pill" title="also relevant to: —">Ecommerce &amp; Retail</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.665</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Thank you for calling. Your order is confirmed and will arrive on Thursday. Is there anything else I can help you with today?</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.665</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.696</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-ecom-07/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    
+    <span>length <b>6.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Thank you for calling your order is confirmed and will arrive on Thursday. Is there anything else I can help you with today?</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.634</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-ecom-07/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.0s</b></span>
+    
+    <span>length <b>6.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Thank you for calling. Your order is confirmed and will arrive on Thursday.  Is there anything else I can help you with today?</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">4.9s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">2 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.63</td><td class="num">9.70</td>
+    <td class="num">±0.06</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-01" data-fam=""
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="18"
+         data-g="9.6899"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-01</span>
+    <span class="stitle">Mission briefing with item and danger callouts - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.69</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Raider, listen up. Extraction point is grid 7 4 2 9, north face of the Speranza Dam. You are carrying one Kestrel-pattern rebreather and three units of refined cobalt. Do not drop them. ARC patrols are heaviest between the silos, so move along the eastern wall instead. The storm front closes that corridor in nine minutes. If you miss the window, fall back to Cache Delta and hold for the next rotation. Good luck out there.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.69</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.705</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>10.2s</b></span>
+    
+    <span>length <b>24.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Raider, listen up. Extraction point is grid 7429, north face of the Speranza Dam. You  are carrying one kestrel pattern rebreather and three units of refined cobalt. Do not drop them.  Arc patrols are heaviest between the silos, so move along the eastern wall instead.  The storm front closes that corridor in nine minutes. If you miss the window,  fall back to cache delta and hold for the next rotation. Good luck out there.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.675</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-01/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>9.9s</b></span>
+    
+    <span>length <b>23.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Raider, listen up. Extraction point is grid 7429, north face of the Speranza dam. You  are carrying one kestrel pattern rebreather and three units of refined cobalt. Do not  drop them. Arc patrols are heaviest between the silos, so move along the eastern wall  instead. The storm front closes that corridor in nine minutes. If you miss the window,  fall back to cache delta and hold for the next rotation. Good luck out there.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">10.2s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">2 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">digits_exact</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">must_say[nine minutes]</span><span class="pill ok">must_say[rebreather]</span><span class="pill ok">must_say[refined cobalt]</span><span class="pill ok">must_say_any[Cache Delta|Cash Delta]</span><span class="pill ok">must_say_any[Kestrel|Kestral]</span><span class="pill ok">must_say_any[Speranza|Esperanza]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.70</td><td class="num">9.67</td>
+    <td class="num">±0.03</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-02" data-fam=""
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="19"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-02</span>
+    <span class="stitle">Announcer escalation across five energy beats - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> We&#39;re level at 14 to 14, ninety seconds on the clock. Vasquez has the cash box and she&#39;s moving. Kowalski is cutting the angle, he&#39;s going to catch her at the bridge. Oh, she jukes! She&#39;s through! Vasquez is through and the platform is lighting up! That is the steal of the tournament, and Ironhaus take it, 18 to 14!</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.6s</b></span>
+    
+    <span>length <b>18.0s</b></span>
+    <span>word errors <b>12.5%</b></span>
+  </div>
+  <div class="tx">We&#39;re level at 14 to 14, 90 seconds on the clock.  Vasquez has the cash box and she&#39;s moving.  Kowalski is cutting the angle.  He&#39;s gonna catch her at the bridge.  Oh, she jukes.  She&#39;s through.  Vasquez is through and the platform is lighting up.  That is the steal of the tournament.  And Iron House take it 18 to 14.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-02/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>8.3s</b></span>
+    
+    <span>length <b>17.1s</b></span>
+    <span>word errors <b>15.6%</b></span>
+  </div>
+  <div class="tx">We&#39;re level at 14 to 14, 90 seconds on the clock.  Vazquez has the cash box and she&#39;s moving.  Kowalski is cutting the angle.  He&#39;s gonna catch her at the bridge.  Oh, she jukes! She&#39;s through!  Vazquez is through and the platform is lighting up.  That is the steal of the tournament.  And Iron House take it 18 to 14!</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">8.6s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ must_say[14 to 14]</span><span class="pill bad">✗ wer_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 15.6%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill bad">must_say[14 to 14]</span><span class="pill ok">must_say[18 to 14]</span><span class="pill ok">must_say[steal of the tournament]</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-03" data-fam=""
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="20"
+         data-g=""
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-03</span>
+    <span class="stitle">Real-time NPC response, time to first audio - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts: no result">—</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> You should not have come this far alone, Raider. Turn back to the ridge and I will cover you.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge bad">no score</span>
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-03/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.5s</b></span>
+    <span>first audio <b>1790 ms</b></span>
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">You should not have come this far alone, Raider.  Turn back to the ridge and I will cover you.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill bad">gate failed</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-03/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.9s</b></span>
+    <span>first audio <b>2273 ms</b></span>
+    <span>length <b>4.7s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">You should not have come this far alone, Raider.  Turn back to the ridge, and I will cover you.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.5s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill bad">✗ ttfa_within_max</span>
+          
+          
+          
+        
+        
+<span class="pill">0 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill bad">ttfa_within_max</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  
+  <tr><td>Time to first audio</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">median 2032 ms</td>
+    <td class="note">95th 2249 ms · range 1790–2273 ms · n=2 — streaming latency, not whole-call time</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>No score.</b> Ran 2 times; every cell failed its gates, so there is nothing to compare. The failed clips and the gates they missed are in the two columns above.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-04" data-fam=""
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="21"
+         data-g="9.521683333333334"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-04</span>
+    <span class="stitle">Six distinct NPC voices - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.522</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> 6 variants
+quartermaster: Supplies are short and the gate closes at dusk. Take what you need and be quick about it.
+scout: Movement on the ridge. Two of them, maybe three. I am not waiting to find out which.
+handler: Hold your position, Raider. Extraction is nine minutes out and the corridor is not clear.
+medic: Sit down and let me look at it. You are not walking anywhere on that leg, so stop arguing.
+engineer: The coupling is fine. The problem is whoever wired the relay backwards, and it was not me.
+trader: Good salvage, that. I will give you four hundred for it, and we both know it is worth three.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.522</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">trader</span>
+    <span class="rl">voice-gemini38</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.646</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-04%23trader/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.3s</b></span>
+    
+    <span>length <b>5.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Good salvage that I will give you 400 for it, and we both know it is worth three</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>11 more clips — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">engineer</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.576</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-04%23engineer/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    
+    <span>length <b>7.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">The coupling is fine.  The problem is whoever wired the relay backwards, and it was not me.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">engineer</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">8.801</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-04%23engineer/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.0s</b></span>
+    
+    <span>length <b>6.7s</b></span>
+    <span>word errors <b>5.9%</b></span>
+  </div>
+  <div class="tx">The coupling&#39;s fine. The problem is whoever wired the relay backwards. And it was not me.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">handler</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.705</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-04%23handler/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.9s</b></span>
+    
+    <span>length <b>6.6s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Hold your position, Raider.  Extraction is nine minutes out and the corridor is not clear.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">handler</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.708</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-04%23handler/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>5.0s</b></span>
+    
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Hold your position, Raider.  Extraction is nine minutes out and the corridor is not clear.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">medic</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">8.913</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-04%23medic/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.6s</b></span>
+    
+    <span>length <b>6.0s</b></span>
+    <span>word errors <b>5.3%</b></span>
+  </div>
+  <div class="tx">Sit down and let me look at it. You&#39;re not walking anywhere on that leg. So stop arguing</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">medic</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.631</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-04%23medic/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.9s</b></span>
+    
+    <span>length <b>5.9s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Sit down and let me look at it.  You are not walking anywhere on that leg, so stop arguing.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">quartermaster</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.524</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-04%23quartermaster/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.8s</b></span>
+    
+    <span>length <b>7.1s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Supplies are short, and the gate closes at dusk.  Take what you need, and be quick about it.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">quartermaster</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.714</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-04%23quartermaster/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.4s</b></span>
+    
+    <span>length <b>7.0s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Supplies are short and the gate closes at dusk.  Take what you need and be quick about it.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">scout</span>
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.726</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-04%23scout/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.8s</b></span>
+    
+    <span>length <b>5.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Movement on the ridge. Two of them. Maybe three. I am not waiting to find out which.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">scout</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.725</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-04%23scout/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.6s</b></span>
+    
+    <span>length <b>5.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Movement on the ridge. Two of them. Maybe three.  I am not waiting to find out which.</div>
+  
+  
+</div>
+
+
+<div class="clip">
+  <div class="top">
+    <span class="pill">trader</span>
+    <span class="rl">voice-gemini38-p2</span>
+    
+    
+    <span class="pill">9.591</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-04%23trader/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.4s</b></span>
+    
+    <span>length <b>5.5s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Good salvage that I will give you 400 for it, and we both know it is worth three</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.3s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">12 of 12 clips scored</span>
+<span class="pill">worst word errors 5.9%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">silence_within_bounds</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.52</td><td class="num">9.53</td>
+    <td class="num">±0.01</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+<div class="tw"><table>
+  <thead><tr><th>Measure</th><th>Model</th><th>Result</th><th>Detail</th></tr></thead>
+  <tbody>
+  
+  <tr><td>Set verdict · speaker_distinct</td><td>gemini-3-8-flash-tts</td>
+    <td><span class="pill ok">pass</span></td>
+    <td class="note">closest pair medic vs scout at 0.7879 against a ceiling of 0.8 (mean 0.6757 over 15 pairs)</td></tr>
+  
+  <tr><td>Set verdict · speaker_distinct</td><td>gemini-3-8-flash-tts</td>
+    <td><span class="pill ok">pass</span></td>
+    <td class="note">closest pair handler vs medic at 0.7872 against a ceiling of 0.8 (mean 0.6795 over 15 pairs)</td></tr>
+  
+  
+  
+  <tr><td>Throughput</td><td>gemini-3-8-flash-tts</td>
+    <td class="num">$0.0286 per audio minute</td>
+    <td class="note">12 clips · 1.23 min of audio</td></tr>
+  
+  </tbody></table></div>
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+<details class="scn rev" id="scn-vr-game-07" data-fam=""
+         data-ind="Gaming" data-win="none"
+         data-task="styled_tts" data-i="22"
+         data-g="9.69825"
+         data-c=""
+         data-d="">
+  <summary>
+    <span class="sid">vr-game-07</span>
+    <span class="stitle">Placeholder VO line, batch throughput - Gaming</span>
+    <span class="pill" title="also relevant to: —">Gaming</span>
+    
+    <span class="scores">
+      
+      <b class="sc" title="gemini-3-8-flash-tts">9.698</b>
+    </span>
+    <span class="thumbs"></span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <div class="body">
+    <div class="briefs">
+      <div class="brief"><b>Brief (verbatim):</b> Hold this position until the extraction window opens.</div>
+      
+    </div>
+
+    <div class="media">
+      
+      
+      <figure class="shot">
+        
+
+<div class="frame audio">
+  <span class="badge ">9.698</span>
+  
+  
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38-p2</span>
+    <span class="pill ok">median take</span>
+    
+    <span class="pill">9.729</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_073403_voice-gemini38-p2/outputs/voice/vr-game-07/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>3.4s</b></span>
+    
+    <span>length <b>3.2s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Hold this position until the extraction window opens.</div>
+  
+  
+</div>
+
+  
+  
+  
+  <details class="disc more"><summary>1 more clip — every take the numbers rest on</summary>
+    <div class="inner">
+
+<div class="clip">
+  <div class="top">
+    
+    <span class="rl">voice-gemini38</span>
+    
+    
+    <span class="pill">9.668</span>
+    
+  </div>
+  <audio controls preload="none" src="2026-09-28_065008_voice-gemini38/outputs/voice/vr-game-07/gemini-3-8-flash-tts.wav"></audio>
+  <div class="meta">
+    <span>generated in <b>4.1s</b></span>
+    
+    <span>length <b>3.3s</b></span>
+    <span>word errors <b>0.0%</b></span>
+  </div>
+  <div class="tx">Hold this position until the extraction window opens.</div>
+  
+  
+</div>
+</div>
+  </details>
+  
+  
+</div>
+
+        <figcaption>
+          <span class="who">gemini-3-8-flash-tts</span>
+          <span class="subcap"></span>
+          <span class="lat" title="time to generate this output">3.4s</span>
+        </figcaption>
+      </figure>
+      
+    </div>
+    
+
+
+
+    <div class="dgrid">
+    
+      <div class="dcol">
+        <div class="mid">gemini-3-8-flash-tts
+          
+        </div>
+        
+          
+          <span class="pill ok">✓ all gates</span>
+          
+          
+        
+        
+<span class="pill">2 of 2 clips scored</span>
+<span class="pill">worst word errors 0.0%</span>
+
+<span class="pill est" title="naturalness and clarity are not yet validated against human listeners">unc</span>
+
+
+
+        
+        
+        
+        <details class="disc"><summary>Checks &amp; provenance</summary>
+          <div class="inner">
+          <span class="pill ok">decodes</span><span class="pill ok">duration_in_range</span><span class="pill ok">loudness_sane</span><span class="pill ok">no_clipping</span><span class="pill ok">not_silent</span><span class="pill ok">wer_within_max</span>
+          
+          </div>
+        </details>
+        
+      </div>
+    
+    </div>
+    
+
+
+
+<div class="tw"><table class="runs">
+  <thead><tr><th>Score for each run</th><th class="num">09-28 06:50</th><th class="num">09-28 07:34</th><th class="num">Own spread</th></tr></thead>
+  <tbody>
+  
+  <tr><td>gemini-3-8-flash-tts</td>
+    <td class="num">9.67</td><td class="num">9.73</td>
+    <td class="num">±0.06</td></tr>
+  
+  
+  </tbody></table></div>
+
+
+
+
+
+
+<p class="note"><b>One arm only.</b> Only one model produced a scored cell here.
+</p>
+
+
+  </div>
+</details>
+
+</div>
+
+
+
+
+
+
+<h2 id="runs">Every run</h2>
+<div class="tw"><table>
+  <thead><tr><th>Run</th><th>Started</th><th>Scenario</th><th class="num">Cells</th><th class="num">Passed</th>
+    <th class="num">Cost</th><th>Judge</th><th>Predictor</th><th>Served from</th></tr></thead>
+  <tbody>
+  
+  <tr><td><code>voice-gemini38-p2</code></td><td class="note">2026-09-28 07:34</td><td><code>voi-ret-01, voi-tel-01, voi-tel-02, voi-tel-06, voi-tel-08, voi-tel-09, vr-ads-02, vr-ads-05, vr-ads-06, vr-drama-01, vr-drama-02, vr-drama-04, vr-ecom-01, vr-ecom-02, vr-ecom-03, vr-ecom-04, vr-ecom-06, vr-ecom-07, vr-game-01, vr-game-02, vr-game-03, vr-game-04, vr-game-07</code></td>
+    <td class="num">29</td><td class="num">14</td><td class="num">$0.1414</td>
+    <td class="note">gemini-2.5-flash</td><td class="note">signal</td><td class="note">gemini-3-8-flash-tts: Gemini API · no region choice</td></tr>
+  
+  <tr><td><code>voice-gemini38</code></td><td class="note">2026-09-28 06:50</td><td><code>voi-ret-01, voi-tel-01, voi-tel-02, voi-tel-06, voi-tel-08, voi-tel-09, vr-ads-02, vr-ads-05, vr-ads-06, vr-drama-01, vr-drama-02, vr-drama-04, vr-ecom-01, vr-ecom-02, vr-ecom-03, vr-ecom-04, vr-ecom-06, vr-ecom-07, vr-game-01, vr-game-02, vr-game-03, vr-game-04, vr-game-07</code></td>
+    <td class="num">29</td><td class="num">13</td><td class="num">$0.1398</td>
+    <td class="note">gemini-2.5-flash</td><td class="note">signal</td><td class="note">gemini-3-8-flash-tts: Gemini API · no region choice</td></tr>
+  
+  <tr><td><code>voice-gemini38-smoke</code></td><td class="note">2026-09-28 06:14</td><td><code>vr-drama-04</code></td>
+    <td class="num">1</td><td class="num">0</td><td class="num">$0.0036</td>
+    <td class="note">gemini-2.5-flash</td><td class="note">signal</td><td class="note">gemini-3-8-flash-tts: Gemini API · no region choice</td></tr>
+  
+  </tbody></table></div>
+
+
+
+<div class="foot" id="footnotes">
+  <b>Footnotes — what was assumed (23 scenarios · 59 clips · 3 runs).</b><br>
+  Totals: generation $0.2512 · judging $0.0336
+  (kept separate; add them yourself if you must).<br>
+  
+  Models: gemini-3-8-flash-tts (Google; Gemini API · no region choice).<br>
+  Judge: gemini-2.5-flash
+  (temperature 0)
+  — same judge, same rubric, blind shuffled labels for every output.<br>
+  
+
+
+
+<b>The judge is uncalibrated.</b> The 2-humans x 5-clips gate has never been run, so <code>naturalness</code> and <code>clarity</code> carry no evidence of agreement with a human ear.<br><b>Quality is meaned over scored cells only</b>, and always carries its denominator. A gated cell is counted in the gate rate, never averaged into quality - a clean read that is too long for an ad slot is the wrong length, not bad audio.<br><b>A repeat is the same script and the same gates.</b> Runs of an edited scenario are excluded from every spread on this page.<br><b>The objective audio number is a signal metric, not a MOS.</b> It measures SNR, spectral flatness, clipping and bandwidth - it must not be quoted as a mean opinion score.<br><b>Cost is what the run believed it paid</b>, at the rates frozen in its own manifest; cost per clip includes transcription and judging.<br><b>Judged by <code>gemini-2.5-flash</code>, listening to the audio</b>, blinded A/B/C per scenario. It shares a vendor with one arm under test - blinding hides the label, not the acoustic fingerprint, so judge-derived criteria carry that exposure.<br><b>Transcribed by <code>medium</code></b>, run locally. The transcript is the basis of every WER number and every phrase gate.<br>
+Transcription cost on this page: $0.0000 (inside the cost per clip).<br>
+
+
+
+  
+  
+  
+  
+  Effective per-scenario weights (incl. redistributed ones) are in manifest.json; every
+  number traces to a JSONL row in the run folder. Outputs are immutable — a correction is
+  a new run.
+  
+</div>
+
+
+</div>
+
+<div id="lb"><div class="sw"></div><img alt=""><div class="cap"></div></div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      document.documentElement.classList.add('ready');
+    });
+  });
+
+  function revealAll(scope) {
+    (scope || document).querySelectorAll('.rev').forEach(function (el) {
+      el.classList.add('vis');
+    });
+  }
+  if (!reduced && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rev').forEach(function (el) { io.observe(el); });
+  } else {
+    revealAll();
+  }
+
+  // tabs (combined report)
+  var tabbar = document.querySelector('.tabbar');
+  if (tabbar) tabbar.addEventListener('click', function (e) {
+    var b = e.target.closest('.tabbtn'); if (!b) return;
+    tabbar.querySelectorAll('.tabbtn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    document.querySelectorAll('.runpanel').forEach(function (p) {
+      p.classList.toggle('on', p.dataset.tab === b.dataset.tab);
+      if (p.dataset.tab === b.dataset.tab) revealAll(p);
+    });
+  });
+
+  // lightbox with in-place model switching, scoped to the panel
+  // the page always carries #lb (kit/run.html.j2, kit/combined.html.j2)
+  var lb = document.getElementById('lb'), lbi = lb.querySelector('img'),
+      cap = lb.querySelector('.cap'), sw = lb.querySelector('.sw');
+  var current = { list: [], idx: 0 };
+  function openLb(img) {
+    var scope = img.closest('.runpanel') || document;
+    current.list = Array.prototype.slice.call(
+      scope.querySelectorAll('img.out[data-sid="' + CSS.escape(img.dataset.sid) + '"]'));
+    current.idx = Math.max(0, current.list.indexOf(img));
+    renderLb(); lb.classList.add('show');
+  }
+  function renderLb() {
+    var im = current.list[current.idx]; if (!im) return;
+    lbi.src = im.src;
+    cap.textContent = im.dataset.cap + '   (chips or ←/→ to flip)';
+    sw.innerHTML = '';
+    current.list.forEach(function (m, i) {
+      var b = document.createElement('button');
+      b.className = 'swb' + (i === current.idx ? ' on' : '');
+      b.textContent = m.dataset.mid;
+      b.addEventListener('click', function (e) {
+        e.stopPropagation(); current.idx = i; renderLb();
+      });
+      sw.appendChild(b);
+    });
+  }
+  function applyChip(chip) {
+    var chips = chip.closest('.chips');
+    chips.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+    chip.classList.add('on');
+    var scope = chip.closest('.runpanel') || document;
+    // AND-combine the active selection of every chip dimension
+    // (industry, winner, family)
+    var active = {};
+    scope.querySelectorAll('.chips .chip.on').forEach(function (c) {
+      if (c.dataset.dim) active[c.dataset.dim] = c.dataset.val;
+    });
+    // keep the breakdown-table rows in step with the chips
+    scope.querySelectorAll('table.roll .frow').forEach(function (r) {
+      r.classList.toggle('on', active[r.dataset.dim] === r.dataset.val);
+    });
+    var dets = scope.querySelectorAll('details.scn');
+    dets.forEach(function (d) {
+      var show = true;
+      if (active.fam && active.fam !== '__all' && d.dataset.fam !== active.fam) show = false;
+      if (active.ind && active.ind !== '__all' && d.dataset.ind !== active.ind) show = false;
+      if (active.win && active.win !== '__all' && d.dataset.win !== active.win) show = false;
+      if (active.task && active.task !== '__all' && d.dataset.task !== active.task) show = false;
+      d.style.display = show ? '' : 'none';
+    });
+    // faceted counts: each chip shows how many scenarios IT would yield
+    // under the other rows' current selections
+    scope.querySelectorAll('.chips .chip').forEach(function (c) {
+      var dim = c.dataset.dim, span = c.querySelector('.n');
+      if (!dim || !span) return;
+      var n = 0;
+      dets.forEach(function (d) {
+        var ok = true;
+        ['fam', 'ind', 'win', 'task'].forEach(function (k) {
+          var v = (k === dim) ? c.dataset.val : active[k];
+          if (v && v !== '__all' && d.dataset[k] !== v) ok = false;
+        });
+        if (ok) n++;
+      });
+      span.textContent = '(' + n + ')';
+      c.classList.toggle('zero', n === 0 && !c.classList.contains('on'));
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.tagName === 'IMG' && t.classList.contains('out')) { openLb(t); return; }
+    if (e.target === lb || e.target === lbi) lb.classList.remove('show');
+    var g = t.closest && t.closest('.gallery .g');
+    if (g) {
+      var d = document.getElementById(g.dataset.target);
+      if (d) { d.style.display = ''; d.open = true; d.classList.add('vis');
+        d.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); }
+      return;
+    }
+    // a family / industry row is a shortcut for its chip
+    var frow = t.closest && t.closest('table.roll .frow');
+    if (frow) { pickRow(frow); return; }
+    var chip = t.closest && t.closest('.chips .chip');
+    if (chip) { applyChip(chip); return; }
+    var ctl = t.closest && t.closest('.ctl');
+    if (ctl) {
+      var scope2 = ctl.closest('.runpanel') || document;
+      scope2.querySelectorAll('details.scn').forEach(function (d) {
+        if (ctl.dataset.act === 'expand') {
+          if (d.style.display !== 'none') { d.open = true; d.classList.add('vis'); }
+        } else { d.open = false; }
+      });
+    }
+  });
+
+  // Clicking the active row shows all again; the list is brought into view.
+  function pickRow(r) {
+    var scope = r.closest('.runpanel') || document;
+    var sel = '.chips .chip[data-dim="' + r.dataset.dim + '"]';
+    var target = r.classList.contains('on')
+      ? scope.querySelector(sel + '[data-val="__all"]')
+      : scope.querySelector(sel + '[data-val="' + CSS.escape(r.dataset.val) + '"]');
+    if (!target) return;
+    applyChip(target);
+    if (!r.classList.contains('on')) return;
+    target.closest('.chips').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var r = e.target.closest && e.target.closest('table.roll .frow');
+    if (r) { e.preventDefault(); pickRow(r); }
+  });
+
+  // only one clip plays at a time (video and audio lanes)
+  document.addEventListener('play', function (e) {
+    document.querySelectorAll('audio, video').forEach(function (m) {
+      if (m !== e.target && !m.paused) m.pause();
+    });
+  }, true);
+
+  // Sort by: reorders the scenario nodes. Filtering only toggles
+  // display, so the two compose — neither reads the other's state.
+  function applySort(sel) {
+    var scope = sel.closest('.runpanel') || document;
+    var list = scope.querySelector('.scnlist');
+    if (!list) return;
+    var parts = String(sel.value).split('-');
+    var key = parts[0], dir = parts[1] === 'asc' ? 1 : -1;
+    var items = Array.prototype.slice.call(list.children).filter(function (n) {
+      return n.classList && n.classList.contains('scn');
+    });
+    items.sort(function (x, y) {
+      var xi = +x.dataset.i, yi = +y.dataset.i;
+      if (key === 'id') return xi - yi;
+      var a = parseFloat(x.dataset[key]), b = parseFloat(y.dataset[key]);
+      var an = isNaN(a), bn = isNaN(b);
+      if (an && bn) return xi - yi;        // unscored keep their id order …
+      if (an) return 1;                    // … and always sink to the bottom
+      if (bn) return -1;
+      if (a === b) return xi - yi;         // stable: equal scores never shuffle
+      return (a < b ? -1 : 1) * dir;
+    });
+    items.forEach(function (d) { list.appendChild(d); });
+    // keep the gallery strip in step with the list it indexes
+    var gal = scope.querySelector('.gallery');
+    if (gal) {
+      var pos = {};
+      items.forEach(function (d, i) { pos[d.id] = i; });
+      Array.prototype.slice.call(gal.querySelectorAll('.g')).sort(function (x, y) {
+        var px = pos[x.dataset.target], py = pos[y.dataset.target];
+        return (px === undefined ? 1e9 : px) - (py === undefined ? 1e9 : py);
+      }).forEach(function (g) { gal.appendChild(g); });
+    }
+  }
+
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest && e.target.closest('[data-sort]');
+    if (sel) applySort(sel);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('show')) return;
+    if (e.key === 'Escape') lb.classList.remove('show');
+    if (e.key === 'ArrowRight' && current.list.length > 1) {
+      current.idx = (current.idx + 1) % current.list.length; renderLb(); }
+    if (e.key === 'ArrowLeft' && current.list.length > 1) {
+      current.idx = (current.idx - 1 + current.list.length) % current.list.length; renderLb(); }
+  });
+})();
+</script>
+
+</body>
+</html>
