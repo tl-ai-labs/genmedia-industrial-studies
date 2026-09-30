@@ -1,0 +1,1330 @@
+{
+  "open": {
+    "system": "elevenlabs-agents",
+    "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+    "conversation_id": "conv_1701m3q1qr3vf7a9h9k14g8f98hn",
+    "input_format": "pcm_16000",
+    "output_format": "pcm_24000",
+    "sdk": "websockets 16.1.1"
+  },
+  "close": {
+    "conversation_id": "conv_1701m3q1qr3vf7a9h9k14g8f98hn",
+    "dropped_stale_chunks": 0,
+    "conversation": {
+      "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+      "agent_name": "kartly-live-ecom-09",
+      "conversation_product": "agent",
+      "status": "done",
+      "user_id": null,
+      "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+      "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk",
+      "metadata": {
+        "start_time_unix_secs": 1790701199,
+        "accepted_time_unix_secs": 1790701199,
+        "call_duration_secs": 165,
+        "queue_wait_secs": null,
+        "cost": 1077,
+        "deletion_settings": {
+          "deletion_time_unix_secs": null,
+          "deleted_logs_at_time_unix_secs": null,
+          "deleted_audio_at_time_unix_secs": null,
+          "deleted_transcript_at_time_unix_secs": null,
+          "delete_transcript_and_pii": false,
+          "delete_audio": false
+        },
+        "feedback": {
+          "type": null,
+          "overall_score": null,
+          "likes": 0,
+          "dislikes": 0,
+          "rating": null,
+          "comment": null
+        },
+        "authorization_method": "signed_url",
+        "charging": {
+          "dev_discount": false,
+          "is_burst": false,
+          "tier": "creator",
+          "llm_usage": {
+            "irreversible_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 13263,
+                    "price": 0.00994725
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 986,
+                    "price": 0.0036975000000000003
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 13263,
+                      "price": 0.00994725
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 986,
+                      "price": 0.0036975000000000003
+                    }
+                  }
+                }
+              ]
+            },
+            "initiated_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 21890,
+                    "price": 0.0164175
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 1256,
+                    "price": 0.00471
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 21890,
+                      "price": 0.0164175
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 1256,
+                      "price": 0.00471
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "llm_price": 0.0211275,
+          "llm_charge": 116,
+          "call_charge": 961,
+          "platform_charge": 961,
+          "platform_usage": {
+            "category_usage": {
+              "voice": {
+                "credits": 961,
+                "price": 0.1736276281726631,
+                "quantity": 2.1839817157946526
+              }
+            }
+          },
+          "platform_price": 0.1736276281726631,
+          "free_minutes_consumed": 0.0,
+          "free_llm_dollars_consumed": 0.0,
+          "tts_usage": {
+            "primary_tts_model": "eleven_v3_conversational",
+            "total_audio_output_seconds": 80.32,
+            "total_characters": 1129,
+            "per_voice_usage": [
+              {
+                "voice_id": "6VrKLjZfyBIk9AEmnZBI",
+                "audio_output_seconds": 80.32
+              }
+            ]
+          },
+          "asr_usage": {
+            "asr_model": "scribe_realtime",
+            "total_transcription_calls": 262,
+            "total_audio_input_seconds": 46.02399999999978
+          },
+          "analysis": null
+        },
+        "phone_call": null,
+        "batch_call": null,
+        "termination_reason": "Client disconnected: 1000",
+        "error": null,
+        "warnings": [],
+        "main_language": "en",
+        "rag_usage": null,
+        "text_only": false,
+        "features_usage": {
+          "language_detection": {
+            "enabled": true,
+            "used": true
+          },
+          "transfer_to_agent": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_number": {
+            "enabled": false,
+            "used": false
+          },
+          "multivoice": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_tones": {
+            "enabled": false,
+            "used": false
+          },
+          "external_mcp_servers": {
+            "enabled": false,
+            "used": false
+          },
+          "pii_zrm_workspace": false,
+          "pii_zrm_agent": false,
+          "tool_dynamic_variable_updates": {
+            "enabled": false,
+            "used": false
+          },
+          "is_livekit": false,
+          "voicemail_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_input": {
+            "enabled": false,
+            "used": false
+          },
+          "workflow": {
+            "enabled": false,
+            "tool_node": {
+              "enabled": false,
+              "used": false
+            },
+            "standalone_agent_node": {
+              "enabled": false,
+              "used": false
+            },
+            "phone_number_node": {
+              "enabled": false,
+              "used": false
+            },
+            "end_node": {
+              "enabled": false,
+              "used": false
+            }
+          },
+          "agent_testing": {
+            "enabled": false,
+            "tests_ran_after_last_modification": false,
+            "tests_ran_in_last_7_days": false
+          },
+          "versioning": {
+            "enabled": true,
+            "used": false
+          },
+          "file_input": {
+            "enabled": true,
+            "used": false
+          },
+          "freeform_procedure": {
+            "enabled": false,
+            "used": false
+          },
+          "structured_procedure": {
+            "enabled": false,
+            "used": false
+          }
+        },
+        "eleven_assistant": {
+          "is_eleven_assistant": false
+        },
+        "initiator_id": null,
+        "conversation_initiation_source": "unknown",
+        "conversation_initiation_source_version": null,
+        "timezone": null,
+        "async_metadata": null,
+        "whatsapp": null,
+        "sms": null,
+        "agent_created_from": "api",
+        "agent_last_updated_from": "api",
+        "voice_rewards": [
+          {
+            "voice_id": "6VrKLjZfyBIk9AEmnZBI",
+            "reward_usd_cents": 0.7059574831955924
+          }
+        ],
+        "cost_fiat": 0.1947551281726631
+      },
+      "analysis": {
+        "evaluation_criteria_results": {},
+        "data_collection_results": {},
+        "evaluation_criteria_results_list": [],
+        "data_collection_results_list": [],
+        "call_successful": "success",
+        "call_success_score": null,
+        "transcript_summary": "The user requested to book a free installation for a water purifier (Order KRT18467720). The agent offered two time slots. The user then handed the phone to their mother, requesting the agent to switch to Hindi. The agent successfully switched languages and re-offered the slots. The mother chose Tuesday, October 6th, from 11 AM to 1 PM. The agent confirmed the booking and provided necessary preparation instructions.",
+        "call_summary_title": "RO Installation Booking",
+        "scoped": [],
+        "sentiment_analysis": {
+          "overall_label": "positive",
+          "overall_sentiment_score": 0.4,
+          "overall_frustration_score": 0.0,
+          "min_user_sentiment_score": 0.1,
+          "max_user_frustration_score": 0.0,
+          "num_scored_user_turns": 2
+        }
+      },
+      "visited_agents": [
+        {
+          "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+          "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh"
+        }
+      ],
+      "conversation_initiation_client_data": {
+        "conversation_config_override": {
+          "asr": null,
+          "turn": null,
+          "tts": null,
+          "conversation": null,
+          "agent": null
+        },
+        "custom_llm_extra_body": {},
+        "user_id": null,
+        "source_info": {
+          "source": null,
+          "version": null
+        },
+        "branch_id": null,
+        "environment": null,
+        "starting_workflow_node_id": null,
+        "experiments": [],
+        "procedure_ids": null,
+        "dynamic_variables": {
+          "system__agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+          "system__agent_turns": 5,
+          "system__current_agent_turns": 5,
+          "system__current_subagent_turns": 5,
+          "system__current_agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+          "system__conversation_id": "conv_1701m3q1qr3vf7a9h9k14g8f98hn",
+          "system__call_duration_secs": 165,
+          "system__time_utc": "2026-09-29T17:02:44.943561+00:00",
+          "system__timezone": null,
+          "system__time": "Tuesday, 17:02 29 September 2026",
+          "system__time_hour": 17,
+          "system__time_minute": 2,
+          "system__time_second": 44,
+          "system__is_text_only": false,
+          "system__channel": "unknown",
+          "system__caller_id": null,
+          "system__called_number": null,
+          "system__call_sid": null,
+          "system__call_id": null,
+          "system__conversation_history": "{\"x-elevenlabs-history\": true, \"entries\": [{\"role\": \"user\", \"message\": \"Hi, we got a water purifier delivered on Saturday and need to book the installation. Order KRT18467720.\"}, {\"role\": \"agent\", \"message\": \"[happy] Hello! I can certainly help you book the free installation for your R O water purifier under order [slow] K R T, one eight four six, seven seven two zero. [/slow] We have slots available on Tuesday, October sixth from eleven a m to one p m, or Wednesday, October seventh from four p m to six p m. Which of those works better for you?\"}, {\"role\": \"user\", \"message\": \"Actually, my mother will be at home for it. I am handing the phone to her. Please explain to her in Hindi.\"}, {\"role\": \"agent\", \"tool_requests\": [{\"tool_name\": \"language_detection\", \"params_as_json\": {\"language\": \"hi\", \"reason\": \"User requested to speak in Hindi for their mother.\"}}]}, {\"role\": \"agent\", \"tool_results\": [{\"tool_name\": \"language_detection\", \"result_value\": \"{\\\"result_type\\\":\\\"language_detection_success\\\",\\\"status\\\":\\\"success\\\",\\\"reason\\\":\\\"User requested to speak in Hindi for their mother.\\\",\\\"language\\\":\\\"hi\\\"}\"}]}, {\"role\": \"agent\", \"message\": \"[happy] \\u0928\\u092e\\u0938\\u094d\\u0924\\u0947 \\u091c\\u0940, \\u092e\\u0948\\u0902 \\u0915\\u093e\\u0930\\u094d\\u091f\\u0932\\u0940 \\u0938\\u0947 \\u092c\\u093e\\u0924 \\u0915\\u0930 \\u0930\\u0939\\u0940 \\u0939\\u0942\\u0901\\u0964 \\u0906\\u092a\\u0915\\u0947 \\u0935\\u0949\\u091f\\u0930 \\u092a\\u094d\\u092f\\u0942\\u0930\\u0940\\u092b\\u093e\\u092f\\u0930 \\u0915\\u0940 \\u092e\\u0941\\u092b\\u094d\\u0924 \\u0907\\u0902\\u0938\\u094d\\u091f\\u0949\\u0932\\u0947\\u0936\\u0928 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u0939\\u092e\\u093e\\u0930\\u0947 \\u092a\\u093e\\u0938 \\u0915\\u0932 \\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u0915\\u094b \\u0938\\u0941\\u092c\\u0939 \\u0917\\u094d\\u092f\\u093e\\u0930\\u0939 \\u0938\\u0947 \\u0926\\u094b\\u092a\\u0939\\u0930 \\u090f\\u0915 \\u092c\\u091c\\u0947, \\u092f\\u093e \\u092c\\u0941\\u0927\\u0935\\u093e\\u0930 \\u0915\\u094b \\u0936\\u093e\\u092e \\u091a\\u093e\\u0930 \\u0938\\u0947 \\u091b\\u0939 \\u092c\\u091c\\u0947 \\u0915\\u093e \\u0938\\u094d\\u0932\\u0949\\u091f \\u0909\\u092a\\u0932\\u092c\\u094d\\u0927 \\u0939\\u0948\\u0964 \\u0906\\u092a\\u0915\\u0947 \\u0932\\u093f\\u090f \\u0915\\u094c\\u0928 \\u0938\\u093e \\u0938\\u092e\\u092f \\u0938\\u0939\\u0940 \\u0930\\u0939\\u0947\\u0917\\u093e?\"}, {\"role\": \"user\", \"message\": \"\\u0939\\u093e\\u0901 \\u092c\\u0947\\u091f\\u093e, \\u0928\\u092e\\u0938\\u094d\\u0924\\u0947\\u0964 \\u0915\\u094c\\u0928 \\u0938\\u0947 \\u0926\\u093f\\u0928 \\u0906\\u090f\\u0901\\u0917\\u0947 \\u0935\\u094b \\u0932\\u094b\\u0917?\"}, {\"role\": \"agent\", \"message\": \"\\u0928\\u092e\\u0938\\u094d\\u0924\\u0947 \\u0906\\u0902\\u091f\\u0940 \\u091c\\u0940! [happy] \\u0939\\u092e\\u093e\\u0930\\u0947 \\u092a\\u093e\\u0938 \\u0926\\u094b \\u0926\\u093f\\u0928 \\u0915\\u0947 \\u0938\\u094d\\u0932\\u0949\\u091f \\u0939\\u0948\\u0902, \\u0915\\u0932 \\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u091b\\u0939 \\u0905\\u0915\\u094d\\u091f\\u0942\\u092c\\u0930 \\u0938\\u0941\\u092c\\u0939 \\u0917\\u094d\\u092f\\u093e\\u0930\\u0939 \\u0938\\u0947 \\u0926\\u094b\\u092a\\u0939\\u0930 \\u090f\\u0915 \\u092c\\u091c\\u0947 \\u0924\\u0915, \\u092f\\u093e \\u092b\\u093f\\u0930 \\u092c\\u0941\\u0927\\u0935\\u093e\\u0930 \\u0938\\u093e\\u0924 \\u0905\\u0915\\u094d\\u091f\\u0942\\u092c\\u0930 \\u0936\\u093e\\u092e \\u091a\\u093e\\u0930 \\u0938\\u0947 \\u091b\\u0939 \\u092c\\u091c\\u0947 \\u0924\\u0915\\u0964 \\u0906\\u092a \\u092c\\u0924\\u093e \\u0926\\u0940\\u091c\\u093f\\u090f, \\u0907\\u0928\\u092e\\u0947\\u0902 \\u0938\\u0947 \\u0915\\u094c\\u0928 \\u0938\\u093e \\u0926\\u093f\\u0928 \\u0906\\u092a\\u0915\\u0947 \\u0932\\u093f\\u090f \\u0920\\u0940\\u0915 \\u0930\\u0939\\u0947\\u0917\\u093e?\"}, {\"role\": \"user\", \"message\": \"\\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u0938\\u0941\\u092c\\u0939 \\u0935\\u093e\\u0932\\u093e\\u0964 \\u0920\\u0940\\u0915 \\u0939\\u0948\\u0964 \\u0915\\u0941\\u091b \\u0924\\u0948\\u092f\\u093e\\u0930\\u0940 \\u0915\\u0930\\u0915\\u0947 \\u0930\\u0916\\u0928\\u0940 \\u0939\\u0948 \\u0915\\u094d\\u092f\\u093e?\"}, {\"role\": \"agent\", \"message\": \"\\u091c\\u0940 \\u0906\\u0902\\u091f\\u0940 \\u091c\\u0940, \\u092e\\u0948\\u0902\\u0928\\u0947 \\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u0938\\u0941\\u092c\\u0939 \\u0917\\u094d\\u092f\\u093e\\u0930\\u0939 \\u0938\\u0947 \\u0926\\u094b\\u092a\\u0939\\u0930 \\u090f\\u0915 \\u092c\\u091c\\u0947 \\u0915\\u093e \\u0938\\u092e\\u092f \\u0906\\u092a\\u0915\\u0947 \\u0932\\u093f\\u090f \\u0924\\u092f \\u0915\\u0930 \\u0926\\u093f\\u092f\\u093e \\u0939\\u0948\\u0964 [happy] \\u0924\\u0948\\u092f\\u093e\\u0930\\u0940 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u092c\\u0938 \\u092a\\u093e\\u0928\\u0940 \\u0915\\u0947 \\u0928\\u0932 \\u0915\\u0947 \\u092a\\u093e\\u0938 \\u0926\\u0940\\u0935\\u093e\\u0930 \\u092a\\u0930 \\u0925\\u094b\\u0921\\u093c\\u0940 \\u091c\\u0917\\u0939 \\u0914\\u0930 \\u090f\\u0915 \\u092e\\u0940\\u091f\\u0930 \\u0915\\u0940 \\u0926\\u0942\\u0930\\u0940 \\u092a\\u0930 \\u091a\\u093e\\u0932\\u0942 \\u092c\\u093f\\u091c\\u0932\\u0940 \\u0915\\u093e \\u092a\\u094d\\u0932\\u0917 \\u092a\\u0949\\u0907\\u0902\\u091f \\u091a\\u093e\\u0939\\u093f\\u090f\\u0964 \\u091f\\u0947\\u0915\\u094d\\u0928\\u093f\\u0936\\u093f\\u092f\\u0928 \\u0906\\u0928\\u0947 \\u0938\\u0947 \\u0924\\u0940\\u0938 \\u092e\\u093f\\u0928\\u091f \\u092a\\u0939\\u0932\\u0947 \\u0906\\u092a\\u0915\\u094b \\u092b\\u094b\\u0928 \\u092d\\u0940 \\u0915\\u0930\\u0947\\u0902\\u0917\\u0947\\u0964\"}, {\"role\": \"user\", \"message\": \"\\u0920\\u0940\\u0915 \\u0939\\u0948 \\u092c\\u0947\\u091f\\u093e, \\u0927\\u0928\\u094d\\u092f\\u0935\\u093e\\u0926\\u0964\"}, {\"role\": \"agent\", \"message\": \"[happy] \\u0906\\u092a\\u0915\\u093e \\u092c\\u0939\\u0941\\u0924-\\u092c\\u0939\\u0941\\u0924 \\u0927\\u0928\\u094d\\u092f\\u0935\\u093e\\u0926 \\u0906\\u0902\\u091f\\u0940 \\u091c\\u0940! \\u0915\\u093e\\u0930\\u094d\\u091f\\u0932\\u0940 \\u092e\\u0947\\u0902 \\u0915\\u0949\\u0932 \\u0915\\u0930\\u0928\\u0947 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u0936\\u0941\\u0915\\u094d\\u0930\\u093f\\u092f\\u093e, \\u0906\\u092a\\u0915\\u093e \\u0926\\u093f\\u0928 \\u0936\\u0941\\u092d \\u0939\\u094b!\"}]}",
+          "system__user_id": null,
+          "system__initiator_id": null
+        },
+        "tool_mock_config": {
+          "mocking_strategy": "none",
+          "fallback_strategy": "raise_error",
+          "mocked_tool_names": []
+        },
+        "tool_mock_overrides": {}
+      },
+      "environment": "production",
+      "experiment_assignments": null,
+      "hiding_reason": null,
+      "smb_metadata": null,
+      "conversation_id": "conv_1701m3q1qr3vf7a9h9k14g8f98hn",
+      "has_audio": true,
+      "has_user_audio": true,
+      "has_response_audio": true,
+      "has_auxiliary_audio": false,
+      "transcript": [
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "Hi, we got a water purifier delivered on Saturday and need to book the installation. Order KRT18467720.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 1,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.08701867703348398
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 78,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": "[happy] Hello! I can certainly help you book the free installation for your R O water purifier under order [slow] K R T, one eight four six, seven seven two zero. [/slow] We have slots available on Tuesday, October sixth from eleven a m to one p m, or Wednesday, October seventh from four p m to six p m. Which of those works better for you?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 15,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 2.301094206981361
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 2.03854538500309
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.5988559192046523
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.17263632593676448
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 2.7364332902617754
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.16
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.08701867703348398
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1689,
+                  "price": 0.00126675
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 245,
+                  "price": 0.00091875
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1689,
+                    "price": 0.00126675
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 245,
+                    "price": 0.00091875
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 78,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "Actually, my mother will be at home for it. I am handing the phone to her. Please explain to her in Hindi.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 39,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.07810545805841684
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 280,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": null,
+          "multivoice_message": null,
+          "tool_calls": [
+            {
+              "type": "system",
+              "request_id": "language_detection_fa2930b8b9de40ad8e44b88c912fb0cd",
+              "tool_name": "language_detection",
+              "params_as_json": "{\"language\": \"hi\", \"reason\": \"User requested to speak in Hindi for their mother.\"}",
+              "tool_has_been_called": true,
+              "tool_details": null
+            }
+          ],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 47,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 2.269481568131596
+              },
+              "convai_llm_tool_request_generation_latency": {
+                "elapsed_time": 2.269886267837137
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1960,
+                  "price": 0.00147
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 164,
+                  "price": 0.000615
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1960,
+                    "price": 0.00147
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 164,
+                    "price": 0.000615
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": null,
+          "source_event_id": 280,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": null,
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [
+            {
+              "request_id": "language_detection_fa2930b8b9de40ad8e44b88c912fb0cd",
+              "tool_name": "language_detection",
+              "result_value": "{\"result_type\":\"language_detection_success\",\"status\":\"success\",\"reason\":\"User requested to speak in Hindi for their mother.\",\"language\":\"hi\"}",
+              "is_error": false,
+              "is_blocked": false,
+              "tool_has_been_called": true,
+              "tool_latency_secs": 0.0010747099295258522,
+              "error_type": "",
+              "raw_error_message": "",
+              "dynamic_variable_updates": [],
+              "type": "system",
+              "result": {
+                "result_type": "language_detection_success",
+                "status": "success",
+                "reason": "User requested to speak in Hindi for their mother.",
+                "language": "hi"
+              }
+            }
+          ],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 47,
+          "conversation_turn_metrics": null,
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": null,
+          "source_event_id": 280,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": "[happy] नमस्ते जी, मैं कार्टली से बात कर रही हूँ। आपके वॉटर प्यूरीफायर की मुफ्त इंस्टॉलेशन के लिए हमारे पास कल मंगलवार को सुबह ग्यारह से दोपहर एक बजे, या बुधवार को शाम चार से छह बजे का स्लॉट उपलब्ध है। आपके लिए कौन सा समय सही रहेगा?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 49,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.7238760329782963
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.723347723018378
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.911602227948606
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2764217332005501
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 5.404507620982826
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 1.024
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 2153,
+                  "price": 0.00161475
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 142,
+                  "price": 0.0005325
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 2153,
+                    "price": 0.00161475
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 142,
+                    "price": 0.0005325
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 280,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "हाँ बेटा, नमस्ते। कौन से दिन आएँगे वो लोग?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 67,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.0956124966032803
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 441,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": 0.3,
+            "user_frustration_score": 0.0
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": "नमस्ते आंटी जी! [happy] हमारे पास दो दिन के स्लॉट हैं, कल मंगलवार छह अक्टूबर सुबह ग्यारह से दोपहर एक बजे तक, या फिर बुधवार सात अक्टूबर शाम चार से छह बजे तक। आप बता दीजिए, इनमें से कौन सा दिन आपके लिए ठीक रहेगा?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 74,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 2.5751970298588276
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 2.5125416312366724
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.765765924938023
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.16746341483667493
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 4.006004992172122
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 1.152
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.0956124966032803
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 2309,
+                  "price": 0.00173175
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 142,
+                  "price": 0.0005325
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 2309,
+                    "price": 0.00173175
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 142,
+                    "price": 0.0005325
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 441,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "मंगलवार सुबह वाला। ठीक है। कुछ तैयारी करके रखनी है क्या?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 91,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.05807838914915919
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 596,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": 0.1,
+            "user_frustration_score": 0.0
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": "जी आंटी जी, मैंने मंगलवार सुबह ग्यारह से दोपहर एक बजे का समय आपके लिए तय कर दिया है। [happy] तैयारी के लिए बस पानी के नल के पास दीवार पर थोड़ी जगह और एक मीटर की दूरी पर चालू बिजली का प्लग पॉइंट चाहिए। टेक्निशियन आने से तीस मिनट पहले आपको फोन भी करेंगे।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 99,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 2.9656020887196064
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 2.9651026385836303
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 3.3142221397720277
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2011574450880289
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 3.690407392244786
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.448
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.05807838914915919
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 2467,
+                  "price": 0.00185025
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 212,
+                  "price": 0.000795
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 2467,
+                    "price": 0.00185025
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 212,
+                    "price": 0.000795
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 596,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "ठीक है बेटा, धन्यवाद।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 120,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.09520881762728095
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 723,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+            "branch_id": "agtbrch_6801m3pkcb27e93syn9p37h39vsh",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_4301m3pkcb4yfvv9y69s0j9tnfwk"
+          },
+          "message": "[happy] आपका बहुत-बहुत धन्यवाद आंटी जी! कार्टली में कॉल करने के लिए शुक्रिया, आपका दिन शुभ हो!",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 123,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 2.04330673487857
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.9236757778562605
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.0432972949929535
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.19805948389694095
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 2.5467660261392595
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.192
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.09520881762728095
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 2685,
+                  "price": 0.00201375
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 81,
+                  "price": 0.00030375
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 2685,
+                    "price": 0.00201375
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 81,
+                    "price": 0.00030375
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 723,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        }
+      ],
+      "tag_ids": [],
+      "realtime_config_snapshots": null,
+      "otlp_traces": null
+    }
+  }
+}

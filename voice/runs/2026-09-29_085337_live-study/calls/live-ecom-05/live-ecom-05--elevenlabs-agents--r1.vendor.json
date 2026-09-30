@@ -1,0 +1,1331 @@
+{
+  "open": {
+    "system": "elevenlabs-agents",
+    "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+    "conversation_id": "conv_4701m3q03c9bect84pn85srpt66z",
+    "input_format": "pcm_16000",
+    "output_format": "pcm_24000",
+    "sdk": "websockets 16.1.1"
+  },
+  "close": {
+    "conversation_id": "conv_4701m3q03c9bect84pn85srpt66z",
+    "dropped_stale_chunks": 0,
+    "conversation": {
+      "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+      "agent_name": "kartly-live-ecom-05",
+      "conversation_product": "agent",
+      "status": "done",
+      "user_id": null,
+      "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+      "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0",
+      "metadata": {
+        "start_time_unix_secs": 1790699483,
+        "accepted_time_unix_secs": 1790699483,
+        "call_duration_secs": 158,
+        "queue_wait_secs": null,
+        "cost": 1183,
+        "deletion_settings": {
+          "deletion_time_unix_secs": null,
+          "deleted_logs_at_time_unix_secs": null,
+          "deleted_audio_at_time_unix_secs": null,
+          "deleted_transcript_at_time_unix_secs": null,
+          "delete_transcript_and_pii": false,
+          "delete_audio": false
+        },
+        "feedback": {
+          "type": null,
+          "overall_score": null,
+          "likes": 0,
+          "dislikes": 0,
+          "rating": null,
+          "comment": null
+        },
+        "authorization_method": "signed_url",
+        "charging": {
+          "dev_discount": false,
+          "is_burst": false,
+          "tier": "creator",
+          "llm_usage": {
+            "irreversible_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 7767,
+                    "price": 0.005825249999999999
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 347,
+                    "price": 0.0013012499999999999
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 7767,
+                      "price": 0.005825249999999999
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 347,
+                      "price": 0.0013012499999999999
+                    }
+                  }
+                }
+              ]
+            },
+            "initiated_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 24361,
+                    "price": 0.01827075
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 575,
+                    "price": 0.00215625
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 24361,
+                      "price": 0.01827075
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 575,
+                      "price": 0.00215625
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "llm_price": 0.020427,
+          "llm_charge": 97,
+          "call_charge": 1086,
+          "platform_charge": 1086,
+          "platform_usage": {
+            "category_usage": {
+              "voice": {
+                "credits": 1086,
+                "price": 0.19630329114407524,
+                "quantity": 2.4674275029373045
+              }
+            }
+          },
+          "platform_price": 0.19630329114407524,
+          "free_minutes_consumed": 0.0,
+          "free_llm_dollars_consumed": 0.0,
+          "tts_usage": {
+            "primary_tts_model": "eleven_v3_conversational",
+            "total_audio_output_seconds": 94.88000000000002,
+            "total_characters": 1523,
+            "per_voice_usage": [
+              {
+                "voice_id": "6VrKLjZfyBIk9AEmnZBI",
+                "audio_output_seconds": 94.88000000000002
+              }
+            ]
+          },
+          "asr_usage": {
+            "asr_model": "scribe_realtime",
+            "total_transcription_calls": 266,
+            "total_audio_input_seconds": 48.21599999999973
+          },
+          "analysis": null
+        },
+        "phone_call": null,
+        "batch_call": null,
+        "termination_reason": "Client disconnected: 1000",
+        "error": null,
+        "warnings": [],
+        "main_language": "en",
+        "rag_usage": null,
+        "text_only": false,
+        "features_usage": {
+          "language_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_agent": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_number": {
+            "enabled": false,
+            "used": false
+          },
+          "multivoice": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_tones": {
+            "enabled": false,
+            "used": false
+          },
+          "external_mcp_servers": {
+            "enabled": false,
+            "used": false
+          },
+          "pii_zrm_workspace": false,
+          "pii_zrm_agent": false,
+          "tool_dynamic_variable_updates": {
+            "enabled": false,
+            "used": false
+          },
+          "is_livekit": false,
+          "voicemail_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_input": {
+            "enabled": false,
+            "used": false
+          },
+          "workflow": {
+            "enabled": false,
+            "tool_node": {
+              "enabled": false,
+              "used": false
+            },
+            "standalone_agent_node": {
+              "enabled": false,
+              "used": false
+            },
+            "phone_number_node": {
+              "enabled": false,
+              "used": false
+            },
+            "end_node": {
+              "enabled": false,
+              "used": false
+            }
+          },
+          "agent_testing": {
+            "enabled": false,
+            "tests_ran_after_last_modification": false,
+            "tests_ran_in_last_7_days": false
+          },
+          "versioning": {
+            "enabled": true,
+            "used": false
+          },
+          "file_input": {
+            "enabled": true,
+            "used": false
+          },
+          "freeform_procedure": {
+            "enabled": false,
+            "used": false
+          },
+          "structured_procedure": {
+            "enabled": false,
+            "used": false
+          }
+        },
+        "eleven_assistant": {
+          "is_eleven_assistant": false
+        },
+        "initiator_id": null,
+        "conversation_initiation_source": "unknown",
+        "conversation_initiation_source_version": null,
+        "timezone": null,
+        "async_metadata": null,
+        "whatsapp": null,
+        "sms": null,
+        "agent_created_from": "api",
+        "agent_last_updated_from": "api",
+        "voice_rewards": [
+          {
+            "voice_id": "6VrKLjZfyBIk9AEmnZBI",
+            "reward_usd_cents": 0.984153445339471
+          }
+        ],
+        "cost_fiat": 0.21673029114407524
+      },
+      "analysis": {
+        "evaluation_criteria_results": {},
+        "data_collection_results": {},
+        "evaluation_criteria_results_list": [],
+        "data_collection_results_list": [],
+        "call_successful": "success",
+        "call_success_score": null,
+        "transcript_summary": "The user reported a double deduction of 4,199 rupees for order KRT61270098. The agent confirmed that one payment was successful, and the duplicate payment, which failed on their end, has been initiated for an auto-reversal. The refund is expected to reach the user's bank by Friday, October 9th, with reference RFD88213. The agent advised the user not to share any sensitive information like UPI PIN, as the refund is automatic and no action is required from their side.",
+        "call_summary_title": "Duplicate Payment Refund",
+        "scoped": [],
+        "sentiment_analysis": {
+          "overall_label": "neutral",
+          "overall_sentiment_score": -0.1,
+          "overall_frustration_score": 0.4,
+          "min_user_sentiment_score": -0.4,
+          "max_user_frustration_score": 0.4,
+          "num_scored_user_turns": 3
+        }
+      },
+      "visited_agents": [
+        {
+          "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+          "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja"
+        }
+      ],
+      "conversation_initiation_client_data": {
+        "conversation_config_override": {
+          "asr": null,
+          "turn": null,
+          "tts": null,
+          "conversation": null,
+          "agent": null
+        },
+        "custom_llm_extra_body": {},
+        "user_id": null,
+        "source_info": {
+          "source": null,
+          "version": null
+        },
+        "branch_id": null,
+        "environment": null,
+        "starting_workflow_node_id": null,
+        "experiments": [],
+        "procedure_ids": null,
+        "dynamic_variables": {
+          "system__agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+          "system__agent_turns": 6,
+          "system__current_agent_turns": 6,
+          "system__current_subagent_turns": 6,
+          "system__current_agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+          "system__conversation_id": "conv_4701m3q03c9bect84pn85srpt66z",
+          "system__call_duration_secs": 158,
+          "system__time_utc": "2026-09-29T16:34:01.521001+00:00",
+          "system__timezone": null,
+          "system__time": "Tuesday, 16:34 29 September 2026",
+          "system__time_hour": 16,
+          "system__time_minute": 34,
+          "system__time_second": 1,
+          "system__is_text_only": false,
+          "system__channel": "unknown",
+          "system__caller_id": null,
+          "system__called_number": null,
+          "system__call_sid": null,
+          "system__call_id": null,
+          "system__conversation_history": "{\"x-elevenlabs-history\": true, \"entries\": [{\"role\": \"user\", \"message\": \"Hi, I'm calling because my money got deducted twice for one order, 4,199, two times.\"}, {\"role\": \"agent\", \"message\": \"[empathic] I understand your concern. For your order K R T [slow] six one two seven, zero zero nine eight, for four thousand one hundred ninety-nine rupees, one payment went through and the duplicate payment has already been initiated for an auto-reversal. It will reach your bank within five working days, by Friday ninth October, under refund reference [slow] R F D eight eight two one three.\"}, {\"role\": \"user\", \"message\": \"The order is, uh, K R T six one two seven zero zero nine eight. I paid by UPI yesterday.\"}, {\"role\": \"agent\", \"message\": \"Yes, I see that. The first U T R ending in [slow] five five nine two went through successfully for the running shoes, while the second U T R ending in [slow] five six one zero failed on our end and is being refunded. You do not need to do anything, and it will be back in your account by Friday ninth October.\"}, {\"role\": \"user\", \"message\": \"The second transaction reference is four two seven eight one six three zero five six one zero.\"}, {\"role\": \"agent\", \"message\": \"Yes, exactly, that is the duplicate transaction that failed on Kartly's side. The auto-reversal for four thousand one hundred ninety-nine rupees started yesterday, and the refund reference number is [slow] R F D eight eight two one three. It will reflect in your account by Friday ninth October.\"}, {\"role\": \"user\", \"message\": \"So, by what date exactly will I see it back? My rent is due.\"}, {\"role\": \"agent\", \"message\": \"[empathic] I completely understand your urgency. The money will reach your bank within five working days, by Friday ninth October at the latest. You do not need to take any action or share any details from your side.\"}, {\"role\": \"user\", \"message\": \"Do you need my UPI PIN or anything to process it faster?\"}, {\"role\": \"agent\", \"message\": \"[serious] No, please never share your U P I P I N or O T P with anyone, as Kartly will never ask for them. The refund is completely automatic and is already on its way. Is there anything else I can help you with today?\"}, {\"role\": \"user\", \"message\": \"All right. Thanks for your help.\"}, {\"role\": \"agent\", \"message\": \"[happy] You are very welcome. Thank you for calling Kartly, and have a wonderful day ahead!\"}]}",
+          "system__user_id": null,
+          "system__initiator_id": null
+        },
+        "tool_mock_config": {
+          "mocking_strategy": "none",
+          "fallback_strategy": "raise_error",
+          "mocked_tool_names": []
+        },
+        "tool_mock_overrides": {}
+      },
+      "environment": "production",
+      "experiment_assignments": null,
+      "hiding_reason": null,
+      "smb_metadata": null,
+      "conversation_id": "conv_4701m3q03c9bect84pn85srpt66z",
+      "has_audio": true,
+      "has_user_audio": true,
+      "has_response_audio": true,
+      "has_auxiliary_audio": false,
+      "transcript": [
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "Hi, I'm calling because my money got deducted twice for one order, 4,199, two times.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 1,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.12043180828914046
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 62,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.3,
+            "user_frustration_score": 0.2
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+            "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0"
+          },
+          "message": "[empathic] I understand your concern. For your order K R T [slow] six one two seven, zero zero nine eight, for four thousand one hundred ninety-nine rupees, one payment went through and the duplicate payment has already been initiated for an auto-reversal. It will reach your bank within five working days, by Friday ninth October, under refund reference [slow] R F D eight eight two one three.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 11,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.2452785419300199
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.2449013921432197
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.717004865873605
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.23081644671037793
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 3.7897035258710385
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 2.112
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.12043180828914046
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1070,
+                  "price": 0.0008025
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 88,
+                  "price": 0.00033
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1070,
+                    "price": 0.0008025
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 88,
+                    "price": 0.00033
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 62,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "The order is, uh, K R T six one two seven zero zero nine eight. I paid by UPI yesterday.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 40,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.05127474991604686
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 292,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+            "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0"
+          },
+          "message": "Yes, I see that. The first U T R ending in [slow] five five nine two went through successfully for the running shoes, while the second U T R ending in [slow] five six one zero failed on our end and is being refunded. You do not need to do anything, and it will be back in your account by Friday ninth October.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 50,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.4199368162080646
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.36687436606735
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.207996144425124
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.1664769402705133
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.844676465921104
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.192
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.05127474991604686
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1182,
+                  "price": 0.0008865
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 73,
+                  "price": 0.00027375
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1182,
+                    "price": 0.0008865
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 73,
+                    "price": 0.00027375
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 292,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "The second transaction reference is four two seven eight one six three zero five six one zero.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 70,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.03978107962757349
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 465,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+            "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0"
+          },
+          "message": "Yes, exactly, that is the duplicate transaction that failed on Kartly's side. The auto-reversal for four thousand one hundred ninety-nine rupees started yesterday, and the refund reference number is [slow] R F D eight eight two one three. It will reflect in your account by Friday ninth October.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 78,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.0117017277516425
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 0.9714298075996339
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.3923009969294071
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.18301468901336193
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.5708643260225654
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.32
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.03978107962757349
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1273,
+                  "price": 0.00095475
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 64,
+                  "price": 0.00024
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1273,
+                    "price": 0.00095475
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 64,
+                    "price": 0.00024
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 465,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "So, by what date exactly will I see it back? My rent is due.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 97,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.058751320000737906
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 627,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.4,
+            "user_frustration_score": 0.4
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+            "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0"
+          },
+          "message": "[empathic] I completely understand your urgency. The money will reach your bank within five working days, by Friday ninth October at the latest. You do not need to take any action or share any details from your side.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 103,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 0.7771497378125787
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 0.7767452681437135
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.0413866369053721
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2091274601407349
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.3170746783204377
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.256
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.058751320000737906
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1354,
+                  "price": 0.0010155
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 46,
+                  "price": 0.0001725
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1354,
+                    "price": 0.0010155
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 46,
+                    "price": 0.0001725
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 627,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "Do you need my UPI PIN or anything to process it faster?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 117,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.041609170380979776
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 737,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.2,
+            "user_frustration_score": 0.3
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+            "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0"
+          },
+          "message": "[serious] No, please never share your U P I P I N or O T P with anyone, as Kartly will never ask for them. The refund is completely automatic and is already on its way. Is there anything else I can help you with today?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 122,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 0.8878347766585648
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 0.8873292966745794
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.3035688856616616
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2595223798416555
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.4290947970710695
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.224
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.041609170380979776
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1413,
+                  "price": 0.00105975
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 54,
+                  "price": 0.0002025
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1413,
+                    "price": 0.00105975
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 54,
+                    "price": 0.0002025
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 737,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "All right. Thanks for your help.",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 138,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.09476631972938776
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 847,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+            "branch_id": "agtbrch_7801m3pkc03weh99gs60vf856sja",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_3401m3pkc07rfz6bnzn9va6vk3f0"
+          },
+          "message": "[happy] You are very welcome. Thank you for calling Kartly, and have a wonderful day ahead!",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 141,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 0.9313946268521249
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 0.9310139371082187
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 0.9629261870868504
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.20541997998952866
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.4730964769385755
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.224
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.09476631972938776
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1475,
+                  "price": 0.00110625
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 22,
+                  "price": 8.25e-05
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1475,
+                    "price": 0.00110625
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 22,
+                    "price": 8.25e-05
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 847,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        }
+      ],
+      "tag_ids": [],
+      "realtime_config_snapshots": null,
+      "otlp_traces": null
+    }
+  }
+}
