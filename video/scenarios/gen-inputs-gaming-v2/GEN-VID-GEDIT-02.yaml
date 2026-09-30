@@ -1,0 +1,22 @@
+# Input asset generator for pilot card VID-GEDIT-02 (BGMI, Video Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GEDIT-02-source.mp4
+# Prompt origin: Team-written v2 (review of 24 Sep 2026, docs/2026-09-24-video-edit-source-prompt-review.md). Not evaluated; no public source.
+id: GEN-VID-GEDIT-02-v2
+modality: video
+task: text_to_video
+title: 'Source clip for VID-GEDIT-02: Blur names in kill feed and tags'
+prompt: 'Third-person view over the player''s shoulder. A squad firefight beside a two-storey house. The full match display is present and legible: a kill feed in the top-left corner listing player names, name tags floating above two teammates who move across the frame, a squad list with four names under the kill feed, a circular minimap in the top-right corner, a health bar at the bottom centre, and a match timer at the top centre. All names are fictional gamertags in Latin letters, such as RIVERSIDE_07, DUSKFOX and MARLOW-9; no real brands, no real player names. Muzzle flashes and smoke. Realistic mobile-game render look, sharp and clean, no watermark. Steady camera, one continuous shot, six seconds.'
+params:
+  duration_s: 6
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'A clean source clip matching the card''s Input line: a squad firefight near a two-storey house. The kill feed in the top-left shows player names, and name tags float above two teammates who move across the frame.'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gen-input
+- gaming-pilot

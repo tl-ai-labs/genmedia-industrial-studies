@@ -1,0 +1,26 @@
+# Input asset generator for pilot card VID-GEDIT-08 (Real Cricket 24, Video Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GEDIT-08-source.mp4
+# Prompt origin: Team-written v2 (review of 24 Sep 2026, docs/2026-09-24-video-edit-source-prompt-review.md). Not evaluated; no public source.
+id: GEN-VID-GEDIT-08-v2
+modality: video
+task: text_to_video
+title: 'Source clip for VID-GEDIT-08: Smooth a choppy six'
+prompt: 'Broadcast view from behind the bowler, the camera tilting up to follow the ball. The batter lofts the ball high for six and the camera follows it over the boundary into the crowd. No graphics or score bar on screen. Realistic mobile-game render look, sharp and clean, no text, no logos, no watermark. One continuous shot, six seconds.'
+params:
+  duration_s: 6
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'A clean source clip matching the card''s Input line: the batter lofts the ball for six and the camera follows the ball into the crowd.'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gen-input
+- gaming-pilot
+# POST-STEP, REQUIRED (review doc, GEDIT-08): a text-to-video model will not render a choppy clip on
+# request. After generation, make it choppy and verify before copying to the bank:
+#   ffmpeg -i in.mp4 -vf "fps=12,fps=24" -c:v libx264 -crf 18 out.mp4
+# Expect about 72 of 144 frames duplicated. Record the command in the sheet's Generation details.

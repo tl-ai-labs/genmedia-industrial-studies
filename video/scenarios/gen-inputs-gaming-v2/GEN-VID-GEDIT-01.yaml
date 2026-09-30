@@ -1,0 +1,22 @@
+# Input asset generator for pilot card VID-GEDIT-01 (BGMI, Video Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GEDIT-01-source.mp4
+# Prompt origin: Team-written v2 (review of 24 Sep 2026, docs/2026-09-24-video-edit-source-prompt-review.md). Not evaluated; no public source.
+id: GEN-VID-GEDIT-01-v2
+modality: video
+task: text_to_video
+title: 'Source clip for VID-GEDIT-01: Rifle becomes frying pan'
+prompt: 'Third-person view from behind and slightly above, camera following at a fixed distance. One player in olive-green military gear runs at a steady pace across open grassland, holding a wooden-stock assault rifle in both hands with the muzzle forward; the rifle stays fully visible in every frame. Overcast daylight, long grass, low hills behind. No other characters, no vehicles. No on-screen display of any kind. Realistic mobile-game render look, sharp and clean, no text, no logos, no watermark. Steady camera, one continuous shot, six seconds.'
+params:
+  duration_s: 6
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'A clean source clip matching the card''s Input line: a player in military gear runs across open grassland holding a wooden-stock assault rifle in both hands.'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gen-input
+- gaming-pilot

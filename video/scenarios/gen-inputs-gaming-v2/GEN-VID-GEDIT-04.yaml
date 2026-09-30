@@ -1,0 +1,22 @@
+# Input asset generator for pilot card VID-GEDIT-04 (BGMI, Video Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GEDIT-04-source.mp4
+# Prompt origin: Team-written v2 (review of 24 Sep 2026, docs/2026-09-24-video-edit-source-prompt-review.md). Not evaluated; no public source.
+id: GEN-VID-GEDIT-04-v2
+modality: video
+task: text_to_video
+title: 'Source clip for VID-GEDIT-04: Remove the buggy in the final circle'
+prompt: 'Third-person view from behind and above the players. Three players in military gear lie prone in tall grass inside a small final zone, still. In the background an open-frame buggy drives across the frame from left to right, kicking up a visible dust trail that hangs in the air behind it. The buggy is the only vehicle and, apart from the grass moving in the wind, the only moving thing. Sky and low hills behind. No on-screen display of any kind. Realistic mobile-game render look, sharp and clean, no text, no logos, no watermark. Steady camera, one continuous shot, six seconds.'
+params:
+  duration_s: 6
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'A clean source clip matching the card''s Input line: three players lie prone in tall grass in a small final zone. In the background an open-frame buggy drives across from left to right kicking up dust.'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gen-input
+- gaming-pilot

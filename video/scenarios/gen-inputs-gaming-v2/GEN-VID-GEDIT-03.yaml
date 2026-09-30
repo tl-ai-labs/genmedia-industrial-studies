@@ -1,0 +1,22 @@
+# Input asset generator for pilot card VID-GEDIT-03 (BGMI, Video Editing).
+# Not an evaluation scenario. Output is copied to assets/bank/gaming/video/VID-GEDIT-03-source.mp4
+# Prompt origin: Team-written v2 (review of 24 Sep 2026, docs/2026-09-24-video-edit-source-prompt-review.md). Not evaluated; no public source.
+id: GEN-VID-GEDIT-03-v2
+modality: video
+task: text_to_video
+title: 'Source clip for VID-GEDIT-03: Coastal drive turned to sunset'
+prompt: 'Chase view from behind the car, camera following at a fixed distance. A plain, unbranded four-door sedan in dark grey drives at moderate speed along a two-lane coastal road in bright midday sun: sea and a low guard rail on the left, grass hills on the right. No badge, no lettering, no number-plate text; a plain grille and plain tail-lights. Short midday shadows directly under the car. No other vehicles. No on-screen display of any kind. Realistic mobile-game render look, sharp and clean, no text, no logos, no watermark. Steady camera, one continuous shot, six seconds.'
+params:
+  duration_s: 6
+  resolution: 1080p
+  aspect_ratio: '16:9'
+  audio: false
+expected: 'A clean source clip matching the card''s Input line: a four-door sedan drives along a coastal road in bright midday sun, sea on the left, grass hills on the right.'
+checks:
+  min_duration_s: 5.5
+  max_duration_s: 9.0
+  min_width: 1280
+  min_height: 720
+tags:
+- gen-input
+- gaming-pilot
