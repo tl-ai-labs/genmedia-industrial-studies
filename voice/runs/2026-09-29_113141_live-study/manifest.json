@@ -1,0 +1,355 @@
+{
+  "run_id": "2026-09-29_113141_live-study",
+  "label": "study",
+  "created_utc": "2026-09-29T18:31:41Z",
+  "git_commit": "707413e706a76cda546732a040138189d7c22028",
+  "systems_under_test": [
+    "gemini-3.8-live",
+    "elevenlabs-agents"
+  ],
+  "systems_config": {
+    "file": "configs/systems.yaml",
+    "sha256": "8f11225f2b2efa7e8e3d643a2f2b39982255f9cb5cc612bc532d4eb74aedb89a",
+    "content": {
+      "gemini_live": {
+        "label": "Gemini 3.8 Live",
+        "route": "vertex",
+        "project_env": "GCP_PROJECT_ID",
+        "location": "us-central1",
+        "model": "gemini-3.8-live",
+        "voice": "Aoede",
+        "input_audio": {
+          "encoding": "pcm_s16le",
+          "sample_rate": 16000
+        },
+        "output_audio": {
+          "encoding": "pcm_s16le",
+          "sample_rate": 24000
+        },
+        "automatic_activity_detection": "vendor_default_enabled",
+        "proactive_audio": false,
+        "affective_dialog": false,
+        "thinking": "vendor_default",
+        "temperature": "vendor_default",
+        "transcripts": {
+          "input": true,
+          "output": true
+        }
+      },
+      "elevenlabs_agents": {
+        "label": "ElevenLabs Agents",
+        "api_base": "https://api.elevenlabs.io",
+        "key_env": "ELEVENLABS_API_KEY",
+        "agent_name_prefix": "kartly-",
+        "llm": "gemini-3.8-flash",
+        "reasoning_effort": "low",
+        "backup_llm": "disabled",
+        "temperature": "vendor_default",
+        "asr": {
+          "provider": "scribe_realtime",
+          "quality": "high",
+          "user_input_audio_format": "pcm_16000"
+        },
+        "tts": {
+          "model_id": "eleven_v3_conversational",
+          "agent_output_audio_format": "pcm_24000",
+          "voices": {
+            "en": {
+              "voice_id": "6VrKLjZfyBIk9AEmnZBI",
+              "account_name": "live-agent-en-IN",
+              "library_name": "Zara – Efficient Recovery Agent"
+            },
+            "hi": {
+              "voice_id": "OtEfb2LVzIE45wdYe54M",
+              "account_name": "live-agent-hi-IN",
+              "library_name": "Zara - Soft, Professional and Gentle"
+            }
+          }
+        },
+        "turn": {
+          "turn_eagerness": "normal",
+          "soft_timeout_seconds": -1
+        },
+        "first_message": "",
+        "disable_first_message_interruptions": false,
+        "client_events": [
+          "audio",
+          "interruption",
+          "user_transcript",
+          "agent_response",
+          "agent_response_correction",
+          "agent_response_complete"
+        ],
+        "max_duration_seconds": 600,
+        "language_by_scenario_language": {
+          "en-IN": "en",
+          "hi-IN": "hi",
+          "hi-en": "hi",
+          "en-IN->hi-IN": "en"
+        },
+        "language_detection_tool_for": [
+          "live-ecom-09"
+        ]
+      },
+      "runner": {
+        "chunk_ms": 20,
+        "recording_rate": 24000,
+        "end_of_reply_silence_s": 1.0,
+        "turn_complete_grace_s": 3.0,
+        "no_reply_after_s": 15.0,
+        "slow_reply_s": 5.0,
+        "max_call_s": 600,
+        "connect_to_first_line_s": 0.5,
+        "stop_gate_s": 1.0
+      }
+    }
+  },
+  "scenarios": {
+    "live-ecom-01": {
+      "file": "scenarios/live-ecom-01",
+      "instructions_sha256": "443fe62d73c6dc7534b432a450024390ecfc4041500e021c5e478820eb4e8bf8",
+      "language": "en-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ]
+    },
+    "live-ecom-02": {
+      "file": "scenarios/live-ecom-02",
+      "instructions_sha256": "7b95b19589349f13eb1d27c767e08e25382e4876579b592c9542ece7ab6a766b",
+      "language": "hi-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-03": {
+      "file": "scenarios/live-ecom-03",
+      "instructions_sha256": "7c9b90f5760dfad454237798d542e0a0e75cac0c99fc4a5cad43171878f466da",
+      "language": "hi-en",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-04": {
+      "file": "scenarios/live-ecom-04",
+      "instructions_sha256": "9c47debacdd9a95cec740cd7f3733e2823f6b29583ea73a799bb14a0e071b922",
+      "language": "hi-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-05": {
+      "file": "scenarios/live-ecom-05",
+      "instructions_sha256": "13cb9b96b6c9b6c6b49e0031d1d102285373bf93b1a19d7e03455f4b02c34278",
+      "language": "en-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-06": {
+      "file": "scenarios/live-ecom-06",
+      "instructions_sha256": "9b8269d4d9e0b37af928f8068a77f9e419b874a0f30809bc108ea2d6da6fae6e",
+      "language": "hi-en",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-07": {
+      "file": "scenarios/live-ecom-07",
+      "instructions_sha256": "c6657fbae9aba469ff0501709b433bbae8b23a662b031b658f5a05da5c3ea2ec",
+      "language": "hi-en",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-08": {
+      "file": "scenarios/live-ecom-08",
+      "instructions_sha256": "d393331f64e7090d3078411feb0c2950cdfa3b2ca1fcd0cb9713d5d1b2dd8cfb",
+      "language": "en-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ]
+    },
+    "live-ecom-09": {
+      "file": "scenarios/live-ecom-09",
+      "instructions_sha256": "56bffcf1cb5f45145a06540c09ff64b0f172b9d8c91446e17b58d2b50fb54669",
+      "language": "en-IN->hi-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ]
+    },
+    "live-ecom-10": {
+      "file": "scenarios/live-ecom-10",
+      "instructions_sha256": "4606fa91f307ac9beba06a088646bafd50d908aff3cf483bd0321b37f5df3458",
+      "language": "hi-IN",
+      "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ]
+    }
+  },
+  "caller_audio": {
+    "bank": "audio",
+    "manifest_sha256": "be24ba67590dea830c67cf25b225dc3fe504e6cb6ab01807f4b26a3998a834c8",
+    "label": "v1 input voices, gemini-3.8-flash-tts",
+    "frozen_at": "2026-09-29T15:45:39+00:00"
+  },
+  "elevenlabs_agents": {
+    "live-ecom-01": {
+      "agent_id": "agent_4401m3pkas2ke6qv3q9p6xdve25h",
+      "name": "kartly-live-ecom-01",
+      "config_sha256": "d495f0a27e417bf29c893f6c4dadfe01074140f63f5507b478c435056d778bcd",
+      "instructions_sha256": "443fe62d73c6dc7534b432a450024390ecfc4041500e021c5e478820eb4e8bf8",
+      "synced_at": "2026-09-29T12:48:45Z",
+      "verified_config_sha256": "d495f0a27e417bf29c893f6c4dadfe01074140f63f5507b478c435056d778bcd"
+    },
+    "live-ecom-02": {
+      "agent_id": "agent_7001m3pkbpq2fset1ga49cw7fm98",
+      "name": "kartly-live-ecom-02",
+      "config_sha256": "304fbb52680ffe9b8c0f86e5680d8f56563d7c3a12931e20a5afc0e003adc5c8",
+      "instructions_sha256": "7b95b19589349f13eb1d27c767e08e25382e4876579b592c9542ece7ab6a766b",
+      "synced_at": "2026-09-29T12:48:47Z",
+      "verified_config_sha256": "304fbb52680ffe9b8c0f86e5680d8f56563d7c3a12931e20a5afc0e003adc5c8"
+    },
+    "live-ecom-03": {
+      "agent_id": "agent_1301m3pkbs8fenv82brq0h3qjx10",
+      "name": "kartly-live-ecom-03",
+      "config_sha256": "5ed09614c5fdc794a384a1ad5d34182a659ccde02273cec88c546d4f900a1c34",
+      "instructions_sha256": "7c9b90f5760dfad454237798d542e0a0e75cac0c99fc4a5cad43171878f466da",
+      "synced_at": "2026-09-29T12:48:50Z",
+      "verified_config_sha256": "5ed09614c5fdc794a384a1ad5d34182a659ccde02273cec88c546d4f900a1c34"
+    },
+    "live-ecom-04": {
+      "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+      "name": "kartly-live-ecom-04",
+      "config_sha256": "081a054a94014c2ce67aac037dc776b90b83fbd07640605b7dca6fd8fb7a417a",
+      "instructions_sha256": "9c47debacdd9a95cec740cd7f3733e2823f6b29583ea73a799bb14a0e071b922",
+      "synced_at": "2026-09-29T12:48:52Z",
+      "verified_config_sha256": "081a054a94014c2ce67aac037dc776b90b83fbd07640605b7dca6fd8fb7a417a"
+    },
+    "live-ecom-05": {
+      "agent_id": "agent_8001m3pkbyv6ehprpvm4fm3zh1c2",
+      "name": "kartly-live-ecom-05",
+      "config_sha256": "a015b9a6790b857bb575f7e222eb55948ed4613a27726bcf3b2344ad932c6c0e",
+      "instructions_sha256": "13cb9b96b6c9b6c6b49e0031d1d102285373bf93b1a19d7e03455f4b02c34278",
+      "synced_at": "2026-09-29T12:48:55Z",
+      "verified_config_sha256": "a015b9a6790b857bb575f7e222eb55948ed4613a27726bcf3b2344ad932c6c0e"
+    },
+    "live-ecom-06": {
+      "agent_id": "agent_4901m3pkc1gwfa28tgztwj95db31",
+      "name": "kartly-live-ecom-06",
+      "config_sha256": "cd834b684bfdc45c9f888436d4d9f3713ebbe04a0accf36719a27c5abba95a20",
+      "instructions_sha256": "9b8269d4d9e0b37af928f8068a77f9e419b874a0f30809bc108ea2d6da6fae6e",
+      "synced_at": "2026-09-29T12:48:58Z",
+      "verified_config_sha256": "cd834b684bfdc45c9f888436d4d9f3713ebbe04a0accf36719a27c5abba95a20"
+    },
+    "live-ecom-07": {
+      "agent_id": "agent_7401m3pkc4c3em2t726551wht29h",
+      "name": "kartly-live-ecom-07",
+      "config_sha256": "19f2566b1d52ed451352f428348b8d72ad6ac2acd59a79a8386096f4c94f58b5",
+      "instructions_sha256": "c6657fbae9aba469ff0501709b433bbae8b23a662b031b658f5a05da5c3ea2ec",
+      "synced_at": "2026-09-29T12:49:01Z",
+      "verified_config_sha256": "19f2566b1d52ed451352f428348b8d72ad6ac2acd59a79a8386096f4c94f58b5"
+    },
+    "live-ecom-08": {
+      "agent_id": "agent_9701m3pkc6vtezy94a7k3fzm811x",
+      "name": "kartly-live-ecom-08",
+      "config_sha256": "b2546b713bcef408ec8557a951e246fd23bd75b9527f37902191d66cd7a08755",
+      "instructions_sha256": "d393331f64e7090d3078411feb0c2950cdfa3b2ca1fcd0cb9713d5d1b2dd8cfb",
+      "synced_at": "2026-09-29T12:49:04Z",
+      "verified_config_sha256": "b2546b713bcef408ec8557a951e246fd23bd75b9527f37902191d66cd7a08755"
+    },
+    "live-ecom-09": {
+      "agent_id": "agent_0001m3pkc9w4ev7bemf7rz2necre",
+      "name": "kartly-live-ecom-09",
+      "config_sha256": "aa2fb4bf98ced0b9609b04687f2c48a55e05d462abaf76aab459251a593c4096",
+      "instructions_sha256": "56bffcf1cb5f45145a06540c09ff64b0f172b9d8c91446e17b58d2b50fb54669",
+      "synced_at": "2026-09-29T12:49:07Z",
+      "verified_config_sha256": "aa2fb4bf98ced0b9609b04687f2c48a55e05d462abaf76aab459251a593c4096"
+    },
+    "live-ecom-10": {
+      "agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+      "name": "kartly-live-ecom-10",
+      "config_sha256": "6034431ced6bb4e3ffac3036b7f2a68f11039c396cf2ff3ec06d74535db7c1cd",
+      "instructions_sha256": "4606fa91f307ac9beba06a088646bafd50d908aff3cf483bd0321b37f5df3458",
+      "synced_at": "2026-09-29T12:49:10Z",
+      "verified_config_sha256": "6034431ced6bb4e3ffac3036b7f2a68f11039c396cf2ff3ec06d74535db7c1cd"
+    }
+  },
+  "network_rtt_ms": {
+    "us-central1-aiplatform.googleapis.com": 47.7,
+    "api.elevenlabs.io": 60.8
+  },
+  "versions": {
+    "python": "3.12.3",
+    "google-genai": "2.22.0",
+    "websockets": "16.1.1",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "list_prices": {
+    "as_of": "2026-09-28",
+    "gemini-3.8-live": {
+      "audio_in_usd_per_1m_tokens": 3.0,
+      "audio_out_usd_per_1m_tokens": 12.0,
+      "per_minute_note": "~$0.005/min listening + ~$0.018/min speaking"
+    },
+    "elevenlabs-agents": {
+      "usd_per_connected_minute": 0.08,
+      "brain": "gemini-3.8-flash tokens on top",
+      "plan_note": "Creator plan includes 275 agent minutes/month; report list price, labelled"
+    }
+  },
+  "run_options": {
+    "systems": [
+      "gemini",
+      "elevenlabs"
+    ],
+    "rep": 2,
+    "smoke": false
+  }
+}

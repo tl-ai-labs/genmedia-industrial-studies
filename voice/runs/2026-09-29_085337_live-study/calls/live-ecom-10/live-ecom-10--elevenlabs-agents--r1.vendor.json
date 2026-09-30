@@ -1,0 +1,732 @@
+{
+  "open": {
+    "system": "elevenlabs-agents",
+    "agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+    "conversation_id": "conv_7801m3q24fbaf8fvay1gn9ddg48h",
+    "input_format": "pcm_16000",
+    "output_format": "pcm_24000",
+    "sdk": "websockets 16.1.1"
+  },
+  "close": {
+    "conversation_id": "conv_7801m3q24fbaf8fvay1gn9ddg48h",
+    "dropped_stale_chunks": 0,
+    "conversation": {
+      "agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+      "agent_name": "kartly-live-ecom-10",
+      "conversation_product": "agent",
+      "status": "done",
+      "user_id": null,
+      "branch_id": "agtbrch_6101m3pkcdrdeftbmfz7hxthd7y5",
+      "version_id": "agtvrsn_6601m3pkcdvpf8wak4pf9x58bsqx",
+      "metadata": {
+        "start_time_unix_secs": 1790701616,
+        "accepted_time_unix_secs": 1790701616,
+        "call_duration_secs": 151,
+        "queue_wait_secs": null,
+        "cost": 892,
+        "deletion_settings": {
+          "deletion_time_unix_secs": null,
+          "deleted_logs_at_time_unix_secs": null,
+          "deleted_audio_at_time_unix_secs": null,
+          "deleted_transcript_at_time_unix_secs": null,
+          "delete_transcript_and_pii": false,
+          "delete_audio": false
+        },
+        "feedback": {
+          "type": null,
+          "overall_score": null,
+          "likes": 0,
+          "dislikes": 0,
+          "rating": null,
+          "comment": null
+        },
+        "authorization_method": "signed_url",
+        "charging": {
+          "dev_discount": false,
+          "is_burst": false,
+          "tier": "creator",
+          "llm_usage": {
+            "irreversible_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 1250,
+                    "price": 0.0009375
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 72,
+                    "price": 0.00027
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 1250,
+                      "price": 0.0009375
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 72,
+                      "price": 0.00027
+                    }
+                  }
+                }
+              ]
+            },
+            "initiated_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 12854,
+                    "price": 0.009640500000000001
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 296,
+                    "price": 0.00111
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 12854,
+                      "price": 0.009640500000000001
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 296,
+                      "price": 0.00111
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "llm_price": 0.010750500000000001,
+          "llm_charge": 51,
+          "call_charge": 841,
+          "platform_charge": 841,
+          "platform_usage": {
+            "category_usage": {
+              "voice": {
+                "credits": 841,
+                "price": 0.15235678453444307,
+                "quantity": 1.9112779884987199
+              }
+            }
+          },
+          "platform_price": 0.15235678453444307,
+          "free_minutes_consumed": 0.0,
+          "free_llm_dollars_consumed": 0.0,
+          "tts_usage": {
+            "primary_tts_model": "eleven_v3_conversational",
+            "total_audio_output_seconds": 20.612125,
+            "total_characters": 695,
+            "per_voice_usage": [
+              {
+                "voice_id": "OtEfb2LVzIE45wdYe54M",
+                "audio_output_seconds": 20.612125
+              }
+            ]
+          },
+          "asr_usage": {
+            "asr_model": "scribe_realtime",
+            "total_transcription_calls": 673,
+            "total_audio_input_seconds": 109.72799999999845
+          },
+          "analysis": null
+        },
+        "phone_call": null,
+        "batch_call": null,
+        "termination_reason": "Client disconnected: 1000",
+        "error": null,
+        "warnings": [
+          "Audio duration mismatch: this may indicate non-continuous audio input and can cause audio overlap or desync in playback. Make sure to send audio continuously."
+        ],
+        "main_language": "hi",
+        "rag_usage": null,
+        "text_only": false,
+        "features_usage": {
+          "language_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_agent": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_number": {
+            "enabled": false,
+            "used": false
+          },
+          "multivoice": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_tones": {
+            "enabled": false,
+            "used": false
+          },
+          "external_mcp_servers": {
+            "enabled": false,
+            "used": false
+          },
+          "pii_zrm_workspace": false,
+          "pii_zrm_agent": false,
+          "tool_dynamic_variable_updates": {
+            "enabled": false,
+            "used": false
+          },
+          "is_livekit": false,
+          "voicemail_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_input": {
+            "enabled": false,
+            "used": false
+          },
+          "workflow": {
+            "enabled": false,
+            "tool_node": {
+              "enabled": false,
+              "used": false
+            },
+            "standalone_agent_node": {
+              "enabled": false,
+              "used": false
+            },
+            "phone_number_node": {
+              "enabled": false,
+              "used": false
+            },
+            "end_node": {
+              "enabled": false,
+              "used": false
+            }
+          },
+          "agent_testing": {
+            "enabled": false,
+            "tests_ran_after_last_modification": false,
+            "tests_ran_in_last_7_days": false
+          },
+          "versioning": {
+            "enabled": true,
+            "used": false
+          },
+          "file_input": {
+            "enabled": true,
+            "used": false
+          },
+          "freeform_procedure": {
+            "enabled": false,
+            "used": false
+          },
+          "structured_procedure": {
+            "enabled": false,
+            "used": false
+          }
+        },
+        "eleven_assistant": {
+          "is_eleven_assistant": false
+        },
+        "initiator_id": null,
+        "conversation_initiation_source": "unknown",
+        "conversation_initiation_source_version": null,
+        "timezone": null,
+        "async_metadata": null,
+        "whatsapp": null,
+        "sms": null,
+        "agent_created_from": "api",
+        "agent_last_updated_from": "api",
+        "voice_rewards": [
+          {
+            "voice_id": "OtEfb2LVzIE45wdYe54M",
+            "reward_usd_cents": 0.1732436076309452
+          }
+        ],
+        "cost_fiat": 0.16310728453444306
+      },
+      "analysis": {
+        "evaluation_criteria_results": {},
+        "data_collection_results": {},
+        "evaluation_criteria_results_list": [],
+        "data_collection_results_list": [],
+        "call_successful": "success",
+        "call_success_score": null,
+        "transcript_summary": "The user contacted support regarding a coupon (FEST500) that was not applied to their air fryer purchase (order 88031195), despite sale advertisements. The agent explained that the item was a \"Deal of the Day,\" making it ineligible for the coupon. However, the agent confirmed the coupon is still valid and can be used on another order until October 15th. The user understood and thanked the agent.",
+        "call_summary_title": "Air Fryer Coupon Issue",
+        "scoped": [],
+        "sentiment_analysis": {
+          "overall_label": "neutral",
+          "overall_sentiment_score": -0.2,
+          "overall_frustration_score": 0.4,
+          "min_user_sentiment_score": -0.5,
+          "max_user_frustration_score": 0.4,
+          "num_scored_user_turns": 3
+        }
+      },
+      "visited_agents": [
+        {
+          "agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+          "branch_id": "agtbrch_6101m3pkcdrdeftbmfz7hxthd7y5"
+        }
+      ],
+      "conversation_initiation_client_data": {
+        "conversation_config_override": {
+          "asr": null,
+          "turn": null,
+          "tts": null,
+          "conversation": null,
+          "agent": null
+        },
+        "custom_llm_extra_body": {},
+        "user_id": null,
+        "source_info": {
+          "source": null,
+          "version": null
+        },
+        "branch_id": null,
+        "environment": null,
+        "starting_workflow_node_id": null,
+        "experiments": [],
+        "procedure_ids": null,
+        "dynamic_variables": {
+          "system__agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+          "system__agent_turns": 2,
+          "system__current_agent_turns": 2,
+          "system__current_subagent_turns": 2,
+          "system__current_agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+          "system__conversation_id": "conv_7801m3q24fbaf8fvay1gn9ddg48h",
+          "system__call_duration_secs": 151,
+          "system__time_utc": "2026-09-29T17:09:27.658098+00:00",
+          "system__timezone": null,
+          "system__time": "Tuesday, 17:09 29 September 2026",
+          "system__time_hour": 17,
+          "system__time_minute": 9,
+          "system__time_second": 27,
+          "system__is_text_only": false,
+          "system__channel": "unknown",
+          "system__caller_id": null,
+          "system__called_number": null,
+          "system__call_sid": null,
+          "system__call_id": null,
+          "system__conversation_history": "{\"x-elevenlabs-history\": true, \"entries\": [{\"role\": \"user\", \"message\": \"\\u0928\\u092e\\u0938\\u094d\\u0924\\u0947, \\u0905, \\u092e\\u0948\\u0902\\u0928\\u0947 \\u0915\\u0932 air fryer \\u0932\\u093f\\u092f\\u093e \\u0925\\u093e\\u0964 \\u0905, coupon \\u092d\\u0940 \\u0932\\u0917\\u093e\\u092f\\u093e \\u0925\\u093e, \\u092a\\u0930 500 \\u0930\\u0941\\u092a\\u090f \\u0915\\u092e \\u0928\\u0939\\u0940\\u0902 \\u0939\\u0941\\u090f\\u0964 \\u0905\\u092c \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u090f \\u092e\\u0947\\u0902\\u0964 \\u091c\\u0940 \\u0939\\u093e\\u0901, \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u090f\\u0964 Offer \\u0938\\u0940\\u092e\\u093f\\u0924 \\u0938\\u092e\\u092f \\u0915\\u0947 \\u0932\\u093f\\u090f\\u0964 \\u0906\\u091c \\u0939\\u0940 order \\u0915\\u0930\\u0947\\u0902\\u0964 \\u0938\\u0941\\u092c\\u0939 \\u0915\\u0940 \\u0924\\u093e\\u091c\\u093c\\u0917\\u0940 \\u0939\\u0930 \\u0918\\u0942\\u0901\\u091f \\u092e\\u0947\\u0902, \\u091a\\u093e\\u092f \\u092e\\u0938\\u093e\\u0932\\u093e \\u0939\\u0930 \\u0918\\u0930 \\u0915\\u0940 \\u092a\\u0938\\u0902\\u0926\\u0964 Order number 88031195 \\u0914\\u0930 coupon code \\u0925\\u093e FEST500. \\u091c\\u0940 \\u0939\\u093e\\u0901, \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u090f\\u0964 Offer \\u0938\\u0940\\u092e\\u093f\\u0924 \\u0938\\u092e\\u092f \\u0915\\u0947 \\u0932\\u093f\\u090f\\u0964 \\u0906\\u091c \\u0939\\u0940 order \\u0915\\u0930\\u0947\\u0902\\u0964\"}, {\"role\": \"agent\", \"message\": \"\\u0928\\u092e\\u0938\\u094d\\u0924\\u0947 \\u091c\\u0940\\u0964 [empathetic] \\u092e\\u0948\\u0902 \\u0938\\u092e\\u091d \\u0938\\u0915\\u0924\\u0940 \\u0939\\u0942\\u0901 \\u0906\\u092a\\u0915\\u0940 \\u092a\\u0930\\u0947\\u0936...\"}, {\"role\": \"user\", \"message\": \"\\u0938\\u0941\\u092c\\u0939 \\u0915\\u0940 \\u0924\\u093e\\u091c\\u0917\\u0940 \\u0939\\u0930 \\u0918\\u0942\\u0902\\u091f \\u092e\\u0947\\u0902, \\u091a\\u093e\\u092f \\u092e\\u0938\\u093e\\u0932\\u093e \\u0939\\u0930 \\u0918\\u0930 \\u0915\\u0940 \\u092a\\u0938\\u0902\\u0926\\u0964 \\u0905\\u092a\\u0928\\u0947 \\u0928\\u091c\\u0926\\u0940\\u0915\\u0940 store \\u092a\\u0930 \\u0906\\u091c \\u0939\\u0940 \\u092e\\u093e\\u0902\\u0917\\u093f\\u090f\\u0964 \\u092f\\u0947 \\u0924\\u094b \\u0917\\u0932\\u0924 \\u092c\\u093e\\u0924 \\u0939\\u0948\\u0964 Sale \\u092e\\u0947\\u0902 \\u0924\\u094b \\u0932\\u093f\\u0916\\u093e \\u0925\\u093e \\u0939\\u0930 \\u091a\\u0940\\u091c\\u093c \\u092a\\u0930 \\u0932\\u0917\\u0947\\u0917\\u093e\\u0964 Dhamaka Festive Sale, \\u0928\\u092f\\u093e Kitchen Pro Air Fryer \\u092c\\u093f\\u0928\\u093e \\u0924\\u0947\\u0932 \\u0915\\u0947 \\u0915\\u0941\\u0930\\u0915\\u0941\\u0930\\u093e \\u0916\\u093e\\u0928\\u093e \\u0905\\u092c \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u092f\\u0947 \\u092e\\u0947\\u0902\\u0964 \\u091c\\u0940 \\u0939\\u093e\\u0901, \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u092f\\u0947\\u0964 Offer \\u0938\\u0940\\u092e\\u093f\\u0924 \\u0938\\u092e\\u092f \\u0915\\u0947 \\u0932\\u093f\\u090f, \\u0906\\u091c \\u0939\\u0940 order \\u0915\\u0930\\u0947\\u0902\\u0964\"}, {\"role\": \"agent\", \"message\": \"[empathetic] \\u092e\\u0948\\u0902 \\u0938\\u092e\\u091d \\u0938\\u0915\\u0924\\u0940 \\u0939\\u0942\\u0901 \\u0906\\u092a\\u0915\\u0940 \\u092c\\u093e\\u0924\\u0964 \\u0906\\u092a\\u0915\\u093e \\u0906\\u0930\\u094d\\u0921\\u0930 \\u0928\\u0902\\u092c\\u0930 [slow] \\u0906\\u0920 \\u0906\\u0920 \\u0936\\u0942\\u0928\\u094d\\u092f \\u0924\\u0940\\u0928 \\u090f\\u0915 \\u090f\\u0915 \\u0928\\u094c \\u092a\\u093e\\u0901\\u091a [/slow] \\u0921\\u0940\\u0932 \\u0911\\u092b \\u0926 \\u0921\\u0947 \\u092e\\u0947\\u0902 \\u0925\\u093e, \\u0907\\u0938\\u0932\\u093f\\u090f \\u0909\\u0938 \\u092a\\u0930 \\u0915\\u0942\\u092a\\u0928 \\u0928\\u0939\\u0940\\u0902 \\u0932\\u0917 \\u092a\\u093e\\u092f\\u093e\\u0964 \\u092f\\u0939 \\u0915\\u0942\\u092a\\u0928 \\u0905\\u092d\\u0940 \\u092d\\u0940 \\u0938\\u0941\\u0930\\u0915\\u094d\\u0937\\u093f\\u0924 \\u0939...\"}, {\"role\": \"user\", \"message\": \"MAGA Festive Sale. \\u0928\\u092f\\u093e Kitchen Pro Air Fryer. \\u092c\\u093f\\u0928\\u093e \\u0924\\u0947\\u0932 \\u0915\\u0947 \\u0915\\u0941\\u0930\\u0915\\u0941\\u0930\\u093e \\u0916\\u093e\\u0928\\u093e\\u0964 \\u0905\\u092c \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u092f\\u0947 \\u092e\\u0947\\u0902\\u0964 \\u0924\\u094b \\u0905\\u092c \\u092e\\u0947\\u0930\\u093e \\u0915\\u0942\\u092a\\u0928 \\u092c\\u0947\\u0915\\u093e\\u0930 \\u0917\\u092f\\u093e? \\u0926\\u094b\\u092c\\u093e\\u0930\\u093e \\u0907\\u0938\\u094d\\u0924\\u0947\\u092e\\u093e\\u0932 \\u0915\\u0930 \\u0938\\u0915\\u0924\\u0940 \\u0939\\u0942\\u0901? Offer \\u0938\\u0940\\u092e\\u093f\\u0924 \\u0938\\u092e\\u092f \\u0915\\u0947 \\u0932\\u093f\\u090f\\u0964 \\u0906\\u091c \\u0939\\u0940 \\u0911\\u0930\\u094d\\u0921\\u0930 \\u0915\\u0930\\u0947\\u0902\\u0964 \\u0938\\u0941\\u092c\\u0939 \\u0915\\u0940 \\u0924\\u093e\\u091c\\u0917\\u0940 \\u0939\\u0930 \\u0918\\u0942\\u0902\\u091f \\u092e\\u0947\\u0902\\u0964 \\u091a\\u093e\\u092f \\u092e\\u0938\\u093e\\u0932\\u093e \\u0939\\u0930 \\u0918\\u0930 \\u0915\\u0940 \\u092a\\u0938\\u0902\\u0926\\u0964 \\u0905\\u092a\\u0928\\u0947 \\u0928\\u091c\\u0926\\u0940\\u0915\\u0940 store \\u092a\\u0930 \\u0906\\u091c \\u0939\\u0940 \\u092e\\u093e\\u0902\\u0917\\u093f\\u090f\\u0964 \\u0920\\u0940\\u0915 \\u0939\\u0948, \\u0938\\u092e\\u091d \\u0917\\u0908\\u0964 \\u0927\\u0928\\u094d\\u092f\\u0935\\u093e\\u0926\\u0964 4,999 \\u0930\\u0941\\u092a\\u092f\\u0947 \\u092e\\u0947\\u0902\\u0964 \\u091c\\u0940 \\u0939\\u093e\\u0901, \\u0938\\u093f\\u0930\\u094d\\u092b 4,999 \\u0930\\u0941\\u092a\\u092f\\u0947 \\u092e\\u0947\\u0902\\u0964 Offer \\u0938\\u0940\\u092e\\u093f\\u0924 \\u0938\\u092e\\u092f \\u0915\\u0947 \\u0932\\u093f\\u090f\\u0964 \\u0906\\u091c \\u0939\\u0940 \\u0911\\u0930\\u094d\\u0921\\u0930 \\u0915\\u0930\\u0947\\u0902\\u0964 \\u0906\\u092a\\u0915\\u093e \\u0906\\u0930\\u094d\\u0921\\u0930 \\u0928\\u0902\\u092c\\u0930 \\u0906\\u0920 \\u0906\\u0920 \\u0936\\u0942\\u0928\\u094d\\u092f \\u0924\\u0940\\u0928 \\u090f\\u0915 \\u090f\\u0915 \\u0928\\u094c \\u092a\\u093e\\u0901\\u091a \\u0921\\u0940\\u0932 \\u0911\\u092b \\u0926 \\u0921\\u0947 \\u092e\\u0947\\u0902 \\u0925\\u093e, \\u0907\\u0938\\u0932\\u093f\\u090f \\u0909\\u0938 \\u092a\\u0930 \\u0915\\u0942\\u092a\\u0928 \\u0928\\u0939\\u0940\\u0902 \\u0932\\u0917 \\u092a\\u093e\\u092f\\u093e\\u0964 \\u092f\\u0939 \\u0915\\u0942\\u092a\\u0928 \\u0905\\u092d\\u0940 \\u092d\\u0940 \\u0938\\u0941\\u0930\\u0915\\u094d\\u0937\\u093f\\u0924 \\u0939\\u0948 \\u0914\\u0930 \\u0906\\u092a \\u0907\\u0938\\u0947 \\u092a\\u0902\\u0926\\u094d\\u0930\\u0939 \\u0905\\u0915\\u094d\\u091f\\u0942\\u092c\\u0930 \\u0924\\u0915 \\u0915\\u093f\\u0938\\u0940 \\u0905\\u0928\\u094d\\u092f \\u0906\\u0930\\u094d\\u0921\\u0930 \\u092a\\u0930 \\u0909\\u092a\\u092f\\u094b\\u0917 \\u0915\\u0930 \\u0938\\u0915\\u0924\\u0940 \\u0939\\u0948\\u0902\\u0964 \\u0920\\u0940\\u0915 \\u0939\\u0948, \\u0927\\u0928\\u094d\\u092f\"}]}",
+          "system__user_id": null,
+          "system__initiator_id": null
+        },
+        "tool_mock_config": {
+          "mocking_strategy": "none",
+          "fallback_strategy": "raise_error",
+          "mocked_tool_names": []
+        },
+        "tool_mock_overrides": {}
+      },
+      "environment": "production",
+      "experiment_assignments": null,
+      "hiding_reason": null,
+      "smb_metadata": null,
+      "conversation_id": "conv_7801m3q24fbaf8fvay1gn9ddg48h",
+      "has_audio": true,
+      "has_user_audio": true,
+      "has_response_audio": true,
+      "has_auxiliary_audio": false,
+      "transcript": [
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "नमस्ते, अ, मैंने कल air fryer लिया था। अ, coupon भी लगाया था, पर 500 रुपए कम नहीं हुए। अब सिर्फ 4,999 रुपए में। जी हाँ, सिर्फ 4,999 रुपए। Offer सीमित समय के लिए। आज ही order करें। सुबह की ताज़गी हर घूँट में, चाय मसाला हर घर की पसंद। Order number 88031195 और coupon code था FEST500. जी हाँ, सिर्फ 4,999 रुपए। Offer सीमित समय के लिए। आज ही order करें।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 2,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.08812798792496324
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 255,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.2,
+            "user_frustration_score": 0.1
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+            "branch_id": "agtbrch_6101m3pkcdrdeftbmfz7hxthd7y5",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_6601m3pkcdvpf8wak4pf9x58bsqx"
+          },
+          "message": "नमस्ते जी। [empathetic] मैं समझ सकती हूँ आपकी परेश...",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 42,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.111269720364362
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.1108323209919035
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.8572555212303996
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.19562802510336041
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.6396421022489667
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.224
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.08812798792496324
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1141,
+                  "price": 0.00085575
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 79,
+                  "price": 0.00029625
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1141,
+                    "price": 0.00085575
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 79,
+                    "price": 0.00029625
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": true,
+          "ignored_as_backchannel": false,
+          "original_message": "नमस्ते जी। [empathetic] मैं समझ सकती हूँ आपकी परेशानी। आपका आर्डर नंबर [slow] आठ आठ शून्य तीन, एक एक नौ पाँच [/slow] डील ऑफ़ द डे में था, इसलिए यह कूपन इस पर लागू नहीं हुआ। पर अच्छी बात यह है कि आपका कूपन पंद्रह अक्टूबर तक किसी भी अन्य योग्य",
+          "reasoning": [],
+          "source_medium": null,
+          "source_event_id": 255,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "सुबह की ताजगी हर घूंट में, चाय मसाला हर घर की पसंद। अपने नजदीकी store पर आज ही मांगिए। ये तो गलत बात है। Sale में तो लिखा था हर चीज़ पर लगेगा। Dhamaka Festive Sale, नया Kitchen Pro Air Fryer बिना तेल के कुरकुरा खाना अब सिर्फ 4,999 रुपये में। जी हाँ, सिर्फ 4,999 रुपये। Offer सीमित समय के लिए, आज ही order करें।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 44,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.09992825798690319
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 418,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.5,
+            "user_frustration_score": 0.4
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_8801m3pkccdbf3x97r78agg5jsat",
+            "branch_id": "agtbrch_6101m3pkcdrdeftbmfz7hxthd7y5",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_6601m3pkcdvpf8wak4pf9x58bsqx"
+          },
+          "message": "[empathetic] मैं समझ सकती हूँ आपकी बात। आपका आर्डर नंबर [slow] आठ आठ शून्य तीन एक एक नौ पाँच [/slow] डील ऑफ द डे में था, इसलिए उस पर कूपन नहीं लग पाया। यह कूपन अभी भी सुरक्षित ह...",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 67,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 0.9255808447487652
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 0.9250994450412691
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 1.439600391779095
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2506940043531358
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 1.6144043558090926
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.32
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.09992825798690319
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1250,
+                  "price": 0.0009375
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 72,
+                  "price": 0.00027
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1250,
+                    "price": 0.0009375
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 72,
+                    "price": 0.00027
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": true,
+          "ignored_as_backchannel": false,
+          "original_message": "[empathetic] मैं समझ सकती हूँ आपकी बात। आपका आर्डर नंबर [slow] आठ आठ शून्य तीन एक एक नौ पाँच [/slow] डील ऑफ द डे में था, इसलिए उस पर कूपन नहीं लग पाया। यह कूपन अभी भी सुरक्षित है और आप इसे पंद्रह अक्टूबर तक किसी अन्य आर्डर पर उपयोग कर सकती हैं।",
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 418,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "MAGA Festive Sale. नया Kitchen Pro Air Fryer. बिना तेल के कुरकुरा खाना। अब सिर्फ 4,999 रुपये में। तो अब मेरा कूपन बेकार गया? दोबारा इस्तेमाल कर सकती हूँ? Offer सीमित समय के लिए। आज ही ऑर्डर करें। सुबह की ताजगी हर घूंट में। चाय मसाला हर घर की पसंद। अपने नजदीकी store पर आज ही मांगिए। ठीक है, समझ गई। धन्यवाद। 4,999 रुपये में। जी हाँ, सिर्फ 4,999 रुपये में। Offer सीमित समय के लिए। आज ही ऑर्डर करें। आपका आर्डर नंबर आठ आठ शून्य तीन एक एक नौ पाँच डील ऑफ द डे में था, इसलिए उस पर कूपन नहीं लग पाया। यह कूपन अभी भी सुरक्षित है और आप इसे पंद्रह अक्टूबर तक किसी अन्य आर्डर पर उपयोग कर सकती हैं। ठीक है, धन्यवाद। आपका आर्डर नंबर आठ आठ शून्य तीन एक एक नौ प",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 75,
+          "conversation_turn_metrics": null,
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": null,
+          "source_event_id": 736,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.1,
+            "user_frustration_score": 0.2
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        }
+      ],
+      "tag_ids": [],
+      "realtime_config_snapshots": null,
+      "otlp_traces": null
+    }
+  }
+}

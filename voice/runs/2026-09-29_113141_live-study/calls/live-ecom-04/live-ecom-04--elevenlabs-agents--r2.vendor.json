@@ -1,0 +1,863 @@
+{
+  "open": {
+    "system": "elevenlabs-agents",
+    "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+    "conversation_id": "conv_2501m3q7j1mrevt9mgghvxpa5gg1",
+    "input_format": "pcm_16000",
+    "output_format": "pcm_24000",
+    "sdk": "websockets 16.1.1"
+  },
+  "close": {
+    "conversation_id": "conv_2501m3q7j1mrevt9mgghvxpa5gg1",
+    "dropped_stale_chunks": 0,
+    "conversation": {
+      "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+      "agent_name": "kartly-live-ecom-04",
+      "conversation_product": "agent",
+      "status": "failed",
+      "user_id": null,
+      "branch_id": "agtbrch_5601m3pkbxhff9wb3ab0sy9r6ycx",
+      "version_id": "agtvrsn_9301m3pkbxmgf5abzsfdcphfq968",
+      "metadata": {
+        "start_time_unix_secs": 1790707304,
+        "accepted_time_unix_secs": 1790707304,
+        "call_duration_secs": 152,
+        "queue_wait_secs": null,
+        "cost": 986,
+        "deletion_settings": {
+          "deletion_time_unix_secs": null,
+          "deleted_logs_at_time_unix_secs": null,
+          "deleted_audio_at_time_unix_secs": null,
+          "deleted_transcript_at_time_unix_secs": null,
+          "delete_transcript_and_pii": false,
+          "delete_audio": false
+        },
+        "feedback": {
+          "type": null,
+          "overall_score": null,
+          "likes": 0,
+          "dislikes": 0,
+          "rating": null,
+          "comment": null
+        },
+        "authorization_method": "signed_url",
+        "charging": {
+          "dev_discount": false,
+          "is_burst": false,
+          "tier": "creator",
+          "llm_usage": {
+            "irreversible_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 3407,
+                    "price": 0.0025552500000000002
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 252,
+                    "price": 0.000945
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 3407,
+                      "price": 0.0025552500000000002
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 252,
+                      "price": 0.000945
+                    }
+                  }
+                }
+              ]
+            },
+            "initiated_generation": {
+              "model_usage": {
+                "gemini-3.8-flash": {
+                  "input": {
+                    "tokens": 5107,
+                    "price": 0.00383025
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 276,
+                    "price": 0.001035
+                  }
+                }
+              },
+              "detailed_model_usage": [
+                {
+                  "config": {
+                    "model": "gemini-3.8-flash",
+                    "service_tier": "standard"
+                  },
+                  "usage": {
+                    "input": {
+                      "tokens": 5107,
+                      "price": 0.00383025
+                    },
+                    "input_cache_read": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "input_cache_write": {
+                      "tokens": 0,
+                      "price": 0.0
+                    },
+                    "output_total": {
+                      "tokens": 276,
+                      "price": 0.001035
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "llm_price": 0.00486525,
+          "llm_charge": 27,
+          "call_charge": 959,
+          "platform_charge": 959,
+          "platform_usage": {
+            "category_usage": {
+              "voice": {
+                "credits": 959,
+                "price": 0.17364941724649433,
+                "quantity": 2.177435897399361
+              }
+            }
+          },
+          "platform_price": 0.17364941724649433,
+          "free_minutes_consumed": 0.0,
+          "free_llm_dollars_consumed": 0.0,
+          "tts_usage": {
+            "primary_tts_model": "eleven_v3_conversational",
+            "total_audio_output_seconds": 63.919999999999995,
+            "total_characters": 903,
+            "per_voice_usage": [
+              {
+                "voice_id": "OtEfb2LVzIE45wdYe54M",
+                "audio_output_seconds": 63.919999999999995
+              }
+            ]
+          },
+          "asr_usage": {
+            "asr_model": "scribe_realtime",
+            "total_transcription_calls": 132,
+            "total_audio_input_seconds": 24.280000000000015
+          },
+          "analysis": null
+        },
+        "phone_call": null,
+        "batch_call": null,
+        "termination_reason": "No user message received for a long period of time - probably a network error occurred.",
+        "error": {
+          "code": 1002,
+          "reason": "No user message received for 60 seconds - the websocket connection was closed, or a network error occurred.",
+          "error_type": "client_disconnected"
+        },
+        "warnings": [
+          "Audio duration mismatch: this may indicate non-continuous audio input and can cause audio overlap or desync in playback. Make sure to send audio continuously."
+        ],
+        "main_language": "hi",
+        "rag_usage": null,
+        "text_only": false,
+        "features_usage": {
+          "language_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_agent": {
+            "enabled": false,
+            "used": false
+          },
+          "transfer_to_number": {
+            "enabled": false,
+            "used": false
+          },
+          "multivoice": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_tones": {
+            "enabled": false,
+            "used": false
+          },
+          "external_mcp_servers": {
+            "enabled": false,
+            "used": false
+          },
+          "pii_zrm_workspace": false,
+          "pii_zrm_agent": false,
+          "tool_dynamic_variable_updates": {
+            "enabled": false,
+            "used": false
+          },
+          "is_livekit": false,
+          "voicemail_detection": {
+            "enabled": false,
+            "used": false
+          },
+          "dtmf_input": {
+            "enabled": false,
+            "used": false
+          },
+          "workflow": {
+            "enabled": false,
+            "tool_node": {
+              "enabled": false,
+              "used": false
+            },
+            "standalone_agent_node": {
+              "enabled": false,
+              "used": false
+            },
+            "phone_number_node": {
+              "enabled": false,
+              "used": false
+            },
+            "end_node": {
+              "enabled": false,
+              "used": false
+            }
+          },
+          "agent_testing": {
+            "enabled": false,
+            "tests_ran_after_last_modification": false,
+            "tests_ran_in_last_7_days": false
+          },
+          "versioning": {
+            "enabled": true,
+            "used": false
+          },
+          "file_input": {
+            "enabled": true,
+            "used": false
+          },
+          "freeform_procedure": {
+            "enabled": false,
+            "used": false
+          },
+          "structured_procedure": {
+            "enabled": false,
+            "used": false
+          }
+        },
+        "eleven_assistant": {
+          "is_eleven_assistant": false
+        },
+        "initiator_id": null,
+        "conversation_initiation_source": "unknown",
+        "conversation_initiation_source_version": null,
+        "timezone": null,
+        "async_metadata": null,
+        "whatsapp": null,
+        "sms": null,
+        "agent_created_from": "api",
+        "agent_last_updated_from": "api",
+        "voice_rewards": [
+          {
+            "voice_id": "OtEfb2LVzIE45wdYe54M",
+            "reward_usd_cents": 0.6085933301435407
+          }
+        ],
+        "cost_fiat": 0.1785146672464943
+      },
+      "analysis": {
+        "evaluation_criteria_results": {},
+        "data_collection_results": {},
+        "evaluation_criteria_results_list": [],
+        "data_collection_results_list": [],
+        "call_successful": "failure",
+        "call_success_score": 0.0,
+        "transcript_summary": "The user reported two failed delivery attempts despite being home. The agent identified the order (33910476, a mixer grinder) and offered two delivery slots for the next day, October 6th: 10 AM-2 PM or 2 PM-6 PM. The user confirmed the order number and chose the afternoon slot (2 PM-6 PM). The agent confirmed the slot, noting it would be the final delivery attempt before a refund of ₹3249, and offered to add a landmark or alternative phone number.",
+        "call_summary_title": "Parcel Delivery Reschedule",
+        "scoped": [],
+        "sentiment_analysis": {
+          "overall_label": "negative",
+          "overall_sentiment_score": -0.4,
+          "overall_frustration_score": 0.4,
+          "min_user_sentiment_score": -0.5,
+          "max_user_frustration_score": 0.4,
+          "num_scored_user_turns": 2
+        }
+      },
+      "visited_agents": [
+        {
+          "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+          "branch_id": "agtbrch_5601m3pkbxhff9wb3ab0sy9r6ycx"
+        }
+      ],
+      "conversation_initiation_client_data": {
+        "conversation_config_override": {
+          "asr": null,
+          "turn": null,
+          "tts": null,
+          "conversation": null,
+          "agent": null
+        },
+        "custom_llm_extra_body": {},
+        "user_id": null,
+        "source_info": {
+          "source": null,
+          "version": null
+        },
+        "branch_id": null,
+        "environment": null,
+        "starting_workflow_node_id": null,
+        "experiments": [],
+        "procedure_ids": null,
+        "dynamic_variables": {
+          "system__agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+          "system__agent_turns": 3,
+          "system__current_agent_turns": 3,
+          "system__current_subagent_turns": 3,
+          "system__current_agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+          "system__conversation_id": "conv_2501m3q7j1mrevt9mgghvxpa5gg1",
+          "system__call_duration_secs": 152,
+          "system__time_utc": "2026-09-29T18:44:16.845526+00:00",
+          "system__timezone": null,
+          "system__time": "Tuesday, 18:44 29 September 2026",
+          "system__time_hour": 18,
+          "system__time_minute": 44,
+          "system__time_second": 16,
+          "system__is_text_only": false,
+          "system__channel": "unknown",
+          "system__caller_id": null,
+          "system__called_number": null,
+          "system__call_sid": null,
+          "system__call_id": null,
+          "system__conversation_history": "{\"x-elevenlabs-history\": true, \"entries\": [{\"role\": \"user\", \"message\": \"\\u0928\\u092e\\u0938\\u094d\\u0924\\u0947, \\u092e\\u0947\\u0930\\u093e parcel \\u0926\\u094b \\u092c\\u093e\\u0930 \\u0935\\u093e\\u092a\\u0938 \\u091a\\u0932\\u093e \\u0917\\u092f\\u093e\\u0964 \\u092e\\u0948\\u0902 \\u0924\\u094b \\u0918\\u0930 \\u092a\\u0930 \\u0939\\u0940 \\u0925\\u0940\\u0964 \\u0915\\u093f\\u0938\\u0940 \\u0928\\u0947 \\u0918\\u0902\\u091f\\u0940 \\u092d\\u0940 \\u0928\\u0939\\u0940\\u0902 \\u092c\\u091c\\u093e\\u0908\\u0964\"}, {\"role\": \"agent\", \"message\": \"[sad] \\u0928\\u092e\\u0938\\u094d\\u0924\\u0947, \\u0939\\u0941\\u0908 \\u0905\\u0938\\u0941\\u0935\\u093f\\u0927\\u093e \\u0915\\u0947 \\u0932\\u093f\\u090f \\u092e\\u0941\\u091d\\u0947 \\u092c\\u0939\\u0941\\u0924 \\u0916\\u0947\\u0926 \\u0939\\u0948\\u0964 [normal] \\u092e\\u0948\\u0902 \\u0906\\u092a\\u0915\\u0947 \\u0911\\u0930\\u094d\\u0921\\u0930 [slow] \\u0924\\u0940\\u0928 \\u0924\\u0940\\u0928 \\u0928\\u094c \\u090f\\u0915, \\u0936\\u0942\\u0928\\u094d\\u092f \\u091a\\u093e\\u0930 \\u0938\\u093e\\u0924 \\u091b\\u0939 [slow] \\u0915\\u094b \\u0926\\u0947\\u0916 \\u092a\\u093e \\u0930\\u0939\\u0940 \\u0939\\u0942\\u0901, \\u091c\\u093f\\u0938\\u092e\\u0947\\u0902 \\u092e\\u093f\\u0915\\u094d\\u0938\\u0930 \\u0917\\u094d\\u0930\\u093e\\u0907\\u0902\\u0921\\u0930 \\u0939\\u0948\\u0964 \\u0939\\u092e\\u093e\\u0930\\u0947 \\u092a\\u093e\\u0938 \\u0915\\u0932, \\u092f\\u093e\\u0928\\u0940 \\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u091b\\u0939 \\u0905\\u0915\\u094d\\u091f\\u0942\\u092c\\u0930 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u0926\\u094b \\u0938\\u094d\\u0932\\u0949\\u091f \\u0939\\u0948\\u0902, \\u0938\\u0941\\u092c\\u0939 \\u0926\\u0938 \\u0938\\u0947 \\u0926\\u094b\\u092a\\u0939\\u0930 \\u0926\\u094b \\u092c\\u091c\\u0947 \\u092f\\u093e \\u0926\\u094b\\u092a\\u0939\\u0930 \\u0926\\u094b \\u0938\\u0947 \\u0936\\u093e\\u092e \\u091b\\u0939 \\u092c\\u091c\\u0947\\u0964 \\u0906\\u092a \\u0921\\u093f\\u0932\\u0940\\u0935\\u0930\\u0940 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u0915\\u094c\\u0928 \\u0938\\u093e \\u0938\\u092e\\u092f \\u091a\\u0941\\u0928\\u0928\\u093e \\u091a\\u093e\\u0939\\u0947\\u0902\\u0917\\u0940?\"}, {\"role\": \"user\", \"message\": \"Order number \\u0939\\u0948, \\u0924\\u0940\\u0928 \\u0924\\u0940\\u0928 \\u0928\\u094c \\u090f\\u0915 \\u0936\\u0942\\u0928\\u094d\\u092f \\u091a\\u093e\\u0930 \\u0938\\u093e\\u0924 \\u091b\\u0939\\u0964\"}, {\"role\": \"agent\", \"message\": \"\\u091c\\u0940, \\u092e\\u0948\\u0902\\u0928\\u0947 \\u0906\\u092a\\u0915\\u093e \\u0911\\u0930\\u094d\\u0921\\u0930 [slow] \\u0924\\u0940\\u0928 \\u0924\\u0940\\u0928 \\u0928\\u094c \\u090f\\u0915, \\u0936\\u0942\\u0928\\u094d\\u092f \\u091a\\u093e\\u0930 \\u0938\\u093e\\u0924 \\u091b\\u0939 [slow] \\u0916\\u094b\\u0932 \\u0932\\u093f\\u092f\\u093e \\u0939\\u0948\\u0964 \\u0915\\u0932 \\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u091b\\u0939 \\u0905\\u0915\\u094d\\u091f\\u0942\\u092c\\u0930 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u0939\\u092e\\u093e\\u0930\\u0947 \\u092a\\u093e\\u0938 \\u0938\\u0941\\u092c\\u0939 \\u0926\\u0938 \\u0938\\u0947 \\u0926\\u094b\\u092a\\u0939\\u0930 \\u0926\\u094b \\u092c\\u091c\\u0947, \\u092f\\u093e \\u0926\\u094b\\u092a\\u0939\\u0930 \\u0926\\u094b \\u0938\\u0947 \\u0936\\u093e\\u092e \\u091b\\u0939 \\u092c\\u091c\\u0947 \\u0915\\u093e \\u0938\\u092e\\u092f \\u0909\\u092a\\u0932\\u092c\\u094d\\u0927 \\u0939\\u0948\\u0964 \\u0915\\u094d\\u092f\\u093e \\u092e\\u0948\\u0902 \\u0906\\u092a\\u0915\\u0947 \\u0932\\u093f\\u090f \\u0915\\u094b\\u0908 \\u0938\\u092e\\u092f \\u091a\\u0941\\u0928 \\u0926\\u0942\\u0901, \\u0914\\u0930 \\u0938\\u093e\\u0925 \\u0939\\u0940 \\u0915\\u094b\\u0908 \\u0932\\u0948\\u0902\\u0921\\u092e\\u093e\\u0930\\u094d\\u0915 \\u092f\\u093e \\u0926\\u0942\\u0938\\u0930\\u093e \\u092b\\u094b\\u0928 \\u0928\\u0902\\u092c\\u0930 \\u091c\\u094b\\u0921\\u093c \\u0926\\u0942\\u0901?\"}, {\"role\": \"user\", \"message\": \"\\u0905\\u092c\\u0915\\u0940 \\u092c\\u093e\\u0930 \\u092a\\u0915\\u094d\\u0915\\u093e \\u0906\\u090f\\u0917\\u093e \\u0928\\u093e? \\u0926\\u094b\\u092a\\u0939\\u0930 \\u0915\\u0947 \\u092c\\u093e\\u0926 \\u092d\\u0947\\u091c \\u0926\\u0940\\u091c\\u093f\\u090f\\u0964\"}, {\"role\": \"agent\", \"message\": \"\\u091c\\u0940 \\u092c\\u093f\\u0932\\u094d\\u0915\\u0941\\u0932, \\u092e\\u0948\\u0902\\u0928\\u0947 \\u0915\\u0932 \\u092e\\u0902\\u0917\\u0932\\u0935\\u093e\\u0930 \\u091b\\u0939 \\u0905\\u0915\\u094d\\u091f\\u0942\\u092c\\u0930 \\u0915\\u094b \\u0926\\u094b\\u092a\\u0939\\u0930 \\u0926\\u094b \\u0938\\u0947 \\u0936\\u093e\\u092e \\u091b\\u0939 \\u092c\\u091c\\u0947 \\u0915\\u093e \\u0938\\u094d\\u0932\\u0949\\u091f \\u0924\\u092f \\u0915\\u0930 \\u0926\\u093f\\u092f\\u093e \\u0939\\u0948\\u0964 \\u092f\\u0939 \\u0906\\u0916\\u093f\\u0930\\u0940 \\u092a\\u094d\\u0930\\u092f\\u093e\\u0938 \\u0939\\u094b\\u0917\\u093e, \\u0914\\u0930 \\u0905\\u0917\\u0930 \\u092f\\u0939 \\u0938\\u092b\\u0932 \\u0928\\u0939\\u0940\\u0902 \\u0939\\u0941\\u0906 \\u0924\\u094b \\u092a\\u093e\\u0930\\u094d\\u0938\\u0932 \\u0938\\u0947\\u0932\\u0930 \\u0915\\u0947 \\u092a\\u093e\\u0938 \\u0935\\u093e\\u092a\\u0938 \\u091a\\u0932\\u093e \\u091c\\u093e\\u090f\\u0917\\u093e \\u0914\\u0930 \\u0906\\u092a\\u0915\\u0947 \\u0924\\u0940\\u0928 \\u0939\\u091c\\u093c\\u093e\\u0930 \\u0926\\u094b \\u0938\\u094c \\u0909\\u0928\\u091a\\u093e\\u0938 \\u0930\\u0941\\u092a\\u092f\\u0947 \\u0930\\u093f\\u092b\\u0902\\u0921 \\u0939\\u094b \\u091c\\u093e\\u090f\\u0901\\u0917\\u0947\\u0964 \\u0921\\u093f\\u0932\\u0940\\u0935\\u0930\\u0940 \\u0915\\u094b \\u0906\\u0938\\u093e\\u0928 \\u092c\\u0928\\u093e\\u0928\\u0947 \\u0915\\u0947 \\u0932\\u093f\\u090f \\u0915\\u094d\\u092f\\u093e \\u0906\\u092a \\u0915\\u094b\\u0908 \\u0932\\u0948\\u0902\\u0921\\u092e\\u093e\\u0930\\u094d\\u0915 \\u092f\\u093e \\u0926\\u0942\\u0938\\u0930\\u093e \\u092b\\u094b\\u0928 \\u0928\\u0902\\u092c\\u0930 \\u091c\\u094b\\u0921\\u093c\\u0928\\u093e \\u091a\\u093e\\u0939\\u0947\\u0902\\u0917\\u0940?\"}]}",
+          "system__user_id": null,
+          "system__initiator_id": null
+        },
+        "tool_mock_config": {
+          "mocking_strategy": "none",
+          "fallback_strategy": "raise_error",
+          "mocked_tool_names": []
+        },
+        "tool_mock_overrides": {}
+      },
+      "environment": "production",
+      "experiment_assignments": null,
+      "hiding_reason": null,
+      "smb_metadata": null,
+      "conversation_id": "conv_2501m3q7j1mrevt9mgghvxpa5gg1",
+      "has_audio": true,
+      "has_user_audio": true,
+      "has_response_audio": true,
+      "has_auxiliary_audio": false,
+      "transcript": [
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "नमस्ते, मेरा parcel दो बार वापस चला गया। मैं तो घर पर ही थी। किसी ने घंटी भी नहीं बजाई।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 1,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.031017412897199392
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 45,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.5,
+            "user_frustration_score": 0.4
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+            "branch_id": "agtbrch_5601m3pkbxhff9wb3ab0sy9r6ycx",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_9301m3pkbxmgf5abzsfdcphfq968"
+          },
+          "message": "[sad] नमस्ते, हुई असुविधा के लिए मुझे बहुत खेद है। [normal] मैं आपके ऑर्डर [slow] तीन तीन नौ एक, शून्य चार सात छह [slow] को देख पा रही हूँ, जिसमें मिक्सर ग्राइंडर है। हमारे पास कल, यानी मंगलवार छह अक्टूबर के लिए दो स्लॉट हैं, सुबह दस से दोपहर दो बजे या दोपहर दो से शाम छह बजे। आप डिलीवरी के लिए कौन सा समय चुनना चाहेंगी?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 9,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.7554186289198697
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.7549467091448605
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.2928164028562605
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2461093687452376
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 2.397985424891114
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.352
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.031017412897199392
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1035,
+                  "price": 0.00077625
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 93,
+                  "price": 0.00034875
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1035,
+                    "price": 0.00077625
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 93,
+                    "price": 0.00034875
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 45,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "Order number है, तीन तीन नौ एक शून्य चार सात छह।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 33,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.05239323014393449
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 248,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+            "branch_id": "agtbrch_5601m3pkbxhff9wb3ab0sy9r6ycx",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_9301m3pkbxmgf5abzsfdcphfq968"
+          },
+          "message": "जी, मैंने आपका ऑर्डर [slow] तीन तीन नौ एक, शून्य चार सात छह [slow] खोल लिया है। कल मंगलवार छह अक्टूबर के लिए हमारे पास सुबह दस से दोपहर दो बजे, या दोपहर दो से शाम छह बजे का समय उपलब्ध है। क्या मैं आपके लिए कोई समय चुन दूँ, और साथ ही कोई लैंडमार्क या दूसरा फोन नंबर जोड़ दूँ?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 41,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.7198017248883843
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.5264757978729904
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.3283130270428956
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.18836355488747358
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 2.230471705965698
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.256
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.05239323014393449
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1141,
+                  "price": 0.00085575
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 76,
+                  "price": 0.000285
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1141,
+                    "price": 0.00085575
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 76,
+                    "price": 0.000285
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 248,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        },
+        {
+          "role": "user",
+          "agent_metadata": null,
+          "message": "अबकी बार पक्का आएगा ना? दोपहर के बाद भेज दीजिए।",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": null,
+          "time_in_call_secs": 61,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_asr_trailing_service_latency": {
+                "elapsed_time": 0.06593440566211939
+              }
+            },
+            "convai_asr_provider": "Scribe v2 Realtime",
+            "convai_tts_model": null,
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": null,
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [],
+          "source_medium": "audio",
+          "source_event_id": 413,
+          "used_static_kb_document_ids": [],
+          "analysis": {
+            "user_sentiment_score": -0.3,
+            "user_frustration_score": 0.3
+          },
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": false
+        },
+        {
+          "role": "agent",
+          "agent_metadata": {
+            "agent_id": "agent_0901m3pkbw6eewvrkvz3wm7ma813",
+            "branch_id": "agtbrch_5601m3pkbxhff9wb3ab0sy9r6ycx",
+            "workflow_node_id": null,
+            "version_id": "agtvrsn_9301m3pkbxmgf5abzsfdcphfq968"
+          },
+          "message": "जी बिल्कुल, मैंने कल मंगलवार छह अक्टूबर को दोपहर दो से शाम छह बजे का स्लॉट तय कर दिया है। यह आखिरी प्रयास होगा, और अगर यह सफल नहीं हुआ तो पार्सल सेलर के पास वापस चला जाएगा और आपके तीन हज़ार दो सौ उनचास रुपये रिफंड हो जाएँगे। डिलीवरी को आसान बनाने के लिए क्या आप कोई लैंडमार्क या दूसरा फोन नंबर जोड़ना चाहेंगी?",
+          "multivoice_message": null,
+          "tool_calls": [],
+          "tool_results": [],
+          "feedback": null,
+          "llm_override": null,
+          "producing_llm": "gemini-3.8-flash",
+          "time_in_call_secs": 67,
+          "conversation_turn_metrics": {
+            "metrics": {
+              "convai_llm_service_ttf_sentence": {
+                "elapsed_time": 1.6301043089479208
+              },
+              "convai_llm_service_ttfb": {
+                "elapsed_time": 1.4136341731064022
+              },
+              "convai_llm_service_tt_last_sentence": {
+                "elapsed_time": 2.2748666959814727
+              },
+              "convai_tts_service_ttfb": {
+                "elapsed_time": 0.2258645398542285
+              },
+              "convai_ttf_audio_since_silence": {
+                "elapsed_time": 2.161134372070432
+              },
+              "convai_turn_silence_before_initiation": {
+                "elapsed_time": 0.224
+              },
+              "convai_turn_asr_latency": {
+                "elapsed_time": 0.06593440566211939
+              }
+            },
+            "convai_asr_provider": null,
+            "convai_tts_model": "eleven_v3_conversational",
+            "convai_tts_cascade": null
+          },
+          "rag_retrieval_info": null,
+          "llm_usage": {
+            "model_usage": {
+              "gemini-3.8-flash": {
+                "input": {
+                  "tokens": 1231,
+                  "price": 0.00092325
+                },
+                "input_cache_read": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "input_cache_write": {
+                  "tokens": 0,
+                  "price": 0.0
+                },
+                "output_total": {
+                  "tokens": 83,
+                  "price": 0.00031125
+                }
+              }
+            },
+            "detailed_model_usage": [
+              {
+                "config": {
+                  "model": "gemini-3.8-flash",
+                  "service_tier": "standard"
+                },
+                "usage": {
+                  "input": {
+                    "tokens": 1231,
+                    "price": 0.00092325
+                  },
+                  "input_cache_read": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "input_cache_write": {
+                    "tokens": 0,
+                    "price": 0.0
+                  },
+                  "output_total": {
+                    "tokens": 83,
+                    "price": 0.00031125
+                  }
+                }
+              }
+            ]
+          },
+          "interrupted": false,
+          "ignored_as_backchannel": false,
+          "original_message": null,
+          "reasoning": [
+            {
+              "summary": null,
+              "provider_redact": false
+            }
+          ],
+          "source_medium": null,
+          "source_event_id": 413,
+          "used_static_kb_document_ids": [],
+          "analysis": null,
+          "user_identifier": null,
+          "id": null,
+          "compaction": null,
+          "triggered_guardrails": [],
+          "file_input": null,
+          "file_inputs": [],
+          "contextual_update_info": null,
+          "config_snapshot_id": null,
+          "reasoned": true
+        }
+      ],
+      "tag_ids": [],
+      "realtime_config_snapshots": null,
+      "otlp_traces": null
+    }
+  }
+}
