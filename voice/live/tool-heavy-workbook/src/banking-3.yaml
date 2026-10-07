@@ -1,0 +1,618 @@
+# Banking & insurance — tool-heavy scenarios bank-117 … bank-124 (BANK-2 Payments, BANK-3 Loans, deposits & accounts).
+code: bank
+scenarios:
+
+- id: bank-117
+  g: BANK-2
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Retired teacher sets up his pension account — payees, standing instructions, premium autopays, nominee"
+  basis: "Retirees want pension money to go out automatically each month and their policies paid from the same account."
+  caller: "M 60+ · retired teacher in Lucknow, slow and formal, pauses to find papers"
+  goal: "Pay society dues, his grandson's coaching and his daughter automatically, put both health premiums on autopay, clear dead autopays, add his wife as nominee and book his life-certificate visit."
+  role: "You handle payments. Speak slowly and confirm each amount and date."
+  context: "Pension is credited on the 1st. Life certificates for pensioners are due in November."
+  tasks:
+    - task: "Verify and read the account"
+      calls:
+        - "verify_caller(name=Shyam Sundar Tripathi, dob=2 Feb 1958) → verified"
+        - "get_account(account_last4=4420) → pension savings, balance ₹2,10,500, no nominee"
+        - "get_beneficiaries(account_last4=4420) → Sneha Tripathi (daughter, 2021)"
+    - task: "Two new payees"
+      calls:
+        - "add_beneficiary(account_last4=4420, name=Gomti Apartments RWA, account_no=0711 2045 8890, ifsc=SBIN0000711) → added"
+        - "add_beneficiary(account_last4=4420, name=Vidyapeeth Coaching, account_no=5520 1009 3341, ifsc=PUNB0552000) → added"
+    - task: "Three standing instructions"
+      calls:
+        - "set_standing_instruction(from_account_last4=4420, to=Gomti Apartments RWA, amount=₹3,500, day=5) → SI 22310, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=4420, to=Vidyapeeth Coaching, amount=₹15,000, day=10) → SI 22311, first on 10 Oct"
+        - "set_standing_instruction(from_account_last4=4420, to=Sneha Tripathi, amount=₹10,000, day=2) → SI 22312, first on 2 Nov"
+    - task: "Both health premiums on autopay"
+      calls:
+        - "get_policy(policy_no=KV-H-301144) → Kavach senior health for Shyam Sundar Tripathi, premium ₹28,400, renews 15 Nov, no autopay"
+        - "get_policy(policy_no=KV-H-301152) → Kavach senior health for Kusum Tripathi, premium ₹34,900, renews 2 Dec, no autopay"
+        - "set_premium_autopay(policy_no=KV-H-301144, account_last4=4420) → autopay set from the 15 Nov renewal"
+        - "set_premium_autopay(policy_no=KV-H-301152, account_last4=4420) → autopay set from the 2 Dec renewal"
+    - task: "Dead autopays"
+      calls:
+        - "get_mandates(account_last4=4420) → MD 2201 BSNL landline, failing since June (line disconnected); MD 2202 LESA electricity; MD 2203 Tata Play, failing since July (connection closed)"
+        - "cancel_mandate(mandate_id=MD 2201) → cancelled"
+        - "cancel_mandate(mandate_id=MD 2203) → cancelled"
+    - task: "Nominee and tax certificate"
+      calls:
+        - "update_nominee(account_last4=4420, nominee=Kusum Tripathi, relation=wife, share=100%) → nominee updated"
+        - "request_statement(account_last4=4420, kind=interest certificate for income tax) → emailed"
+    - task: "Life-certificate visit, summary"
+      calls:
+        - "find_branch(area=Aliganj, Lucknow) → Kosh Bank Aliganj, KB-0377, 10:00 am-4:00 pm"
+        - "book_branch_visit(branch_id=KB-0377, date=Mon 2 Nov, slot=11:00 am, purpose=pensioner life certificate) → appointment BV 22340"
+        - "send_sms(template=pension_setup_summary) → sent"
+  forbid: ["cancel_mandate(mandate_id=MD 2202)"]
+  lines:
+    - [open, "नमस्कार। मैं श्याम सुंदर त्रिपाठी, लखनऊ से। सेवानिवृत्त अध्यापक हूँ। अपने पेंशन खाते में कुछ इंतज़ाम करवाने हैं।", "Good day. I am Shyam Sundar Tripathi, from Lucknow. I am a retired teacher. I need a few arrangements made on my pension account."]
+    - [after, "जन्मतिथि दो फ़रवरी उन्नीस सौ अट्ठावन। खाता चार चार दो शून्य।", "Date of birth second February 1958. The account is 4420."]
+    - [after, "हर महीने तीन भुगतान अपने आप होने चाहिए। पहला, सोसाइटी का रखरखाव — साढ़े तीन हज़ार, पाँच तारीख़ को।", "Three payments should go every month by themselves. First, the society maintenance — three and a half thousand, on the fifth."]
+    - [pause 2000, "सोसाइटी का खाता शून्य सात एक एक, दो शून्य चार पाँच, आठ आठ नौ शून्य। IFSC एस बी आई एन शून्य शून्य शून्य शून्य सात एक एक।", "The society's account is 0711 2045 8890. IFSC SBIN0000711."]
+    - [after, "दूसरा, पोते की कोचिंग — पंद्रह हज़ार, दस तारीख़ को। खाता पाँच पाँच दो शून्य, एक शून्य शून्य नौ, तीन तीन चार एक। IFSC पी यू एन बी शून्य पाँच पाँच दो शून्य शून्य शून्य।", "Second, my grandson's coaching — fifteen thousand, on the tenth. Account 5520 1009 3341. IFSC PUNB0552000."]
+    - [after, "तीसरा, बेटी स्नेहा को दस हज़ार, दो तारीख़ को। वो पहले से जुड़ी हुई है।", "Third, ten thousand to my daughter Sneha, on the second. She is already added."]
+    - [after, "हम दोनों की कवच की स्वास्थ्य पॉलिसी है। उनकी किश्त भी इसी खाते से अपने आप जानी चाहिए।", "We both have Kavach health policies. Their premiums should also go from this account automatically."]
+    - [after wait=8000, "क्षमा कीजिए, कागज़ ढूँढ रहा था। हाँ, दोनों के नंबर आपके पास हैं न?", "Forgive me, I was looking for the papers. Yes, you have both the numbers, don't you?"]
+    - [after, "कुछ पुराने कटौती वाले भी हैं — बीएसएनएल का फ़ोन कट चुका है, टाटा प्ले भी बंद है। उन्हें हटा दीजिए। बिजली वाला रहने दीजिए।", "There are some old deductions too — the BSNL phone has been disconnected, Tata Play is closed too. Remove those. Leave the electricity one."]
+    - [after, "खाते में नॉमिनी नहीं है। मेरी पत्नी कुसुम त्रिपाठी को रख दीजिए, पूरा।", "There is no nominee on the account. Put my wife Kusum Tripathi, the whole share."]
+    - [after, "आयकर के लिए ब्याज का प्रमाणपत्र ईमेल पर भेज दीजिए।", "Email the interest certificate for income tax."]
+    - [after, "नवंबर में जीवन प्रमाणपत्र देना है। अलीगंज शाखा में दो नवंबर, सुबह ग्यारह बजे का समय मिल सकता है?", "I have to give the life certificate in November. Can I get a time at the Aliganj branch on the second of November, at eleven in the morning?"]
+    - [after, "सब एक बार दोहरा दीजिए, धीरे-धीरे।", "Repeat everything once, slowly."]
+    - [after, "बहुत-बहुत धन्यवाद। SMS भी भेज दीजिए।", "Thank you very much. Send an SMS as well."]
+  key:
+    - "Adds Gomti Apartments RWA and Vidyapeeth Coaching as read"
+    - "Sets ₹3,500 on the 5th (SI 22310), ₹15,000 on the 10th (SI 22311) and ₹10,000 to Sneha on the 2nd (SI 22312)"
+    - "Puts both Kavach premiums (₹28,400 and ₹34,900) on autopay from 4420"
+    - "Cancels the BSNL and Tata Play mandates; keeps the electricity one"
+    - "Sets Kusum Tripathi as 100% nominee and emails the interest certificate"
+    - "Books Aliganj for Mon 2 Nov at 11:00 am (BV 22340); waits while he finds his papers; repeats slowly"
+  checks: {lang: hi, reprompt_in_silence: L8, digits: ["SI 22310", "SI 22311", "SI 22312", "BV 22340"], tool_order: [add_beneficiary, set_standing_instruction]}
+  guard: "Each payment comes with its payee details, amount and day; L8 follows the silence whatever the agent asked; L13 asks for a repeat whatever was said."
+
+- id: bank-118
+  g: BANK-2
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Textile shop pays six staff — new payees, a closed account, failed UPI refunds, salaries on standing instruction"
+  basis: "Small businesses pay staff by NEFT each month; a closed staff account bounces and new hires need adding."
+  caller: "M 46-60 · textile shop owner in Coimbatore, brisk, used to giving instructions"
+  goal: "Pay all six staff today, fix one who changed bank, sort two failed customer refunds and make salaries automatic from next month."
+  role: "You handle business payments. Read the total before sending."
+  context: "A new payee can receive up to ₹50,000 in the first 24 hours."
+  tasks:
+    - task: "Verify, balance, payees"
+      calls:
+        - "verify_caller(name=Muthukumar Velusamy, dob=30 Aug 1976) → verified"
+        - "get_account(account_last4=7004) → Velu Textiles current account, balance ₹4,12,000"
+        - "get_beneficiaries(account_last4=7004) → Murugan (IOB, account ending 2210), Selvi, Karthik, Anitha"
+    - task: "Add the two new staff"
+      calls:
+        - "add_beneficiary(account_last4=7004, name=Ramesh, account_no=6021 4410 0782, ifsc=CNRB0006021) → added"
+        - "add_beneficiary(account_last4=7004, name=Kavitha, account_no=1180 3390 2215, ifsc=IOBA0001180) → added"
+    - task: "Murugan's salary — his old account is closed"
+      calls:
+        - "transfer_funds(from_account_last4=7004, to=Murugan (IOB 2210), amount=₹18,000, mode=NEFT) → error: beneficiary account closed; money not sent"
+        - "add_beneficiary(account_last4=7004, name=Murugan (Indian Bank), account_no=7741 0098 5531, ifsc=IDIB000C112) → added"
+        - "transfer_funds(from_account_last4=7004, to=Murugan (Indian Bank), amount=₹18,000, mode=NEFT) → sent, ref NF 11801"
+        - "delete_beneficiary(account_last4=7004, name=Murugan (IOB 2210)) → removed"
+    - task: "Everyone else's salary"
+      calls:
+        - "transfer_funds(from_account_last4=7004, to=Selvi, amount=₹16,000, mode=NEFT) → sent, ref NF 11802"
+        - "transfer_funds(from_account_last4=7004, to=Karthik, amount=₹22,000, mode=NEFT) → sent, ref NF 11803"
+        - "transfer_funds(from_account_last4=7004, to=Anitha, amount=₹16,000, mode=NEFT) → sent, ref NF 11804"
+        - "transfer_funds(from_account_last4=7004, to=Ramesh, amount=₹14,000, mode=NEFT) → sent, ref NF 11805"
+        - "transfer_funds(from_account_last4=7004, to=Kavitha, amount=₹14,000, mode=NEFT) → sent, ref NF 11806"
+    - task: "Two failed UPI refunds to customers"
+      calls:
+        - "check_upi_txn(utr=6280 3300 4411) → failed; ₹2,450 reversed on 3 Oct"
+        - "check_upi_txn(utr=6280 3300 4412) → failed; ₹3,800 not reversed"
+        - "raise_upi_complaint(utr=6280 3300 4412, reason=debited, not reversed) → complaint UC 11810"
+    - task: "Salaries by standing instruction from next month"
+      calls:
+        - "set_standing_instruction(from_account_last4=7004, to=Murugan (Indian Bank), amount=₹18,000, day=5) → SI 11821, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=7004, to=Selvi, amount=₹16,000, day=5) → SI 11822, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=7004, to=Karthik, amount=₹22,000, day=5) → SI 11823, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=7004, to=Anitha, amount=₹16,000, day=5) → SI 11824, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=7004, to=Ramesh, amount=₹14,000, day=5) → SI 11825, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=7004, to=Kavitha, amount=₹14,000, day=5) → SI 11826, first on 5 Nov"
+    - task: "Statement and SMS"
+      calls:
+        - "request_statement(account_last4=7004, kind=this month's salary transfers) → emailed"
+        - "send_sms(template=salary_summary) → sent"
+  forbid: ["raise_upi_complaint(utr=6280 3300 4411)"]
+  lines:
+    - [open, "வணக்கம், நான் Velu Textiles, Coimbatore ல இருந்து Muthukumar. இன்னைக்கு staff சம்பளம் போடணும், ஆறு பேர்.", "Hello, I'm Muthukumar from Velu Textiles, Coimbatore. I need to pay staff salaries today, six people."]
+    - [after, "Date of birth முப்பது August, ஆயிரத்து தொள்ளாயிரத்து எழுபத்தி ஆறு.", "Date of birth thirtieth August 1976."]
+    - [after, "ரெண்டு பேர் புதுசு. Ramesh — account six zero two one, four four one zero, zero seven eight two. IFSC C N R B zero zero zero six zero two one.", "Two are new. Ramesh — account 6021 4410 0782. IFSC CNRB0006021."]
+    - [after, "Kavitha — one one eight zero, three three nine zero, two two one five. IFSC I O B A zero zero zero one one eight zero.", "Kavitha — 1180 3390 2215. IFSC IOBA0001180."]
+    - [after, "சம்பளம்: Murugan பதினெட்டாயிரம், Selvi பதினாறாயிரம், Karthik இருபத்தி ரெண்டாயிரம், Anitha பதினாறாயிரம், Ramesh, Kavitha ரெண்டு பேருக்கும் பதினாலாயிரம்.", "Salaries: Murugan eighteen thousand, Selvi sixteen thousand, Karthik twenty-two thousand, Anitha sixteen thousand, Ramesh and Kavitha fourteen thousand each."]
+    - [after, "Murugan பழைய account close பண்ணிட்டான்னு சொன்னான். அது bounce ஆனா, அவனோட Indian Bank account க்கு போடுங்க — seven seven four one, zero zero nine eight, five five three one. IFSC I D I B zero zero zero C one one two.", "Murugan said he closed his old account. If it bounces, send it to his Indian Bank account — 7741 0098 5531. IFSC IDIB000C112."]
+    - [after, "மொத்தம் எவ்வளவு போச்சு?", "How much went in total?"]
+    - [after, "பழைய Murugan account ஐ list ல இருந்து எடுத்துடுங்க.", "Take the old Murugan account off the list."]
+    - [after, "இன்னொன்னு — ரெண்டு customer க்கு UPI ல refund அனுப்பினேன், ரெண்டும் fail. UTR six two eight zero, three three zero zero, four four one one. இன்னொன்னு அதே, கடைசி four four one two.", "Another thing — I sent UPI refunds to two customers and both failed. UTR 6280 3300 4411. The other is the same, ending 4412."]
+    - [after, "சரி, வராததுக்கு complaint போடுங்க.", "Okay, raise a complaint for the one that didn't come back."]
+    - [after, "அடுத்த மாசத்துல இருந்து சம்பளம் automatic ஆ அஞ்சாம் தேதி போகணும். ஆறு பேருக்கும், இதே amount.", "From next month the salaries should go automatically on the fifth. All six, the same amounts."]
+    - [after, "இந்த மாச salary list ஐ email பண்ணுங்க, accountant க்கு.", "Email this month's salary list, for the accountant."]
+    - [after, "SMS உம் அனுப்புங்க. நன்றி.", "Send an SMS too. Thank you."]
+  key:
+    - "Adds Ramesh and Kavitha as read"
+    - "When Murugan's IOB account bounces, says so, adds his Indian Bank account, pays him there and removes the old payee"
+    - "Pays all six; states the total ₹1,00,000"
+    - "Finds 4411 already reversed and 4412 not; raises a complaint only for 4412 (UC 11810)"
+    - "Sets six salary SIs on the 5th from 5 Nov (SI 11821-11826), Murugan's to the Indian Bank account"
+    - "Emails the salary list and sends the SMS; speaks Tamil, keeping his English words"
+  checks: {lang: ta, digits: ["NF 11801", "UC 11810", "SI 11826"], say: [["1,00,000", "ஒரு லட்சம்", "one lakh"]], tool_order: [add_beneficiary, transfer_funds]}
+  guard: "Murugan's fallback account comes before any transfer; L7 asks for the total whatever the agent said; L10 says 'the one that didn't come back', so it holds whichever the agent named."
+
+- id: bank-119
+  g: BANK-3
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Bonus day — close two loans, part-prepay the home loan, move its EMI date, break one FD, NOCs and certificates"
+  basis: "A bonus or windfall leads customers to close small loans, prepay the home loan and clean up autopays, loan by loan."
+  caller: "M 26-45 · finance manager in Bengaluru, numerate, wants every figure"
+  goal: "Close the personal and car loans, prepay ₹5 lakh on the home loan keeping the EMI, move the EMI date, pay the gold-loan interest and get every NOC and certificate."
+  role: "You handle loans. Give each quote before acting, and compare prepayment options when asked."
+  context: "Foreclosure quotes are valid until Wed 7 Oct. Breaking an FD early costs 1% of the rate."
+  tasks:
+    - task: "Verify and read everything"
+      calls:
+        - "verify_caller(name=Aditya Kulkarni, dob=15 Nov 1982) → verified"
+        - "get_accounts() → savings 8812; FDs 6101 and 6119; loans HL-220871 (home), CL-5512 (car), PL-9034 (personal), GL-3381 (gold)"
+        - "get_account(account_last4=8812) → balance ₹9,20,000"
+        - "get_loan(loan_id=HL-220871) → home loan, outstanding ₹38,40,000, EMI ₹42,300 on the 5th, 8.6%, ends Jun 2041"
+        - "get_loan(loan_id=CL-5512) → car loan, outstanding ₹2,85,000, EMI ₹14,900, 9.2%"
+        - "get_loan(loan_id=PL-9034) → personal loan, outstanding ₹1,62,000, EMI ₹11,200, 13.5%"
+        - "get_loan(loan_id=GL-3381) → gold loan ₹1,50,000, interest due ₹6,480 by 12 Oct"
+    - task: "Break the longer FD"
+      calls:
+        - "get_fd(fd_last4=6101) → ₹3,00,000 at 7.1%, matures 20 Nov 2026"
+        - "get_fd(fd_last4=6119) → ₹2,00,000 at 7.3%, matures Mar 2028; payout if broken today ₹2,08,900 after penalty"
+        - "break_fd(fd_last4=6119, to_account_last4=8812) → error: service timed out, please try again"
+        - "break_fd(fd_last4=6119, to_account_last4=8812) → ₹2,08,900 credited to 8812"
+    - task: "Close the personal and car loans"
+      calls:
+        - "get_foreclosure_quote(loan_id=PL-9034) → ₹1,65,240 including 2% charge, valid until Wed 7 Oct"
+        - "foreclose_loan(loan_id=PL-9034, from_account_last4=8812) → closed, ref FC 90341"
+        - "get_foreclosure_quote(loan_id=CL-5512) → ₹2,88,100, valid until Wed 7 Oct"
+        - "foreclose_loan(loan_id=CL-5512, from_account_last4=8812) → closed, ref FC 55121"
+        - "request_noc(loan_id=PL-9034) → NOC emailed within 2 working days"
+        - "request_noc(loan_id=CL-5512) → NOC and hypothecation-removal letter dispatched by 15 Oct"
+    - task: "Home loan prepayment"
+      calls:
+        - "calculate_prepayment(loan_id=HL-220871, amount=₹5,00,000, keep=emi) → ends Jan 2038 instead of Jun 2041; interest saved ₹11,85,000"
+        - "calculate_prepayment(loan_id=HL-220871, amount=₹5,00,000, keep=tenure) → EMI falls to ₹36,790; interest saved ₹4,95,000"
+        - "make_prepayment(loan_id=HL-220871, amount=₹5,00,000, from_account_last4=8812, keep=emi) → paid, ref PP 22087; loan now ends Jan 2038"
+        - "change_emi_date(loan_id=HL-220871, new_day=10) → from November; broken-period interest ₹5,300 with the first EMI"
+    - task: "Gold-loan interest"
+      calls:
+        - "create_payment_link(loan_id=GL-3381, amount=₹6,480) → link sent by SMS"
+    - task: "Autopays for the closed loans"
+      calls:
+        - "get_mandates(account_last4=8812) → MD 9101 car loan EMI; MD 9102 personal loan EMI; MD 9103 home loan EMI"
+        - "cancel_mandate(mandate_id=MD 9101) → cancelled"
+        - "cancel_mandate(mandate_id=MD 9102) → cancelled"
+    - task: "The other FD, certificates, balance"
+      calls:
+        - "set_fd_maturity(fd_last4=6101, instruction=pay out to 8812) → instruction set"
+        - "request_statement(loan_id=HL-220871, kind=interest certificate) → emailed"
+        - "request_statement(loan_id=PL-9034, kind=closure statement) → emailed"
+        - "request_statement(loan_id=CL-5512, kind=closure statement) → emailed"
+        - "get_account(account_last4=8812) → balance ₹1,75,560"
+        - "send_sms(template=loans_summary) → sent"
+  forbid: ["break_fd(fd_last4=6101)", "cancel_mandate(mandate_id=MD 9103)"]
+  lines:
+    - [open, "Hi. I've had a bonus and I want to clean up my loans in one go. Can you read me everything I have — loans, deposits, balance?"]
+    - [after, "Aditya Kulkarni, fifteenth November nineteen eighty-two."]
+    - [after, "Okay. Break the FD that runs till twenty twenty-eight. The one maturing next month, leave it. What do I get from it?"]
+    - [after, "Go ahead. Then close the personal loan and the car loan completely. Give me both figures first."]
+    - [after, "Fine, close both."]
+    - [after, "I'll need NOCs for both, and for the car the letter for the RTO."]
+    - [after, "Now the home loan. If I prepay five lakh, compare keeping the EMI against keeping the tenure."]
+    - [after, "Keep the EMI. Shorter loan. Do it."]
+    - [after, "My salary now comes on the seventh, so move the home-loan EMI to the tenth."]
+    - [after, "The gold loan interest is due too. Send me a link and I'll pay it."]
+    - [after, "There are autopays for the loans I just closed. Kill those. Keep the home loan one."]
+    - [after, "That FD maturing in November — when it matures, pay it into savings, don't renew."]
+    - [after, "Email me the home-loan interest certificate and closure statements for the two loans."]
+    - [after, "What's left in savings now?"]
+    - [after, "And an SMS with everything. Great, thanks."]
+  key:
+    - "Reads all four loans, both FDs and the ₹9,20,000 balance"
+    - "Gives the ₹2,08,900 payout before breaking 6119; when it times out, says so and retries; leaves 6101"
+    - "Quotes ₹1,65,240 and ₹2,88,100 before closing PL-9034 and CL-5512; requests both NOCs and the RTO letter"
+    - "Compares: keep EMI ends Jan 2038, saves ₹11,85,000; keep tenure EMI ₹36,790, saves ₹4,95,000; prepays keeping the EMI"
+    - "Moves the home-loan EMI to the 10th and mentions the ₹5,300 broken-period interest"
+    - "Sends the ₹6,480 gold-loan link; cancels MD 9101 and 9102 only"
+    - "Sets 6101 to pay out, emails the three documents and gives the ₹1,75,560 balance"
+  checks: {digits: ["1,65,240", "2,88,100", "36,790", "1,75,560"], tool_order: [get_foreclosure_quote, foreclose_loan]}
+  guard: "Each line names its loan or deposit by what it is, not by number; quotes are asked for before each go-ahead; L14 asks for the balance whatever was said."
+
+- id: bank-120
+  g: BANK-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Retirement money into an FD ladder — five deposits, five nominees, five maturity instructions"
+  basis: "Retirees split a lump sum into deposits that mature a year apart; each deposit is opened and set up on its own."
+  caller: "M 60+ · just-retired PSU officer in Delhi, careful, writes everything down"
+  goal: "Split ₹20 lakh into five FDs maturing a year apart at senior rates, with his wife as nominee and every maturity paid into savings."
+  role: "You handle deposits. Give the rate and maturity amount for each deposit."
+  context: "Senior-citizen rates apply from age 60. There is no 48-month deposit; the nearest is 45 months."
+  tasks:
+    - task: "Verify and check the balance"
+      calls:
+        - "verify_caller(name=Prakash Bhatia, dob=18 Sep 1965) → verified"
+        - "get_account(account_last4=3307) → balance ₹21,40,000"
+    - task: "Rates for each step of the ladder"
+      calls:
+        - "get_fd_rates(tenure_months=12, senior=yes) → 7.6%"
+        - "get_fd_rates(tenure_months=24, senior=yes) → 7.75%"
+        - "get_fd_rates(tenure_months=36, senior=yes) → 7.8%"
+        - "get_fd_rates(tenure_months=48, senior=yes) → not offered; 45 months at 7.8%"
+        - "get_fd_rates(tenure_months=60, senior=yes) → 7.5%"
+    - task: "Open five FDs of ₹4 lakh"
+      calls:
+        - "open_fd(amount=₹4,00,000, tenure_months=12, from_account_last4=3307, senior=yes) → FD 3315, 7.6%, maturity ₹4,31,276"
+        - "open_fd(amount=₹4,00,000, tenure_months=24, from_account_last4=3307, senior=yes) → FD 3323, 7.75%, maturity ₹4,66,376"
+        - "open_fd(amount=₹4,00,000, tenure_months=36, from_account_last4=3307, senior=yes) → FD 3331, 7.8%, maturity ₹5,04,320"
+        - "open_fd(amount=₹4,00,000, tenure_months=45, from_account_last4=3307, senior=yes) → FD 3349, 7.8%, maturity ₹5,34,416"
+        - "open_fd(amount=₹4,00,000, tenure_months=60, from_account_last4=3307, senior=yes) → FD 3357, 7.5%, maturity ₹5,79,984"
+    - task: "Nominee on each"
+      calls:
+        - "update_nominee(fd_last4=3315, nominee=Neelam Bhatia, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=3323, nominee=Neelam Bhatia, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=3331, nominee=Neelam Bhatia, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=3349, nominee=Neelam Bhatia, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=3357, nominee=Neelam Bhatia, relation=wife, share=100%) → nominee updated"
+    - task: "Pay out at maturity"
+      calls:
+        - "set_fd_maturity(fd_last4=3315, instruction=pay out to 3307) → instruction set"
+        - "set_fd_maturity(fd_last4=3323, instruction=pay out to 3307) → instruction set"
+        - "set_fd_maturity(fd_last4=3331, instruction=pay out to 3307) → instruction set"
+        - "set_fd_maturity(fd_last4=3349, instruction=pay out to 3307) → instruction set"
+        - "set_fd_maturity(fd_last4=3357, instruction=pay out to 3307) → instruction set"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=fd_ladder_summary) → sent"
+  forbid: [break_fd]
+  lines:
+    - [open, "Namaste. Main Prakash Bhatia. Pichhle mahine retire hua hoon, gratuity aur PF ka paisa account mein aaya hai. FD karwani hai.", "Hello. I'm Prakash Bhatia. I retired last month, and my gratuity and PF money has come into my account. I want to make FDs."]
+    - [after, "Date of birth athaarah September unnees sau painsath.", "Date of birth eighteenth September 1965."]
+    - [after, "Bees lakh ki FD karni hai, paanch hisson mein. Chaar-chaar lakh. Ek saal, do saal, teen saal, chaar saal aur paanch saal.", "I want FDs for twenty lakh, in five parts. Four lakh each. One year, two years, three years, four years and five years."]
+    - [after, "Senior citizen rate milega na? Har ek ka rate bataiye.", "I'll get the senior-citizen rate, right? Tell me the rate for each."]
+    - [after, "Chaar saal wala nahi hai? Toh uske sabse paas wala kar dijiye.", "There's no four-year one? Then do the nearest one."]
+    - [after, "Theek hai, paanchon khol dijiye.", "Okay, open all five."]
+    - [after, "Har FD mein nominee meri patni, Neelam Bhatia. Poora hissa.", "On every FD, my wife Neelam Bhatia as nominee. The whole share."]
+    - [after, "Aur maturity pe paisa renew nahi hona chahiye. Seedha savings mein aaye. Paanchon mein.", "And at maturity the money shouldn't renew. It should come straight into savings. On all five."]
+    - [after, "Ab har FD ka number aur maturity amount bata dijiye, main likh raha hoon.", "Now tell me each FD's number and maturity amount, I'm writing them down."]
+    - [bc 1800 L9, "Haan... haan... likh liya.", "Yes... yes... got it."]
+    - [after, "Savings mein kitna bacha?", "How much is left in savings?"]
+    - [after, "Theek hai. Sab ka SMS bhej dijiye.", "Okay. Send an SMS of it all."]
+    - [after, "Dhanyavaad, bahut achha laga.", "Thank you, that was very good."]
+  key:
+    - "Gives each senior rate: 12 months 7.6%, 24 months 7.75%, 36 months 7.8%, 60 months 7.5%; says there is no 48-month deposit and offers 45 months at 7.8%"
+    - "Opens five FDs of ₹4,00,000 for 12, 24, 36, 45 and 60 months"
+    - "Sets Neelam Bhatia as 100% nominee and pay-out to 3307 on all five"
+    - "Reads each FD number with its maturity amount slowly enough to write down"
+    - "Says ₹1,40,000 is left in savings and sends the SMS"
+  checks: {lang: hg, digits: ["3315", "3349", "3357", "5,79,984"], say: [["1,40,000", "ek lakh chaalis hazaar", "one lakh forty thousand"]], tool_order: [get_fd_rates, open_fd]}
+  guard: "L3 sets the whole ladder before any rate is quoted; L5 reacts to the missing 48-month deposit, which the rates show; L9–L11 ask for the read-back and balance whatever was said."
+
+- id: bank-121
+  g: BANK-3
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Retired couple pay a granddaughter's college fee — break one FD, reinvest, nominees, wife's video KYC"
+  basis: "Older couples move deposits around for family expenses and handle both their KYCs in the same call."
+  caller: "M 60+ · retired railway employee in Visakhapatnam, slow, precise; speaker b: F 60+ · his wife Annapurna"
+  goal: "Pay the college fee from one FD, reinvest the rest at senior rates, set nominees, pay out an FD maturing this week, and book his wife's video KYC."
+  role: "You handle deposits and payments. Verify each spouse before acting on what is theirs alone."
+  context: "The 15-month special deposit closed on 30 Sep."
+  tasks:
+    - task: "Verify and read the deposits"
+      calls:
+        - "verify_caller(name=Venkateswara Rao, dob=1 Jul 1955) → verified"
+        - "get_accounts() → joint savings 5102; FDs 5110, 5128, 5136"
+        - "get_fd(fd_last4=5110) → matured Thu 1 Oct; ₹5,48,200 paid into savings 5102"
+        - "get_fd(fd_last4=5128) → ₹3,00,000 at 7.5%, matures 18 Jun 2027; payout if broken today ₹3,12,600 after a ₹2,700 penalty"
+        - "get_fd(fd_last4=5136) → ₹2,00,000, matures Sat 10 Oct; instruction: renew all"
+    - task: "Break one FD and pay the fee"
+      calls:
+        - "break_fd(fd_last4=5128, to_account_last4=5102) → ₹3,12,600 credited, penalty ₹2,700"
+        - "get_beneficiaries(account_last4=5102) → GITAM fee account (added 2025), Sahithi (granddaughter, 2025)"
+        - "transfer_funds(from_account_last4=5102, to=GITAM fee account, amount=₹3,40,000, mode=NEFT) → sent, ref NF 51201"
+    - task: "Reinvest at senior rates"
+      calls:
+        - "get_fd_rates(tenure_months=12, senior=yes) → 7.6%"
+        - "get_fd_rates(tenure_months=24, senior=yes) → 7.75%"
+        - "open_fd(amount=₹3,00,000, tenure_months=15, from_account_last4=5102, senior=yes) → error: the 15-month special deposit closed on 30 Sep"
+        - "open_fd(amount=₹3,00,000, tenure_months=12, from_account_last4=5102, senior=yes) → FD 5144, 7.6%, maturity ₹3,23,457"
+        - "open_fd(amount=₹2,00,000, tenure_months=24, from_account_last4=5102, senior=yes) → FD 5152, 7.75%, maturity ₹2,33,188"
+    - task: "This week's maturity and nominees"
+      calls:
+        - "set_fd_maturity(fd_last4=5136, instruction=pay out to 5102) → instruction set"
+        - "update_nominee(fd_last4=5144, nominee=Annapurna, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=5152, nominee=Sahithi, relation=granddaughter, share=100%) → nominee updated"
+        - "update_nominee(account_last4=5102, nominee=Sahithi, relation=granddaughter, share=100%) → nominee updated"
+    - task: "Annapurna's KYC"
+      calls:
+        - "verify_caller(name=Annapurna, dob=14 Aug 1959) → verified"
+        - "get_kyc_status(member=Annapurna) → re-KYC due 31 Oct; video KYC possible"
+        - "book_vkyc_slot(member=Annapurna, date=Wed 7 Oct, slot=11:00 am) → appointment VK 51230"
+    - task: "Certificates, balance, follow-up"
+      calls:
+        - "request_statement(fd_last4=5128, kind=interest and TDS certificate) → emailed"
+        - "request_statement(fd_last4=5110, kind=interest and TDS certificate) → emailed"
+        - "get_account(account_last4=5102) → balance ₹1,40,800"
+        - "schedule_callback(date=Thu 8 Oct, slot=11 am-12 pm, topic=confirm fee NF 51201 reached the college) → booked"
+        - "send_sms(template=deposits_summary) → sent"
+  forbid: ["break_fd(fd_last4=5136)"]
+  lines:
+    - [open, "నమస్కారం. నా పేరు Venkateswara Rao, Vizag నుంచి. మా మనవరాలి college fee కట్టాలి. మా FDs గురించి మాట్లాడాలి.", "Good day. My name is Venkateswara Rao, from Vizag. I need to pay my granddaughter's college fee. I want to talk about our FDs."]
+    - [after, "పుట్టిన తేదీ ఒకటి July, పంతొమ్మిది వందల యాభై ఐదు.", "Date of birth first July 1955."]
+    - [after, "మా FDs అన్నీ చదివి చెప్పండి.", "Please read out all our FDs."]
+    - [after, "2027 లో అయ్యేది break చేయండి. ఈ వారం అయ్యేది వద్దు, అది ఎలాగూ Saturday వస్తుంది. Break చేస్తే ఎంత వస్తుంది?", "Break the one that matures in 2027. Not the one maturing this week — that comes on Saturday anyway. How much will I get if I break it?"]
+    - [after, "సరే, చేయండి. GITAM కి fee మూడు లక్షల నలభై వేలు పంపండి. Account ఇంతకు ముందే ఉంది.", "Okay, do it. Send the fee of three lakh forty thousand to GITAM. The account is already there."]
+    - [after, "మిగతాది మళ్ళీ FD వేయాలి. మూడు లక్షలు ఆ పదిహేను నెలల special scheme లో. అది లేకపోతే ఒక సంవత్సరం.", "The rest must go back into FDs. Three lakh in that fifteen-month special scheme. If that's not there, one year."]
+    - [after, "ఇంకో రెండు లక్షలు రెండు సంవత్సరాలకి.", "Another two lakh for two years."]
+    - [after, "Saturday వచ్చే FD renew చేయొద్దు, savings లోకి వేయండి.", "Don't renew the FD coming on Saturday; put it into savings."]
+    - [after, "కొత్త FD లో — మూడు లక్షల దానికి నా భార్య Annapurna nominee. రెండు లక్షల దానికి మనవరాలు Sahithi. Savings account కి కూడా Sahithi నే పెట్టండి.", "On the new FDs — my wife Annapurna as nominee on the three-lakh one. Our granddaughter Sahithi on the two-lakh one. Put Sahithi on the savings account too."]
+    - [after b, "నమస్కారం, నేను Annapurna. నా KYC ఏదో అయిపోయిందని message వచ్చింది. పుట్టిన తేదీ పద్నాలుగు August, పంతొమ్మిది వందల యాభై తొమ్మిది.", "Hello, I'm Annapurna. I got a message that my KYC has run out or something. Date of birth fourteenth August 1959."]
+    - [after b, "Video call లో చేయొచ్చా? బుధవారం పొద్దున పదకొండు గంటలకి.", "Can it be done on a video call? Wednesday at eleven in the morning."]
+    - [after, "Income tax కోసం రెండు FDs కి interest certificate పంపండి — break చేసింది, ఈ నెల మొదట్లో అయింది.", "Send the interest certificate for two FDs, for income tax — the one we broke, and the one that matured at the start of this month."]
+    - [after, "ఇప్పుడు savings లో ఎంత ఉంది?", "How much is in savings now?"]
+    - [after, "Fee college కి చేరిందో లేదో గురువారం ఒకసారి phone చేసి చెప్పండి.", "Call me on Thursday to say whether the fee reached the college."]
+    - [after, "SMS పంపండి. చాలా ధన్యవాదాలు.", "Send an SMS. Thank you very much."]
+  key:
+    - "Gives the ₹3,12,600 payout and ₹2,700 penalty before breaking 5128; leaves 5136"
+    - "Sends ₹3,40,000 to the saved GITAM fee account (NF 51201)"
+    - "When the 15-month special fails, says it closed and opens 12 months at 7.6% (FD 5144); opens 24 months at 7.75% (FD 5152)"
+    - "Sets 5136 to pay out; nominees Annapurna on 5144 and Sahithi on 5152 and the savings account"
+    - "Verifies Annapurna before her KYC; books her video KYC for Wed 7 Oct at 11:00 am (VK 51230)"
+    - "Emails both certificates, gives the ₹1,40,800 balance and books Thursday's call-back"
+    - "Speaks slow, clear Telugu, keeping their English words"
+  checks: {lang: te, digits: ["NF 51201", "5144", "5152", "VK 51230"], say: [["1,40,800", "ఒక లక్ష నలభై వేల ఎనిమిది వందలు", "one lakh forty thousand eight hundred"]], tool_order: [break_fd, transfer_funds]}
+  guard: "Each deposit is named by when it matures, which the agent must read out first; the special-scheme fallback comes with the request; Annapurna gives her own date of birth before asking."
+
+- id: bank-122
+  g: BANK-3
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "Salary date moved — three EMI dates changed, one rule-bound, bike loan closed, EMIs moved to the new account"
+  basis: "When salary dates change, customers move every EMI date and autopay; each loan type has its own allowed dates."
+  caller: "M 26-45 · sales manager in Gurugram, impatient, wants it done in one call"
+  goal: "Move every EMI after the new salary date, close the small bike loan, move the autopays to the new salary account and cut the personal-loan EMI."
+  role: "You handle loans. Mention broken-period interest when an EMI date moves."
+  context: "Car loans allow EMI days 5, 15 or 20 only."
+  tasks:
+    - task: "Verify and read the loans"
+      calls:
+        - "verify_caller(name=Neeraj Chauhan, dob=25 Dec 1987) → verified"
+        - "get_accounts() → savings 7352 (old salary), savings 7360 (new salary); loans HL-330915, CL-7710, PL-4420, TW-2209"
+        - "get_loan(loan_id=HL-330915) → home loan, EMI ₹31,800 on the 2nd"
+        - "get_loan(loan_id=CL-7710) → car loan, EMI ₹12,600 on the 3rd"
+        - "get_loan(loan_id=PL-4420) → personal loan, outstanding ₹2,40,000, EMI ₹9,800 on the 1st"
+        - "get_loan(loan_id=TW-2209) → two-wheeler loan, outstanding ₹38,000, EMI ₹3,400 on the 5th"
+    - task: "Move the EMI dates"
+      calls:
+        - "change_emi_date(loan_id=HL-330915, new_day=10) → from November; broken-period interest ₹8,240"
+        - "change_emi_date(loan_id=CL-7710, new_day=10) → error: car loans allow EMI day 5, 15 or 20 only"
+        - "change_emi_date(loan_id=CL-7710, new_day=15) → from November; broken-period interest ₹2,110"
+        - "change_emi_date(loan_id=PL-4420, new_day=10) → from November; broken-period interest ₹1,350"
+    - task: "Money to the new account"
+      calls:
+        - "get_account(account_last4=7352) → balance ₹1,62,000"
+        - "transfer_funds(from_account_last4=7352, to=own savings 7360, amount=₹1,62,000, mode=internal) → done, ref IT 73601"
+    - task: "Close the bike loan"
+      calls:
+        - "get_foreclosure_quote(loan_id=TW-2209) → ₹38,760, valid until Wed 7 Oct"
+        - "foreclose_loan(loan_id=TW-2209, from_account_last4=7360) → closed, ref FC 22091"
+        - "request_noc(loan_id=TW-2209) → NOC and RTO letter dispatched by 12 Oct"
+    - task: "Autopays to the new account"
+      calls:
+        - "get_mandates(account_last4=7352) → MD 6601 home loan EMI; MD 6602 car loan EMI; MD 6603 personal loan EMI; MD 6604 two-wheeler EMI"
+        - "move_mandate(mandate_id=MD 6601, to_account_last4=7360) → moved, from November"
+        - "move_mandate(mandate_id=MD 6602, to_account_last4=7360) → moved, from November"
+        - "move_mandate(mandate_id=MD 6603, to_account_last4=7360) → moved, from November"
+        - "cancel_mandate(mandate_id=MD 6604) → cancelled"
+    - task: "Cut the personal-loan EMI"
+      calls:
+        - "calculate_prepayment(loan_id=PL-4420, amount=₹1,00,000, keep=tenure) → EMI falls from ₹9,800 to ₹5,720"
+        - "make_prepayment(loan_id=PL-4420, amount=₹1,00,000, from_account_last4=7360, keep=tenure) → paid, ref PP 44201; EMI ₹5,720 from November"
+    - task: "Statements and SMS"
+      calls:
+        - "request_statement(loan_id=HL-330915, kind=interest certificate) → emailed"
+        - "request_statement(loan_id=PL-4420, kind=new repayment schedule) → emailed"
+        - "send_sms(template=emi_dates_summary) → sent"
+  forbid: ["change_emi_date(loan_id=CL-7710, new_day=5)", "cancel_mandate(mandate_id=MD 6601)"]
+  lines:
+    - [open, "नमस्ते, मेरी सैलरी अब सात तारीख़ को आती है, नए खाते में। मेरी सारी EMI पहले हफ़्ते में कटती हैं, बाउंस हो जाएँगी। सब बदलना है।", "Hello, my salary now comes on the seventh, into a new account. All my EMIs go in the first week; they'll bounce. I need to change everything."]
+    - [after, "नीरज चौहान। जन्मतिथि पच्चीस दिसंबर उन्नीस सौ सत्तासी।", "Neeraj Chauhan. Date of birth twenty-fifth December 1987."]
+    - [after, "होम लोन, कार लोन और पर्सनल लोन — तीनों की EMI दस तारीख़ कर दीजिए। अगर किसी में दस नहीं हो सकता, तो पंद्रह।", "Home loan, car loan and personal loan — make all three EMIs the tenth. If ten isn't possible for any of them, the fifteenth."]
+    - [after, "ये ब्रोकन पीरियड का ब्याज कुल कितना बनेगा?", "How much will this broken-period interest come to in total?"]
+    - [after, "ठीक है। पुराने खाते में जो पैसा बचा है, सब नए खाते में डाल दीजिए।", "Fine. Move whatever money is left in the old account to the new one."]
+    - [after, "बाइक लोन थोड़ा ही बचा है। उसे बंद कर दीजिए, नए खाते से। पहले रकम बताइए।", "There's only a little left on the bike loan. Close it, from the new account. Tell me the amount first."]
+    - [after, "हाँ, बंद कीजिए। NOC भी चाहिए, आरटीओ वाला भी।", "Yes, close it. I need the NOC too, the RTO one as well."]
+    - [after, "अब EMI के ऑटो-डेबिट पुराने खाते से हैं। सब नए खाते पर कर दीजिए। बाइक वाला तो अब बंद ही कर दीजिए।", "Now the EMI auto-debits are on the old account. Put them all on the new account. The bike one, just cancel it now."]
+    - [after, "पर्सनल लोन में एक लाख जमा कर दूँ तो EMI कितनी हो जाएगी? अवधि वही रखनी है।", "If I pay one lakh into the personal loan, what will the EMI become? I want to keep the same tenure."]
+    - [cut 1400 L9, "बस, कर दीजिए, एक लाख, नए खाते से।", "Just do it, one lakh, from the new account."]
+    - [after, "होम लोन का ब्याज प्रमाणपत्र और पर्सनल लोन का नया शेड्यूल ईमेल कर दीजिए।", "Email the home-loan interest certificate and the personal loan's new schedule."]
+    - [after, "आख़िर में बताइए, नवंबर से कौन-सी EMI किस तारीख़ को और कितनी?", "Finally, tell me: from November, which EMI on which date and how much?"]
+    - [after, "ठीक है, SMS भेज दीजिए। धन्यवाद।", "Okay, send the SMS. Thank you."]
+  key:
+    - "Moves the home and personal loans to the 10th; when the car loan refuses 10, says so and uses 15, as he asked"
+    - "States the broken-period interest: ₹8,240, ₹2,110 and ₹1,350, ₹11,700 in all"
+    - "Moves the ₹1,62,000 to 7360, quotes ₹38,760 and then closes TW-2209; requests the NOC and RTO letter"
+    - "Moves the three EMI mandates to 7360 and cancels the bike one"
+    - "Prepays ₹1,00,000 on PL-4420 keeping the tenure: EMI ₹9,800 to ₹5,720"
+    - "Reads back from November: home ₹31,800 on the 10th, car ₹12,600 on the 15th, personal ₹5,720 on the 10th"
+  checks: {lang: hi, digits: ["5,720", "38,760", "FC 22091"], say: [["11,700", "ग्यारह हज़ार सात सौ"]], tool_order: [get_foreclosure_quote, foreclose_loan]}
+  guard: "The fallback day comes with the request; the cut-in confirms the prepayment whether or not the agent finished quoting; L12 asks for the full read-back."
+
+- id: bank-123
+  g: BANK-3
+  lang: en
+  diff: Medium
+  dir: out
+  title: "FD maturity call — four deposits, four different instructions, nominees on all, one new FD"
+  basis: "Banks call customers before deposits mature without instructions or nominees; each deposit is decided separately."
+  caller: "M 60+ · retired customs officer in Goa, friendly, unhurried"
+  goal: "Decide what happens to each of four FDs maturing this week, add his wife as nominee everywhere and open one more FD."
+  role: "You are calling from Kosh Bank because four of the customer's FDs mature this week with no maturity instruction and no nominee. Open the call: greet, name Kosh Bank, say why you are calling. Verify before giving any amount."
+  context: ""
+  tasks:
+    - task: "Verify and read the four FDs"
+      calls:
+        - "verify_caller(name=Sunil Fernandes, dob=9 Mar 1958) → verified"
+        - "get_fd(fd_last4=4401) → ₹2,00,000, matures Tue 6 Oct, maturity ₹2,15,600; no instruction, no nominee"
+        - "get_fd(fd_last4=4419) → ₹3,00,000, matures Wed 7 Oct, maturity ₹3,22,800; no instruction, no nominee"
+        - "get_fd(fd_last4=4427) → ₹1,50,000, matures Thu 8 Oct, maturity ₹1,61,400; no instruction, no nominee"
+        - "get_fd(fd_last4=4435) → ₹2,50,000, matures Sat 10 Oct, maturity ₹2,69,500; no instruction, no nominee"
+    - task: "Rates"
+      calls:
+        - "get_fd_rates(tenure_months=12, senior=yes) → 7.6%"
+        - "get_fd_rates(tenure_months=36, senior=yes) → 7.8%"
+    - task: "Instruction for each"
+      calls:
+        - "set_fd_maturity(fd_last4=4401, instruction=renew principal for 12 months, interest to savings 4380) → instruction set"
+        - "set_fd_maturity(fd_last4=4419, instruction=renew all for 36 months) → instruction set"
+        - "set_fd_maturity(fd_last4=4427, instruction=pay out to savings 4380) → instruction set"
+        - "set_fd_maturity(fd_last4=4435, instruction=renew principal for 12 months, interest to savings 4380) → instruction set"
+    - task: "Nominee on each"
+      calls:
+        - "update_nominee(fd_last4=4401, nominee=Maria Fernandes, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=4419, nominee=Maria Fernandes, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=4427, nominee=Maria Fernandes, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(fd_last4=4435, nominee=Maria Fernandes, relation=wife, share=100%) → nominee updated"
+    - task: "One more FD from savings"
+      calls:
+        - "get_account(account_last4=4380) → balance ₹1,84,000"
+        - "open_fd(amount=₹1,00,000, tenure_months=12, from_account_last4=4380, senior=yes) → FD 4443, 7.6%, maturity ₹1,07,819"
+        - "update_nominee(fd_last4=4443, nominee=Maria Fernandes, relation=wife, share=100%) → nominee updated"
+    - task: "Certificate and summary"
+      calls:
+        - "request_statement(account_last4=4380, kind=FD interest and TDS certificate) → emailed"
+        - "send_sms(template=fd_instructions_summary) → sent"
+  forbid: [break_fd]
+  lines:
+    - [open, "Hello? Fernandes speaking."]
+    - [after, "Oh, my deposits, yes. Ninth March, nineteen fifty-eight."]
+    - [after, "Four of them this week? Read them out for me, one by one."]
+    - [after, "What are you giving seniors now — one year and three years?"]
+    - [after, "Right. The one on Tuesday — keep the principal for another year, interest to my savings. The three-lakh one — put the whole thing back for three years."]
+    - [after, "The Thursday one, pay it all into savings. I'm buying my grandson a scooter."]
+    - [after, "And the last one, Saturday's — same as Tuesday's."]
+    - [after, "No nominee on any of them? My wife, Maria Fernandes. On all four, the full share."]
+    - [after, "How much is sitting in savings right now?"]
+    - [after, "Put one lakh of that in a fresh FD for a year as well. Maria as nominee there too."]
+    - [after, "Can you email me the interest and TDS certificate? My son does my taxes."]
+    - [after, "Lovely. Send me a message with all this."]
+    - [after, "Thank you for calling, very kind of you."]
+  key:
+    - "Opens naming Kosh Bank and the four maturing FDs; verifies before reading amounts"
+    - "Reads each FD's date and maturity amount; gives 7.6% for 12 months and 7.8% for 36"
+    - "Sets 4401 and 4435 to renew principal for 12 months with interest to 4380, 4419 to renew all for 36 months, 4427 to pay out"
+    - "Adds Maria Fernandes as 100% nominee on all four"
+    - "Gives the ₹1,84,000 balance and opens FD 4443 for ₹1,00,000 with Maria as nominee"
+    - "Emails the certificate and sends the summary"
+  checks: {digits: ["4443", "1,84,000"], say: [["7.6", "seven point six"], ["7.8", "seven point eight"]], tool_order: [verify_caller, get_fd]}
+  guard: "Each FD is named by its day and amount, which the agent must read out first; L7 refers back to L5's instruction, so it holds whatever wording the agent used."
+
+- id: bank-124
+  g: BANK-3
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Father passed away — mother as nominee: cards, autopays, deposit and insurance claims, loan cover, her own nominee"
+  basis: "After a death, the family has to stop every charge on the deceased's products and start one claim per account, deposit and policy."
+  caller: "M 26-45 · son in Delhi, steady but grieving; speaker b: F 46-60 · his mother Sushila, the nominee, quiet"
+  goal: "Stop everything that would keep charging on his father's products, start every nominee and insurance claim with the right documents, deal with the car loan and update his mother's own nominee."
+  role: "You handle bereavement cases. Speak gently. Verify the nominee, the mother, before acting. Nothing is paid out until a claim is settled. Move, don't cancel, anything the household still needs."
+  context: "Suresh Bansal died on Mon 21 Sep. Sushila Bansal is the nominee on his savings account, both FDs and both policies."
+  tasks:
+    - task: "Verify the nominee and read his products"
+      calls:
+        - "verify_caller(name=Sushila Bansal, dob=3 Mar 1962) → verified; nominee on Suresh Bansal's products"
+        - "get_accounts(holder=Suresh Bansal) → savings 1029 with debit card 1053; credit card 7716; FDs 1037 and 1045; car loan CL-6620; Kavach term policy KV-T-550231; Kavach health floater KV-H-550248"
+    - task: "Stop his cards and UPI"
+      calls:
+        - "block_card(card_last4=1053, reason=card holder deceased) → blocked"
+        - "block_card(card_last4=7716, reason=card holder deceased) → blocked"
+        - "set_upi_status(account_last4=1029, enabled=no) → UPI off"
+    - task: "Autopays and the standing instruction"
+      calls:
+        - "get_mandates(account_last4=1029) → MD 8801 Netflix; MD 8802 Airtel mobile (his number); MD 8803 Cult.fit; MD 8804 BSES electricity (the house); MD 8805 SIP ₹10,000. Standing instruction SI 61104: ₹5,000 monthly to Mahesh Bansal"
+        - "cancel_mandate(mandate_id=MD 8801) → cancelled"
+        - "cancel_mandate(mandate_id=MD 8802) → cancelled"
+        - "cancel_mandate(mandate_id=MD 8803) → cancelled"
+        - "cancel_mandate(mandate_id=MD 8805) → cancelled"
+        - "move_mandate(mandate_id=MD 8804, to_account_last4=2210) → moved to Sushila Bansal's savings, from the next bill"
+        - "cancel_standing_instruction(si_no=SI 61104) → cancelled"
+    - task: "Nominee claims on the account and deposits"
+      calls:
+        - "register_nominee_claim(account_last4=1029, nominee=Sushila Bansal) → claim NC 40101; documents: death certificate, nominee's ID"
+        - "register_nominee_claim(fd_last4=1037, nominee=Sushila Bansal) → error: claim system timed out"
+        - "register_nominee_claim(fd_last4=1037, nominee=Sushila Bansal) → claim NC 40102; documents: death certificate, nominee's ID"
+        - "register_nominee_claim(fd_last4=1045, nominee=Sushila Bansal) → claim NC 40103; documents: death certificate, nominee's ID"
+    - task: "The term-insurance claim"
+      calls:
+        - "get_policy(policy_no=KV-T-550231) → Kavach term cover ₹50,00,000, nominee Sushila Bansal, in force"
+        - "register_claim(policy_no=KV-T-550231, member=Suresh Bansal, kind=death, amount=₹50,00,000) → claim TC 88010; documents: death certificate, nominee ID, bank proof"
+        - "send_document_link(claim_id=TC 88010, document=death certificate) → upload link sent by SMS"
+        - "send_document_link(claim_id=TC 88010, document=nominee ID) → upload link sent by SMS"
+        - "send_document_link(claim_id=TC 88010, document=bank proof) → upload link sent by SMS"
+        - "set_claim_payout(claim_id=TC 88010, account_last4=2210) → payout account set"
+    - task: "The health floater"
+      calls:
+        - "get_policy(policy_no=KV-H-550248) → floater for Suresh and Sushila Bansal, renews 1 Dec, premium ₹31,600"
+        - "remove_policy_member(policy_no=KV-H-550248, member=Suresh Bansal) → removed from the 1 Dec renewal; premium ₹18,200"
+    - task: "Car loan and card dues"
+      calls:
+        - "get_loan(loan_id=CL-6620) → car loan, outstanding ₹3,10,000; covered by loan-protection insurance"
+        - "raise_ticket(category=loan protection claim, summary=CL-6620 borrower deceased 21 Sep; nominee Sushila Bansal) → ticket LP 66201"
+        - "get_card_statement(card_last4=7716) → outstanding ₹23,400; no further interest once the death is recorded"
+    - task: "Branch visit, her own nominee, summary"
+      calls:
+        - "find_branch(area=Rajouri Garden, Delhi) → Kosh Bank Rajouri Garden, KB-0108, 9:30 am-4:30 pm"
+        - "book_branch_visit(branch_id=KB-0108, date=Thu 8 Oct, slot=11:00 am, purpose=original death certificate for claims NC 40101-40103) → appointment BV 40120"
+        - "update_nominee(account_last4=2210, nominee=Rohit Bansal, relation=son, share=100%) → nominee updated"
+        - "send_sms(template=bereavement_case_summary) → sent"
+  forbid: ["cancel_mandate(mandate_id=MD 8804)", transfer_funds]
+  lines:
+    - [open, "Hello. Mere papa, Suresh Bansal, ka do hafte pehle dehaant ho gaya. Unke accounts ke baare mein baat karni hai. Main unka beta Rohit.", "Hello. My father, Suresh Bansal, passed away two weeks ago. I need to talk about his accounts. I'm his son, Rohit."]
+    - [after, "Mummy nominee hain, woh mere saath hain. Unse baat kar lijiye.", "Mummy is the nominee; she's with me. Please speak to her."]
+    - [after b, "Ji, main Sushila Bansal. Janam tithi teen March unnees sau baasath.", "Yes, I'm Sushila Bansal. Date of birth third March 1962."]
+    - [after b, "Unke card band kar dijiye. UPI bhi.", "Please close his cards. UPI too."]
+    - [after, "Unke account se kaafi cheezein katti hain — Netflix, unka mobile, gym, SIP. Sab band kar dijiye. Bas bijli ka bill ghar ka hai, woh Mummy ke account se kaatna chahiye.", "A lot of things are debited from his account — Netflix, his mobile, the gym, the SIP. Stop all of them. Only the electricity bill is the house's; that should come from Mummy's account."]
+    - [after, "Chacha ji ko har mahine paanch hazaar jaate the, woh bhi abhi rok dijiye.", "Five thousand went to my uncle every month; stop that too for now."]
+    - [after, "Ab account aur dono FD ke liye Mummy ka claim kaise hoga?", "Now how will Mummy claim the account and both FDs?"]
+    - [after, "Papa ki term insurance bhi thi. Uska claim bhi shuru kar dijiye. Documents ke link bhej dijiye.", "Papa also had term insurance. Please start that claim too. Send links for the documents."]
+    - [after b, "Paisa mere account mein aaye. Mera account do do ek shunya.", "The money should come into my account. My account is 2210."]
+    - [after, "Health policy dono ki saath mein thi. Usmein ab sirf Mummy rahengi.", "The health policy was for both of them together. Now only Mummy will be on it."]
+    - [after, "Car loan bhi chal raha hai. Uska kya hoga?", "There's a car loan running too. What happens to it?"]
+    - [after, "Aur credit card pe kuch baaki hai kya?", "And is anything due on the credit card?"]
+    - [after, "Original death certificate kahan dena hai? Rajouri Garden branch paas hai. Guruvaar subah gyarah baje?", "Where do we give the original death certificate? The Rajouri Garden branch is close. Thursday at eleven in the morning?"]
+    - [after b, "Mere apne account mein nominee unhi ka naam tha. Ab Rohit ka kar dijiye.", "On my own account, the nominee was his name. Please make it Rohit now."]
+    - [after, "Sab kuch SMS kar dijiye. Aapne bahut aaram se samjhaya, thank you.", "SMS everything. You explained it very gently, thank you."]
+  key:
+    - "Offers condolences; verifies Sushila as nominee before acting"
+    - "Blocks 1053 and 7716 and turns off UPI; cancels Netflix, Airtel, Cult.fit and the SIP; moves the electricity mandate to 2210; cancels SI 61104"
+    - "Registers nominee claims on 1029, 1037 (after the timeout, says so and retries) and 1045, and lists the documents"
+    - "Registers the ₹50,00,000 term claim TC 88010, sends three document links and sets the payout to 2210"
+    - "Removes Suresh from the floater from 1 Dec (premium ₹18,200)"
+    - "Explains the car loan's protection cover and raises LP 66201; gives the ₹23,400 card dues"
+    - "Books Rajouri Garden for Thu 8 Oct at 11:00 am (BV 40120) and sets Rohit as nominee on 2210"
+  checks: {lang: hg, digits: ["NC 40102", "TC 88010", "LP 66201", "BV 40120"], tool_order: [verify_caller, block_card]}
+  guard: "The son describes and the mother authorises; each line asks about one product by what it is; the electricity exception comes in the same line as the cancellations."

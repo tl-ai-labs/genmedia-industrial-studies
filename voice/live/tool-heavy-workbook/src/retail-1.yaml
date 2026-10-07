@@ -1,0 +1,557 @@
+# Ecommerce & Retail — tool-heavy scenarios ret-101 … ret-108 (RET-1 Orders & delivery, RET-2 Checkout & payments).
+code: ret
+scenarios:
+
+- id: ret-101
+  g: RET-1
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Diwali order turned into gifts — three addresses, gift wrap, a dispatched item, a late lamp, kids' parcels moved"
+  basis: "Festive orders are bought to one address and then split into gifts; each item's address, wrap and timing is changed on its own."
+  caller: "F 26-45 · marketing manager in Kolkata, quick, has the app open"
+  goal: "Send three items to three relatives gift-wrapped with messages, replace a lamp that will come after Puja, and move her other order's parcels to Saturday."
+  role: "You handle orders and delivery. An address can change only before an item is dispatched."
+  context: "Gift wrap is ₹49 an item."
+  tasks:
+    - task: "Read the order"
+      calls:
+        - "get_order(order_id=KT-58120) → Banarasi silk saree ₹6,400 (packed); smartwatch ₹4,999 (dispatched, AWB EK 7710 2201); perfume gift set ₹2,350 (packed); Bluetooth speaker ₹3,199 (packed); kitchen set ₹1,899 (packed); table lamp ₹1,650 (delayed, now Thu 22 Oct); paid by card; all to 7 CK Block, Salt Lake, Kolkata 700091"
+    - task: "Three items to three relatives"
+      calls:
+        - "update_delivery_address(order_id=KT-58120, item_id=Banarasi silk saree, address=Rina Ghosh, 14 Lake Road, Ballygunge, Kolkata 700019) → updated; delivery Thu 8 Oct"
+        - "update_delivery_address(order_id=KT-58120, item_id=perfume gift set, address=Priya Bose, Flat 5B, Kalyani Nagar, Pune 411006) → updated; delivery Sat 10 Oct"
+        - "update_delivery_address(order_id=KT-58120, item_id=Bluetooth speaker, address=Arjun Dey, 22 G T Road, Howrah 711101) → error: pincode 711101 is not served by this seller"
+        - "update_delivery_address(order_id=KT-58120, item_id=Bluetooth speaker, address=Arjun Dey, Room 214, Techno Hostel, Sector 5, Salt Lake 700091) → updated; delivery Wed 7 Oct"
+    - task: "The smartwatch already left"
+      calls:
+        - "track_shipment(awb=EK 7710 2201) → Ekart, reached Kolkata hub, delivery Tue 6 Oct"
+    - task: "Gift wrap with messages"
+      calls:
+        - "add_gift_wrap(order_id=KT-58120, item_id=Banarasi silk saree, message=Shubho Bijoya, Mashi) → wrapped, prices hidden, ₹49"
+        - "add_gift_wrap(order_id=KT-58120, item_id=perfume gift set, message=Happy Diwali, Boudi) → wrapped, prices hidden, ₹49"
+        - "add_gift_wrap(order_id=KT-58120, item_id=Bluetooth speaker, message=Rock on, Arjun) → wrapped, prices hidden, ₹49"
+    - task: "Replace the late lamp"
+      calls:
+        - "cancel_item(order_id=KT-58120, item_id=table lamp, reason=delivery after the date needed) → cancelled; ₹1,650 back to the card in 5-7 days"
+        - "find_alternatives(sku=table lamp) → brass table lamp ₹1,790, delivery Thu 8 Oct; ceramic table lamp ₹1,450, delivery Fri 9 Oct"
+        - "get_wallet() → Kartly balance ₹2,300"
+        - "add_to_cart(sku=brass table lamp, qty=1) → added, ₹1,790"
+        - "place_order(address=7 CK Block, Salt Lake, Kolkata 700091, payment_mode=Kartly balance) → order KT-58340, ₹1,790, delivery Thu 8 Oct"
+        - "credit_goodwill(order_id=KT-58120, amount=₹150, reason=lamp delayed) → ₹150 added to Kartly balance"
+    - task: "Kids' Puja clothes to Saturday"
+      calls:
+        - "get_order(order_id=KT-58155) → three shipments: DL 4410 1001 (Tue 6 Oct), DL 4410 1002 (Wed 7 Oct), DL 4410 1003 (Wed 7 Oct)"
+        - "reschedule_delivery(awb=DL 4410 1001, date=Sat 10 Oct, slot=10 am-2 pm) → rescheduled"
+        - "reschedule_delivery(awb=DL 4410 1002, date=Sat 10 Oct, slot=10 am-2 pm) → rescheduled"
+        - "reschedule_delivery(awb=DL 4410 1003, date=Sat 10 Oct, slot=10 am-2 pm) → rescheduled"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=order_changes_summary) → sent"
+  forbid: [cancel_order, "cancel_item(order_id=KT-58120, item_id=kitchen set)"]
+  lines:
+    - [open, "Hi, I placed a big Diwali order on Saturday and now I want most of it to go to different people as gifts. Order K T five eight one two zero."]
+    - [after, "The silk saree goes to my aunt — Mrs Rina Ghosh, fourteen Lake Road, Ballygunge, Kolkata seven hundred nineteen. That's seven zero zero zero one nine."]
+    - [after, "The perfume set to my sister-in-law — Priya Bose, Flat five B, Kalyani Nagar, Pune four one one zero zero six."]
+    - [after, "The speaker to my nephew — Arjun Dey, twenty-two G T Road, Howrah seven one one one zero one. If Howrah doesn't work, send it to his hostel — Room two fourteen, Techno Hostel, Sector Five, Salt Lake, seven zero zero zero nine one."]
+    - [after, "And the smartwatch to my brother in Bengaluru. Can you change that one too?"]
+    - [after, "Oh, it's already shipped. Fine, let it come to me, I'll send it on myself. When does it reach me?"]
+    - [after, "Gift-wrap the three that are going to people, prices hidden. Messages: for my aunt, 'Shubho Bijoya, Mashi'. For Priya, 'Happy Diwali, Boudi'. For Arjun, 'Rock on, Arjun'."]
+    - [after, "The table lamp says the twenty-second — that's after Puja. Cancel it and find me something similar that comes this week."]
+    - [after, "The brass one. Order it, to my address, and pay from my Kartly balance if there's enough."]
+    - [after, "The delay was annoying, honestly. Can you do anything about that?"]
+    - [after, "I have a second order with the kids' Puja clothes. I'm at work on weekdays — move all those parcels to Saturday morning."]
+    - [after, "What did the gift wrapping come to?"]
+    - [after, "Send me an SMS with everything. Thanks!"]
+  key:
+    - "Moves the saree to Ballygunge and the perfume to Pune; when Howrah fails, says so and sends the speaker to the hostel"
+    - "Explains the smartwatch is dispatched and can't be redirected; says it reaches her Tue 6 Oct"
+    - "Gift-wraps the three with the exact messages and prices hidden"
+    - "Cancels only the lamp, offers both alternatives, orders the brass lamp (KT-58340) from her ₹2,300 balance"
+    - "Credits ₹150 for the delay; moves all three kids' parcels to Sat 10 Oct, 10 am-2 pm"
+    - "States ₹147 for gift wrap and sends the SMS"
+  checks: {digits: ["KT-58340", "Tue 6 Oct"], say: [["147", "one forty-seven", "one hundred and forty-seven"]], tool_order: [update_delivery_address, add_gift_wrap]}
+  guard: "Every address and the Howrah fallback come before any change; L6 reacts to the dispatch the agent must report; L9 picks the brass lamp, which the alternatives list."
+
+- id: ret-102
+  g: RET-1
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Moving week — two orders, eight shipments tracked, some held, some moved, one to a pickup point"
+  basis: "Customers moving house have many parcels in flight and want each one timed around the move."
+  caller: "M 26-45 · software engineer in Bengaluru moving flats this week, juggling movers on another phone"
+  goal: "Know where every parcel is and time each one: before the move to the old flat, after it to the new one, the bulky one to a pickup point."
+  role: "You handle delivery. Holds last up to 7 days."
+  context: ""
+  tasks:
+    - task: "Find the orders"
+      calls:
+        - "list_orders() → KT-60211 (home setup, 5 shipments); KT-60230 (kitchen, 3 shipments)"
+        - "get_order(order_id=KT-60211) → AWBs BD 3301 7701 (curtains), BD 3301 7702 (bedsheets), BD 3301 7703 (study table), BD 3301 7704 (wall clock), BD 3301 7705 (shoe rack); to Flat 302, HSR Layout 560102"
+        - "get_order(order_id=KT-60230) → AWBs DL 8820 4401 (cookware set), DL 8820 4402 (mixer grinder), DL 8820 4403 (water purifier); to Flat 302, HSR Layout 560102"
+    - task: "Track all eight"
+      calls:
+        - "track_shipment(awb=BD 3301 7701) → Blue Dart, out for delivery today"
+        - "track_shipment(awb=BD 3301 7702) → Blue Dart, out for delivery today"
+        - "track_shipment(awb=BD 3301 7703) → Blue Dart, at Bengaluru hub, delivery Wed 7 Oct"
+        - "track_shipment(awb=BD 3301 7704) → Blue Dart, delivery Thu 8 Oct"
+        - "track_shipment(awb=BD 3301 7705) → Blue Dart, delivery Thu 8 Oct"
+        - "track_shipment(awb=DL 8820 4401) → Delhivery, delivery Wed 7 Oct"
+        - "track_shipment(awb=DL 8820 4402) → Delhivery, delivery Thu 8 Oct"
+        - "track_shipment(awb=DL 8820 4403) → Delhivery, delivery Fri 9 Oct"
+    - task: "Hold the move-day ones, move the rest to Sunday"
+      calls:
+        - "hold_delivery(awb=BD 3301 7704, until_date=Sun 11 Oct) → held at the HSR hub"
+        - "hold_delivery(awb=BD 3301 7705, until_date=Sun 11 Oct) → held at the HSR hub"
+        - "reschedule_delivery(awb=DL 8820 4402, date=Sun 11 Oct, slot=10 am-2 pm) → rescheduled"
+        - "reschedule_delivery(awb=DL 8820 4403, date=Sun 11 Oct, slot=10 am-2 pm) → rescheduled"
+    - task: "The study table to a pickup point"
+      calls:
+        - "redirect_to_pickup_point(awb=BD 3301 7703, pickup_point=Kartly Point, HSR Sector 2) → collect by Wed 14 Oct"
+    - task: "A late shoe rack swapped for one in stock"
+      calls:
+        - "get_order(order_id=KT-60211) → shoe rack seller has delayed packing; new date Mon 19 Oct"
+        - "cancel_item(order_id=KT-60211, item_id=shoe rack, reason=too late, refund_to=Kartly balance) → cancelled; ₹2,499 to Kartly balance now"
+        - "find_alternatives(sku=shoe rack) → 4-tier metal shoe rack ₹2,199, delivery Sun 11 Oct"
+        - "add_to_cart(sku=4-tier metal shoe rack, qty=1) → added, ₹2,199"
+        - "place_order(address=Flat 1104, Sobha Dream Acres, Panathur 560087, payment_mode=Kartly balance) → order KT-60415, ₹2,199, delivery Sun 11 Oct"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=delivery_plan_summary) → sent"
+  forbid: [cancel_order, "hold_delivery(awb=BD 3301 7701, until_date=Sun 11 Oct)"]
+  lines:
+    - [open, "Hi, main Rohit. Is hafte flat shift kar raha hoon aur Kartly se bahut saare parcels aa rahe hain. Sab ka status chahiye.", "Hi, I'm Rohit. I'm moving flats this week and lots of Kartly parcels are coming. I need the status of all of them."]
+    - [after, "Haan, dono orders. Har parcel ka bataiye, kab aa raha hai.", "Yes, both orders. Tell me for every parcel when it's coming."]
+    - [after, "Aaj wale do theek hain, main purane flat pe hoon. Unko aane do.", "Today's two are fine, I'm at the old flat. Let them come."]
+    - [after, "Study table bahut bada hai, movers ke beech nahi chahiye. Usko HSR mein kisi pickup point pe bhej do, main baad mein utha loonga.", "The study table is huge; I don't want it in the middle of the movers. Send it to some pickup point in HSR and I'll collect it later."]
+    - [after, "Thursday ko shift ho raha hoon. Clock aur shoe rack Thursday wale hain — unko rok lo, Sunday tak.", "I'm moving on Thursday. The clock and shoe rack are Thursday's — hold them until Sunday."]
+    - [after, "Mixer aur water purifier bhi Sunday ko chahiye, subah das se do ke beech.", "I want the mixer and water purifier on Sunday too, between ten and two in the morning."]
+    - [after, "Cookware Wednesday ko theek hai.", "The cookware is fine on Wednesday."]
+    - [after, "Ek minute — shoe rack ka seller late hai kya? App mein kuch alag dikh raha hai.", "One minute — is the shoe rack's seller late? The app is showing something different."]
+    - [after, "Unnees? Nahi chahiye. Cancel karke paisa Kartly balance mein daal do, aur koi aisa shoe rack dhoondo jo Sunday tak aaye.", "The nineteenth? Don't want it. Cancel it, put the money in my Kartly balance, and find a shoe rack that comes by Sunday."]
+    - [after, "Woh metal wala order kar do, naye flat pe — Flat eleven zero four, Sobha Dream Acres, Panathur, five six zero zero eight seven. Balance se.", "Order the metal one to the new flat — Flat 1104, Sobha Dream Acres, Panathur, 560087. From my balance."]
+    - [after, "Ek baar poora plan bata do, kaunsa parcel kab aur kahan.", "Tell me the whole plan once — which parcel when and where."]
+    - [after, "SMS bhej do, thanks yaar.", "Send an SMS, thanks."]
+  key:
+    - "Tracks all eight parcels and gives each date"
+    - "Leaves today's two and Wednesday's cookware alone; sends the study table to Kartly Point HSR Sector 2 (collect by 14 Oct)"
+    - "Holds the clock and shoe rack until Sun 11 Oct; moves the mixer and purifier to Sun 11 Oct, 10 am-2 pm"
+    - "Finds the shoe rack delayed to 19 Oct, cancels it to Kartly balance (₹2,499) and orders the ₹2,199 metal rack to Panathur (KT-60415)"
+    - "Reads the whole plan back and sends the SMS"
+  checks: {lang: hg, digits: ["KT-60415", "BD 3301 7703"], tool_order: [cancel_item, place_order]}
+  guard: "Each line names parcels by what they are, which fits whatever order the agent read them in; L8 asks about the shoe rack whether or not the agent already spotted the delay."
+
+- id: ret-103
+  g: RET-1
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Son ordered for his mother to the wrong city — four items readdressed, one reordered, COD turned prepaid"
+  basis: "Children order for parents in another city and forget to change the saved address."
+  caller: "M 26-45 · son in Pune ordering for his mother in Indore, apologetic, careful"
+  goal: "Get everything meant for his mother to Indore, reorder the one that already left, make sure she pays nothing at the door."
+  role: "You handle orders. An address can change only before dispatch."
+  context: ""
+  tasks:
+    - task: "Find the orders"
+      calls:
+        - "list_orders() → KT-61001 (prepaid), KT-61002 (cash on delivery), KT-61003 (cash on delivery); all to 9 Baner Road, Pune 411045"
+        - "get_order(order_id=KT-61001) → walker ₹2,850 (packed); BP monitor ₹1,999 (dispatched, AWB EK 9031 5501)"
+        - "get_order(order_id=KT-61002) → pressure cooker ₹1,650 (packed); bedsheet set ₹1,299 (packed)"
+        - "get_order(order_id=KT-61003) → mixer grinder ₹3,490 (packed); slippers ₹499 (dispatched, AWB EK 9031 5502)"
+        - "check_pincode(pincode=452010) → serviceable, 2-3 days, COD yes"
+    - task: "Four items to Indore"
+      calls:
+        - "update_delivery_address(order_id=KT-61001, item_id=walker, address=Kamla Sharma, 31 Saket Nagar, Indore 452018) → updated; delivery Thu 8 Oct"
+        - "update_delivery_address(order_id=KT-61002, item_id=pressure cooker, address=Kamla Sharma, 31 Saket Nagar, Indore 452018) → error: address service timed out"
+        - "update_delivery_address(order_id=KT-61002, item_id=pressure cooker, address=Kamla Sharma, 31 Saket Nagar, Indore 452018) → updated; delivery Thu 8 Oct"
+        - "update_delivery_address(order_id=KT-61002, item_id=bedsheet set, address=Kamla Sharma, 31 Saket Nagar, Indore 452018) → updated; delivery Thu 8 Oct"
+        - "update_delivery_address(order_id=KT-61003, item_id=mixer grinder, address=Kamla Sharma, 31 Saket Nagar, Indore 452018) → updated; delivery Fri 9 Oct"
+    - task: "The BP monitor already left — order another for Indore"
+      calls:
+        - "track_shipment(awb=EK 9031 5501) → Ekart, delivery in Pune tomorrow, Tue 6 Oct"
+        - "track_shipment(awb=EK 9031 5502) → Ekart, delivery in Pune Wed 7 Oct"
+        - "check_stock(sku=BP monitor, pincode=452018) → in stock"
+        - "add_to_cart(sku=BP monitor, qty=1) → added, ₹1,999"
+        - "place_order(address=Kamla Sharma, 31 Saket Nagar, Indore 452018, payment_mode=UPI) → order KT-61240, ₹1,999, delivery Thu 8 Oct"
+    - task: "Nothing to pay at her door"
+      calls:
+        - "convert_cod_to_prepaid(order_id=KT-61002) → link for ₹2,899 sent, ₹50 prepaid discount"
+        - "convert_cod_to_prepaid(order_id=KT-61003) → link for ₹3,939 sent, ₹50 prepaid discount"
+        - "get_payment(order_id=KT-61002) → paid ₹2,899, UTR 6281 4402 3310"
+        - "get_payment(order_id=KT-61003) → paid ₹3,939, UTR 6281 4402 3311"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=order_changes_summary) → sent"
+  forbid: [cancel_order, "update_delivery_address(order_id=KT-61003, item_id=slippers)"]
+  lines:
+    - [open, "नमस्ते, मैंने माँ के लिए कुछ सामान मँगवाया था, पर ग़लती से सब मेरे पुणे वाले पते पर चला गया। माँ इंदौर में रहती हैं।", "Hello, I ordered some things for my mother, but by mistake everything went to my Pune address. My mother lives in Indore."]
+    - [after, "तीन ऑर्डर हैं। चप्पल मेरे लिए हैं, वो पुणे ही आने दीजिए। बाकी सब माँ के पास जाना है।", "There are three orders. The slippers are for me, let them come to Pune. Everything else has to go to my mother."]
+    - [after, "पता है — कमला शर्मा, इकतीस साकेत नगर, इंदौर, चार पाँच दो शून्य एक आठ।", "The address is — Kamla Sharma, 31 Saket Nagar, Indore, 452018."]
+    - [after, "BP मशीन निकल चुकी है? तो वो मेरे पास आ जाएगी, मैं रख लूँगा। माँ के लिए एक और मँगवा दीजिए, इंदौर में।", "The BP monitor has already left? Then it'll come to me and I'll keep it. Order another one for my mother, in Indore."]
+    - [after, "UPI से दे दूँगा।", "I'll pay by UPI."]
+    - [after, "माँ को दरवाज़े पर पैसे नहीं देने चाहिए। जो दो ऑर्डर कैश ऑन डिलीवरी हैं, उनका अभी ऑनलाइन कर दीजिए।", "My mother shouldn't have to pay at the door. The two orders that are cash on delivery — make them online now."]
+    - [after wait=8000, "हाँ, दोनों लिंक से पेमेंट कर दिया। देख लीजिए आ गया क्या।", "Yes, I've paid through both links. Check whether it has come through."]
+    - [after, "माँ के पास सब कब तक पहुँच जाएगा?", "By when will everything reach my mother?"]
+    - [after, "डिलीवरी के समय OTP लगेगा न? वो अभी मुझे बता दीजिए, मैं माँ को भेज दूँगा।", "There'll be an OTP at delivery, right? Tell it to me now and I'll send it to my mother."]
+    - [after, "और मेरे पास पुणे में क्या आएगा?", "And what will come to me in Pune?"]
+    - [after, "ठीक है, सब SMS कर दीजिए।", "Okay, SMS everything."]
+    - [after, "धन्यवाद, आपने बहुत अच्छे से समझाया।", "Thank you, you explained it very well."]
+  key:
+    - "Moves the walker, pressure cooker (after a timeout, says so and retries), bedsheets and mixer to Saket Nagar, Indore 452018; leaves the slippers"
+    - "Explains the BP monitor is dispatched; orders a new one to Indore by UPI (KT-61240)"
+    - "Converts KT-61002 and KT-61003 to prepaid, then confirms both payments (₹2,899 and ₹3,939) after he pays"
+    - "Gives Indore dates Thu 8 Oct and Fri 9 Oct, and Pune: BP monitor and slippers"
+    - "Does not read out any delivery OTP; explains it comes to the registered mobile at delivery time"
+    - "Waits through the silence while he pays"
+  checks: {lang: hi, digits: ["KT-61240", "452018"], say: [["2,899", "दो हज़ार आठ सौ निन्यानवे"], ["3,939", "तीन हज़ार नौ सौ उनतालीस"]], tool_order: [convert_cod_to_prepaid, get_payment]}
+  guard: "Which items go where is said in L2 before any change; L4 reacts to the dispatch the agent must report; L7 follows the silence and asks for the payment check whatever the agent said."
+
+- id: ret-104
+  g: RET-1
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Wedding order — three items too late swapped, two sent to the function hall gift-wrapped, one parcel moved"
+  basis: "Wedding orders have a hard date; late items are replaced and some go straight to the venue."
+  caller: "F 46-60 · mother of the bride in Hyderabad, anxious about the date"
+  goal: "Have everything before the wedding on Sunday the 18th: replace what is late, send the return gifts to the hall wrapped, and time the rest."
+  role: "You handle orders. An address can change only before dispatch."
+  context: "Gift wrap is ₹49 an item."
+  tasks:
+    - task: "Read the order"
+      calls:
+        - "get_order(order_id=KT-62550) → silver pooja thali set ₹4,200 (packed); 50 return-gift boxes ₹7,500 (packed); 50 brass diyas ₹3,000 (packed); groom's kurta ₹3,899 (delayed, now Wed 21 Oct); designer clutch ₹1,850 (delayed, now Tue 20 Oct); wedding photo frame ₹1,299 (delayed, now Mon 19 Oct); bridal juttis ₹2,450 (dispatched, AWB EK 6620 1004); paid by UPI; to 12 Jubilee Hills, Hyderabad 500033"
+    - task: "Swap the three late items"
+      calls:
+        - "cancel_item(order_id=KT-62550, item_id=groom's kurta, reason=after the wedding date, refund_to=Kartly balance) → cancelled; ₹3,899 to Kartly balance now"
+        - "cancel_item(order_id=KT-62550, item_id=designer clutch, reason=after the wedding date, refund_to=Kartly balance) → cancelled; ₹1,850 to Kartly balance now"
+        - "cancel_item(order_id=KT-62550, item_id=wedding photo frame, reason=after the wedding date, refund_to=Kartly balance) → cancelled; ₹1,299 to Kartly balance now"
+        - "find_alternatives(sku=groom's kurta) → silk kurta set ₹4,150, delivery Sat 10 Oct; cotton kurta ₹2,600, delivery Fri 9 Oct"
+        - "find_alternatives(sku=designer clutch) → embellished clutch ₹1,790, delivery Fri 9 Oct"
+        - "find_alternatives(sku=wedding photo frame) → engraved wooden frame ₹1,450, delivery Thu 8 Oct"
+        - "add_to_cart(sku=silk kurta set, qty=1) → added, ₹4,150"
+        - "add_to_cart(sku=embellished clutch, qty=1) → added, ₹1,790"
+        - "add_to_cart(sku=engraved wooden frame, qty=1) → added, ₹1,450"
+        - "get_wallet() → Kartly balance ₹7,048"
+        - "place_order(address=12 Jubilee Hills, Hyderabad 500033, payment_mode=Kartly balance) → order KT-62781, ₹7,390: ₹7,048 from Kartly balance, ₹342 by UPI; delivery by Sat 10 Oct"
+    - task: "Return gifts and diyas to the function hall, wrapped"
+      calls:
+        - "check_pincode(pincode=500034) → serviceable, 2 days"
+        - "update_delivery_address(order_id=KT-62550, item_id=50 return-gift boxes, address=Sri Lakshmi Convention Hall, Road No. 2, Banjara Hills 500034) → updated; delivery Fri 9 Oct"
+        - "update_delivery_address(order_id=KT-62550, item_id=50 brass diyas, address=Sri Lakshmi Convention Hall, Road No. 2, Banjara Hills 500034) → updated; delivery Fri 9 Oct"
+        - "add_gift_wrap(order_id=KT-62550, item_id=50 return-gift boxes, message=With love, Keerthi weds Sandeep) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-62550, item_id=50 brass diyas, message=With love, Keerthi weds Sandeep) → wrapped, ₹49"
+    - task: "The juttis on a day she is home"
+      calls:
+        - "track_shipment(awb=EK 6620 1004) → Ekart, delivery Tue 6 Oct"
+        - "reschedule_delivery(awb=EK 6620 1004, date=Wed 7 Oct, slot=4-8 pm) → rescheduled"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=order_changes_summary) → sent"
+  forbid: ["cancel_item(order_id=KT-62550, item_id=silver pooja thali set)", cancel_order]
+  lines:
+    - [open, "హలో, మా అమ్మాయి పెళ్ళి పద్దెనిమిదో తేదీ, Sunday. Kartly లో పెళ్ళి సామాన్లు order చేశాను, కొన్ని late అని చూపిస్తోంది. Order K T six two five five zero.", "Hello, my daughter's wedding is on Sunday the eighteenth. I ordered wedding things on Kartly, and some are showing as late. Order KT-62550."]
+    - [after, "పెళ్ళి తర్వాత వచ్చేవి ఏవీ వద్దు. అవి cancel చేసి, డబ్బు Kartly balance లో వేయండి. ఈ వారంలో వచ్చే వేరేవి చూపించండి.", "I don't want anything that comes after the wedding. Cancel those and put the money in my Kartly balance. Show me others that come this week."]
+    - [after, "Kurta కి silk ది, clutch కి ఆ ఒక్కటే, frame కి wooden ది. మూడూ order చేయండి, balance నుంచి. తక్కువ పడితే UPI.", "The silk one for the kurta, that one clutch, the wooden frame. Order all three, from the balance. If it falls short, UPI."]
+    - [after, "Return gifts, diyas — ఇవి రెండూ ఇంటికి కాదు, function hall కి పంపాలి. Sri Lakshmi Convention Hall, Road number two, Banjara Hills, five zero zero zero three four.", "The return gifts and the diyas — both should go to the function hall, not home. Sri Lakshmi Convention Hall, Road No. 2, Banjara Hills, 500034."]
+    - [after, "రెండింటికీ gift wrap చేయండి, message — 'With love, Keerthi weds Sandeep'.", "Gift-wrap both, message — 'With love, Keerthi weds Sandeep'."]
+    - [after, "Pooja thali మాత్రం ఇంటికే రావాలి. అది ఎప్పుడు వస్తుంది?", "But the pooja thali must come home. When will it come?"]
+    - [after, "Hall లో మేనేజర్ ఉంటాడు, అతను తీసుకుంటాడు. ఏమైనా చెప్పాలా?", "The manager at the hall will receive it. Do I need to tell him anything?"]
+    - [after, "Juttis ఎప్పుడు వస్తాయి? రేపు నేను ఇంట్లో ఉండను. బుధవారం సాయంత్రం పంపించండి.", "When are the juttis coming? I won't be home tomorrow. Send them Wednesday evening."]
+    - [after, "కొత్త order కి ఎంత అయింది? Balance ఎంత పోయింది, UPI ఎంత?", "How much did the new order come to? How much from the balance, how much UPI?"]
+    - [after, "Gift wrap కి ఎంత అయింది?", "How much did the gift wrap cost?"]
+    - [after, "అన్నీ పెళ్ళి ముందే వస్తాయి కదా? ఒకసారి చెప్పండి.", "Everything will come before the wedding, right? Tell me once."]
+    - [after, "SMS పంపండి. చాలా thanks అండి.", "Send an SMS. Thank you so much."]
+  key:
+    - "Cancels only the three late items (kurta, clutch, frame) to Kartly balance; keeps the thali and juttis"
+    - "Orders the silk kurta, embellished clutch and wooden frame (KT-62781, ₹7,390): ₹7,048 from balance, ₹342 by UPI; delivery by Sat 10 Oct"
+    - "Sends the return gifts and diyas to Sri Lakshmi Convention Hall 500034 and wraps both with the message"
+    - "Moves the juttis to Wed 7 Oct, 4-8 pm"
+    - "Confirms everything arrives before 18 October; speaks Telugu, keeping her English words"
+  checks: {lang: te, digits: ["KT-62781", "7,048"], say: [["342", "మూడు వందల నలభై రెండు", "three forty-two"], ["7,390", "ఏడు వేల మూడు వందల తొంభై"]], tool_order: [cancel_item, place_order]}
+  guard: "L3 names each choice by kind, which fits the alternatives the agent must read; the hall address and the message come before any change; L8 asks for the split whatever the agent said."
+
+- id: ret-105
+  g: RET-1
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Leaving for two weeks — seven parcels held, redirected, readdressed or turned prepaid, one hold over the limit"
+  basis: "Customers travelling with parcels in transit hold, redirect and readdress each one so nothing returns to the seller."
+  caller: "M 26-45 · consultant in Chennai flying to Singapore tomorrow, rushed"
+  goal: "Make sure none of seven parcels comes back unclaimed while he is away: hold some, send some to his brother, take two tomorrow morning, and make COD prepaid so his brother can receive it."
+  role: "You handle delivery. Holds last up to 7 days."
+  context: ""
+  tasks:
+    - task: "Find everything in flight"
+      calls:
+        - "list_orders() → KT-63010 (headphones, books), KT-63022 (air fryer, cash on delivery), KT-63045 (shirts ×2 in one shipment, shoes), KT-63060 (office chair, not dispatched; desk lamp, not dispatched)"
+        - "get_order(order_id=KT-63010) → AWBs DL 5520 9901 (headphones, Tue 6 Oct), DL 5520 9902 (books, Wed 7 Oct)"
+        - "get_order(order_id=KT-63022) → AWB DL 5520 9910 (air fryer, Thu 8 Oct), cash on delivery ₹6,499"
+        - "get_order(order_id=KT-63045) → AWBs EK 4471 0081 (shirts, Thu 8 Oct), EK 4471 0082 (shoes, Fri 9 Oct)"
+        - "get_order(order_id=KT-63060) → office chair and desk lamp, packing; delivery Mon 12 Oct; to 4 Besant Nagar, Chennai 600090"
+    - task: "Take two before he leaves"
+      calls:
+        - "reschedule_delivery(awb=DL 5520 9901, date=Tue 6 Oct, slot=7-10 am) → rescheduled"
+        - "reschedule_delivery(awb=DL 5520 9902, date=Tue 6 Oct, slot=7-10 am) → rescheduled"
+    - task: "Hold the clothes until he is back"
+      calls:
+        - "hold_delivery(awb=EK 4471 0081, until_date=Mon 19 Oct) → error: holds last up to 7 days; latest Thu 15 Oct"
+        - "hold_delivery(awb=EK 4471 0081, until_date=Thu 15 Oct) → held at the Adyar hub"
+        - "hold_delivery(awb=EK 4471 0082, until_date=Thu 15 Oct) → held at the Adyar hub"
+    - task: "The air fryer to his brother, prepaid"
+      calls:
+        - "track_shipment(awb=DL 5520 9910) → Delhivery, at Chennai hub, delivery Thu 8 Oct"
+        - "redirect_to_pickup_point(awb=DL 5520 9910, pickup_point=Kartly Point, Anna Nagar 2nd Avenue) → collect by Sat 17 Oct"
+        - "convert_cod_to_prepaid(order_id=KT-63022) → link for ₹6,449 sent, ₹50 prepaid discount"
+        - "get_payment(order_id=KT-63022) → paid ₹6,449, UTR 6283 1120 7701"
+    - task: "Chair and lamp to his brother's flat"
+      calls:
+        - "check_pincode(pincode=600040) → serviceable, 2 days"
+        - "update_delivery_address(order_id=KT-63060, item_id=office chair, address=Karthik Ramasamy, 18 3rd Street, Anna Nagar, Chennai 600040) → updated; delivery Mon 12 Oct"
+        - "update_delivery_address(order_id=KT-63060, item_id=desk lamp, address=Karthik Ramasamy, 18 3rd Street, Anna Nagar, Chennai 600040) → updated; delivery Mon 12 Oct"
+    - task: "The jacket return pickup"
+      calls:
+        - "get_return(return_id=RT-62980) → denim jacket from KT-62711; pickup booked Wed 7 Oct"
+        - "reschedule_pickup(return_id=RT-62980, date=Mon 19 Oct) → pickup Mon 19 Oct, 10 am-2 pm; return window held open"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=delivery_plan_summary) → sent"
+  forbid: [cancel_order, "cancel_return(return_id=RT-62980)", "cancel_item(order_id=KT-63022, item_id=air fryer)"]
+  lines:
+    - [open, "வணக்கம், நான் Vignesh. நாளைக்கு Singapore போறேன், இரண்டு வாரம். Kartly ல நிறைய parcel வந்துட்டு இருக்கு. எதுவும் return ஆகக்கூடாது.", "Hello, I'm Vignesh. I'm going to Singapore tomorrow for two weeks. Lots of Kartly parcels are on the way. None of them should go back."]
+    - [after, "எல்லா order ஐயும் பாருங்க, ஒவ்வொரு parcel உம் எப்போ வருதுன்னு சொல்லுங்க.", "Look at all the orders and tell me when each parcel is coming."]
+    - [after, "Headphones உம் books உம் நாளைக்கு காலைல ஏழு மணிக்குள்ள வந்தா நான் எடுத்துக்குவேன். Flight பத்து மணிக்கு.", "If the headphones and books come early tomorrow morning, from seven, I'll take them. My flight is at ten."]
+    - [after, "Shirts உம் shoes உம் நான் வர்ற வரைக்கும் hold பண்ணுங்க, பத்தொன்பதாம் தேதி வரைக்கும். அவ்ளோ நாள் முடியலைன்னா, முடிஞ்ச வரைக்கும் hold பண்ணுங்க, என் தம்பி போய் வாங்கிக்குவான்.", "Hold the shirts and shoes until I'm back, until the nineteenth. If that's too long, hold them as long as you can, and my brother will go and collect them."]
+    - [after, "Air fryer பெருசு, அது cash on delivery. என் தம்பி Anna Nagar ல இருக்கான், அதை அங்க ஒரு pickup point க்கு அனுப்புங்க.", "The air fryer is big, and it's cash on delivery. My brother lives in Anna Nagar — send it to a pickup point there."]
+    - [after, "அவன் பணம் கட்ட வேண்டாம். இப்பவே online ஆ மாத்துங்க, நான் கட்டிடுறேன்.", "He shouldn't have to pay. Make it online now, I'll pay."]
+    - [after, "கட்டிட்டேன். வந்துச்சா பாருங்க.", "I've paid. Check whether it came through."]
+    - [after, "Chair உம் lamp உம் இன்னும் pack ஆகிட்டு இருக்கா? அப்போ அதை நேரா அவன் வீட்டுக்கு அனுப்புங்க — Karthik Ramasamy, eighteen, third street, Anna Nagar, six zero zero zero four zero.", "Are the chair and lamp still being packed? Then send them straight to his house — Karthik Ramasamy, 18, 3rd Street, Anna Nagar, 600040."]
+    - [after, "இன்னொன்னு — ஒரு jacket return பண்ணியிருக்கேன், புதன்கிழமை pickup. நான் இருக்க மாட்டேன். திரும்பி வந்ததும், பத்தொன்பதாம் தேதி வர சொல்லுங்க.", "One more — I've returned a jacket, pickup on Wednesday. I won't be there. Have them come on the nineteenth, after I'm back."]
+    - [after, "Return cancel ஆகாது இல்ல? அந்த பணம் எனக்கு வேணும்.", "The return won't get cancelled, right? I need that money."]
+    - [after, "எல்லாம் ஒரு தடவை சொல்லுங்க — எது எங்க, எப்போ.", "Tell me everything once — what goes where, and when."]
+    - [after, "SMS அனுப்புங்க. நன்றி, ரொம்ப உதவியா இருந்தீங்க.", "Send an SMS. Thank you, that was a big help."]
+  key:
+    - "Reads every parcel's date across the four orders"
+    - "Moves the headphones and books to Tue 6 Oct, 7-10 am"
+    - "When a hold to 19 October fails, says the 7-day limit and holds the shirts and shoes until Thu 15 Oct at the Adyar hub"
+    - "Sends the air fryer to Kartly Point Anna Nagar, turns it prepaid (₹6,449) and confirms the payment"
+    - "Readdresses the chair and lamp to Karthik's flat 600040 (Mon 12 Oct)"
+    - "Moves the jacket pickup RT-62980 to Mon 19 Oct and confirms the return stays open"
+    - "Reads the plan back; speaks Tamil, keeping his English words"
+  checks: {lang: ta, digits: ["Thu 15 Oct", "6,449"], tool_order: [convert_cod_to_prepaid, get_payment]}
+  guard: "The hold fallback comes with the request; L7 asks for the payment check after the link the agent must send; L8 asks about the chair and lamp whether or not the agent mentioned their status."
+
+- id: ret-106
+  g: RET-1
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Seller's warehouse flooded — eight delayed items decided one by one: cancel, swap or wait"
+  basis: "Marketplaces call customers when a seller's stock is delayed and offer a choice per item."
+  caller: "F 46-60 · homemaker in Mumbai decorating for Diwali, chatty and decisive"
+  goal: "Decide for each delayed décor item whether to cancel, take an in-stock alternative or wait, and get something for the trouble."
+  role: "You are calling from Kartly because eight items on order KT-64400 are delayed after the seller's warehouse flooded. Open the call: greet, name Kartly, say why you are calling. Offer for each item: cancel, an alternative, or wait for the new date."
+  context: "Customers affected by this delay get ₹300 Kartly balance."
+  tasks:
+    - task: "Read the delayed items"
+      calls:
+        - "get_order(order_id=KT-64400) → delayed to Wed 28 Oct: ceramic vases (pair) ₹1,450; jute rug ₹2,899; cushion covers (set of 5) ₹999; brass urli ₹2,350; wall hanging ₹1,199; LED string lights ₹649; table runner ₹799; scented candles (set of 6) ₹899; paid by card; to 21 Hill Road, Bandra, Mumbai 400050"
+    - task: "Cancel three"
+      calls:
+        - "cancel_item(order_id=KT-64400, item_id=ceramic vases, reason=seller delay, refund_to=Kartly balance) → cancelled; ₹1,450 to Kartly balance now"
+        - "cancel_item(order_id=KT-64400, item_id=wall hanging, reason=seller delay, refund_to=Kartly balance) → cancelled; ₹1,199 to Kartly balance now"
+        - "cancel_item(order_id=KT-64400, item_id=table runner, reason=seller delay, refund_to=Kartly balance) → cancelled; ₹799 to Kartly balance now"
+    - task: "Swap three for in-stock items"
+      calls:
+        - "cancel_item(order_id=KT-64400, item_id=LED string lights, reason=seller delay, refund_to=Kartly balance) → cancelled; ₹649 to Kartly balance now"
+        - "cancel_item(order_id=KT-64400, item_id=cushion covers, reason=seller delay, refund_to=Kartly balance) → cancelled; ₹999 to Kartly balance now"
+        - "cancel_item(order_id=KT-64400, item_id=scented candles, reason=seller delay, refund_to=Kartly balance) → cancelled; ₹899 to Kartly balance now"
+        - "find_alternatives(sku=LED string lights) → warm-white fairy lights ₹599, delivery Thu 8 Oct"
+        - "find_alternatives(sku=cushion covers) → embroidered cushion covers (set of 5) ₹1,099, delivery Fri 9 Oct"
+        - "find_alternatives(sku=scented candles) → jar candles (set of 4) ₹749, delivery Thu 8 Oct"
+        - "check_stock(sku=warm-white fairy lights, pincode=400050) → in stock"
+        - "check_stock(sku=embroidered cushion covers, pincode=400050) → in stock"
+        - "check_stock(sku=jar candles, pincode=400050) → in stock"
+        - "add_to_cart(sku=warm-white fairy lights, qty=2) → added, ₹1,198"
+        - "add_to_cart(sku=embroidered cushion covers, qty=1) → added, ₹1,099"
+        - "add_to_cart(sku=jar candles, qty=1) → added, ₹749"
+        - "place_order(address=21 Hill Road, Bandra, Mumbai 400050, payment_mode=Kartly balance) → order KT-64712, ₹3,046 from Kartly balance; delivery by Fri 9 Oct"
+    - task: "Wait for two, with alerts"
+      calls:
+        - "notify_restock(sku=jute rug) → alert set"
+        - "notify_restock(sku=brass urli) → alert set"
+    - task: "Goodwill, follow-up, summary"
+      calls:
+        - "credit_goodwill(order_id=KT-64400, amount=₹300, reason=seller delay) → ₹300 added to Kartly balance"
+        - "get_wallet() → Kartly balance ₹3,249"
+        - "send_sms(template=delay_choices_summary) → sent"
+  forbid: [cancel_order, "cancel_item(order_id=KT-64400, item_id=jute rug)", "cancel_item(order_id=KT-64400, item_id=brass urli)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Yes, this is Shobha. Flooded? Oh no. Which things?"]
+    - [after, "Read me the list, one by one."]
+    - [after, "The vases, the wall hanging and the table runner — cancel those, I'll manage without. Put the money back in my Kartly balance."]
+    - [after, "Lights, cushion covers and candles I need before Diwali. What else do you have that comes this week?"]
+    - [after, "Take all three, but two packs of the fairy lights. Pay from the balance."]
+    - [after, "The rug and the urli — those I'll wait for, they're special. Will you tell me when they ship?"]
+    - [after, "And for all this trouble? Anything?"]
+    - [after, "When exactly do the new things come?"]
+    - [after, "So what's my Kartly balance now?"]
+    - [after, "Lovely. Send me a message with all of it."]
+    - [after, "Thank you for calling, beta. Very nice of you."]
+  key:
+    - "Opens naming Kartly and the flood delay on KT-64400; reads all eight items with the 28 October date"
+    - "Cancels the vases, wall hanging and table runner to Kartly balance"
+    - "Offers alternatives for lights, cushions and candles; orders two fairy lights, embroidered covers and jar candles (KT-64712, ₹3,046)"
+    - "Keeps the rug and urli on order and sets restock alerts; does not cancel them"
+    - "Credits ₹300 and gives the ₹3,249 balance"
+  checks: {digits: ["KT-64712", "3,249"], say: [["3,046", "three thousand forty-six", "three thousand and forty-six"]], tool_order: [cancel_item, place_order]}
+  guard: "Every choice names items by what they are, fitting any order the agent read them in; L6 picks from the alternatives the agent must offer."
+
+- id: ret-107
+  g: RET-2
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "New flat, whole cart on the phone — ten items checked one by one, two swapped, coupons, EMI, card declined"
+  basis: "Customers setting up a home build big carts with an agent and hit stock, coupon and payment problems along the way."
+  caller: "F 26-45 · young professional in Gurugram setting up her first flat, excited, list in hand"
+  goal: "Order everything on her list in one order with the best coupon, on EMI, delivered by the weekend where possible."
+  role: "You handle orders. Check stock for each item at her pincode before adding it. State the total before placing the order."
+  context: "Coupon NEWHOME10 gives 10% up to ₹5,000 on orders above ₹25,000. Coupon DIWALI500 expired on 30 Sep."
+  tasks:
+    - task: "What's already in the cart"
+      calls:
+        - "get_cart() → old phone cover ₹299; cart value ₹299"
+        - "remove_from_cart(sku=phone cover) → removed"
+    - task: "Check stock for each item on her list"
+      calls:
+        - "check_stock(sku=queen bed frame, pincode=122002) → in stock"
+        - "check_stock(sku=orthopaedic mattress queen, pincode=122002) → in stock"
+        - "check_stock(sku=3-seater sofa, pincode=122002) → out of stock, back Sat 24 Oct"
+        - "check_stock(sku=coffee table, pincode=122002) → in stock"
+        - "check_stock(sku=4-burner gas stove, pincode=122002) → in stock"
+        - "check_stock(sku=microwave 25 L, pincode=122002) → out of stock, back Thu 15 Oct"
+        - "check_stock(sku=dinner set 24 pc, pincode=122002) → in stock"
+        - "check_stock(sku=curtains (set of 4), pincode=122002) → in stock"
+        - "check_stock(sku=study chair, pincode=122002) → in stock"
+        - "check_stock(sku=floor lamp, pincode=122002) → in stock"
+    - task: "Alternatives for the two out of stock"
+      calls:
+        - "find_alternatives(sku=3-seater sofa) → fabric 3-seater sofa ₹18,999, delivery Sat 10 Oct; recliner sofa ₹32,500, delivery Mon 12 Oct"
+        - "find_alternatives(sku=microwave 25 L) → convection microwave 23 L ₹9,290, delivery Thu 8 Oct"
+        - "notify_restock(sku=3-seater sofa) → alert set"
+    - task: "Add everything"
+      calls:
+        - "add_to_cart(sku=queen bed frame, qty=1) → added, ₹14,500"
+        - "add_to_cart(sku=orthopaedic mattress queen, qty=1) → added, ₹12,999"
+        - "add_to_cart(sku=fabric 3-seater sofa, qty=1) → added, ₹18,999"
+        - "add_to_cart(sku=coffee table, qty=1) → added, ₹4,299"
+        - "add_to_cart(sku=4-burner gas stove, qty=1) → added, ₹6,850"
+        - "add_to_cart(sku=convection microwave 23 L, qty=1) → added, ₹9,290"
+        - "add_to_cart(sku=dinner set 24 pc, qty=1) → added, ₹2,399"
+        - "add_to_cart(sku=curtains (set of 4), qty=1) → added, ₹1,899"
+        - "add_to_cart(sku=study chair, qty=1) → added, ₹5,499"
+        - "add_to_cart(sku=floor lamp, qty=1) → added, ₹2,265"
+    - task: "Coupons and EMI"
+      calls:
+        - "validate_coupon(code=DIWALI500, cart_value=₹78,999) → not valid: expired on 30 Sep"
+        - "validate_coupon(code=NEWHOME10, cart_value=₹78,999) → valid; ₹5,000 off (10% capped)"
+        - "get_emi_options(cart_value=₹73,999) → 3 months no-cost ₹24,667 a month; 6 months ₹12,950 a month at 14%"
+    - task: "Place the order"
+      calls:
+        - "place_order(address=Flat 704, Tower B, Sector 54, Gurugram 122002, payment_mode=credit card 3 months no-cost EMI, coupon=NEWHOME10) → error: card declined by the bank (online limit)"
+        - "place_order(address=Flat 704, Tower B, Sector 54, Gurugram 122002, payment_mode=debit card 3 months no-cost EMI, coupon=NEWHOME10) → order KT-65120, ₹73,999; deliveries Thu 8 Oct to Sat 10 Oct"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=order_summary) → sent"
+  forbid: ["validate_coupon(code=FIRST50)", "add_to_cart(sku=recliner sofa)"]
+  lines:
+    - [open, "Hi! Main naye flat mein shift ho rahi hoon, Gurugram. Poori list hai, aap ke saath ek hi order mein karna hai.", "Hi! I'm moving into a new flat in Gurugram. I have a whole list and want to do it in one order with you."]
+    - [after, "Pincode one two two zero zero two. Cart mein ek purana phone cover pada hai, woh hata do.", "Pincode 122002. There's an old phone cover sitting in the cart — remove it."]
+    - [after, "List — queen bed frame, orthopaedic mattress queen, teen seater sofa, coffee table, chaar burner gas stove.", "The list — queen bed frame, queen orthopaedic mattress, three-seater sofa, coffee table, four-burner gas stove."]
+    - [pause 1800, "Aur — microwave pachchees litre, chaubees piece dinner set, chaar curtains ka set, study chair aur ek floor lamp.", "And — a 25-litre microwave, a 24-piece dinner set, a set of four curtains, a study chair and a floor lamp."]
+    - [after, "Sofa nahi hai? Toh fabric wala le lo, recliner bahut mehenga hai. Par jab woh wala wapas aaye toh mujhe bata dena.", "The sofa isn't there? Then take the fabric one, the recliner is too expensive. But tell me when the original comes back."]
+    - [after, "Microwave mein woh convection wala theek hai.", "For the microwave, that convection one is fine."]
+    - [after, "Total kitna hua? Mere paas coupon hai — DIWALI five hundred.", "What's the total? I have a coupon — DIWALI500."]
+    - [after, "Expire ho gaya? Achha, koi aur lagta hai kya naye ghar wala?", "It's expired? Okay, is there any other for a new home?"]
+    - [after, "Badiya. EMI mein kya options hain?", "Great. What EMI options are there?"]
+    - [after, "Teen mahine no-cost, credit card se. Agar credit card na chale toh debit card se wahi EMI.", "Three months no-cost, on the credit card. If the credit card doesn't work, the same EMI on the debit card."]
+    - [after, "Sab kab tak aayega?", "When will everything arrive?"]
+    - [after, "Perfect. SMS kar do. Thank you so much!", "Perfect. SMS it. Thank you so much!"]
+  key:
+    - "Removes the phone cover; checks stock for all ten items at 122002"
+    - "Offers both sofa alternatives and the convection microwave; adds the fabric sofa, sets a restock alert for the original sofa, does not add the recliner"
+    - "Says DIWALI500 expired on 30 September and finds NEWHOME10: ₹78,999 less ₹5,000"
+    - "Gives the 3-month no-cost (₹24,667) and 6-month options; when the credit card is declined, says so and places it on the debit card"
+    - "States the total ₹73,999 and order KT-65120, delivery 8–10 October"
+  checks: {lang: hg, digits: ["KT-65120", "24,667"], say: [["73,999", "tihattar hazaar nau sau ninyanave", "seventy-three thousand nine hundred ninety-nine"]], tool_order: [check_stock, add_to_cart]}
+  guard: "The whole list comes in L3–L4 before any check; L5–L6 choose from the alternatives the agent must offer; the card fallback comes with the EMI choice."
+
+- id: ret-108
+  g: RET-2
+  lang: en
+  diff: Medium
+  dir: in
+  title: "Sale-day payment chaos — five orders: debited but failed, pending, re-paid by link, coupons re-checked"
+  basis: "On big sale days payments time out and customers are left unsure which orders went through."
+  caller: "M 18-25 · college student in Pune who shopped the midnight sale, worried about money"
+  goal: "Know which of five orders actually went through, get his money back where it was taken twice or for nothing, and complete the ones he still wants."
+  role: "You handle payments. A debit for an order that failed is refunded automatically within 3 working days."
+  context: "Coupons stay valid on a re-paid order for 24 hours."
+  tasks:
+    - task: "Check each order's payment"
+      calls:
+        - "list_orders() → KT-66001 earbuds, KT-66002 backpack, KT-66003 sneakers, KT-66004 hoodie, KT-66005 power bank; all placed today between 12:02 am and 12:20 am"
+        - "get_payment(order_id=KT-66001) → paid ₹1,799, UTR 6284 0012 1101; order confirmed"
+        - "get_payment(order_id=KT-66002) → debited ₹1,299, UTR 6284 0012 1102; order failed; refund due by Thu 8 Oct"
+        - "get_payment(order_id=KT-66003) → payment pending; order on hold for 24 hours"
+        - "get_payment(order_id=KT-66004) → not debited; order failed"
+        - "get_payment(order_id=KT-66005) → paid twice: ₹999, UTR 6284 0012 1105 and ₹999, UTR 6284 0012 1106; order confirmed"
+    - task: "Refund status for the money taken for nothing"
+      calls:
+        - "check_refund(order_id=KT-66002, item_id=backpack) → ₹1,299 to UPI by Thu 8 Oct, ref RF 7702"
+        - "check_refund(order_id=KT-66005, item_id=power bank) → ₹999 second payment to UPI by Wed 7 Oct, ref RF 7705"
+    - task: "Re-pay the ones he still wants"
+      calls:
+        - "validate_coupon(code=SALE15, cart_value=₹2,999) → valid on the re-paid sneakers order; ₹450 off"
+        - "send_payment_link(order_id=KT-66003, amount=₹2,549) → link sent by SMS"
+        - "validate_coupon(code=SALE15, cart_value=₹1,499) → valid on the re-paid hoodie order; ₹225 off"
+        - "send_payment_link(order_id=KT-66004, amount=₹1,274) → link sent by SMS"
+        - "send_payment_link(order_id=KT-66002, amount=₹1,299) → link sent by SMS"
+        - "get_payment(order_id=KT-66003) → paid ₹2,549; order confirmed"
+        - "get_payment(order_id=KT-66004) → error: payment status service timed out"
+        - "get_payment(order_id=KT-66004) → paid ₹1,274; order confirmed"
+        - "get_payment(order_id=KT-66002) → paid ₹1,299; order confirmed"
+    - task: "Something for the trouble, ticket, summary"
+      calls:
+        - "credit_goodwill(order_id=KT-66005, amount=₹100, reason=double charge on sale day) → ₹100 added to Kartly balance"
+        - "raise_ticket(category=duplicate payment, summary=KT-66005 charged twice, UTR 6284 0012 1106) → ticket PY 66050"
+        - "send_sms(template=payments_summary) → sent"
+  forbid: ["cancel_order(order_id=KT-66001)", "send_payment_link(order_id=KT-66005)"]
+  lines:
+    - [open, "Hi, I shopped the midnight sale and the payments went crazy. Five orders. Some show money gone, some say failed. I don't know what I've paid for."]
+    - [after, "Can you check all five, one by one?"]
+    - [after, "So the backpack money is gone but the order failed? Will I get it back?"]
+    - [after, "And the power bank charged me twice?! Get that back."]
+    - [after, "I still want the backpack, the sneakers and the hoodie. Can I pay again? I had a SALE fifteen coupon — does that still work?"]
+    - [after wait=9000, "Okay, I've paid all three links. Can you check they went through?"]
+    - [after, "Phew. So what's the total I've actually paid today, for things I'm getting?"]
+    - [after, "Can I get anything for the double charge mess?"]
+    - [after, "And when exactly do I get the two refunds?"]
+    - [after, "Is the earbuds order fine? I don't want to lose that one."]
+    - [after, "Send me all of it on SMS please."]
+    - [after, "Thanks, you saved my month."]
+  key:
+    - "Checks all five: earbuds paid; backpack debited but failed (refund by Thu 8 Oct); sneakers pending; hoodie not debited; power bank paid twice"
+    - "Confirms both refunds: ₹1,299 by Thu 8 Oct and the duplicate ₹999 by Wed 7 Oct"
+    - "Re-checks SALE15 on each re-paid order and sends links: sneakers ₹2,549, hoodie ₹1,274, backpack ₹1,299"
+    - "Confirms all three payments after he pays; when the hoodie check times out, says so and checks again"
+    - "States ₹7,920 paid for the five items he gets; credits ₹100 and raises PY 66050"
+  checks: {digits: ["2,549", "1,274", "PY 66050"], say: [["7,920", "seven thousand nine hundred and twenty", "seven thousand nine hundred twenty"]], tool_order: [send_payment_link, get_payment]}
+  guard: "L3–L4 react to results the agent must give; L6 follows a silence while he pays and asks for the checks; L7 asks for the total whatever was said."

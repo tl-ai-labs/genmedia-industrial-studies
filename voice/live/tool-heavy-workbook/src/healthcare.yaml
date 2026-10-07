@@ -1,0 +1,69 @@
+# Healthcare — tool-heavy live-call scenarios (header). Scenarios: healthcare-*.yaml.
+# Shape and cue grammar: ../README.md.
+
+industry: Healthcare
+code: hlt
+brand: "Nirmaya Hospitals · Nirmaya Pharmacy · Nirmaya Labs"
+agent_role_base: |
+  You are the phone assistant for Nirmaya Hospitals, its pharmacy and its labs. The
+  caller is matched by caller ID to a family account; you act for the patients linked
+  to it. Every tool acts on one patient, one appointment, one medicine, one test or one
+  bill item, so booking for three people is three calls. You never diagnose, never
+  interpret test values and never advise on doses beyond what the prescription says;
+  for those, offer the pharmacist, the nurse or the doctor. A substitute medicine needs
+  the pharmacist's approval. Reports go only to the patient, a linked family member or
+  the treating doctor. Read medicine names, strengths (mg) and times exactly. If the
+  caller describes an emergency (chest pain, trouble breathing, stroke signs, heavy
+  bleeding, unconsciousness), stop and tell them to call 108 or 112 now.
+
+tools:
+  # patients and appointments
+  get_patient: "(patient) → hospital ID (UHID), age, linked family members"
+  find_doctor: "(speciality, branch, date?) → doctors with id and next free date"
+  get_slots: "(doctor_id, date) → free slots"
+  book_appointment: "(doctor_id, date, slot, patient, mode?) → appointment id, fee; or slot taken"
+  get_appointment: "(appointment_id) → doctor, date, slot, mode, fee paid"
+  reschedule_appointment: "(appointment_id, date, slot) → moved, or slot taken"
+  cancel_appointment: "(appointment_id) → cancelled, refund"
+  send_teleconsult_link: "(appointment_id) → video link sent by SMS"
+  # pharmacy
+  get_prescription: "(rx_id) → medicines with strength, dose, schedule, refills left"
+  check_medicine_stock: "(medicine, pincode) → in stock, or out of stock with same-salt substitute"
+  order_medicine: "(rx_id, medicine, qty, order_id?) → added to the order, price; a substitute needs pharmacist approval"
+  place_pharmacy_order: "(order_id, address, slot) → order placed, total, delivery time"
+  get_pharmacy_order: "(order_id) → items, status, rider ETA"
+  report_order_issue: "(order_id, medicine, issue) → replacement or refund, pickup of the wrong item"
+  set_refill_reminder: "(rx_id, medicine, every) → reminder and auto-refill set"
+  # labs
+  get_lab_order: "(order_id) → tests, sample status"
+  get_collection_slots: "(pincode, date) → home-collection slots"
+  book_home_collection: "(tests, pincode, date, slot, patient) → collection id, fasting instructions; or slot full"
+  add_test: "(collection_id, test) → added, price"
+  reschedule_collection: "(collection_id, date, slot) → moved"
+  get_report_status: "(order_id, test) → ready or pending, expected time"
+  send_report: "(order_id, test, to) → sent to the patient, a linked family member or the doctor"
+  # admissions and billing
+  check_room_availability: "(branch, room_type, date) → rooms free, daily rate"
+  book_admission: "(patient, doctor_id, date, room_type) → admission id, estimate, deposit"
+  get_admission: "(admission_id) → room, doctor, estimate, insurance status, expected discharge"
+  request_cashless: "(admission_id, insurer, policy_no) → pre-authorisation sent, approved amount"
+  pay_deposit_link: "(admission_id, amount) → payment link sent by SMS"
+  get_hospital_bill: "(admission_id) → items with amounts, insurance share, patient share"
+  raise_bill_query: "(admission_id, item, reason) → query number, answer by"
+  get_discharge_status: "(admission_id) → discharge summary status, pending clearances"
+  book_ambulance: "(pickup, drop, date, time, type) → booking id, crew"
+  request_medical_records: "(patient, record) → records emailed"
+  # service
+  send_sms: "(template) → SMS sent to the caller's number"
+  schedule_callback: "(date, slot, topic) → callback booked"
+  transfer_to_pharmacist: "(reason) → pharmacist joins"
+  transfer_to_nurse: "(reason) → nurse line joins"
+  raise_ticket: "(category, summary) → ticket number"
+
+groups:
+  HLT-1: {stage: "Appointments & teleconsults — several patients and doctors, series of visits, rescheduling", accounts: "Apollo Hospitals, Manipal, Fortis, Practo, AMRI", tests: "one booking per patient and doctor, dates and slots, emergency recognition mid-booking"}
+  HLT-2: {stage: "Pharmacy — monthly medicines, cold chain, substitutes, wrong deliveries, refill reminders", accounts: "Tata 1mg, Apollo 24/7, PharmEasy, Apollo Pharmacy", tests: "one call per medicine, names and strengths exact, refusing dose advice, pharmacist for substitutes"}
+  HLT-3: {stage: "Lab tests — home collection for several people, add-on tests, fasting, reports", accounts: "Dr Lal PathLabs, Thyrocare, Metropolis, Redcliffe", tests: "one collection per patient, sample and report IDs, never interpreting values, reports to the right person"}
+  HLT-4: {stage: "Admissions, discharge & billing — planned surgery, cashless, bill items, discharge logistics", accounts: "Apollo, Fortis, Max, Narayana Health, Medanta", tests: "estimates and deposits, one query per bill item, discharge medicines and follow-ups, ambulance"}
+
+scenarios: []

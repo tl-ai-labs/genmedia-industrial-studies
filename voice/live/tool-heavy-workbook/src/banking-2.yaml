@@ -1,0 +1,594 @@
+# Banking & insurance — tool-heavy scenarios bank-109 … bank-116 (BANK-4 Fraud, BANK-2 Payments).
+code: bank
+scenarios:
+
+- id: bank-109
+  g: BANK-4
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "SIM swap on an elderly father — two accounts, UPI, IMPS and a card charge, nothing sent to the stolen number"
+  basis: "SIM-swap fraud takes over the registered mobile; the family has to freeze every channel without using that number."
+  caller: "M 26-45 · son in Jaipur, angry and anxious; speaker b: M 60+ · his father, the account holder, slow and confused"
+  goal: "Stop every channel on both accounts and both cards, complain about every debit, remove the fraudster's payee, check the FD and arrange the branch visit."
+  role: "You handle fraud. The father's SIM has been taken over, so the registered mobile is with the fraudster: send nothing to it. Verify the father, whose accounts these are. Contact details change only at a branch."
+  context: "Statements can be emailed; the email on the account was not changed."
+  tasks:
+    - task: "Verify the father and see what happened"
+      calls:
+        - "verify_caller(name=Mohanlal Sharma, dob=4 Jul 1952) → verified"
+        - "get_accounts(holder=Mohanlal Sharma) → pension savings 6021 with debit card 6047; savings 6039; credit card 1188; FD 7730"
+        - "get_login_activity() → Sun 4 Oct 7:05 pm mobile banking registered on a new SIM; 7:10 pm device Vivo Y20 in Asansol; 7:14 pm payee Deepak K added"
+    - task: "Freeze every channel"
+      calls:
+        - "block_netbanking(reason=SIM swap) → frozen, NB 41180"
+        - "logout_device(device=Vivo Y20, Asansol) → session ended, device removed"
+        - "set_upi_status(account_last4=6021, enabled=no) → UPI off"
+        - "set_upi_status(account_last4=6039, enabled=no) → UPI off"
+    - task: "Complaints for the UPI debits on the pension account"
+      calls:
+        - "get_transactions(account_last4=6021, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → Sun 4 Oct 7:20 pm UPI ₹40,000 to Deepak K, UTR 6278 4410 1101; 7:35 pm UPI ₹40,000, UTR 6278 4410 1102; today 8:15 am UPI ₹20,000, UTR 6278 4410 1103"
+        - "raise_upi_complaint(utr=6278 4410 1101, reason=SIM swap fraud) → complaint UC 31001, 30 days"
+        - "raise_upi_complaint(utr=6278 4410 1102, reason=SIM swap fraud) → complaint UC 31002, 30 days"
+        - "raise_upi_complaint(utr=6278 4410 1103, reason=SIM swap fraud) → complaint UC 31003, 30 days"
+    - task: "The IMPS from the second account"
+      calls:
+        - "get_transactions(account_last4=6039, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → today 8:40 am IMPS ₹49,500 to Deepak K, ref IM 6039 0840"
+        - "raise_dispute(txn_ref=IM 6039 0840, reason=SIM swap fraud) → dispute DS 31010, receiving bank asked to hold funds"
+    - task: "Remove the fraudster's payee"
+      calls:
+        - "get_beneficiaries(account_last4=6021) → Deepak K (added Sun 4 Oct), Sunita Sharma (2019)"
+        - "delete_beneficiary(account_last4=6021, name=Deepak K) → removed"
+    - task: "Both cards"
+      calls:
+        - "block_card(card_last4=6047, reason=SIM swap fraud) → blocked, BL 31020"
+        - "block_card(card_last4=1188, reason=SIM swap fraud) → blocked, BL 31021"
+        - "get_transactions(card_last4=1188, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → today 9:02 am ₹24,999 Amazon gift card, ref CC 1188 0902"
+        - "raise_dispute(txn_ref=CC 1188 0902, reason=SIM swap fraud) → dispute DS 31011"
+        - "reissue_card(card_last4=6047, deliver_to=home) → new card ending 6055, dispatched Wed 7 Oct"
+        - "reissue_card(card_last4=1188, deliver_to=home) → new card ending 1196, dispatched Wed 7 Oct"
+    - task: "The FD"
+      calls:
+        - "get_fd(fd_last4=7730) → ₹5,00,000 at 7.4%, matures 12 Mar 2027; a premature closure was requested online today at 9:20 am and is on hold: it needs a signature at the branch"
+    - task: "Report, branch visit, statements by email"
+      calls:
+        - "raise_ticket(category=cyber fraud, summary=SIM swap; three UPI, one IMPS and one card charge) → ticket FR 66214"
+        - "find_branch(area=Malviya Nagar, Jaipur) → Kosh Bank Malviya Nagar, KB-0219, 9:30 am-4:30 pm"
+        - "book_branch_visit(branch_id=KB-0219, date=Tue 6 Oct, slot=11:00 am, purpose=register new SIM, cancel the FD closure request, reopen netbanking) → appointment BV 31044"
+        - "request_statement(account_last4=6021, kind=last 7 days, by email) → emailed"
+        - "request_statement(account_last4=6039, kind=last 7 days, by email) → emailed"
+  forbid: [send_sms, update_contact]
+  lines:
+    - [open, "नमस्ते, मेरे पिताजी के खाते से पैसे निकल गए हैं। कल शाम से उनका फ़ोन बंद है, सिम काम नहीं कर रहा। मैं उनका बेटा अजय बोल रहा हूँ।", "Hello, money has gone from my father's account. His phone has been dead since yesterday evening, the SIM isn't working. This is his son Ajay."]
+    - [after, "पापा मेरे साथ ही हैं, उनसे बात कर लीजिए।", "Papa is right here with me, speak to him."]
+    - [after b, "हाँ जी, मैं मोहनलाल शर्मा। जन्मतिथि चार जुलाई उन्नीस सौ बावन।", "Yes, I'm Mohanlal Sharma. Date of birth fourth July 1952."]
+    - [after b, "मुझे तो कुछ समझ नहीं आ रहा। जो भी हो रहा है, सब रोक दीजिए।", "I don't understand any of this. Whatever is happening, stop it all."]
+    - [after, "पापा के दो बचत खाते हैं, दोनों में UPI बंद कर दीजिए। कितने पैसे गए हैं?", "Papa has two savings accounts; turn off UPI on both. How much money has gone?"]
+    - [after, "सबकी शिकायत डाल दीजिए। ये दीपक कौन है? उसे हटा दीजिए। सुनीता मेरी बहन है, उसे रहने दीजिए।", "Raise complaints on all of them. Who is this Deepak? Remove him. Sunita is my sister, leave her."]
+    - [after b, "मेरे दोनों कार्ड भी बंद कर दो — एटीएम वाला और क्रेडिट कार्ड।", "Block both my cards as well — the ATM card and the credit card."]
+    - [after, "क्रेडिट कार्ड पर भी कुछ ख़र्च हुआ है क्या?", "Has anything been spent on the credit card too?"]
+    - [after, "उसकी भी शिकायत कीजिए। नए कार्ड घर भेज दीजिए।", "Raise a complaint on that too. Send new cards home."]
+    - [after b, "मेरी पाँच लाख की एफ़डी है, वो ठीक है न?", "I have a five-lakh FD — that's safe, isn't it?"]
+    - [after, "उस नंबर पर कोई SMS मत भेजिए, वो अब उनके पास है। मेरे नंबर पर भेज दीजिए — नौ आठ दो नौ...", "Don't send any SMS to that number, they have it now. Send it to my number — nine eight two nine..."]
+    - [after, "तो अब नया सिम लेकर क्या करना है?", "So what do we do now with a new SIM?"]
+    - [after, "मालवीय नगर ब्रांच पास है। कल सुबह ग्यारह बजे हो सकता है?", "The Malviya Nagar branch is close. Can it be tomorrow at eleven in the morning?"]
+    - [after, "दोनों खातों का स्टेटमेंट ईमेल पर भेज दीजिए, पुलिस को देना है।", "Email the statements for both accounts; we need to give them to the police."]
+    - [after, "ठीक है, धन्यवाद।", "Okay, thank you."]
+  key:
+    - "Verifies the father, then freezes netbanking, logs out the Asansol device and turns UPI off on 6021 and 6039"
+    - "Raises one UPI complaint per debit (UC 31001-31003) and disputes the ₹49,500 IMPS (DS 31010)"
+    - "Removes Deepak K, keeps Sunita; blocks 6047 and 1188, disputes the ₹24,999 charge and reissues both"
+    - "Says the FD is safe and its closure request is on hold until a branch signature"
+    - "Sends nothing to the stolen number and does not add the son's number; explains the branch will register the new SIM"
+    - "Books Malviya Nagar for Tue 6 Oct at 11:00 am (BV 31044), emails both statements, tells them to report it on 1930"
+  checks: {lang: hi, digits: ["UC 31003", "DS 31010", "BV 31044"], say: [["1930", "उन्नीस सौ तीस", "एक नौ तीन शून्य"]], tool_order: [block_netbanking, raise_upi_complaint]}
+  guard: "Father and son each ask only for what their earlier lines set up; L11 is refused whatever the agent offered before; L13 proposes a time whether or not the agent named a branch."
+
+- id: bank-110
+  g: BANK-4
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Screen-sharing app scam — devices out, UPI checks and complaints, card replaced, UPI kept off"
+  basis: "Fake customer-care numbers get people to install remote-access apps and then move money while they watch."
+  caller: "M 26-45 · shop owner in Lucknow, embarrassed and in a hurry"
+  goal: "Cut off the scammer, complain about every payment that went through, replace his card and get his UPI back for the shop."
+  role: "You handle fraud. After a remote-access scam, UPI and netbanking stay off until the phone is reset and the customer re-registers at a branch."
+  context: ""
+  tasks:
+    - task: "Verify and see the sessions"
+      calls:
+        - "verify_caller(name=Imran Qureshi, dob=19 Apr 1984) → verified"
+        - "get_login_activity() → today 9:50 am login on his Samsung M31 with a screen-sharing app running; 10:02 am payee Rakesh Mishra added; 10:05 am unknown laptop in Ranchi"
+    - task: "Cut the scammer off"
+      calls:
+        - "logout_device(device=unknown laptop, Ranchi) → session ended, device removed"
+        - "logout_device(device=Samsung M31) → session ended, device removed"
+        - "block_netbanking(reason=remote-access scam) → frozen, NB 52201"
+        - "set_upi_status(account_last4=3356, enabled=no) → UPI off"
+    - task: "Check each payment"
+      calls:
+        - "get_transactions(account_last4=3356, from_date=Mon 5 Oct, to_date=Mon 5 Oct) → 10:04 am UPI ₹25,000 to rakesh.m@ybl, UTR 6281 0042 7701; 10:07 am UPI ₹25,000, UTR 6281 0042 7702; 10:11 am UPI ₹9,999, UTR 6281 0042 7703; 10:15 am IMPS ₹45,000 to Rakesh Mishra, ref IM 3356 1015"
+        - "check_upi_txn(utr=6281 0042 7701) → success, credited to rakesh.m@ybl"
+        - "check_upi_txn(utr=6281 0042 7702) → success, credited to rakesh.m@ybl"
+        - "check_upi_txn(utr=6281 0042 7703) → failed at the payee bank; ₹9,999 will be reversed by Wed 7 Oct"
+    - task: "Complaints and dispute for what went through"
+      calls:
+        - "raise_upi_complaint(utr=6281 0042 7701, reason=remote-access fraud) → error: complaint system timed out"
+        - "raise_upi_complaint(utr=6281 0042 7701, reason=remote-access fraud) → complaint UC 52110, 30 days"
+        - "raise_upi_complaint(utr=6281 0042 7702, reason=remote-access fraud) → complaint UC 52111, 30 days"
+        - "raise_dispute(txn_ref=IM 3356 1015, reason=remote-access fraud) → dispute DS 52120, receiving bank asked to hold funds"
+    - task: "Remove the payee"
+      calls:
+        - "get_beneficiaries(account_last4=3356) → Rakesh Mishra (added today), Qureshi Traders (2020)"
+        - "delete_beneficiary(account_last4=3356, name=Rakesh Mishra) → removed"
+    - task: "His debit card was on the screen"
+      calls:
+        - "block_card(card_last4=3364, reason=card shown during remote-access fraud) → blocked, BL 52130"
+        - "reissue_card(card_last4=3364, deliver_to=home) → new card ending 3372, dispatched Wed 7 Oct"
+    - task: "Report, follow-up, summary"
+      calls:
+        - "raise_ticket(category=cyber fraud, summary=remote-access app; two UPI and one IMPS) → ticket FR 52140"
+        - "schedule_callback(date=Wed 7 Oct, slot=5-6 pm, topic=UPI reversal 6281 0042 7703 and fraud complaints) → booked"
+        - "send_sms(template=fraud_case_summary) → sent"
+  forbid: ["set_upi_status(account_last4=3356, enabled=yes)", transfer_funds]
+  lines:
+    - [open, "Hello, mujhse fraud ho gaya hai. Ek customer care wale ne app download karwaya, aur ab paise kat rahe hain.", "Hello, I've been defrauded. A customer-care person made me download an app, and now money is being taken."]
+    - [after, "Imran Qureshi. Date of birth unnees April unnees sau chauraasi.", "Imran Qureshi. Date of birth nineteenth April 1984."]
+    - [after, "Woh app abhi bhi phone pe hai. Kya karoon? Pehle sab band karo!", "That app is still on my phone. What do I do? Shut everything first!"]
+    - [after, "Haan, uninstall kar raha hoon. Ab bataiye kitne paise gaye?", "Yes, I'm uninstalling it. Now tell me how much has gone?"]
+    - [after, "Chaaron check karo, kaun sa gaya kaun sa nahi.", "Check all four, which went through and which didn't."]
+    - [after, "Jo gaye hain un sab pe complaint daalo.", "Raise complaints on all the ones that went through."]
+    - [after, "Usne Rakesh Mishra naam ka payee bhi add kiya tha. Qureshi Traders mera hai.", "He also added a payee called Rakesh Mishra. Qureshi Traders is mine."]
+    - [after, "Mera debit card bhi screen pe dikh gaya tha. Usko band karke naya bhejo.", "My debit card showed on the screen too. Block it and send a new one."]
+    - [after, "Ek baat — dukaan ke payments UPI pe aate hain. UPI aaj hi wapas chalu kar do na, please.", "One thing — the shop's payments come on UPI. Please switch UPI back on today."]
+    - [after, "Achha, toh phone reset karke branch jaana padega. Theek hai.", "Okay, so I have to reset the phone and go to the branch. Fine."]
+    - [after, "Woh nau hazaar wala kab wapas aayega?", "When will the nine-thousand one come back?"]
+    - [after, "Mujhe Wednesday shaam ko call kar dena, sab ka update dena.", "Call me on Wednesday evening with an update on everything."]
+    - [after, "Aur SMS bhej do. Thank you, bhai.", "And send an SMS. Thank you, brother."]
+  key:
+    - "Logs out the Ranchi laptop and his own phone, freezes netbanking and turns UPI off before anything else"
+    - "Checks each UPI payment: 7701 and 7702 went through, 7703 failed and will be reversed by 7 October"
+    - "Raises complaints on 7701 (after the timeout, says so and retries) and 7702, and disputes the ₹45,000 IMPS"
+    - "Removes Rakesh Mishra, keeps Qureshi Traders; blocks 3364 and reissues as 3372"
+    - "Refuses to switch UPI back on today and explains the reset and branch step"
+    - "Tells him to report it on 1930, books the Wednesday call-back and sends the SMS; never asks for an OTP"
+  checks: {lang: hg, digits: ["UC 52110", "UC 52111", "DS 52120", "3372"], say: [["1930", "unnees sau tees", "nineteen thirty", "one nine three zero"]], tool_order: [logout_device, raise_upi_complaint]}
+  guard: "L3 asks to stop everything whatever the agent said about the app; L5 asks for every payment checked; L9 must be refused; L10 accepts any explanation of the branch step."
+
+- id: bank-111
+  g: BANK-4
+  lang: ta
+  script: ta-mix
+  diff: Medium
+  dir: in
+  title: "Lost phone, calling from a friend's — UPI and wallets off, bills that run on UPI rearranged"
+  basis: "A lost phone carries UPI, wallets and card tokens; bills paid by UPI then need another route until the new SIM comes."
+  caller: "F 26-45 · office worker in Chennai, calling from a colleague's phone, composed"
+  goal: "Shut UPI and phone payments on both accounts and both cards, check nothing was misused, keep rent, the cook and school fees going, and get UPI back after the new SIM."
+  role: "You handle security. The caller is not on the registered mobile: verify her by name and date of birth. The registered mobile is the lost phone, so send nothing to it."
+  context: "Rent and the cook's salary normally go by UPI on the 7th."
+  tasks:
+    - task: "Verify and check the phone's sessions"
+      calls:
+        - "verify_caller(name=Lakshmi Narayanan, dob=23 Mar 1991) → verified"
+        - "get_accounts() → savings 6610 with debit card 6636; salary savings 6628; credit card 4490"
+        - "get_login_activity() → OnePlus 11 last active today 8:20 am in Chennai; no new devices or changes"
+    - task: "Shut the phone out"
+      calls:
+        - "logout_device(device=OnePlus 11) → session ended, device removed"
+        - "set_upi_status(account_last4=6610, enabled=no) → UPI off"
+        - "set_upi_status(account_last4=6628, enabled=no) → UPI off"
+        - "set_card_control(card_last4=6636, channel=phone wallet, enabled=no) → updated"
+        - "set_card_control(card_last4=4490, channel=phone wallet, enabled=no) → updated"
+    - task: "Check nothing was misused"
+      calls:
+        - "get_transactions(account_last4=6610, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → only her usual payments; nothing after 8:20 am"
+        - "get_transactions(card_last4=4490, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → only her usual payments; nothing after 8:20 am"
+    - task: "Autopays"
+      calls:
+        - "get_mandates(account_last4=6628) → none"
+        - "get_mandates(account_last4=6610) → MD 4101 electricity ₹2,100 on the 7th; MD 4102 Jio postpaid on the 8th; MD 4103 SIP ₹5,000 on the 10th; MD 4104 old gym, failing since August"
+        - "cancel_mandate(mandate_id=MD 4104) → cancelled"
+    - task: "Rent and the cook by standing instruction, school fee by NEFT"
+      calls:
+        - "get_beneficiaries(account_last4=6610) → Raghavan (landlord, 2023), Ponni (cook, 2024)"
+        - "set_standing_instruction(from_account_last4=6610, to=Raghavan, amount=₹18,000, day=7) → SI 64471, first on 7 Oct"
+        - "set_standing_instruction(from_account_last4=6610, to=Ponni, amount=₹6,000, day=7) → SI 64472, first on 7 Oct"
+        - "add_beneficiary(account_last4=6610, name=Vidya Mandir School, account_no=4412 0098 7731, ifsc=IOBA0001288) → added; up to ₹50,000 in the first 24 hours"
+        - "transfer_funds(from_account_last4=6610, to=Vidya Mandir School, amount=₹14,500, mode=NEFT) → sent, ref NF 64480"
+    - task: "Record it and the call-back for UPI"
+      calls:
+        - "raise_ticket(category=lost phone, summary=UPI and wallets off on 6610, 6628, 6636, 4490) → ticket LP 64490"
+        - "schedule_callback(date=Tue 6 Oct, slot=6-7 pm, topic=switch UPI back on after the new SIM) → booked"
+  forbid: [send_sms, update_contact]
+  lines:
+    - [open, "வணக்கம். என் phone தொலைஞ்சு போச்சு, இது என் colleague phone. என் bank account ல UPI எல்லாம் இருக்கு, உடனே நிறுத்தணும்.", "Hello. I lost my phone; this is my colleague's phone. My bank accounts have UPI on it all, I need to stop it right away."]
+    - [after, "Lakshmi Narayanan. Date of birth இருபத்தி மூணு March, ஆயிரத்து தொள்ளாயிரத்து தொண்ணூத்தி ஒண்ணு.", "Lakshmi Narayanan. Date of birth twenty-third March 1991."]
+    - [after, "காலைல எட்டு மணிக்கு bus ல போச்சுன்னு நினைக்கிறேன். ரெண்டு account லயும் UPI off பண்ணுங்க.", "I think it went on the bus at around eight this morning. Turn UPI off on both accounts."]
+    - [after, "என் debit card, credit card ரெண்டும் phone ல tap-to-pay க்கு save பண்ணி இருக்கேன். அதையும் நிறுத்துங்க. Cards என் கிட்ட தான் இருக்கு.", "My debit card and credit card are both saved on the phone for tap-to-pay. Stop that too. The cards themselves are with me."]
+    - [after, "யாராவது ஏதாவது பணம் எடுத்திருக்காங்களா? Savings, credit card ரெண்டையும் பாருங்க.", "Has anyone taken any money? Check both the savings account and the credit card."]
+    - [after, "நல்லது. இப்போ ஒரு பிரச்சனை — இந்த மாசம் rent, சமையல்காரம்மா சம்பளம் எல்லாம் UPI ல தான் அனுப்புவேன், ஏழாம் தேதி.", "Good. Now one problem — I send the rent and the cook's salary by UPI, on the seventh."]
+    - [after, "அப்போ ரெண்டையும் ஏழாம் தேதி automatic ஆ போற மாதிரி பண்ணுங்க. Rent பதினெட்டாயிரம், Ponni க்கு ஆறாயிரம்.", "Then make both go automatically on the seventh. Rent eighteen thousand, six thousand to Ponni."]
+    - [after, "School fee பதினாலாயிரத்து ஐநூறு இந்த வாரம் கட்டணும். School account number four four one two, zero zero nine eight, seven seven three one. IFSC I O B A zero zero zero one two eight eight.", "The school fee of fourteen thousand five hundred is due this week. School account number 4412 0098 7731. IFSC IOBA0001288."]
+    - [after, "அதை இப்பவே அனுப்புங்க.", "Send it right now."]
+    - [after, "ரெண்டு account லயும் இருக்கற autopays ஓடுமா? எதாவது பிரச்சனை ஆகுமா?", "Will the autopays on both accounts run? Will anything be a problem?"]
+    - [after, "அந்த gym பழையது, அதை cancel பண்ணிடுங்க.", "That gym one is old, cancel it."]
+    - [after, "நாளைக்கு புது SIM வந்துடும். அப்புறம் UPI திரும்ப on பண்ண எனக்கு நாளைக்கு சாயங்காலம் call பண்ணுங்க.", "The new SIM will come tomorrow. Call me tomorrow evening to switch UPI back on."]
+    - [after, "எல்லாத்துக்கும் ஒரு SMS அனுப்புங்க.", "Send an SMS for all of it."]
+    - [after, "ஓ, சரி சரி, அது தொலைஞ்ச phone க்கு தான் போகும். வேண்டாம். நன்றி.", "Oh, right, that would go to the lost phone. Never mind. Thank you."]
+  key:
+    - "Verifies her by name and date of birth; logs out the OnePlus, turns UPI off on 6610 and 6628 and phone wallets off on 6636 and 4490"
+    - "Checks the savings account and the credit card and says nothing was misused"
+    - "Says the account autopays keep running with UPI off; cancels only the old gym mandate MD 4104"
+    - "Sets SIs on the 7th: ₹18,000 to Raghavan (SI 64471) and ₹6,000 to Ponni (SI 64472)"
+    - "Adds the school and sends ₹14,500 by NEFT (NF 64480)"
+    - "Does not send an SMS to the lost phone; books the call-back for Tue 6 Oct, 6–7 pm"
+    - "Speaks Tamil, keeping her English words"
+  checks: {lang: ta, digits: ["SI 64471", "SI 64472", "NF 64480"], tool_order: [set_upi_status, set_standing_instruction]}
+  guard: "Every request carries its own amounts and dates; L13 asks for an SMS and L14 withdraws it whatever the agent said, so the agent must not have sent one."
+
+- id: bank-112
+  g: BANK-4
+  lang: tx
+  script: en → te-mix
+  diff: Hard
+  dir: in
+  switch: "L5: English → Telugu (her mother takes the phone)"
+  title: "Fake KYC call on an elderly mother — daughter explains in English, mother carries on in Telugu"
+  basis: "Fake 'KYC expired' calls target older customers; a child calls in and the account holder has to take over."
+  caller: "F 26-45 · daughter visiting her mother in Vijayawada, quick and worried; speaker b: F 60+ · her mother, the account holder, Telugu only"
+  goal: "Freeze the mother's account, complain about every debit, replace her card, remove the fraudster's payee and reassure her about her KYC and FD."
+  role: "You handle fraud. Act only after the account holder, the mother, is verified. On a fraud call, contact details change only at a branch."
+  context: ""
+  tasks:
+    - task: "Verify the mother and see what happened"
+      calls:
+        - "verify_caller(name=Padmavathi Rao, dob=11 Jan 1958) → verified"
+        - "get_login_activity() → today 9:30 am login from a new device in Hyderabad; 9:33 am payee K Srinu added"
+    - task: "Freeze"
+      calls:
+        - "block_netbanking(reason=fake KYC call, OTP shared) → frozen, NB 83301"
+        - "logout_device(device=new device, Hyderabad) → session ended, device removed"
+        - "set_upi_status(account_last4=8015, enabled=no) → UPI off"
+    - task: "Dispute each debit"
+      calls:
+        - "get_transactions(account_last4=8015, from_date=Mon 5 Oct, to_date=Mon 5 Oct) → 9:40 am IMPS ₹48,000 to K Srinu, ref IM 8015 0940; 9:52 am IMPS ₹22,000 to K Srinu, ref IM 8015 0952; 10:15 am debit card online ₹15,600, ref DC 8023 1015"
+        - "raise_dispute(txn_ref=IM 8015 0940, reason=fraud, OTP obtained by a fake KYC call) → error: dispute system timed out"
+        - "raise_dispute(txn_ref=IM 8015 0940, reason=fraud, OTP obtained by a fake KYC call) → dispute DS 83310, receiving bank asked to hold funds"
+        - "raise_dispute(txn_ref=IM 8015 0952, reason=fraud, OTP obtained by a fake KYC call) → dispute DS 83311, receiving bank asked to hold funds"
+        - "raise_dispute(txn_ref=DC 8023 1015, reason=fraud, OTP obtained by a fake KYC call) → dispute DS 83312"
+    - task: "Her card and the payee"
+      calls:
+        - "block_card(card_last4=8023, reason=fraud) → blocked, BL 83320"
+        - "reissue_card(card_last4=8023, deliver_to=home) → new card ending 8031, dispatched Wed 7 Oct"
+        - "get_beneficiaries(account_last4=8015) → K Srinu (added today), Divya Rao (2022), LIC premium (2018)"
+        - "delete_beneficiary(account_last4=8015, name=K Srinu) → removed"
+    - task: "Her KYC and FD"
+      calls:
+        - "get_kyc_status(member=Padmavathi Rao) → complete; next due 2029"
+        - "get_fd(fd_last4=9041) → ₹3,00,000 at 7.6%, matures 20 Feb 2027; untouched"
+    - task: "Report, branch visit, summary"
+      calls:
+        - "raise_ticket(category=cyber fraud, summary=fake KYC call; two IMPS and one card charge) → ticket FR 83330"
+        - "find_branch(area=Benz Circle, Vijayawada) → Kosh Bank Benz Circle, KB-0533, 9:30 am-4:30 pm"
+        - "book_branch_visit(branch_id=KB-0533, date=Tue 6 Oct, slot=11:00 am, purpose=reopen netbanking, add daughter's number for alerts) → appointment BV 83340"
+        - "send_sms(template=fraud_case_summary) → sent"
+  forbid: [update_contact, transfer_funds]
+  lines:
+    - [open, "Hi, I'm calling about my mother's account. Someone called her this morning saying her KYC had expired and her account would be blocked. She gave them the OTPs."]
+    - [after, "I'm her daughter, Divya. I'm at her place in Vijayawada, she's right here with me."]
+    - [after, "She's been getting SMSes for money going out. Please stop everything."]
+    - [after, "Okay, I'll give her the phone. She speaks only Telugu."]
+    - [after b, "హలో, నేను పద్మావతి రావు. పుట్టిన తేదీ పదకొండు January, పంతొమ్మిది వందల యాభై ఎనిమిది.", "Hello, I'm Padmavathi Rao. Date of birth eleventh January 1958."]
+    - [after b, "ఎవరో ఫోన్ చేసి KYC అయిపోయిందన్నారు. OTP అడిగారు, చెప్పేశాను. అన్నీ ఆపేయండమ్మా.", "Someone called and said my KYC had run out. They asked for the OTP and I told them. Please stop everything."]
+    - [after b, "ఎంత డబ్బు పోయింది?", "How much money has gone?"]
+    - [after b, "అన్నిటికీ complaint పెట్టండి.", "Put complaints on all of them."]
+    - [after b, "నా ATM card కూడా block చేసి, కొత్తది ఇంటికి పంపండి.", "Block my ATM card too and send a new one home."]
+    - [after b, "నా payee list లో ఎవరో కొత్త వ్యక్తి ఉన్నాడట. తీసేయండి. మా అమ్మాయి, LIC — అవి నావే.", "Apparently there's some new person in my payee list. Remove him. My daughter and LIC — those are mine."]
+    - [after b, "నా KYC నిజంగా అయిపోయిందా?", "Has my KYC really run out?"]
+    - [after b, "నా FD మూడు లక్షలు ఉంది. అది safe గా ఉందా?", "I have an FD of three lakh. Is it safe?"]
+    - [after b, "మా అమ్మాయి number ఇప్పుడే account లో పెట్టండి. ఇక నుంచి messages తనకి కూడా వెళ్ళాలి.", "Put my daughter's number on the account right now. From now on messages should go to her too."]
+    - [after b, "సరే, Benz Circle branch దగ్గర. రేపు పొద్దున పదకొండు గంటలకి వెళ్తాం.", "Okay, the Benz Circle branch is close. We'll go tomorrow at eleven in the morning."]
+    - [after b, "SMS పంపండి. చాలా thanks అమ్మా.", "Send an SMS. Thank you so much."]
+  key:
+    - "Explains in English that the account holder must speak; acts only after verifying Padmavathi"
+    - "Replies in Telugu from L5 and keeps to simple, patient Telugu"
+    - "Freezes netbanking, logs out the Hyderabad device, turns UPI off"
+    - "Disputes the two IMPS (₹48,000 after a timeout and retry, ₹22,000) and the ₹15,600 card charge: ₹85,600 in all"
+    - "Blocks 8023, reissues as 8031, removes K Srinu and keeps Divya and LIC"
+    - "Says her KYC is complete until 2029 and her ₹3,00,000 FD is untouched; banks never ask for OTPs"
+    - "Does not add the daughter's number on the call; books Benz Circle for Tue 6 Oct at 11:00 am (BV 83340); mentions 1930"
+  checks: {lang_from: {L5: te}, digits: ["DS 83310", "8031", "BV 83340"], say: [["85,600", "ఎనభై ఐదు వేల ఆరు వందలు", "eighty-five thousand six hundred"]], tool_order: [verify_caller, block_netbanking]}
+  guard: "The daughter's English lines only describe and hand over; every Telugu line is a request that holds after any reply; L13 must be refused."
+
+- id: bank-113
+  g: BANK-2
+  lang: en
+  diff: Medium
+  dir: in
+  title: "New salary account — move six autopays, cancel two, redo standing instructions, empty the old account"
+  basis: "A job change moves salary to a new account, and every autopay and standing instruction has to follow it one by one."
+  caller: "F 26-45 · product manager in Pune, organised, reading from a list"
+  goal: "Move every autopay she keeps to the new account, cancel two, redo her rent and her mother's transfer, move the balance and close the old account."
+  role: "You handle payments. Standing instructions can't be moved: cancel them on the old account and set them again on the new one."
+  context: "The insurance premium autopay is set on the policy, not as a mandate."
+  tasks:
+    - task: "Verify and find the accounts"
+      calls:
+        - "verify_caller(name=Farah Siddiqui, dob=8 Sep 1990) → verified"
+        - "get_accounts() → savings 2240 (old salary account); savings 9915 (new salary account, opened Sep); Kavach health policy KV-H-448120"
+        - "get_mandates(account_last4=2240) → MD 7101 SIP Axis MF ₹10,000; MD 7102 SIP Parag Parikh ₹15,000; MD 7103 LIC premium ₹8,400 quarterly; MD 7104 Tata Power; MD 7105 Airtel broadband; MD 7106 Netflix; MD 7107 Cult.fit; MD 7108 Kosh credit card 5590 bill. Standing instructions: SI 50121 rent ₹28,000 on the 3rd to Mr Joshi; SI 50122 ₹5,000 on the 1st to Ammi"
+    - task: "Move six autopays"
+      calls:
+        - "move_mandate(mandate_id=MD 7101, to_account_last4=9915) → moved, from 10 Oct"
+        - "move_mandate(mandate_id=MD 7102, to_account_last4=9915) → moved, from 10 Oct"
+        - "move_mandate(mandate_id=MD 7103, to_account_last4=9915) → moved, from the next quarter"
+        - "move_mandate(mandate_id=MD 7104, to_account_last4=9915) → moved, from the next bill"
+        - "move_mandate(mandate_id=MD 7105, to_account_last4=9915) → moved, from the next bill"
+        - "move_mandate(mandate_id=MD 7108, to_account_last4=9915) → moved, from the next statement"
+    - task: "Cancel two"
+      calls:
+        - "cancel_mandate(mandate_id=MD 7106) → cancelled"
+        - "cancel_mandate(mandate_id=MD 7107) → cancelled"
+    - task: "Redo the standing instructions"
+      calls:
+        - "cancel_standing_instruction(si_no=SI 50121) → cancelled"
+        - "cancel_standing_instruction(si_no=SI 50122) → cancelled"
+        - "get_beneficiaries(account_last4=2240) → Mr Joshi, account 3021 4471 0098, SBIN0004410; Ammi, account 7712 0045 3310, KOSB0000221"
+        - "get_beneficiaries(account_last4=9915) → none"
+        - "add_beneficiary(account_last4=9915, name=Mr Joshi, account_no=3021 4471 0098, ifsc=SBIN0004410) → added"
+        - "add_beneficiary(account_last4=9915, name=Ammi, account_no=7712 0045 3310, ifsc=KOSB0000221) → added"
+        - "set_standing_instruction(from_account_last4=9915, to=Mr Joshi, amount=₹28,000, day=3) → SI 50311, first on 3 Nov"
+        - "set_standing_instruction(from_account_last4=9915, to=Ammi, amount=₹5,000, day=1) → SI 50312, first on 1 Nov"
+    - task: "Premium autopay and nominee on the new account"
+      calls:
+        - "set_premium_autopay(policy_no=KV-H-448120, account_last4=9915) → autopay set from the March renewal"
+        - "update_nominee(account_last4=9915, nominee=Rukhsana Siddiqui, relation=mother, share=100%) → nominee updated"
+    - task: "Move the money and close the old account"
+      calls:
+        - "get_account(account_last4=2240) → balance ₹1,86,240; no holds"
+        - "transfer_funds(from_account_last4=2240, to=own savings 9915, amount=₹1,86,240, mode=internal) → done, ref IT 50320"
+        - "request_statement(account_last4=2240, kind=final statement) → emailed"
+        - "raise_ticket(category=account closure, summary=close savings 2240; balance moved to 9915) → ticket AC 50330; closure in 7 working days"
+        - "send_sms(template=account_move_summary) → sent"
+  forbid: ["cancel_mandate(mandate_id=MD 7102)", "cancel_mandate(mandate_id=MD 7101)"]
+  lines:
+    - [open, "Hi, I've changed jobs and my salary now comes into my new Kosh account. I want to move everything over from the old one."]
+    - [after, "Farah Siddiqui, eighth September nineteen ninety."]
+    - [after, "Can you read me what's set up on the old account?"]
+    - [after, "Keep both SIPs, the LIC premium, the electricity, the broadband and the credit card bill — move all six to the new account."]
+    - [after, "Netflix and Cult.fit — cancel those, I don't use them."]
+    - [after, "Then the rent to Mr Joshi and the five thousand to my mother. Same amounts, same dates, from the new account. Their details are already on the old account."]
+    - [after, "My health insurance premium is also paid from the old account. Move that too."]
+    - [after, "The new account doesn't have a nominee yet. Put my mother — Rukhsana Siddiqui — a hundred percent."]
+    - [after, "How much is left in the old account?"]
+    - [after, "Move all of it to the new one."]
+    - [after, "And then I want to close the old account. Can you start that?"]
+    - [after, "Can you email me a final statement for the old account before it closes?"]
+    - [after, "Read me back what's on the new account now, please."]
+    - [after, "And an SMS with all of it. Thanks, that was a long list!"]
+  key:
+    - "Reads the eight autopays and two standing instructions on 2240"
+    - "Moves MD 7101, 7102, 7103, 7104, 7105 and 7108 to 9915; cancels only Netflix (7106) and Cult.fit (7107)"
+    - "Explains SIs can't move; cancels SI 50121 and 50122, adds Mr Joshi and Ammi to 9915 and sets ₹28,000 on the 3rd and ₹5,000 on the 1st"
+    - "Moves the policy's premium autopay to 9915 and sets Rukhsana Siddiqui as nominee"
+    - "Moves the full ₹1,86,240 balance, emails the final statement and raises the closure ticket AC 50330"
+    - "Reads back the new account's setup and sends the SMS"
+  checks: {digits: ["SI 50311", "SI 50312", "AC 50330"], say: [["1,86,240", "one lakh eighty-six thousand two hundred and forty", "one lakh eighty six thousand two hundred forty"]], tool_order: [cancel_standing_instruction, set_standing_instruction]}
+  guard: "L4 and L5 name every autopay by what it is, so they fit whatever order the agent read them in; L6 tells the agent where the payee details are."
+
+- id: bank-114
+  g: BANK-2
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Kirana shop — eight failed UPI payments to suppliers checked one by one, complaints, suppliers paid by NEFT"
+  basis: "Small shops pay suppliers by UPI; when payments fail but money is debited, each UTR has to be traced."
+  caller: "M 46-60 · kirana shop owner in Indore, practical, background noise of the shop"
+  goal: "Know which of a week's failed supplier payments came back, complain about the rest, pay every supplier properly and fix the electricity autopay."
+  role: "You handle payments. A failed UPI debit is reversed within 1 working day; after that, raise a complaint."
+  context: ""
+  noise: {bed: shop_counter, snr_db: 12}
+  tasks:
+    - task: "Verify and list the failed payments"
+      calls:
+        - "verify_caller(name=Suresh Yadav, dob=10 Oct 1975) → verified"
+        - "get_transactions(account_last4=8204, from_date=Mon 28 Sep, to_date=Sun 4 Oct) → failed UPI with money debited: Mon 28 Sep ₹12,400 Agarwal Traders, UTR 6279 1100 0101; Tue 29 Sep ₹8,750 Sharma Dairy, UTR 6279 1100 0102; Wed 30 Sep ₹15,000 Agarwal Traders, UTR 6279 1100 0103; Thu 1 Oct ₹6,200 Bansal Oil, UTR 6279 1100 0104; Fri 2 Oct ₹9,900 Sharma Dairy, UTR 6279 1100 0105; Sat 3 Oct ₹4,350 Gupta Biscuits, UTR 6279 1100 0106; Sat 3 Oct ₹11,000 Bansal Oil, UTR 6279 1100 0107; Sun 4 Oct ₹7,600 Gupta Biscuits, UTR 6279 1100 0108"
+    - task: "Check each UTR"
+      calls:
+        - "check_upi_txn(utr=6279 1100 0101) → failed; ₹12,400 reversed on 30 Sep"
+        - "check_upi_txn(utr=6279 1100 0102) → failed; not reversed"
+        - "check_upi_txn(utr=6279 1100 0103) → failed; not reversed"
+        - "check_upi_txn(utr=6279 1100 0104) → failed; ₹6,200 reversed on 2 Oct"
+        - "check_upi_txn(utr=6279 1100 0105) → failed; not reversed"
+        - "check_upi_txn(utr=6279 1100 0106) → failed; ₹4,350 reversed on 4 Oct"
+        - "check_upi_txn(utr=6279 1100 0107) → failed; not reversed"
+        - "check_upi_txn(utr=6279 1100 0108) → failed; reversal due by Tue 6 Oct"
+    - task: "Complaints for the four not reversed"
+      calls:
+        - "raise_upi_complaint(utr=6279 1100 0102, reason=debited, not reversed) → complaint UC 70102"
+        - "raise_upi_complaint(utr=6279 1100 0103, reason=debited, not reversed) → complaint UC 70103"
+        - "raise_upi_complaint(utr=6279 1100 0105, reason=debited, not reversed) → complaint UC 70105"
+        - "raise_upi_complaint(utr=6279 1100 0107, reason=debited, not reversed) → complaint UC 70107"
+    - task: "Pay the four suppliers by NEFT"
+      calls:
+        - "get_beneficiaries(account_last4=8204) → Agarwal Traders (2021), Sharma Dairy (2022)"
+        - "add_beneficiary(account_last4=8204, name=Bansal Oil, account_no=0581 2200 4413, ifsc=PUNB0058100) → added; up to ₹50,000 in the first 24 hours"
+        - "add_beneficiary(account_last4=8204, name=Gupta Biscuits, account_no=3378 0012 9065, ifsc=BKID0003378) → added; up to ₹50,000 in the first 24 hours"
+        - "transfer_funds(from_account_last4=8204, to=Agarwal Traders, amount=₹27,400, mode=NEFT) → sent, ref NF 70201"
+        - "transfer_funds(from_account_last4=8204, to=Sharma Dairy, amount=₹18,650, mode=NEFT) → sent, ref NF 70202"
+        - "transfer_funds(from_account_last4=8204, to=Bansal Oil, amount=₹17,200, mode=NEFT) → sent, ref NF 70203"
+        - "transfer_funds(from_account_last4=8204, to=Gupta Biscuits, amount=₹11,950, mode=NEFT) → sent, ref NF 70204"
+    - task: "The electricity autopay"
+      calls:
+        - "get_mandates(account_last4=8204) → MD 5501 MPEB electricity ₹6,840, failed on Sat 3 Oct for low balance"
+        - "retry_mandate(mandate_id=MD 5501, date=Tue 6 Oct) → retry scheduled"
+    - task: "Statement and SMS"
+      calls:
+        - "request_statement(account_last4=8204, kind=last 7 days) → emailed"
+        - "send_sms(template=upi_complaints_summary) → sent"
+  forbid: ["raise_upi_complaint(utr=6279 1100 0101)", "raise_upi_complaint(utr=6279 1100 0108)"]
+  lines:
+    - [open, "Namaste ji, main Suresh Yadav, Indore se. Kirana ki dukaan hai. Is hafte supplier ko jo UPI payment kiye, saare fail ho gaye, par paise kat gaye.", "Hello, I'm Suresh Yadav from Indore. I have a grocery shop. All the UPI payments I made to suppliers this week failed, but the money was taken."]
+    - [after, "Janam tithi das October unnees sau pachattar.", "Date of birth tenth October 1975."]
+    - [after, "Pichhle Somvaar se kal tak, aath payment the. Ek-ek karke dekhiye, kaun sa wapas aaya, kaun sa nahi.", "From last Monday to yesterday, eight payments. Check them one by one, which came back and which didn't."]
+    - [after, "Kitne paise abhi tak atke hue hain?", "How much money is still stuck?"]
+    - [after, "Jo wapas nahi aaye, un sab pe complaint daal do.", "Raise complaints on all the ones that didn't come back."]
+    - [after, "Ab suppliers ko paisa toh dena padega. Chaaron ko NEFT se bhej do — jitna jitna fail hua tha, utna.", "Now the suppliers still have to be paid. Send all four by NEFT — whatever failed for each, that much."]
+    - [after, "Bansal Oil aur Gupta Biscuits saved nahi hain. Bansal Oil — account zero five eight one, two two zero zero, four four one three. IFSC P U N B zero zero five eight one zero zero.", "Bansal Oil and Gupta Biscuits aren't saved. Bansal Oil — account 0581 2200 4413. IFSC PUNB0058100."]
+    - [pause 1800, "Gupta Biscuits — teen teen saat aath, zero zero ek do, nau zero chhe paanch. IFSC B K I D zero zero zero teen teen saat aath.", "Gupta Biscuits — 3378 0012 9065. IFSC BKID0003378."]
+    - [after, "Har supplier ko kitna gaya, ek baar bata dijiye.", "Tell me once how much went to each supplier."]
+    - [after, "Aur bijli ka autopay bhi fail hua tha shayad, us din account khaali ho gaya tha.", "And I think the electricity autopay failed too, the account had run dry that day."]
+    - [after, "Haan, kal phir se try karwa do.", "Yes, have it tried again tomorrow."]
+    - [after, "Hafte ka statement email kar do, CA ko dena hai.", "Email the week's statement, I need to give it to my CA."]
+    - [after, "Aur SMS bhi. Bahut dhanyavaad ji.", "And an SMS too. Thank you very much."]
+  key:
+    - "Checks all eight UTRs: 0101, 0104 and 0106 reversed; 0108 due back by 6 October; 0102, 0103, 0105 and 0107 not reversed"
+    - "States ₹44,650 is stuck and raises one complaint for each of the four (UC 70102, 70103, 70105, 70107); none for the reversed or pending ones"
+    - "Adds Bansal Oil and Gupta Biscuits as read, and pays each supplier its two failed amounts by NEFT"
+    - "Reads back Agarwal ₹27,400, Sharma Dairy ₹18,650, Bansal Oil ₹17,200, Gupta Biscuits ₹11,950"
+    - "Finds the failed electricity mandate and schedules a retry for Tue 6 Oct"
+    - "Emails the statement and sends the SMS"
+  checks: {lang: hg, digits: ["27,400", "18,650", "17,200", "11,950"], say: [["44,650", "chauvalis hazaar chhe sau pachaas", "forty-four thousand six hundred fifty"]], tool_order: [check_upi_txn, raise_upi_complaint]}
+  guard: "L3 asks for every payment checked; L5 asks for complaints on whatever has not come back; L6 states the rule for each amount, so the agent sums the two failed payments per supplier."
+
+- id: bank-115
+  g: BANK-2
+  lang: te
+  script: te-mix
+  diff: Medium
+  dir: in
+  title: "Moved house — new landlord, maid and school as payees, old ones removed, standing instructions for the year"
+  basis: "After moving, customers redo payees and monthly standing instructions for rent, help and family in one call."
+  caller: "M 26-45 · IT employee in Hyderabad, moved last week, methodical"
+  goal: "Replace the old landlord and maid with the new ones, set every monthly payment, pay this month's rent and school fee, and clear an old autopay."
+  role: "You handle payments. A new payee can receive up to ₹50,000 in the first 24 hours."
+  context: ""
+  tasks:
+    - task: "Verify and read the payees"
+      calls:
+        - "verify_caller(name=Ravi Teja, dob=6 Jun 1986) → verified"
+        - "get_account(account_last4=3017) → savings, balance ₹1,42,800"
+        - "get_beneficiaries(account_last4=3017) → Lakshmi Prasad (old landlord), Ganga (old maid), Amma (mother, Guntur)"
+    - task: "Add the new payees"
+      calls:
+        - "add_beneficiary(account_last4=3017, name=Srinivas Murthy, account_no=5010 0234 5678 12, ifsc=HDFC0001234) → error: IFSC HDFC0001234 does not match this account number"
+        - "add_beneficiary(account_last4=3017, name=Srinivas Murthy, account_no=5010 0234 5678 12, ifsc=HDFC0004421) → added"
+        - "add_beneficiary(account_last4=3017, name=Saroja, account_no=2045 1180 0391, ifsc=SBIN0020451) → added"
+        - "add_beneficiary(account_last4=3017, name=Vidya Niketan School, account_no=9120 0004 5521, ifsc=UTIB0000912) → added"
+    - task: "Remove the old ones and their standing instructions"
+      calls:
+        - "delete_beneficiary(account_last4=3017, name=Lakshmi Prasad) → removed"
+        - "delete_beneficiary(account_last4=3017, name=Ganga) → removed"
+        - "cancel_standing_instruction(si_no=SI 40210) → cancelled (rent to Lakshmi Prasad)"
+        - "cancel_standing_instruction(si_no=SI 40211) → cancelled (salary to Ganga)"
+    - task: "Monthly standing instructions"
+      calls:
+        - "set_standing_instruction(from_account_last4=3017, to=Srinivas Murthy, amount=₹26,000, day=5) → SI 40310, first on 5 Nov"
+        - "set_standing_instruction(from_account_last4=3017, to=Saroja, amount=₹7,000, day=1) → SI 40311, first on 1 Nov"
+        - "set_standing_instruction(from_account_last4=3017, to=Amma, amount=₹10,000, day=1) → SI 40312, first on 1 Nov"
+        - "set_standing_instruction(from_account_last4=3017, to=own PPF 3025, amount=₹5,000, day=1) → SI 40313, first on 1 Nov"
+    - task: "This month's rent and the school fee now"
+      calls:
+        - "transfer_funds(from_account_last4=3017, to=Srinivas Murthy, amount=₹26,000, mode=IMPS) → sent, ref IM 40320"
+        - "transfer_funds(from_account_last4=3017, to=Vidya Niketan School, amount=₹38,500, mode=NEFT) → sent, ref NF 40321"
+    - task: "Old school-bus autopay"
+      calls:
+        - "get_mandates(account_last4=3017) → MD 3301 Little Stars school bus ₹2,800; MD 3302 Jio; MD 3303 TSSPDCL electricity"
+        - "cancel_mandate(mandate_id=MD 3301) → cancelled"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=payees_and_si_summary) → sent"
+  forbid: ["delete_beneficiary(account_last4=3017, name=Amma)", "cancel_mandate(mandate_id=MD 3303)"]
+  lines:
+    - [open, "హలో, మేము కొత్త ఇంటికి మారాం. Payments అన్నీ మార్చాలి — rent, పనిమనిషి, school.", "Hello, we've moved to a new house. I need to change all my payments — rent, the maid, school."]
+    - [after, "Ravi Teja. Date of birth ఆరు June, పంతొమ్మిది వందల ఎనభై ఆరు.", "Ravi Teja. Date of birth sixth June 1986."]
+    - [after, "కొత్త owner Srinivas Murthy. Account five zero one zero, zero two three four, five six seven eight, one two. IFSC H D F C zero zero zero one two three four. ఆయన రెండు IFSC లు పంపారు — అది పని చేయకపోతే H D F C zero zero zero four four two one.", "The new owner is Srinivas Murthy. Account 5010 0234 5678 12. IFSC HDFC0001234. He sent two IFSC codes — if that one doesn't work, HDFC0004421."]
+    - [after, "పనిమనిషి Saroja. Account two zero four five, one one eight zero, zero three nine one. IFSC S B I N zero zero two zero four five one.", "The maid is Saroja. Account 2045 1180 0391. IFSC SBIN0020451."]
+    - [after, "School — Vidya Niketan. Account nine one two zero, zero zero zero four, five five two one. IFSC U T I B zero zero zero zero nine one two.", "The school — Vidya Niketan. Account 9120 0004 5521. IFSC UTIB0000912."]
+    - [after, "పాత owner Lakshmi Prasad, పాత పనిమనిషి Ganga — ఇద్దరినీ తీసేయండి. వాళ్ళకి వెళ్ళే monthly payments కూడా ఆపేయండి. Amma ని మాత్రం ఉంచండి.", "Remove the old owner Lakshmi Prasad and the old maid Ganga. Stop the monthly payments to them too. But keep Amma."]
+    - [after, "ఇప్పుడు ప్రతి నెలా — rent ఇరవై ఆరు వేలు ఐదో తేదీ, Saroja కి ఏడు వేలు ఒకటో తేదీ.", "Now every month — rent twenty-six thousand on the fifth, seven thousand to Saroja on the first."]
+    - [after, "Amma కి పది వేలు ఒకటో తేదీ, ఇంకా నా PPF account కి ఐదు వేలు, అదీ ఒకటో తేదీ.", "Ten thousand to Amma on the first, and five thousand to my PPF account, also on the first."]
+    - [after, "ఈ నెల rent ఈరోజే ఇవ్వాలి. ఇప్పుడే పంపండి.", "This month's rent is due today. Send it now."]
+    - [after, "School fee ముప్పై ఎనిమిది వేల ఐదు వందలు కూడా ఈ వారం కట్టాలి. అదీ పంపండి.", "The school fee of thirty-eight thousand five hundred is due this week too. Send that as well."]
+    - [after, "పాత school bus autopay ఒకటి ఉంది, దాన్ని cancel చేయండి. Current bill, Jio ఉంచండి.", "There's an old school-bus autopay; cancel it. Keep the electricity bill and Jio."]
+    - [after, "ఇప్పుడు balance ఎంత ఉంది?", "What's the balance now?"]
+    - [after, "సరే, అన్నీ SMS లో పంపండి. Thanks అండి.", "Okay, send everything by SMS. Thank you."]
+  key:
+    - "When the first IFSC fails, says so and adds Srinivas Murthy with HDFC0004421, as he asked"
+    - "Adds Saroja and Vidya Niketan School as read; removes Lakshmi Prasad and Ganga and cancels SI 40210 and 40211; keeps Amma"
+    - "Sets SIs: ₹26,000 on the 5th, ₹7,000 to Saroja, ₹10,000 to Amma and ₹5,000 to PPF on the 1st"
+    - "Sends this month's rent ₹26,000 and the ₹38,500 school fee, both within the new-payee limit"
+    - "Cancels only the school-bus mandate MD 3301"
+    - "Gives the balance after the two payments, ₹78,300; speaks Telugu, keeping his English words"
+  checks: {lang: te, digits: ["SI 40310", "IM 40320", "NF 40321"], say: [["78,300", "డెబ్బై ఎనిమిది వేల మూడు వందలు", "seventy-eight thousand three hundred"]], tool_order: [add_beneficiary, transfer_funds]}
+  guard: "The second IFSC comes with the first; each payee's details and each amount are given in its own line; L12 asks for the balance whatever was said."
+
+- id: bank-116
+  g: BANK-2
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Wedding week — break an FD, raise the limit, pay seven vendors, one over the new-payee cap"
+  basis: "Wedding advances go to many vendors at once; new payees hit the first-day cap and the transfer limit."
+  caller: "F 26-45 · bride's sister handling payments in Chandigarh, busy and direct"
+  goal: "Fund the account from one FD, pay seven vendors their advances today and split whatever the new-payee cap blocks."
+  role: "You handle payments. Breaking an FD early costs a penalty: state the payout before breaking."
+  context: "The IMPS limit is ₹2,00,000 a day unless the customer raises it, up to ₹5,00,000."
+  noise: {bed: wedding_hall, snr_db: 12}
+  tasks:
+    - task: "Verify and check the money"
+      calls:
+        - "verify_caller(name=Simran Kaur, dob=27 Jul 1993) → verified"
+        - "get_account(account_last4=5530) → balance ₹3,40,000; IMPS limit ₹2,00,000 a day"
+        - "get_fd(fd_last4=5561) → ₹2,00,000 at 7.1%, matures 14 Mar 2027; payout if broken today ₹2,06,180 after a ₹1,950 penalty"
+    - task: "Break the FD and raise the limit"
+      calls:
+        - "break_fd(fd_last4=5561, to_account_last4=5530) → ₹2,06,180 credited, penalty ₹1,950"
+        - "set_transfer_limit(account_last4=5530, mode=IMPS, limit=₹5,00,000) → changed"
+    - task: "Payees"
+      calls:
+        - "get_beneficiaries(account_last4=5530) → added Fri 2 Oct: Royal Banquets, Sandhu Caterers, Gurpreet Photography, DJ Bunty, Kaur Florists"
+        - "add_beneficiary(account_last4=5530, name=Mehndi by Rani, account_no=6612 0045 1180, ifsc=PUNB0661200) → added; up to ₹50,000 in the first 24 hours"
+        - "add_beneficiary(account_last4=5530, name=Jasmeet Bridal Makeup, account_no=3390 1122 7741, ifsc=HDFC0003390) → added; up to ₹50,000 in the first 24 hours"
+    - task: "Seven advances"
+      calls:
+        - "transfer_funds(from_account_last4=5530, to=Royal Banquets, amount=₹1,50,000, mode=IMPS) → sent, ref IM 11601"
+        - "transfer_funds(from_account_last4=5530, to=Sandhu Caterers, amount=₹1,20,000, mode=IMPS) → sent, ref IM 11602"
+        - "transfer_funds(from_account_last4=5530, to=Gurpreet Photography, amount=₹60,000, mode=IMPS) → sent, ref IM 11603"
+        - "transfer_funds(from_account_last4=5530, to=DJ Bunty, amount=₹25,000, mode=IMPS) → sent, ref IM 11604"
+        - "transfer_funds(from_account_last4=5530, to=Kaur Florists, amount=₹35,000, mode=IMPS) → sent, ref IM 11605"
+        - "transfer_funds(from_account_last4=5530, to=Mehndi by Rani, amount=₹30,000, mode=IMPS) → sent, ref IM 11606"
+        - "transfer_funds(from_account_last4=5530, to=Jasmeet Bridal Makeup, amount=₹65,000, mode=IMPS) → error: above the ₹50,000 limit for a payee added in the last 24 hours"
+        - "transfer_funds(from_account_last4=5530, to=Jasmeet Bridal Makeup, amount=₹50,000, mode=IMPS) → sent, ref IM 11607"
+        - "transfer_funds(from_account_last4=5530, to=Jasmeet Bridal Makeup, amount=₹15,000, mode=IMPS, date=Tue 6 Oct) → scheduled, ref IM 11608"
+    - task: "Balance and summary"
+      calls:
+        - "get_account(account_last4=5530) → balance ₹76,180; ₹15,000 scheduled for Tue 6 Oct"
+        - "request_statement(account_last4=5530, kind=today's transfers) → emailed"
+        - "send_sms(template=transfers_summary) → sent"
+  forbid: ["break_fd(fd_last4=5579)"]
+  lines:
+    - [open, "Hi, it's my sister's wedding on Saturday and I have to pay all the vendors today. Lots of transfers."]
+    - [after, "Simran Kaur, twenty-seventh July nineteen ninety-three."]
+    - [after, "How much is in my savings? I'll need about five lakh."]
+    - [after, "Then break my FD ending five five six one. Not the other one — that one's for my parents. What do I get?"]
+    - [after, "Fine, break it. And I'll be sending more than two lakh today — can the limit go up to five?"]
+    - [after, "Five vendors I added on Friday — they should all be there. And two new ones."]
+    - [after, "Mehndi by Rani — account six six one two, zero zero four five, one one eight zero. IFSC P U N B zero six six one two zero zero."]
+    - [after, "Jasmeet Bridal Makeup — three three nine zero, one one two two, seven seven four one. IFSC H D F C zero zero zero three three nine zero."]
+    - [after, "Now the amounts. Royal Banquets one lakh fifty. Sandhu Caterers one lakh twenty. Gurpreet Photography sixty thousand."]
+    - [bc 1500 L9, "Mm-hmm."]
+    - [after, "DJ Bunty twenty-five, Kaur Florists thirty-five, Mehndi by Rani thirty, Jasmeet sixty-five. If a new one is over any limit, send fifty thousand now and the rest tomorrow."]
+    - [after, "What's the total I've paid today?"]
+    - [after, "And what's left in the account?"]
+    - [after, "Email me the list of transfers, and an SMS summary. Thank you so much!"]
+  key:
+    - "States the ₹2,06,180 payout and ₹1,950 penalty before breaking FD 5561; leaves 5579"
+    - "Raises the IMPS limit to ₹5,00,000 and adds Mehndi by Rani and Jasmeet Bridal Makeup as read"
+    - "Sends the six advances that fit; when Jasmeet's ₹65,000 fails, says so, sends ₹50,000 now and schedules ₹15,000 for Tue 6 Oct"
+    - "States ₹4,70,000 paid today (₹4,85,000 with tomorrow's ₹15,000)"
+    - "Gives the balance ₹76,180, emails the transfer list and sends the SMS"
+  checks: {digits: ["2,06,180", "IM 11608", "76,180"], say: [["4,70,000", "four lakh seventy thousand"]], tool_order: [break_fd, transfer_funds]}
+  guard: "Which FD, every payee and amount and the cap fallback all come before the agent can send the last transfer; L12–L13 ask for totals whatever was said."

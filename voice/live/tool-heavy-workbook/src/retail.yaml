@@ -1,0 +1,97 @@
+# Ecommerce & Retail — tool-heavy live-call scenarios (header). Scenarios: retail-*.yaml.
+# Shape and cue grammar: ../README.md.
+
+industry: Ecommerce & Retail
+code: ret
+brand: "Kartly · Kartly Fresh (groceries) · Kissago and Chalchitra Play (subscription apps)"
+agent_role_base: |
+  You are the phone support agent for Kartly, an Indian online marketplace, and for
+  Kartly Fresh, its grocery delivery service. You also answer for two subscription apps
+  Kartly runs support for: Kissago (audio series, paid in coins) and Chalchitra Play
+  (video streaming). The caller is matched by caller ID. Every tool acts on one item,
+  one shipment, one return or one subscription, so returning four items is four calls.
+  Never cancel, refund or change anything unless the caller asks for it, and confirm
+  before anything that costs money. Never read a delivery OTP aloud. Refunds go to the
+  original payment method unless the customer chooses Kartly balance, which is instant.
+
+tools:
+  # orders and delivery
+  list_orders: "() → recent orders with order id, items, status"
+  get_order: "(order_id) → items with status and price, payment mode, addresses, promised dates, AWBs"
+  track_shipment: "(awb) → courier, last scan, expected delivery"
+  cancel_item: "(order_id, item_id, reason, refund_to?) → that item cancelled, refund amount and route"
+  cancel_order: "(order_id, reason) → whole order cancelled, refund"
+  update_delivery_address: "(order_id, item_id, address) → updated (only before dispatch)"
+  reschedule_delivery: "(awb, date, slot) → new delivery slot"
+  hold_delivery: "(awb, until_date) → held at the courier hub"
+  redirect_to_pickup_point: "(awb, pickup_point) → sent to a pickup point, collect by date"
+  add_gift_wrap: "(order_id, item_id, message) → gift-wrapped with prices hidden, charge"
+  check_pincode: "(pincode, sku?) → serviceable, delivery days, COD yes/no"
+  # cart, stock and checkout
+  get_cart: "() → items and cart value"
+  add_to_cart: "(sku, qty) → added, price"
+  remove_from_cart: "(sku) → removed"
+  check_stock: "(sku, pincode) → in stock, or out of stock with restock date"
+  find_alternatives: "(sku) → similar items with price and stock"
+  notify_restock: "(sku) → restock alert set"
+  validate_coupon: "(code, cart_value) → valid with discount, or the reason it is not"
+  get_emi_options: "(cart_value) → card EMI tenures with monthly amount"
+  place_order: "(address, payment_mode, coupon?) → order id, total, delivery dates"
+  # payments and wallet
+  get_payment: "(order_id) → payment status, UTR, refund if any"
+  send_payment_link: "(order_id, amount) → UPI link sent by SMS"
+  convert_cod_to_prepaid: "(order_id) → payment link sent, prepaid discount"
+  get_wallet: "() → Kartly balance, gift card balance, Kart Coins with expiry"
+  redeem_gift_card: "(code) → added to Kartly balance, or invalid / already used"
+  # returns, refunds, damage
+  check_return_eligibility: "(order_id, item_id) → returnable or exchange-only or not, window end"
+  create_return: "(order_id, item_id, reason, pickup_date) → return id, pickup slot, refund amount"
+  create_exchange: "(order_id, item_id, new_size) → exchange id, pickup and delivery, or size out of stock"
+  get_return: "(return_id) → pickup attempts, status"
+  reschedule_pickup: "(return_id, date) → new pickup slot"
+  cancel_return: "(return_id) → return cancelled"
+  check_refund: "(order_id, item_id) → refund amount, route, date, UTR"
+  set_refund_route: "(return_id, route) → refund to the original payment or to Kartly balance"
+  report_damage: "(order_id, item_id, issue) → damage report, photo upload link sent"
+  create_replacement: "(order_id, item_id) → replacement id, delivery date"
+  credit_goodwill: "(order_id, amount, reason) → Kartly balance credited"
+  # Kartly Fresh (groceries)
+  get_fresh_order: "(order_id) → items with status (packed, substituted, missing), slot"
+  approve_substitution: "(order_id, item_id, accept) → substitute kept or removed, price change"
+  report_missing_item: "(order_id, item_id) → refund to Kartly balance"
+  report_quality_issue: "(order_id, item_id, issue) → refund, or replacement in the next slot"
+  add_fresh_item: "(order_id, sku, qty) → added to the order, price, or out of stock"
+  book_fresh_slot: "(order_id, date, slot) → delivery slot, or slot full"
+  # installation and warranty
+  book_installation: "(order_id, item_id, date, slot) → technician visit, or slot full"
+  get_installation: "(order_id, item_id) → visit status"
+  register_warranty_claim: "(order_id, item_id, serial, issue) → claim number, visit date"
+  add_extended_warranty: "(order_id, item_id, years) → plan added, price"
+  # memberships and subscriptions
+  get_membership: "() → Kartly Plus status, renewal date, benefits used"
+  cancel_membership_autorenew: "() → auto-renew off"
+  refund_membership: "(reason) → refund amount, date"
+  get_subscription: "(app) → plan, price, renewal date, payment channel"
+  cancel_autorenew: "(app) → auto-renew off, access until"
+  change_plan: "(app, plan) → new plan, amount charged or credited today"
+  list_devices: "(app) → signed-in devices"
+  remove_device: "(app, device) → signed out"
+  get_coin_txns: "() → Kissago coin purchases and spends with transaction ids"
+  refund_coins: "(txn_id) → refund amount, route, date, or not eligible"
+  check_app_payment: "(reference) → app payment status, amount, channel"
+  unlock_episode: "(series, episode) → unlocked"
+  # service
+  send_sms: "(template) → SMS sent to the registered mobile"
+  schedule_callback: "(date, slot, topic) → callback booked"
+  raise_ticket: "(category, summary) → ticket number"
+  transfer_to_human: "(reason) → queued for a specialist"
+
+groups:
+  RET-1: {stage: "Orders & delivery — split shipments, gifts to several addresses, delays, holds, address changes", accounts: "Flipkart, Amazon.in, Ajio, Meesho; Delhivery, Ekart, Blue Dart", tests: "one call per item and per shipment, AWBs, addresses and pincodes, never reading an OTP"}
+  RET-2: {stage: "Checkout & payments — carts built on the phone, stock and alternatives, coupons, gift cards, failed payments, COD", accounts: "Flipkart, Amazon.in, Meesho, Samsung Shop", tests: "item-by-item stock checks, coupon rules, UTRs, payment links"}
+  RET-3: {stage: "Returns, refunds & exchanges", accounts: "Myntra, Ajio, Nykaa, Croma, Reliance Digital", tests: "eligibility per item, exchanges by size, refund routes and dates, failed pickups"}
+  RET-4: {stage: "Installation, warranty & damage — appliances, furniture, electronics", accounts: "Croma, Reliance Digital, Flipkart (Jeeves), Samsung, LG, Pepperfry", tests: "one visit per appliance, serial numbers, slots, damage reports, a second speaker"}
+  RET-5: {stage: "Kartly Fresh — grocery substitutions, missing items, quality, slots", accounts: "Blinkit, Zepto, Swiggy Instamart, BigBasket", tests: "one call per item, accept or reject each substitute, small amounts added up"}
+  RET-6: {stage: "Memberships & subscriptions — Kartly Plus, Kissago coins, Chalchitra Play", accounts: "Flipkart Plus, Amazon Prime, Pocket FM, Kuku FM, JioHotstar, ZEE5", tests: "renewals, coin refunds per transaction, devices, retention offer said once"}
+
+scenarios: []

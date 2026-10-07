@@ -1,0 +1,467 @@
+# Healthcare — tool-heavy scenarios hlt-115 … hlt-121 (HLT-3 Lab tests).
+code: hlt
+scenarios:
+
+- id: hlt-115
+  g: HLT-3
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Annual check-ups for five — a collection per person over two mornings, add-ons, one slot full, reports routed, two reviews"
+  basis: "Families book yearly health check-ups together; each person has their own package, add-ons and report recipient."
+  caller: "F 46-60 · school principal in Hyderabad organising her family's annual check-ups, decisive"
+  goal: "Get all five tested at home across two mornings with the right extra tests, each report going to the right person, and review consults for the parents."
+  role: "You handle lab bookings. Book one collection per person. Reports go only to the patient, a linked family member or the treating doctor."
+  context: ""
+  tasks:
+    - task: "The five"
+      calls:
+        - "get_patient(patient=Shobha Reddy) → UHID HY-551200, 52"
+        - "get_patient(patient=Prakash Reddy) → UHID HY-551201, 56"
+        - "get_patient(patient=Narayana Reddy) → UHID HY-551202, 81"
+        - "get_patient(patient=Kamala Reddy) → UHID HY-551203, 76"
+        - "get_patient(patient=Anusha Reddy) → UHID HY-551204, 23"
+    - task: "Two mornings"
+      calls:
+        - "get_collection_slots(pincode=500033, date=Sat 10 Oct) → 6:30-7:30 am, 7:30-8:30 am"
+        - "get_collection_slots(pincode=500033, date=Sun 11 Oct) → 6:30-7:30 am, 7:30-8:30 am"
+        - "book_home_collection(tests=Executive Health package, pincode=500033, date=Sat 10 Oct, slot=6:30-7:30 am, patient=Shobha Reddy) → HC 55301; 10-12 hours fasting"
+        - "book_home_collection(tests=Executive Health package, pincode=500033, date=Sat 10 Oct, slot=6:30-7:30 am, patient=Prakash Reddy) → HC 55302; 10-12 hours fasting"
+        - "book_home_collection(tests=Senior Citizen package, pincode=500033, date=Sat 10 Oct, slot=6:30-7:30 am, patient=Narayana Reddy) → error: slot full for a third person"
+        - "book_home_collection(tests=Senior Citizen package, pincode=500033, date=Sun 11 Oct, slot=6:30-7:30 am, patient=Narayana Reddy) → HC 55303; 10-12 hours fasting"
+        - "book_home_collection(tests=Senior Citizen package, pincode=500033, date=Sun 11 Oct, slot=6:30-7:30 am, patient=Kamala Reddy) → HC 55304; 10-12 hours fasting"
+        - "book_home_collection(tests=Basic Wellness package, pincode=500033, date=Sun 11 Oct, slot=7:30-8:30 am, patient=Anusha Reddy) → HC 55305; 8 hours fasting"
+    - task: "Add-on tests"
+      calls:
+        - "add_test(collection_id=HC 55301, test=vitamin D) → added, ₹1,200"
+        - "add_test(collection_id=HC 55302, test=PSA) → added, ₹900"
+        - "add_test(collection_id=HC 55302, test=vitamin D) → added, ₹1,200"
+        - "add_test(collection_id=HC 55303, test=PSA) → added, ₹900"
+        - "add_test(collection_id=HC 55304, test=vitamin B12) → added, ₹800"
+        - "add_test(collection_id=HC 55305, test=iron studies) → added, ₹1,100"
+    - task: "Who gets each report"
+      calls:
+        - "send_report(order_id=HC 55301, test=all, to=Shobha Reddy) → will be sent when ready"
+        - "send_report(order_id=HC 55302, test=all, to=Shobha Reddy) → will be sent when ready (linked family member)"
+        - "send_report(order_id=HC 55303, test=all, to=Dr Ravi Shankar) → will be sent when ready (treating doctor)"
+        - "send_report(order_id=HC 55304, test=all, to=Dr Ravi Shankar) → will be sent when ready (treating doctor)"
+        - "send_report(order_id=HC 55305, test=all, to=Anusha Reddy) → will be sent when ready"
+    - task: "Reviews for the parents"
+      calls:
+        - "find_doctor(speciality=internal medicine, branch=Jubilee Hills) → Dr Ravi Shankar (D-5520), their physician"
+        - "get_slots(doctor_id=D-5520, date=Thu 15 Oct) → 10:00 am, 10:30 am"
+        - "book_appointment(doctor_id=D-5520, date=Thu 15 Oct, slot=10:00 am, patient=Narayana Reddy) → AP 55320, ₹900"
+        - "book_appointment(doctor_id=D-5520, date=Thu 15 Oct, slot=10:30 am, patient=Kamala Reddy) → AP 55321, ₹900"
+        - "schedule_callback(date=Wed 14 Oct, slot=5-6 pm, topic=all five reports ready before the reviews) → booked"
+        - "send_sms(template=health_checks_summary) → sent"
+  forbid: ["send_report(order_id=HC 55305, test=all, to=Prakash Reddy)"]
+  lines:
+    - [open, "Hi, I want to book annual health check-ups for my whole family at home. Five of us."]
+    - [after, "Me, my husband Prakash, his parents — they're eighty-one and seventy-six — and our daughter Anusha, twenty-three."]
+    - [after, "Two mornings, this Saturday and Sunday. My husband, me and my father-in-law on Saturday, first slot. If Saturday can't take all three, move him to Sunday with his wife."]
+    - [after, "Packages — executive for me and Prakash, senior citizen for his parents, basic for Anusha."]
+    - [after, "Extra tests: vitamin D for me and Prakash. PSA for Prakash and his father. B12 for my mother-in-law. Iron studies for Anusha."]
+    - [after, "Anusha will want the slot after the old people, she can't wake up that early."]
+    - [after, "Reports — mine and my husband's to me. His parents' straight to their doctor, Dr Ravi Shankar. Anusha's only to her."]
+    - [after, "And my husband said to send Anusha's to him too. Can you?"]
+    - [after, "Fine, her choice. Book his parents with Dr Ravi Shankar next Thursday morning to go over the reports."]
+    - [after, "What does everyone need to do the night before?"]
+    - [after, "Call me Wednesday evening to make sure the reports are in."]
+    - [after, "Send me everything on SMS. Thanks!"]
+  key:
+    - "Books one collection per person; when Saturday can't take a third, says so and moves Narayana to Sunday with Kamala"
+    - "Books Anusha's Sunday collection in the later slot"
+    - "Adds each extra test on the right person, six in all"
+    - "Routes reports as asked: Shobha and Prakash to Shobha, the parents' to Dr Ravi Shankar, Anusha's to Anusha only"
+    - "Explains Anusha's report goes to her unless she adds her father herself; does not route it to him"
+    - "Gives the fasting instructions; books the two reviews Thu 15 Oct 10:00 and 10:30; books Wednesday's call-back"
+  checks: {digits: ["HC 55303", "AP 55321", "Sun 11 Oct"], tool_order: [book_home_collection, add_test]}
+  guard: "Days, the fallback, packages, add-ons and recipients each come in their own line before booking; L8 asks for an adult's report to go to someone she did not choose."
+
+- id: hlt-116
+  g: HLT-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Parents' quarterly diabetes tests — two collections, add-ons, results to the doctor, two video reviews"
+  basis: "People with diabetes repeat the same panel every quarter; each parent's collection, add-ons and review are separate."
+  caller: "F 26-45 · daughter in Mumbai arranging her parents' tests in Indore, organised"
+  goal: "Have both parents' quarterly tests done at home, their key results sent to their doctor, and video reviews booked after."
+  role: "You handle lab bookings. Never interpret results."
+  context: ""
+  tasks:
+    - task: "Parents and slots"
+      calls:
+        - "get_patient(patient=Om Prakash Jain) → UHID IN-662100, 70; linked to the caller"
+        - "get_patient(patient=Kusum Jain) → UHID IN-662101, 66; linked to the caller"
+        - "get_collection_slots(pincode=452001, date=Thu 8 Oct) → 7-8 am, 8-9 am"
+        - "book_home_collection(tests=Diabetes panel (HbA1c, fasting glucose, lipid profile, kidney function), pincode=452001, date=Thu 8 Oct, slot=7-8 am, patient=Om Prakash Jain) → HC 66201; 10-12 hours fasting"
+        - "book_home_collection(tests=Diabetes panel (HbA1c, fasting glucose, lipid profile, kidney function), pincode=452001, date=Thu 8 Oct, slot=7-8 am, patient=Kusum Jain) → HC 66202; 10-12 hours fasting"
+    - task: "Add-ons"
+      calls:
+        - "add_test(collection_id=HC 66201, test=urine microalbumin) → added, ₹600"
+        - "add_test(collection_id=HC 66201, test=vitamin B12) → added, ₹800"
+        - "add_test(collection_id=HC 66202, test=urine microalbumin) → added, ₹600"
+        - "add_test(collection_id=HC 66202, test=TSH) → added, ₹450"
+    - task: "Results to the doctor"
+      calls:
+        - "send_report(order_id=HC 66201, test=HbA1c, to=Dr Sharad Joshi) → will be sent when ready"
+        - "send_report(order_id=HC 66201, test=kidney function, to=Dr Sharad Joshi) → will be sent when ready"
+        - "send_report(order_id=HC 66202, test=HbA1c, to=Dr Sharad Joshi) → will be sent when ready"
+        - "send_report(order_id=HC 66202, test=kidney function, to=Dr Sharad Joshi) → will be sent when ready"
+    - task: "Video reviews"
+      calls:
+        - "find_doctor(speciality=diabetology, branch=Indore) → Dr Sharad Joshi (D-6620), video consults"
+        - "get_slots(doctor_id=D-6620, date=Mon 12 Oct) → 6:00 pm, 6:15 pm, 6:30 pm"
+        - "book_appointment(doctor_id=D-6620, date=Mon 12 Oct, slot=6:00 pm, patient=Om Prakash Jain, mode=video) → AP 66210, ₹700"
+        - "book_appointment(doctor_id=D-6620, date=Mon 12 Oct, slot=6:15 pm, patient=Kusum Jain, mode=video) → AP 66211, ₹700"
+        - "send_teleconsult_link(appointment_id=AP 66210) → link sent by SMS"
+        - "send_teleconsult_link(appointment_id=AP 66211) → link sent by SMS"
+        - "send_sms(template=tests_and_reviews_summary) → sent"
+  forbid: ["book_home_collection(tests=Diabetes panel (HbA1c, fasting glucose, lipid profile, kidney function), pincode=452001, date=Thu 8 Oct, slot=8-9 am, patient=Om Prakash Jain)"]
+  lines:
+    - [open, "Hi, mere mummy-papa ka teen mahine wala sugar test karwana hai, Indore mein ghar pe. Main Mumbai se book kar rahi hoon.", "Hi, I need my parents' three-monthly sugar tests done at home in Indore. I'm booking from Mumbai."]
+    - [after, "Thursday subah, sabse pehla slot, dono ka ek saath. Woh khali pet rahenge.", "Thursday morning, the earliest slot, both together. They'll be fasting."]
+    - [after, "Woh diabetes wala poora panel dono ka.", "The full diabetes panel for both."]
+    - [after, "Dono ka urine microalbumin bhi. Papa ka B12, mummy ka thyroid.", "Urine microalbumin for both as well. Papa's B12, Mummy's thyroid."]
+    - [after, "HbA1c aur kidney wala report seedha Dr Sharad Joshi ko chala jaye, dono ka.", "The HbA1c and kidney reports should go straight to Dr Sharad Joshi, for both."]
+    - [after, "Pichhli baar papa ka HbA1c saat point aath tha. Ye theek hai na?", "Last time Papa's HbA1c was seven point eight. That's okay, right?"]
+    - [after, "Theek hai, doctor se hi poochhenge. Agle Monday shaam Dr Joshi ke saath dono ka video consult, ek ke baad ek.", "Okay, we'll ask the doctor. Next Monday evening, a video consult with Dr Joshi for both, one after the other."]
+    - [after, "Link mere number pe bhejna, main unke saath judungi.", "Send the link to my number; I'll join with them."]
+    - [after, "Add-on tests ka kitna hua?", "How much were the add-on tests?"]
+    - [after, "Aur raat ko kab se khana band karna hai?", "And from when at night must they stop eating?"]
+    - [after, "SMS bhej do. Thanks!", "Send an SMS. Thanks!"]
+    - [after, "Bye!", "Bye!"]
+  key:
+    - "Books both parents in the 7-8 am slot on Thu 8 Oct, one collection each"
+    - "Adds microalbumin for both, B12 for Om Prakash, TSH for Kusum"
+    - "Sets HbA1c and kidney-function reports for each to go to Dr Sharad Joshi"
+    - "Does not comment on 7.8; leaves it to the doctor"
+    - "Books both video reviews Mon 12 Oct 6:00 and 6:15 pm and sends the links; states ₹2,450 for add-ons; gives the 10-12 hour fast"
+  checks: {lang: hg, digits: ["HC 66202", "AP 66211"], say: [["2,450", "do hazaar chaar sau pachaas", "two thousand four hundred fifty"]], tool_order: [book_home_collection, add_test]}
+  guard: "Slot, panel, add-ons and recipients each come before their calls; L6 must not be interpreted; L9 asks for the add-on total whatever was said."
+
+- id: hlt-117
+  g: HLT-3
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "Last week's reports — eight tests traced, one sample spoiled and recollected, ready ones sent, the doctor's visit moved"
+  basis: "Delayed lab reports hold up doctor visits; each test is traced, sent or recollected on its own."
+  caller: "M 46-60 · businessman in Delhi whose wife's and his reports are late, impatient"
+  goal: "Find out which of eight tests are ready, get those to the doctor, redo the spoiled one fast, and move the doctor's appointment to when everything is in."
+  role: "You handle lab reports. Never read out or interpret values; reports go to the patient, a linked family member or the treating doctor."
+  context: "Collected Tue 29 Sep: LB 77010 (Rajiv Malhotra) and LB 77011 (Neeta Malhotra)."
+  tasks:
+    - task: "Both orders"
+      calls:
+        - "get_lab_order(order_id=LB 77010) → Rajiv: HbA1c, lipid profile, liver function, vitamin D"
+        - "get_lab_order(order_id=LB 77011) → Neeta: thyroid profile, CBC, vitamin B12, ferritin"
+    - task: "Each test's status"
+      calls:
+        - "get_report_status(order_id=LB 77010, test=HbA1c) → ready"
+        - "get_report_status(order_id=LB 77010, test=lipid profile) → ready"
+        - "get_report_status(order_id=LB 77010, test=liver function) → ready"
+        - "get_report_status(order_id=LB 77010, test=vitamin D) → pending, expected Tue 6 Oct"
+        - "get_report_status(order_id=LB 77011, test=thyroid profile) → ready"
+        - "get_report_status(order_id=LB 77011, test=CBC) → sample haemolysed; recollection needed"
+        - "get_report_status(order_id=LB 77011, test=vitamin B12) → ready"
+        - "get_report_status(order_id=LB 77011, test=ferritin) → pending, expected Tue 6 Oct"
+    - task: "Send the ready ones to Dr Kapoor"
+      calls:
+        - "send_report(order_id=LB 77010, test=HbA1c, to=Dr Vinod Kapoor) → error: report delivery service timed out"
+        - "send_report(order_id=LB 77010, test=HbA1c, to=Dr Vinod Kapoor) → sent"
+        - "send_report(order_id=LB 77010, test=lipid profile, to=Dr Vinod Kapoor) → sent"
+        - "send_report(order_id=LB 77010, test=liver function, to=Dr Vinod Kapoor) → sent"
+        - "send_report(order_id=LB 77011, test=thyroid profile, to=Dr Vinod Kapoor) → sent"
+        - "send_report(order_id=LB 77011, test=vitamin B12, to=Dr Vinod Kapoor) → sent"
+    - task: "Recollect the spoiled sample"
+      calls:
+        - "get_collection_slots(pincode=110048, date=Tue 6 Oct) → 7-8 am, 8-9 am"
+        - "book_home_collection(tests=CBC, pincode=110048, date=Tue 6 Oct, slot=7-8 am, patient=Neeta Malhotra) → HC 77030; no charge, no fasting"
+        - "send_report(order_id=HC 77030, test=CBC, to=Dr Vinod Kapoor) → will be sent when ready (same day)"
+        - "raise_ticket(category=delayed reports, summary=LB 77010 and LB 77011 late; CBC haemolysed) → ticket LR 77040"
+    - task: "Move the doctor's visit"
+      calls:
+        - "get_appointment(appointment_id=AP 77050) → Rajiv and Neeta with Dr Vinod Kapoor (D-7701), Tue 6 Oct 11:00 am"
+        - "get_slots(doctor_id=D-7701, date=Thu 8 Oct) → 11:00 am, 5:00 pm"
+        - "reschedule_appointment(appointment_id=AP 77050, date=Thu 8 Oct, slot=11:00 am) → moved"
+        - "schedule_callback(date=Tue 6 Oct, slot=5-6 pm, topic=vitamin D, ferritin and CBC reports sent) → booked"
+        - "send_sms(template=reports_status_summary) → sent"
+  forbid: ["book_home_collection(tests=CBC, pincode=110048, date=Tue 6 Oct, slot=7-8 am, patient=Rajiv Malhotra)"]
+  lines:
+    - [open, "नमस्ते। पिछले मंगलवार हम दोनों का ब्लड सैंपल लिया था, अभी तक पूरी रिपोर्ट नहीं आई। कल डॉक्टर के पास जाना है।", "Hello. Our blood samples were taken last Tuesday and the full reports still haven't come. We have to see the doctor tomorrow."]
+    - [after, "मेरी और पत्नी नीता की, दोनों की देखिए — हर टेस्ट का।", "Check both — mine and my wife Neeta's — every test."]
+    - [after, "जो तैयार हैं, सीधे डॉ. विनोद कपूर को भेज दीजिए।", "Send the ready ones straight to Dr Vinod Kapoor."]
+    - [after, "मेरा कोलेस्ट्रॉल कितना आया है? बता दीजिए अभी।", "What did my cholesterol come to? Tell me now."]
+    - [after, "ठीक है। नीता का सैंपल ख़राब हो गया? तो दोबारा कल सुबह सबसे पहले ले लीजिए। पैसे नहीं लगने चाहिए।", "Okay. Neeta's sample got spoiled? Then take it again tomorrow morning, first thing. It shouldn't cost anything."]
+    - [after, "उसकी रिपोर्ट भी डॉक्टर को जाए।", "Her report should go to the doctor too."]
+    - [after, "इतनी देर की शिकायत दर्ज कीजिए।", "Register a complaint about such a delay."]
+    - [after, "कल डॉक्टर के पास जाने का क्या फ़ायदा जब रिपोर्ट ही पूरी नहीं? अपॉइंटमेंट गुरुवार कर दीजिए, उसी समय।", "What's the point of seeing the doctor tomorrow if the reports aren't complete? Move the appointment to Thursday, same time."]
+    - [after, "कल शाम फ़ोन करके बताइए कि बाकी रिपोर्ट गईं या नहीं।", "Call tomorrow evening to say whether the rest have gone."]
+    - [after, "SMS भी भेज दीजिए।", "Send an SMS too."]
+    - [after, "ठीक है।", "Okay."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Checks all eight tests: five ready, vitamin D and ferritin due Tue 6 Oct, CBC haemolysed"
+    - "Sends each ready report to Dr Vinod Kapoor; when the first send times out, says so and retries"
+    - "Does not read out the cholesterol value; says the doctor will go through it"
+    - "Books a free CBC recollection Tue 6 Oct 7-8 am with the report going to the doctor; raises LR 77040"
+    - "Moves the appointment to Thu 8 Oct 11:00 am and books tomorrow evening's call-back"
+  checks: {lang: hi, digits: ["HC 77030", "LR 77040", "Thu 8 Oct"], tool_order: [get_report_status, send_report]}
+  guard: "L2 asks for every test; L4 asks for a value the agent must not read out; L8 sets the new day and time."
+
+- id: hlt-118
+  g: HLT-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Three siblings' visa medicals — blood at home for each, chest X-rays and fitness checks at the centre, reports to each"
+  basis: "Visa and job medicals need the same set of tests for several people, booked person by person."
+  caller: "M 18-25 · eldest of three siblings in Jalandhar starting jobs in Canada, organised"
+  goal: "Get all three siblings' visa medical tests, chest X-rays and fitness certificates done this week with each report going to its own person."
+  role: "You handle lab and centre bookings. Reports go only to each adult patient unless they choose otherwise."
+  context: ""
+  tasks:
+    - task: "The three"
+      calls:
+        - "get_patient(patient=Harjot Singh) → UHID JL-880101, 24"
+        - "get_patient(patient=Simran Kaur) → UHID JL-880102, 22"
+        - "get_patient(patient=Gurpreet Singh) → UHID JL-880103, 21"
+    - task: "Blood and urine at home"
+      calls:
+        - "get_collection_slots(pincode=144001, date=Wed 7 Oct) → 7-8 am, 8-9 am"
+        - "book_home_collection(tests=Visa medical panel (CBC, urine, blood group), pincode=144001, date=Wed 7 Oct, slot=7-8 am, patient=Harjot Singh) → HC 88111"
+        - "book_home_collection(tests=Visa medical panel (CBC, urine, blood group), pincode=144001, date=Wed 7 Oct, slot=7-8 am, patient=Simran Kaur) → HC 88112"
+        - "book_home_collection(tests=Visa medical panel (CBC, urine, blood group), pincode=144001, date=Wed 7 Oct, slot=7-8 am, patient=Gurpreet Singh) → HC 88113"
+        - "add_test(collection_id=HC 88111, test=hepatitis B surface antigen) → added, ₹450"
+        - "add_test(collection_id=HC 88112, test=hepatitis B surface antigen) → added, ₹450"
+        - "add_test(collection_id=HC 88113, test=hepatitis B surface antigen) → added, ₹450"
+    - task: "X-rays and fitness checks at the centre"
+      calls:
+        - "find_doctor(speciality=radiology, branch=Jalandhar Model Town, date=Thu 8 Oct) → X-ray desk (D-8810)"
+        - "book_appointment(doctor_id=D-8810, date=Thu 8 Oct, slot=10:00 am, patient=Harjot Singh) → AP 88121, ₹400"
+        - "book_appointment(doctor_id=D-8810, date=Thu 8 Oct, slot=10:15 am, patient=Simran Kaur) → AP 88122, ₹400"
+        - "book_appointment(doctor_id=D-8810, date=Thu 8 Oct, slot=10:30 am, patient=Gurpreet Singh) → AP 88123, ₹400"
+        - "find_doctor(speciality=general medicine, branch=Jalandhar Model Town, date=Fri 9 Oct) → Dr Amandeep Gill (D-8815), fitness certificates"
+        - "book_appointment(doctor_id=D-8815, date=Fri 9 Oct, slot=11:00 am, patient=Harjot Singh) → AP 88131, ₹600"
+        - "book_appointment(doctor_id=D-8815, date=Fri 9 Oct, slot=11:20 am, patient=Simran Kaur) → AP 88132, ₹600"
+        - "book_appointment(doctor_id=D-8815, date=Fri 9 Oct, slot=11:40 am, patient=Gurpreet Singh) → AP 88133, ₹600"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=visa_medicals_summary) → sent"
+        - "schedule_callback(date=Thu 8 Oct, slot=6-7 pm, topic=blood reports ready before Friday's fitness checks) → booked"
+  forbid: ["send_report(order_id=HC 88112, test=all, to=Harjot Singh)"]
+  lines:
+    - [open, "Sat Sri Akal. Hum teen bhai-behen Canada job ke liye ja rahe hain, visa medical karwana hai. Main sabse bada hoon, Harjot.", "Hello. We three siblings are going to Canada for jobs and need visa medicals. I'm the eldest, Harjot."]
+    - [after, "Main, Simran aur Gurpreet. Teenon ka blood aur urine ghar pe le lo, Wednesday subah.", "Me, Simran and Gurpreet. Take all three's blood and urine at home, Wednesday morning."]
+    - [after, "Hepatitis B ka test bhi chahiye teenon ka, agency ki list mein hai.", "We need the hepatitis B test for all three too; it's on the agency's list."]
+    - [after, "Chest X-ray centre pe Thursday subah, ek ke baad ek.", "Chest X-rays at the centre on Thursday morning, one after another."]
+    - [after, "Fitness certificate ke liye doctor Friday ko, report aane ke baad.", "The doctor for the fitness certificate on Friday, after the reports."]
+    - [after, "Simran aur Gurpreet ki reports bhi mere email pe bhej dena, main sab sambhal raha hoon.", "Send Simran's and Gurpreet's reports to my email too; I'm handling everything."]
+    - [after, "Achha, woh khud apne liye haan bolenge. Theek hai.", "Okay, they'll say yes themselves. Fine."]
+    - [after, "Total kitna hua teenon ka?", "What's the total for all three?"]
+    - [after, "Thursday shaam ko bata dena reports aa gayi ya nahi.", "Tell me Thursday evening whether the reports have come."]
+    - [after, "Sab SMS kar do.", "SMS everything."]
+    - [after, "Thank you ji.", "Thank you."]
+    - [after, "Bye.", "Bye."]
+  key:
+    - "Books one home collection per sibling Wed 7 Oct 7-8 am and adds hepatitis B for each"
+    - "Books three X-rays Thu 8 Oct at 10:00, 10:15, 10:30 and three fitness checks Fri 9 Oct at 11:00, 11:20, 11:40"
+    - "Explains Simran's and Gurpreet's reports go to them unless they agree; does not send them to Harjot"
+    - "States ₹4,350 for the hepatitis tests, X-rays and fitness checks (the visa panel is billed with each collection)"
+  checks: {lang: hg, digits: ["HC 88113", "AP 88133"], say: [["4,350", "chaar hazaar teen sau pachaas", "four thousand three hundred fifty"]], tool_order: [book_home_collection, add_test]}
+  guard: "Each step's day and order come in its own line; L6 asks for other adults' reports, which the agent must decline; L8 asks for the total whatever was said."
+
+- id: hlt-119
+  g: HLT-3
+  lang: tx
+  script: en → te-mix
+  diff: Medium
+  dir: in
+  switch: "L5: English → Telugu (her father takes the phone)"
+  title: "Father's reports and next tests — daughter books in English, father asks in Telugu what his numbers mean"
+  basis: "Older patients want their results explained; the agent must route that to a clinician while still booking what is needed."
+  caller: "F 26-45 · daughter in Bengaluru booking for her father in Warangal; speaker b: M 60+ · her father, Telugu only, worried about his sugar"
+  goal: "Get the father's last reports to his doctor and his daughter, book the next tests and a review, and get his questions answered by a nurse."
+  role: "You handle lab bookings and reports. Never interpret values; offer the nurse."
+  context: ""
+  tasks:
+    - task: "Last month's reports"
+      calls:
+        - "get_patient(patient=Ramulu G) → UHID WG-991200, 68; linked to the caller"
+        - "get_lab_order(order_id=LB 99110) → HbA1c, fasting glucose, kidney function; collected Thu 10 Sep"
+        - "get_report_status(order_id=LB 99110, test=HbA1c) → ready"
+        - "get_report_status(order_id=LB 99110, test=fasting glucose) → ready"
+        - "get_report_status(order_id=LB 99110, test=kidney function) → ready"
+        - "send_report(order_id=LB 99110, test=all, to=Dr Srinivas Rao) → sent"
+        - "send_report(order_id=LB 99110, test=all, to=Lavanya G) → sent (linked family member)"
+    - task: "Next tests"
+      calls:
+        - "get_collection_slots(pincode=506002, date=Thu 8 Oct) → 7-8 am"
+        - "book_home_collection(tests=fasting glucose, post-meal glucose, pincode=506002, date=Thu 8 Oct, slot=7-8 am, patient=Ramulu G) → error: slot full"
+        - "get_collection_slots(pincode=506002, date=Fri 9 Oct) → 7-8 am, 8-9 am"
+        - "book_home_collection(tests=fasting glucose, post-meal glucose, pincode=506002, date=Fri 9 Oct, slot=7-8 am, patient=Ramulu G) → HC 99130; 10-12 hours fasting; second sample 2 hours after breakfast"
+        - "add_test(collection_id=HC 99130, test=urine microalbumin) → added, ₹600"
+        - "add_test(collection_id=HC 99130, test=lipid profile) → added, ₹700"
+        - "add_test(collection_id=HC 99130, test=vitamin B12) → added, ₹800"
+    - task: "Review and the nurse"
+      calls:
+        - "find_doctor(speciality=diabetology, branch=Hanamkonda) → Dr Srinivas Rao (D-9910)"
+        - "get_slots(doctor_id=D-9910, date=Mon 12 Oct) → 10:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-9910, date=Mon 12 Oct, slot=10:00 am, patient=Ramulu G) → AP 99140, ₹700"
+        - "send_report(order_id=HC 99130, test=all, to=Dr Srinivas Rao) → will be sent when ready"
+        - "transfer_to_nurse(reason=patient wants his sugar and kidney results explained) → nurse joins"
+        - "send_sms(template=tests_and_review_summary) → sent"
+  forbid: [transfer_to_pharmacist]
+  lines:
+    - [open, "Hi, I'm calling about my father's lab tests. He's in Warangal, I'm in Bangalore. He's on my account."]
+    - [after, "Can you check if last month's reports are ready? Send them to his doctor, Dr Srinivas Rao, and to me."]
+    - [after, "The doctor wants new tests — fasting and after-breakfast sugar. Thursday morning at home, or Friday if Thursday's full. Also add urine microalbumin, lipid profile and B12."]
+    - [after, "And a review with Dr Srinivas Rao on Monday morning, after the results. My father wants to say something — he speaks Telugu."]
+    - [after b, "నమస్కారం అమ్మా. నా sugar రిపోర్ట్ లో ఎంత వచ్చింది? ప్రమాదమా?", "Hello. What did my sugar report show? Is it dangerous?"]
+    - [after b, "Kidney టెస్ట్ కూడా బాగుందా?", "Is the kidney test also fine?"]
+    - [after b, "సరే, nurse తో మాట్లాడతాను. టెస్ట్ కి ముందు రోజు రాత్రి ఏం తినకూడదు?", "Okay, I'll talk to the nurse. What should I not eat the night before the test?"]
+    - [after b, "Breakfast తర్వాత మళ్ళీ వస్తారా?", "Will they come again after breakfast?"]
+    - [after b, "Monday డాక్టర్ దగ్గరికి ఎన్ని గంటలకి?", "What time at the doctor on Monday?"]
+    - [after b, "సరే. Message అమ్మాయికి పంపండి.", "Okay. Send the message to my daughter."]
+    - [after b, "ఇప్పుడు nurse ని కలపండి.", "Now connect the nurse."]
+    - [after b, "Thanks అమ్మా.", "Thank you."]
+  key:
+    - "Finds last month's three reports ready and sends them to Dr Srinivas Rao and to Lavanya"
+    - "When Thursday is full, says so and books Fri 9 Oct 7-8 am; adds microalbumin, lipid profile and B12"
+    - "Books the review Mon 12 Oct 10:00 am with the new reports going to the doctor"
+    - "Replies in Telugu from L5; does not read or judge his sugar or kidney values; connects the nurse"
+    - "Explains the fast and the second sample 2 hours after breakfast"
+  checks: {lang_from: {L5: te}, digits: ["HC 99130", "AP 99140", "Fri 9 Oct"], tool_order: [get_report_status, send_report]}
+  guard: "The daughter sets the recipients, test fallback and review in English before the handover; the father's first two questions must not be answered with values."
+
+- id: hlt-120
+  g: HLT-3
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Warfarin patient — four weekly INR tests at home, extra tests, every result to the doctor, a video review, a bruising question"
+  basis: "Patients on blood thinners need regular INR checks; each week's collection and report is booked separately."
+  caller: "F 46-60 · daughter-in-law in Chandigarh caring for her father-in-law after a valve replacement, methodical"
+  goal: "Set up four weekly home INR tests with every result going to the cardiologist, a video review after the month, the warfarin refill, and the bruising question answered by a nurse."
+  role: "You handle lab bookings. Never interpret INR values or advise on warfarin doses; offer the nurse."
+  context: ""
+  tasks:
+    - task: "Patient and medicine"
+      calls:
+        - "get_patient(patient=Balwant Singh) → UHID CD-120400, 74; valve replacement in August"
+        - "get_prescription(rx_id=RX 12041) → warfarin 3 mg once a day (dose by INR); metoprolol 25 mg; furosemide 20 mg"
+        - "request_medical_records(patient=Balwant Singh, record=INR results since August) → emailed"
+    - task: "Four weekly INR tests"
+      calls:
+        - "get_collection_slots(pincode=160022, date=Wed 7 Oct) → 7-8 am"
+        - "book_home_collection(tests=INR, pincode=160022, date=Wed 7 Oct, slot=7-8 am, patient=Balwant Singh) → HC 12051"
+        - "get_collection_slots(pincode=160022, date=Wed 14 Oct) → 7-8 am"
+        - "book_home_collection(tests=INR, pincode=160022, date=Wed 14 Oct, slot=7-8 am, patient=Balwant Singh) → HC 12052"
+        - "get_collection_slots(pincode=160022, date=Wed 21 Oct) → 7-8 am"
+        - "book_home_collection(tests=INR, pincode=160022, date=Wed 21 Oct, slot=7-8 am, patient=Balwant Singh) → HC 12053"
+        - "get_collection_slots(pincode=160022, date=Wed 28 Oct) → 7-8 am"
+        - "book_home_collection(tests=INR, pincode=160022, date=Wed 28 Oct, slot=7-8 am, patient=Balwant Singh) → HC 12054"
+        - "add_test(collection_id=HC 12051, test=CBC) → added, ₹350"
+        - "add_test(collection_id=HC 12054, test=liver function) → added, ₹650"
+    - task: "Every result to the cardiologist"
+      calls:
+        - "send_report(order_id=HC 12051, test=all, to=Dr Harpreet Sandhu) → will be sent when ready"
+        - "send_report(order_id=HC 12052, test=INR, to=Dr Harpreet Sandhu) → will be sent when ready"
+        - "send_report(order_id=HC 12053, test=INR, to=Dr Harpreet Sandhu) → will be sent when ready"
+        - "send_report(order_id=HC 12054, test=all, to=Dr Harpreet Sandhu) → will be sent when ready"
+    - task: "Review, refill, nurse"
+      calls:
+        - "find_doctor(speciality=cardiology, branch=Sector 17) → Dr Harpreet Sandhu (D-1205)"
+        - "get_slots(doctor_id=D-1205, date=Fri 30 Oct) → 5:00 pm, 5:30 pm"
+        - "book_appointment(doctor_id=D-1205, date=Fri 30 Oct, slot=5:00 pm, patient=Balwant Singh, mode=video) → AP 12060, ₹900"
+        - "send_teleconsult_link(appointment_id=AP 12060) → link sent by SMS"
+        - "set_refill_reminder(rx_id=RX 12041, medicine=warfarin 3 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 12041, medicine=metoprolol 25 mg, every=30 days) → set"
+        - "transfer_to_nurse(reason=bruises on arms; patient on warfarin) → nurse joins"
+        - "send_sms(template=inr_schedule) → sent"
+  forbid: ["book_home_collection(tests=INR, pincode=160022, date=Wed 7 Oct, slot=8-9 am, patient=Balwant Singh)"]
+  lines:
+    - [open, "Namaste. Mere sasur ji ka valve operation hua tha August mein. Warfarin chal rahi hai, har hafte INR test karwana hai, ghar pe.", "Hello. My father-in-law had a valve operation in August. He's on warfarin and needs an INR test every week, at home."]
+    - [after, "Agle chaar Wednesday, subah saat se aath. Har hafte ki alag booking.", "The next four Wednesdays, seven to eight in the morning. A separate booking each week."]
+    - [after, "Pehle hafte CBC bhi, aur aakhri hafte liver ka test.", "CBC in the first week too, and the liver test in the last week."]
+    - [after, "Har report Dr Harpreet Sandhu ko jaye, unhone kaha hai.", "Every report should go to Dr Harpreet Sandhu; he asked for that."]
+    - [after, "Pichhle saare INR ke results bhi mere email pe bhej do, August se.", "Email me all the previous INR results too, since August."]
+    - [after, "Mahine ke end mein Dr Sandhu ke saath video consult — aakhri test ke do din baad, shaam.", "A video consult with Dr Sandhu at the end of the month — two days after the last test, evening."]
+    - [after, "Warfarin aur metoprolol har mahine apne aap aa jaye.", "Warfarin and metoprolol should come every month automatically."]
+    - [after, "Ek baat — unke haath pe neele nishaan aa rahe hain. Warfarin kam kar dein kya?", "One thing — he's getting bruises on his arms. Should we reduce the warfarin?"]
+    - [after, "Theek hai, nurse se baat karti hoon. Pehle saari dates ek baar bata do.", "Okay, I'll talk to the nurse. First tell me all the dates once."]
+    - [after, "Total kitna hua?", "What's the total?"]
+    - [after, "SMS kar do, phir nurse.", "SMS it, then the nurse."]
+    - [after, "Shukriya.", "Thank you."]
+  key:
+    - "Books four separate INR collections, Wed 7, 14, 21 and 28 Oct, 7-8 am"
+    - "Adds CBC to the first and liver function to the last; routes every result to Dr Harpreet Sandhu"
+    - "Emails the INR history since August"
+    - "Books the video review Fri 30 Oct 5:00 pm and sends the link; sets the warfarin refill"
+    - "Does not advise on the warfarin dose; connects the nurse; mentions urgent care if bleeding is heavy"
+  checks: {lang: hg, digits: ["HC 12054", "AP 12060", "Fri 30 Oct"], tool_order: [book_home_collection, send_report]}
+  guard: "Days and add-ons come before booking; L6 sets the review relative to the last test; L8 must be referred."
+
+- id: hlt-121
+  g: HLT-3
+  lang: en
+  diff: Medium
+  dir: in
+  title: "Three family members' thyroid and vitamin tests — collections, add-ons, reports to each, two reviews"
+  basis: "Families often test together for thyroid and vitamins; each person's tests and reports are booked separately."
+  caller: "F 26-45 · IT professional in Gurugram booking tests for herself, her husband and her mother, efficient"
+  goal: "Get all three tested on one morning with their own extra tests, each report to its owner, and reviews for the two who need them."
+  role: "You handle lab bookings. Reports go only to the patient, a linked family member or the treating doctor."
+  context: ""
+  tasks:
+    - task: "Patients and slot"
+      calls:
+        - "get_patient(patient=Neha Bansal) → UHID GG-130300, 34"
+        - "get_patient(patient=Rohit Bansal) → UHID GG-130301, 37"
+        - "get_patient(patient=Usha Goyal) → UHID GG-130302, 62; linked to the caller"
+        - "get_collection_slots(pincode=122018, date=Sat 10 Oct) → 7-8 am, 8-9 am"
+    - task: "Collections and add-ons"
+      calls:
+        - "book_home_collection(tests=thyroid profile, vitamin D, vitamin B12, pincode=122018, date=Sat 10 Oct, slot=7-8 am, patient=Neha Bansal) → HC 13311"
+        - "book_home_collection(tests=thyroid profile, vitamin D, vitamin B12, pincode=122018, date=Sat 10 Oct, slot=7-8 am, patient=Rohit Bansal) → HC 13312"
+        - "book_home_collection(tests=thyroid profile, vitamin D, vitamin B12, pincode=122018, date=Sat 10 Oct, slot=7-8 am, patient=Usha Goyal) → HC 13313"
+        - "add_test(collection_id=HC 13311, test=ferritin) → added, ₹700"
+        - "add_test(collection_id=HC 13312, test=lipid profile) → added, ₹700"
+        - "add_test(collection_id=HC 13313, test=calcium) → added, ₹300"
+        - "add_test(collection_id=HC 13313, test=HbA1c) → added, ₹500"
+    - task: "Reports"
+      calls:
+        - "send_report(order_id=HC 13311, test=all, to=Neha Bansal) → will be sent when ready"
+        - "send_report(order_id=HC 13312, test=all, to=Rohit Bansal) → will be sent when ready"
+        - "send_report(order_id=HC 13313, test=all, to=Neha Bansal) → will be sent when ready (linked family member)"
+    - task: "Reviews"
+      calls:
+        - "find_doctor(speciality=endocrinology, branch=Gurugram) → Dr Meenakshi Arora (D-1330)"
+        - "get_slots(doctor_id=D-1330, date=Wed 14 Oct) → 6:00 pm, 6:30 pm"
+        - "book_appointment(doctor_id=D-1330, date=Wed 14 Oct, slot=6:00 pm, patient=Neha Bansal) → AP 13321, ₹900"
+        - "book_appointment(doctor_id=D-1330, date=Wed 14 Oct, slot=6:30 pm, patient=Usha Goyal) → AP 13322, ₹900"
+        - "schedule_callback(date=Tue 13 Oct, slot=6-7 pm, topic=reports ready before the reviews) → booked"
+        - "send_sms(template=tests_and_reviews_summary) → sent"
+  forbid: ["send_report(order_id=HC 13312, test=all, to=Neha Bansal)"]
+  lines:
+    - [open, "Hi, I want to book thyroid and vitamin tests at home for three of us — me, my husband Rohit and my mother."]
+    - [after, "All on Saturday, the first slot."]
+    - [after, "Thyroid, vitamin D and B12 for all three. Plus ferritin for me, lipid profile for Rohit, and calcium and HbA1c for my mother."]
+    - [after, "Reports — mine to me, Rohit's to Rohit, and my mother's to me as well, she doesn't use email."]
+    - [after, "Actually, send Rohit's to me too, it's easier."]
+    - [after, "Okay, he can add me himself later. Can my mother and I see an endocrinologist after the results? Next Wednesday evening, back to back."]
+    - [after, "Do we need to fast?"]
+    - [after, "What's the total for the extra tests?"]
+    - [after, "Call me Tuesday evening to confirm the reports are in."]
+    - [after, "Send me everything on SMS. Thanks."]
+    - [after, "Bye."]
+    - [after, "Thanks again."]
+  key:
+    - "Books one collection per person Sat 10 Oct 7-8 am and adds the right extra tests to each"
+    - "Sends Neha's and her mother's reports to Neha and Rohit's to Rohit; does not send Rohit's to Neha"
+    - "Books the two endocrinology reviews Wed 14 Oct 6:00 and 6:30 pm"
+    - "Says HbA1c and lipid profile need fasting for Rohit and Usha; states ₹2,200 for the extra tests"
+  checks: {digits: ["HC 13313", "AP 13322"], say: [["2,200", "two thousand two hundred"]], tool_order: [book_home_collection, add_test]}
+  guard: "Tests and recipients come before booking; L5 asks for another adult's report, which the agent must decline; L8 asks for the total whatever was said."

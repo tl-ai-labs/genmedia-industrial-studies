@@ -1,0 +1,78 @@
+# Travel — tool-heavy live-call scenarios (header). Scenarios: travel-*.yaml.
+# Shape and cue grammar: ../README.md.
+
+industry: Travel
+code: trv
+brand: "Yatri Air · Safar (train and bus tickets) · Raahi Cabs"
+agent_role_base: |
+  You are the phone support agent for Yatri Air, an Indian airline, and for its
+  partner travel services: Safar (train and bus tickets) and Raahi Cabs. The caller
+  is matched by caller ID to the booking. Read PNRs, flight numbers, seats, times and
+  gates exactly. Every tool acts on one passenger, one seat, one bag or one ride, so a
+  change for four people is four calls. Confirm before any cancellation or change that
+  costs money. If a passenger reports danger, tell them to call 112 first, then escalate.
+
+tools:
+  # bookings and flights
+  get_booking: "(pnr) → passengers, flights, fare type, add-ons"
+  get_fare_rules: "(pnr) → change and cancellation charges per passenger"
+  get_flight_status: "(flight_no, date) → scheduled / expected times, gate, status"
+  search_flights: "(from, to, date) → flights with times, seats left and fare difference per person"
+  change_flight: "(pnr, passenger, new_flight) → changed for that passenger, amount to pay or refund"
+  cancel_passenger: "(pnr, passenger) → that passenger cancelled, refund amount"
+  cancel_booking: "(pnr) → whole booking cancelled, refund amount"
+  split_pnr: "(pnr, passengers) → passengers moved to a new PNR"
+  update_name: "(pnr, passenger, corrected_name) → corrected, fee"
+  update_contact: "(pnr, mobile?, email?) → contact updated"
+  add_frequent_flyer: "(pnr, passenger, ff_no) → number added, miles will credit"
+  # seats, meals, bags, services
+  get_seat_map: "(flight_no, date) → free seats, rows with seats together"
+  assign_seat: "(pnr, passenger, flight_no, seat) → assigned, price"
+  add_meal: "(pnr, passenger, flight_no, meal) → added, price"
+  add_baggage: "(pnr, passenger, flight_no, kg) → added, price"
+  add_infant: "(pnr, infant_name, dob, with_passenger) → infant added, fee"
+  add_special_service: "(pnr, passenger, flight_no, service) → bassinet / meet-and-assist / unaccompanied minor booked"
+  request_wheelchair: "(pnr, passenger, flight_no) → wheelchair booked at departure and arrival"
+  add_travel_insurance: "(pnr, passenger) → insurance added, price"
+  web_check_in: "(pnr, passenger, flight_no) → checked in, boarding pass sent by SMS"
+  send_payment_link: "(pnr, amount) → payment link sent by SMS"
+  # disruptions
+  rebook_disrupted: "(pnr, passenger, new_flight) → rebooked free after an airline disruption"
+  issue_meal_voucher: "(pnr, passenger) → meal voucher code"
+  issue_hotel_voucher: "(pnr, room_for) → hotel, room, voucher code"
+  file_compensation_claim: "(pnr, passenger, reason) → claim number, eligibility under the airline's policy"
+  get_refund: "(pnr, passenger?) → refund status, amount, date, reference"
+  convert_to_credit: "(pnr, passenger) → travel credit number, amount, valid until"
+  # baggage
+  get_baggage_status: "(tag) → where the bag is, expected arrival"
+  raise_baggage_claim: "(pnr, passenger, tag, description) → claim number"
+  arrange_bag_delivery: "(claim_id, address, slot) → delivery booked"
+  raise_damage_claim: "(pnr, passenger, tag, damage) → damage claim number, inspection or repair route"
+  # rail and bus (Safar)
+  get_train_booking: "(pnr) → train, class, passengers, status (CNF / RAC / WL), chart time"
+  search_trains: "(from, to, date, class) → trains with availability and fare"
+  book_train_ticket: "(train_no, date, class, passenger, berth_pref?) → booked, coach and berth or WL number, fare"
+  cancel_train_ticket: "(pnr, passenger) → that passenger cancelled, refund"
+  get_bus_booking: "(booking_id) → bus, passengers, seats, boarding point, time"
+  search_buses: "(from, to, date) → buses with seats left and fare"
+  book_bus_seat: "(bus_id, date, passenger, seat, boarding_point) → booked, fare"
+  change_boarding_point: "(booking_id, passenger, point) → changed, new pick-up time"
+  cancel_bus_seat: "(booking_id, passenger) → cancelled, refund"
+  # cabs (Raahi)
+  book_cab: "(pickup, drop, date, time, car_type) → ride id, fare estimate"
+  cancel_cab: "(ride_id) → cancelled, fee"
+  get_ride: "(ride_id) → driver, vehicle, route, fare"
+  report_lost_item: "(ride_id, item) → lost-item ticket, driver contacted"
+  contact_driver_masked: "(ride_id) → masked call connected"
+  sos_escalate: "(ride_id) → safety team alerted, live tracking shared"
+  # service
+  raise_ticket: "(category, summary) → ticket number"
+  send_sms: "(template) → SMS sent"
+  transfer_to_human: "(reason) → queued for a specialist"
+
+groups:
+  TRV-1: {stage: "Flights — changes, cancellations, add-ons, special assistance", accounts: "IndiGo, Air India, Akasa Air, MakeMyTrip, ixigo", tests: "families and groups: one call per passenger, seats together, fare differences, second speaker"}
+  TRV-2: {stage: "Disruptions & baggage — delays, missed connections, lost bags, refunds", accounts: "IndiGo, Air India, SpiceJet", tests: "rebooking whole families, vouchers, several bags and claims, airport noise with decoy announcements"}
+  TRV-3: {stage: "Rail, bus & cabs — waitlists, boarding points, fares, safety", accounts: "IRCTC, ConfirmTkt, redBus, Uber, Ola, Rapido", tests: "multi-leg trips across train, bus and cab; WL/RAC; one booking per traveller"}
+
+scenarios: []

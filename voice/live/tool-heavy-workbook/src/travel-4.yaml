@@ -1,0 +1,587 @@
+# Travel — tool-heavy scenarios trv-125 … trv-132 (TRV-3 Rail, bus & cabs).
+code: trv
+scenarios:
+
+- id: trv-125
+  g: TRV-3
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Waitlisted family trip — move all five to another train, split the return, a bus day trip, four cabs"
+  basis: "Families with part-waitlisted rail tickets rebuild the whole trip so they travel together, with cabs at both ends."
+  caller: "M 46-60 · father planning a family pilgrimage, methodical"
+  goal: "All five on one train with seats, his wife and kids back earlier, a Rishikesh bus day trip, and cabs for every transfer."
+  role: "You handle Safar train and bus bookings and Raahi Cabs. Read 10-digit PNRs in groups. Waitlisted tickets after the chart are not confirmed; say so plainly. State refunds before cancelling."
+  context: "Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Check both train bookings"
+      calls:
+        - "get_train_booking(pnr=4521776309) → train 29417 New Delhi-Haridwar Sat 10 Oct 6:45 am, CC; Rajesh Gupta CNF C2-41, Anju Gupta CNF C2-42, Kamla Devi Gupta CNF C2-43, Mohit Gupta WL 7, Pari Gupta WL 8; chart at 2:45 am, low chance"
+        - "get_train_booking(pnr=4521776355) → train 29420 Haridwar-New Delhi Tue 13 Oct 5:40 pm, CC; Rajesh, Anju and Kamla Devi CNF, Mohit and Pari WL 12, WL 13"
+    - task: "Move all five to one train on Saturday"
+      calls:
+        - "search_trains(from=NDLS, to=HW, date=Sat 10 Oct, class=CC) → train 29419 7:30 am, arrives 12:05 pm, 46 seats, ₹735 per person"
+        - "cancel_train_ticket(pnr=4521776309, passenger=Rajesh Gupta) → cancelled, refund ₹640"
+        - "cancel_train_ticket(pnr=4521776309, passenger=Anju Gupta) → cancelled, refund ₹640"
+        - "cancel_train_ticket(pnr=4521776309, passenger=Kamla Devi Gupta) → cancelled, refund ₹640"
+        - "cancel_train_ticket(pnr=4521776309, passenger=Mohit Gupta) → cancelled, full refund ₹705"
+        - "cancel_train_ticket(pnr=4521776309, passenger=Pari Gupta) → cancelled, full refund ₹705"
+        - "book_train_ticket(train_no=29419, date=Sat 10 Oct, class=CC, passenger=Kamla Devi Gupta, berth_pref=window) → booked C3-21 window, ₹735"
+        - "book_train_ticket(train_no=29419, date=Sat 10 Oct, class=CC, passenger=Rajesh Gupta) → booked C3-22, ₹735"
+        - "book_train_ticket(train_no=29419, date=Sat 10 Oct, class=CC, passenger=Anju Gupta) → booked C3-23, ₹735"
+        - "book_train_ticket(train_no=29419, date=Sat 10 Oct, class=CC, passenger=Mohit Gupta) → error: coach C3 just filled; next booking goes to coach C4"
+        - "book_train_ticket(train_no=29419, date=Sat 10 Oct, class=CC, passenger=Mohit Gupta, berth_pref=coach C4) → booked C4-11, ₹735"
+        - "book_train_ticket(train_no=29419, date=Sat 10 Oct, class=CC, passenger=Pari Gupta, berth_pref=coach C4) → booked C4-12, ₹735"
+    - task: "Anju and the kids back on the earlier train"
+      calls:
+        - "search_trains(from=HW, to=NDLS, date=Tue 13 Oct, class=CC) → train 29458 3:10 pm, 30 seats, ₹690 per person"
+        - "cancel_train_ticket(pnr=4521776355, passenger=Anju Gupta) → cancelled, refund ₹610"
+        - "cancel_train_ticket(pnr=4521776355, passenger=Mohit Gupta) → cancelled, full refund ₹690"
+        - "cancel_train_ticket(pnr=4521776355, passenger=Pari Gupta) → cancelled, full refund ₹690"
+        - "book_train_ticket(train_no=29458, date=Tue 13 Oct, class=CC, passenger=Anju Gupta) → booked C1-31, ₹690"
+        - "book_train_ticket(train_no=29458, date=Tue 13 Oct, class=CC, passenger=Mohit Gupta) → booked C1-32, ₹690"
+        - "book_train_ticket(train_no=29458, date=Tue 13 Oct, class=CC, passenger=Pari Gupta) → booked C1-33, ₹690"
+    - task: "Sunday bus to Rishikesh, seats 1 to 5"
+      calls:
+        - "search_buses(from=Haridwar, to=Rishikesh, date=Sun 11 Oct) → bus RB 2201 9:00 am, AC seater, 18 seats left, ₹180"
+        - "book_bus_seat(bus_id=RB 2201, date=Sun 11 Oct, passenger=Kamla Devi Gupta, seat=1, boarding_point=Haridwar bus stand) → booked, ₹180"
+        - "book_bus_seat(bus_id=RB 2201, date=Sun 11 Oct, passenger=Rajesh Gupta, seat=2, boarding_point=Haridwar bus stand) → booked, ₹180"
+        - "book_bus_seat(bus_id=RB 2201, date=Sun 11 Oct, passenger=Anju Gupta, seat=3, boarding_point=Haridwar bus stand) → booked, ₹180"
+        - "book_bus_seat(bus_id=RB 2201, date=Sun 11 Oct, passenger=Mohit Gupta, seat=4, boarding_point=Haridwar bus stand) → booked, ₹180"
+        - "book_bus_seat(bus_id=RB 2201, date=Sun 11 Oct, passenger=Pari Gupta, seat=5, boarding_point=Haridwar bus stand) → booked, ₹180"
+    - task: "Four cabs"
+      calls:
+        - "book_cab(pickup=Rohini Sector 9, drop=New Delhi station, date=Sat 10 Oct, time=5:30 am, car_type=SUV) → ride RC 1101, about ₹640"
+        - "book_cab(pickup=Haridwar station, drop=Hotel Har Ki Pauri View, date=Sat 10 Oct, time=12:20 pm, car_type=SUV) → ride RC 1102, about ₹260"
+        - "book_cab(pickup=Hotel Har Ki Pauri View, drop=Haridwar station, date=Tue 13 Oct, time=2:15 pm, car_type=sedan) → ride RC 1103, about ₹220"
+        - "book_cab(pickup=Hotel Har Ki Pauri View, drop=Haridwar station, date=Tue 13 Oct, time=4:45 pm, car_type=sedan) → ride RC 1104, about ₹220"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=trip_summary) → sent"
+  forbid: ["cancel_train_ticket(pnr=4521776355, passenger=Rajesh Gupta)", "cancel_train_ticket(pnr=4521776355, passenger=Kamla Devi Gupta)"]
+  lines:
+    - [open, "Hi, I have a Safar train booking for five people to Haridwar on Saturday, and two of us are still waitlisted. P N R four five two one, seven seven six, three zero nine."]
+    - [after, "Seven and eight on the waitlist? That won't clear. Is there another train that morning with five seats?"]
+    - [after, "Then move all five of us to that train. Cancel all five on the current one. We travel together."]
+    - [after, "On the new train, my mother by a window, then me, my wife, and the two kids. If the coach fills up while you're booking, put whoever's left in the next coach."]
+    - [after, "How much do we get back for the cancelled tickets, and what's the new fare?"]
+    - [after wait=7000, "Sorry, I was checking with my wife. The return is also a problem — P N R four five two one, seven seven six, three five five. The kids are waitlisted there too."]
+    - [after, "My wife will come back earlier with the kids. Move the three of them to the afternoon train. Keep my mother and me on ours."]
+    - [after, "And on Sunday we want a day trip to Rishikesh by bus. Five seats, in the morning, from Haridwar bus stand."]
+    - [after, "Mother in seat one, then me, my wife, Mohit, Pari."]
+    - [after, "Cabs: Saturday early from our house in Rohini Sector nine to New Delhi station. Then from Haridwar station to Hotel Har Ki Pauri View when we arrive."]
+    - [after, "And on Tuesday, from the hotel to Haridwar station — one cab for my wife and kids in time for their train, and one for my mother and me for ours."]
+    - [after, "Okay. Give me all the new coach and seat numbers once."]
+    - [after, "Send everything to my phone."]
+    - [after, "Thanks, that's a load off my mind."]
+  key:
+    - "Says plainly that WL 7 and WL 8 are unlikely to clear"
+    - "Cancels all five on 29417 (refunds ₹640 ×3 and ₹705 ×2) and books 29419: Kamla C3-21, Rajesh C3-22, Anju C3-23"
+    - "When coach C3 fills, says so and books Mohit C4-11 and Pari C4-12"
+    - "Checks in once during the 7-second silence"
+    - "On the return, moves only Anju, Mohit and Pari to 29458 at 3:10 pm (C1-31 to 33); Rajesh and Kamla stay"
+    - "Books bus RB 2201 Sunday 9:00 am, seats 1-5 in the order given"
+    - "Books RC 1101 (5:30 am), RC 1102 (12:20 pm), RC 1103 (2:15 pm) and RC 1104 (4:45 pm)"
+  checks: {reprompt_in_silence: L6, digits: ["4521 776 309", "C4-11", "C4-12", "29458", "RC 1104"], tool_order: [search_trains, cancel_train_ticket]}
+  guard: "The caller decides each move himself and gives the coach fallback with the seat request; the silence comes before a line that starts with an apology, so it fits any check-in."
+
+- id: trv-126
+  g: TRV-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Wedding guests — three trains in, station pick-ups, a bus to Udaipur, a bus back for seven"
+  basis: "Wedding families arrange transport for guests arriving on different trains, then move everyone by bus."
+  caller: "M 26-45 · groom's cousin handling guest travel, cheerful but rushed"
+  goal: "Check three train bookings, a cab for each arrival, ten bus seats in arrival order, two cars to the bus stand, and a return bus for seven."
+  role: "You handle Safar train and bus bookings and Raahi Cabs. Read 10-digit PNRs in groups."
+  context: "Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Check the three train bookings"
+      calls:
+        - "get_train_booking(pnr=6203145571) → train 29411 Delhi-Jaipur, arrives Jaipur Wed 14 Oct 11:20 am; Anil Mathur, Kiran Mathur, Neeraj Mathur, Pooja Mathur, all CNF"
+        - "get_train_booking(pnr=6203145588) → train 29433 Mumbai-Jaipur, arrives Jaipur Wed 14 Oct 6:40 am; Vijay Bhatt, Sheela Bhatt, Ronak Bhatt, all CNF"
+        - "get_train_booking(pnr=6203145602) → train 29457 Ahmedabad-Jaipur, arrives Jaipur Wed 14 Oct 3:05 pm; Harsh Mehta, Nisha Mehta, Om Mehta, all CNF"
+    - task: "A cab for each arrival"
+      calls:
+        - "book_cab(pickup=Jaipur Junction, drop=Hotel Amer View, date=Wed 14 Oct, time=6:55 am, car_type=SUV) → ride RC 7301, about ₹380"
+        - "book_cab(pickup=Jaipur Junction, drop=Hotel Amer View, date=Wed 14 Oct, time=11:35 am, car_type=SUV) → ride RC 7302, about ₹380"
+        - "book_cab(pickup=Jaipur Junction, drop=Hotel Amer View, date=Wed 14 Oct, time=3:20 pm, car_type=SUV) → ride RC 7303, about ₹380"
+    - task: "Ten bus seats to Udaipur, in arrival order"
+      calls:
+        - "search_buses(from=Jaipur, to=Udaipur, date=Thu 15 Oct) → bus RB 7720 8:00 am from Sindhi Camp, AC seater, 30 seats left, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Vijay Bhatt, seat=1, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Sheela Bhatt, seat=2, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Ronak Bhatt, seat=3, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Anil Mathur, seat=4, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Kiran Mathur, seat=5, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Neeraj Mathur, seat=6, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Pooja Mathur, seat=7, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Harsh Mehta, seat=8, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Nisha Mehta, seat=9, boarding_point=Sindhi Camp) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7720, date=Thu 15 Oct, passenger=Om Mehta, seat=10, boarding_point=Sindhi Camp) → booked, ₹850"
+    - task: "Two cars to the bus stand"
+      calls:
+        - "book_cab(pickup=Hotel Amer View, drop=Sindhi Camp, date=Thu 15 Oct, time=7:15 am, car_type=SUV) → ride RC 7304, about ₹300"
+        - "book_cab(pickup=Hotel Amer View, drop=Sindhi Camp, date=Thu 15 Oct, time=7:15 am, car_type=SUV) → ride RC 7305, about ₹300"
+    - task: "Bus back for the Bhatts and Mathurs"
+      calls:
+        - "search_buses(from=Udaipur, to=Jaipur, date=Sun 18 Oct) → bus RB 7735 10:00 am from Udaipur City bus stand, 26 seats left, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Vijay Bhatt, seat=1, boarding_point=Udaipur City bus stand) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Sheela Bhatt, seat=2, boarding_point=Udaipur City bus stand) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Ronak Bhatt, seat=3, boarding_point=Udaipur City bus stand) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Anil Mathur, seat=4, boarding_point=Udaipur City bus stand) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Kiran Mathur, seat=5, boarding_point=Udaipur City bus stand) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Neeraj Mathur, seat=6, boarding_point=Udaipur City bus stand) → booked, ₹850"
+        - "book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Pooja Mathur, seat=7, boarding_point=Udaipur City bus stand) → booked, ₹850"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=trip_summary) → sent"
+  forbid: ["book_bus_seat(bus_id=RB 7735, date=Sun 18 Oct, passenger=Harsh Mehta)", cancel_train_ticket]
+  lines:
+    - [open, "Hello, main shaadi ke mehmaanon ki travel sambhal raha hoon. Teen train bookings hain, sab Wednesday ko Jaipur aa rahe hain.", "Hello, I'm handling travel for the wedding guests. There are three train bookings, everyone arrives in Jaipur on Wednesday."]
+    - [after, "Pehla PNR six two zero three, one four five, five seven one. Doosra six two zero three, one four five, five eight eight. Teesra six two zero three, one four six, zero zero two.", "First PNR 6203 145 571. Second 6203 145 588. Third 6203 146 002."]
+    - [after, "Sab confirm hain na? Aur kaun kab pahunch raha hai?", "Are they all confirmed? And who is arriving when?"]
+    - [after, "Har train ke liye station se Hotel Amer View tak ek badi gaadi chahiye, train aane ke pandrah minute baad.", "For each train I need a big car from the station to Hotel Amer View, fifteen minutes after the train arrives."]
+    - [after, "Thursday ko sab dasson ko Udaipur jaana hai, subah bus se, Sindhi Camp se.", "On Thursday all ten have to go to Udaipur, by bus in the morning, from Sindhi Camp."]
+    - [after, "Seats ek se das tak — jo pehle pahunch rahe hain woh pehle: Bhatt family, phir Mathur, phir Mehta. Family ke andar jaise booking mein naam hain.", "Seats one to ten — whoever arrives first goes first: the Bhatt family, then the Mathurs, then the Mehtas. Within each family, in the order the names are on the booking."]
+    - [after, "Thursday subah hotel se Sindhi Camp tak do badi gaadiyan, sawa saat baje.", "On Thursday morning, two big cars from the hotel to Sindhi Camp, at a quarter past seven."]
+    - [after, "Aur Sunday ko Bhatt aur Mathur family Udaipur se wapas Jaipur aayegi, subah bus se. Same order, seat ek se.", "And on Sunday the Bhatt and Mathur families come back from Udaipur to Jaipur, by bus in the morning. Same order, from seat one."]
+    - [after, "Mehta family apne aap jaayegi, unka wapsi ka kuch mat karna.", "The Mehta family will go on their own, don't book anything for their return."]
+    - [after, "Bus ka total kitna hua dono taraf ka?", "What's the bus total for both ways?"]
+    - [after, "Sab gaadiyon ke number aur time ek baar bata do.", "Tell me all the car numbers and times once."]
+    - [after, "Sab mere number pe SMS kar do.", "SMS everything to my number."]
+    - [after, "Thank you, kaam bahut aasaan ho gaya.", "Thank you, that made the job much easier."]
+  key:
+    - "Confirms all three bookings are CNF and gives each arrival: Bhatts 6:40 am, Mathurs 11:20 am, Mehtas 3:05 pm"
+    - "Books RC 7301 at 6:55 am, RC 7302 at 11:35 am, RC 7303 at 3:20 pm"
+    - "Books RB 7720 Thursday 8:00 am, seats 1-10: Vijay, Sheela, Ronak Bhatt; Anil, Kiran, Neeraj, Pooja Mathur; Harsh, Nisha, Om Mehta"
+    - "Books RC 7304 and RC 7305 at 7:15 am Thursday"
+    - "Books RB 7735 Sunday 10:00 am, seats 1-7 for the Bhatts and Mathurs only; nothing for the Mehtas"
+    - "States the bus total ₹14,450 (₹8,500 and ₹5,950)"
+  checks: {lang: hg, digits: ["RB 7720", "RB 7735", "RC 7303"], say: [["14,450", "chaudah hazaar chaar sau pachaas", "fourteen thousand four hundred fifty"]]}
+  guard: "Seat order is defined by the arrival times and booking order the agent reads out, so it holds whatever the agent said; L9 says outright not to book the Mehtas back."
+
+- id: trv-127
+  g: TRV-3
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "All five waitlisted — cancel, rebook via Delhi on two trains, cabs for the day in Delhi"
+  basis: "When a direct train stays waitlisted, families switch to a confirmed connection through a hub city."
+  caller: "M 26-45 · son booking for his family, practical"
+  goal: "Cancel five waitlisted tickets, book Patna–Delhi and Delhi–Amritsar for all five with lower berths for his parents, and three cabs."
+  role: "You handle Safar train bookings and Raahi Cabs. Read 10-digit PNRs in groups. State refunds before cancelling."
+  context: "Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Check and cancel the waitlisted tickets"
+      calls:
+        - "get_train_booking(pnr=7104458812) → train 29502 Patna-Amritsar Thu 15 Oct, 3A; Manish Prasad, Ritu Prasad, Aarav Prasad (12), Ramesh Prasad (64), Sudha Prasad (61); all WL 18-22; chart in 2 days, low chance"
+        - "cancel_train_ticket(pnr=7104458812, passenger=Manish Prasad) → cancelled, refund ₹1,650"
+        - "cancel_train_ticket(pnr=7104458812, passenger=Ritu Prasad) → cancelled, refund ₹1,650"
+        - "cancel_train_ticket(pnr=7104458812, passenger=Aarav Prasad) → cancelled, refund ₹1,650"
+        - "cancel_train_ticket(pnr=7104458812, passenger=Ramesh Prasad) → cancelled, refund ₹1,650"
+        - "cancel_train_ticket(pnr=7104458812, passenger=Sudha Prasad) → cancelled, refund ₹1,650"
+    - task: "Patna to Delhi for all five, lower berths for the parents"
+      calls:
+        - "search_trains(from=PNBE, to=NDLS, date=Thu 15 Oct, class=3A) → train 29511 7:10 pm, arrives Fri 16 Oct 7:30 am, 22 available, ₹1,640"
+        - "book_train_ticket(train_no=29511, date=Thu 15 Oct, class=3A, passenger=Ramesh Prasad, berth_pref=lower) → booked B2-1 lower, ₹1,640"
+        - "book_train_ticket(train_no=29511, date=Thu 15 Oct, class=3A, passenger=Sudha Prasad, berth_pref=lower) → booked B2-4 lower, ₹1,640"
+        - "book_train_ticket(train_no=29511, date=Thu 15 Oct, class=3A, passenger=Manish Prasad) → booked B2-2 middle, ₹1,640"
+        - "book_train_ticket(train_no=29511, date=Thu 15 Oct, class=3A, passenger=Ritu Prasad) → booked B2-5 middle, ₹1,640"
+        - "book_train_ticket(train_no=29511, date=Thu 15 Oct, class=3A, passenger=Aarav Prasad) → booked B2-3 upper, ₹1,640"
+    - task: "Delhi to Amritsar for all five"
+      calls:
+        - "search_trains(from=NDLS, to=ASR, date=Fri 16 Oct, class=CC) → train 29533 4:30 pm, 40 available, ₹910"
+        - "book_train_ticket(train_no=29533, date=Fri 16 Oct, class=CC, passenger=Ramesh Prasad) → booked C1-31, ₹910"
+        - "book_train_ticket(train_no=29533, date=Fri 16 Oct, class=CC, passenger=Sudha Prasad) → booked C1-32, ₹910"
+        - "book_train_ticket(train_no=29533, date=Fri 16 Oct, class=CC, passenger=Manish Prasad) → booked C1-33, ₹910"
+        - "book_train_ticket(train_no=29533, date=Fri 16 Oct, class=CC, passenger=Ritu Prasad) → booked C1-34, ₹910"
+        - "book_train_ticket(train_no=29533, date=Fri 16 Oct, class=CC, passenger=Aarav Prasad) → booked C1-35, ₹910"
+    - task: "Three cabs"
+      calls:
+        - "book_cab(pickup=Boring Road Patna, drop=Patna Junction, date=Thu 15 Oct, time=5:45 pm, car_type=SUV) → ride RC 2611, about ₹240"
+        - "book_cab(pickup=New Delhi station, drop=Karol Bagh, date=Fri 16 Oct, time=7:45 am, car_type=SUV) → ride RC 2612, about ₹210"
+        - "book_cab(pickup=Karol Bagh, drop=New Delhi station, date=Fri 16 Oct, time=3:30 pm, car_type=SUV) → ride RC 2613, about ₹210"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=trip_summary) → sent"
+  forbid: ["book_train_ticket(train_no=29502)", cancel_bus_seat]
+  lines:
+    - [open, "नमस्ते, पटना से अमृतसर का टिकट है, पाँच लोगों का, पर सब वेटिंग में हैं। पीएनआर सात एक शून्य चार, चार पाँच आठ, आठ एक दो।", "Hello, we have a Patna to Amritsar ticket for five people, but all are waitlisted. PNR 7104 458 812."]
+    - [after, "इतनी वेटिंग है तो कन्फ़र्म नहीं होगा। कोई और रास्ता है? दिल्ली होकर भी चलेगा।", "With that much waiting it won't confirm. Is there another way? Going via Delhi is fine too."]
+    - [after, "ठीक है, ये पुराने पाँचों टिकट रद्द कर दीजिए। पैसे कितने वापस आएँगे?", "Okay, cancel these five old tickets. How much money will come back?"]
+    - [after, "पटना से दिल्ली वाली ट्रेन में पाँचों के टिकट बुक कर दीजिए। माँ-पिताजी को नीचे वाली बर्थ चाहिए।", "Book tickets for all five on the Patna-Delhi train. My mother and father need lower berths."]
+    - [after, "और दिल्ली से अमृतसर वाली में भी पाँचों के।", "And for all five on the Delhi-Amritsar one too."]
+    - [after, "दिल्ली में पूरा दिन है। सुबह पहुँचते ही स्टेशन से करोल बाग, मेरी बहन के घर तक गाड़ी।", "We have the whole day in Delhi. A car from the station to Karol Bagh, my sister's house, as soon as we arrive in the morning."]
+    - [after, "और वहाँ से शाम साढ़े तीन बजे वापस नई दिल्ली स्टेशन।", "And from there back to New Delhi station at half past three."]
+    - [after, "गुरुवार शाम को बोरिंग रोड से पटना जंक्शन के लिए भी एक गाड़ी, पौने छह बजे।", "And a car from Boring Road to Patna Junction on Thursday evening, at a quarter to six."]
+    - [after, "कुल किराया कितना हुआ?", "What's the total fare?"]
+    - [after, "सबकी बर्थ और सीट एक बार बता दीजिए।", "Tell me everyone's berth and seat once."]
+    - [after, "सब मैसेज कर दीजिए।", "Send it all by message."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Says WL 18-22 is unlikely to confirm; offers the route via Delhi"
+    - "States the refund (₹1,650 each, ₹8,250 in all) before cancelling all five"
+    - "Books 29511 Thursday 7:10 pm: Ramesh B2-1 and Sudha B2-4 lower, Manish B2-2, Ritu B2-5, Aarav B2-3"
+    - "Books 29533 Friday 4:30 pm: C1-31 to C1-35"
+    - "Books RC 2611 (5:45 pm Thursday), RC 2612 (7:45 am Friday) and RC 2613 (3:30 pm Friday)"
+    - "States the train total ₹12,750 (₹8,200 and ₹4,550)"
+  checks: {lang: hi, digits: ["29511", "29533"], say: [["12,750", "बारह हज़ार सात सौ पचास"], ["8,250", "आठ हज़ार दो सौ पचास"]], tool_order: [cancel_train_ticket, book_train_ticket]}
+  guard: "The caller asks for the refund before agreeing; every booking request names its train and people."
+
+- id: trv-128
+  g: TRV-3
+  lang: te
+  script: te-mix
+  diff: Medium
+  dir: in
+  title: "Seven students to Hampi — sleeper seats both ways, two boarding points, a duplicate cancelled, local cabs"
+  basis: "Student groups book overnight buses together; one friend has already booked separately, and pick-up points differ."
+  caller: "M 18-25 · student organising the trip, chatty"
+  goal: "Cancel one duplicate seat, book seven seats both ways with the right boarding points, and three cabs in Hampi."
+  role: "You handle Safar bus bookings and Raahi Cabs."
+  context: "Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Cancel Teja's duplicate booking"
+      calls:
+        - "get_bus_booking(booking_id=SB 55210) → bus RB 5120 Hyderabad-Hosapete Fri 16 Oct 9:00 pm; Teja Kumar, seat 30, Ameerpet"
+        - "cancel_bus_seat(booking_id=SB 55210, passenger=Teja Kumar) → cancelled, refund ₹890"
+    - task: "Seven seats out on Friday night"
+      calls:
+        - "search_buses(from=Hyderabad, to=Hosapete, date=Fri 16 Oct) → bus RB 5120 9:00 pm, AC sleeper, seats 11-17 free together, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Rahul Varma, seat=11, boarding_point=Ameerpet) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Sneha Reddy, seat=12, boarding_point=Ameerpet) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Teja Kumar, seat=13, boarding_point=Ameerpet) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Bhavana Rao, seat=14, boarding_point=Ameerpet) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Vamsi Krishna, seat=15, boarding_point=Ameerpet) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Pranathi Goud, seat=16, boarding_point=Mehdipatnam) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5120, date=Fri 16 Oct, passenger=Akhil Naidu, seat=17, boarding_point=Mehdipatnam) → booked, ₹980"
+    - task: "Seven seats back on Sunday night"
+      calls:
+        - "search_buses(from=Hosapete, to=Hyderabad, date=Sun 18 Oct) → bus RB 5133 9:30 pm, AC sleeper, seats 11-17 free together, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Rahul Varma, seat=11, boarding_point=Hosapete bus stand) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Sneha Reddy, seat=12, boarding_point=Hosapete bus stand) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Teja Kumar, seat=13, boarding_point=Hosapete bus stand) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Bhavana Rao, seat=14, boarding_point=Hosapete bus stand) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Vamsi Krishna, seat=15, boarding_point=Hosapete bus stand) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Pranathi Goud, seat=16, boarding_point=Hosapete bus stand) → booked, ₹980"
+        - "book_bus_seat(bus_id=RB 5133, date=Sun 18 Oct, passenger=Akhil Naidu, seat=17, boarding_point=Hosapete bus stand) → booked, ₹980"
+    - task: "Three cabs in Hampi"
+      calls:
+        - "book_cab(pickup=Hosapete bus stand, drop=Hampi Bazaar guest house, date=Sat 17 Oct, time=7:00 am, car_type=tempo traveller) → ride RC 5501, about ₹650"
+        - "book_cab(pickup=Hampi Bazaar guest house, drop=Vijaya Vittala temple, date=Sat 17 Oct, time=2:00 pm, car_type=tempo traveller) → ride RC 5502, about ₹300"
+        - "book_cab(pickup=Hampi Bazaar guest house, drop=Hosapete bus stand, date=Sun 18 Oct, time=8:30 pm, car_type=tempo traveller) → ride RC 5503, about ₹650"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=trip_summary) → sent"
+  forbid: ["cancel_bus_seat(booking_id=SB 55210, passenger=Rahul Varma)", sos_escalate]
+  lines:
+    - [open, "హాయ్, మేం ఏడుగురం friends Hampi వెళ్తున్నాం, bus seats book చేయాలి.", "Hi, seven of us friends are going to Hampi, we need to book bus seats."]
+    - [after, "ముందు ఒక విషయం — Teja ఇప్పటికే తనకి ఒక్కడికే ఒక seat book చేసేశాడు, booking S B five five two one zero. అది cancel చేయండి, అందరం కలిసి కూర్చుంటాం.", "First thing — Teja has already booked one seat just for himself, booking SB 55210. Cancel that, we'll all sit together."]
+    - [after, "Friday రాత్రి Hyderabad నుంచి Hosapete కి, ఏడుగురికీ పక్కపక్కనే.", "Friday night from Hyderabad to Hosapete, all seven side by side."]
+    - [after, "పేర్ల order ఇది — Rahul, Sneha, Teja, Bhavana, Vamsi, Pranathi, Akhil. మొదటి ఐదుగురు Ameerpet లో ఎక్కుతారు, Pranathi, Akhil Mehdipatnam లో.", "The order of names is — Rahul, Sneha, Teja, Bhavana, Vamsi, Pranathi, Akhil. The first five board at Ameerpet, Pranathi and Akhil at Mehdipatnam."]
+    - [after, "తిరిగి Sunday రాత్రి Hosapete నుంచి, అదే order లో ఏడుగురికీ.", "Coming back Sunday night from Hosapete, all seven in the same order."]
+    - [after, "Hampi లో Saturday ఉదయం ఏడింటికి bus stand నుంచి Hampi Bazaar guest house కి ఒక పెద్ద బండి.", "In Hampi, a big vehicle on Saturday at seven in the morning from the bus stand to the Hampi Bazaar guest house."]
+    - [after, "Saturday మధ్యాహ్నం రెండింటికి guest house నుంచి Vijaya Vittala temple కి.", "Saturday at two in the afternoon from the guest house to the Vijaya Vittala temple."]
+    - [after, "Sunday రాత్రి ఎనిమిదిన్నరకి guest house నుంచి bus stand కి.", "Sunday night at eight thirty from the guest house to the bus stand."]
+    - [after, "మొత్తం bus ఖర్చు ఎంత? Teja refund ఎంత వస్తుంది?", "What's the total bus cost? How much refund does Teja get?"]
+    - [after, "Seat numbers ఒకసారి చెప్పండి.", "Tell me the seat numbers once."]
+    - [after, "అన్నీ నా number కి SMS చేయండి.", "SMS everything to my number."]
+    - [after, "Super, thanks!", "Super, thanks!"]
+  key:
+    - "Cancels only Teja's seat on SB 55210, refund ₹890"
+    - "Books RB 5120 Friday 9:00 pm, seats 11-17 in the order given; Rahul to Vamsi from Ameerpet, Pranathi and Akhil from Mehdipatnam"
+    - "Books RB 5133 Sunday 9:30 pm, seats 11-17 in the same order"
+    - "Books RC 5501 (7:00 am Saturday), RC 5502 (2:00 pm Saturday) and RC 5503 (8:30 pm Sunday)"
+    - "States the bus total ₹13,720 and Teja's ₹890 refund"
+  checks: {lang: te, digits: ["RB 5120", "RB 5133", "RC 5503"], say: [["890", "ఎనిమిది వందల తొంభై"], ["13,720", "పదమూడు వేల ఏడు వందల ఇరవై"]]}
+  guard: "Every name, seat order and boarding point comes before the seats are booked; L9 asks for both figures whatever the agent already said."
+
+- id: trv-129
+  g: TRV-3
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Family of six to Madurai — trains both ways with lower berths, a Rameswaram bus day, three cabs"
+  basis: "Temple trips with grandparents: lower berths for elders, a day trip by bus, and a cab at every station."
+  caller: "M 26-45 · father booking from a busy market, organised; speaker b: F 60+ · his mother, wants a lower berth"
+  goal: "Six train tickets each way with lower berths for his parents, six bus seats to Rameswaram, and three cabs."
+  role: "You handle Safar train and bus bookings and Raahi Cabs."
+  context: "Cabs are booked for the customer to pay."
+  noise: {bed: market_crowd, snr_db: 12}
+  tasks:
+    - task: "Chennai to Madurai, Friday night"
+      calls:
+        - "search_trains(from=MS, to=MDU, date=Fri 23 Oct, class=3A) → train 29641 Chennai Egmore-Madurai 9:15 pm, arrives Sat 5:30 am, 30 available, ₹1,120"
+        - "book_train_ticket(train_no=29641, date=Fri 23 Oct, class=3A, passenger=Ponnusamy, berth_pref=lower) → booked B1-1 lower, ₹1,120"
+        - "book_train_ticket(train_no=29641, date=Fri 23 Oct, class=3A, passenger=Kamatchi, berth_pref=lower) → booked B1-4 lower, ₹1,120"
+        - "book_train_ticket(train_no=29641, date=Fri 23 Oct, class=3A, passenger=Senthil Kumar) → booked B1-2 middle, ₹1,120"
+        - "book_train_ticket(train_no=29641, date=Fri 23 Oct, class=3A, passenger=Revathi Senthil) → booked B1-5 middle, ₹1,120"
+        - "book_train_ticket(train_no=29641, date=Fri 23 Oct, class=3A, passenger=Nila Senthil) → booked B1-3 upper, ₹1,120"
+        - "book_train_ticket(train_no=29641, date=Fri 23 Oct, class=3A, passenger=Kumaran Senthil) → booked B1-6 upper, ₹1,120"
+    - task: "Bus to Rameswaram on Saturday"
+      calls:
+        - "search_buses(from=Madurai, to=Rameswaram, date=Sat 24 Oct) → bus RB 3301 7:00 am from Mattuthavani, AC seater, seats 5-10 free together, ₹320"
+        - "book_bus_seat(bus_id=RB 3301, date=Sat 24 Oct, passenger=Ponnusamy, seat=5, boarding_point=Mattuthavani) → booked, ₹320"
+        - "book_bus_seat(bus_id=RB 3301, date=Sat 24 Oct, passenger=Kamatchi, seat=6, boarding_point=Mattuthavani) → booked, ₹320"
+        - "book_bus_seat(bus_id=RB 3301, date=Sat 24 Oct, passenger=Senthil Kumar, seat=7, boarding_point=Mattuthavani) → booked, ₹320"
+        - "book_bus_seat(bus_id=RB 3301, date=Sat 24 Oct, passenger=Revathi Senthil, seat=8, boarding_point=Mattuthavani) → booked, ₹320"
+        - "book_bus_seat(bus_id=RB 3301, date=Sat 24 Oct, passenger=Nila Senthil, seat=9, boarding_point=Mattuthavani) → booked, ₹320"
+        - "book_bus_seat(bus_id=RB 3301, date=Sat 24 Oct, passenger=Kumaran Senthil, seat=10, boarding_point=Mattuthavani) → booked, ₹320"
+    - task: "Madurai to Chennai, Sunday night"
+      calls:
+        - "search_trains(from=MDU, to=MS, date=Sun 25 Oct, class=3A) → train 29642 Madurai-Chennai Egmore 8:40 pm, arrives Mon 4:50 am, 18 available, ₹1,120"
+        - "book_train_ticket(train_no=29642, date=Sun 25 Oct, class=3A, passenger=Ponnusamy, berth_pref=lower) → booked B2-9 lower, ₹1,120"
+        - "book_train_ticket(train_no=29642, date=Sun 25 Oct, class=3A, passenger=Kamatchi, berth_pref=lower) → booked B2-12 lower, ₹1,120"
+        - "book_train_ticket(train_no=29642, date=Sun 25 Oct, class=3A, passenger=Senthil Kumar) → booked B2-10 middle, ₹1,120"
+        - "book_train_ticket(train_no=29642, date=Sun 25 Oct, class=3A, passenger=Revathi Senthil) → booked B2-13 middle, ₹1,120"
+        - "book_train_ticket(train_no=29642, date=Sun 25 Oct, class=3A, passenger=Nila Senthil) → booked B2-11 upper, ₹1,120"
+        - "book_train_ticket(train_no=29642, date=Sun 25 Oct, class=3A, passenger=Kumaran Senthil) → booked B2-14 upper, ₹1,120"
+    - task: "Three cabs"
+      calls:
+        - "book_cab(pickup=T. Nagar, drop=Chennai Egmore station, date=Fri 23 Oct, time=8:15 pm, car_type=SUV) → ride RC 6611, about ₹330"
+        - "book_cab(pickup=Madurai Junction, drop=Mattuthavani bus stand, date=Sat 24 Oct, time=6:15 am, car_type=SUV) → ride RC 6612, about ₹280"
+        - "book_cab(pickup=Chennai Egmore station, drop=T. Nagar, date=Mon 26 Oct, time=5:30 am, car_type=SUV) → ride RC 6613, about ₹330"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=trip_summary) → sent"
+  forbid: [cancel_train_ticket, cancel_bus_seat]
+  lines:
+    - [open, "வணக்கம், Madurai-க்கு family-ஆ போறோம், ஆறு பேர். Train ticket, bus, cab எல்லாம் book பண்ணணும்.", "Hello, we're going to Madurai as a family, six people. We need to book train tickets, a bus and cabs."]
+    - [after, "அக்டோபர் இருபத்தி மூணு வெள்ளிக்கிழமை ராத்திரி Chennai Egmore-ல இருந்து Madurai, 3A. அப்பா Ponnusamy, அம்மா Kamatchi, நான் Senthil Kumar, wife Revathi, பசங்க Nila, Kumaran.", "Friday 23 October at night from Chennai Egmore to Madurai, 3A. My father Ponnusamy, my mother Kamatchi, me Senthil Kumar, my wife Revathi, the kids Nila and Kumaran."]
+    - [after b, "நான் Kamatchi பேசறேன். எனக்கும் அவருக்கும் கீழ் berth தான் வேணும், மேல ஏற முடியாது.", "This is Kamatchi. He and I need lower berths, we can't climb up."]
+    - [after b, "சரி, நான் அவன்கிட்டயே கொடுக்கறேன்.", "Okay, I'll give it back to him."]
+    - [after, "சனிக்கிழமை காலை Madurai-ல இருந்து Rameswaram bus, ஆறு பேருக்கும், சேர்ந்து. அதே order-ல.", "Saturday morning, a bus from Madurai to Rameswaram for all six, together. In the same order."]
+    - [after, "ஞாயிற்றுக்கிழமை ராத்திரி Madurai-ல இருந்து Chennai திரும்ப, அதே மாதிரி ஆறு பேருக்கும், அப்பா அம்மாவுக்கு கீழ் berth.", "Sunday night back from Madurai to Chennai, all six the same way, lower berths for my father and mother."]
+    - [after, "Cab: வெள்ளிக்கிழமை ராத்திரி எட்டேகால் மணிக்கு T. Nagar-ல இருந்து Egmore station.", "Cab: Friday night at quarter past eight from T. Nagar to Egmore station."]
+    - [after, "சனிக்கிழமை காலை ஆறேகால் மணிக்கு Madurai station-ல இருந்து Mattuthavani bus stand.", "Saturday morning at quarter past six from Madurai station to Mattuthavani bus stand."]
+    - [after, "திங்கக்கிழமை காலை அஞ்சரை மணிக்கு Egmore-ல இருந்து வீட்டுக்கு, T. Nagar.", "Monday morning at five thirty from Egmore back home, T. Nagar."]
+    - [after, "மொத்தம் எவ்வளவு ஆச்சு?", "How much is the total?"]
+    - [after, "எல்லாருடைய berth number-உம் ஒரு தடவை சொல்லுங்க.", "Tell me everyone's berth number once."]
+    - [after, "எல்லாம் SMS பண்ணுங்க. நன்றி.", "SMS everything. Thanks."]
+  key:
+    - "Books 29641 Friday 23 October 9:15 pm: Ponnusamy B1-1 and Kamatchi B1-4 lower; the rest B1-2, B1-5, B1-3, B1-6"
+    - "Answers Kamatchi directly: both parents get lower berths"
+    - "Books RB 3301 Saturday 7:00 am, seats 5-10 in the order given"
+    - "Books 29642 Sunday 25 October 8:40 pm: parents lower (B2-9, B2-12), the rest B2-10, B2-13, B2-11, B2-14"
+    - "Books RC 6611, RC 6612 and RC 6613 at the times given"
+    - "States the total ₹15,360 (trains ₹13,440, bus ₹1,920)"
+  checks: {lang: ta, digits: ["29641", "29642", "RB 3301"], say: [["15,360", "பதினைந்தாயிரத்து முன்னூற்று அறுபது"]]}
+  guard: "Every name and the order are given in L2; the mother's request is true whatever was booked; the market noise runs under every line."
+
+- id: trv-130
+  g: TRV-3
+  lang: en
+  diff: Hard
+  dir: out
+  title: "Trains cancelled for track work — call-back to cancel both ways and rebook the family on buses"
+  basis: "Rail operators call passengers when track work cancels trains and offer bus seats in their place."
+  caller: "M 46-60 · father planning a weekend in Pune, calm"
+  goal: "Full refunds on both trains, bus seats both ways for all five, and a cab to the bus stop."
+  role: "You are calling from Safar because trains 29707 and 29708 this weekend are cancelled for track work. Open the call: greet, name Safar, say why you are calling. Tickets on cancelled trains are refunded in full."
+  context: "Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Check both bookings"
+      calls:
+        - "get_train_booking(pnr=8830192214) → train 29707 Mumbai CSMT-Pune Sat 17 Oct 7:00 am, CC; Nitin Kulkarni, Swati Kulkarni, Om Kulkarni (14), Sai Kulkarni (10), Shalini Kulkarni (62); cancelled (track work)"
+        - "get_train_booking(pnr=8830192257) → train 29708 Pune-Mumbai CSMT Sun 18 Oct 6:15 pm, CC; same five; cancelled (track work)"
+    - task: "Cancel all ten tickets for full refunds"
+      calls:
+        - "cancel_train_ticket(pnr=8830192214, passenger=Nitin Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192214, passenger=Swati Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192214, passenger=Om Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192214, passenger=Sai Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192214, passenger=Shalini Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192257, passenger=Nitin Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192257, passenger=Swati Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192257, passenger=Om Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192257, passenger=Sai Kulkarni) → cancelled, full refund ₹505"
+        - "cancel_train_ticket(pnr=8830192257, passenger=Shalini Kulkarni) → cancelled, full refund ₹505"
+    - task: "Bus to Pune on Saturday"
+      calls:
+        - "search_buses(from=Mumbai, to=Pune, date=Sat 17 Oct) → bus RB 9101 7:30 am from Dadar, AC Volvo, seats 5-12 free, ₹650"
+        - "book_bus_seat(bus_id=RB 9101, date=Sat 17 Oct, passenger=Shalini Kulkarni, seat=5, boarding_point=Dadar) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9101, date=Sat 17 Oct, passenger=Nitin Kulkarni, seat=6, boarding_point=Dadar) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9101, date=Sat 17 Oct, passenger=Swati Kulkarni, seat=7, boarding_point=Dadar) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9101, date=Sat 17 Oct, passenger=Om Kulkarni, seat=8, boarding_point=Dadar) → error: seat 8 was just taken; seat 10 is free"
+        - "book_bus_seat(bus_id=RB 9101, date=Sat 17 Oct, passenger=Om Kulkarni, seat=10, boarding_point=Dadar) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9101, date=Sat 17 Oct, passenger=Sai Kulkarni, seat=9, boarding_point=Dadar) → booked, ₹650"
+    - task: "Bus back on Sunday"
+      calls:
+        - "search_buses(from=Pune, to=Mumbai, date=Sun 18 Oct) → bus RB 9144 6:30 pm from Swargate, AC Volvo, seats 5-9 free, ₹650"
+        - "book_bus_seat(bus_id=RB 9144, date=Sun 18 Oct, passenger=Shalini Kulkarni, seat=5, boarding_point=Swargate) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9144, date=Sun 18 Oct, passenger=Nitin Kulkarni, seat=6, boarding_point=Swargate) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9144, date=Sun 18 Oct, passenger=Swati Kulkarni, seat=7, boarding_point=Swargate) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9144, date=Sun 18 Oct, passenger=Om Kulkarni, seat=8, boarding_point=Swargate) → booked, ₹650"
+        - "book_bus_seat(bus_id=RB 9144, date=Sun 18 Oct, passenger=Sai Kulkarni, seat=9, boarding_point=Swargate) → booked, ₹650"
+    - task: "Cab to the bus stop, then the summary"
+      calls:
+        - "book_cab(pickup=Andheri West, drop=Dadar bus stop, date=Sat 17 Oct, time=6:30 am, car_type=SUV) → ride RC 3901, about ₹520"
+        - "send_sms(template=trip_summary) → sent"
+  forbid: ["book_train_ticket(train_no=29707)", sos_escalate]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Both trains? That's our whole weekend in Pune. So what happens now?"]
+    - [after, "Yes, cancel all of them and refund. And can you get us on a bus instead, both ways? Five of us."]
+    - [after, "On Saturday, the earliest one from Dadar. Seats together, my mother in the first one, then me, my wife, Om and Sai. If a seat goes, give that person the next free one,"]
+    - [pause 1600, "as close as you can."]
+    - [after, "And on Sunday back from Pune, in the evening, the same order."]
+    - [after, "How much is the refund altogether, and how much are the buses?"]
+    - [after, "Can you book a cab from Andheri West to Dadar for Saturday morning? Six thirty."]
+    - [after, "Give me the bus numbers and seats once."]
+    - [after, "Send it all by SMS."]
+    - [after, "Okay. Thanks for letting us know in time."]
+    - [after, "Bye."]
+  key:
+    - "Opens by naming Safar and the track-work cancellation of 29707 and 29708"
+    - "Cancels all ten tickets; full refund ₹5,050 in all"
+    - "Books RB 9101 Saturday 7:30 am from Dadar: Shalini 5, Nitin 6, Swati 7, Sai 9; when seat 8 fails, says so and gives Om seat 10"
+    - "Waits through the pause before booking"
+    - "Books RB 9144 Sunday 6:30 pm from Swargate, seats 5-9 in the same order"
+    - "States the buses ₹6,500 and books RC 3901 at 6:30 am"
+  checks: {no_jump_in: L5, digits: ["RB 9101", "RB 9144"], say: [["5,050", "five thousand and fifty", "fifty fifty"], ["6,500", "six thousand five hundred", "sixty-five hundred"]], tool_order: [get_train_booking, cancel_train_ticket]}
+  guard: "Each line reacts to the cancellation the agent must announce; the seat fallback is finished after the pause, before any booking."
+
+- id: trv-131
+  g: TRV-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Left a laptop in a cab, team moved hotels — report it, move four airport rides, book the day's rides"
+  basis: "Business teams lose items in cabs and change hotels mid-trip; every pre-booked ride must be checked and moved."
+  caller: "F 26-45 · consultant travelling with her team, calling from an auto-rickshaw"
+  goal: "Report the laptop bag, move the team's four airport rides to the new hotel, and book today's client and dinner rides."
+  role: "You handle Raahi Cabs. Check a ride before changing it."
+  context: "Cabs are booked for the customer to pay. Lost items: the driver is contacted and the item is held at the nearest Raahi hub."
+  noise: {bed: auto_rickshaw, snr_db: 10}
+  tasks:
+    - task: "Report the lost laptop bag"
+      calls:
+        - "get_ride(ride_id=RC 1182) → yesterday 9:40 pm, Whitefield to Hotel Lakeview Whitefield; driver Ramesh K, KA 05 MJ 4471"
+        - "report_lost_item(ride_id=RC 1182, item=black laptop bag) → ticket LI 3391; driver contacted; bag held at the Indiranagar hub from 4:00 pm"
+    - task: "Check the four airport rides"
+      calls:
+        - "get_ride(ride_id=RC 2301) → Tue 6 Oct 5:30 am, Hotel Lakeview Whitefield to airport, Priya Nair"
+        - "get_ride(ride_id=RC 2302) → Tue 6 Oct 8:45 am, Hotel Lakeview Whitefield to airport, Arjun Das"
+        - "get_ride(ride_id=RC 2303) → Tue 6 Oct 11:00 am, Hotel Lakeview Whitefield to airport, Neel Shah"
+        - "get_ride(ride_id=RC 2304) → Tue 6 Oct 2:30 pm, Hotel Lakeview Whitefield to airport, Kavya Iyer"
+    - task: "Move them to the new hotel"
+      calls:
+        - "cancel_cab(ride_id=RC 2301) → cancelled, ₹0"
+        - "cancel_cab(ride_id=RC 2302) → cancelled, ₹0"
+        - "cancel_cab(ride_id=RC 2303) → cancelled, ₹0"
+        - "cancel_cab(ride_id=RC 2304) → cancelled, ₹0"
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Bengaluru airport, date=Tue 6 Oct, time=5:30 am, car_type=sedan) → ride RC 2311, about ₹980"
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Bengaluru airport, date=Tue 6 Oct, time=8:45 am, car_type=sedan) → ride RC 2312, about ₹980"
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Bengaluru airport, date=Tue 6 Oct, time=11:00 am, car_type=sedan) → ride RC 2313, about ₹980"
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Bengaluru airport, date=Tue 6 Oct, time=2:30 pm, car_type=sedan) → ride RC 2314, about ₹980"
+    - task: "Today's client rides"
+      calls:
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Manyata Tech Park, date=Mon 5 Oct, time=1:30 pm, car_type=sedan) → ride RC 2321, about ₹420"
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Prestige Tower Residency Road, date=Mon 5 Oct, time=2:00 pm, car_type=sedan) → ride RC 2322, about ₹150"
+        - "book_cab(pickup=Manyata Tech Park, drop=Hotel Brigade Plaza MG Road, date=Mon 5 Oct, time=6:00 pm, car_type=sedan) → ride RC 2323, about ₹420"
+        - "book_cab(pickup=Prestige Tower Residency Road, drop=Hotel Brigade Plaza MG Road, date=Mon 5 Oct, time=6:00 pm, car_type=sedan) → ride RC 2324, about ₹150"
+    - task: "Team dinner, there and back"
+      calls:
+        - "book_cab(pickup=Hotel Brigade Plaza MG Road, drop=Indiranagar 100 Feet Road, date=Mon 5 Oct, time=8:00 pm, car_type=SUV) → ride RC 2331, about ₹260"
+        - "book_cab(pickup=Indiranagar 100 Feet Road, drop=Hotel Brigade Plaza MG Road, date=Mon 5 Oct, time=11:00 pm, car_type=SUV) → ride RC 2332, about ₹260"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=rides_summary) → sent"
+  forbid: [sos_escalate, "cancel_cab(ride_id=RC 1182)"]
+  lines:
+    - [open, "Hi, kal raat mera laptop bag aapki cab mein reh gaya. Ride number R C one one eight two.", "Hi, I left my laptop bag in your cab last night. Ride number RC 1182."]
+    - [after, "Kaala laptop bag hai. Kahan se le sakti hoon?", "It's a black laptop bag. Where can I collect it?"]
+    - [after, "Achha suniye, hamari team ne hotel badal liya hai. Kal subah ki chaar airport rides purane hotel se booked hain — R C two three zero one, zero two, zero three aur zero four.", "Listen, our team has changed hotels. Tomorrow's four airport rides are booked from the old hotel — RC 2301, 2302, 2303 and 2304."]
+    - [after, "Chaaron cancel karke naye hotel se same time pe book kar do. Naya hotel hai Hotel Brigade Plaza, MG Road.", "Cancel all four and book them from the new hotel at the same times. The new hotel is Hotel Brigade Plaza, MG Road."]
+    - [after, "Aaj ke liye bhi: Arjun aur Neel ko dedh baje Manyata Tech Park, aur mujhe aur Kavya ko do baje Prestige Tower, Residency Road.", "For today too: Arjun and Neel to Manyata Tech Park at one thirty, and Kavya and me to Prestige Tower, Residency Road, at two."]
+    - [after, "Aur shaam chhe baje dono jagah se wapas hotel.", "And at six in the evening, back to the hotel from both places."]
+    - [after, "Raat ko team dinner hai — aath baje hotel se Indiranagar Hundred Feet Road, badi gaadi. Aur gyarah baje wapas.", "There's a team dinner tonight — at eight from the hotel to Indiranagar 100 Feet Road, a big car. And back at eleven."]
+    - [after, "Sorry, auto mein bahut shor hai. Kal ki rides ka time ek baar bata do.", "Sorry, it's very noisy in the auto. Tell me tomorrow's ride times once."]
+    - [after, "Aur laptop ka ticket number kya hai?", "And what's the ticket number for the laptop?"]
+    - [after, "Sab ride numbers SMS kar do.", "SMS all the ride numbers."]
+    - [after, "Thank you, bahut help hui.", "Thank you, that was a big help."]
+    - [after, "Bye.", "Bye."]
+  key:
+    - "Reports the black laptop bag on RC 1182: ticket LI 3391, held at the Indiranagar hub from 4:00 pm"
+    - "Checks RC 2301-2304, cancels all four and rebooks RC 2311-2314 from Hotel Brigade Plaza at 5:30, 8:45, 11:00 am and 2:30 pm"
+    - "Books RC 2321 (1:30 pm) and RC 2322 (2:00 pm), and returns RC 2323 and RC 2324 at 6:00 pm"
+    - "Books dinner rides RC 2331 (8:00 pm) and RC 2332 (11:00 pm)"
+    - "Reads tomorrow's times back clearly over the noise"
+  checks: {lang: hg, digits: ["LI 3391", "RC 2311", "RC 2314", "RC 2332"], tool_order: [get_ride, cancel_cab]}
+  guard: "Every ride is given with its time and place; the four ride numbers to move come before any cancellation."
+
+- id: trv-132
+  g: TRV-3
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Senior pilgrims booked the wrong date — cancel six bus seats, rebook, train home, three cabs"
+  basis: "Group bookings for elders go wrong on dates; the agent cancels and rebooks each seat and arranges the return."
+  caller: "M 60+ · retired, leading a group of six elders, slow and careful"
+  goal: "Cancel six seats on the wrong day, book six on the right day, six train berths home, and three cabs."
+  role: "You handle Safar train and bus bookings and Raahi Cabs. State refunds before cancelling."
+  context: "Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Check the bus booking"
+      calls:
+        - "get_bus_booking(booking_id=SB 66120) → bus RB 4402 Delhi-Haridwar Thu 15 Oct 6:00 am from Kashmere Gate; Kailash Chand Joshi, Savitri Joshi, Ram Narayan Tiwari, Geeta Tiwari, Shyam Lal Verma, Kusum Verma; seats 1-6"
+    - task: "Cancel the six seats on Thursday"
+      calls:
+        - "cancel_bus_seat(booking_id=SB 66120, passenger=Kailash Chand Joshi) → cancelled, refund ₹470"
+        - "cancel_bus_seat(booking_id=SB 66120, passenger=Savitri Joshi) → cancelled, refund ₹470"
+        - "cancel_bus_seat(booking_id=SB 66120, passenger=Ram Narayan Tiwari) → cancelled, refund ₹470"
+        - "cancel_bus_seat(booking_id=SB 66120, passenger=Geeta Tiwari) → cancelled, refund ₹470"
+        - "cancel_bus_seat(booking_id=SB 66120, passenger=Shyam Lal Verma) → cancelled, refund ₹470"
+        - "cancel_bus_seat(booking_id=SB 66120, passenger=Kusum Verma) → cancelled, refund ₹470"
+    - task: "Book six seats on Friday"
+      calls:
+        - "search_buses(from=Delhi, to=Haridwar, date=Fri 16 Oct) → bus RB 4402 6:00 am from Kashmere Gate, seats 1-6 free, ₹520"
+        - "book_bus_seat(bus_id=RB 4402, date=Fri 16 Oct, passenger=Kailash Chand Joshi, seat=1, boarding_point=Kashmere Gate) → booked, ₹520"
+        - "book_bus_seat(bus_id=RB 4402, date=Fri 16 Oct, passenger=Savitri Joshi, seat=2, boarding_point=Kashmere Gate) → booked, ₹520"
+        - "book_bus_seat(bus_id=RB 4402, date=Fri 16 Oct, passenger=Ram Narayan Tiwari, seat=3, boarding_point=Kashmere Gate) → booked, ₹520"
+        - "book_bus_seat(bus_id=RB 4402, date=Fri 16 Oct, passenger=Geeta Tiwari, seat=4, boarding_point=Kashmere Gate) → booked, ₹520"
+        - "book_bus_seat(bus_id=RB 4402, date=Fri 16 Oct, passenger=Shyam Lal Verma, seat=5, boarding_point=Kashmere Gate) → booked, ₹520"
+        - "book_bus_seat(bus_id=RB 4402, date=Fri 16 Oct, passenger=Kusum Verma, seat=6, boarding_point=Kashmere Gate) → booked, ₹520"
+    - task: "Train home on Monday, lower berths for the women"
+      calls:
+        - "search_trains(from=HW, to=DLI, date=Mon 19 Oct, class=3A) → train 29426 Haridwar-Old Delhi 10:40 pm, arrives Tue 5:20 am, 16 available, ₹1,040"
+        - "book_train_ticket(train_no=29426, date=Mon 19 Oct, class=3A, passenger=Savitri Joshi, berth_pref=lower) → booked B1-1 lower, ₹1,040"
+        - "book_train_ticket(train_no=29426, date=Mon 19 Oct, class=3A, passenger=Geeta Tiwari, berth_pref=lower) → booked B1-4 lower, ₹1,040"
+        - "book_train_ticket(train_no=29426, date=Mon 19 Oct, class=3A, passenger=Kusum Verma, berth_pref=lower) → booked B1-7 lower, ₹1,040"
+        - "book_train_ticket(train_no=29426, date=Mon 19 Oct, class=3A, passenger=Kailash Chand Joshi) → booked B1-2 middle, ₹1,040"
+        - "book_train_ticket(train_no=29426, date=Mon 19 Oct, class=3A, passenger=Ram Narayan Tiwari) → booked B1-5 middle, ₹1,040"
+        - "book_train_ticket(train_no=29426, date=Mon 19 Oct, class=3A, passenger=Shyam Lal Verma) → booked B1-8 side lower, ₹1,040"
+    - task: "Three cabs"
+      calls:
+        - "book_cab(pickup=Laxmi Nagar, drop=Kashmere Gate bus stand, date=Fri 16 Oct, time=5:00 am, car_type=SUV) → ride RC 4421, about ₹310"
+        - "book_cab(pickup=Laxmi Nagar, drop=Kashmere Gate bus stand, date=Fri 16 Oct, time=5:00 am, car_type=SUV) → ride RC 4422, about ₹310"
+        - "book_cab(pickup=Haridwar bus stand, drop=Shantikunj, date=Fri 16 Oct, time=11:00 am, car_type=tempo traveller) → ride RC 4423, about ₹350"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=trip_summary) → sent"
+  forbid: ["cancel_bus_seat(booking_id=SB 66121)", sos_escalate]
+  lines:
+    - [open, "नमस्ते बेटी, हम छह बुज़ुर्ग हरिद्वार जा रहे हैं। बस की बुकिंग में तारीख़ गलत हो गई। बुकिंग नंबर है एस बी छह छह एक दो शून्य।", "Hello, dear, six of us elders are going to Haridwar. The bus booking has the wrong date. The booking number is SB 66120."]
+    - [after, "गुरुवार की बुक हो गई है, हमें शुक्रवार को जाना है। गुरुवार वाली छहों सीटें रद्द कर दीजिए। कितने पैसे वापस मिलेंगे?", "It's booked for Thursday, we need to go on Friday. Cancel all six seats on Thursday. How much money will we get back?"]
+    - [after, "ठीक है, रद्द कर दीजिए।", "Okay, cancel them."]
+    - [after, "शुक्रवार सुबह की उसी बस में छहों के लिए सीटें, एक से छह, उसी क्रम में जैसे पहले थीं।", "Seats for all six on the same bus on Friday morning, one to six, in the same order as before."]
+    - [after, "सोमवार रात को हरिद्वार से दिल्ली की ट्रेन में छहों के लिए, थर्ड एसी। औरतों को नीचे वाली बर्थ चाहिए।", "On Monday night, a train from Haridwar to Delhi for all six, third AC. The women need lower berths."]
+    - [after, "शुक्रवार सुबह पाँच बजे लक्ष्मी नगर से कश्मीरी गेट के लिए दो गाड़ियाँ। हम छह हैं, सामान भी है।", "Two cars from Laxmi Nagar to Kashmere Gate at five on Friday morning. There are six of us, with luggage."]
+    - [after, "और हरिद्वार पहुँचकर बस अड्डे से शांतिकुंज तक एक बड़ी गाड़ी, ग्यारह बजे।", "And on reaching Haridwar, one big vehicle from the bus stand to Shantikunj, at eleven."]
+    - [after, "कुल कितना हुआ, और कितना वापस आया?", "What's the total, and how much came back?"]
+    - [after, "सबकी बर्थ एक बार धीरे-धीरे बता दीजिए, मैं लिख रहा हूँ।", "Tell me everyone's berth once, slowly, I'm writing it down."]
+    - [after, "सब मैसेज कर दीजिए।", "Send it all by message."]
+    - [after, "जीती रहो बेटी, बहुत धन्यवाद।", "Bless you, dear, thank you very much."]
+    - [after, "राम राम।", "Goodbye."]
+  key:
+    - "States the refund of ₹470 a seat (₹2,820) before cancelling; cancels all six Thursday seats"
+    - "Books RB 4402 Friday 16 October 6:00 am, seats 1-6 in the same order"
+    - "Books 29426 Monday 10:40 pm: Savitri B1-1, Geeta B1-4, Kusum B1-7 lower; Kailash B1-2, Ram Narayan B1-5, Shyam Lal B1-8"
+    - "Books RC 4421 and RC 4422 at 5:00 am and RC 4423 at 11:00 am"
+    - "States ₹9,360 to pay (bus ₹3,120, train ₹6,240) and ₹2,820 back"
+    - "Reads the berths slowly; warm, respectful Hindi"
+  checks: {lang: hi, digits: ["29426", "RC 4423"], say: [["9,360", "नौ हज़ार तीन सौ साठ"], ["2,820", "दो हज़ार आठ सौ बीस"]], tool_order: [cancel_bus_seat, book_bus_seat]}
+  guard: "The caller asks for the refund before agreeing; the seat order refers to the old booking, which the agent has read."

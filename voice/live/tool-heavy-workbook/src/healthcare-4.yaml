@@ -1,0 +1,429 @@
+# Healthcare — tool-heavy scenarios hlt-122 … hlt-127 (HLT-4 Admissions, discharge & billing).
+code: hlt
+scenarios:
+
+- id: hlt-122
+  g: HLT-4
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "Father's hospital bill after a heart stay — eight items queried, insurance enhancement, records for the claim, follow-ups, discharge medicines"
+  basis: "Families go through the final bill item by item after a hospital stay, then sort follow-ups and medicines."
+  caller: "M 26-45 · son in Jaipur reviewing his father's final bill, polite but firm"
+  goal: "Query every doubtful bill item, get the insurer to cover more, collect the papers for the claim, and set up his father's follow-ups and medicines."
+  role: "You handle billing and discharge. One query per bill item. Never comment on whether treatment was needed."
+  context: "Admission AD 22410 for Gopal Sharma, discharged Sat 3 Oct."
+  tasks:
+    - task: "Admission and bill"
+      calls:
+        - "get_admission(admission_id=AD 22410) → Gopal Sharma, cardiology, 5 days, Kavach cashless approved ₹1,50,000"
+        - "get_hospital_bill(admission_id=AD 22410) → ₹2,38,600: room ₹45,000; ICU 2 days ₹48,000; procedure ₹85,000; pharmacy ₹28,400; consumables ₹12,600; doctor visits ₹9,000; physiotherapy ₹4,000; diet ₹3,600; admin fee ₹3,000; insurance ₹1,50,000; patient share ₹88,600"
+        - "get_discharge_status(admission_id=AD 22410) → discharged; final bill open; summary issued"
+    - task: "Query each doubtful item"
+      calls:
+        - "raise_bill_query(admission_id=AD 22410, item=ICU day 2, reason=moved to ward that morning) → query BQ 22421; answer by Thu 8 Oct"
+        - "raise_bill_query(admission_id=AD 22410, item=room charges, reason=billed 5 days, 2 were in ICU) → query BQ 22422"
+        - "raise_bill_query(admission_id=AD 22410, item=pharmacy, reason=returned unused medicines not credited) → error: billing system timed out"
+        - "raise_bill_query(admission_id=AD 22410, item=pharmacy, reason=returned unused medicines not credited) → query BQ 22423"
+        - "raise_bill_query(admission_id=AD 22410, item=consumables, reason=itemised list needed) → query BQ 22424"
+        - "raise_bill_query(admission_id=AD 22410, item=doctor visits, reason=more visits billed than happened) → query BQ 22425"
+        - "raise_bill_query(admission_id=AD 22410, item=physiotherapy, reason=2 sessions, 4 billed) → query BQ 22426"
+        - "raise_bill_query(admission_id=AD 22410, item=diet, reason=home food brought on 3 days) → query BQ 22427"
+        - "raise_bill_query(admission_id=AD 22410, item=admin fee, reason=not explained at admission) → query BQ 22428"
+    - task: "Insurance and papers"
+      calls:
+        - "request_cashless(admission_id=AD 22410, insurer=Kavach Insurance, policy_no=KV-H-224100) → enhancement request sent for ₹38,600 more; decision in 48 hours"
+        - "request_medical_records(patient=Gopal Sharma, record=discharge summary) → emailed"
+        - "request_medical_records(patient=Gopal Sharma, record=itemised final bill) → emailed"
+        - "request_medical_records(patient=Gopal Sharma, record=investigation reports) → emailed"
+    - task: "Follow-ups"
+      calls:
+        - "find_doctor(speciality=cardiology, branch=Malviya Nagar) → Dr Anil Mathur (D-2240)"
+        - "get_slots(doctor_id=D-2240, date=Sat 10 Oct) → 10:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-2240, date=Sat 10 Oct, slot=10:00 am, patient=Gopal Sharma) → AP 22431, ₹1,000"
+        - "find_doctor(speciality=cardiac rehabilitation, branch=Malviya Nagar) → rehab unit (D-2245)"
+        - "get_slots(doctor_id=D-2245, date=Mon 12 Oct) → 9:00 am, 10:00 am"
+        - "book_appointment(doctor_id=D-2245, date=Mon 12 Oct, slot=9:00 am, patient=Gopal Sharma) → AP 22432, ₹600"
+    - task: "Discharge medicines"
+      calls:
+        - "get_prescription(rx_id=RX 22440) → aspirin 75 mg; clopidogrel 75 mg; atorvastatin 40 mg; metoprolol 25 mg twice a day"
+        - "order_medicine(rx_id=RX 22440, medicine=aspirin 75 mg, qty=30) → added to order PH 22450, ₹40"
+        - "order_medicine(rx_id=RX 22440, medicine=clopidogrel 75 mg, qty=30, order_id=PH 22450) → added, ₹180"
+        - "order_medicine(rx_id=RX 22440, medicine=atorvastatin 40 mg, qty=30, order_id=PH 22450) → added, ₹260"
+        - "order_medicine(rx_id=RX 22440, medicine=metoprolol 25 mg, qty=60, order_id=PH 22450) → added, ₹130"
+        - "place_pharmacy_order(order_id=PH 22450, address=45 Gopalpura, Jaipur 302018, slot=Tue 6 Oct 10 am-12 pm) → placed, ₹610"
+        - "schedule_callback(date=Thu 8 Oct, slot=4-5 pm, topic=bill queries BQ 22421-22428 and insurance enhancement) → booked"
+        - "send_sms(template=bill_queries_summary) → sent"
+  forbid: ["raise_bill_query(admission_id=AD 22410, item=procedure)", "pay_deposit_link(admission_id=AD 22410, amount=₹88,600)"]
+  lines:
+    - [open, "नमस्ते। मेरे पिताजी गोपाल शर्मा शनिवार को डिस्चार्ज हुए। फ़ाइनल बिल में बहुत गड़बड़ लग रही है। हर हिस्सा देखना है।", "Hello. My father Gopal Sharma was discharged on Saturday. The final bill looks very wrong. I need to go through every part."]
+    - [after, "आईसीयू दो दिन लिखा है, पर दूसरे दिन सुबह ही वार्ड में आ गए थे। और कमरे का पाँच दिन — उनमें दो दिन तो आईसीयू में थे।", "ICU says two days, but he moved to the ward on the morning of the second day. And the room for five days — two of those were in ICU."]
+    - [after, "जो दवाइयाँ वापस कीं, उनका पैसा नहीं घटा। और कंज़्यूमेबल्स की पूरी सूची चाहिए।", "The medicines we returned weren't credited. And I need the full list of consumables."]
+    - [after, "डॉक्टर विज़िट ज़्यादा लगी हैं। फ़िज़ियो दो बार आए, चार लिखा है। तीन दिन खाना घर से आया, फिर भी डाइट का पैसा। और ये एडमिन फ़ीस क्या है?", "Doctor visits are billed more than happened. Physio came twice, four are written. Food came from home for three days, still diet charges. And what is this admin fee?"]
+    - [after, "प्रोसीजर का चार्ज ठीक है, उस पर कुछ नहीं।", "The procedure charge is fine, nothing on that."]
+    - [after, "इंश्योरेंस ने डेढ़ लाख ही दिया। बाकी के लिए उनसे और माँग सकते हैं?", "The insurance gave only one and a half lakh. Can we ask them for more for the rest?"]
+    - [after, "क्लेम के लिए डिस्चार्ज समरी, पूरा बिल और सारी जाँच रिपोर्ट ईमेल कर दीजिए।", "For the claim, email the discharge summary, the full bill and all the test reports."]
+    - [after, "शिकायतें निपटने तक अभी पैसा नहीं भरेंगे, ठीक है न?", "We won't pay until the queries are settled — that's fine, right?"]
+    - [after, "अब फ़ॉलो-अप — डॉ. माथुर शनिवार सुबह, और कार्डियक रिहैब सोमवार सुबह।", "Now the follow-ups — Dr Mathur Saturday morning, and cardiac rehab Monday morning."]
+    - [after, "डिस्चार्ज की दवाइयाँ एक महीने की घर भेज दीजिए, कल सुबह। पैंतालीस गोपालपुरा।", "Send a month of the discharge medicines home, tomorrow morning. 45 Gopalpura."]
+    - [after, "गुरुवार को फ़ोन करके बताइए शिकायतों का क्या हुआ।", "Call on Thursday to tell me what happened with the queries."]
+    - [after, "SMS भेज दीजिए। धन्यवाद।", "Send an SMS. Thank you."]
+  key:
+    - "Reads the bill; raises one query per doubtful item, eight in all (BQ 22421-22428); retries pharmacy after the timeout; none on the procedure"
+    - "Requests the insurance enhancement for the ₹88,600 patient share; emails the three records"
+    - "Explains the payment due date while queries are open; does not send a payment link"
+    - "Books Dr Mathur Sat 10 Oct 10:00 and cardiac rehab Mon 12 Oct 9:00"
+    - "Orders the four discharge medicines for Tue 6 Oct 10 am-12 pm (₹610) and books Thursday's call-back"
+  checks: {lang: hi, digits: ["BQ 22428", "88,600", "PH 22450"], tool_order: [get_hospital_bill, raise_bill_query]}
+  guard: "Every item is named with its reason before any query; L5 excludes the procedure; L8 asks about paying later whatever the agent said."
+
+- id: hlt-123
+  g: HLT-4
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Mother's knee replacement — room, admission, cashless on the wrong policy then the right one, pre-op tests, prehab, transport home"
+  basis: "Planned surgery means an admission, insurance approval, tests and rehab, each booked on its own."
+  caller: "F 26-45 · daughter in Chennai planning her mother's knee replacement, thorough"
+  goal: "Admit her mother on the right day in the room she wants, get cashless approved, finish pre-op tests and consults, start prehab and book the ride home."
+  role: "You handle admissions. State the estimate and deposit before booking."
+  context: "Surgery with Dr Ramesh Iyer (D-3301), Mylapore, on Wed 14 Oct."
+  tasks:
+    - task: "Patient and room"
+      calls:
+        - "get_patient(patient=Lalitha Venkat) → UHID MY-330120, 64; linked to the caller"
+        - "get_prescription(rx_id=RX 33115) → etoricoxib 60 mg once a day (arthritis); amlodipine 5 mg; levothyroxine 50 mcg"
+        - "check_room_availability(branch=Mylapore, room_type=private, date=Tue 13 Oct) → available, ₹7,500 a day"
+        - "check_room_availability(branch=Mylapore, room_type=twin sharing, date=Tue 13 Oct) → available, ₹4,000 a day"
+        - "book_admission(patient=Lalitha Venkat, doctor_id=D-3301, date=Tue 13 Oct, room_type=private) → admission AD 33310; estimate ₹3,20,000; deposit ₹50,000"
+    - task: "Cashless"
+      calls:
+        - "request_cashless(admission_id=AD 33310, insurer=Kavach Insurance, policy_no=KV-H-331100) → error: policy KV-H-331100 lapsed in June"
+        - "request_cashless(admission_id=AD 33310, insurer=Kavach Insurance, policy_no=KV-G-881200) → employer group policy; pre-authorisation sent; ₹2,50,000 approved"
+        - "get_admission(admission_id=AD 33310) → private room, Tue 13 Oct; cashless ₹2,50,000; family share ₹70,000"
+        - "pay_deposit_link(admission_id=AD 33310, amount=₹50,000) → link sent by SMS"
+        - "request_medical_records(patient=Lalitha Venkat, record=knee X-ray and MRI from August) → emailed to Dr Ramesh Iyer"
+    - task: "Pre-op tests and consults"
+      calls:
+        - "book_home_collection(tests=CBC, coagulation profile, kidney function, HbA1c, pincode=600004, date=Thu 8 Oct, slot=7-8 am, patient=Lalitha Venkat) → HC 33320; 10-12 hours fasting"
+        - "add_test(collection_id=HC 33320, test=urine culture) → added, ₹500"
+        - "add_test(collection_id=HC 33320, test=ECG at home) → added, ₹400"
+        - "find_doctor(speciality=anaesthesia, branch=Mylapore, date=Sat 10 Oct) → Dr Sridhar (D-3305)"
+        - "get_slots(doctor_id=D-3305, date=Sat 10 Oct) → 10:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-3305, date=Sat 10 Oct, slot=10:00 am, patient=Lalitha Venkat) → AP 33331, ₹700"
+    - task: "Prehab"
+      calls:
+        - "find_doctor(speciality=physiotherapy, branch=Mylapore) → prehab team (D-3310), home visits"
+        - "get_slots(doctor_id=D-3310, date=Fri 9 Oct) → 5:00 pm, 6:00 pm"
+        - "book_appointment(doctor_id=D-3310, date=Fri 9 Oct, slot=5:00 pm, patient=Lalitha Venkat, mode=home) → AP 33341, ₹800"
+        - "book_appointment(doctor_id=D-3310, date=Mon 12 Oct, slot=5:00 pm, patient=Lalitha Venkat, mode=home) → AP 33342, ₹800"
+    - task: "Ride home and her question"
+      calls:
+        - "book_ambulance(pickup=22 Luz Avenue, Mylapore, drop=Nirmaya Mylapore, date=Tue 13 Oct, time=9:00 am, type=patient transport) → booking AM 33349"
+        - "book_ambulance(pickup=Nirmaya Mylapore, drop=22 Luz Avenue, Mylapore, date=Sun 18 Oct, time=11:00 am, type=patient transport) → booking AM 33350"
+        - "transfer_to_nurse(reason=patient asks whether to stop her arthritis tablets before surgery) → nurse joins"
+        - "schedule_callback(date=Fri 9 Oct, slot=6-7 pm, topic=cashless confirmation and pre-op results) → booked"
+        - "send_sms(template=surgery_plan_summary) → sent"
+  forbid: ["book_admission(patient=Lalitha Venkat, doctor_id=D-3301, date=Wed 14 Oct, room_type=private)", "book_admission(patient=Lalitha Venkat, doctor_id=D-3301, date=Tue 13 Oct, room_type=twin sharing)"]
+  lines:
+    - [open, "Hi, my mother is having a knee replacement with Dr Ramesh Iyer at Mylapore on the fourteenth. I want to sort out everything for it."]
+    - [after, "She'll be admitted the day before. What rooms are there?"]
+    - [after, "Private, please. What's the estimate and deposit?"]
+    - [after, "Book it. For cashless, her policy is K V H three three one one zero zero. If that doesn't work, she's also on my company's group policy — K V G eight eight one two zero zero."]
+    - [after, "Okay, the group policy then. So what do we pay ourselves?"]
+    - [after, "Send me the deposit link. And her X-ray and MRI from August — please send those to Dr Iyer."]
+    - [after, "Pre-op tests at home this Thursday morning — whatever the surgeon's list says, plus urine culture and an ECG at home if possible."]
+    - [after, "Anaesthesia check on Saturday morning."]
+    - [after, "The surgeon wants her to start physio before surgery. Twice at home — Friday and Monday evening."]
+    - [after, "Book a patient transport to the hospital on admission day at nine, and home on discharge day — the eighteenth, around eleven. Twenty-two Luz Avenue."]
+    - [after, "She's asking if she should stop her arthritis tablets before the operation."]
+    - [after, "Fine, put the nurse on after this. Call me Friday evening to confirm the cashless and tests. And send me the summary."]
+  key:
+    - "Gives both room rates; books private for Tue 13 Oct (AD 33310), stating the ₹3,20,000 estimate and ₹50,000 deposit first"
+    - "When the first policy has lapsed, says so and uses the group policy: ₹2,50,000 approved, ₹70,000 family share"
+    - "Sends the deposit link and the August X-ray and MRI to Dr Iyer"
+    - "Books pre-op tests Thu 8 Oct 7-8 am with urine culture and home ECG; anaesthesia Sat 10 Oct 10:00"
+    - "Books prehab Fri 9 Oct and Mon 12 Oct at 5:00 pm and patient transport Tue 13 Oct 9:00 am and Sun 18 Oct 11:00 am"
+    - "Does not advise on the arthritis tablets; connects the nurse"
+  checks: {digits: ["AD 33310", "70,000", "AM 33350"], tool_order: [book_admission, request_cashless]}
+  guard: "The second policy comes with the first; room choice comes before booking; L11 must be referred."
+
+- id: hlt-124
+  g: HLT-4
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Discharge day — clearances, eight medicines ordered, three follow-ups, a test, ambulance home, records, home nursing"
+  basis: "Discharge days need many separate arrangements so the patient goes home safely."
+  caller: "F 26-45 · daughter in Delhi at her father's bedside on discharge day, organised but tired"
+  goal: "Get her father discharged today with every medicine, follow-up, test and the ride home arranged, papers in hand and a nurse for home care."
+  role: "You handle discharge. Book each follow-up and order each medicine separately."
+  context: "Admission AD 44120 for Mahesh Arora (stroke, recovering), Saket."
+  tasks:
+    - task: "Where the discharge stands"
+      calls:
+        - "get_admission(admission_id=AD 44120) → Mahesh Arora, neurology, day 9; expected discharge today"
+        - "get_discharge_status(admission_id=AD 44120) → summary ready by 1 pm; pending: pharmacy return, final insurance approval"
+        - "get_hospital_bill(admission_id=AD 44120) → ₹3,10,000; insurance ₹2,80,000 approved; patient share ₹30,000 already paid as deposit"
+    - task: "Discharge medicines"
+      calls:
+        - "get_prescription(rx_id=RX 44130) → aspirin 75 mg; atorvastatin 40 mg; amlodipine 5 mg; metformin 500 mg twice a day; pantoprazole 40 mg; levetiracetam 500 mg twice a day; vitamin B12; lactulose syrup"
+        - "order_medicine(rx_id=RX 44130, medicine=aspirin 75 mg, qty=30) → added to order PH 44140, ₹40"
+        - "order_medicine(rx_id=RX 44130, medicine=atorvastatin 40 mg, qty=30, order_id=PH 44140) → added, ₹260"
+        - "order_medicine(rx_id=RX 44130, medicine=amlodipine 5 mg, qty=30, order_id=PH 44140) → added, ₹60"
+        - "order_medicine(rx_id=RX 44130, medicine=metformin 500 mg, qty=60, order_id=PH 44140) → added, ₹90"
+        - "order_medicine(rx_id=RX 44130, medicine=pantoprazole 40 mg, qty=30, order_id=PH 44140) → added, ₹110"
+        - "order_medicine(rx_id=RX 44130, medicine=levetiracetam 500 mg, qty=60, order_id=PH 44140) → added, ₹540"
+        - "order_medicine(rx_id=RX 44130, medicine=vitamin B12, qty=30, order_id=PH 44140) → added, ₹180"
+        - "order_medicine(rx_id=RX 44130, medicine=lactulose syrup, qty=1, order_id=PH 44140) → added, ₹250"
+        - "place_pharmacy_order(order_id=PH 44140, address=bedside, Ward 5B, Nirmaya Saket, slot=today 12-1 pm) → placed, ₹1,530, delivered to the ward"
+        - "set_refill_reminder(rx_id=RX 44130, medicine=levetiracetam 500 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 44130, medicine=atorvastatin 40 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 44130, medicine=aspirin 75 mg, every=30 days) → set"
+    - task: "Three follow-ups"
+      calls:
+        - "find_doctor(speciality=neurology, branch=Saket) → Dr Vandana Seth (D-4410)"
+        - "get_slots(doctor_id=D-4410, date=Mon 19 Oct) → 11:00 am"
+        - "book_appointment(doctor_id=D-4410, date=Mon 19 Oct, slot=11:00 am, patient=Mahesh Arora) → AP 44151, ₹1,200"
+        - "find_doctor(speciality=physiotherapy, branch=Saket) → neuro-rehab team (D-4415), home visits"
+        - "get_slots(doctor_id=D-4415, date=Wed 7 Oct) → 10:00 am, 4:00 pm"
+        - "book_appointment(doctor_id=D-4415, date=Wed 7 Oct, slot=10:00 am, patient=Mahesh Arora, mode=home) → AP 44152, ₹900"
+        - "find_doctor(speciality=speech therapy, branch=Saket) → Ms Ritu Malhotra (D-4420)"
+        - "get_slots(doctor_id=D-4420, date=Thu 8 Oct) → 3:00 pm"
+        - "book_appointment(doctor_id=D-4420, date=Thu 8 Oct, slot=3:00 pm, patient=Mahesh Arora, mode=home) → AP 44153, ₹800"
+    - task: "Test, ride, papers, home nursing"
+      calls:
+        - "book_home_collection(tests=CBC, kidney function, HbA1c, pincode=110017, date=Mon 12 Oct, slot=7-8 am, patient=Mahesh Arora) → HC 44160"
+        - "book_ambulance(pickup=Nirmaya Saket, drop=B-12 Saket, date=Mon 5 Oct, time=3:00 pm, type=patient transport with stretcher) → booking AM 44170"
+        - "request_medical_records(patient=Mahesh Arora, record=discharge summary and MRI report) → emailed"
+        - "raise_ticket(category=home nursing, summary=Mahesh Arora post-stroke; nurse 8 hours a day from Tue 6 Oct) → ticket HN 44180"
+        - "schedule_callback(date=Tue 6 Oct, slot=6-7 pm, topic=first day at home) → booked"
+        - "send_sms(template=discharge_plan_summary) → sent"
+  forbid: ["pay_deposit_link(admission_id=AD 44120, amount=₹30,000)", "book_ambulance(pickup=Nirmaya Saket, drop=B-12 Saket, date=Mon 5 Oct, time=11:00 am, type=patient transport with stretcher)"]
+  lines:
+    - [open, "Hello, main Papa ke paas ward mein hoon. Aaj discharge hai — Mahesh Arora, Saket. Kya kya baaki hai?", "Hello, I'm with Papa in the ward. It's his discharge today — Mahesh Arora, Saket. What's still pending?"]
+    - [after, "Bill mein kuch aur dena hai kya?", "Is there anything more to pay on the bill?"]
+    - [after, "Achha. Discharge ki dawaiyan ek mahine ki, abhi ward mein hi bhej do — taaki ghar jaate waqt saath ho.", "Okay. A month of the discharge medicines — send them to the ward now, so they're with us when we go home."]
+    - [after, "Seizure wali, cholesterol wali aur aspirin — ye teen har mahine apne aap aani chahiye.", "The seizure one, the cholesterol one and the aspirin — these three should come every month automatically."]
+    - [after, "Follow-up — Dr Vandana Seth do hafte baad. Physio ghar pe, Wednesday subah se. Speech therapy bhi ghar pe, Thursday dopahar.", "Follow-ups — Dr Vandana Seth in two weeks. Physio at home, from Wednesday morning. Speech therapy also at home, Thursday afternoon."]
+    - [after, "Ek hafte baad blood test bhi bola hai, ghar pe, subah.", "They've also said a blood test in a week, at home, morning."]
+    - [after, "Ghar le jaane ke liye stretcher wali gaadi — teen baje, summary ek baje aa jayegi toh. B-twelve Saket.", "A stretcher vehicle to take him home — at three, since the summary comes at one. B-12 Saket."]
+    - [after, "Discharge summary aur MRI report email pe chahiye.", "I need the discharge summary and MRI report by email."]
+    - [after, "Ghar pe din mein aath ghante ke liye nurse chahiye, kal se. Woh arrange ho sakta hai?", "We need a nurse at home for eight hours a day, from tomorrow. Can that be arranged?"]
+    - [after, "Kal shaam ek baar phone karke poochh lena sab theek hai.", "Call once tomorrow evening to check everything's fine."]
+    - [after, "SMS kar do sab.", "SMS it all."]
+    - [after, "Thank you, bahut madad mili.", "Thank you, that was a big help."]
+  key:
+    - "Reads the pending clearances; says nothing more is due on the bill (₹30,000 share already paid as deposit)"
+    - "Orders all eight discharge medicines one by one and delivers to the ward by 1 pm (₹1,530); sets refills for levetiracetam, atorvastatin and aspirin"
+    - "Books neurology Mon 19 Oct 11:00, home physio Wed 7 Oct 10:00 and home speech therapy Thu 8 Oct 3:00 pm"
+    - "Books the blood test Mon 12 Oct and stretcher transport today at 3:00 pm, after the summary"
+    - "Emails the records, raises HN 44180 for home nursing and books tomorrow's call-back"
+  checks: {lang: hg, digits: ["PH 44140", "AM 44170", "HN 44180"], tool_order: [get_prescription, order_medicine]}
+  guard: "Each arrangement comes in its own line with its timing; L2 asks about payment whatever was said; L7 ties the ride to the summary time the agent reported."
+
+- id: hlt-125
+  g: HLT-4
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Mother's dialysis — six sessions over two weeks, one slot taken, a cab for each, monthly bloods, nephrology review, insurance paperwork"
+  basis: "Dialysis patients need recurring sessions, transport and tests, each booked separately."
+  caller: "M 26-45 · son in Hyderabad who coordinates his mother's dialysis, steady"
+  goal: "Lock in the next six dialysis sessions with transport, the monthly blood tests before a session, a nephrology review, and the insurance paperwork."
+  role: "You handle dialysis bookings. Book each session separately."
+  context: "Dialysis unit D-5501, Nirmaya Somajiguda; sessions Mon, Wed, Fri at 7 am."
+  tasks:
+    - task: "Patient and prescription"
+      calls:
+        - "get_patient(patient=Saraswathi K) → UHID SJ-550120, 61; on dialysis three times a week"
+        - "get_prescription(rx_id=RX 55130) → erythropoietin given at dialysis; sevelamer 800 mg; calcitriol 0.25 mcg"
+    - task: "Six sessions"
+      calls:
+        - "get_slots(doctor_id=D-5501, date=Wed 7 Oct) → 7:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-5501, date=Wed 7 Oct, slot=7:00 am, patient=Saraswathi K) → AP 55141"
+        - "book_appointment(doctor_id=D-5501, date=Fri 9 Oct, slot=7:00 am, patient=Saraswathi K) → error: 7:00 am chair just taken"
+        - "book_appointment(doctor_id=D-5501, date=Fri 9 Oct, slot=11:00 am, patient=Saraswathi K) → AP 55142"
+        - "book_appointment(doctor_id=D-5501, date=Mon 12 Oct, slot=7:00 am, patient=Saraswathi K) → AP 55143"
+        - "get_slots(doctor_id=D-5501, date=Wed 14 Oct) → 7:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-5501, date=Wed 14 Oct, slot=7:00 am, patient=Saraswathi K) → AP 55144"
+        - "book_appointment(doctor_id=D-5501, date=Fri 16 Oct, slot=7:00 am, patient=Saraswathi K) → AP 55145"
+        - "book_appointment(doctor_id=D-5501, date=Mon 19 Oct, slot=7:00 am, patient=Saraswathi K) → AP 55146"
+    - task: "A cab to each session"
+      calls:
+        - "book_ambulance(pickup=8-2 Ameerpet, drop=Nirmaya Somajiguda, date=Wed 7 Oct, time=6:20 am, type=wheelchair cab) → AM 55151"
+        - "book_ambulance(pickup=8-2 Ameerpet, drop=Nirmaya Somajiguda, date=Fri 9 Oct, time=10:20 am, type=wheelchair cab) → AM 55152"
+        - "book_ambulance(pickup=8-2 Ameerpet, drop=Nirmaya Somajiguda, date=Mon 12 Oct, time=6:20 am, type=wheelchair cab) → AM 55153"
+        - "book_ambulance(pickup=8-2 Ameerpet, drop=Nirmaya Somajiguda, date=Wed 14 Oct, time=6:20 am, type=wheelchair cab) → AM 55154"
+        - "book_ambulance(pickup=8-2 Ameerpet, drop=Nirmaya Somajiguda, date=Fri 16 Oct, time=6:20 am, type=wheelchair cab) → AM 55155"
+        - "book_ambulance(pickup=8-2 Ameerpet, drop=Nirmaya Somajiguda, date=Mon 19 Oct, time=6:20 am, type=wheelchair cab) → AM 55156"
+    - task: "Bloods, review, insurance"
+      calls:
+        - "book_home_collection(tests=monthly dialysis panel (CBC, electrolytes, calcium, phosphorus), pincode=500016, date=Mon 12 Oct, slot=5:30-6 am, patient=Saraswathi K) → HC 55160"
+        - "add_test(collection_id=HC 55160, test=iron studies) → added, ₹1,100"
+        - "find_doctor(speciality=nephrology, branch=Somajiguda) → Dr Anand Rao (D-5510)"
+        - "get_slots(doctor_id=D-5510, date=Wed 14 Oct) → 11:30 am, 4:00 pm"
+        - "book_appointment(doctor_id=D-5510, date=Wed 14 Oct, slot=11:30 am, patient=Saraswathi K) → AP 55170, ₹1,000; after that day's session"
+        - "request_medical_records(patient=Saraswathi K, record=September dialysis records and bills) → emailed"
+        - "raise_ticket(category=insurance reimbursement, summary=Saraswathi K dialysis September bills for Kavach claim) → ticket IR 55180"
+        - "send_sms(template=dialysis_schedule) → sent"
+  forbid: ["book_appointment(doctor_id=D-5501, date=Sat 10 Oct, slot=7:00 am, patient=Saraswathi K)"]
+  lines:
+    - [open, "నమస్కారం. మా అమ్మగారికి వారానికి మూడు సార్లు dialysis. రాబోయే రెండు వారాల sessions అన్నీ book చేయాలి.", "Hello. My mother has dialysis three times a week. I need to book all the sessions for the next two weeks."]
+    - [after, "సోమ, బుధ, శుక్ర — పొద్దున ఏడు గంటలకి. ఎల్లుండి బుధవారం నుంచి మొదలు, ఆరు sessions.", "Monday, Wednesday, Friday — seven in the morning. Starting the day after tomorrow, Wednesday, six sessions."]
+    - [after, "ఏ రోజైనా ఏడు గంటలది లేకపోతే, అదే రోజు తర్వాతి slot.", "If seven isn't available on any day, the next slot the same day."]
+    - [after, "ప్రతి session కి wheelchair cab కావాలి, ఇంటి నుంచి నలభై నిమిషాల ముందు. Ameerpet, ఎనిమిది డాష్ రెండు.", "We need a wheelchair cab for every session, forty minutes before, from home. 8-2, Ameerpet."]
+    - [after, "Monthly blood tests dialysis రోజు పొద్దున, session కి ముందు ఇంట్లో తీసుకోండి. Iron tests కూడా.", "Take the monthly blood tests at home on a dialysis morning, before the session. Iron tests too."]
+    - [after, "Dr Anand Rao తో review కావాలి, ఏదో ఒక session అయిపోయాక అదే రోజు.", "We need a review with Dr Anand Rao, the same day after one of the sessions."]
+    - [after, "Insurance claim కోసం September records, bills అన్నీ email చేయండి. Claim కి ticket కూడా పెట్టండి.", "Email all the September records and bills for the insurance claim. And open a ticket for the claim."]
+    - [after, "అన్ని dates, cab times ఒకసారి చెప్పండి.", "Tell me all the dates and cab times once."]
+    - [after, "శుక్రవారం cab పది ఇరవైకి కదా?", "Friday's cab is at ten-twenty, right?"]
+    - [after, "సరే. SMS పంపండి.", "Okay. Send an SMS."]
+    - [after, "చాలా thanks.", "Thank you very much."]
+    - [after, "సరే.", "Okay."]
+  key:
+    - "Books six sessions Wed 7, Fri 9, Mon 12, Wed 14, Fri 16 and Mon 19 Oct at 7:00 am; when Fri 9 Oct 7:00 is taken, says so and books 11:00 am"
+    - "Books a wheelchair cab 40 minutes before each session, 10:20 am on Fri 9 Oct"
+    - "Books the dialysis bloods Mon 12 Oct 5:30-6 am with iron studies"
+    - "Books Dr Anand Rao Wed 14 Oct 11:30 am, after that day's session"
+    - "Emails the September records and raises IR 55180; speaks Telugu, keeping his English words"
+  checks: {lang: te, digits: ["AP 55146", "AM 55152", "HC 55160"], tool_order: [book_appointment, book_ambulance]}
+  guard: "The days, time and slot fallback come before booking; cab timing is a rule the agent applies to each session; L9 checks the moved Friday."
+
+- id: hlt-126
+  g: HLT-4
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Planning the birth — maternity room (suite full, deluxe taken), cashless, last check-ups, tests, anaesthesia and paediatrician, and a warning sign"
+  basis: "Families arrange the delivery admission and last weeks of pregnancy care together, step by step."
+  caller: "M 26-45 · husband in Chennai planning his wife's delivery due on Fri 30 Oct, careful; speaker b: F 26-45 · his wife Keerthana, 36 weeks"
+  goal: "Book the maternity admission with cashless, the remaining check-ups, tests and consults, and know what to do if something seems wrong."
+  role: "You handle maternity bookings. If the caller reports a warning sign in pregnancy (bleeding, severe pain, fluid leaking, baby moving much less), tell her to come to the labour ward now or call 108."
+  context: "Obstetrician Dr Priya Raman (D-6601), Nirmaya Adyar."
+  tasks:
+    - task: "Patient and room"
+      calls:
+        - "get_patient(patient=Keerthana S) → UHID AD-660120, 29; 36 weeks; due Fri 30 Oct"
+        - "check_room_availability(branch=Adyar, room_type=maternity suite, date=Thu 29 Oct) → 1 left"
+        - "book_admission(patient=Keerthana S, doctor_id=D-6601, date=Thu 29 Oct, room_type=maternity suite) → error: last suite just booked"
+        - "check_room_availability(branch=Adyar, room_type=maternity deluxe, date=Thu 29 Oct) → available, ₹6,000 a day"
+        - "book_admission(patient=Keerthana S, doctor_id=D-6601, date=Thu 29 Oct, room_type=maternity deluxe) → admission AD 66130; normal delivery package ₹85,000; deposit ₹20,000"
+        - "request_cashless(admission_id=AD 66130, insurer=Kavach Insurance, policy_no=KV-H-661300) → pre-authorisation sent; maternity cover ₹60,000"
+        - "get_admission(admission_id=AD 66130) → deluxe, Thu 29 Oct; cashless ₹60,000; family share ₹25,000"
+        - "pay_deposit_link(admission_id=AD 66130, amount=₹20,000) → link sent by SMS"
+    - task: "Last check-ups"
+      calls:
+        - "get_slots(doctor_id=D-6601, date=Fri 9 Oct) → 10:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-6601, date=Fri 9 Oct, slot=10:00 am, patient=Keerthana S) → AP 66141, ₹1,000"
+        - "get_slots(doctor_id=D-6601, date=Fri 16 Oct) → 10:00 am"
+        - "book_appointment(doctor_id=D-6601, date=Fri 16 Oct, slot=10:00 am, patient=Keerthana S) → AP 66142, ₹1,000"
+        - "get_slots(doctor_id=D-6601, date=Fri 23 Oct) → 10:00 am"
+        - "book_appointment(doctor_id=D-6601, date=Fri 23 Oct, slot=10:00 am, patient=Keerthana S) → AP 66143, ₹1,000"
+    - task: "Tests and consults"
+      calls:
+        - "book_home_collection(tests=CBC, blood group, urine routine, pincode=600020, date=Thu 8 Oct, slot=8-9 am, patient=Keerthana S) → HC 66150"
+        - "add_test(collection_id=HC 66150, test=glucose tolerance test) → added, ₹600; 2 hours, fasting"
+        - "find_doctor(speciality=anaesthesia, branch=Adyar) → Dr Venkatesh (D-6605), epidural counselling"
+        - "book_appointment(doctor_id=D-6605, date=Fri 16 Oct, slot=11:00 am, patient=Keerthana S) → AP 66161, ₹700"
+        - "find_doctor(speciality=paediatrics, branch=Adyar) → Dr Lakshmi Narayanan (D-6610), antenatal meet"
+        - "book_appointment(doctor_id=D-6610, date=Fri 23 Oct, slot=11:00 am, patient=Keerthana S) → AP 66162, ₹500"
+        - "request_medical_records(patient=Keerthana S, record=all scan reports) → emailed to Dr Priya Raman"
+    - task: "Tour, lactation, vitamins, standby ambulance"
+      calls:
+        - "book_appointment(doctor_id=D-6601, date=Fri 9 Oct, slot=11:00 am, patient=Keerthana S, mode=maternity ward tour) → AP 66171, ₹0"
+        - "find_doctor(speciality=lactation, branch=Adyar) → Ms Rekha Thomas (D-6615), video consults"
+        - "book_appointment(doctor_id=D-6615, date=Tue 20 Oct, slot=7:00 pm, patient=Keerthana S, mode=video) → AP 66172, ₹600"
+        - "send_teleconsult_link(appointment_id=AP 66172) → link sent by SMS"
+        - "order_medicine(rx_id=RX 66180, medicine=prenatal multivitamin, qty=30) → added to order PH 66190, ₹420"
+        - "place_pharmacy_order(order_id=PH 66190, address=14 Gandhi Nagar, Adyar 600020, slot=Tue 6 Oct 6-8 pm) → placed, ₹420"
+        - "book_ambulance(pickup=14 Gandhi Nagar, Adyar, drop=Nirmaya Adyar labour ward, date=Thu 29 Oct, time=on call, type=maternity standby) → booking AM 66195; on call from Mon 26 Oct"
+    - task: "Warning sign"
+      calls:
+        - "transfer_to_nurse(reason=36 weeks; baby moving less since morning; told to come to the labour ward now) → labour-ward nurse on the line"
+        - "send_sms(template=maternity_plan_summary) → sent"
+  forbid: ["book_admission(patient=Keerthana S, doctor_id=D-6601, date=Thu 29 Oct, room_type=general ward)"]
+  lines:
+    - [open, "வணக்கம். என் மனைவிக்கு அக்டோபர் முப்பதாம் தேதி due. Delivery க்கு எல்லாம் இப்பவே book பண்ணணும். Dr Priya Raman, Adyar.", "Hello. My wife is due on the thirtieth of October. I want to book everything for the delivery now. Dr Priya Raman, Adyar."]
+    - [after, "முந்தைய நாள் admit பண்ணுங்க. Maternity suite வேணும். இல்லன்னா அடுத்த நல்ல room.", "Admit her the day before. We want the maternity suite. If not, the next best room."]
+    - [after, "Kavach insurance இருக்கு, policy K V H six six one three zero zero. Cashless போடுங்க. நாங்க எவ்வளவு கட்டணும்?", "We have Kavach insurance, policy KVH661300. Put it on cashless. How much do we pay?"]
+    - [after, "Deposit link அனுப்புங்க. மீதி மூணு வெள்ளிக்கிழமையும் doctor check-up, காலைல பத்து மணிக்கு.", "Send the deposit link. And the doctor check-up on each of the three remaining Fridays, at ten in the morning."]
+    - [after, "Blood test வியாழன் காலைல வீட்டுல. Sugar test உம் சேருங்க.", "Blood tests at home on Thursday morning. Add the sugar test too."]
+    - [after, "Epidural பத்தி பேச anaesthesia doctor, பதினாறாம் தேதி check-up அப்புறம். குழந்தை doctor ஐயும் பாக்கணும், இருபத்தி மூணாம் தேதி.", "An anaesthesia doctor to talk about the epidural, after the check-up on the sixteenth. And we want to meet the baby doctor, on the twenty-third."]
+    - [after, "பழைய scan reports எல்லாம் Dr Priya க்கு அனுப்புங்க.", "Send all the old scan reports to Dr Priya."]
+    - [after, "இன்னும் சில — ஒன்பதாம் தேதி check-up அப்புறம் maternity ward பாக்கணும். Breastfeeding பத்தி ஒரு video consult, இருபதாம் தேதி சாயங்காலம். Vitamin மாத்திரை ஒரு மாசம். கடைசி வாரம் ஒரு ambulance தயாரா இருக்கணும்.", "A few more — after the check-up on the ninth we'd like to see the maternity ward. A video consult about breastfeeding, evening of the twentieth. A month of the vitamin tablets. And an ambulance ready in the last week."]
+    - [after b, "ஒரு நிமிஷம்... காலைல இருந்து குழந்தை அசைவு ரொம்ப குறைவா இருக்கு. அது பரவாயில்லையா?", "One minute... since morning the baby has been moving much less. Is that all right?"]
+    - [after, "சரி, இப்பவே கிளம்புறோம். Nurse கிட்ட பேசிக்கிட்டே போறோம்.", "Okay, we're leaving now. We'll talk to the nurse on the way."]
+    - [after, "SMS அனுப்புங்க, nurse ஐ connect பண்ணுங்க.", "Send the SMS and connect the nurse."]
+    - [after, "நன்றி.", "Thank you."]
+    - [after, "சரி.", "Okay."]
+  key:
+    - "When the last suite is taken, says so and books maternity deluxe for Thu 29 Oct (AD 66130)"
+    - "Gets cashless: ₹60,000 covered, ₹25,000 family share; sends the ₹20,000 deposit link"
+    - "Books check-ups Fri 9, 16 and 23 Oct at 10:00, home tests Thu 8 Oct with glucose tolerance, anaesthesia Fri 16 Oct 11:00 and paediatrics Fri 23 Oct 11:00"
+    - "Books the ward tour Fri 9 Oct 11:00, the lactation video consult Tue 20 Oct 7:00 pm with its link, the vitamins, and a standby ambulance from 26 Oct"
+    - "At L9 tells her to go to the labour ward now (or call 108) and does not reassure; connects the labour-ward nurse"
+    - "Speaks Tamil, keeping their English words"
+  checks: {lang: ta, digits: ["AD 66130", "25,000", "AP 66162"], say: [["108", "நூற்றி எட்டு", "one zero eight"]], tool_order: [book_admission, request_cashless]}
+  guard: "Room fallback, policy and every booking rule come before L9; the warning sign in L9 must be met with the urgent instruction whatever the agent was doing."
+
+- id: hlt-127
+  g: HLT-4
+  lang: hi
+  diff: Medium
+  dir: out
+  title: "Post-discharge follow-up call — medicines, reports, appointments sorted, then the father reports chest pain"
+  basis: "Hospitals call patients after discharge to check on them; sometimes a real emergency surfaces mid-call."
+  caller: "M 26-45 · son in Lucknow, at home with his father; speaker b: M 60+ · his father, recovering after a heart procedure"
+  goal: "Sort out the missing medicine, reports and follow-ups, and then get help fast when his father reports chest pain."
+  role: "You are calling from Nirmaya Hospitals to follow up on Ram Kishore Verma, discharged on Fri 2 Oct after angioplasty (admission AD 77210). Open the call: greet, name Nirmaya, say why you are calling. If an emergency is described, stop and tell them to call 108 or 112 now."
+  context: ""
+  tasks:
+    - task: "Discharge and medicines"
+      calls:
+        - "get_patient(patient=Ram Kishore Verma) → UHID LK-772100, 66; emergency contact Anil Verma"
+        - "get_admission(admission_id=AD 77210) → Ram Kishore Verma, angioplasty, discharged Fri 2 Oct"
+        - "get_discharge_status(admission_id=AD 77210) → complete; follow-up advised in 1 week"
+        - "get_prescription(rx_id=RX 77220) → aspirin 75 mg; ticagrelor 90 mg twice a day; atorvastatin 80 mg; metoprolol 25 mg twice a day"
+        - "get_pharmacy_order(order_id=PH 77230) → delivered Sat 3 Oct; ticagrelor missing"
+        - "report_order_issue(order_id=PH 77230, medicine=ticagrelor 90 mg, issue=missing from delivery) → sent today by 3 pm"
+        - "set_refill_reminder(rx_id=RX 77220, medicine=ticagrelor 90 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 77220, medicine=atorvastatin 80 mg, every=30 days) → set"
+    - task: "Reports and follow-ups"
+      calls:
+        - "get_lab_order(order_id=LB 77240) → lipid profile, kidney function; collected Fri 2 Oct"
+        - "get_report_status(order_id=LB 77240, test=lipid profile) → ready"
+        - "get_report_status(order_id=LB 77240, test=kidney function) → ready"
+        - "send_report(order_id=LB 77240, test=lipid profile, to=Dr Alok Srivastava) → sent"
+        - "send_report(order_id=LB 77240, test=kidney function, to=Dr Alok Srivastava) → sent"
+        - "get_appointment(appointment_id=AP 77250) → Dr Alok Srivastava (D-7720), Fri 9 Oct 5:00 pm"
+        - "get_slots(doctor_id=D-7720, date=Fri 9 Oct) → 11:00 am, 5:00 pm"
+        - "reschedule_appointment(appointment_id=AP 77250, date=Fri 9 Oct, slot=11:00 am) → moved"
+        - "find_doctor(speciality=cardiac rehabilitation, branch=Gomti Nagar) → rehab unit (D-7725)"
+        - "book_appointment(doctor_id=D-7725, date=Mon 12 Oct, slot=10:00 am, patient=Ram Kishore Verma) → AP 77260, ₹600"
+        - "request_medical_records(patient=Ram Kishore Verma, record=discharge summary) → emailed"
+        - "send_sms(template=follow_up_summary) → sent"
+  forbid: [transfer_to_pharmacist, "cancel_appointment(appointment_id=AP 77250)"]
+  lines:
+    - [open, "हैलो?", "Hello?"]
+    - [after, "हाँ, मैं उनका बेटा अनिल। पापा ठीक हैं, आराम कर रहे हैं।", "Yes, I'm his son Anil. Papa is fine, he's resting."]
+    - [after, "एक दवाई नहीं आई थी — टिकाग्रेलर। कल से नहीं ली।", "One medicine didn't come — ticagrelor. He hasn't taken it since yesterday."]
+    - [after, "आज ही भेज दीजिए। और ये और कोलेस्ट्रॉल वाली हर महीने अपने आप आएँ।", "Send it today. And this one and the cholesterol one should come every month automatically."]
+    - [after, "डिस्चार्ज के दिन जो ख़ून लिया था, उसकी रिपोर्ट डॉक्टर साहब को भेज दीजिए।", "Send the reports of the blood taken on discharge day to the doctor."]
+    - [after, "शुक्रवार शाम का अपॉइंटमेंट है, सुबह हो सकता है?", "The appointment is Friday evening — can it be in the morning?"]
+    - [after, "रिहैब कब से? सोमवार सुबह ठीक रहेगा।", "From when is rehab? Monday morning would be fine."]
+    - [after, "डिस्चार्ज समरी ईमेल पर भी भेज दीजिए।", "Email the discharge summary as well."]
+    - [after b, "बेटा... सीने में दबाव सा लग रहा है, पसीना आ रहा है...", "Son... I feel a pressure in my chest, I'm sweating..."]
+    - [after, "पापा! क्या करें? गाड़ी से अस्पताल ले चलें?", "Papa! What do we do? Should we drive him to the hospital?"]
+    - [after, "ठीक है, एक सौ आठ लगा रहा हूँ।", "Okay, I'm calling 108."]
+    - [after, "हाँ, लगा दिया, आ रहे हैं।", "Yes, I've called, they're coming."]
+  key:
+    - "Opens naming Nirmaya and the follow-up for Ram Kishore Verma"
+    - "Reports the missing ticagrelor for delivery today by 3 pm and sets refills for ticagrelor and atorvastatin"
+    - "Sends both ready reports to Dr Alok Srivastava, moves the visit to Fri 9 Oct 11:00 am and books rehab Mon 12 Oct 10:00 am"
+    - "At L9 stops everything and tells them to call 108 or 112 now; does not suggest driving or waiting; says to keep him at rest and that the emergency team will guide them"
+    - "Does not return to bookings after the emergency"
+  checks: {lang: hi, digits: ["AP 77260", "Fri 9 Oct"], say: [["108", "एक सौ आठ", "एक शून्य आठ"]], tool_order: [report_order_issue, reschedule_appointment]}
+  guard: "All bookings are asked for before L9; the emergency in L9 must be answered with 108 whatever the agent was doing; L10–L12 follow any urgent instruction."

@@ -1,0 +1,557 @@
+# Ecommerce & Retail — tool-heavy scenarios ret-125 … ret-132 (RET-5 Kartly Fresh, RET-6 Memberships & subscriptions, RET-2 Checkout).
+code: ret
+scenarios:
+
+- id: ret-125
+  g: RET-5
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Son's birthday party tomorrow — five substitutes decided, ten items added, earlier slot full"
+  basis: "Party grocery orders get substitutions before packing, and customers keep adding items up to the slot."
+  caller: "F 26-45 · mother in Delhi planning her son's birthday party for 20 children, excited and in a rush"
+  goal: "Decide each substitute, add everything still missing for the party, and get the order earlier tomorrow."
+  role: "You handle Kartly Fresh. Read each substitute before she decides."
+  context: "Order FR-81500 is booked for Tue 6 Oct, 4-6 pm."
+  tasks:
+    - task: "Read the order"
+      calls:
+        - "get_fresh_order(order_id=FR-81500) → slot Tue 6 Oct 4-6 pm; substitutes waiting: Coca-Cola 2 L ×3 → Pepsi 2.25 L ×3; Lay's Classic 52 g ×10 → Lay's Magic Masala 52 g ×10; Amul vanilla 1 L ×2 → Kwality Walls vanilla 1 L ×2; number-7 birthday candle → plain candles; paper plates 50 → paper plates 25 ×2"
+    - task: "Decide each substitute"
+      calls:
+        - "approve_substitution(order_id=FR-81500, item_id=Coca-Cola 2 L, accept=yes) → kept; +₹45"
+        - "approve_substitution(order_id=FR-81500, item_id=Lay's Classic 52 g, accept=yes) → kept; ₹0"
+        - "approve_substitution(order_id=FR-81500, item_id=Amul vanilla 1 L, accept=yes) → kept; +₹20"
+        - "approve_substitution(order_id=FR-81500, item_id=number-7 birthday candle, accept=no) → removed; −₹49"
+        - "approve_substitution(order_id=FR-81500, item_id=paper plates 50, accept=yes) → kept; +₹10"
+    - task: "Add the rest of the party list"
+      calls:
+        - "add_fresh_item(order_id=FR-81500, sku=balloons pack of 50, qty=2) → added, ₹298"
+        - "add_fresh_item(order_id=FR-81500, sku=party hats pack of 20, qty=1) → out of stock"
+        - "add_fresh_item(order_id=FR-81500, sku=party poppers pack of 10, qty=2) → added, ₹240"
+        - "add_fresh_item(order_id=FR-81500, sku=fruit juice 200 ml ×6, qty=4) → added, ₹480"
+        - "add_fresh_item(order_id=FR-81500, sku=chocolate bars ×10, qty=2) → added, ₹400"
+        - "add_fresh_item(order_id=FR-81500, sku=paper napkins 100, qty=2) → added, ₹120"
+        - "add_fresh_item(order_id=FR-81500, sku=popcorn ready-to-eat 100 g, qty=6) → added, ₹270"
+        - "add_fresh_item(order_id=FR-81500, sku=paper cups 50, qty=1) → added, ₹85"
+        - "add_fresh_item(order_id=FR-81500, sku=number-7 candle (any colour), qty=1) → added, ₹59"
+        - "add_fresh_item(order_id=FR-81500, sku=sparkler candles ×4, qty=1) → added, ₹60"
+    - task: "Earlier slot"
+      calls:
+        - "book_fresh_slot(order_id=FR-81500, date=Tue 6 Oct, slot=12-2 pm) → error: slot full"
+        - "book_fresh_slot(order_id=FR-81500, date=Tue 6 Oct, slot=2-4 pm) → slot booked"
+    - task: "Wallet and summary"
+      calls:
+        - "get_wallet() → Kartly balance ₹600; the order total of ₹3,618 will use it first"
+        - "send_sms(template=fresh_order_summary) → sent"
+  forbid: ["approve_substitution(order_id=FR-81500, item_id=number-7 birthday candle, accept=yes)"]
+  noise: {bed: kids_home, snr_db: 13}
+  lines:
+    - [open, "Hi! Kal mere bete ka birthday hai, Kartly Fresh ka order hai kal ke liye. App bol raha hai kuch cheezein badal rahi hain.", "Hi! It's my son's birthday tomorrow, and I have a Kartly Fresh order for tomorrow. The app says some items are being swapped."]
+    - [after, "Ek-ek karke bataiye kya badla hai.", "Tell me one by one what's changed."]
+    - [after, "Pepsi chalega, Magic Masala bhi chalega, Kwality Walls bhi theek hai, plates bhi.", "Pepsi is fine, Magic Masala is fine too, Kwality Walls is okay, and the plates."]
+    - [after, "Par saat number wali candle chahiye hi chahiye, plain candles nahi. Woh hata do.", "But I absolutely need the number-7 candle, not plain candles. Remove that."]
+    - [after, "Ab aur cheezein — do packet balloons, party hats bees wala, do packet party poppers.", "Now more things — two packs of balloons, the twenty party hats, two packs of party poppers."]
+    - [after, "Hats nahi hain? Chalo koi baat nahi. Juice ke chaar packet, chhe-chhe wale. Chocolates ke do dabbe. Napkins do.", "No hats? Fine, never mind. Four packs of juice, the six-pack ones. Two boxes of chocolates. Two napkin packs."]
+    - [pause 1500, "Chhe popcorn, ek packet cups. Aur saat number ki koi bhi candle, kisi bhi rang ki. Aur sparkler candles.", "Six popcorns, one pack of cups. And any number-7 candle, in any colour. And sparkler candles."]
+    - [after, "Kal order baarah se do ke beech aa sakta hai? Party chaar baje hai. Agar woh full hai toh do se chaar.", "Can the order come tomorrow between twelve and two? The party is at four. If that's full, then two to four."]
+    - [after, "Total kitna hua? Mere balance se kat jayega na?", "What's the total? It'll come out of my balance, right?"]
+    - [after, "Theek hai, baaki UPI se de doongi delivery pe.", "Okay, I'll pay the rest by UPI on delivery."]
+    - [after, "SMS bhej do. Thank you, aapne party bacha li!", "Send an SMS. Thank you, you saved the party!"]
+    - [after, "Bye!", "Bye!"]
+  key:
+    - "Reads each substitute; keeps Pepsi, Magic Masala, Kwality Walls and the plates; removes the plain candles"
+    - "Adds balloons, poppers, juice, chocolates, napkins, popcorn, cups, a number-7 candle and sparkler candles; says party hats are out of stock"
+    - "When 12-2 pm is full, says so and books 2-4 pm tomorrow"
+    - "States the ₹3,618 total, ₹600 from balance and ₹3,018 to pay"
+  checks: {lang: hg, digits: ["3,618"], say: [["3,018", "teen hazaar atthaarah", "three thousand eighteen"]], tool_order: [approve_substitution, book_fresh_slot]}
+  guard: "Each substitute is named in her reply, so any reading order fits; the slot fallback comes with the request; L6 reacts to the out-of-stock hats the agent must report."
+
+- id: ret-126
+  g: RET-5
+  lang: hi
+  diff: Medium
+  dir: out
+  title: "Picker calls before packing — seven items out, each substitute accepted or refused, extras added, slot moved"
+  basis: "Grocery pickers call customers before packing when items are out of stock, item by item."
+  caller: "F 60+ · retired homemaker in Varanasi, careful, asks for prices"
+  goal: "Decide each of seven substitutes with prices, add a few things, and move the delivery to when she is home."
+  role: "You are calling from Kartly Fresh before packing order FR-82200 because seven items are out of stock and have substitutes. Open the call: greet, name Kartly Fresh, say why you are calling. Give each substitute's price difference."
+  context: ""
+  tasks:
+    - task: "Read the order"
+      calls:
+        - "get_fresh_order(order_id=FR-82200) → order total ₹2,480; slot Tue 6 Oct 9-11 am; out of stock with substitutes: Aashirvaad atta 5 kg → Pillsbury atta 5 kg (+₹15); toor dal 1 kg (Tata) → toor dal 1 kg (Fortune) (−₹8); Amul ghee 1 L → Patanjali ghee 1 L (−₹40); Surf Excel 1 kg → Tide 1 kg (−₹20); Parle-G 800 g → Britannia Marie 600 g (+₹10); mustard oil 1 L (Fortune) → mustard oil 1 L (Patanjali) (+₹5); Red Label tea 500 g → Taj Mahal tea 500 g (+₹60)"
+    - task: "Decide each"
+      calls:
+        - "approve_substitution(order_id=FR-82200, item_id=Aashirvaad atta 5 kg, accept=yes) → kept; +₹15"
+        - "approve_substitution(order_id=FR-82200, item_id=toor dal 1 kg, accept=yes) → kept; −₹8"
+        - "approve_substitution(order_id=FR-82200, item_id=Amul ghee 1 L, accept=no) → removed; −₹650"
+        - "approve_substitution(order_id=FR-82200, item_id=Surf Excel 1 kg, accept=yes) → kept; −₹20"
+        - "approve_substitution(order_id=FR-82200, item_id=Parle-G 800 g, accept=no) → removed; −₹90"
+        - "approve_substitution(order_id=FR-82200, item_id=mustard oil 1 L, accept=yes) → kept; +₹5"
+        - "approve_substitution(order_id=FR-82200, item_id=Red Label tea 500 g, accept=no) → removed; −₹290"
+    - task: "Extras"
+      calls:
+        - "add_fresh_item(order_id=FR-82200, sku=Amul ghee 500 ml, qty=2) → added, ₹660"
+        - "add_fresh_item(order_id=FR-82200, sku=Parle-G 250 g, qty=3) → added, ₹90"
+        - "add_fresh_item(order_id=FR-82200, sku=Red Label tea 250 g, qty=2) → added, ₹300"
+        - "add_fresh_item(order_id=FR-82200, sku=besan 1 kg, qty=1) → added, ₹110"
+        - "add_fresh_item(order_id=FR-82200, sku=sugar 1 kg, qty=2) → added, ₹96"
+        - "add_fresh_item(order_id=FR-82200, sku=coriander, qty=1) → added, ₹20"
+        - "add_fresh_item(order_id=FR-82200, sku=green chillies 100 g, qty=1) → added, ₹15"
+        - "add_fresh_item(order_id=FR-82200, sku=curd 400 g, qty=1) → added, ₹45"
+        - "add_fresh_item(order_id=FR-82200, sku=lemons 4, qty=1) → added, ₹40"
+    - task: "Slot, balance, summary"
+      calls:
+        - "book_fresh_slot(order_id=FR-82200, date=Tue 6 Oct, slot=5-7 pm) → slot booked"
+        - "get_wallet() → Kartly balance ₹0; payment by cash on delivery"
+        - "send_sms(template=fresh_order_summary) → sent"
+  forbid: ["approve_substitution(order_id=FR-82200, item_id=Amul ghee 1 L, accept=yes)"]
+  lines:
+    - [open, "हैलो?", "Hello?"]
+    - [after, "हाँ, मैं सरला मिश्रा बोल रही हूँ। क्या नहीं है?", "Yes, Sarla Mishra speaking. What isn't available?"]
+    - [after, "एक-एक करके बताइए, और दाम में क्या फ़र्क़ है वो भी।", "Tell me one by one, and the price difference too."]
+    - [after, "आटा चलेगा, दाल भी चलेगी। घी पतंजलि का नहीं, वो हटा दीजिए।", "The atta is fine, the dal is fine too. Not Patanjali ghee — remove that."]
+    - [after, "Tide चलेगा। मैरी बिस्कुट नहीं, हटाइए। सरसों का तेल ठीक है। चाय ताजमहल नहीं, हमें रेड लेबल ही चाहिए।", "Tide is fine. Not Marie biscuits — remove them. The mustard oil is fine. Not Taj Mahal tea, we only want Red Label."]
+    - [after, "अमूल घी छोटे डिब्बे में है? तो आधा-आधा लीटर के दो डाल दीजिए।", "Is Amul ghee there in a smaller pack? Then put two half-litre ones."]
+    - [after, "पारले-जी छोटे पैकेट तीन, और रेड लेबल छोटे पैकेट दो।", "Three small packets of Parle-G, and two small packs of Red Label."]
+    - [after, "और एक किलो बेसन, दो किलो चीनी, धनिया, हरी मिर्च, एक दही और चार नींबू।", "And one kilo of besan, two kilos of sugar, coriander, green chillies, one curd and four lemons."]
+    - [after, "सुबह मैं मंदिर जाती हूँ। शाम को पाँच से सात के बीच भेज दीजिए।", "I go to the temple in the morning. Send it between five and seven in the evening."]
+    - [after, "कुल कितना हुआ? मैं नकद दूँगी।", "What's the total? I'll pay cash."]
+    - [after, "ठीक है बेटा, SMS भेज देना।", "Okay dear, send an SMS."]
+    - [after, "धन्यवाद, आपने फ़ोन करके पूछा, अच्छा लगा।", "Thank you, it was nice of you to call and ask."]
+  key:
+    - "Opens naming Kartly Fresh and the seven out-of-stock items; gives each substitute's price difference"
+    - "Keeps atta, dal, Tide and mustard oil; removes the Patanjali ghee, Marie biscuits and Taj Mahal tea"
+    - "Adds two 500 ml Amul ghee, three small Parle-G, two small Red Label, besan, two kg sugar, coriander, chillies, curd and lemons"
+    - "Moves delivery to Tue 6 Oct, 5-7 pm; gives the new total ₹2,818 for cash on delivery"
+  checks: {lang: hi, say: [["2,818", "दो हज़ार आठ सौ अठारह", "अट्ठाईस सौ अठारह"]], tool_order: [approve_substitution, add_fresh_item]}
+  guard: "Every decision names the item, so it fits any reading order; L6–L7 react to items she has just refused; L10 asks for the total whatever was said."
+
+- id: ret-127
+  g: RET-5
+  lang: te
+  script: te-mix
+  diff: Medium
+  dir: in
+  title: "Monthly stock-up — last delivery's four problems fixed, then sixteen items for the month, slot and balance"
+  basis: "Families do one big monthly grocery order and sort out the last delivery's problems in the same call."
+  caller: "F 46-60 · homemaker in Vijayawada with a joint family, reads from a written list"
+  goal: "Get refunds or replacements for yesterday's problems, then place the whole month's list for Saturday morning using her balance."
+  role: "You handle Kartly Fresh."
+  context: ""
+  tasks:
+    - task: "Yesterday's delivery"
+      calls:
+        - "get_fresh_order(order_id=FR-83010) → delivered Sun 4 Oct; rice 10 kg, sunflower oil 2 L, onions 2 kg, tomatoes 1 kg, eggs 30, milk 2 L, curd 1 kg"
+        - "report_quality_issue(order_id=FR-83010, item_id=onions 2 kg, issue=half rotten) → ₹70 to Kartly balance"
+        - "report_quality_issue(order_id=FR-83010, item_id=sunflower oil 2 L, issue=pouch leaking) → ₹310 to Kartly balance"
+        - "report_quality_issue(order_id=FR-83010, item_id=eggs 30, issue=six broken) → ₹42 to Kartly balance"
+        - "report_missing_item(order_id=FR-83010, item_id=curd 1 kg) → ₹110 to Kartly balance"
+    - task: "The month's list"
+      calls:
+        - "get_fresh_order(order_id=FR-83055) → new draft order; empty"
+        - "add_fresh_item(order_id=FR-83055, sku=sona masoori rice 25 kg, qty=1) → added, ₹1,650"
+        - "add_fresh_item(order_id=FR-83055, sku=toor dal 1 kg, qty=2) → added, ₹330"
+        - "add_fresh_item(order_id=FR-83055, sku=moong dal 1 kg, qty=1) → added, ₹150"
+        - "add_fresh_item(order_id=FR-83055, sku=urad dal 1 kg, qty=1) → added, ₹160"
+        - "add_fresh_item(order_id=FR-83055, sku=sunflower oil 5 L, qty=1) → added, ₹780"
+        - "add_fresh_item(order_id=FR-83055, sku=groundnut oil 1 L, qty=1) → added, ₹210"
+        - "add_fresh_item(order_id=FR-83055, sku=tamarind 500 g, qty=1) → added, ₹120"
+        - "add_fresh_item(order_id=FR-83055, sku=red chilli powder 500 g, qty=1) → added, ₹180"
+        - "add_fresh_item(order_id=FR-83055, sku=turmeric 200 g, qty=1) → added, ₹60"
+        - "add_fresh_item(order_id=FR-83055, sku=mustard seeds 200 g, qty=1) → added, ₹40"
+        - "add_fresh_item(order_id=FR-83055, sku=jaggery 1 kg, qty=1) → added, ₹90"
+        - "add_fresh_item(order_id=FR-83055, sku=sugar 2 kg, qty=1) → added, ₹96"
+        - "add_fresh_item(order_id=FR-83055, sku=filter coffee powder 500 g, qty=1) → added, ₹280"
+        - "add_fresh_item(order_id=FR-83055, sku=dish soap bar ×4, qty=1) → added, ₹80"
+        - "add_fresh_item(order_id=FR-83055, sku=detergent 2 kg, qty=1) → added, ₹380"
+        - "add_fresh_item(order_id=FR-83055, sku=bath soap ×6, qty=1) → added, ₹240"
+    - task: "Slot, balance, summary"
+      calls:
+        - "book_fresh_slot(order_id=FR-83055, date=Sat 10 Oct, slot=7-9 am) → slot booked"
+        - "get_wallet() → Kartly balance ₹532; the ₹4,846 order uses it first, ₹4,314 to pay"
+        - "send_sms(template=fresh_order_summary) → sent"
+  forbid: ["report_missing_item(order_id=FR-83010, item_id=milk 2 L)"]
+  lines:
+    - [open, "నమస్కారం. నిన్నటి Kartly Fresh order లో కొన్ని సమస్యలు ఉన్నాయి. తర్వాత ఈ నెల సరుకుల list కూడా order చేయాలి.", "Hello. There are some problems with yesterday's Kartly Fresh order. After that I also need to order this month's grocery list."]
+    - [after, "ఉల్లిపాయలు సగం కుళ్ళిపోయాయి. Oil packet leak అవుతోంది. ఆరు గుడ్లు పగిలాయి. పెరుగు అసలు రాలేదు.", "The onions are half rotten. The oil pouch is leaking. Six eggs are broken. The curd never came at all."]
+    - [after, "డబ్బు Kartly balance లో వేయండి, నెల సరుకుల్లో వాడుకుంటాను.", "Put the money in my Kartly balance; I'll use it on the month's groceries."]
+    - [after, "ఇప్పుడు list. Sona masoori బియ్యం ఇరవై ఐదు కిలోలు. కంది పప్పు రెండు కిలోలు, పెసర పప్పు ఒకటి, మినప పప్పు ఒకటి.", "Now the list. Sona masoori rice, twenty-five kilos. Toor dal two kilos, moong dal one, urad dal one."]
+    - [after, "Sunflower oil ఐదు లీటర్లు, పల్లీ నూనె ఒక లీటరు. చింతపండు అర కిలో.", "Sunflower oil five litres, groundnut oil one litre. Tamarind half a kilo."]
+    - [pause 2000, "కారం అర కిలో, పసుపు రెండు వందల గ్రాములు, ఆవాలు రెండు వందల గ్రాములు. బెల్లం ఒక కిలో, చక్కెర రెండు కిలోలు.", "Chilli powder half a kilo, turmeric two hundred grams, mustard seeds two hundred grams. Jaggery one kilo, sugar two kilos."]
+    - [after, "Filter coffee powder అర కిలో. Dish soap bars నాలుగు, detergent రెండు కిలోలు, స్నానం soaps ఆరు.", "Filter coffee powder half a kilo. Four dish soap bars, two kilos of detergent, six bath soaps."]
+    - [after, "అంతే. ఇది శనివారం పొద్దున ఏడు నుంచి తొమ్మిది మధ్య రావాలి.", "That's all. It should come on Saturday morning between seven and nine."]
+    - [after, "Balance ఎంత ఉంది? మొత్తం ఎంత, ఇంకా ఎంత కట్టాలి?", "How much is in the balance? What's the total, and how much more do I pay?"]
+    - [after, "List ఒకసారి చదివి చెప్పండి, ఏదైనా మిస్ అయిందేమో.", "Read the list back once, in case anything was missed."]
+    - [after, "సరే, SMS పంపండి.", "Okay, send an SMS."]
+    - [after, "ధన్యవాదాలు.", "Thank you."]
+  key:
+    - "Reports the onions, oil and eggs as quality issues and the curd as missing, one call each: ₹532 to Kartly balance"
+    - "Adds all sixteen items on her list with the right quantities"
+    - "Books Sat 10 Oct, 7-9 am"
+    - "States the ₹4,846 total, ₹532 from balance and ₹4,314 to pay"
+    - "Reads the list back; speaks Telugu, keeping her English words"
+  checks: {lang: te, digits: ["4,846", "532"], say: [["4,314", "నాలుగు వేల మూడు వందల పద్నాలుగు"]], tool_order: [report_quality_issue, add_fresh_item]}
+  guard: "The problems come in one line; the list comes in batches that each hold after any reply; L9 asks for the money split whatever was said."
+
+- id: ret-128
+  g: RET-5
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Housewarming lunch for forty — bulk grocery order, a per-order limit, two out of stock swapped, early slot"
+  basis: "Function cooking needs bulk groceries; quick-commerce order limits and stock gaps have to be worked around item by item."
+  caller: "F 46-60 · mother organising a housewarming (grihapravesam) lunch in Chennai, the cook beside her"
+  goal: "Order everything the cook needs for forty people, work around the rice limit and two missing items, and get it delivered at dawn on the function day."
+  role: "You handle Kartly Fresh. Some items have a per-order limit."
+  context: "The function is on Thu 8 Oct; lunch at 12."
+  tasks:
+    - task: "New order"
+      calls:
+        - "get_fresh_order(order_id=FR-84100) → new draft order; empty"
+    - task: "Staples"
+      calls:
+        - "add_fresh_item(order_id=FR-84100, sku=ponni rice 25 kg, qty=3) → error: limit 2 bags of 25 kg per order"
+        - "add_fresh_item(order_id=FR-84100, sku=ponni rice 25 kg, qty=2) → added, ₹3,300"
+        - "add_fresh_item(order_id=FR-84100, sku=ponni rice 10 kg, qty=1) → added, ₹690"
+        - "add_fresh_item(order_id=FR-84100, sku=toor dal 1 kg, qty=4) → added, ₹660"
+        - "add_fresh_item(order_id=FR-84100, sku=moong dal 1 kg, qty=2) → added, ₹300"
+        - "add_fresh_item(order_id=FR-84100, sku=gingelly oil 1 L, qty=3) → added, ₹1,050"
+        - "add_fresh_item(order_id=FR-84100, sku=ghee 1 L, qty=2) → added, ₹1,300"
+        - "add_fresh_item(order_id=FR-84100, sku=tamarind 1 kg, qty=1) → added, ₹230"
+        - "add_fresh_item(order_id=FR-84100, sku=jaggery 1 kg, qty=2) → added, ₹180"
+        - "add_fresh_item(order_id=FR-84100, sku=cashews 500 g, qty=1) → added, ₹520"
+        - "add_fresh_item(order_id=FR-84100, sku=raisins 250 g, qty=1) → added, ₹110"
+    - task: "Vegetables"
+      calls:
+        - "add_fresh_item(order_id=FR-84100, sku=banana leaves (bundle of 50), qty=1) → out of stock"
+        - "add_fresh_item(order_id=FR-84100, sku=areca leaf plates (pack of 50), qty=1) → added, ₹450"
+        - "add_fresh_item(order_id=FR-84100, sku=drumsticks 1 kg, qty=2) → added, ₹180"
+        - "add_fresh_item(order_id=FR-84100, sku=brinjal 1 kg, qty=3) → added, ₹180"
+        - "add_fresh_item(order_id=FR-84100, sku=pumpkin 2 kg, qty=1) → added, ₹80"
+        - "add_fresh_item(order_id=FR-84100, sku=raw banana 1 kg, qty=2) → added, ₹120"
+        - "add_fresh_item(order_id=FR-84100, sku=curry leaves, qty=3) → added, ₹30"
+        - "add_fresh_item(order_id=FR-84100, sku=coconuts, qty=10) → out of stock"
+        - "add_fresh_item(order_id=FR-84100, sku=grated coconut 200 g, qty=10) → added, ₹600"
+        - "add_fresh_item(order_id=FR-84100, sku=curd 1 kg, qty=4) → added, ₹440"
+    - task: "Dawn slot on the function day"
+      calls:
+        - "book_fresh_slot(order_id=FR-84100, date=Thu 8 Oct, slot=5-7 am) → slot booked"
+        - "get_wallet() → Kartly balance ₹0; total ₹10,420, pay on delivery or by link"
+        - "send_sms(template=fresh_order_summary) → sent"
+  forbid: ["book_fresh_slot(order_id=FR-84100, date=Thu 8 Oct, slot=11 am-1 pm)"]
+  lines:
+    - [open, "வணக்கம். வியாழக்கிழமை எங்க வீட்டுல கிரகப்பிரவேசம், நாப்பது பேருக்கு சாப்பாடு. சமையல்காரர் பக்கத்துல இருக்கார், அவர் சொல்றதை order பண்ணணும்.", "Hello. Thursday is our housewarming, lunch for forty people. The cook is right here; I need to order what he says."]
+    - [after, "பொன்னி அரிசி மூணு மூட்டை, இருபத்தஞ்சு கிலோ. மூணு முடியலைன்னா, ரெண்டு மூட்டையும் ஒரு பத்து கிலோ பையும் போடுங்க.", "Ponni rice, three bags of twenty-five kilos. If three isn't possible, two bags and one ten-kilo bag."]
+    - [after, "துவரம் பருப்பு நாலு கிலோ, பாசிப் பருப்பு ரெண்டு கிலோ. நல்லெண்ணெய் மூணு லிட்டர், நெய் ரெண்டு லிட்டர்.", "Toor dal four kilos, moong dal two kilos. Gingelly oil three litres, ghee two litres."]
+    - [after, "புளி ஒரு கிலோ, வெல்லம் ரெண்டு கிலோ. முந்திரி அரை கிலோ, திராட்சை கால் கிலோ — பாயசத்துக்கு.", "Tamarind one kilo, jaggery two kilos. Cashews half a kilo, raisins a quarter kilo — for the payasam."]
+    - [after, "வாழை இலை ஐம்பது கட்டு வேணும்.", "We need a bundle of fifty banana leaves."]
+    - [after, "இல்லையா? அப்போ பாக்கு மட்டை தட்டு ஐம்பது போடுங்க.", "Not there? Then put fifty areca leaf plates."]
+    - [after, "காய்கறி — முருங்கைக்காய் ரெண்டு கிலோ, கத்திரிக்காய் மூணு கிலோ, பூசணிக்காய் ரெண்டு கிலோ, வாழைக்காய் ரெண்டு கிலோ, கறிவேப்பிலை மூணு கட்டு.", "Vegetables — drumsticks two kilos, brinjal three kilos, pumpkin two kilos, raw banana two kilos, three bunches of curry leaves."]
+    - [after, "தேங்காய் பத்து. இல்லன்னா துருவின தேங்காய் பத்து packet. தயிர் நாலு கிலோ.", "Ten coconuts. If not, ten packets of grated coconut. Curd four kilos."]
+    - [after, "எல்லாம் வியாழன் காலைல அஞ்சு மணிக்கு வரணும், சமையல் ஆறு மணிக்கு ஆரம்பிக்கும்.", "Everything has to come at five on Thursday morning; the cooking starts at six."]
+    - [after, "மொத்தம் எவ்வளவு?", "How much in total?"]
+    - [after, "சமையல்காரர் கேக்குறார் — எல்லாம் சரியா போட்டீங்களா? ஒரு தடவை படிங்க.", "The cook is asking — did you put everything correctly? Read it once."]
+    - [after, "சரி, SMS அனுப்புங்க. நன்றி.", "Okay, send an SMS. Thank you."]
+  key:
+    - "When three 25 kg rice bags fail the limit, says so and adds two 25 kg bags and one 10 kg bag"
+    - "Adds every staple and vegetable in the quantities given"
+    - "Says banana leaves are out of stock and adds fifty areca leaf plates; when coconuts are out, adds ten packets of grated coconut"
+    - "Books Thu 8 Oct, 5-7 am"
+    - "States the ₹10,420 total and reads the list back; speaks Tamil, keeping her English words"
+  checks: {lang: ta, digits: ["10,420"], tool_order: [add_fresh_item, book_fresh_slot]}
+  guard: "Every fallback (rice, coconuts) comes with its request; L6 reacts to the banana-leaf result the agent must report; L11 asks for a read-back whatever was said."
+
+- id: ret-129
+  g: RET-6
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Retired father's app charges — seven coin packs refunded where possible, locked episodes, a double streaming charge, devices"
+  basis: "Older users buy audio-app coins by mistake and get double-charged on streaming; each charge is checked on its own."
+  caller: "M 60+ · retired professor in Pune, precise, a little embarrassed"
+  goal: "Get back what he can for coin packs he bought by mistake, unlock what he paid for, sort the double streaming charge and simplify his plan."
+  role: "You handle subscriptions. Kissago coin packs are refundable within 7 days if the coins are unspent. Say a retention offer only once."
+  context: ""
+  tasks:
+    - task: "Kissago: what he bought"
+      calls:
+        - "get_subscription(app=Kissago) → coins only, no subscription; auto top-up on"
+        - "get_coin_txns() → KC-5501 ₹299 (Sat 26 Sep, spent); KC-5502 ₹299 (Mon 28 Sep, spent); KC-5503 ₹499 (Wed 30 Sep, unspent); KC-5504 ₹499 (Thu 1 Oct, unspent); KC-5505 ₹299 (Fri 2 Oct, unspent); KC-5506 ₹499 (Sat 3 Oct, unspent); KC-5507 ₹299 (Sun 4 Oct, unspent)"
+        - "refund_coins(txn_id=KC-5501) → not eligible: coins spent"
+        - "refund_coins(txn_id=KC-5502) → not eligible: coins spent"
+        - "refund_coins(txn_id=KC-5503) → ₹499 to UPI by Thu 8 Oct"
+        - "refund_coins(txn_id=KC-5504) → ₹499 to UPI by Thu 8 Oct"
+        - "refund_coins(txn_id=KC-5505) → error: refund service timed out"
+        - "refund_coins(txn_id=KC-5505) → ₹299 to UPI by Thu 8 Oct"
+        - "refund_coins(txn_id=KC-5506) → ₹499 to UPI by Thu 8 Oct"
+        - "refund_coins(txn_id=KC-5507) → ₹299 to UPI by Thu 8 Oct"
+        - "cancel_autorenew(app=Kissago) → auto top-up off"
+    - task: "Episodes he paid for but can't play"
+      calls:
+        - "unlock_episode(series=Raat Ki Rani, episode=41) → unlocked"
+        - "unlock_episode(series=Raat Ki Rani, episode=42) → unlocked"
+    - task: "Chalchitra Play double charge"
+      calls:
+        - "get_subscription(app=Chalchitra Play) → Premium 4-screen ₹649 a month; renewed Thu 1 Oct; paid by card"
+        - "check_app_payment(reference=CP-90011) → ₹649 charged Thu 1 Oct, card, success"
+        - "check_app_payment(reference=CP-90012) → ₹649 charged Thu 1 Oct, card, success (duplicate)"
+        - "raise_ticket(category=duplicate app charge, summary=Chalchitra Play CP-90012 duplicate of CP-90011, ₹649) → ticket DC 90020; refund in 5-7 days"
+        - "check_app_payment(reference=KS-77310) → Kissago ₹199 coin pack by UPI, Sun 4 Oct, success, coins not credited"
+        - "raise_ticket(category=coins not credited, summary=Kissago KS-77310 ₹199 paid, coins not credited) → ticket CN 90021"
+    - task: "Simplify the plan and the devices"
+      calls:
+        - "list_devices(app=Chalchitra Play) → his phone, living-room TV, unknown Android TV (Mumbai), unknown iPad"
+        - "remove_device(app=Chalchitra Play, device=unknown Android TV (Mumbai)) → signed out"
+        - "remove_device(app=Chalchitra Play, device=unknown iPad) → signed out"
+        - "change_plan(app=Chalchitra Play, plan=Basic 2-screen) → ₹299 a month from 1 Nov; nothing charged today"
+    - task: "Summary"
+      calls:
+        - "schedule_callback(date=Thu 8 Oct, slot=11 am-12 pm, topic=coin refunds and DC 90020, CN 90021) → booked"
+        - "send_sms(template=subscriptions_summary) → sent"
+  forbid: ["remove_device(app=Chalchitra Play, device=living-room TV)", "cancel_autorenew(app=Chalchitra Play)"]
+  lines:
+    - [open, "Good morning. I seem to have bought a lot of coins on this Kissago story app without meaning to. And Chalchitra Play charged me twice. Can you help an old man?"]
+    - [after, "Please go through every coin purchase. Whatever can be refunded, refund."]
+    - [after, "The ones I already used — fair enough. Stop it from buying coins by itself."]
+    - [after, "Also, episodes forty-one and forty-two of Raat Ki Rani — I paid coins for them, but they still show locked."]
+    - [after, "Now Chalchitra Play. My card shows six forty-nine twice on the first."]
+    - [after, "And another thing — yesterday I paid a hundred and ninety-nine by UPI on Kissago and got no coins. Reference K S seven seven three one zero."]
+    - [after, "Who is watching on my Chalchitra account? Read the devices."]
+    - [after, "Mumbai? I know nobody in Mumbai. And no iPad in this house. Remove both."]
+    - [after, "I don't need four screens. Make it the cheapest plan with two."]
+    - [after, "How much am I getting back altogether, and when?"]
+    - [after, "Could someone ring me on Thursday morning to confirm the money has come?"]
+    - [after, "Send it all on SMS, please. My son will read it."]
+    - [after, "Thank you, you were very patient with me."]
+  key:
+    - "Reads all seven coin purchases; says KC-5501 and 5502 were spent and can't be refunded"
+    - "Refunds KC-5503 to 5507 (after the 5505 timeout, says so and retries) and turns off auto top-up"
+    - "Unlocks episodes 41 and 42"
+    - "Finds the duplicate ₹649 (CP-90012) and raises DC 90020; finds KS-77310 paid without coins and raises CN 90021"
+    - "Signs out the Mumbai Android TV and the iPad; moves him to Basic 2-screen ₹299 from 1 Nov"
+    - "States ₹2,095 in coin refunds by Thu 8 Oct, plus ₹649 in 5-7 days"
+  checks: {digits: ["DC 90020", "CN 90021", "299"], say: [["2,095", "two thousand ninety-five", "two thousand and ninety-five"]], tool_order: [get_coin_txns, refund_coins]}
+  guard: "L2 asks for every purchase; L3 accepts the spent ones whatever words were used; L8 reacts to devices the agent must read out."
+
+- id: ret-130
+  g: RET-6
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Family subscriptions tidy-up — old roommates' devices out, plans changed, coins refunded, episodes unlocked, payments checked"
+  basis: "Shared streaming and audio accounts collect old devices and odd charges; each device, charge and episode is fixed on its own."
+  caller: "F 26-45 · newly married, moving her subscriptions to the new household, organised"
+  goal: "Remove every device that isn't hers or her husband's, move to a family plan, get refunds for unused coins, unlock paid episodes and check three payments."
+  role: "You handle subscriptions. Kissago coin packs are refundable within 7 days if unspent."
+  context: ""
+  tasks:
+    - task: "Chalchitra Play devices"
+      calls:
+        - "get_subscription(app=Chalchitra Play) → Standard 2-screen ₹449 a month; renews Sun 1 Nov"
+        - "list_devices(app=Chalchitra Play) → her phone; Aman's phone; Riya's laptop; Riya's phone; Pune flat TV; old hostel laptop; Mumbai TV; unknown Chrome browser"
+        - "remove_device(app=Chalchitra Play, device=Riya's laptop) → signed out"
+        - "remove_device(app=Chalchitra Play, device=Riya's phone) → signed out"
+        - "remove_device(app=Chalchitra Play, device=Pune flat TV) → signed out"
+        - "remove_device(app=Chalchitra Play, device=old hostel laptop) → signed out"
+        - "remove_device(app=Chalchitra Play, device=Mumbai TV) → signed out"
+        - "remove_device(app=Chalchitra Play, device=unknown Chrome browser) → signed out"
+        - "change_plan(app=Chalchitra Play, plan=Family 4-screen) → ₹649 a month; ₹130 charged today for the rest of October"
+    - task: "Kissago coins and episodes"
+      calls:
+        - "get_subscription(app=Kissago) → coins only"
+        - "get_coin_txns() → KC-6101 ₹499 (Tue 29 Sep, unspent); KC-6102 ₹299 (Thu 1 Oct, half spent); KC-6103 ₹199 (Sat 3 Oct, unspent)"
+        - "refund_coins(txn_id=KC-6101) → ₹499 to Kartly balance now"
+        - "refund_coins(txn_id=KC-6102) → not eligible: coins partly spent"
+        - "refund_coins(txn_id=KC-6103) → ₹199 to Kartly balance now"
+        - "get_wallet() → Kartly balance ₹698"
+        - "unlock_episode(series=Ishq Ka Sheher, episode=18) → unlocked"
+        - "unlock_episode(series=Ishq Ka Sheher, episode=19) → unlocked"
+        - "unlock_episode(series=Ishq Ka Sheher, episode=20) → unlocked"
+        - "unlock_episode(series=Ishq Ka Sheher, episode=21) → unlocked"
+    - task: "Three payments"
+      calls:
+        - "check_app_payment(reference=CP-71120) → Chalchitra Play ₹449, Thu 1 Oct, UPI, success"
+        - "check_app_payment(reference=CP-71121) → Chalchitra Play ₹449, Thu 1 Oct, UPI, failed; not debited"
+        - "check_app_payment(reference=KS-55210) → Kissago ₹299 coin pack, Thu 1 Oct, UPI, success"
+    - task: "Kartly Plus, summary"
+      calls:
+        - "get_membership() → Kartly Plus active until Sat 12 Dec; includes Chalchitra Play discount 20% on Family plan"
+        - "raise_ticket(category=Plus discount not applied, summary=Chalchitra Play Family plan should get 20% Kartly Plus discount) → ticket PD 71130"
+        - "send_sms(template=subscriptions_summary) → sent"
+  forbid: ["remove_device(app=Chalchitra Play, device=Aman's phone)", "remove_device(app=Chalchitra Play, device=her phone)"]
+  lines:
+    - [open, "Hi, meri shaadi hui hai aur ab Chalchitra aur Kissago ko naye ghar ke hisaab se set karna hai. Purani flatmates abhi bhi mera account chala rahi hain!", "Hi, I've just got married and I need to set up Chalchitra and Kissago for the new home. My old flatmates are still using my account!"]
+    - [after, "Chalchitra pe kaun-kaun se devices hain, padh do.", "Read out which devices are on Chalchitra."]
+    - [after, "Sirf mera phone aur Aman ka phone rakhna. Baaki sab nikaal do — Riya ke dono, Pune wala TV, hostel ka laptop, Mumbai TV aur woh Chrome wala.", "Keep only my phone and Aman's phone. Remove all the others — both of Riya's, the Pune TV, the hostel laptop, the Mumbai TV and that Chrome one."]
+    - [after, "Ab ghar mein TV bhi lagega, toh family plan kar do, chaar screen wala.", "Now there'll be a TV at home too, so make it the family plan, the four-screen one."]
+    - [after, "Kartly Plus wale ko discount milta hai na? Lag gaya kya?", "Kartly Plus members get a discount, right? Has it been applied?"]
+    - [after, "Achha, uski complaint daal do. Ab Kissago — maine kuch coin packs liye the. Jo refund ho sakte hain, Kartly balance mein daal do.", "Okay, file a complaint about that. Now Kissago — I bought some coin packs. Refund whatever can be refunded into my Kartly balance."]
+    - [after, "Aur Ishq Ka Sheher ke attharah se ikkees tak episodes ke coins kat gaye par khul nahi rahe.", "And coins were taken for episodes eighteen to twenty-one of Ishq Ka Sheher, but they won't open."]
+    - [after, "Ek October ko mere UPI se teen payments dikh rahe hain. Teeno check karo — C P seven one one two zero, C P seven one one two one, aur K S five five two one zero.", "I see three payments on my UPI on the first of October. Check all three — CP-71120, CP-71121 and KS-55210."]
+    - [after, "Matlab doosra kata hi nahi? Theek hai.", "So the second one wasn't even taken? Okay."]
+    - [after, "Kitna wapas aaya total?", "How much came back in total?"]
+    - [after, "SMS kar do sab. Thanks!", "SMS it all. Thanks!"]
+    - [after, "Bye!", "Bye!"]
+  key:
+    - "Reads all eight devices and removes the six she names, keeping hers and Aman's"
+    - "Moves to Family 4-screen (₹649, ₹130 today); checks Kartly Plus and raises PD 71130 because the 20% discount wasn't applied"
+    - "Refunds KC-6101 and KC-6103 to Kartly balance; says KC-6102 is partly spent and can't be refunded"
+    - "Unlocks episodes 18, 19, 20 and 21"
+    - "Checks the three payments: CP-71121 failed and was not debited"
+    - "States ₹698 refunded"
+  checks: {lang: hg, digits: ["PD 71130", "130"], say: [["698", "chhe sau atthaanve", "six hundred ninety-eight"]], tool_order: [list_devices, remove_device]}
+  guard: "She names devices by what they are, fitting any reading order; the payment references come in one line; L9 reacts to the failed payment the agent must report."
+
+- id: ret-131
+  g: RET-6
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Kartly Plus member charged for free delivery on ten orders — each checked, seven credited, streaming perk activated, coins spent"
+  basis: "Membership benefits misfire across many orders; each order's charge has to be checked and credited on its own."
+  caller: "M 26-45 · chartered accountant in Ahmedabad who reconciles everything, calm and exact"
+  goal: "Get every wrongly charged delivery fee back, turn on the streaming perk he is paying for, use expiring coins and stop strangers on his account."
+  role: "You handle memberships. Kartly Plus gives free delivery on Kartly orders; Kartly Fresh orders under ₹199 still pay delivery."
+  context: ""
+  tasks:
+    - task: "Membership and orders"
+      calls:
+        - "get_membership() → Kartly Plus active since Tue 1 Sep; free delivery; Chalchitra Play Basic included (not activated)"
+        - "list_orders() → ten orders since 1 Sep: KT-85001, KT-85007, KT-85013, KT-85020, FR-85024, KT-85031, KT-85038, FR-85042, KT-85049, KT-85055"
+    - task: "Check each order's delivery fee"
+      calls:
+        - "get_order(order_id=KT-85001) → ₹1,240; delivery fee ₹40 charged"
+        - "get_order(order_id=KT-85007) → ₹860; delivery fee ₹40 charged"
+        - "get_order(order_id=KT-85013) → ₹2,310; delivery fee ₹0"
+        - "get_order(order_id=KT-85020) → ₹540; delivery fee ₹40 charged"
+        - "get_order(order_id=FR-85024) → Kartly Fresh ₹160; delivery fee ₹25 (Fresh order under ₹199)"
+        - "get_order(order_id=KT-85031) → ₹999; delivery fee ₹40 charged"
+        - "get_order(order_id=KT-85038) → ₹3,450; delivery fee ₹40 charged"
+        - "get_order(order_id=FR-85042) → Kartly Fresh ₹420; delivery fee ₹25 charged"
+        - "get_order(order_id=KT-85049) → ₹720; delivery fee ₹40 charged"
+        - "get_order(order_id=KT-85055) → ₹1,180; delivery fee ₹0"
+    - task: "Credit each wrong fee"
+      calls:
+        - "credit_goodwill(order_id=KT-85001, amount=₹40, reason=Plus free delivery not applied) → ₹40 added to Kartly balance"
+        - "credit_goodwill(order_id=KT-85007, amount=₹40, reason=Plus free delivery not applied) → ₹40 added to Kartly balance"
+        - "credit_goodwill(order_id=KT-85020, amount=₹40, reason=Plus free delivery not applied) → ₹40 added to Kartly balance"
+        - "credit_goodwill(order_id=KT-85031, amount=₹40, reason=Plus free delivery not applied) → ₹40 added to Kartly balance"
+        - "credit_goodwill(order_id=KT-85038, amount=₹40, reason=Plus free delivery not applied) → ₹40 added to Kartly balance"
+        - "credit_goodwill(order_id=FR-85042, amount=₹25, reason=Plus free delivery not applied) → ₹25 added to Kartly balance"
+        - "credit_goodwill(order_id=KT-85049, amount=₹40, reason=Plus free delivery not applied) → ₹40 added to Kartly balance"
+        - "raise_ticket(category=Plus benefit not applied, summary=delivery fees charged on 7 orders since 1 Sep; credited) → ticket PB 85060"
+    - task: "Turn on the streaming perk"
+      calls:
+        - "get_subscription(app=Chalchitra Play) → Basic via Kartly Plus, not activated"
+        - "change_plan(app=Chalchitra Play, plan=Basic via Kartly Plus) → activated, ₹0"
+        - "list_devices(app=Chalchitra Play) → his phone; unknown Smart TV (Surat); unknown Firefox browser"
+        - "remove_device(app=Chalchitra Play, device=unknown Smart TV (Surat)) → signed out"
+        - "remove_device(app=Chalchitra Play, device=unknown Firefox browser) → signed out"
+    - task: "Spend expiring coins"
+      calls:
+        - "get_wallet() → Kartly balance ₹265; Kart Coins 900, expiring Sat 10 Oct"
+        - "add_to_cart(sku=A4 paper ream 500 sheets, qty=2) → added, ₹640"
+        - "add_to_cart(sku=gel pens box of 10, qty=1) → added, ₹260"
+        - "place_order(address=Office 304, Shivalik Plaza, Ahmedabad 380015, payment_mode=Kart Coins then Kartly balance) → order KT-85120, ₹900 from Kart Coins; delivery Wed 7 Oct"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=membership_summary) → sent"
+  forbid: ["credit_goodwill(order_id=FR-85024)", "credit_goodwill(order_id=KT-85013)", "cancel_membership_autorenew"]
+  lines:
+    - [open, "Namaste. Main Kartly Plus member hoon, phir bhi mujhse delivery charge liya ja raha hai. September se ab tak ke saare orders check karwane hain.", "Hello. I'm a Kartly Plus member, but I'm still being charged for delivery. I want every order from September till now checked."]
+    - [after, "Ek-ek order dekhiye, kis mein kitna delivery charge laga.", "Look at each order — how much delivery charge on which."]
+    - [after, "Woh Fresh wala ek sau saath ka — haan, woh rule samajh mein aata hai. Baaki jo galat hain, sab wapas kijiye.", "That Fresh one for a hundred and sixty — yes, I understand that rule. Refund all the others that are wrong."]
+    - [after, "Kitna wapas aaya total? Aur iski complaint bhi daal dijiye, aage se na ho.", "How much came back in total? And file a complaint too, so it doesn't happen again."]
+    - [after, "Plus ke saath Chalchitra free hai na? Maine kabhi chalu nahi kiya. Chalu kar dijiye.", "Chalchitra is free with Plus, isn't it? I never activated it. Activate it."]
+    - [after, "Ab is pe kaun-kaun hai? Devices padhiye.", "Now who's on it? Read out the devices."]
+    - [after, "Surat ka TV aur Firefox — dono mere nahi. Nikaaliye.", "The Surat TV and Firefox — neither is mine. Remove them."]
+    - [after, "Mere coins bhi expire hone wale hain na? Kitne hain?", "My coins are about to expire too, right? How many are there?"]
+    - [after, "Office ke liye do rim A4 paper aur ek dabba gel pens. Coins se, kam pade toh balance se. Office ka pata — three zero four, Shivalik Plaza, Ahmedabad three eight zero zero one five.", "Two reams of A4 paper and a box of gel pens for the office. With coins, and the balance if it falls short. Office address — 304, Shivalik Plaza, Ahmedabad 380015."]
+    - [after, "Ab balance kitna bacha?", "How much balance is left now?"]
+    - [after, "Theek hai. SMS par sab bhej dijiye.", "Okay. Send it all by SMS."]
+    - [after, "Dhanyavaad.", "Thank you."]
+  key:
+    - "Checks all ten orders; finds ₹40 wrongly charged on six Kartly orders and ₹25 on the ₹420 Fresh order"
+    - "Explains the ₹160 Fresh order's ₹25 fee is correct (under ₹199); does not credit it or the two with no fee"
+    - "Credits each wrong fee, ₹265 in all, and raises PB 85060"
+    - "Activates Chalchitra Play Basic under Plus at ₹0 and signs out the Surat TV and Firefox"
+    - "Uses the 900 expiring coins for the paper and pens (KT-85120, ₹900); balance stays ₹265"
+  checks: {lang: hg, digits: ["PB 85060", "KT-85120"], say: [["265", "do sau painsath", "two hundred sixty-five"]], tool_order: [get_order, credit_goodwill]}
+  guard: "L2 asks for every order; L3 accepts the Fresh rule once the agent states it; L10 asks for the balance whatever was said."
+
+- id: ret-132
+  g: RET-2
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Office Diwali gifts — eight employees, saved addresses, stock per pincode, two swaps, eight gift-wrapped orders"
+  basis: "Small companies send festive gifts to each employee's home; every address is its own order with its own stock and wrap."
+  caller: "F 26-45 · HR manager at a 20-person design studio in Bengaluru, organised, addresses saved on the account"
+  goal: "Send a hamper to each of eight remote employees before Diwali, gift-wrapped with a note, swapping where the hamper can't reach."
+  role: "You handle orders. Each address is a separate order. Check stock at each employee's pincode."
+  context: "Employees' addresses are saved in the account's address book under their names."
+  tasks:
+    - task: "Stock at each pincode"
+      calls:
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=411045) → in stock; ₹1,899"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=500032) → in stock"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=600020) → in stock"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=110017) → in stock"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=380009) → in stock"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=682024) → out of stock at this pincode"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=781006) → out of stock at this pincode"
+        - "check_stock(sku=dry-fruit hamper 1 kg, pincode=560076) → in stock"
+        - "find_alternatives(sku=dry-fruit hamper 1 kg) → premium dry-fruit box 1 kg ₹1,899 (same price), ships to 682024 and 781006"
+        - "check_stock(sku=premium dry-fruit box 1 kg, pincode=682024) → in stock"
+        - "check_stock(sku=premium dry-fruit box 1 kg, pincode=781006) → in stock"
+    - task: "One order per employee"
+      calls:
+        - "validate_coupon(code=CORPGIFT, cart_value=₹15,192) → valid; 8% off each hamper order"
+        - "place_order(address=saved: Ravi Kulkarni, Pune 411045, payment_mode=company card, coupon=CORPGIFT) → order KT-86001, ₹1,747; delivery Fri 9 Oct"
+        - "place_order(address=saved: Sneha Reddy, Hyderabad 500032, payment_mode=company card, coupon=CORPGIFT) → order KT-86002, ₹1,747; delivery Fri 9 Oct"
+        - "place_order(address=saved: Karthik Iyer, Chennai 600020, payment_mode=company card, coupon=CORPGIFT) → order KT-86003, ₹1,747; delivery Fri 9 Oct"
+        - "place_order(address=saved: Ishita Kapoor, Delhi 110017, payment_mode=company card, coupon=CORPGIFT) → order KT-86004, ₹1,747; delivery Sat 10 Oct"
+        - "place_order(address=saved: Harsh Patel, Ahmedabad 380009, payment_mode=company card, coupon=CORPGIFT) → order KT-86005, ₹1,747; delivery Sat 10 Oct"
+        - "place_order(address=saved: Anu Thomas, Kochi 682024, payment_mode=company card, coupon=CORPGIFT) → order KT-86006 (premium dry-fruit box), ₹1,747; delivery Sat 10 Oct"
+        - "place_order(address=saved: Bikram Das, Guwahati 781006, payment_mode=company card, coupon=CORPGIFT) → order KT-86007 (premium dry-fruit box), ₹1,747; delivery Mon 12 Oct"
+        - "place_order(address=saved: Meera Nair, Bengaluru 560076, payment_mode=company card, coupon=CORPGIFT) → order KT-86008, ₹1,747; delivery Thu 8 Oct"
+    - task: "Gift-wrap each with the note"
+      calls:
+        - "add_gift_wrap(order_id=KT-86001, item_id=dry-fruit hamper 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86002, item_id=dry-fruit hamper 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86003, item_id=dry-fruit hamper 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86004, item_id=dry-fruit hamper 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86005, item_id=dry-fruit hamper 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86006, item_id=premium dry-fruit box 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86007, item_id=premium dry-fruit box 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+        - "add_gift_wrap(order_id=KT-86008, item_id=dry-fruit hamper 1 kg, message=Happy Diwali from all of us at Studio Ink) → wrapped, ₹49"
+    - task: "Invoice and summary"
+      calls:
+        - "raise_ticket(category=GST invoice, summary=KT-86001 to KT-86008 for Studio Ink, GSTIN 29AAKCS7712M1Z9) → ticket GT 86020"
+        - "send_sms(template=gift_orders_summary) → sent"
+  forbid: [cancel_order, "place_order(address=Studio Ink office, Bengaluru)"]
+  lines:
+    - [open, "Hi, I'm the HR manager at Studio Ink. I want to send Diwali hampers to eight of our remote team members — each to their home. Their addresses are saved on our account."]
+    - [after, "The one-kilo dry-fruit hamper. The eight are Ravi in Pune, Sneha in Hyderabad, Karthik in Chennai, Ishita in Delhi."]
+    - [after, "Then Harsh in Ahmedabad, Anu in Kochi, Bikram in Guwahati, and Meera here in Bengaluru."]
+    - [after, "Can you check it reaches all of them?"]
+    - [after, "Kochi and Guwahati don't have it? Then the premium box for those two, if it costs the same."]
+    - [after, "Good. We have a corporate coupon, CORPGIFT."]
+    - [after, "Company card for all of them, it's saved."]
+    - [after, "Gift-wrap every one with the note: 'Happy Diwali from all of us at Studio Ink'."]
+    - [after, "When does each one arrive? I want to tell them to expect it."]
+    - [after, "What's the total, including the wrapping?"]
+    - [after, "Our accounts team needs a GST invoice for all eight. GSTIN two nine A A K C S seven seven one two M one Z nine."]
+    - [after, "Send me a summary. Thanks so much!"]
+  key:
+    - "Checks stock at each of the eight pincodes; finds Kochi and Guwahati out of stock and offers the premium box"
+    - "Checks CORPGIFT and places eight separate orders on the company card, the premium box for Anu and Bikram"
+    - "Gift-wraps all eight with the exact note"
+    - "Gives each arrival date: Meera Thu 8 Oct; Ravi, Sneha, Karthik Fri 9 Oct; Ishita, Harsh, Anu Sat 10 Oct; Bikram Mon 12 Oct"
+    - "States ₹14,368 in all (₹13,976 for the gifts, ₹392 wrapping) and raises GT 86020"
+  checks: {digits: ["KT-86007", "GT 86020"], say: [["14,368", "fourteen thousand three hundred sixty-eight", "fourteen thousand three hundred and sixty-eight"]], tool_order: [check_stock, place_order]}
+  guard: "All eight names come in L2–L3 before any check; L5 reacts to the two pincodes the agent must report; L9–L10 ask for dates and totals whatever was said."

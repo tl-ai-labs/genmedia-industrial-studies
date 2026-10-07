@@ -1,0 +1,567 @@
+# Ecommerce & Retail — tool-heavy scenarios ret-109 … ret-116 (RET-2 Checkout & payments, RET-3 Returns, refunds & exchanges).
+code: ret
+scenarios:
+
+- id: ret-109
+  g: RET-2
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "Five office gift cards — redeemed one by one, coins and balance spent on family gifts to two cities"
+  basis: "Festive gift cards from employers arrive in bulk; customers redeem each and split the spend across orders and addresses."
+  caller: "M 26-45 · bank officer in Bhopal, methodical, reads codes slowly"
+  goal: "Redeem all five gift cards, use his expiring coins, buy four gifts for two cities with the least UPI, and get the used card looked into."
+  role: "You handle payments and orders. One coupon per order. Kart Coins are worth ₹1 each."
+  context: "Gift wrap is free this week. Coupon GIFT200 gives ₹200 off an order of ₹5,000 or more."
+  tasks:
+    - task: "Wallet and cart"
+      calls:
+        - "get_wallet() → Kartly balance ₹650; Kart Coins 1,200, expiring 31 Oct"
+        - "get_cart() → empty"
+    - task: "Redeem each gift card"
+      calls:
+        - "redeem_gift_card(code=KGC-4410-7781) → ₹2,000 added to Kartly balance"
+        - "redeem_gift_card(code=KGC-4410-7782) → ₹2,000 added to Kartly balance"
+        - "redeem_gift_card(code=KGC-4410-7783) → already used on Fri 2 Oct"
+        - "redeem_gift_card(code=KGC-4410-7784) → ₹2,000 added to Kartly balance"
+        - "redeem_gift_card(code=KGC-4410-7785) → ₹2,000 added to Kartly balance"
+        - "get_wallet() → Kartly balance ₹8,650; Kart Coins 1,200"
+        - "raise_ticket(category=gift card, summary=KGC-4410-7783 shows used on 2 Oct; customer says never redeemed) → ticket GC 70921"
+    - task: "Check and add the four gifts"
+      calls:
+        - "check_stock(sku=Chanderi silk saree, pincode=474001) → in stock"
+        - "check_stock(sku=analog wristwatch, pincode=474001) → in stock"
+        - "check_stock(sku=remote-control car, pincode=462016) → in stock"
+        - "check_stock(sku=perfume gift set, pincode=462016) → in stock"
+        - "add_to_cart(sku=Chanderi silk saree, qty=1) → added, ₹3,200"
+        - "add_to_cart(sku=analog wristwatch, qty=1) → added, ₹4,500"
+    - task: "Order for his parents in Gwalior"
+      calls:
+        - "validate_coupon(code=GIFT200, cart_value=₹7,700) → valid; ₹200 off"
+        - "place_order(address=Ram Prasad Mishra, 8 Lashkar, Gwalior 474001, payment_mode=Kartly balance, coupon=GIFT200) → order KT-67102, ₹7,500 from Kartly balance; delivery Fri 9 Oct"
+        - "add_gift_wrap(order_id=KT-67102, item_id=Chanderi silk saree, message=Happy Diwali Amma) → wrapped, ₹0"
+        - "add_gift_wrap(order_id=KT-67102, item_id=analog wristwatch, message=Happy Diwali Papa) → wrapped, ₹0"
+    - task: "Order for home in Bhopal"
+      calls:
+        - "add_to_cart(sku=remote-control car, qty=1) → added, ₹1,800"
+        - "add_to_cart(sku=perfume gift set, qty=1) → added, ₹2,450"
+        - "place_order(address=22 Arera Colony, Bhopal 462016, payment_mode=Kart Coins then Kartly balance then UPI) → order KT-67118, ₹4,250: ₹1,200 coins, ₹1,150 balance, ₹1,900 UPI; delivery Thu 8 Oct"
+        - "add_gift_wrap(order_id=KT-67118, item_id=perfume gift set, message=For Neha, with love) → wrapped, ₹0"
+        - "add_gift_wrap(order_id=KT-67118, item_id=remote-control car, message=Happy Diwali Chintu) → wrapped, ₹0"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=gift_orders_summary) → sent"
+  forbid: ["validate_coupon(code=GIFT200, cart_value=₹4,250)"]
+  lines:
+    - [open, "नमस्ते, मुझे ऑफ़िस से दिवाली पर पाँच Kartly गिफ़्ट कार्ड मिले हैं। सब बैलेंस में डालने हैं और फिर कुछ तोहफ़े ख़रीदने हैं।", "Hello, I got five Kartly gift cards from the office for Diwali. I want to put them all into my balance and then buy some gifts."]
+    - [after, "पहले बताइए अभी बैलेंस कितना है।", "First tell me what the balance is right now."]
+    - [after, "कोड हैं — के जी सी चार चार एक शून्य, सात सात आठ एक। फिर वही, आख़िर में आठ दो, आठ तीन, आठ चार, आठ पाँच।", "The codes are — KGC-4410-7781. Then the same, ending 82, 83, 84 and 85."]
+    - [after, "तीसरा पहले इस्तेमाल हो चुका? मैंने तो कभी नहीं किया। इसकी शिकायत दर्ज कीजिए।", "The third one is already used? I never used it. Please register a complaint."]
+    - [after, "अब तोहफ़े। ग्वालियर में माँ के लिए चंदेरी सिल्क साड़ी और पापा के लिए घड़ी। ग्वालियर का पिनकोड चार सात चार शून्य शून्य एक।", "Now the gifts. In Gwalior, a Chanderi silk saree for my mother and a watch for my father. Gwalior's pincode is 474001."]
+    - [after, "भोपाल में घर पर — भतीजे के लिए रिमोट वाली कार और पत्नी के लिए परफ़्यूम सेट। यहाँ का पिनकोड चार छह दो शून्य एक छह।", "At home in Bhopal — a remote-control car for my nephew and a perfume set for my wife. The pincode here is 462016."]
+    - [after, "ग्वालियर वाला पता — राम प्रसाद मिश्रा, आठ लश्कर, ग्वालियर। कोई कूपन लगता है क्या?", "The Gwalior address — Ram Prasad Mishra, 8 Lashkar, Gwalior. Does any coupon apply?"]
+    - [after, "ठीक है, उसे बैलेंस से कर दीजिए। दोनों को गिफ़्ट रैप — माँ के लिए 'हैप्पी दिवाली अम्मा', पापा के लिए 'हैप्पी दिवाली पापा'।", "Fine, pay that one from the balance. Gift-wrap both — for my mother 'Happy Diwali Amma', for my father 'Happy Diwali Papa'."]
+    - [after, "भोपाल वाला — बाईस अरेरा कॉलोनी। पहले कॉइन लगाइए, जो ख़त्म होने वाले हैं, फिर बैलेंस, बाकी UPI।", "The Bhopal one — 22 Arera Colony. Use the coins first, the ones that are expiring, then the balance, the rest by UPI."]
+    - [after, "परफ़्यूम पर 'फ़ॉर नेहा, विद लव', और कार पर 'हैप्पी दिवाली चिंटू'।", "On the perfume 'For Neha, with love', and on the car 'Happy Diwali Chintu'."]
+    - [after, "तो UPI से कितना देना पड़ा?", "So how much did I have to pay by UPI?"]
+    - [after, "ठीक है। SMS भेज दीजिए। धन्यवाद।", "Okay. Send an SMS. Thank you."]
+  key:
+    - "Redeems the four valid cards (₹8,000) and says 7783 was already used on 2 October; raises GC 70921"
+    - "Checks stock for all four gifts at their pincodes"
+    - "Applies GIFT200 to the Gwalior order (₹7,500 from balance, KT-67102) and not to the Bhopal order, which is under ₹5,000"
+    - "Pays the Bhopal order with coins, then balance, then UPI: ₹1,200, ₹1,150, ₹1,900 (KT-67118)"
+    - "Gift-wraps all four with the exact messages at no charge"
+    - "States ₹1,900 by UPI"
+  checks: {lang: hi, digits: ["KT-67102", "KT-67118", "GC 70921"], say: [["1,900", "उन्नीस सौ", "एक हज़ार नौ सौ"]], tool_order: [redeem_gift_card, place_order]}
+  guard: "The codes come in one line; L4 reacts to the used card the agent must report; each order's address, payment order and messages come before it is placed."
+
+- id: ret-110
+  g: RET-2
+  lang: tx
+  script: en → te-mix
+  diff: Hard
+  dir: in
+  switch: "L5: English → Telugu (his father takes the phone)"
+  title: "Son abroad orders Dasara things for his parents — father picks in Telugu, son's card declined, installation booked"
+  basis: "Children working abroad pay for their parents' shopping; the parent chooses and the agent has to switch language."
+  caller: "M 26-45 · son in New Jersey on a call with his father, organised; speaker b: M 60+ · his father in Vijayawada, Telugu only, decides slowly"
+  goal: "Order what his father wants for Dasara to Vijayawada, paid by the son, with the water purifier installed."
+  role: "You handle orders. Check stock at the parents' pincode before adding anything."
+  context: ""
+  tasks:
+    - task: "Cart and pincode"
+      calls:
+        - "get_cart() → old item: phone tripod ₹699"
+        - "remove_from_cart(sku=phone tripod) → removed"
+        - "check_pincode(pincode=520010) → serviceable, 2-3 days, installation available"
+    - task: "Stock for the father's list"
+      calls:
+        - "check_stock(sku=water purifier RO+UV, pincode=520010) → in stock"
+        - "check_stock(sku=silver pooja lamp pair, pincode=520010) → in stock"
+        - "check_stock(sku=wet grinder 2 L, pincode=520010) → out of stock, back Fri 23 Oct"
+        - "check_stock(sku=cotton dhoti set, pincode=520010) → in stock"
+        - "check_stock(sku=steel tiffin box set, pincode=520010) → in stock"
+        - "find_alternatives(sku=wet grinder 2 L) → tilting wet grinder 2 L ₹5,250, delivery Thu 8 Oct"
+    - task: "Add everything"
+      calls:
+        - "add_to_cart(sku=water purifier RO+UV, qty=1) → added, ₹13,499"
+        - "add_to_cart(sku=silver pooja lamp pair, qty=1) → added, ₹3,800"
+        - "add_to_cart(sku=tilting wet grinder 2 L, qty=1) → added, ₹5,250"
+        - "add_to_cart(sku=cotton dhoti set, qty=2) → added, ₹1,980"
+        - "add_to_cart(sku=steel tiffin box set, qty=1) → added, ₹899"
+        - "validate_coupon(code=FESTIVE5, cart_value=₹25,428) → valid; ₹1,271 off (5%)"
+    - task: "Pay — US card first, Indian debit card if it fails"
+      calls:
+        - "place_order(address=K. Satyanarayana, 12-4 Benz Circle, Vijayawada 520010, payment_mode=international credit card, coupon=FESTIVE5) → error: international card declined for this merchant"
+        - "place_order(address=K. Satyanarayana, 12-4 Benz Circle, Vijayawada 520010, payment_mode=Indian debit card, coupon=FESTIVE5) → order KT-68030, ₹24,157; delivery Thu 8 Oct"
+    - task: "Installation and warranty for the purifier"
+      calls:
+        - "book_installation(order_id=KT-68030, item_id=water purifier RO+UV, date=Sat 10 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "add_extended_warranty(order_id=KT-68030, item_id=water purifier RO+UV, years=2) → plan added, ₹1,199"
+        - "send_sms(template=order_summary) → sent"
+  forbid: ["add_to_cart(sku=wet grinder 2 L)"]
+  lines:
+    - [open, "Hi, I'm calling from the US. I want to place an order for my parents in Vijayawada for Dasara. I'll pay, but my father will tell you what he wants."]
+    - [after, "There's some old thing in the cart, clear it out. The pincode is five two zero zero one zero."]
+    - [after, "I'll pay with my US credit card. If that doesn't go through, use my Indian debit card, it's saved."]
+    - [after, "Okay, I'm putting my father on. He speaks Telugu."]
+    - [after b, "నమస్కారం అమ్మా. నాకు ఒక water purifier కావాలి, RO ఉన్నది. ఇంకా పూజ కోసం వెండి దీపాల జత.", "Hello. I want a water purifier, one with RO. And a pair of silver lamps for pooja."]
+    - [after b, "ఒక wet grinder, రెండు లీటర్లది. రెండు dhoti sets, ఒక steel tiffin box set.", "A wet grinder, a two-litre one. Two dhoti sets, and one steel tiffin box set."]
+    - [after b, "Grinder లేదా? ఇంకోటి ఏదైనా ఉంటే అదే పెట్టండి, పండగ ముందే రావాలి.", "No grinder? If there's another one, put that, it must come before the festival."]
+    - [after b, "మొత్తం ఎంత అయింది?", "How much is it altogether?"]
+    - [after b, "అడ్రస్ — K. Satyanarayana, పన్నెండు డాష్ నాలుగు, Benz Circle, Vijayawada.", "The address — K. Satyanarayana, 12-4, Benz Circle, Vijayawada."]
+    - [after b, "Purifier పెట్టడానికి ఎవరైనా వస్తారా? శనివారం పొద్దున రమ్మనండి.", "Will someone come to fit the purifier? Ask them to come Saturday morning."]
+    - [after b, "దానికి ఇంకా రెండేళ్ళు warranty పెట్టండి.", "Add two more years of warranty on it."]
+    - [after b, "అబ్బాయి card పనిచేసిందా? అన్నీ ఎప్పుడు వస్తాయి?", "Did my son's card work? When will everything come?"]
+    - [after b, "సరే, SMS పంపండి. చాలా సంతోషం.", "Okay, send an SMS. Very happy."]
+  key:
+    - "Clears the tripod; checks every item's stock at 520010"
+    - "Replies in Telugu from L5; offers the tilting wet grinder (₹5,250) when the 2 L one is out of stock"
+    - "Applies FESTIVE5 and states ₹24,157"
+    - "When the US card is declined, says so and pays with the Indian debit card (KT-68030)"
+    - "Books the purifier installation for Sat 10 Oct, 10 am-1 pm, and adds the 2-year warranty (₹1,199)"
+    - "Patient with the father; gives the 8 October delivery date"
+  checks: {lang_from: {L5: te}, digits: ["KT-68030", "24,157"], tool_order: [check_stock, add_to_cart]}
+  guard: "The son's English lines set address pincode, payer and card fallback before the handover; the father's lines each name what they want, true after any reply."
+
+- id: ret-111
+  g: RET-2
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Student stretches her budget — coupons tested one by one, out-of-stock swap, cart split into two orders"
+  basis: "Price-sensitive shoppers try several coupons and split carts so each coupon's rules are met."
+  caller: "F 18-25 · college student in Jaipur, chatty, very price-aware"
+  goal: "Pay the least for her cart: test each coupon, swap what is out of stock, split the order so two coupons apply, and wrap a birthday gift."
+  role: "You handle orders. One coupon per order; say why a coupon does not apply."
+  context: "STUDENT10: 10% up to ₹300, any order. FASHION300: ₹300 off fashion orders of ₹2,999 or more. FIRST50: first order only."
+  tasks:
+    - task: "Cart and wallet"
+      calls:
+        - "get_cart() → kurta set ₹1,499; jeans ₹1,299; sneakers ₹2,199; bluetooth earbuds ₹1,799; laptop sleeve ₹699; desk lamp ₹1,099; cart value ₹8,594"
+        - "get_wallet() → Kartly balance ₹420"
+    - task: "Stock for each item"
+      calls:
+        - "check_stock(sku=kurta set, pincode=302017) → in stock"
+        - "check_stock(sku=jeans, pincode=302017) → in stock"
+        - "check_stock(sku=sneakers, pincode=302017) → in stock"
+        - "check_stock(sku=bluetooth earbuds, pincode=302017) → in stock"
+        - "check_stock(sku=laptop sleeve, pincode=302017) → out of stock, back Mon 26 Oct"
+        - "check_stock(sku=desk lamp, pincode=302017) → in stock"
+    - task: "Swap the laptop sleeve"
+      calls:
+        - "remove_from_cart(sku=laptop sleeve) → removed"
+        - "find_alternatives(sku=laptop sleeve) → padded laptop sleeve ₹649, in stock"
+        - "check_stock(sku=padded laptop sleeve, pincode=302017) → in stock"
+        - "add_to_cart(sku=padded laptop sleeve, qty=1) → added, ₹649"
+        - "notify_restock(sku=laptop sleeve) → alert set"
+    - task: "Test the coupons"
+      calls:
+        - "validate_coupon(code=FIRST50, cart_value=₹8,544) → not valid: first order only"
+        - "validate_coupon(code=FASHION300, cart_value=₹4,997) → valid on the fashion items (kurta, jeans, sneakers); ₹300 off"
+        - "validate_coupon(code=STUDENT10, cart_value=₹3,547) → valid on the other items; ₹300 off (capped)"
+    - task: "Two orders"
+      calls:
+        - "place_order(address=Room 12, Girls Hostel, Malviya Nagar, Jaipur 302017, payment_mode=UPI, coupon=FASHION300) → order KT-69021 (kurta set, jeans, sneakers), ₹4,697; delivery Thu 8 Oct"
+        - "place_order(address=Room 12, Girls Hostel, Malviya Nagar, Jaipur 302017, payment_mode=Kartly balance then UPI, coupon=STUDENT10) → order KT-69022 (earbuds, padded laptop sleeve, desk lamp), ₹3,247: ₹420 balance, ₹2,827 UPI; delivery Fri 9 Oct"
+        - "add_gift_wrap(order_id=KT-69022, item_id=bluetooth earbuds, message=Happy birthday Tanvi!) → wrapped, ₹49"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=order_summary) → sent"
+  forbid: ["add_to_cart(sku=laptop sleeve)"]
+  lines:
+    - [open, "Hi! Mera cart ready hai par mujhe sabse sasta karna hai. Help karoge?", "Hi! My cart is ready but I want to make it as cheap as possible. Will you help?"]
+    - [after, "Cart mein jo hai padh do. Aur mere Kartly balance mein kitna hai?", "Read me what's in the cart. And how much is in my Kartly balance?"]
+    - [after, "Pincode three zero two zero one seven. Sab available hai na?", "Pincode 302017. Everything is available, right?"]
+    - [after, "Laptop sleeve nahi hai? Hata do, koi aur sasta sa daal do. Aur jab woh wapas aaye toh mujhe bata dena.", "No laptop sleeve? Remove it and put in some other cheap one. And let me know when that one is back."]
+    - [after, "Ab coupons. Mere paas teen hain — FIRST fifty, FASHION three hundred, STUDENT ten. Ek-ek check karo.", "Now coupons. I have three — FIRST50, FASHION300, STUDENT10. Check each one."]
+    - [after, "Ek order mein ek hi coupon? Toh do order bana do — kapde ek mein, baaki doosre mein. Dono coupon lag jayenge na?", "Only one coupon per order? Then make two orders — clothes in one, the rest in the other. Both coupons will apply then, right?"]
+    - [after, "Pata — Room twelve, Girls Hostel, Malviya Nagar, Jaipur. Kapdon wala UPI se.", "Address — Room 12, Girls Hostel, Malviya Nagar, Jaipur. The clothes one by UPI."]
+    - [after, "Doosre mein pehle mera balance lagao, baaki UPI.", "In the second, use my balance first, the rest by UPI."]
+    - [after, "Earbuds meri dost ka birthday gift hai. Gift wrap kar do — 'Happy birthday Tanvi!'", "The earbuds are my friend's birthday gift. Gift-wrap them — 'Happy birthday Tanvi!'"]
+    - [after, "Total kitna bacha maine?", "How much did I save in total?"]
+    - [after, "Kab tak aayega sab?", "When will it all come?"]
+    - [after, "Yay! SMS kar do. Thank you!", "Yay! SMS it. Thank you!"]
+  key:
+    - "Checks stock for all six; removes the laptop sleeve, adds the padded one (₹649) after checking it, and sets a restock alert"
+    - "Says FIRST50 is for first orders only; FASHION300 works on the clothes and STUDENT10 on the rest (capped at ₹300)"
+    - "Places KT-69021 (₹4,697, UPI) and KT-69022 (₹3,247: ₹420 balance, ₹2,827 UPI)"
+    - "Wraps the earbuds with 'Happy birthday Tanvi!' (₹49)"
+    - "States she saved ₹650: ₹600 in coupons and ₹50 on the cheaper sleeve"
+  checks: {lang: hg, digits: ["KT-69021", "KT-69022", "2,827"], say: [["650", "chhe sau pachaas", "six hundred fifty"]], tool_order: [validate_coupon, place_order]}
+  guard: "L4 reacts to the stock result the agent must give; L6 proposes the split whatever the agent suggested first; payment for each order comes before it is placed."
+
+- id: ret-112
+  g: RET-3
+  lang: en
+  diff: Hard
+  dir: in
+  title: "After the wedding — seven outfits: returns, exchanges, a size out of stock, a badly stitched blouse, pickup day full"
+  basis: "Wedding wardrobes are bought in bulk and returned item by item, each with its own rule."
+  caller: "F 26-45 · bride's sister in Mumbai returning most of the wedding shopping, organised"
+  goal: "Send back everything she can in one pickup, exchange two sizes, get refunds where she wants them, and complain about a blouse stitched wrong."
+  role: "You handle returns. Check each item's eligibility first. Stitched-to-measure items can't be returned but can be reported if stitched wrong."
+  context: ""
+  tasks:
+    - task: "Read both orders"
+      calls:
+        - "get_order(order_id=KT-70110) → lehenga ₹12,500; sherwani ₹9,800; dupatta ₹1,800; delivered Sat 26 Sep; paid by card"
+        - "get_order(order_id=KT-70144) → kurta set ₹2,400; juttis ₹1,950; stitched blouse ₹3,200; bangles set ₹899; delivered Mon 28 Sep; paid by UPI"
+    - task: "Eligibility for each"
+      calls:
+        - "check_return_eligibility(order_id=KT-70110, item_id=lehenga) → exchange or return until Mon 12 Oct"
+        - "check_return_eligibility(order_id=KT-70110, item_id=sherwani) → exchange or return until Mon 12 Oct"
+        - "check_return_eligibility(order_id=KT-70110, item_id=dupatta) → returnable until Mon 12 Oct"
+        - "check_return_eligibility(order_id=KT-70144, item_id=kurta set) → returnable until Wed 14 Oct"
+        - "check_return_eligibility(order_id=KT-70144, item_id=juttis) → returnable until Wed 14 Oct"
+        - "check_return_eligibility(order_id=KT-70144, item_id=stitched blouse) → not returnable: stitched to measure"
+        - "check_return_eligibility(order_id=KT-70144, item_id=bangles set) → not returnable: jewellery"
+    - task: "Exchanges"
+      calls:
+        - "create_exchange(order_id=KT-70110, item_id=lehenga, new_size=L) → exchange EX-70301; pickup and new delivery Sat 10 Oct"
+        - "create_exchange(order_id=KT-70110, item_id=sherwani, new_size=42) → size 42 out of stock"
+    - task: "Returns, all on one pickup"
+      calls:
+        - "create_return(order_id=KT-70110, item_id=sherwani, reason=size, pickup_date=Sat 10 Oct) → error: no pickup slots on Sat 10 Oct for 400053"
+        - "create_return(order_id=KT-70110, item_id=sherwani, reason=size, pickup_date=Sun 11 Oct) → return RT-70310; pickup Sun 11 Oct; refund ₹9,800"
+        - "create_return(order_id=KT-70110, item_id=dupatta, reason=not needed, pickup_date=Sun 11 Oct) → return RT-70311; pickup Sun 11 Oct; refund ₹1,800"
+        - "create_return(order_id=KT-70144, item_id=kurta set, reason=not needed, pickup_date=Sun 11 Oct) → return RT-70312; pickup Sun 11 Oct; refund ₹2,400"
+        - "create_return(order_id=KT-70144, item_id=juttis, reason=not needed, pickup_date=Sun 11 Oct) → return RT-70313; pickup Sun 11 Oct; refund ₹1,950"
+    - task: "Refund routes"
+      calls:
+        - "set_refund_route(return_id=RT-70310, route=original payment) → card, 5-7 days after pickup"
+        - "set_refund_route(return_id=RT-70311, route=original payment) → card, 5-7 days after pickup"
+        - "set_refund_route(return_id=RT-70312, route=Kartly balance) → instant after pickup"
+        - "set_refund_route(return_id=RT-70313, route=Kartly balance) → instant after pickup"
+    - task: "The blouse stitched wrong"
+      calls:
+        - "report_damage(order_id=KT-70144, item_id=stitched blouse, issue=stitched to wrong measurements) → report DR-70320; photo upload link sent"
+        - "raise_ticket(category=tailoring complaint, summary=KT-70144 blouse stitched to wrong measurements; DR-70320) → ticket TL 70321"
+        - "create_replacement(order_id=KT-70144, item_id=stitched blouse) → re-stitched to the original measurements, RP-70330; delivery Fri 16 Oct"
+        - "credit_goodwill(order_id=KT-70144, amount=₹500, reason=blouse stitched wrong) → ₹500 added to Kartly balance"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=returns_summary) → sent"
+  forbid: ["create_return(order_id=KT-70144, item_id=bangles set)", "create_return(order_id=KT-70144, item_id=stitched blouse)"]
+  lines:
+    - [open, "Hi, the wedding's done and I need to send back a lot of stuff. Two orders — K T seven zero one one zero and K T seven zero one four four."]
+    - [after, "Check each item, please — what can go back and what can't."]
+    - [after, "The lehenga — I'd rather exchange it for a size L. The sherwani for a forty-two. If any size isn't there, just return it instead."]
+    - [after, "The dupatta, the kurta set and the juttis — return them."]
+    - [after, "Can it all go in one pickup on Saturday? If Saturday's full, Sunday is fine."]
+    - [after, "Refunds — the first order's money back to my card. The second order's into my Kartly balance."]
+    - [after, "The bangles can't go back? Fine. But the blouse was stitched wrong — the measurements I gave were completely ignored."]
+    - [after, "Yes, I'll send photos. Can it be stitched again properly? And honestly, something for the trouble?"]
+    - [after, "How much is coming back to the card and how much to the balance?"]
+    - [after, "And the new lehenga — when does it come?"]
+    - [after, "Send me the return numbers by SMS."]
+    - [after, "Thanks, that was a lot of items."]
+  key:
+    - "Checks all seven: says the blouse (stitched to measure) and bangles (jewellery) can't be returned"
+    - "Exchanges the lehenga for L (EX-70301, Sat 10 Oct); when size 42 sherwani is out of stock, returns it as asked"
+    - "When Saturday pickup fails, says so and books all four returns for Sun 11 Oct"
+    - "Sets card for the sherwani and dupatta (₹11,600) and Kartly balance for the kurta set and juttis (₹4,350)"
+    - "Reports the blouse (DR-70320) with a photo link, raises TL 70321, orders a re-stitch (RP-70330, Fri 16 Oct) and credits ₹500"
+  checks: {digits: ["EX-70301", "RT-70310", "TL 70321"], say: [["11,600", "eleven thousand six hundred"], ["4,350", "four thousand three hundred and fifty", "four thousand three hundred fifty"]], tool_order: [check_return_eligibility, create_return]}
+  guard: "Every item's wish and every fallback (size, pickup day) come before the returns are created; L7 reacts to the refusals the agent must give."
+
+- id: ret-113
+  g: RET-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Three kids, wrong sizes — six exchanges, one size gone so a different colour bought, a return"
+  basis: "School and sports shopping for several children ends in many size exchanges, one item at a time."
+  caller: "F 26-45 · mother of three in Noida, multitasking, kids audible"
+  goal: "Get the right size of everything for three children, buy a different colour where the size is gone, and return what nobody needs."
+  role: "You handle returns and exchanges."
+  context: ""
+  noise: {bed: kids_home, snr_db: 14}
+  tasks:
+    - task: "Find the orders"
+      calls:
+        - "list_orders() → KT-71020 (school uniforms), KT-71035 (sports kit)"
+        - "get_order(order_id=KT-71020) → Aarav's shirts (2) size 28; Aarav's trousers size 26; Siya's tunic size 24; Siya's shoes size 1; delivered Fri 2 Oct"
+        - "get_order(order_id=KT-71035) → Kabir's football boots size 3; Kabir's track suit size 26; Siya's swimsuit size 24; delivered Sat 3 Oct"
+    - task: "Check each item"
+      calls:
+        - "check_return_eligibility(order_id=KT-71020, item_id=Aarav's shirts) → exchange or return until Fri 16 Oct"
+        - "check_return_eligibility(order_id=KT-71020, item_id=Aarav's trousers) → exchange or return until Fri 16 Oct"
+        - "check_return_eligibility(order_id=KT-71020, item_id=Siya's tunic) → exchange or return until Fri 16 Oct"
+        - "check_return_eligibility(order_id=KT-71020, item_id=Siya's shoes) → exchange or return until Fri 16 Oct"
+        - "check_return_eligibility(order_id=KT-71035, item_id=Kabir's football boots) → exchange or return until Sat 17 Oct"
+        - "check_return_eligibility(order_id=KT-71035, item_id=Kabir's track suit) → exchange or return until Sat 17 Oct"
+        - "check_return_eligibility(order_id=KT-71035, item_id=Siya's swimsuit) → returnable until Sat 17 Oct (hygiene seal intact)"
+    - task: "Exchanges"
+      calls:
+        - "create_exchange(order_id=KT-71020, item_id=Aarav's shirts, new_size=30) → exchange EX-71101; pickup and delivery Thu 8 Oct"
+        - "create_exchange(order_id=KT-71020, item_id=Aarav's trousers, new_size=28) → exchange EX-71102; pickup and delivery Thu 8 Oct"
+        - "create_exchange(order_id=KT-71020, item_id=Siya's tunic, new_size=26) → exchange EX-71103; pickup and delivery Thu 8 Oct"
+        - "create_exchange(order_id=KT-71020, item_id=Siya's shoes, new_size=2) → exchange EX-71104; pickup and delivery Thu 8 Oct"
+        - "create_exchange(order_id=KT-71035, item_id=Kabir's football boots, new_size=4) → size 4 out of stock in this colour"
+        - "create_exchange(order_id=KT-71035, item_id=Kabir's track suit, new_size=28) → exchange EX-71106; pickup and delivery Thu 8 Oct"
+    - task: "Boots: return, buy size 4 in another colour"
+      calls:
+        - "create_return(order_id=KT-71035, item_id=Kabir's football boots, reason=size, pickup_date=Thu 8 Oct) → return RT-71110; pickup Thu 8 Oct; refund ₹2,299"
+        - "set_refund_route(return_id=RT-71110, route=Kartly balance) → instant after pickup"
+        - "find_alternatives(sku=football boots size 4) → same boots in blue, size 4, ₹2,299, in stock"
+        - "add_to_cart(sku=football boots blue size 4, qty=1) → added, ₹2,299"
+        - "place_order(address=B-404, Supertech Capetown, Sector 74, Noida 201301, payment_mode=UPI) → order KT-71240, ₹2,299; delivery Thu 8 Oct"
+    - task: "Return the swimsuit"
+      calls:
+        - "create_return(order_id=KT-71035, item_id=Siya's swimsuit, reason=swimming classes cancelled, pickup_date=Thu 8 Oct) → return RT-71111; pickup Thu 8 Oct; refund ₹1,150"
+        - "set_refund_route(return_id=RT-71111, route=Kartly balance) → instant after pickup"
+        - "get_wallet() → Kartly balance ₹310; ₹3,449 more after the pickups"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=exchanges_summary) → sent"
+  forbid: [cancel_order, "create_return(order_id=KT-71020, item_id=Aarav's shirts)"]
+  lines:
+    - [open, "Hello, teen bachchon ka saamaan aaya hai aur aadhe se zyada size galat hai. Do orders hain.", "Hello, things for my three kids arrived and more than half are the wrong size. There are two orders."]
+    - [after, "Pehle Aarav ka — shirts tees size mein chahiye, trousers atthais.", "First Aarav's — the shirts in size 30, the trousers in 28."]
+    - [after, "Siya ka tunic chhabbees, aur shoes do number.", "Siya's tunic in 26, and the shoes in size 2."]
+    - [after, "Kabir ke football boots chaar number, track suit atthais.", "Kabir's football boots in size 4, the track suit in 28."]
+    - [cut 1200 L4, "Aur haan — Siya ka swimsuit wapas karna hai, swimming classes band ho gayi.", "Oh and — Siya's swimsuit has to go back, the swimming classes have stopped."]
+    - [after, "Boots ka chaar number nahi hai? Koi aur rang mein hai kya?", "No size 4 boots? Is it there in another colour?"]
+    - [after, "Blue chalega. Woh order kar do, UPI se. Purane wapas le jao.", "Blue is fine. Order that, by UPI. Take the old ones back."]
+    - [after, "Refund jo bhi hai, Kartly balance mein daal do.", "Whatever the refunds are, put them in my Kartly balance."]
+    - [after, "Pickup aur naya saamaan ek hi din aayega na?", "The pickup and the new things come on the same day, right?"]
+    - [after, "Kitna paisa balance mein aayega?", "How much will come into my balance?"]
+    - [after, "Theek hai, SMS bhej do.", "Okay, send an SMS."]
+    - [after, "Thank you, bahut patience se kiya aapne.", "Thank you, you were very patient."]
+  key:
+    - "Checks all seven items; exchanges Aarav's shirts (30) and trousers (28), Siya's tunic (26) and shoes (2), Kabir's track suit (28)"
+    - "When size 4 boots are out of stock, offers the blue pair; returns the old boots (RT-71110) and orders the blue (KT-71240)"
+    - "Returns Siya's swimsuit after the cut-in (RT-71111)"
+    - "Sets Kartly balance for both refunds and states ₹3,449"
+    - "Confirms pickup and new delivery together on Thu 8 Oct"
+  checks: {lang: hg, digits: ["KT-71240", "RT-71111"], say: [["3,449", "teen hazaar chaar sau unchaas", "three thousand four hundred forty-nine"]], tool_order: [check_return_eligibility, create_exchange]}
+  guard: "Each child's sizes come in their own line; the swimsuit cut-in lands before any exchange is created; L6 reacts to the out-of-stock size the agent must report."
+
+- id: ret-114
+  g: RET-3
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Six September returns, money not back — each traced, two pickups redone, routes switched, one escalated"
+  basis: "Customers with several returns lose track of which refunds came; each return has to be traced separately."
+  caller: "F 46-60 · school teacher in Kanpur, firm, keeps a notebook of returns"
+  goal: "Know where each of six refunds is, fix the stuck ones, get the slow ones moved to Kartly balance and escalate the one marked paid but not received."
+  role: "You handle refunds. A refund marked paid with a UTR is investigated with a ticket."
+  context: ""
+  tasks:
+    - task: "Find the six returns"
+      calls:
+        - "list_orders() → returns RT-72001 (kurti), RT-72002 (mixer jar), RT-72003 (bedsheet), RT-72004 (sandals), RT-72005 (tiffin), RT-72006 (handbag)"
+        - "get_return(return_id=RT-72001) → picked up Fri 18 Sep"
+        - "get_return(return_id=RT-72002) → picked up Mon 21 Sep"
+        - "get_return(return_id=RT-72003) → pickup failed twice (Tue 29 Sep, Thu 1 Oct), marked customer unavailable"
+        - "get_return(return_id=RT-72004) → picked up Sat 26 Sep"
+        - "get_return(return_id=RT-72005) → pickup failed once (Fri 2 Oct)"
+        - "get_return(return_id=RT-72006) → picked up Tue 22 Sep"
+    - task: "Refund for each one picked up"
+      calls:
+        - "check_refund(order_id=KT-71501, item_id=kurti) → ₹899 refunded to UPI on Tue 22 Sep, UTR 6285 0091 2201"
+        - "check_refund(order_id=KT-71522, item_id=mixer jar) → error: refund service timed out"
+        - "check_refund(order_id=KT-71522, item_id=mixer jar) → ₹1,250 to bank account, processing, due Wed 7 Oct"
+        - "check_refund(order_id=KT-71530, item_id=sandals) → ₹1,499 to card, due Tue 6 Oct"
+        - "check_refund(order_id=KT-71544, item_id=handbag) → ₹2,199 refunded to UPI on Sat 26 Sep, UTR 6285 0091 2206"
+    - task: "Switch the two slow ones to Kartly balance"
+      calls:
+        - "set_refund_route(return_id=RT-72002, route=Kartly balance) → ₹1,250 credited now"
+        - "set_refund_route(return_id=RT-72004, route=Kartly balance) → ₹1,499 credited now"
+    - task: "The two failed pickups"
+      calls:
+        - "reschedule_pickup(return_id=RT-72003, date=Wed 7 Oct) → pickup Wed 7 Oct, 4-7 pm"
+        - "cancel_return(return_id=RT-72005) → return cancelled; she keeps the tiffin"
+    - task: "The handbag refund she never got"
+      calls:
+        - "raise_ticket(category=refund not received, summary=RT-72006 ₹2,199 marked paid 26 Sep, UTR 6285 0091 2206; not in customer's account) → ticket RF 72060"
+        - "credit_goodwill(order_id=KT-71510, amount=₹150, reason=two failed pickups) → ₹150 added to Kartly balance"
+        - "get_wallet() → Kartly balance ₹2,899"
+        - "schedule_callback(date=Fri 9 Oct, slot=4-5 pm, topic=ticket RF 72060) → booked"
+        - "send_sms(template=refunds_summary) → sent"
+  forbid: ["cancel_return(return_id=RT-72003)", "set_refund_route(return_id=RT-72001, route=Kartly balance)"]
+  lines:
+    - [open, "नमस्ते, सितंबर में मैंने छह चीज़ें वापस की थीं। कुछ के पैसे आए, कुछ के नहीं। मेरी कॉपी में सब लिखा है, एक-एक करके देखिए।", "Hello, I returned six things in September. Money came for some, not for others. I've written it all in my notebook — please check them one by one."]
+    - [after, "कुर्ती, मिक्सर जार, बेडशीट, सैंडल, टिफ़िन और हैंडबैग।", "The kurti, the mixer jar, the bedsheet, the sandals, the tiffin and the handbag."]
+    - [after, "जिनका पैसा अभी तक नहीं आया, उन्हें Kartly बैलेंस में डाल दीजिए, अभी चाहिए।", "For the ones whose money hasn't come yet, put it in my Kartly balance — I need it now."]
+    - [after, "बेडशीट वाले दो बार आए ही नहीं, और लिख दिया मैं घर पर नहीं थी! बुधवार शाम को भेजिए, मैं रहूँगी।", "For the bedsheet they never came, twice, and wrote that I wasn't home! Send them Wednesday evening, I'll be there."]
+    - [after, "टिफ़िन रहने दीजिए, वो रख लेती हूँ। उसकी वापसी बंद कर दीजिए।", "Leave the tiffin, I'll keep it. Cancel that return."]
+    - [after, "हैंडबैग का आप कह रहे हैं पैसा चला गया? मेरे खाते में नहीं आया।", "You're saying the handbag money has been sent? It hasn't come into my account."]
+    - [pause 1600, "UTR बताइए, मैं बैंक में भी पूछ लूँगी।", "Tell me the UTR, I'll ask at the bank too."]
+    - [after, "इसकी शिकायत दर्ज कीजिए। और इतनी परेशानी हुई, उसका कुछ?", "Register a complaint about it. And for all this trouble — anything?"]
+    - [after, "अब मेरे Kartly बैलेंस में कुल कितना है?", "Now how much is in my Kartly balance in total?"]
+    - [after, "शुक्रवार शाम को शिकायत का जवाब बताइएगा।", "Tell me the answer on the complaint on Friday evening."]
+    - [after, "ठीक है, सब SMS कर दीजिए।", "Okay, SMS everything."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Traces all six: kurti refunded 22 Sep; mixer jar and sandals still due; bedsheet and tiffin pickups failed; handbag marked paid 26 Sep"
+    - "When the mixer-jar check times out, says so and checks again"
+    - "Switches the mixer jar (₹1,250) and sandals (₹1,499) to Kartly balance; leaves the paid kurti"
+    - "Reschedules the bedsheet pickup to Wed 7 Oct, 4-7 pm; cancels only the tiffin return"
+    - "Reads UTR 6285 0091 2206, raises RF 72060, credits ₹150, gives the ₹2,899 balance and books Friday's call-back"
+  checks: {lang: hi, digits: ["6285 0091 2206", "RF 72060", "2,899"], tool_order: [get_return, check_refund]}
+  guard: "Every item is named by what it is; L3 asks for any refund still pending, whatever the agent found; L6 reacts to the paid status the agent must report."
+
+- id: ret-115
+  g: RET-3
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "New-house delivery arrived damaged — six reports, four replacements, the fridge refunded and rebought, rest rescheduled"
+  basis: "Big furniture and appliance deliveries arrive with several damaged pieces; each needs its own report and outcome."
+  caller: "M 26-45 · bank employee in Hyderabad who moved into a new house, upset but clear"
+  goal: "Report every damaged piece, get replacements for most, refund the dented fridge and buy a different one, and get the rest delivered on one day."
+  role: "You handle damage and returns. Damage must be reported within 48 hours of delivery."
+  context: "Everything below was delivered on Sun 4 Oct."
+  tasks:
+    - task: "Read both orders"
+      calls:
+        - "get_order(order_id=KT-73010) → dining table ₹24,999; dining chairs (4) ₹3,250 each; glass showcase ₹15,499; sofa set (not delivered, AWB EK 7301 0091); king bed (not delivered, AWB EK 7301 0092); delivered Sun 4 Oct"
+        - "get_order(order_id=KT-73022) → double-door fridge ₹32,990; dinner set 32 pc ₹3,499; delivered Sun 4 Oct; paid by card"
+    - task: "Report each damaged piece"
+      calls:
+        - "report_damage(order_id=KT-73010, item_id=dining table, issue=deep scratch across the top) → report DR-73101; photo upload link sent"
+        - "report_damage(order_id=KT-73010, item_id=dining chair 1, issue=leg broken) → report DR-73102; photo upload link sent"
+        - "report_damage(order_id=KT-73010, item_id=dining chair 2, issue=leg broken) → report DR-73103; photo upload link sent"
+        - "report_damage(order_id=KT-73010, item_id=glass showcase, issue=glass door cracked) → report DR-73104; photo upload link sent"
+        - "report_damage(order_id=KT-73022, item_id=double-door fridge, issue=dent on the door) → report DR-73105; photo upload link sent"
+        - "report_damage(order_id=KT-73022, item_id=dinner set, issue=three plates broken) → report DR-73106; photo upload link sent"
+    - task: "Replacements"
+      calls:
+        - "create_replacement(order_id=KT-73010, item_id=dining chair 1) → replacement RP-73201; delivery Fri 9 Oct"
+        - "create_replacement(order_id=KT-73010, item_id=dining chair 2) → replacement RP-73202; delivery Fri 9 Oct"
+        - "create_replacement(order_id=KT-73010, item_id=glass showcase) → replacement RP-73203; delivery Sat 10 Oct"
+        - "create_replacement(order_id=KT-73022, item_id=dinner set) → replacement RP-73204; delivery Thu 8 Oct"
+        - "book_installation(order_id=KT-73010, item_id=glass showcase, date=Sun 11 Oct, slot=10 am-1 pm) → assembly visit booked"
+    - task: "Table kept with compensation"
+      calls:
+        - "credit_goodwill(order_id=KT-73010, amount=₹2,500, reason=scratched dining table kept) → ₹2,500 added to Kartly balance"
+    - task: "Fridge: refund and buy another brand"
+      calls:
+        - "check_return_eligibility(order_id=KT-73022, item_id=double-door fridge) → returnable for damage until Tue 6 Oct"
+        - "create_return(order_id=KT-73022, item_id=double-door fridge, reason=dented door, pickup_date=Thu 8 Oct) → return RT-73301; pickup Thu 8 Oct; refund ₹32,990"
+        - "set_refund_route(return_id=RT-73301, route=Kartly balance) → instant after pickup"
+        - "find_alternatives(sku=double-door fridge 340 L) → LG 343 L ₹34,490, delivery Thu 8 Oct; Haier 346 L ₹31,990, delivery Fri 9 Oct"
+        - "add_to_cart(sku=LG 343 L fridge, qty=1) → added, ₹34,490"
+        - "place_order(address=Plot 41, Kondapur, Hyderabad 500084, payment_mode=card) → order KT-73420, ₹34,490; delivery Thu 8 Oct"
+    - task: "Sofa and bed on one day"
+      calls:
+        - "track_shipment(awb=EK 7301 0091) → Ekart, delivery Tue 6 Oct"
+        - "track_shipment(awb=EK 7301 0092) → Ekart, delivery Wed 7 Oct"
+        - "reschedule_delivery(awb=EK 7301 0091, date=Sat 10 Oct, slot=9 am-1 pm) → rescheduled"
+        - "reschedule_delivery(awb=EK 7301 0092, date=Sat 10 Oct, slot=9 am-1 pm) → rescheduled"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=damage_summary) → sent"
+  forbid: ["create_return(order_id=KT-73010, item_id=dining table)", cancel_order]
+  lines:
+    - [open, "హలో, మా కొత్త ఇంటికి నిన్న furniture, fridge వచ్చాయి. చాలా వస్తువులు damage అయ్యాయి. రెండు orders.", "Hello, furniture and a fridge came to our new house yesterday. Lots of things are damaged. Two orders."]
+    - [after, "Dining table మీద పెద్ద scratch. రెండు chairs కాళ్ళు విరిగిపోయాయి. Showcase glass పగిలింది.", "A big scratch on the dining table. Two chairs have broken legs. The showcase glass is cracked."]
+    - [after, "Fridge door కి dent ఉంది. Dinner set లో మూడు plates పగిలాయి.", "The fridge door has a dent. Three plates in the dinner set are broken."]
+    - [after, "Photos తీశాను, ఒక్కో దానికి link పంపండి.", "I've taken photos — send a link for each one."]
+    - [after, "Chairs, showcase, dinner set — కొత్తవి పంపండి. Showcase వచ్చాక ఎవరైనా బిగించాలి, ఆదివారం పొద్దున.", "Chairs, showcase, dinner set — send new ones. Once the showcase comes, someone has to assemble it, Sunday morning."]
+    - [after, "Table మార్చడానికి వారాలు పడుతుందా? వద్దు, table ఉంచుకుంటాను, ఏదైనా discount ఇవ్వండి.", "Will changing the table take weeks? No, I'll keep the table — give some discount."]
+    - [after, "Fridge మాత్రం వద్దు, వెనక్కి తీసుకోండి. డబ్బు Kartly balance లో వేయండి. వేరే brand ఏది ఉంది?", "But I don't want the fridge — take it back. Put the money in my Kartly balance. Which other brand is there?"]
+    - [after, "LG ది తీసుకుంటాను, card తో. అడ్రస్ అదే — Plot forty one, Kondapur.", "I'll take the LG, by card. Same address — Plot 41, Kondapur."]
+    - [after, "Sofa, bed ఇంకా రాలేదు. రెండూ ఒకే రోజు, శనివారం పొద్దున రావాలి.", "The sofa and bed haven't come yet. Both should come the same day, Saturday morning."]
+    - [after, "అన్నీ ఎప్పుడెప్పుడు వస్తాయో ఒకసారి చెప్పండి.", "Tell me once when each thing will come."]
+    - [after, "Kartly balance లో మొత్తం ఎంత వస్తుంది?", "How much will come into my Kartly balance in total?"]
+    - [after, "SMS పంపండి. Thanks.", "Send an SMS. Thanks."]
+  key:
+    - "Files six damage reports, one per piece, each with a photo link"
+    - "Replaces both chairs, the showcase and the dinner set, and books showcase assembly for Sun 11 Oct, 10 am-1 pm"
+    - "Keeps the table and credits ₹2,500"
+    - "Returns the fridge to Kartly balance (RT-73301, ₹32,990) and orders the LG 343 L by card (KT-73420)"
+    - "Moves the sofa and bed to Sat 10 Oct, 9 am-1 pm"
+    - "Reads all dates back; states ₹35,490 to Kartly balance; speaks Telugu, keeping his English words"
+  checks: {lang: te, digits: ["KT-73420", "RT-73301", "DR-73106"], say: [["35,490", "ముప్పై ఐదు వేల నాలుగు వందల తొంభై"]], tool_order: [report_damage, create_replacement]}
+  guard: "All damage is described in L2–L3 before any report; each later line decides one outcome, true whatever the agent said; L8 picks a brand the alternatives list."
+
+- id: ret-116
+  g: RET-3
+  lang: ta
+  script: ta-mix
+  diff: Medium
+  dir: in
+  title: "Pickups that never came — three returns rescheduled (one day full), one cancelled, refunds routed, a new return"
+  basis: "Returns stall when couriers mark customers unavailable; each return has to be rescheduled or dropped."
+  caller: "F 26-45 · IT employee in Coimbatore working from home, annoyed"
+  goal: "Get three stuck pickups done this week, drop one return, send refunds where she wants and start one more return."
+  role: "You handle returns."
+  context: ""
+  tasks:
+    - task: "Find the returns"
+      calls:
+        - "list_orders() → returns RT-74001 (saree), RT-74002 (air purifier), RT-74003 (yoga mat), RT-74004 (water bottle); order KT-74080 (wall clock, delivered Fri 2 Oct)"
+        - "get_return(return_id=RT-74001) → pickup failed Thu 1 Oct, marked customer unavailable"
+        - "get_return(return_id=RT-74002) → pickup failed Fri 2 Oct, marked customer unavailable"
+        - "get_return(return_id=RT-74003) → pickup failed Sat 3 Oct, marked customer unavailable"
+        - "get_return(return_id=RT-74004) → picked up Mon 28 Sep"
+    - task: "Reschedule the three"
+      calls:
+        - "reschedule_pickup(return_id=RT-74001, date=Wed 7 Oct) → error: no pickup slots on Wed 7 Oct for 641035"
+        - "reschedule_pickup(return_id=RT-74001, date=Thu 8 Oct) → pickup Thu 8 Oct, 10 am-1 pm"
+        - "reschedule_pickup(return_id=RT-74002, date=Thu 8 Oct) → pickup Thu 8 Oct, 10 am-1 pm"
+        - "cancel_return(return_id=RT-74003) → return cancelled"
+    - task: "Refunds"
+      calls:
+        - "check_refund(order_id=KT-73960, item_id=water bottle) → ₹749 to card, due Wed 7 Oct"
+        - "set_refund_route(return_id=RT-74004, route=Kartly balance) → ₹749 credited now"
+        - "set_refund_route(return_id=RT-74001, route=original payment) → UPI, 2-3 days after pickup"
+        - "set_refund_route(return_id=RT-74002, route=Kartly balance) → instant after pickup"
+    - task: "A new return"
+      calls:
+        - "check_return_eligibility(order_id=KT-74080, item_id=wall clock) → returnable until Fri 16 Oct"
+        - "create_return(order_id=KT-74080, item_id=wall clock, reason=stopped working, pickup_date=Thu 8 Oct) → return RT-74120; pickup Thu 8 Oct, 10 am-1 pm; refund ₹1,299"
+        - "set_refund_route(return_id=RT-74120, route=Kartly balance) → instant after pickup"
+    - task: "Complaint, goodwill, follow-up"
+      calls:
+        - "raise_ticket(category=pickup marked unavailable, summary=RT-74001, 74002, 74003 marked customer unavailable; customer was home) → ticket PK 74130"
+        - "credit_goodwill(order_id=KT-74080, amount=₹200, reason=three failed pickups) → ₹200 added to Kartly balance"
+        - "schedule_callback(date=Thu 8 Oct, slot=2-3 pm, topic=confirm pickups RT-74001, 74002, 74120 done) → booked"
+        - "send_sms(template=returns_summary) → sent"
+  forbid: ["cancel_return(return_id=RT-74001)", "cancel_return(return_id=RT-74002)"]
+  lines:
+    - [open, "வணக்கம். மூணு return pickup க்கு யாருமே வரலை, ஆனா நான் வீட்டுல இல்லன்னு எழுதிட்டாங்க. நான் work from home, வீட்டுல தான் இருந்தேன்!", "Hello. Nobody came for three return pickups, but they wrote that I wasn't home. I work from home — I was right here!"]
+    - [after, "எல்லா return ஐயும் பாருங்க.", "Check all my returns."]
+    - [after, "Saree உம் air purifier உம் புதன்கிழமை எடுக்க சொல்லுங்க. புதன் முடியலைன்னா வியாழன்.", "Have the saree and air purifier picked up on Wednesday. If Wednesday isn't possible, Thursday."]
+    - [after, "Yoga mat வேண்டாம், அதை நானே வச்சுக்குறேன். அந்த return ஐ cancel பண்ணுங்க.", "Not the yoga mat — I'll keep it myself. Cancel that return."]
+    - [after, "Water bottle பணம் இன்னும் வரலை. அதை Kartly balance ல போடுங்க.", "The water bottle money hasn't come yet. Put it in my Kartly balance."]
+    - [after, "Saree பணம் என் UPI க்கு வரணும். Purifier பணம் Kartly balance க்கு.", "The saree money should come to my UPI. The purifier money to Kartly balance."]
+    - [after, "இன்னொன்னு — வெள்ளிக்கிழமை வந்த wall clock ஓடவே இல்லை. அதையும் return பண்ணணும், அதே நாள் pickup.", "One more — the wall clock that came on Friday doesn't work at all. I want to return that too, pickup on the same day."]
+    - [after, "அதோட பணமும் Kartly balance க்கு.", "Its money to Kartly balance too."]
+    - [after, "மூணு தடவை பொய்யா எழுதினாங்களே, அதுக்கு complaint போடுங்க. எதாவது compensation?", "They wrote false reasons three times — file a complaint. Any compensation?"]
+    - [after, "வியாழன் மதியம் pickup ஆச்சான்னு call பண்ணி கேளுங்க.", "Call me Thursday afternoon to check the pickups happened."]
+    - [after, "SMS அனுப்புங்க. நன்றி.", "Send an SMS. Thank you."]
+    - [after, "சரி, bye.", "Okay, bye."]
+  key:
+    - "Traces all four returns: three failed pickups marked customer unavailable, the water bottle picked up 28 Sep"
+    - "When Wednesday is full, says so and books the saree and purifier for Thu 8 Oct, 10 am-1 pm; cancels only the yoga mat return"
+    - "Moves the water bottle's ₹749 to Kartly balance now; saree to UPI, purifier to Kartly balance"
+    - "Creates the wall-clock return RT-74120 on Thu 8 Oct with refund to Kartly balance"
+    - "Raises PK 74130, credits ₹200 and books Thursday's call-back; speaks Tamil, keeping her English words"
+  checks: {lang: ta, digits: ["RT-74120", "PK 74130"], tool_order: [get_return, reschedule_pickup]}
+  guard: "The Thursday fallback comes with the request; each return is named by item; L7 adds the clock with its pickup day, which holds after any reply."

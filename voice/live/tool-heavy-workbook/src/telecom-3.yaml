@@ -1,0 +1,785 @@
+# Telecom — tool-heavy scenarios tel-117 … tel-127 (TEL-3 Network, TEL-4 SIM & roaming, TEL-5 Small business).
+code: tel
+scenarios:
+
+- id: tel-117
+  g: TEL-3
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "After the storm — fibre down, two TV dishes off, mobile tower out: a complaint and visit per service, credits, Wi-Fi calling"
+  basis: "Heavy rain knocks out several services at once; each needs its own complaint and fix, and an elderly patient needs a working phone."
+  caller: "M 26-45 · son in Chennai caring for his father on home dialysis, worried"
+  goal: "Get the fibre, both TV boxes and calls working again as fast as possible, with priority for his father, and credit for the days lost."
+  role: "You handle faults. Check outages first. Raise one complaint per service and book a visit for each."
+  context: "A medical-priority request moves a fibre visit ahead of the queue."
+  noise: {bed: rain_window, snr_db: 10}
+  tasks:
+    - task: "What is down"
+      calls:
+        - "list_connections() → mobiles 98840 77101 (Senthil), 98840 77102 (Appa), 98840 77103 (Amma), 98840 77104 (Meena); Fiber FB-77100; TV boxes TV-7711 (hall), TV-7712 (Appa's room)"
+        - "check_outage(pincode=600091) → mobile tower TN-0912 down (power), restore Wed 7 Oct; no fibre outage in the area"
+        - "get_account(mobile=98840 77101) → served by TN-0912"
+        - "get_account(mobile=98840 77102) → served by TN-0912"
+        - "get_account(mobile=98840 77103) → served by TN-0912"
+        - "get_account(mobile=98840 77104) → served by TN-0912"
+        - "raise_complaint(type=no mobile signal, mobile_or_fibre=98840 77102, pincode=600091, details=medical priority, home dialysis; tower TN-0912) → complaint NC 77131; tower restore prioritised"
+    - task: "Fibre"
+      calls:
+        - "run_line_test(fibre_id=FB-77100) → no signal on the line (LOS)"
+        - "remote_reboot(fibre_id=FB-77100) → restarted; still LOS"
+        - "get_complaint(complaint_id=CF 77050) → raised by the customer yesterday, no visit yet"
+        - "raise_ticket(category=medical priority, summary=FB-77100 CF 77050; father on home dialysis needs a working line) → ticket MP 77110; fibre visit prioritised"
+        - "schedule_technician(complaint_id=CF 77050, date=Mon 5 Oct, slot=2-5 pm) → error: slot full"
+        - "schedule_technician(complaint_id=CF 77050, date=Tue 6 Oct, slot=8-11 am) → visit booked, first visit of the day"
+    - task: "Both TV boxes"
+      calls:
+        - "get_dth(box_id=TV-7711) → no signal since Sun 4 Oct"
+        - "get_dth(box_id=TV-7712) → no signal since Sun 4 Oct"
+        - "raise_complaint(type=DTH no signal, mobile_or_fibre=TV-7711, pincode=600091, details=dish moved in the storm) → complaint TC 77121"
+        - "raise_complaint(type=DTH no signal, mobile_or_fibre=TV-7712, pincode=600091, details=dish moved in the storm) → complaint TC 77122"
+        - "schedule_technician(complaint_id=TC 77121, date=Wed 7 Oct, slot=10 am-1 pm) → visit booked"
+        - "schedule_technician(complaint_id=TC 77122, date=Wed 7 Oct, slot=10 am-1 pm) → visit booked, same technician"
+    - task: "Calls once the fibre is back"
+      calls:
+        - "enable_wifi_calling(mobile=98840 77101) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98840 77102) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98840 77103) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98840 77104) → Wi-Fi calling on"
+        - "order_fibre_addon(fibre_id=FB-77100, addon=4G backup router) → added, ₹199 a month, delivered Tue 6 Oct with the visit"
+    - task: "Credits, escalation, summary"
+      calls:
+        - "apply_service_credit(account_or_fibre=FB-77100, amount=₹200, reason=storm outage) → ₹200 credit on the next bill"
+        - "apply_service_credit(account_or_fibre=TV-7711, amount=₹100, reason=no signal 3 days) → ₹100 credit"
+        - "apply_service_credit(account_or_fibre=TV-7712, amount=₹100, reason=no signal 3 days) → ₹100 credit"
+        - "schedule_callback(date=Tue 6 Oct, slot=12-1 pm, topic=fibre restored, MP 77110) → booked"
+        - "schedule_callback(date=Wed 7 Oct, slot=12-1 pm, topic=tower TN-0912 restored, NC 77131) → booked"
+        - "send_sms(template=storm_faults_summary) → sent"
+  forbid: ["schedule_technician(complaint_id=TC 77121, date=Mon 5 Oct)", "shift_connection"]
+  lines:
+    - [open, "வணக்கம். நேத்து ராத்திரி மழையில எல்லாமே போச்சு — fibre இல்ல, ரெண்டு TV யும் வரலை, phone ல signal யே இல்ல.", "Hello. Everything went in last night's rain — no fibre, neither TV works, and no signal on the phones."]
+    - [after, "அப்பா வீட்டுல dialysis பண்றார். Doctor கூட பேசணும்னா phone அவசியம். ப்ளீஸ், அவசரம்.", "My father does dialysis at home. The phone is essential to talk to the doctor. Please, it's urgent."]
+    - [after, "Area ல ஏதாவது பிரச்சனையா? நாலு phone லயும் signal இல்ல. அப்பா number க்கு priority போடுங்க.", "Is there a problem in the area? None of the four phones has signal. Put priority on Appa's number."]
+    - [after, "Fibre ஐ ஒரு தடவை restart பண்ணி பாருங்க.", "Try restarting the fibre once."]
+    - [after, "நேத்தே complaint போட்டேன், யாரும் வரலை. இன்னைக்கு மதியம் யாராவது வரணும். இல்லன்னா நாளைக்கு காலைல முதல் visit.", "I complained yesterday too, nobody came. Someone must come this afternoon. If not, the first visit tomorrow morning."]
+    - [after, "ரெண்டு TV dish உம் காத்துல திரும்பிடுச்சு போல. ரெண்டுக்கும் complaint போட்டு ஒரே நாள்ல ஆள் அனுப்புங்க.", "Both TV dishes seem to have turned in the wind. File complaints for both and send someone on one day."]
+    - [after, "Fibre வந்தா phone call அதுல போகுமா? நாலு phone க்கும் அதை on பண்ணுங்க.", "When the fibre's back, can calls go over it? Turn that on for all four phones."]
+    - [after, "அடுத்த தடவை fibre போனா கூட backup ஏதாவது இருக்கா?", "Is there some backup for the next time the fibre goes?"]
+    - [after, "அதையும் போடுங்க. மூணு நாள் service இல்லாததுக்கு எதாவது?", "Add that too. Anything for three days without service?"]
+    - [after, "நாளைக்கு மதியம் fibre வந்துச்சான்னு call பண்ணுங்க. Tower சரியானதும் இன்னொரு call.", "Call tomorrow afternoon to check the fibre's back. And another call once the tower is fixed."]
+    - [after, "SMS அனுப்புங்க. ரொம்ப நன்றி.", "Send an SMS. Thank you very much."]
+    - [after, "சரி.", "Okay."]
+  key:
+    - "Checks the outage: tower TN-0912 down until 7 Oct; no fibre outage; all four phones on that tower; raises priority complaint NC 77131 for Appa's number"
+    - "Tests and reboots the fibre, finds yesterday's CF 77050 without a visit, raises medical priority MP 77110"
+    - "When this afternoon is full, says so and books the first visit Tue 6 Oct, 8-11 am"
+    - "Raises one complaint per TV box (TC 77121, TC 77122) with one technician on Wed 7 Oct"
+    - "Turns on Wi-Fi calling on all four phones and adds the 4G backup router"
+    - "Credits ₹200 on the fibre and ₹100 on each box; books the call-back; speaks Tamil, keeping his English words"
+  checks: {lang: ta, digits: ["MP 77110", "TC 77122", "Tue 6 Oct"], tool_order: [check_outage, run_line_test]}
+  guard: "The visit fallback comes with the request; L6 asks for both boxes on one day; L9 asks for credit whatever the agent offered."
+
+- id: tel-118
+  g: TEL-3
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Technician follow-up — fibre better but slow upstairs, TV remote dead, calls drop: each fixed on the call"
+  basis: "Operators call after a repair visit; customers raise everything still wrong, one connection at a time."
+  caller: "F 46-60 · homemaker in Pune, chatty, has a list ready"
+  goal: "Confirm the repair and get the remaining problems fixed: weak Wi-Fi upstairs, a TV box issue, call drops, and a bill question."
+  role: "You are calling from Tarang to follow up on fibre complaint CF 88010, repaired on Sat 3 Oct. Open the call: greet, name Tarang, say why you are calling."
+  context: "Fiber FB-88000; TV box TV-8801; mobiles 98500 88001 (Lata), 98500 88002 (Vinod), 98500 88003 (Rohan)."
+  tasks:
+    - task: "The repair"
+      calls:
+        - "get_complaint(complaint_id=CF 88010) → fibre cut repaired Sat 3 Oct; closed"
+        - "check_outage(pincode=411038) → no outage"
+        - "run_line_test(fibre_id=FB-88000) → line up, 100 Mbps at the router; drops to 8 Mbps upstairs"
+        - "remote_reboot(fibre_id=FB-88000) → restarted"
+        - "run_line_test(fibre_id=FB-88000) → 100 Mbps at the router; upstairs still weak"
+    - task: "Upstairs Wi-Fi"
+      calls:
+        - "order_fibre_addon(fibre_id=FB-88000, addon=mesh extender upstairs) → ₹99 a month, install Thu 8 Oct"
+        - "order_fibre_addon(fibre_id=FB-88000, addon=mesh extender terrace room) → ₹99 a month, install Thu 8 Oct"
+        - "change_fibre_plan(fibre_id=FB-88000, plan_id=Fiber 200) → from Tue 6 Oct, ₹849"
+    - task: "The TV box"
+      calls:
+        - "get_dth(box_id=TV-8801) → Marathi Value ₹329; box working"
+        - "raise_complaint(type=DTH remote not working, mobile_or_fibre=TV-8801, pincode=411038, details=remote dead after new batteries) → complaint TC 88021; replacement remote by courier Wed 7 Oct"
+        - "add_channel(box_id=TV-8801, channel=Colors Marathi HD) → added, ₹22 a month"
+    - task: "Calls drop"
+      calls:
+        - "enable_wifi_calling(mobile=98500 88001) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98500 88002) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98500 88003) → Wi-Fi calling on"
+    - task: "The bill"
+      calls:
+        - "get_bill(account=FB-88000, month=September) → ₹1,180 including ₹250 for the visit"
+        - "apply_service_credit(account_or_fibre=FB-88000, amount=₹250, reason=visit charged for a cable fault) → ₹250 credit on the next bill"
+        - "send_payment_link(account=FB-88000, amount=₹930) → link sent by SMS"
+        - "set_autopay(account=FB-88000, method=saved UPI) → autopay on"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Thu 8 Oct, slot=6-7 pm, topic=upstairs Wi-Fi after mesh install) → booked"
+        - "send_sms(template=follow_up_summary) → sent"
+  forbid: ["change_fibre_plan(fibre_id=FB-88000, plan_id=Fiber 500)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Oh yes, the technician came on Saturday. It works downstairs, but upstairs it's very slow."]
+    - [after, "Can you check it from there? Restart if you need to."]
+    - [after, "Still slow upstairs? We have a room on the terrace too, where my son studies."]
+    - [after, "Put one on each, then. And is our plan enough? Something a bit faster, not too expensive."]
+    - [after, "Fine. Another thing — the TV remote died. New batteries, nothing."]
+    - [after, "And add Colors Marathi HD while you're at it."]
+    - [after, "Our calls also cut inside the house, all three phones."]
+    - [after, "One more — the bill charged us for the technician. It was your cable that was cut!"]
+    - [after, "So what do I pay now? Send me the link, and set autopay on my UPI."]
+    - [after, "Call me on Thursday after the extenders are in."]
+    - [after, "Send me everything on SMS. Thanks for calling back, that's nice."]
+  key:
+    - "Opens naming Tarang and complaint CF 88010; confirms the repair"
+    - "Tests, reboots and tests again; orders two mesh extenders (upstairs, terrace) for Thu 8 Oct and moves to Fiber 200 (₹849), not 500"
+    - "Raises TC 88021 for the remote (replacement Wed 7 Oct) and adds Colors Marathi HD"
+    - "Turns on Wi-Fi calling for all three phones"
+    - "Credits the ₹250 visit charge, sends a ₹930 link and sets UPI autopay"
+  checks: {digits: ["TC 88021", "930"], tool_order: [run_line_test, order_fibre_addon]}
+  guard: "Each line raises one problem, true whatever the agent said before; L5 asks for a modest upgrade; L10 asks for the amount after the credit the agent must give."
+
+- id: tel-119
+  g: TEL-4
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Family of five to Europe — a roaming pack per traveller with their own dates, one number barred, Swiss add-on, kids capped"
+  basis: "Family trips abroad need a pack per traveller with their own dates; barred numbers and extra countries trip people up."
+  caller: "M 46-60 · doctor in Mumbai planning a three-week Europe trip, precise"
+  goal: "Have every family member covered from the day they land, with the right pack, limits on the children's lines and Wi-Fi calling as backup."
+  role: "You handle roaming. Give each pack's price and dates before activating."
+  context: "The EU pack covers France, Italy and Germany but not Switzerland."
+  tasks:
+    - task: "Travellers and packs"
+      calls:
+        - "list_connections() → postpaid family TF-30330: Rahul 98200 33301, Nisha 98200 33302, Ira 98200 33303, Kabir 98200 33304, Nana 98200 33305"
+        - "get_roaming_packs(country=Europe) → EU21 ₹4,999 21 days 15 GB 300 min; EU14 ₹3,499 14 days 10 GB 200 min"
+        - "get_roaming_packs(country=Switzerland) → CH3 ₹999 3 days 3 GB 60 min"
+        - "get_account(mobile=98200 33301) → postpaid, roaming on"
+        - "get_account(mobile=98200 33302) → postpaid, roaming on"
+        - "get_account(mobile=98200 33303) → postpaid, roaming on"
+        - "get_account(mobile=98200 33304) → postpaid, roaming barred (set in 2025)"
+        - "get_account(mobile=98200 33305) → postpaid, roaming on"
+    - task: "A pack per traveller"
+      calls:
+        - "activate_roaming_pack(mobile=98200 33301, pack_id=EU21, start_date=Sat 10 Oct) → active Sat 10 Oct to Fri 30 Oct, ₹4,999"
+        - "activate_roaming_pack(mobile=98200 33302, pack_id=EU21, start_date=Sun 11 Oct) → active Sun 11 Oct to Sat 31 Oct, ₹4,999"
+        - "activate_roaming_pack(mobile=98200 33304, pack_id=EU21, start_date=Sun 11 Oct) → error: roaming is barred on this number"
+        - "set_call_barring(mobile=98200 33304, type=roaming, enabled=no) → roaming barring off"
+        - "activate_roaming_pack(mobile=98200 33304, pack_id=EU21, start_date=Sun 11 Oct) → active Sun 11 Oct to Sat 31 Oct, ₹4,999"
+        - "activate_roaming_pack(mobile=98200 33303, pack_id=EU21, start_date=Sun 11 Oct) → active Sun 11 Oct to Sat 31 Oct, ₹4,999"
+        - "activate_roaming_pack(mobile=98200 33305, pack_id=EU14, start_date=Sun 11 Oct) → active Sun 11 Oct to Sat 24 Oct, ₹3,499"
+        - "activate_roaming_pack(mobile=98200 33301, pack_id=CH3, start_date=Mon 19 Oct) → active Mon 19 Oct to Wed 21 Oct, ₹999"
+    - task: "Protect the children's lines"
+      calls:
+        - "set_call_barring(mobile=98200 33303, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98200 33304, type=premium-rate, enabled=yes) → barring on"
+        - "set_usage_limit(mobile=98200 33303, limit=₹6,000) → set"
+        - "set_usage_limit(mobile=98200 33304, limit=₹6,000) → set"
+    - task: "Wi-Fi calling as backup, eSIM for Nisha"
+      calls:
+        - "enable_wifi_calling(mobile=98200 33301) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98200 33302) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98200 33303) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98200 33304) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98200 33305) → Wi-Fi calling on"
+        - "convert_esim(mobile=98200 33302, device=iPhone 16) → eSIM QR sent by email after SMS confirmation"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=roaming_summary) → sent"
+  forbid: ["activate_roaming_pack(mobile=98200 33305, pack_id=EU21)", "activate_roaming_pack(mobile=98200 33302, pack_id=CH3)"]
+  lines:
+    - [open, "Hi, five of us are going to Europe and I want everyone's roaming sorted. All on our family postpaid."]
+    - [after, "What packs do you have for Europe?"]
+    - [after, "I fly on the tenth for a conference; the others join on the eleventh. Twenty-one days for me, my wife and both kids, from their own day."]
+    - [after, "My father-in-law is coming back early, after two weeks. The shorter pack for him, from the eleventh."]
+    - [after, "Wait — does that cover Switzerland? I'll be in Zurich for three days from the nineteenth. Only me."]
+    - [after, "Kabir's number had roaming blocked, I think — we did that last year. Unblock it if needed."]
+    - [after, "On both kids' numbers, block premium-rate numbers and keep a limit of six thousand each."]
+    - [after, "Can we call on hotel Wi-Fi too? Switch that on for all five."]
+    - [after, "My wife has a new iPhone. Can her number move to eSIM before we go?"]
+    - [after, "What's the total for all the packs?"]
+    - [after, "Read me each person's dates once more."]
+    - [after, "Send the summary to my phone. Thanks a lot."]
+  key:
+    - "Checks all five lines and finds Kabir's roaming barred"
+    - "Activates EU21 for Rahul from Sat 10 Oct and for Nisha, Ira and Kabir from Sun 11 Oct; EU14 for Nana from Sun 11 Oct"
+    - "When Kabir's pack fails, says roaming is barred, lifts the barring and activates"
+    - "Adds CH3 for Rahul only, from Mon 19 Oct"
+    - "Bars premium-rate numbers and sets ₹6,000 limits on both children's lines; turns on Wi-Fi calling for all five; starts Nisha's eSIM"
+    - "States ₹24,494 for the packs and reads every traveller's dates"
+  checks: {digits: ["Fri 30 Oct", "Sat 24 Oct"], say: [["24,494", "twenty-four thousand four hundred ninety-four", "twenty four thousand four hundred and ninety four"]], tool_order: [get_roaming_packs, activate_roaming_pack]}
+  guard: "Every traveller's pack and start date comes before activation; L5 asks about Switzerland whatever was said; L6 offers the barring fix before it is needed."
+
+- id: tel-120
+  g: TEL-4
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Two phones stolen at a concert — both SIMs blocked, charges after the theft disputed, replacements at a store with stock"
+  basis: "When phones are stolen, each number is blocked, misuse is disputed and a replacement SIM is arranged with ID."
+  caller: "M 46-60 · father in Mumbai whose wife's and daughter's phones were stolen last night, calling from his own phone"
+  goal: "Block both stolen numbers, get any charges after the theft reversed, report the handsets, and get both numbers back on new SIMs tomorrow."
+  role: "You handle lost and stolen phones. A replacement SIM needs the user's ID at a store; never do a SIM swap on the phone."
+  context: "Family account TF-40220. Stolen: 98330 40222 (Kavita) and 98330 40223 (Tanya), Sun 4 Oct around 10 pm."
+  tasks:
+    - task: "The two numbers"
+      calls:
+        - "list_connections() → TF-40220: Rakesh 98330 40221 (owner), Kavita 98330 40222, Tanya 98330 40223"
+        - "get_account(mobile=98330 40222) → postpaid, active; last used today 1:40 am"
+        - "get_account(mobile=98330 40223) → postpaid, active; last used Sun 4 Oct 10:05 pm"
+        - "get_data_usage(mobile=98330 40222) → 3.2 GB used since 10 pm last night"
+        - "get_data_usage(mobile=98330 40223) → nothing since 10:05 pm"
+    - task: "Block both"
+      calls:
+        - "block_sim(mobile=98330 40222, reason=phone stolen) → blocked, BS 40231"
+        - "block_sim(mobile=98330 40223, reason=phone stolen) → blocked, BS 40232"
+    - task: "Charges after the theft"
+      calls:
+        - "get_bill(account=TF-40220, month=October so far) → Kavita: ISD calls to +880 today 12:10 am-1:40 am ₹2,760; premium SMS ₹300"
+        - "raise_bill_dispute(account=TF-40220, item=Kavita ISD calls after theft, reason=phone stolen 4 Oct 10 pm) → dispute BD 40241; provisional credit ₹2,760"
+        - "raise_bill_dispute(account=TF-40220, item=Kavita premium SMS after theft, reason=phone stolen 4 Oct 10 pm) → dispute BD 40242; provisional credit ₹300"
+    - task: "Report the handsets"
+      calls:
+        - "raise_complaint(type=stolen handset, mobile_or_fibre=98330 40222, pincode=400051, details=iPhone 14, stolen at concert, Bandra) → complaint SH 40251; IMEI block request forwarded"
+        - "raise_complaint(type=stolen handset, mobile_or_fibre=98330 40223, pincode=400051, details=Samsung S23, stolen at concert, Bandra) → complaint SH 40252; IMEI block request forwarded"
+    - task: "Replacement SIMs"
+      calls:
+        - "find_store(pincode=400050) → Tarang Bandra West ST-0511, 10 am-9 pm; Tarang Khar ST-0518, 10 am-8 pm"
+        - "request_sim_replacement(mobile=98330 40222, store_id=ST-0511) → error: Bandra West store has no SIM stock until Thu 8 Oct"
+        - "request_sim_replacement(mobile=98330 40222, store_id=ST-0518) → replacement ready at Khar; Kavita's ID needed"
+        - "request_sim_replacement(mobile=98330 40223, store_id=ST-0518) → replacement ready at Khar; Tanya's ID needed"
+        - "book_store_visit(store_id=ST-0518, date=Tue 6 Oct, slot=11:00 am, purpose=two replacement SIMs) → appointment SV 40260"
+    - task: "Once the new SIMs are in"
+      calls:
+        - "set_call_barring(mobile=98330 40222, type=international, enabled=yes) → barring on from reactivation"
+        - "set_call_barring(mobile=98330 40223, type=international, enabled=yes) → barring on from reactivation"
+        - "set_call_barring(mobile=98330 40222, type=premium-rate, enabled=yes) → barring on from reactivation"
+        - "set_call_barring(mobile=98330 40223, type=premium-rate, enabled=yes) → barring on from reactivation"
+        - "set_usage_limit(mobile=98330 40222, limit=₹1,500) → set"
+        - "set_usage_limit(mobile=98330 40223, limit=₹1,000) → set"
+        - "schedule_callback(date=Tue 6 Oct, slot=4-5 pm, topic=both numbers working on new SIMs) → booked"
+        - "send_sms(template=stolen_phones_summary) → sent to 98330 40221"
+  forbid: ["convert_esim(mobile=98330 40222)", "request_sim_replacement(mobile=98330 40221)"]
+  lines:
+    - [open, "Hello, kal raat concert mein meri wife aur beti ke phone chori ho gaye. Main apne phone se bol raha hoon. Dono numbers band karne hain.", "Hello, my wife's and daughter's phones were stolen at a concert last night. I'm calling from my own phone. Both numbers need blocking."]
+    - [after, "Pehle dekho, chori ke baad kisi ne use toh nahi kiya?", "First check — has anyone used them since the theft?"]
+    - [after, "Kavita ka raat ko use hua? Turant dono block karo.", "Kavita's was used during the night? Block both immediately."]
+    - [after, "Bill mein kuch laga kya uske baad?", "Has anything been charged on the bill after that?"]
+    - [after, "Woh hum ne nahi kiya. Dono pe dispute daalo.", "We didn't do that. Raise disputes on both."]
+    - [after, "Phones ki bhi report karni hai — Kavita ka iPhone fourteen, Tanya ka Samsung S twenty-three. Bandra mein concert tha.", "The phones need reporting too — Kavita's iPhone 14, Tanya's Samsung S23. The concert was in Bandra."]
+    - [after, "Kya aap abhi naya SIM same number pe chalu kar sakte ho? Main yahan se OTP bata doonga.", "Can you activate a new SIM on the same number right now? I'll give you the OTP from here."]
+    - [after, "Theek hai, store jaayenge. Bandra West wala store sabse paas hai. Wahan stock na ho toh Khar.", "Okay, we'll go to a store. Bandra West is nearest. If they have no stock, then Khar."]
+    - [after, "Kal subah gyarah baje dono ek saath aayenge.", "Tomorrow at eleven in the morning, both together."]
+    - [after, "Naye SIM aane ke baad dono pe international aur premium calls band, aur limit — Kavita pandrah sau, Tanya hazaar.", "Once the new SIMs are in, international and premium calls off on both, and limits — Kavita fifteen hundred, Tanya one thousand."]
+    - [after, "Kal shaam ko check karna sab chal raha hai ya nahi.", "Check tomorrow evening whether everything's working."]
+    - [after, "SMS mere number pe bhej do. Shukriya.", "Send the SMS to my number. Thanks."]
+  key:
+    - "Checks both numbers' use since the theft (Kavita's used until 1:40 am) and blocks both (BS 40231, BS 40232)"
+    - "Disputes the ₹2,760 ISD calls and ₹300 premium SMS after the theft (BD 40241, BD 40242)"
+    - "Raises stolen-handset complaints SH 40251 and SH 40252"
+    - "Refuses to swap the SIM on the phone or take an OTP; explains ID at a store"
+    - "When Bandra West has no stock, says so and arranges both replacements at Khar; books Tue 6 Oct at 11:00 am (SV 40260)"
+    - "Sets international and premium-rate barring and the two limits from reactivation; books the call-back"
+  checks: {lang: hg, digits: ["BD 40241", "SV 40260", "SH 40252"], not_say: ["tell me the OTP", "OTP batao"], tool_order: [block_sim, request_sim_replacement]}
+  guard: "The store fallback comes with the request; L7 must be refused whatever the agent offered; L4 asks about charges whatever the agent said."
+
+- id: tel-121
+  g: TEL-4
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Parents and uncle off on Umrah — a roaming pack each, long recharges, Wi-Fi calling, barring, and an ISD pack for the son"
+  basis: "Pilgrim families need each traveller's number to stay alive and reachable abroad, number by number."
+  caller: "M 26-45 · son in Lucknow arranging his parents' and uncle's Umrah trip, careful"
+  goal: "Make sure all three travellers can be reached for the whole 40 days without bill shocks, and that he can call them cheaply."
+  role: "You handle roaming. Give each pack's price and dates. Prepaid numbers must stay valid through the trip."
+  context: "Travel Mon 12 Oct to Fri 20 Nov (40 days)."
+  tasks:
+    - task: "Travellers"
+      calls:
+        - "list_connections() → prepaid: Salim (son) 94150 12101, Abbu 94150 12102, Ammi 94150 12103, Chacha 94150 12104"
+        - "get_account(mobile=94150 12102) → P299, valid until Sat 17 Oct"
+        - "get_account(mobile=94150 12103) → P299, valid until Sat 17 Oct"
+        - "get_account(mobile=94150 12104) → P155, valid until Thu 29 Oct"
+        - "get_roaming_packs(country=Saudi Arabia) → SA45 ₹3,999 45 days 5 GB 150 min incoming free; SA30 ₹2,999 30 days 3 GB 100 min"
+    - task: "Keep each number valid, then a pack each"
+      calls:
+        - "recharge(mobile=94150 12102, plan_id=P859, payment=saved UPI) → recharged, valid until Sat 9 Jan 2027"
+        - "recharge(mobile=94150 12103, plan_id=P859, payment=saved UPI) → recharged, valid until Sat 9 Jan 2027"
+        - "recharge(mobile=94150 12104, plan_id=P479, payment=saved UPI) → recharged, valid until Thu 21 Jan 2027"
+        - "activate_roaming_pack(mobile=94150 12102, pack_id=SA45, start_date=Mon 12 Oct) → active Mon 12 Oct to Wed 25 Nov, ₹3,999"
+        - "activate_roaming_pack(mobile=94150 12103, pack_id=SA45, start_date=Mon 12 Oct) → active Mon 12 Oct to Wed 25 Nov, ₹3,999"
+        - "activate_roaming_pack(mobile=94150 12104, pack_id=SA45, start_date=Mon 12 Oct) → active Mon 12 Oct to Wed 25 Nov, ₹3,999"
+    - task: "Backups and protection"
+      calls:
+        - "enable_wifi_calling(mobile=94150 12102) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=94150 12103) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=94150 12104) → Wi-Fi calling on"
+        - "set_call_barring(mobile=94150 12102, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=94150 12103, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=94150 12104, type=premium-rate, enabled=yes) → barring on"
+    - task: "Son's ISD pack"
+      calls:
+        - "activate_pack(mobile=94150 12101, pack_id=ISD Saudi 300 minutes 45 days) → active Mon 12 Oct to Wed 25 Nov, ₹599"
+        - "schedule_callback(date=Sat 10 Oct, slot=11 am-12 pm, topic=check everything before travel) → booked"
+        - "send_sms(template=roaming_summary) → sent"
+  forbid: ["activate_roaming_pack(mobile=94150 12102, pack_id=SA30)", "set_call_barring(mobile=94150 12102, type=roaming, enabled=yes)"]
+  lines:
+    - [open, "अस्सलाम अलैकुम। मेरे अम्मी-अब्बू और चाचा उमरा पर जा रहे हैं, बारह अक्टूबर से चालीस दिन। तीनों के फ़ोन का इंतज़ाम करना है।", "Peace be upon you. My parents and uncle are going on Umrah — forty days from the twelfth of October. I need to arrange all three phones."]
+    - [after, "तीनों नंबर कब तक चालू हैं, देखिए।", "Check how long all three numbers are valid."]
+    - [after, "सऊदी के लिए कौन-से पैक हैं?", "Which packs are there for Saudi?"]
+    - [after, "पैंतालीस दिन वाला, तीनों को, बारह तारीख़ से।", "The forty-five-day one for all three, from the twelfth."]
+    - [after, "पर बीच में नंबर बंद न हो जाए। अब्बू-अम्मी का चौरासी दिन वाला, चाचा का सस्ता वाला लंबा। सब UPI से।", "But the numbers mustn't lapse in between. The eighty-four-day one for Abbu and Ammi, the cheap long one for Chacha. All by UPI."]
+    - [after, "होटल में वाई-फ़ाई होगा। उस पर कॉल हो सके, तीनों पर चालू कर दीजिए।", "The hotel will have Wi-Fi. Turn on calling over it for all three."]
+    - [after, "और कोई महँगे नंबर पर कॉल न लगे, तीनों पर वो बंद कर दीजिए।", "And so no call goes to expensive numbers, block those on all three."]
+    - [after, "मुझे यहाँ से उन्हें रोज़ फ़ोन करना होगा। मेरे नंबर पर सऊदी का कोई कॉल पैक?", "I'll have to call them every day from here. A Saudi calling pack on my number?"]
+    - [after, "हाँ, वो लगा दीजिए।", "Yes, add that."]
+    - [after, "कुल कितना ख़र्च हुआ?", "How much was spent in total?"]
+    - [after, "जाने से पहले शनिवार को एक बार फ़ोन करके सब जाँच लीजिए।", "Call once on Saturday before they leave to check everything."]
+    - [after, "शुक्रिया, SMS भेज दीजिए।", "Thank you, send an SMS."]
+  key:
+    - "Reads each number's validity; recharges Abbu and Ammi on P859 and Chacha on P479 so all stay valid past 20 Nov"
+    - "Activates SA45 for all three from Mon 12 Oct (to 25 Nov)"
+    - "Turns on Wi-Fi calling and premium-rate barring on all three"
+    - "Adds the Saudi ISD pack on Salim's number (₹599)"
+    - "States ₹14,793 in all and books Saturday's check"
+  checks: {lang: hi, digits: ["Wed 25 Nov", "9 Jan 2027"], say: [["14,793", "चौदह हज़ार सात सौ तिरानवे"]], tool_order: [recharge, activate_roaming_pack]}
+  guard: "Each traveller's plan is named; L5 asks for validity cover whatever the agent offered; L10 asks for the total whatever was said."
+
+- id: tel-122
+  g: TEL-4
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Children's first phones — two numbers moved to postpaid with limits, barring, DND, and a smartwatch eSIM that needs a second try"
+  basis: "Parents setting up children's first phones and watches lock each line down separately."
+  caller: "F 26-45 · mother in Visakhapatnam setting up her two children's phones and a smartwatch, careful; speaker b: F 13-17 · her daughter Sahithi"
+  goal: "Put both children's numbers on the family postpaid with tight limits and protections, clear junk services, and get her daughter's watch on an eSIM."
+  role: "You handle family plans and eSIM. An eSIM QR needs the confirmation code sent to the number."
+  context: "Family account TF-53110 owned by the caller, 99630 53111."
+  tasks:
+    - task: "The children's numbers"
+      calls:
+        - "list_connections() → TF-53110: Swapna 99630 53111 (owner), Ravi 99630 53112; prepaid: Charan 99630 53113, Sahithi 99630 53114"
+        - "get_account(mobile=99630 53111) → Family 2 ₹999 on TF-53110; members can be added at ₹199 each"
+        - "get_account(mobile=99630 53113) → prepaid P299, valid until Sat 10 Oct"
+        - "get_account(mobile=99630 53114) → prepaid P299, valid until Sat 10 Oct"
+        - "get_vas(mobile=99630 53113) → games portal ₹99 a month"
+        - "get_vas(mobile=99630 53114) → none"
+        - "deactivate_vas(mobile=99630 53113, service=games portal) → stopped"
+    - task: "Onto the family postpaid"
+      calls:
+        - "convert_to_postpaid(mobile=99630 53113, account=TF-53110) → postpaid from Sun 11 Oct"
+        - "convert_to_postpaid(mobile=99630 53114, account=TF-53110) → postpaid from Sun 11 Oct"
+        - "add_family_member(account=TF-53110, mobile=99630 53113) → added from Sun 11 Oct, ₹199 a month"
+        - "add_family_member(account=TF-53110, mobile=99630 53114) → added from Sun 11 Oct, ₹199 a month"
+    - task: "Lock each down"
+      calls:
+        - "set_usage_limit(mobile=99630 53113, limit=₹300) → set"
+        - "set_usage_limit(mobile=99630 53114, limit=₹300) → set"
+        - "set_call_barring(mobile=99630 53113, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99630 53114, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99630 53113, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99630 53114, type=premium-rate, enabled=yes) → barring on"
+        - "set_dnd(mobile=99630 53113, categories=all promotional) → set, effective in 24 hours"
+        - "set_dnd(mobile=99630 53114, categories=all promotional) → set, effective in 24 hours"
+        - "enable_wifi_calling(mobile=99630 53113) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=99630 53114) → Wi-Fi calling on"
+    - task: "Sahithi's smartwatch"
+      calls:
+        - "convert_esim(mobile=99630 53114, device=smartwatch) → error: confirmation code expired before it was entered"
+        - "convert_esim(mobile=99630 53114, device=smartwatch) → eSIM QR sent by email after SMS confirmation"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Mon 12 Oct, slot=5-6 pm, topic=children's lines after the move to postpaid) → booked"
+        - "send_sms(template=family_plan_summary) → sent"
+  forbid: ["set_usage_limit(mobile=99630 53113, limit=₹3,000)", "remove_family_member(account=TF-53110, mobile=99630 53112)"]
+  lines:
+    - [open, "హలో, మా పిల్లలిద్దరికీ కొత్తగా phones ఇచ్చాం. వాళ్ళ numbers ని సరిగ్గా set చేయాలి.", "Hello, we've just given both our children phones. I need to set up their numbers properly."]
+    - [after, "Charan, Sahithi numbers prepaid లో ఉన్నాయి. ముందు వాటి మీద ఏమైనా charges ఉన్నాయేమో చూడండి.", "Charan's and Sahithi's numbers are on prepaid. First check whether there are any charges on them."]
+    - [after, "అది ఆపేయండి. ఇద్దరినీ నా family postpaid లోకి మార్చండి.", "Stop that. Move both of them onto my family postpaid."]
+    - [after, "ఇద్దరికీ నెలకి మూడు వందలు limit. International, premium calls రెండూ block.", "A limit of three hundred a month for both. Block international and premium calls on both."]
+    - [after, "Promotional calls, messages కూడా ఆపేయండి.", "Stop promotional calls and messages too."]
+    - [after, "School లో signal సరిగ్గా ఉండదు, ఇంట్లో Wi-Fi తో calls వెళ్ళేలా చేయండి ఇద్దరికీ.", "Signal is poor at school; make calls go over Wi-Fi at home for both."]
+    - [after, "Sahithi కి smartwatch కూడా కొన్నాం. దాన్ని eSIM తో తన number కి కలపాలి.", "We also bought Sahithi a smartwatch. It needs to be linked to her number with an eSIM."]
+    - [after b, "Amma, code వచ్చింది కానీ type చేసేలోపు అయిపోయింది.", "Amma, the code came but it expired before I could type it."]
+    - [after, "ఇంకోసారి పంపండి, ఈసారి త్వరగా చేస్తుంది.", "Send it once more; she'll be quick this time."]
+    - [after, "నెలకి ఎంత extra అవుతుంది?", "How much extra will it be per month?"]
+    - [after, "వచ్చే సోమవారం ఒకసారి call చేసి అన్నీ సరిగా ఉన్నాయా అడగండి.", "Call next Monday once to ask if everything is fine."]
+    - [after, "SMS పంపండి. Thanks.", "Send an SMS. Thanks."]
+  key:
+    - "Checks both numbers and stops the games portal on Charan's before moving them"
+    - "Converts both to postpaid on TF-53110 and adds them from Sun 11 Oct"
+    - "Sets ₹300 limits, international and premium-rate barring, DND and Wi-Fi calling on each, one call per number"
+    - "When the watch eSIM code expires, says so and sends it again"
+    - "States ₹398 a month extra; books Monday's call-back; speaks Telugu, keeping her English words"
+  checks: {lang: te, digits: ["Sun 11 Oct"], say: [["398", "మూడు వందల తొంభై ఎనిమిది", "three ninety-eight"]], tool_order: [convert_to_postpaid, add_family_member]}
+  guard: "Each protection is asked for both children in one line; the daughter reports the expired code herself before the retry is asked for."
+
+- id: tel-123
+  g: TEL-4
+  lang: tx
+  script: en → te-mix
+  diff: Medium
+  dir: in
+  switch: "L5: English → Telugu (her mother takes the phone)"
+  title: "Four new phones in the family — eSIM for each, plan and services checked, mother switches to Telugu"
+  basis: "When a family upgrades phones together, each number moves to eSIM and gets checked on its own."
+  caller: "F 18-25 · college student in Guntur helping her family with new phones; speaker b: F 46-60 · her mother, Telugu only"
+  goal: "Move all four numbers to eSIM on the new phones, check each for unwanted charges and make calls work over Wi-Fi."
+  role: "You handle eSIM and services. Each eSIM needs the confirmation code sent to that number."
+  context: ""
+  tasks:
+    - task: "The four numbers"
+      calls:
+        - "list_connections() → prepaid: Harika 93460 21101, Amma 93460 21102, Nanna 93460 21103, Charan 93460 21104"
+        - "get_account(mobile=93460 21101) → P349, valid until Sun 25 Oct"
+        - "get_account(mobile=93460 21102) → P299, valid until Wed 14 Oct"
+        - "get_account(mobile=93460 21103) → P299, valid until Wed 14 Oct"
+        - "get_account(mobile=93460 21104) → P299, valid until Fri 30 Oct"
+    - task: "eSIM on each new phone"
+      calls:
+        - "convert_esim(mobile=93460 21101, device=iPhone 16) → eSIM QR sent by email after SMS confirmation"
+        - "convert_esim(mobile=93460 21102, device=Samsung A55) → eSIM QR sent by email after SMS confirmation"
+        - "convert_esim(mobile=93460 21103, device=Samsung A55) → eSIM QR sent by email after SMS confirmation"
+        - "convert_esim(mobile=93460 21104, device=Pixel 9a) → eSIM QR sent by email after SMS confirmation"
+    - task: "Charges on each"
+      calls:
+        - "get_vas(mobile=93460 21101) → none"
+        - "get_vas(mobile=93460 21102) → devotional caller tune ₹49 a month"
+        - "get_vas(mobile=93460 21103) → none"
+        - "get_vas(mobile=93460 21104) → none"
+        - "deactivate_vas(mobile=93460 21102, service=devotional caller tune) → stopped"
+    - task: "Wi-Fi calling and DND"
+      calls:
+        - "enable_wifi_calling(mobile=93460 21101) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=93460 21102) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=93460 21103) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=93460 21104) → Wi-Fi calling on"
+        - "set_dnd(mobile=93460 21102, categories=all promotional) → set, effective in 24 hours"
+        - "send_sms(template=esim_summary) → sent"
+  forbid: ["deactivate_vas(mobile=93460 21102, service=all)", "block_sim(mobile=93460 21102)"]
+  lines:
+    - [open, "Hi, our whole family just got new phones and I want to move all four numbers to eSIM."]
+    - [after, "They're all on my profile — mine, my mom's, my dad's and my brother Charan's."]
+    - [after, "Mine's an iPhone sixteen, Charan has a Pixel nine A, and my parents both have Samsung A fifty-fives."]
+    - [after, "My mom wants to ask something herself — she only speaks Telugu. Here she is."]
+    - [after b, "నమస్కారం అమ్మా. నా phone కి ఏదో పాట వస్తోంది ఎవరైనా call చేస్తే, దానికి డబ్బులు పోతున్నాయా?", "Hello. Some song plays when anyone calls my phone — is money going for that?"]
+    - [after b, "దాన్ని ఆపేయండి. ఇంకా ఎవరి number లో అయినా ఇలాంటివి ఉన్నాయా చూడండి.", "Stop it. And check whether anyone else's number has things like that."]
+    - [after b, "ఇంట్లో signal సరిగ్గా ఉండదు. నలుగురి phones కి Wi-Fi మీద calls వెళ్ళేలా చేయండి.", "Signal isn't good at home. Make calls go over Wi-Fi for all four phones."]
+    - [after b, "నాకు advertisement calls చాలా వస్తాయి. అవి ఆపేయండి.", "I get a lot of advertisement calls. Stop those."]
+    - [after b, "eSIM కి code ఎవరి phone కి వస్తుంది?", "Whose phone does the eSIM code come to?"]
+    - [after b, "సరే. Recharge ఎప్పుడు అయిపోతుందో కూడా చెప్పండి, నాది, ఆయనది.", "Okay. Also tell me when the recharge runs out — mine and his."]
+    - [after b, "అమ్మాయికి message పంపండి. చాలా thanks.", "Send a message to my daughter. Thank you very much."]
+    - [after b, "సరే అమ్మా.", "Okay."]
+  key:
+    - "Starts the eSIM for each of the four numbers on its own device"
+    - "Replies in Telugu from L5; explains each code goes by SMS to that number"
+    - "Checks all four for services; stops only the caller tune on Amma's number"
+    - "Turns on Wi-Fi calling on all four and DND on Amma's"
+    - "Gives Amma's and Nanna's recharge end date, Wed 14 Oct"
+  checks: {lang_from: {L5: te}, digits: ["Wed 14 Oct"], tool_order: [list_connections, convert_esim]}
+  guard: "The daughter's English lines name every device before the handover; the mother's lines each ask one thing, true after any reply."
+
+- id: tel-124
+  g: TEL-5
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Garment shops' eight staff SIMs and two fibre lines — recharges, a leaver's number closed, a lost SIM, barring, upgrades"
+  basis: "Small shops keep staff SIMs on the owner's business ID and manage each line by hand."
+  caller: "M 46-60 · owner of two garment shops in Surat, brisk, list on paper"
+  goal: "Recharge every staff SIM, close the leaver's, replace a lost one, stop staff making international calls, and upgrade both shops' internet."
+  role: "You handle business connections. All numbers are on the owner's business ID."
+  context: "Shop 1 fibre FB-39010, Shop 2 fibre FB-39020."
+  tasks:
+    - task: "Every staff number"
+      calls:
+        - "list_connections() → business prepaid: Ramesh 99250 39011, Suresh 99250 39012, Kiran 99250 39013, Mehul 99250 39014, Pinky 99250 39015, Asif 99250 39016, Dinesh 99250 39017, Neha 99250 39018; Fiber FB-39010, FB-39020"
+        - "get_account(mobile=99250 39011) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=99250 39012) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=99250 39013) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=99250 39014) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=99250 39015) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=99250 39016) → P299, valid until Thu 8 Oct; unused since Mon 28 Sep"
+        - "get_account(mobile=99250 39017) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=99250 39018) → P299, valid until Thu 8 Oct"
+        - "get_plans(type=prepaid) → P299 ₹299 28 days; P859 ₹859 84 days"
+    - task: "Recharge six, close the leaver's"
+      calls:
+        - "recharge(mobile=99250 39011, plan_id=P859, payment=business UPI) → valid until Thu 31 Dec"
+        - "recharge(mobile=99250 39012, plan_id=P859, payment=business UPI) → valid until Thu 31 Dec"
+        - "recharge(mobile=99250 39013, plan_id=P859, payment=business UPI) → valid until Thu 31 Dec"
+        - "recharge(mobile=99250 39014, plan_id=P859, payment=business UPI) → valid until Thu 31 Dec"
+        - "recharge(mobile=99250 39015, plan_id=P859, payment=business UPI) → valid until Thu 31 Dec"
+        - "recharge(mobile=99250 39018, plan_id=P859, payment=business UPI) → valid until Thu 31 Dec"
+        - "disconnect_number(mobile=99250 39016, reason=staff member left) → closed"
+    - task: "Dinesh lost his SIM"
+      calls:
+        - "block_sim(mobile=99250 39017, reason=SIM lost) → blocked, BS 39030"
+        - "find_store(pincode=395003) → Tarang Ring Road ST-0920, 10 am-9 pm"
+        - "request_sim_replacement(mobile=99250 39017, store_id=ST-0920) → ready at Ring Road; business ID and Dinesh needed"
+        - "book_store_visit(store_id=ST-0920, date=Tue 6 Oct, slot=11:00 am, purpose=replacement SIM for 99250 39017) → appointment SV 39031"
+    - task: "No international calls on staff lines"
+      calls:
+        - "set_call_barring(mobile=99250 39011, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99250 39012, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99250 39013, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99250 39014, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99250 39015, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99250 39018, type=international, enabled=yes) → barring on"
+    - task: "Both shops' internet"
+      calls:
+        - "run_line_test(fibre_id=FB-39010) → line fine, 50 Mbps, 18 devices"
+        - "run_line_test(fibre_id=FB-39020) → line fine, 50 Mbps, 11 devices"
+        - "change_fibre_plan(fibre_id=FB-39010, plan_id=Business 200) → from Tue 6 Oct, ₹1,499"
+        - "change_fibre_plan(fibre_id=FB-39020, plan_id=Business 100) → from Tue 6 Oct, ₹999"
+        - "order_fibre_addon(fibre_id=FB-39010, addon=static IP) → ₹300 a month, active Wed 7 Oct"
+        - "send_sms(template=business_lines_summary) → sent"
+  forbid: ["recharge(mobile=99250 39016)", "set_call_barring(mobile=99250 39017, type=international, enabled=no)"]
+  lines:
+    - [open, "Namaste, main Surat mein do kapde ki dukaanein chalata hoon. Aath staff ke SIM aur dono dukaanon ka fibre aapka hai. Sab ek saath karna hai.", "Hello, I run two clothing shops in Surat. Eight staff SIMs and both shops' fibre are with you. I want to do everything at once."]
+    - [after, "Sab numbers padh do, kab tak chalenge.", "Read all the numbers and how long they're valid."]
+    - [after, "Asif ne kaam chhod diya hai. Uska number band kar do. Baaki sab ka chaurasi din wala, business UPI se.", "Asif has left the job. Close his number. The 84-day plan for everyone else, by business UPI."]
+    - [cut 1200 L3, "Ruko — Dinesh ka recharge mat karna, uska SIM kho gaya hai.", "Wait — don't recharge Dinesh's, his SIM is lost."]
+    - [after, "Uska SIM block karo aur naya chahiye. Ring Road wala store paas hai.", "Block his SIM and he needs a new one. The Ring Road store is near."]
+    - [after, "Kal subah gyarah baje main Dinesh ko lekar aaunga.", "I'll bring Dinesh tomorrow at eleven in the morning."]
+    - [after, "Staff wale saare numbers pe international calls band karo. Pichhle mahine kisi ne Dubai phone kiya tha.", "Block international calls on all the staff numbers. Last month someone called Dubai."]
+    - [after, "Ab fibre. Dono dukaanon ka internet slow hai, billing machine atak jaati hai. Check karo.", "Now the fibre. Both shops' internet is slow; the billing machine hangs. Check it."]
+    - [after, "Badi dukaan ka do sau, chhoti ka sau kar do. Badi dukaan pe static IP bhi chahiye, CCTV ke liye.", "Make the big shop two hundred and the small shop one hundred. The big shop also needs a static IP, for the CCTV."]
+    - [after, "Aaj ka recharge ka total kitna hua?", "What's today's recharge total?"]
+    - [after, "SMS bhej do. Dhanyavaad.", "Send an SMS. Thank you."]
+    - [after, "Haan, bas.", "Yes, that's all."]
+  key:
+    - "Reads all eight numbers; closes Asif's unused number"
+    - "After the cut-in, recharges only the six others on P859 and not Dinesh's"
+    - "Blocks Dinesh's SIM, arranges a replacement at Ring Road and books Tue 6 Oct at 11:00 am (SV 39031)"
+    - "Bars international calls on the six active staff numbers"
+    - "Tests both lines; moves the big shop to Business 200 with a static IP and the small shop to Business 100"
+    - "States ₹5,154 for today's recharges"
+  checks: {lang: hg, digits: ["SV 39031", "BS 39030"], say: [["5,154", "paanch hazaar ek sau chauvan", "five thousand one hundred fifty-four"]], tool_order: [block_sim, request_sim_replacement]}
+  guard: "The cut-in removes Dinesh before any recharge can reach him in the read-out order; L7 names all staff lines; L9 names each shop's change."
+
+- id: tel-125
+  g: TEL-5
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Startup moves staff to company postpaid — five lines converted, limits, barring, two on roaming, office fibre upgraded"
+  basis: "Small companies bring staff numbers onto one business account and set rules line by line."
+  caller: "F 26-45 · operations head at a 12-person startup in Hyderabad, efficient"
+  goal: "Move five staff numbers onto the company account with a limit and barring each, cover two people travelling to Singapore, and upgrade the office internet."
+  role: "You handle business accounts. Staff numbers join only with the account owner's go-ahead, which the caller has."
+  context: "Business account TB-71500; office fibre FB-71500."
+  tasks:
+    - task: "The five numbers"
+      calls:
+        - "list_connections() → business TB-71500 (owner: Priya Menon); staff prepaid numbers linked for transfer: Arjun 90000 71501, Sana 90000 71502, Vikram 90000 71503, Meghna 90000 71504, Tejas 90000 71505"
+        - "get_plans(type=business postpaid) → Biz 499 ₹499 a line 75 GB; Biz 799 ₹799 a line 150 GB with roaming discount"
+    - task: "Convert each"
+      calls:
+        - "convert_to_postpaid(mobile=90000 71501, account=TB-71500) → postpaid from Sun 11 Oct, Biz 499"
+        - "convert_to_postpaid(mobile=90000 71502, account=TB-71500) → postpaid from Sun 11 Oct, Biz 799"
+        - "convert_to_postpaid(mobile=90000 71503, account=TB-71500) → postpaid from Sun 11 Oct, Biz 499"
+        - "convert_to_postpaid(mobile=90000 71504, account=TB-71500) → postpaid from Sun 11 Oct, Biz 799"
+        - "convert_to_postpaid(mobile=90000 71505, account=TB-71500) → postpaid from Sun 11 Oct, Biz 499"
+    - task: "Limits and barring"
+      calls:
+        - "set_usage_limit(mobile=90000 71501, limit=₹1,000) → set"
+        - "set_usage_limit(mobile=90000 71502, limit=₹5,000) → set"
+        - "set_usage_limit(mobile=90000 71503, limit=₹1,000) → set"
+        - "set_usage_limit(mobile=90000 71504, limit=₹5,000) → set"
+        - "set_usage_limit(mobile=90000 71505, limit=₹1,000) → set"
+        - "set_call_barring(mobile=90000 71501, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=90000 71503, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=90000 71505, type=international, enabled=yes) → barring on"
+    - task: "Two to Singapore"
+      calls:
+        - "get_roaming_packs(country=Singapore) → SG10 ₹1,999 10 days 5 GB 100 min; SG7 ₹1,499 7 days 3 GB"
+        - "activate_roaming_pack(mobile=90000 71502, pack_id=SG10, start_date=Mon 19 Oct) → active Mon 19 Oct to Wed 28 Oct, ₹1,999"
+        - "activate_roaming_pack(mobile=90000 71504, pack_id=SG10, start_date=Mon 19 Oct) → active Mon 19 Oct to Wed 28 Oct, ₹1,999"
+    - task: "Office fibre"
+      calls:
+        - "check_outage(pincode=500081) → no outage"
+        - "run_line_test(fibre_id=FB-71500) → line fine; 100 Mbps; 24 devices"
+        - "change_fibre_plan(fibre_id=FB-71500, plan_id=Business 300) → from Tue 6 Oct, ₹1,999"
+        - "order_fibre_addon(fibre_id=FB-71500, addon=static IP) → ₹300 a month, active Wed 7 Oct"
+        - "order_fibre_addon(fibre_id=FB-71500, addon=mesh extender meeting room) → ₹99 a month, install Thu 8 Oct"
+    - task: "Autopay and summary"
+      calls:
+        - "set_autopay(account=TB-71500, method=company card) → autopay on"
+        - "send_sms(template=business_setup_summary) → sent"
+  forbid: ["set_call_barring(mobile=90000 71502, type=international, enabled=yes)", "set_call_barring(mobile=90000 71504, type=international, enabled=yes)"]
+  lines:
+    - [open, "Hi, I'm Priya from Lumen Labs. We're moving five staff numbers onto our company postpaid and I'd like to set everything up today."]
+    - [after, "Read me the five numbers you see linked for transfer, and the business plans."]
+    - [after, "Sana and Meghna travel a lot — they get the seven-ninety-nine plan. Arjun, Vikram and Tejas the four-ninety-nine."]
+    - [after, "Limits — one thousand for the three on the cheaper plan, five thousand for Sana and Meghna."]
+    - [after, "Block international calls for Arjun, Vikram and Tejas. Not for Sana and Meghna."]
+    - [after, "Sana and Meghna are going to Singapore for ten days from the nineteenth. What's there?"]
+    - [after, "The ten-day one for both."]
+    - [after, "Now the office internet. Twenty-four devices and it crawls in the afternoon. Can you check it?"]
+    - [after, "Go to three hundred. We also need a static IP for our servers, and the meeting room has no signal — an extender there."]
+    - [after, "Autopay on the company card, please."]
+    - [after, "What will the monthly total be for the five lines?"]
+    - [after, "Send me the summary. Thanks!"]
+  key:
+    - "Converts all five onto TB-71500 from Sun 11 Oct: Biz 799 for Sana and Meghna, Biz 499 for the other three"
+    - "Sets each limit as given; bars international calls only for Arjun, Vikram and Tejas"
+    - "Activates SG10 for Sana and Meghna from Mon 19 Oct (₹1,999 each)"
+    - "Tests the office line, moves to Business 300 (₹1,999), adds a static IP and a meeting-room extender"
+    - "Sets autopay; states ₹3,095 a month for the five lines"
+  checks: {digits: ["Wed 28 Oct", "TB-71500"], say: [["3,095", "three thousand ninety-five", "three thousand and ninety-five"]], tool_order: [convert_to_postpaid, set_usage_limit]}
+  guard: "Each rule names its people; L5 says who is not barred; L11 asks for the total whatever was said."
+
+- id: tel-126
+  g: TEL-5
+  lang: hi
+  diff: Medium
+  dir: out
+  title: "Clinic's business bill overdue — paid, two lines of staff who left closed, limits and barring on the rest, fibre checked"
+  basis: "Operators call small businesses before suspending lines for an unpaid bill; the owner tidies the account on the same call."
+  caller: "F 46-60 · doctor who owns a small clinic in Jaipur, busy between patients"
+  goal: "Avoid suspension, stop paying for lines of staff who left, control the remaining lines, and make sure the clinic internet holds up."
+  role: "You are calling from Tarang because business account TB-82100's September bill of ₹6,840 is overdue and lines may be suspended on Sat 10 Oct. Open the call: greet, name Tarang, say why you are calling."
+  context: "Lines: 98290 82101 (Dr Meena), 98290 82102 (reception), 98290 82103 (Sunil, left in September), 98290 82104 (Rekha, left in August), 98290 82105 (pharmacy). Fibre FB-82100."
+  tasks:
+    - task: "The bill"
+      calls:
+        - "get_bill(account=TB-82100, month=September) → ₹6,840 overdue; includes ₹1,198 for Sunil's and Rekha's lines"
+        - "send_payment_link(account=TB-82100, amount=₹6,840) → link sent by SMS"
+        - "set_autopay(account=TB-82100, method=clinic current account e-mandate) → autopay on from October"
+    - task: "Lines of staff who left"
+      calls:
+        - "get_account(mobile=98290 82103) → Biz 599; last used Tue 15 Sep"
+        - "get_account(mobile=98290 82104) → Biz 599; last used Fri 28 Aug"
+        - "disconnect_number(mobile=98290 82103, reason=staff left) → closed"
+        - "disconnect_number(mobile=98290 82104, reason=staff left) → closed"
+    - task: "The three remaining lines"
+      calls:
+        - "set_usage_limit(mobile=98290 82102, limit=₹800) → set"
+        - "set_usage_limit(mobile=98290 82105, limit=₹800) → set"
+        - "set_call_barring(mobile=98290 82102, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98290 82105, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98290 82102, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98290 82105, type=premium-rate, enabled=yes) → barring on"
+        - "enable_wifi_calling(mobile=98290 82101) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98290 82102) → Wi-Fi calling on"
+    - task: "Clinic fibre"
+      calls:
+        - "check_outage(pincode=302001) → no outage now; area fault fixed Sat 3 Oct"
+        - "run_line_test(fibre_id=FB-82100) → line fine; 50 Mbps; frequent drops last week"
+        - "remote_reboot(fibre_id=FB-82100) → restarted; stable"
+        - "order_fibre_addon(fibre_id=FB-82100, addon=4G backup router) → ₹199 a month, delivered Wed 7 Oct"
+        - "send_sms(template=business_account_summary) → sent"
+  forbid: ["disconnect_number(mobile=98290 82105)", "set_call_barring(mobile=98290 82101, type=international, enabled=yes)"]
+  lines:
+    - [open, "हैलो, डॉ. मीना शर्मा, बोलिए।", "Hello, Dr Meena Sharma speaking."]
+    - [after, "अरे, बिल रह गया? ये तो रिसेप्शन वाले देखते थे। लिंक भेज दीजिए, अभी भर देती हूँ।", "Oh, the bill was left unpaid? Reception used to handle it. Send the link, I'll pay now."]
+    - [after, "और आगे से अपने आप कटे, क्लिनिक के खाते से।", "And from now on it should be deducted automatically, from the clinic's account."]
+    - [after, "छह हज़ार आठ सौ चालीस? इतना क्यों?", "Six thousand eight hundred and forty? Why so much?"]
+    - [after, "सुनील और रेखा तो कब के छोड़ चुके! दोनों नंबर बंद कर दीजिए।", "Sunil and Rekha left long ago! Close both numbers."]
+    - [after, "रिसेप्शन और फ़ार्मेसी वाले नंबर पर आठ सौ की लिमिट, और विदेशी और प्रीमियम कॉल बंद।", "An eight-hundred limit on the reception and pharmacy numbers, and international and premium calls off."]
+    - [after, "मेरे नंबर पर कुछ मत बंद कीजिए, मैं विदेश में डॉक्टरों से बात करती हूँ।", "Don't block anything on my number; I talk to doctors abroad."]
+    - [after, "क्लिनिक में अंदर सिग्नल नहीं आता। मेरे और रिसेप्शन के फ़ोन पर वाई-फ़ाई कॉलिंग चालू कर दीजिए।", "There's no signal inside the clinic. Turn on Wi-Fi calling on my phone and reception's."]
+    - [after, "इंटरनेट भी पिछले हफ़्ते बार-बार जा रहा था, अपॉइंटमेंट सिस्टम बंद हो जाता है।", "The internet kept going last week too; the appointment system shuts down."]
+    - [after, "बैकअप वाला लगा दीजिए।", "Put the backup one in."]
+    - [after, "मरीज़ बैठे हैं, SMS कर दीजिए।", "Patients are waiting, SMS it."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Opens naming Tarang, the overdue ₹6,840 bill and the Sat 10 Oct suspension date"
+    - "Sends the payment link and sets autopay from the clinic account"
+    - "Explains ₹1,198 was for the two former staff lines and closes both"
+    - "Sets ₹800 limits and international and premium-rate barring on reception and pharmacy; leaves Dr Meena's line open"
+    - "Turns on Wi-Fi calling on her phone and reception's; tests and reboots the fibre and adds the 4G backup router"
+  checks: {lang: hi, digits: ["6,840", "1,198"], tool_order: [get_bill, send_payment_link]}
+  guard: "L4 asks about the amount whatever the agent said; L5 names the two leavers; L7 must be respected after L6's barring."
+
+- id: tel-127
+  g: TEL-5
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Three clinic branches — each branch's fibre tested and upgraded, a technician for one, reception lines, waiting-room TVs repacked"
+  basis: "Multi-branch small businesses manage internet, phones and TV per branch, one connection at a time."
+  caller: "M 26-45 · operations manager of a three-branch dental clinic in Delhi, organised"
+  goal: "Get every branch's internet reliable with static IPs for the booking system, fix the branch that keeps dropping, control reception lines and trim the waiting-room TV packs."
+  role: "You handle business connections. Test each line before changing it."
+  context: "Branches: Saket (FB-50101, line 98100 50101, TV-5011), Dwarka (FB-50102, line 98100 50102, TV-5012), Rohini (FB-50103, line 98100 50103, TV-5013). Business account TB-50100."
+  tasks:
+    - task: "Test every branch"
+      calls:
+        - "check_outage(pincode=110017) → no outage"
+        - "check_outage(pincode=110075) → no outage"
+        - "check_outage(pincode=110085) → no outage"
+        - "run_line_test(fibre_id=FB-50101) → line fine, 100 Mbps"
+        - "run_line_test(fibre_id=FB-50102) → line fine, 100 Mbps"
+        - "run_line_test(fibre_id=FB-50103) → high errors on the line; drops 6 times a day"
+        - "remote_reboot(fibre_id=FB-50103) → restarted; errors persist"
+    - task: "Rohini's fault"
+      calls:
+        - "raise_complaint(type=fibre drops, mobile_or_fibre=FB-50103, pincode=110085, details=line errors after reboot; clinic booking system) → complaint CF 50111"
+        - "schedule_technician(complaint_id=CF 50111, date=Tue 6 Oct, slot=8-10 am) → error: slot full"
+        - "schedule_technician(complaint_id=CF 50111, date=Tue 6 Oct, slot=1-3 pm) → visit booked (clinic lunch break)"
+        - "order_fibre_addon(fibre_id=FB-50103, addon=4G backup router) → ₹199 a month, delivered Tue 6 Oct with the visit"
+    - task: "Upgrades and static IPs"
+      calls:
+        - "change_fibre_plan(fibre_id=FB-50101, plan_id=Business 200) → from Tue 6 Oct, ₹1,499"
+        - "change_fibre_plan(fibre_id=FB-50102, plan_id=Business 200) → from Tue 6 Oct, ₹1,499"
+        - "change_fibre_plan(fibre_id=FB-50103, plan_id=Business 200) → from Tue 6 Oct, ₹1,499"
+        - "order_fibre_addon(fibre_id=FB-50101, addon=static IP) → ₹300 a month, active Wed 7 Oct"
+        - "order_fibre_addon(fibre_id=FB-50102, addon=static IP) → ₹300 a month, active Wed 7 Oct"
+        - "order_fibre_addon(fibre_id=FB-50103, addon=static IP) → ₹300 a month, active Wed 7 Oct"
+    - task: "Reception lines"
+      calls:
+        - "set_usage_limit(mobile=98100 50101, limit=₹1,000) → set"
+        - "set_usage_limit(mobile=98100 50102, limit=₹1,000) → set"
+        - "set_usage_limit(mobile=98100 50103, limit=₹1,000) → set"
+        - "set_call_barring(mobile=98100 50101, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98100 50102, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98100 50103, type=international, enabled=yes) → barring on"
+    - task: "Waiting-room TVs"
+      calls:
+        - "get_dth(box_id=TV-5011) → Hindi Mega ₹549 a month (same pack on TV-5012 and TV-5013)"
+        - "change_dth_pack(box_id=TV-5011, pack=News and Infotainment) → from Tue 6 Oct, ₹199 a month"
+        - "change_dth_pack(box_id=TV-5012, pack=News and Infotainment) → from Tue 6 Oct, ₹199 a month"
+        - "change_dth_pack(box_id=TV-5013, pack=News and Infotainment) → from Tue 6 Oct, ₹199 a month"
+    - task: "Credit, follow-up, summary"
+      calls:
+        - "apply_service_credit(account_or_fibre=FB-50103, amount=₹300, reason=repeated drops) → ₹300 credit on the next bill"
+        - "schedule_callback(date=Tue 6 Oct, slot=5-6 pm, topic=Rohini line after the visit) → booked"
+        - "send_sms(template=branches_summary) → sent"
+  forbid: ["change_fibre_plan(fibre_id=FB-50101, plan_id=Business 500)", "remove_channel(box_id=TV-5011, channel=all)"]
+  lines:
+    - [open, "Namaste, main Dentique Clinics se Amit bol raha hoon. Hamari teen branches hain — Saket, Dwarka, Rohini. Teeno ka internet, phone aur TV aapka hai.", "Hello, this is Amit from Dentique Clinics. We have three branches — Saket, Dwarka, Rohini. All three have your internet, phone and TV."]
+    - [after, "Booking system online hai, internet jaata hai toh sab ruk jaata hai. Teeno branches check kar lo, area mein koi problem toh nahi.", "Our booking system is online; when the internet goes, everything stops. Check all three branches, and whether there's an area problem."]
+    - [after, "Rohini wala hi roz jaata hai. Restart karke dekho.", "It's Rohini that goes every day. Restart it and see."]
+    - [after, "Complaint daalo, aur kal subah aath baje koi aaye, clinic khulne se pehle. Woh na ho toh dopahar lunch break mein, ek se teen.", "File a complaint, and have someone come tomorrow at eight in the morning, before the clinic opens. If not, during the lunch break, one to three."]
+    - [after, "Rohini mein backup bhi laga do.", "Put a backup in at Rohini too."]
+    - [after, "Teeno branches ka plan do sau kar do, aur teeno pe static IP — naye booking software ke liye chahiye.", "Make all three branches' plan two hundred, and a static IP on all three — the new booking software needs it."]
+    - [after, "Teeno reception phones pe hazaar ki limit aur international band.", "A thousand limit and international off on all three reception phones."]
+    - [after, "Waiting room ke TV pe sirf news aur infotainment chahiye. Teeno.", "The waiting-room TVs need only news and infotainment. All three."]
+    - [after, "Rohini ki problem ke liye kuch credit milega?", "Will we get some credit for Rohini's problem?"]
+    - [after, "Kal shaam ko Rohini ka update dena.", "Give me Rohini's update tomorrow evening."]
+    - [after, "Mahine ka naya total kitna hoga teeno fibre ka?", "What will the new monthly total be for the three fibre lines?"]
+    - [after, "SMS kar do. Thanks.", "SMS it. Thanks."]
+  key:
+    - "Checks each branch's area and tests each line; finds Rohini's errors and reboots"
+    - "Raises CF 50111; when 8 am is full, says so and books the 1-3 pm lunch-break slot; adds Rohini's 4G backup"
+    - "Moves all three to Business 200 and adds a static IP on each, one call per branch"
+    - "Sets ₹1,000 limits and international barring on all three reception lines"
+    - "Moves all three waiting-room boxes to News and Infotainment (₹199)"
+    - "Credits ₹300 for Rohini; states ₹5,596 a month for the three fibre lines with static IPs and the backup"
+  checks: {lang: hg, digits: ["CF 50111", "1-3 pm"], say: [["5,596", "paanch hazaar paanch sau chhiyaanve", "five thousand five hundred ninety-six"]], tool_order: [run_line_test, raise_complaint]}
+  guard: "The visit fallback comes with the request; each later line applies one rule to all three branches by name; L11 asks for the total whatever was said."

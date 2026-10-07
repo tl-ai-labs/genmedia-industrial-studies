@@ -1,0 +1,474 @@
+# Healthcare — tool-heavy scenarios hlt-108 … hlt-114 (HLT-2 Pharmacy).
+code: hlt
+scenarios:
+
+- id: hlt-108
+  g: HLT-2
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Parents' monthly medicines — twelve items from two prescriptions, one swapped via the pharmacist, slot full, ten auto-refills"
+  basis: "Families order elderly parents' chronic medicines each month, medicine by medicine, and set refills so nothing runs out."
+  caller: "M 26-45 · son in Lucknow who handles his parents' medicines, careful"
+  goal: "Order every medicine on both prescriptions plus test strips, get a substitute approved properly, and set monthly auto-refills for the long-term ones."
+  role: "You handle pharmacy orders. A substitute needs the pharmacist's approval before it is ordered."
+  context: "Prescriptions RX 21301 (father) and RX 21302 (mother)."
+  tasks:
+    - task: "Patients and prescriptions"
+      calls:
+        - "get_patient(patient=Ram Prakash Gupta) → UHID LK-213010, 74; linked to the caller"
+        - "get_patient(patient=Shanti Gupta) → UHID LK-213011, 70; linked to the caller"
+        - "get_prescription(rx_id=RX 21301) → metformin 500 mg twice a day; glimepiride 1 mg once a day; telmisartan 40 mg once a day; atorvastatin 10 mg at night; clopidogrel 75 mg once a day; pantoprazole 40 mg before breakfast; cefuroxime 500 mg twice a day for 5 days"
+        - "get_prescription(rx_id=RX 21302) → levothyroxine 50 mcg empty stomach; amlodipine 5 mg once a day; calcium with vitamin D3 once a day; alendronate 70 mg once a week; diclofenac gel as needed"
+    - task: "Father's seven"
+      calls:
+        - "order_medicine(rx_id=RX 21301, medicine=metformin 500 mg, qty=60) → added to order PH 21320, ₹90"
+        - "order_medicine(rx_id=RX 21301, medicine=glimepiride 1 mg, qty=30, order_id=PH 21320) → added, ₹120"
+        - "order_medicine(rx_id=RX 21301, medicine=telmisartan 40 mg, qty=30, order_id=PH 21320) → out of stock; same-salt substitute Telma 40 needs pharmacist approval"
+        - "transfer_to_pharmacist(reason=approve same-salt substitute for telmisartan 40 mg, RX 21301) → pharmacist approves Telma 40"
+        - "order_medicine(rx_id=RX 21301, medicine=Telma 40 (telmisartan 40 mg), qty=30, order_id=PH 21320) → added, ₹210"
+        - "order_medicine(rx_id=RX 21301, medicine=atorvastatin 10 mg, qty=30, order_id=PH 21320) → added, ₹150"
+        - "order_medicine(rx_id=RX 21301, medicine=clopidogrel 75 mg, qty=30, order_id=PH 21320) → added, ₹180"
+        - "order_medicine(rx_id=RX 21301, medicine=pantoprazole 40 mg, qty=30, order_id=PH 21320) → added, ₹110"
+        - "order_medicine(rx_id=RX 21301, medicine=cefuroxime 500 mg, qty=10, order_id=PH 21320) → added, ₹320"
+    - task: "Mother's five and the strips"
+      calls:
+        - "order_medicine(rx_id=RX 21302, medicine=levothyroxine 50 mcg, qty=30, order_id=PH 21320) → added, ₹140"
+        - "order_medicine(rx_id=RX 21302, medicine=amlodipine 5 mg, qty=30, order_id=PH 21320) → added, ₹60"
+        - "order_medicine(rx_id=RX 21302, medicine=calcium with vitamin D3, qty=30, order_id=PH 21320) → added, ₹240"
+        - "order_medicine(rx_id=RX 21302, medicine=alendronate 70 mg, qty=4, order_id=PH 21320) → added, ₹280"
+        - "order_medicine(rx_id=RX 21302, medicine=diclofenac gel 30 g, qty=1, order_id=PH 21320) → added, ₹95"
+        - "order_medicine(rx_id=none, medicine=glucometer strips (50), qty=1, order_id=PH 21320) → added, ₹990"
+        - "order_medicine(rx_id=none, medicine=lancets (100), qty=1, order_id=PH 21320) → added, ₹150"
+    - task: "Delivery"
+      calls:
+        - "place_pharmacy_order(order_id=PH 21320, address=B-22 Indira Nagar, Lucknow 226016, slot=today 6-8 pm) → error: today's evening slots are full"
+        - "place_pharmacy_order(order_id=PH 21320, address=B-22 Indira Nagar, Lucknow 226016, slot=Tue 6 Oct 8-10 am) → placed, ₹3,135, delivery Tue 6 Oct 8-10 am"
+    - task: "Monthly auto-refills for the long-term ones"
+      calls:
+        - "set_refill_reminder(rx_id=RX 21301, medicine=metformin 500 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21301, medicine=glimepiride 1 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21301, medicine=Telma 40 (telmisartan 40 mg), every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21301, medicine=atorvastatin 10 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21301, medicine=clopidogrel 75 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21301, medicine=pantoprazole 40 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21302, medicine=levothyroxine 50 mcg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21302, medicine=amlodipine 5 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21302, medicine=calcium with vitamin D3, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 21302, medicine=alendronate 70 mg, every=28 days) → set"
+        - "send_sms(template=pharmacy_order_summary) → sent"
+  forbid: ["set_refill_reminder(rx_id=RX 21301, medicine=cefuroxime 500 mg)", "set_refill_reminder(rx_id=RX 21302, medicine=diclofenac gel 30 g)"]
+  lines:
+    - [open, "Namaste, mummy-papa ki mahine ki dawaiyan mangwani hain. Dono ke prescription aapke system mein hain.", "Hello, I need to order my parents' monthly medicines. Both prescriptions are in your system."]
+    - [after, "Dono prescription ek baar padh do, main mila leta hoon.", "Read both prescriptions once; I'll check them."]
+    - [after, "Papa ki saari saat dawaiyan, ek mahine ki. Antibiotic sirf paanch din ka.", "All seven of Papa's medicines, for a month. The antibiotic only for five days."]
+    - [after, "Telmisartan nahi hai? Doosri company ka same wala chalega kya? Pharmacist se poochh lo.", "No telmisartan? Will the same one from another company do? Ask the pharmacist."]
+    - [after, "Theek hai, woh daal do. Ab mummy ki paanchon — haddi wali hafte mein ek baar wali hai, chaar goli.", "Okay, add that. Now all five of Mummy's — the bone one is once a week, four tablets."]
+    - [after, "Papa ke sugar check ki strips bhi khatam hain — pachaas wala pack aur lancets.", "Papa's sugar-test strips have run out too — the pack of fifty and lancets."]
+    - [after, "Papa ne poochha hai, sugar ki goli khaane se pehle leni hai ya baad mein?", "Papa's asking — should the sugar tablet be taken before food or after?"]
+    - [after, "Achha, likha hai waisa hi. Aaj shaam tak bhej do — B-22 Indira Nagar. Aaj na ho toh kal subah.", "Okay, as it's written then. Send it by this evening — B-22 Indira Nagar. If not today, tomorrow morning."]
+    - [after, "Total kitna hua?", "What's the total?"]
+    - [after, "Har mahine yaad dilana aur apne aap bhej dena — jo roz ki hain, sab. Antibiotic aur gel nahi.", "Remind me every month and send automatically — all the daily ones. Not the antibiotic or the gel."]
+    - [after, "Haddi wali hafte wali hai na, uska hisaab alag rakhna.", "The bone one is weekly, remember — keep its timing separate."]
+    - [after, "SMS kar do. Dhanyavaad.", "SMS it. Thank you."]
+  key:
+    - "Reads both prescriptions; orders each of the twelve medicines in its own call, cefuroxime for 5 days only"
+    - "When telmisartan is out, gets the pharmacist's approval before adding Telma 40"
+    - "Adds the strips and lancets"
+    - "Answers the food question only from what the prescription says; offers the pharmacist for more"
+    - "When today's slots are full, says so and books Tue 6 Oct 8-10 am; states ₹3,135"
+    - "Sets ten auto-refills (every 30 days, alendronate every 28) and none for the antibiotic or gel"
+  checks: {lang: hg, digits: ["PH 21320", "3,135"], tool_order: [transfer_to_pharmacist, set_refill_reminder]}
+  guard: "Each patient's list is asked for in its own line; L4 asks for the pharmacist; the delivery fallback comes with the request; L10 names what to leave out."
+
+- id: hlt-109
+  g: HLT-2
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Teenager with type 1 diabetes — six supplies checked and ordered cold-chain, last month's warm insulin, six refills, a dose question for the nurse"
+  basis: "Insulin users need several supplies every month with cold-chain delivery, and dose questions belong to a clinician."
+  caller: "F 46-60 · mother in Pune managing her 15-year-old son's diabetes, experienced and exact"
+  goal: "Get every supply for the month delivered cold-chain by tomorrow, sort out last month's warm insulin, set refills, and talk to someone about his insulin dose."
+  role: "You handle pharmacy orders. Never advise on insulin doses; connect the nurse."
+  context: "Prescription RX 33410 for Aarav Kulkarni."
+  tasks:
+    - task: "Patient and prescription"
+      calls:
+        - "get_patient(patient=Aarav Kulkarni) → UHID PN-334100, 15; linked to the caller"
+        - "get_prescription(rx_id=RX 33410) → insulin glargine 100 U/mL pen; insulin aspart 100 U/mL pen; pen needles 4 mm; CGM sensor (14-day); glucose tablets; ketone test strips"
+    - task: "Last month's problem"
+      calls:
+        - "get_pharmacy_order(order_id=PH 33380) → delivered Mon 7 Sep; cold-chain box arrived open"
+        - "report_order_issue(order_id=PH 33380, medicine=insulin aspart pens, issue=cold-chain box arrived open, insulin warm) → replacement free with this order; warm pens to be returned"
+    - task: "Stock for each supply"
+      calls:
+        - "check_medicine_stock(medicine=insulin glargine 100 U/mL pen, pincode=411038) → in stock"
+        - "check_medicine_stock(medicine=insulin aspart 100 U/mL pen, pincode=411038) → in stock"
+        - "check_medicine_stock(medicine=pen needles 4 mm, pincode=411038) → in stock"
+        - "check_medicine_stock(medicine=CGM sensor 14-day, pincode=411038) → in stock"
+        - "check_medicine_stock(medicine=glucose tablets, pincode=411038) → in stock"
+        - "check_medicine_stock(medicine=ketone test strips, pincode=411038) → in stock"
+    - task: "Order each"
+      calls:
+        - "order_medicine(rx_id=RX 33410, medicine=insulin glargine 100 U/mL pen, qty=3) → added to order PH 33420, ₹2,550"
+        - "order_medicine(rx_id=RX 33410, medicine=insulin aspart 100 U/mL pen, qty=5, order_id=PH 33420) → added, ₹2,250"
+        - "order_medicine(rx_id=RX 33410, medicine=pen needles 4 mm, qty=100, order_id=PH 33420) → added, ₹1,400"
+        - "order_medicine(rx_id=RX 33410, medicine=CGM sensor 14-day, qty=2, order_id=PH 33420) → added, ₹9,998"
+        - "order_medicine(rx_id=RX 33410, medicine=glucose tablets, qty=2, order_id=PH 33420) → added, ₹300"
+        - "order_medicine(rx_id=RX 33410, medicine=ketone test strips, qty=1, order_id=PH 33420) → added, ₹850"
+        - "place_pharmacy_order(order_id=PH 33420, address=Flat 7, Prabhat Road, Pune 411004, slot=Tue 6 Oct 8-10 am cold-chain) → placed, ₹17,348, cold-chain delivery Tue 6 Oct 8-10 am"
+    - task: "Refills"
+      calls:
+        - "set_refill_reminder(rx_id=RX 33410, medicine=insulin glargine 100 U/mL pen, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 33410, medicine=insulin aspart 100 U/mL pen, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 33410, medicine=pen needles 4 mm, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 33410, medicine=CGM sensor 14-day, every=28 days) → set"
+        - "set_refill_reminder(rx_id=RX 33410, medicine=glucose tablets, every=60 days) → set"
+        - "set_refill_reminder(rx_id=RX 33410, medicine=ketone test strips, every=90 days) → set"
+    - task: "The dose question"
+      calls:
+        - "transfer_to_nurse(reason=mother asks about adjusting Aarav's glargine dose; readings high at night) → nurse joins"
+        - "send_sms(template=pharmacy_order_summary) → sent"
+  forbid: ["order_medicine(rx_id=RX 33410, medicine=insulin glargine 100 U/mL pen, qty=6)"]
+  lines:
+    - [open, "Hi, I need my son's diabetes supplies for the month. He's fifteen, type one. Everything's on his prescription."]
+    - [after, "Before that — last month's insulin box came open and the pens were warm. I didn't use them. I want that sorted."]
+    - [after, "Fine. This month: three glargine pens, five aspart pens, a hundred pen needles, two CGM sensors, two glucose tablet packs and one ketone strips."]
+    - [after, "Check you actually have each one before you add it — I can't have a gap."]
+    - [after, "It has to come cold-chain, by tomorrow morning. Flat seven, Prabhat Road."]
+    - [after, "Total?"]
+    - [after, "Set refills for all of it — insulin and needles monthly, sensors every four weeks, the tablets every two months, ketone strips every three."]
+    - [after, "One more thing — his readings have been high at night. Should I increase his glargine by two units?"]
+    - [after, "Right, I know. Then let me speak to the nurse after this."]
+    - [after, "And the warm pens — do I hand them back to the delivery person?"]
+    - [after, "Send me the summary. Then the nurse, please."]
+    - [after, "Thanks."]
+  key:
+    - "Finds last month's open cold-chain box and arranges free replacement aspart pens with the return"
+    - "Checks stock for all six supplies before adding each"
+    - "Orders each in the quantity given and places a cold-chain delivery for Tue 6 Oct 8-10 am; states ₹17,348"
+    - "Sets six refills with the intervals she gave"
+    - "Does not advise on the glargine dose; connects the nurse"
+  checks: {digits: ["PH 33420", "17,348"], tool_order: [check_medicine_stock, order_medicine]}
+  guard: "Quantities come in L3 and the stock rule in L4 before any order; L8 must be referred to a clinician; L9 accepts the referral whatever the wording."
+
+- id: hlt-110
+  g: HLT-2
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Wrong medicines delivered — wrong strength, missing, damaged and expired items reported, next month ordered right"
+  basis: "Pharmacy deliveries sometimes arrive wrong in several ways at once; each item needs its own report."
+  caller: "F 60+ · retired nurse in Kanpur, sharp, checks every strip"
+  goal: "Get every wrong item replaced, a pharmacist's word on the wrong tablet she took, and next month's order placed correctly."
+  role: "You handle pharmacy orders. Questions about a wrong dose already taken go to the pharmacist."
+  context: ""
+  tasks:
+    - task: "The order"
+      calls:
+        - "get_patient(patient=Sushila Mishra) → UHID KP-445000, 68"
+        - "get_pharmacy_order(order_id=PH 44510) → delivered Sat 3 Oct: atorvastatin 20 mg ×30; metoprolol 25 mg ×30; vitamin B12 ×30; glucometer strips ×50; aspirin 75 mg ×30"
+        - "get_prescription(rx_id=RX 44500) → atorvastatin 10 mg at night; metoprolol 25 mg twice a day; vitamin B12 once a day; aspirin 75 mg once a day; ranolazine 500 mg twice a day"
+    - task: "Report each problem"
+      calls:
+        - "report_order_issue(order_id=PH 44510, medicine=atorvastatin, issue=20 mg sent instead of 10 mg) → error: issue system timed out"
+        - "report_order_issue(order_id=PH 44510, medicine=atorvastatin, issue=20 mg sent instead of 10 mg) → replacement 10 mg Tue 6 Oct; wrong strip collected then"
+        - "report_order_issue(order_id=PH 44510, medicine=metoprolol 25 mg, issue=only 30 tablets for a twice-a-day dose) → 30 more on Tue 6 Oct"
+        - "report_order_issue(order_id=PH 44510, medicine=ranolazine 500 mg, issue=missing) → sent Tue 6 Oct"
+        - "report_order_issue(order_id=PH 44510, medicine=glucometer strips, issue=box crushed, foil torn) → replacement Tue 6 Oct"
+        - "report_order_issue(order_id=PH 44510, medicine=vitamin B12, issue=expires Oct 2026) → replacement Tue 6 Oct"
+        - "transfer_to_pharmacist(reason=patient took one atorvastatin 20 mg instead of 10 mg last night) → pharmacist joins after this"
+        - "raise_ticket(category=dispensing error, summary=PH 44510 wrong strength, short quantity, missing, damaged and short-expiry items) → ticket DE 44520"
+    - task: "Next month's order, checked"
+      calls:
+        - "check_medicine_stock(medicine=atorvastatin 10 mg, pincode=208017) → in stock"
+        - "check_medicine_stock(medicine=ranolazine 500 mg, pincode=208017) → in stock"
+        - "order_medicine(rx_id=RX 44500, medicine=atorvastatin 10 mg, qty=30) → added to order PH 44560, ₹150"
+        - "order_medicine(rx_id=RX 44500, medicine=metoprolol 25 mg, qty=60, order_id=PH 44560) → added, ₹130"
+        - "order_medicine(rx_id=RX 44500, medicine=ranolazine 500 mg, qty=60, order_id=PH 44560) → added, ₹540"
+        - "order_medicine(rx_id=RX 44500, medicine=aspirin 75 mg, qty=30, order_id=PH 44560) → added, ₹40"
+        - "place_pharmacy_order(order_id=PH 44560, address=117 Swaroop Nagar, Kanpur 208002, slot=Mon 2 Nov 10 am-12 pm) → placed, ₹860"
+        - "set_refill_reminder(rx_id=RX 44500, medicine=ranolazine 500 mg, every=30 days) → set"
+        - "send_sms(template=order_issues_summary) → sent"
+  forbid: ["report_order_issue(order_id=PH 44510, medicine=aspirin 75 mg)"]
+  lines:
+    - [open, "नमस्ते। शनिवार को दवाइयाँ आईं, और उनमें कई गड़बड़ हैं। मैं ख़ुद नर्स रह चुकी हूँ, हर पत्ता देखा है।", "Hello. Medicines came on Saturday, and there are several mistakes. I was a nurse myself; I've checked every strip."]
+    - [after, "पहले ऑर्डर और पर्चा दोनों पढ़िए, मिलाकर।", "First read both the order and the prescription, side by side."]
+    - [after, "एटोरवास्टेटिन बीस भेजा, पर्चे में दस है। मेटोप्रोलोल दिन में दो बार है, तीस ही भेजीं।", "You sent atorvastatin twenty; the prescription says ten. Metoprolol is twice a day, and you sent only thirty."]
+    - [after, "रैनोलाज़ीन आई ही नहीं। शुगर स्ट्रिप का डिब्बा पिचका हुआ, पन्नी फटी। और बी-ट्वेल्व इसी महीने ख़त्म हो रही है।", "Ranolazine didn't come at all. The sugar-strip box is crushed, the foil torn. And the B12 expires this very month."]
+    - [after, "एस्पिरिन ठीक है।", "The aspirin is fine."]
+    - [after, "कल रात ग़लती से एक बीस वाली खा ली। कुछ होगा क्या?", "Last night I took one twenty by mistake. Will anything happen?"]
+    - [after, "ठीक है, बाद में फ़ार्मासिस्ट से बात करा दीजिए। इसकी शिकायत भी दर्ज कीजिए।", "Okay, connect me to the pharmacist afterwards. And register a complaint about this."]
+    - [after, "अगले महीने का ऑर्डर अभी लगा दीजिए — सही मात्रा में, दो नवंबर को। पहले देख लीजिए स्टॉक में है।", "Place next month's order now — the right quantities, on the second of November. First check it's in stock."]
+    - [after, "बी-ट्वेल्व अगले महीने नहीं चाहिए, बदलाव वाली काफ़ी है।", "I don't need B12 next month; the replacement is enough."]
+    - [after, "रैनोलाज़ीन हर महीने अपने आप आए।", "Ranolazine should come every month automatically."]
+    - [after, "SMS भेज दीजिए। फिर फ़ार्मासिस्ट।", "Send an SMS. Then the pharmacist."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Compares order and prescription; reports each problem in its own call (wrong strength, short quantity, missing, damaged, short expiry); retries after the timeout"
+    - "Leaves the aspirin alone"
+    - "Does not say whether the extra 20 mg is harmful; connects the pharmacist and raises DE 44520"
+    - "Checks stock and places next month's order without B12 for Mon 2 Nov (PH 44560, ₹860)"
+    - "Sets a monthly refill for ranolazine"
+  checks: {lang: hi, digits: ["DE 44520", "PH 44560", "860"], tool_order: [report_order_issue, transfer_to_pharmacist]}
+  guard: "Each problem is named with its medicine; L6 must be referred; L8 asks for the stock check first; L9 removes B12 before the order is placed."
+
+- id: hlt-111
+  g: HLT-2
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Father home after a heart procedure — nine discharge medicines ordered one by one, a test and follow-up, dose questions for the pharmacist"
+  basis: "Discharge prescriptions are long; families order every item and set up the first follow-ups."
+  caller: "F 26-45 · daughter in Coimbatore whose father was discharged yesterday after a stent, anxious"
+  goal: "Get all nine discharge medicines delivered today, the INR test and cardiology follow-up booked, refills set, and her timing questions answered by a pharmacist."
+  role: "You handle pharmacy and bookings. Timing and dose questions go to the pharmacist."
+  context: ""
+  tasks:
+    - task: "Discharge prescription"
+      calls:
+        - "get_patient(patient=Shanmugam R) → UHID CB-771230, 67; angioplasty with stent, discharged Sun 4 Oct"
+        - "get_discharge_status(admission_id=AD 77120) → discharged Sun 4 Oct; discharge prescription RX 77130"
+        - "get_prescription(rx_id=RX 77130) → aspirin 75 mg; ticagrelor 90 mg twice a day; atorvastatin 80 mg; metoprolol 25 mg twice a day; ramipril 2.5 mg; pantoprazole 40 mg; nitroglycerin 0.5 mg under the tongue if chest pain; warfarin 2 mg; dapagliflozin 10 mg"
+    - task: "Order each"
+      calls:
+        - "order_medicine(rx_id=RX 77130, medicine=aspirin 75 mg, qty=30) → added to order PH 77140, ₹40"
+        - "order_medicine(rx_id=RX 77130, medicine=ticagrelor 90 mg, qty=60, order_id=PH 77140) → added, ₹2,400"
+        - "order_medicine(rx_id=RX 77130, medicine=atorvastatin 80 mg, qty=30, order_id=PH 77140) → added, ₹420"
+        - "order_medicine(rx_id=RX 77130, medicine=metoprolol 25 mg, qty=60, order_id=PH 77140) → added, ₹130"
+        - "order_medicine(rx_id=RX 77130, medicine=ramipril 2.5 mg, qty=30, order_id=PH 77140) → error: pharmacy system timed out"
+        - "order_medicine(rx_id=RX 77130, medicine=ramipril 2.5 mg, qty=30, order_id=PH 77140) → added, ₹110"
+        - "order_medicine(rx_id=RX 77130, medicine=pantoprazole 40 mg, qty=30, order_id=PH 77140) → added, ₹110"
+        - "order_medicine(rx_id=RX 77130, medicine=nitroglycerin 0.5 mg, qty=25, order_id=PH 77140) → added, ₹90"
+        - "order_medicine(rx_id=RX 77130, medicine=warfarin 2 mg, qty=30, order_id=PH 77140) → added, ₹60"
+        - "order_medicine(rx_id=RX 77130, medicine=dapagliflozin 10 mg, qty=30, order_id=PH 77140) → added, ₹550"
+        - "place_pharmacy_order(order_id=PH 77140, address=21 Race Course Road, Coimbatore 641018, slot=today 4-6 pm) → placed, ₹3,910, delivery today 4-6 pm"
+    - task: "INR test and follow-up"
+      calls:
+        - "book_home_collection(tests=INR, pincode=641018, date=Fri 9 Oct, slot=7-8 am, patient=Shanmugam R) → collection HC 77150"
+        - "find_doctor(speciality=cardiology, branch=Race Course) → Dr Senthil Nathan (D-7710), his cardiologist"
+        - "get_slots(doctor_id=D-7710, date=Mon 12 Oct) → 10:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-7710, date=Mon 12 Oct, slot=10:00 am, patient=Shanmugam R) → AP 77160, ₹900"
+        - "send_report(order_id=HC 77150, test=INR, to=Dr Senthil Nathan) → will be sent when ready"
+    - task: "Refills for the long-term ones"
+      calls:
+        - "set_refill_reminder(rx_id=RX 77130, medicine=ticagrelor 90 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 77130, medicine=atorvastatin 80 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 77130, medicine=metoprolol 25 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 77130, medicine=aspirin 75 mg, every=30 days) → set"
+    - task: "Her questions"
+      calls:
+        - "transfer_to_pharmacist(reason=daughter asks timing of ticagrelor and warfarin, and how to use nitroglycerin) → pharmacist joins"
+        - "send_sms(template=discharge_medicines_summary) → sent"
+  forbid: ["set_refill_reminder(rx_id=RX 77130, medicine=warfarin 2 mg)"]
+  lines:
+    - [open, "வணக்கம். என் அப்பாக்கு நேத்து stent போட்டு discharge பண்ணிட்டாங்க. Discharge ல எழுதின எல்லா மருந்தும் இன்னைக்கே வேணும்.", "Hello. My father had a stent and was discharged yesterday. I need every medicine on the discharge sheet today."]
+    - [after, "Discharge prescription ஐ ஒவ்வொண்ணா படிங்க, நான் பாக்குறேன்.", "Read the discharge prescription one by one; I'll check."]
+    - [after, "எல்லாத்தையும் ஒரு மாசத்துக்கு போடுங்க. இன்னைக்கு சாயங்காலத்துக்குள்ள வேணும். Race Course Road, இருபத்தொண்ணு.", "Put all of them for a month. I need them by this evening. 21 Race Course Road."]
+    - [after, "Warfarin க்கு blood test பண்ணணும்னு சொன்னாங்க. வெள்ளிக்கிழமை காலைல வீட்டுக்கு வந்து எடுங்க.", "They said warfarin needs a blood test. Come home and collect it on Friday morning."]
+    - [after, "அந்த report நேரா அவரோட doctor க்கு போகணும்.", "That report should go straight to his doctor."]
+    - [after, "Dr Senthil Nathan கிட்ட அடுத்த திங்கள் follow-up வேணும், காலைல.", "We need a follow-up with Dr Senthil Nathan next Monday, morning."]
+    - [after, "தினமும் சாப்பிடுறதுக்கு மாசா மாசம் auto refill போடுங்க — ticagrelor, atorvastatin, metoprolol, aspirin.", "Set monthly auto-refills for the daily ones — ticagrelor, atorvastatin, metoprolol, aspirin."]
+    - [after, "Warfarin dose test பாத்து மாறும்னு சொன்னாங்க, அதுக்கு வேண்டாம்.", "They said the warfarin dose changes with the test, so not for that one."]
+    - [after, "Ticagrelor உம் warfarin உம் ஒரே நேரத்துல சாப்பிடலாமா? நெஞ்சு வலி வந்தா அந்த நாக்கு அடியில வைக்கிற மாத்திரை எப்படி?", "Can ticagrelor and warfarin be taken at the same time? And how is the under-the-tongue tablet used if he gets chest pain?"]
+    - [after, "சரி, pharmacist கிட்ட பேசுறேன். மொத்தம் எவ்வளவு?", "Okay, I'll talk to the pharmacist. How much in total?"]
+    - [after, "SMS அனுப்புங்க, அப்புறம் pharmacist.", "Send an SMS, then the pharmacist."]
+    - [after, "நன்றி.", "Thank you."]
+  key:
+    - "Reads all nine discharge medicines and orders each in its own call; retries ramipril after the timeout"
+    - "Places delivery today 4-6 pm to 21 Race Course Road (PH 77140, ₹3,910)"
+    - "Books the INR home collection Fri 9 Oct 7-8 am with the report going to Dr Senthil Nathan, and the follow-up Mon 12 Oct 10:00 am"
+    - "Sets refills for the four daily medicines she named, not warfarin"
+    - "Does not answer the timing or nitroglycerin questions; connects the pharmacist and says to call 108 if chest pain does not settle"
+    - "Speaks Tamil, keeping her English words"
+  checks: {lang: ta, digits: ["PH 77140", "AP 77160", "3,910"], say: [["108", "நூற்றி எட்டு", "one zero eight"]], tool_order: [get_prescription, order_medicine]}
+  guard: "Each request names its medicines; L8 excludes warfarin before any refill; L9 must be referred."
+
+- id: hlt-112
+  g: HLT-2
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "One call to set the family's refills — three patients' long-term medicines, auto-refill each, this month's gaps ordered"
+  basis: "Households with several chronic patients set up auto-refills medicine by medicine so nothing runs out."
+  caller: "F 46-60 · homemaker in Jaipur who manages medicines for her mother-in-law, husband and herself"
+  goal: "Never run out again: put every long-term medicine for all three on auto-refill with the right interval, and order what is already short."
+  role: "You handle pharmacy refills."
+  context: "Prescriptions RX 55101 (Kamla Devi), RX 55102 (Suresh Agarwal), RX 55103 (Meena Agarwal)."
+  tasks:
+    - task: "Three prescriptions"
+      calls:
+        - "get_patient(patient=Meena Agarwal) → UHID JP-551030; linked: Kamla Devi, Suresh Agarwal"
+        - "get_prescription(rx_id=RX 55101) → Kamla Devi: amlodipine 5 mg; levothyroxine 75 mcg; calcium with vitamin D3; donepezil 5 mg"
+        - "get_prescription(rx_id=RX 55102) → Suresh: metformin 1000 mg twice a day; rosuvastatin 10 mg; telmisartan 40 mg"
+        - "get_prescription(rx_id=RX 55103) → Meena: levothyroxine 50 mcg; vitamin D3 60000 IU weekly"
+    - task: "Auto-refill each"
+      calls:
+        - "set_refill_reminder(rx_id=RX 55101, medicine=amlodipine 5 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55101, medicine=levothyroxine 75 mcg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55101, medicine=calcium with vitamin D3, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55101, medicine=donepezil 5 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55102, medicine=metformin 1000 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55102, medicine=rosuvastatin 10 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55102, medicine=telmisartan 40 mg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55103, medicine=levothyroxine 50 mcg, every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 55103, medicine=vitamin D3 60000 IU, every=56 days) → set"
+    - task: "What's short this month"
+      calls:
+        - "order_medicine(rx_id=RX 55101, medicine=donepezil 5 mg, qty=30) → added to order PH 55120, ₹380"
+        - "order_medicine(rx_id=RX 55102, medicine=metformin 1000 mg, qty=60, order_id=PH 55120) → added, ₹180"
+        - "order_medicine(rx_id=RX 55103, medicine=vitamin D3 60000 IU, qty=8, order_id=PH 55120) → added, ₹220"
+        - "order_medicine(rx_id=RX 55101, medicine=levothyroxine 75 mcg, qty=30, order_id=PH 55120) → added, ₹150"
+        - "place_pharmacy_order(order_id=PH 55120, address=C-14 Vaishali Nagar, Jaipur 302021, slot=Tue 6 Oct 10 am-12 pm) → placed, ₹930"
+        - "get_pharmacy_order(order_id=PH 55120) → confirmed; delivery Tue 6 Oct 10 am-12 pm"
+        - "send_sms(template=refills_summary) → sent"
+  forbid: ["order_medicine(rx_id=RX 55102, medicine=rosuvastatin 10 mg)"]
+  lines:
+    - [open, "Namaste, ghar mein teen log roz dawai lete hain — saasu maa, pati aur main. Har mahine koi na koi khatam ho jaati hai. Sab automatic karna hai.", "Hello, three of us at home take medicines daily — my mother-in-law, my husband and me. Every month something runs out. I want it all automatic."]
+    - [after, "Teenon ke prescription padh do.", "Read all three prescriptions."]
+    - [after, "Sab dawaiyon ka har mahine auto-refill laga do.", "Set monthly auto-refill on every medicine."]
+    - [after, "Mera vitamin D hafte mein ek baar hai, aath goli do mahine chalti hain. Uska hisaab waise rakhna.", "My vitamin D is once a week; eight tablets last two months. Set its timing that way."]
+    - [after, "Abhi kuch khatam hai — saasu maa ki yaad wali goli, pati ki metformin, mera vitamin D.", "Some things are out right now — mother-in-law's memory tablet, my husband's metformin, my vitamin D."]
+    - [after, "Aur saasu maa ki thyroid ki bhi chaar-paanch hi bachi hain. Woh bhi bhej do.", "And only four or five of mother-in-law's thyroid tablets are left. Send those too."]
+    - [after, "Pati ki cholesterol wali abhi hai, woh nahi.", "My husband's cholesterol one is still there — not that."]
+    - [after, "Kal subah bhej do, C-14 Vaishali Nagar.", "Send it tomorrow morning, C-14 Vaishali Nagar."]
+    - [after, "Total kitna hua? Aur pakka kal aa jayega na?", "What's the total? And it will definitely come tomorrow, right?"]
+    - [after, "Auto-refill wale har mahine kab aayenge, ek baar bata do.", "Tell me once when the auto-refills will come each month."]
+    - [after, "SMS kar do.", "SMS it."]
+    - [after, "Thank you ji.", "Thank you."]
+  key:
+    - "Reads all three prescriptions and sets an auto-refill on each of the nine medicines, one call each"
+    - "Sets vitamin D3 every 56 days, as she described"
+    - "Orders donepezil, metformin, vitamin D3 and levothyroxine 75 mcg now; not rosuvastatin"
+    - "Places delivery Tue 6 Oct 10 am-12 pm, confirms it, and states ₹930"
+  checks: {lang: hg, digits: ["PH 55120", "930"], tool_order: [set_refill_reminder, place_pharmacy_order]}
+  guard: "L3 asks for refills on all; L4 sets the exception; L5–L7 name what to order and not; L9 asks for confirmation whatever was said."
+
+- id: hlt-113
+  g: HLT-2
+  lang: te
+  script: te-mix
+  diff: Medium
+  dir: in
+  title: "Dialysis patient's monthly medicines — six checked, one substitute approved by the pharmacist, a cold-chain injection, refills"
+  basis: "Kidney patients take several specialised medicines; stock gaps and cold-chain injections need care, one by one."
+  caller: "M 26-45 · son in Guntur managing his mother's dialysis care, careful and calm"
+  goal: "Get every one of his mother's kidney medicines this week, including the injection kept cold, with a proper substitute where needed and refills set."
+  role: "You handle pharmacy orders. A substitute needs the pharmacist's approval."
+  context: "Prescription RX 66201 for Lakshmi Devi."
+  tasks:
+    - task: "Patient and prescription"
+      calls:
+        - "get_patient(patient=Lakshmi Devi) → UHID GT-662010, 63; on dialysis"
+        - "get_prescription(rx_id=RX 66201) → sevelamer 800 mg three times a day with food; erythropoietin 4000 IU injection twice a week; iron sucrose (given at dialysis); calcitriol 0.25 mcg; amlodipine 10 mg; sodium bicarbonate 500 mg twice a day"
+    - task: "Stock for each"
+      calls:
+        - "check_medicine_stock(medicine=sevelamer 800 mg, pincode=522002) → out of stock; same-salt substitute Sevlamer-800 needs pharmacist approval"
+        - "check_medicine_stock(medicine=erythropoietin 4000 IU, pincode=522002) → in stock, cold-chain"
+        - "check_medicine_stock(medicine=calcitriol 0.25 mcg, pincode=522002) → in stock"
+        - "check_medicine_stock(medicine=amlodipine 10 mg, pincode=522002) → in stock"
+        - "check_medicine_stock(medicine=sodium bicarbonate 500 mg, pincode=522002) → in stock"
+        - "transfer_to_pharmacist(reason=approve same-salt substitute for sevelamer 800 mg, RX 66201) → pharmacist approves Sevlamer-800"
+        - "check_medicine_stock(medicine=Sevlamer-800, pincode=522002) → in stock"
+    - task: "Order each"
+      calls:
+        - "order_medicine(rx_id=RX 66201, medicine=Sevlamer-800 (sevelamer 800 mg), qty=90) → added to order PH 66220, ₹1,350"
+        - "order_medicine(rx_id=RX 66201, medicine=erythropoietin 4000 IU, qty=8, order_id=PH 66220) → added, ₹3,600, cold-chain"
+        - "order_medicine(rx_id=RX 66201, medicine=calcitriol 0.25 mcg, qty=30, order_id=PH 66220) → added, ₹210"
+        - "order_medicine(rx_id=RX 66201, medicine=amlodipine 10 mg, qty=30, order_id=PH 66220) → added, ₹75"
+        - "order_medicine(rx_id=RX 66201, medicine=sodium bicarbonate 500 mg, qty=60, order_id=PH 66220) → added, ₹120"
+        - "place_pharmacy_order(order_id=PH 66220, address=4-11 Brodipet, Guntur 522002, slot=Wed 7 Oct 8-10 am cold-chain) → placed, ₹5,355, cold-chain delivery Wed 7 Oct 8-10 am"
+    - task: "Refills"
+      calls:
+        - "get_pharmacy_order(order_id=PH 66220) → confirmed; cold box packed Tue 6 Oct night"
+        - "set_refill_reminder(rx_id=RX 66201, medicine=Sevlamer-800 (sevelamer 800 mg), every=30 days) → set"
+        - "set_refill_reminder(rx_id=RX 66201, medicine=erythropoietin 4000 IU, every=28 days) → set"
+        - "set_refill_reminder(rx_id=RX 66201, medicine=calcitriol 0.25 mcg, every=30 days) → set"
+        - "send_sms(template=pharmacy_order_summary) → sent"
+  forbid: ["order_medicine(rx_id=RX 66201, medicine=iron sucrose)"]
+  lines:
+    - [open, "నమస్కారం. మా అమ్మగారు dialysis లో ఉన్నారు. ఆమె నెల మందులు order చేయాలి.", "Hello. My mother is on dialysis. I need to order her monthly medicines."]
+    - [after, "Prescription చదవండి. Iron injection dialysis దగ్గరే ఇస్తారు, అది వద్దు.", "Read the prescription. The iron injection is given at dialysis — not that."]
+    - [after, "మిగతావి ఒక్కొక్కటి stock లో ఉందో చూసి చెప్పండి.", "Check each of the rest for stock and tell me."]
+    - [after, "Sevelamer లేదా? వేరే company ది అదే మందు ఉంటే pharmacist ని అడిగి వేయండి.", "No sevelamer? If there's the same medicine from another company, ask the pharmacist and add it."]
+    - [after, "అన్నీ ఒక నెలకి. Injection వారానికి రెండు, ఎనిమిది.", "All for a month. The injection is twice a week — eight."]
+    - [after, "Injection చల్లగా రావాలి కదా. బుధవారం పొద్దున పంపండి, నేను ఇంట్లో ఉంటాను. Brodipet, నాలుగు డాష్ పదకొండు.", "The injection has to come cold, right? Send it Wednesday morning, I'll be home. 4-11, Brodipet."]
+    - [after, "మొత్తం ఎంత?", "How much in total?"]
+    - [after, "Sevelamer, injection, calcitriol — ఈ మూడు నెల నెలా automatic గా రావాలి.", "Sevelamer, the injection and calcitriol — these three should come automatically every month."]
+    - [after, "Injection నాలుగు వారాలకి సరిపోతుంది, దాని ప్రకారం పెట్టండి.", "The injection lasts four weeks — set it by that."]
+    - [after, "SMS పంపండి.", "Send an SMS."]
+    - [after, "చాలా thanks.", "Thank you very much."]
+    - [after, "సరే.", "Okay."]
+  key:
+    - "Reads the prescription; leaves out iron sucrose"
+    - "Checks stock for each of the five; gets the pharmacist's approval before adding Sevlamer-800"
+    - "Orders each, eight erythropoietin injections included, cold-chain delivery Wed 7 Oct 8-10 am (PH 66220); states ₹5,355"
+    - "Sets refills for sevelamer and calcitriol every 30 days and the injection every 28"
+    - "Speaks Telugu, keeping his English words"
+  checks: {lang: te, digits: ["PH 66220", "5,355"], tool_order: [transfer_to_pharmacist, order_medicine]}
+  guard: "L2 excludes the iron before any order; L4 asks for the pharmacist; L9 gives the injection's interval."
+
+- id: hlt-114
+  g: HLT-2
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Pharmacy calls about four unavailable items — substitutes approved, one removed, extras added, new slot"
+  basis: "Pharmacies call before dispatch when items are unavailable; the customer decides each one."
+  caller: "M 46-60 · bank manager in Chennai, busy, wants quick decisions"
+  goal: "Decide each unavailable medicine, add a few things while the order is open, and get it delivered when someone is home."
+  role: "You are calling from Nirmaya Pharmacy because four items on order PH 88310 are unavailable. Open the call: greet, name Nirmaya Pharmacy, say why you are calling. A substitute needs the pharmacist's approval."
+  context: "Prescription RX 88300 for Ramesh Iyer."
+  tasks:
+    - task: "The order and what's missing"
+      calls:
+        - "get_pharmacy_order(order_id=PH 88310) → 7 items; unavailable: Glycomet GP 2, Ecosprin 75, Thyronorm 50, Becosules"
+        - "get_prescription(rx_id=RX 88300) → Glycomet GP 2 (metformin 500 mg + glimepiride 2 mg); Ecosprin 75 (aspirin 75 mg); Thyronorm 50 (levothyroxine 50 mcg); Becosules (B-complex)"
+        - "check_medicine_stock(medicine=Glycomet GP 2, pincode=600028) → out; substitute Gluconorm G2 (same salts)"
+        - "check_medicine_stock(medicine=Ecosprin 75, pincode=600028) → out; substitute Loprin 75 (same salt)"
+        - "check_medicine_stock(medicine=Thyronorm 50, pincode=600028) → out; substitute Eltroxin 50 (same salt)"
+        - "check_medicine_stock(medicine=Becosules, pincode=600028) → out; back Fri 9 Oct"
+    - task: "Substitutes through the pharmacist"
+      calls:
+        - "transfer_to_pharmacist(reason=approve Gluconorm G2 and Loprin 75 as same-salt substitutes, RX 88300) → pharmacist approves both"
+        - "order_medicine(rx_id=RX 88300, medicine=Gluconorm G2, qty=60, order_id=PH 88310) → error: order is locked while the pharmacist note saves"
+        - "order_medicine(rx_id=RX 88300, medicine=Gluconorm G2, qty=60, order_id=PH 88310) → added, ₹290"
+        - "order_medicine(rx_id=RX 88300, medicine=Loprin 75, qty=30, order_id=PH 88310) → added, ₹35"
+        - "report_order_issue(order_id=PH 88310, medicine=Thyronorm 50, issue=customer will buy locally; remove) → removed, ₹160 refunded"
+        - "report_order_issue(order_id=PH 88310, medicine=Becosules, issue=remove; send with next month's order) → removed, ₹50 refunded"
+    - task: "Extras"
+      calls:
+        - "check_medicine_stock(medicine=digital thermometer, pincode=600028) → in stock"
+        - "check_medicine_stock(medicine=ORS sachets (10), pincode=600028) → in stock"
+        - "order_medicine(rx_id=none, medicine=digital thermometer, qty=1, order_id=PH 88310) → added, ₹250"
+        - "order_medicine(rx_id=none, medicine=ORS sachets (10), qty=1, order_id=PH 88310) → added, ₹220"
+    - task: "New slot, summary"
+      calls:
+        - "place_pharmacy_order(order_id=PH 88310, address=8 Luz Church Road, Mylapore 600004, slot=today 7-9 pm) → placed, delivery today 7-9 pm"
+        - "set_refill_reminder(rx_id=RX 88300, medicine=Becosules, every=30 days) → set; starts with next month's order"
+        - "send_sms(template=pharmacy_order_summary) → sent"
+        - "schedule_callback(date=Tue 6 Oct, slot=9-10 am, topic=delivery received PH 88310) → booked"
+  forbid: ["order_medicine(rx_id=RX 88300, medicine=Eltroxin 50)"]
+  lines:
+    - [open, "Hello, Ramesh here."]
+    - [after, "Four items? Which ones?"]
+    - [after, "Are there replacements with the same thing in them?"]
+    - [after, "The sugar tablet and the aspirin — if your pharmacist is fine with them, go ahead."]
+    - [after, "Thyroid — no, my doctor is particular about the brand. I'll buy it from the shop downstairs. Remove it."]
+    - [after, "Becosules can wait. Remove it now and send it with next month's order."]
+    - [after, "While you have the order open, add a digital thermometer and a pack of ORS."]
+    - [after, "Nobody's home in the afternoon. Can it come after seven tonight?"]
+    - [after, "What's the change in the bill?"]
+    - [after, "Call me tomorrow morning to check it arrived."]
+    - [after, "Send me the summary. Thanks for calling."]
+    - [after, "Bye."]
+  key:
+    - "Opens naming Nirmaya Pharmacy and the four unavailable items on PH 88310"
+    - "Gets the pharmacist's approval, then adds Gluconorm G2 (retrying after the lock) and Loprin 75"
+    - "Removes Thyronorm (₹160 back) without substituting it, and Becosules (₹50 back) with a refill from next month"
+    - "Adds the thermometer and ORS; moves delivery to today 7-9 pm"
+    - "States the bill change: ₹795 added, ₹210 removed"
+  checks: {digits: ["PH 88310", "7-9 pm"], tool_order: [transfer_to_pharmacist, order_medicine]}
+  guard: "Each decision names its medicine; L4 makes the substitutes conditional on the pharmacist; L5 refuses the thyroid substitute before it can be added."
