@@ -1,7 +1,8 @@
 # genmedia-industrial-studies
 
 Industrial GenMedia model comparisons — the same standard applied to every
-modality (image, video and voice): the same input goes to every model,
+modality (image, video and voice, including live speech-to-speech calls):
+the same input goes to every model,
 automatic pass/fail checks run before any AI scoring, a blind AI judge scores
 what those checks can't, and **quality, cost, latency and reliability are
 reported as four separate numbers — never mixed into one score**.
@@ -11,6 +12,7 @@ README is the map of the whole repo. Each lane then documents itself in
 depth — follow the links as you go deeper.
 
 **Contents:** [Overview](#overview) · [Models](#models) ·
+[Live speech-to-speech study](#live-speech-to-speech-study) ·
 [Scenarios](#scenarios) · [Folder structure](#folder-structure) ·
 [Running a lane](#running-a-lane) · [Troubleshooting](#troubleshooting) ·
 [The cell lifecycle](#the-cell-lifecycle) ·
@@ -32,7 +34,7 @@ One term used a lot below: an **arm** just means one model being compared —
 |------|--------|-------------------|------------|
 | [`image/`](image/README.md) | **complete** | Text-to-image + image editing — Gemini 3 Pro / Flash vs GPT Image 2, blind-judged. 154 scenarios across the bank | [image/README.md](image/README.md) |
 | [`video/`](video/README.md) | **in progress** | Text-to-video, cinematic + physics families (20-scenario v1 bank; 60 extracted, 40 pending assets). Active arms: Omni Flash vs Seedance 2.5; Veo 3.1 / Sora 2 parked | [video/README.md](video/README.md) |
-| [`voice/`](voice/README.md) | **built, bank partial** | TTS / styled speech — Gemini 3.1 Flash TTS vs ElevenLabs v3 — deterministic audio gates, ASR-verified WER, blind-judged. 18 scenarios runnable, 11 blocked pending instrumentation | [voice/README.md](voice/README.md), [voice/HANDOFF.md](voice/HANDOFF.md) |
+| [`voice/`](voice/README.md) | **built, bank partial** | TTS / styled speech — Gemini 3.8 Flash TTS is the enabled arm (earlier runs: Gemini 3.1 Flash TTS vs ElevenLabs v3) — deterministic audio gates, ASR-verified WER, blind-judged. 23 scenarios runnable, 11 blocked pending instrumentation. Also holds the **live speech-to-speech study** (Gemini 3.8 Live vs ElevenLabs Agents, 40 calls) — see [below](#live-speech-to-speech-study) | [voice/README.md](voice/README.md), [voice/HANDOFF.md](voice/HANDOFF.md) |
 
 **`panel/` is not a fourth lane — it's the cross-lane tool that reads the
 other three.** It never generates or judges anything itself: it takes runs
@@ -125,32 +127,49 @@ Prices verified against `configs/models.yaml`: 2026-09-22.
 Judge: **Gemini 3 Flash** (Vertex AI) — the same judge model as the image
 lane; it reads mp4 media natively.
 
-### voice — Gemini 3.1 Flash TTS vs ElevenLabs v3
+### voice — Gemini 3.8 Flash TTS (text-to-speech)
 
 | Model | Vendor | Route | Price |
 |---|---|---|---|
-| **Gemini 3.1 Flash TTS** (preview) | Google | Vertex AI, `us-central1` | $1 / 1M input tokens, $20 / 1M audio-output tokens |
-| **ElevenLabs v3** (`eleven_v3`) | ElevenLabs | direct API, US region | $0.10 / 1k characters sent |
-| ElevenLabs Multilingual v2 — from past runs, since replaced by v3 above | ElevenLabs | direct API | $0.10 / 1k characters |
+| **Gemini 3.8 Flash TTS** (`gemini-3.8-flash-tts`) — the one enabled arm | Google | **Gemini API** (not Vertex), global | $0.50 / 1M input tokens, $9 / 1M audio-output tokens |
+| Gemini 3.8 Flash Lite TTS — configured, disabled | Google | Gemini API, global | $0.50 / 1M input tokens, $6 / 1M audio-output tokens |
+| Gemini 3.1 Flash TTS (preview) — from past runs | Google | Vertex AI, `us-central1` | $1 / 1M input tokens, $20 / 1M audio-output tokens |
+| ElevenLabs v3 (`eleven_v3`) — from past runs | ElevenLabs | direct API, US region | $0.10 / 1k characters sent |
+| ElevenLabs Multilingual v2 — from past runs, replaced by v3 | ElevenLabs | direct API | $0.10 / 1k characters |
+
+**Gemini 3.8 Flash TTS is not on Vertex AI** (Google Cloud listed no 3.8 TTS
+model when it was added), so it has its own adapter (`gemini_api_tts`) and is
+called through the Gemini API with an authorization key read from Secret
+Manager at start-up — the Gemini API refuses service-account tokens. Its
+price is the standard paid tier through 2026-12-31; Google doubles every 3.8
+TTS rate from 2027-01-01. Don't put its cost next to a Vertex arm's as
+like-for-like: the two routes are priced separately. Full integration notes:
+[docs/2026-09-28-gemini-3-8-tts-spec.md](docs/2026-09-28-gemini-3-8-tts-spec.md).
+
+The 3.8 runs (`voice/runs/2026-09-28_*_voice-gemini38*`: a smoke run, a full
+run over all 23 runnable scenarios, and a second pass) were **single-arm** —
+only Gemini 3.8 was enabled — so they're compared against the earlier 3.1 and
+ElevenLabs runs on the cross-run dashboard, not head to head in one run.
 
 Voice has no fixed "per clip" price — clip length varies a lot by scenario,
 so Gemini's token rates and ElevenLabs' character rates are each shown as
 their real billing unit rather than forced into one shape. For a feel of
-the real dollar amounts: a **measured** run put Gemini at **≈$0.0069/clip
+the real dollar amounts: a **measured** run put Gemini 3.1 at **≈$0.0069/clip
 ($0.0430/audio-minute)** and ElevenLabs at **≈$0.0144/clip
 ($0.0991/audio-minute)** (`voice/HANDOFF.md` §13, 2026-09-04). That
 ElevenLabs figure is against **v2** — the character rate carried over
 unchanged into v3 ($0.10/1k either way), so it's a reasonable proxy, but v3
 has not been separately measured for $/clip.
 
-Prices verified against `configs/models.yaml`: 2026-09-22.
+Prices verified against `configs/models.yaml`: 2026-10-06.
 
-Judge: **Gemini 2.5 Flash** (Vertex AI, `us-central1`), listening to the
-audio directly. **Disclosed caveat**: this is a Google model judging a
-comparison that includes a Google arm, on the same vendor and region — the
-project has accepted this deliberately (footnoted on every report) rather
-than hide it, and a neutral-judge cross-check is the highest-value
-experiment left undone (see [voice/HANDOFF.md](voice/HANDOFF.md) §9).
+Judge: **Gemini 2.5 Flash** (Vertex AI, global endpoint), listening to the
+audio directly. **Disclosed caveat**: this is a Google model judging Google
+arms — it shares a vendor with the Gemini arm (though not the route: the 3.8
+arm goes through the Gemini API). The project has accepted this deliberately
+(footnoted on every report) rather than hide it, and a neutral-judge
+cross-check is the highest-value experiment left undone (see
+[voice/HANDOFF.md](voice/HANDOFF.md) §9).
 
 The ASR (Automatic Speech Recognition — it turns each clip back into text)
 is what every WER (word error rate) and word-accuracy gate is measured
@@ -175,6 +194,91 @@ The same pattern in every lane:
 
 Nothing in `checks.py`, `judge.py`, `scoring.py`, `cost.py` or `report.py`
 changes, and none of them know a specific provider exists.
+
+## Live speech-to-speech study
+
+Separate from the TTS comparison above: here each model is a **live voice
+agent on a phone call**. A recorded caller speaks pre-made lines into the
+call, the agent listens and answers in real time, and the study measures
+what a customer would notice — did it reply to every line, how fast, did it
+stop talking when cut in on, did it read numbers back exactly, did it stay
+in the caller's language, did it finish the task.
+
+| System | Vendor | Setup | Price (list, as of 2026-09-28) |
+|---|---|---|---|
+| **Gemini 3.8 Live** (`gemini-3.8-live`) | Google | Vertex AI, `us-central1`, voice Aoede, vendor-default turn detection | $3 / 1M audio-input tokens, $12 / 1M audio-output tokens |
+| **ElevenLabs Agents** | ElevenLabs | one agent per scenario; Gemini 3.8 Flash as the LLM, Scribe realtime ASR, `eleven_v3_conversational` voice | $0.08 / connected minute, plus the LLM tokens |
+
+**Rounds 1 and 2 are done**: the same 10 ecommerce scenarios (`live-ecom-01`…`10`,
+in English, Hindi, Hinglish and English → Hindi), each called once on each
+system per round — **40 calls, 29 Sep 2026**. One call didn't finish
+(ElevenLabs, round 2, `live-ecom-04`: no reply to the caller's third line,
+then the vendor closed the connection).
+
+Headline, over both rounds (from the client report): Gemini 3.8 Live passed
+**92%** of the automatic checks against **71%**, won **8 of 10** scenarios
+(1 no winner, 1 ElevenLabs win), and replied faster (median **1.5 s** vs
+**2.5 s**). In English the two were close; the gap comes from the Hindi and
+Hinglish calls. Cost per call minute: Gemini **≈$0.035** (upper bound, see
+below) vs ElevenLabs **$0.076** (billed).
+
+What's in the repo:
+
+- [`voice/runs/live-study-client.html`](voice/runs/live-study-client.html)
+  — the client report over both rounds: one self-contained page with every
+  call's recording embedded, a caller/agent timeline, turn-by-turn replies,
+  rubric scores with the judge's reasoning, and the automatic checks.
+- `voice/runs/2026-09-29_085337_live-study/` (round 1) and
+  `voice/runs/2026-09-29_113141_live-study/` (round 2). A live run's folder
+  has a different shape from a TTS run's:
+
+  ```
+  voice/runs/<run-id>_live-study/
+  ├── manifest.json          systems config + hash, scenarios, frozen caller-audio set,
+  │                           ElevenLabs agent ids + config hashes, network RTT, prices
+  ├── run-log.jsonl          one row per call as it ran
+  ├── calls.jsonl            one row per call: replies, timings, outcome
+  ├── checks.jsonl           the automatic checks, per call
+  ├── judge.jsonl            blind rubric scores (Gemini 2.5 Flash, given the measured
+  │                           reply and stop times as facts), each row with its cost
+  ├── listener-queue.jsonl   calls queued for a native-speaker listener
+  ├── telemetry.jsonl        one row per call in the voice lane's format
+  └── calls/<scenario>/      per call: <scenario>--<system>--r<n>.events.jsonl and
+                             .vendor.json (vendor usage/billing), both systems side by side
+  ```
+
+  Recordings stay out of git, as for every other run.
+
+Read the numbers with these caveats:
+
+- **Gemini's cost is an upper bound** — only its audio prices are on file, so
+  text/thinking tokens are priced at the audio rate. ElevenLabs' cost is what
+  was billed. The judge costs are also an upper bound (input split not
+  recorded for these 40 calls).
+- `telemetry.jsonl` for rounds 1–2 was **rebuilt after the runs** from their
+  saved files (every row is marked `backfilled`).
+- 10 scenarios × 2 rounds is a small sample; round-to-round spread is shown
+  in the report and is not small for ElevenLabs.
+
+**Not in the repo yet**: the live call runner, the 10 `live-ecom` scenario
+files and the caller audio (the "input voices") that produced these runs.
+The runs record what was used — config hashes, scenario instruction hashes,
+the caller-audio manifest hash — but you can't re-run them from a fresh
+clone today.
+
+### Next scenario banks (not run yet)
+
+Workbooks in [`voice/docs/sheets/`](voice/docs/sheets):
+
+| Workbook | What | Size |
+|---|---|---|
+| `voice-speech-to-speech-scenarios-v2.xlsx` | live speech-to-speech calls | 216 calls, 997 customer lines |
+| `2026-10-06-live-call-tool-heavy-scenarios-v1.xlsx` | tool-heavy live calls (20+ tool calls each) across banking & insurance, ecommerce, travel, telecom, healthcare | 150 calls |
+| `2026-09-23-indic-voice-scenario-bank-v3.xlsx` | text-to-speech in Hindi, Tamil, Telugu, Marathi, Bengali | 303 scenarios |
+
+The tool-heavy workbook is built from YAML sources by
+[`voice/live/tool-heavy-workbook/`](voice/live/tool-heavy-workbook/README.md)
+— edit `src/*.yaml` and rebuild; don't edit the `.xlsx` by hand.
 
 ## Scenarios
 
@@ -258,7 +362,7 @@ anything on it.
 genmedia-industrial-studies/
 ├── image/    text-to-image + edit lane (complete)
 ├── video/    text-to-video lane (in progress)
-├── voice/    text-to-speech lane (built, bank partial)
+├── voice/    text-to-speech lane (built, bank partial) + live speech-to-speech study
 ├── panel/    cross-lane blind human panel + judge correlation
 ├── shared/   the report-rendering kit every lane's `report.py` calls into
 ├── assets/   the shared scenario-bank workbook
@@ -303,6 +407,9 @@ see [panel/README.md](panel/README.md).
   - `GEMINI_API_KEY` / `GOOGLE_APPLICATION_CREDENTIALS` (Vertex ADC —
     Application Default Credentials) for any Gemini/Vertex arm, the judge,
     and (voice) the ASR.
+  - `GEMINI_API_KEY_SECRET` for the Gemini 3.8 Flash TTS voice arm — the
+    Secret Manager **resource name** of its key, not the key itself; the
+    adapter reads the key at start-up with your Google identity.
   - `OPENAI_API_KEY` for GPT Image / Sora / OpenAI TTS arms.
   - `ELEVENLABS_API_KEY` for the ElevenLabs voice arm.
   - `ARK_API_KEY` for the Seedance video arm (BytePlus ModelArk).
@@ -395,6 +502,7 @@ cd voice
 python3.12 -m venv .venv                     # or, faster: uv venv --python 3.12 .venv
 .venv/bin/pip install -e '.[google,dev]'     # or '.[openai,dev]' — see note below
 cp .env.example .env                # ELEVENLABS_API_KEY, GOOGLE_APPLICATION_CREDENTIALS, GCP_PROJECT_ID
+                                     # + GEMINI_API_KEY_SECRET for the 3.8 arm (listed in the root .env.example)
 .venv/bin/python -m pytest -q       # offline, no keys, no spend
 ```
 
@@ -404,8 +512,8 @@ already carries a heavy local speech-recognition model (`faster-whisper`)
 as a core dependency, so the split just lets you skip installing a cloud
 SDK you won't use. Want both providers? `.[google,openai,dev]`.
 
-**Real run** (spends money once the pre-flight budget check clears — two
-models ship enabled):
+**Real run** (spends money once the pre-flight budget check clears — one
+model ships enabled, Gemini 3.8 Flash TTS):
 
 ```bash
 .venv/bin/python -m runner.cli run    --budget 2.00 --yes    # --modality defaults to voice
@@ -537,7 +645,10 @@ Enforced in code, in every lane:
 
 - [`docs/`](docs) — dated planning notes and review write-ups
   (scenario-complexity tiers, the 4 Sept Google review, task splits, the
-  gaming-scenario plan). Background, not required to run anything.
+  gaming-scenario plan, the Gemini 3.8 Flash TTS integration spec).
+  Background, not required to run anything.
+- [`voice/runs/live-study-client.html`](voice/runs/live-study-client.html) —
+  the live speech-to-speech study's client report (rounds 1–2).
 - [`voice/HANDOFF.md`](voice/HANDOFF.md) — the fullest single write-up in the
   repo: what's measured vs assumed, every instrument bug found and fixed,
   and the open items list. Worth reading even if you're not touching voice,
