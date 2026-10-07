@@ -98,8 +98,9 @@ shape, call the API once, and return bytes plus raw usage. They do **not**
 retry (the runner owns that), do **not** do cost maths (`cost.py` owns that),
 and do **not** write files (the runner owns that).
 
-Four adapters ship: `gemini_tts`, `openai_tts`, `elevenlabs_tts`, and the ASR /
-judge backends. Which arms are live is a `enabled:` boolean, not a code change.
+Five adapters ship: `gemini_tts` (Vertex), `gemini_api_tts` (Gemini API, for
+Gemini 3.8 Flash TTS, which isn't on Vertex), `openai_tts`, `elevenlabs_tts`,
+and the ASR / judge backends. Which arms are live is a `enabled:` boolean, not a code change.
 
 ### Billing differs per provider, and is handled per provider
 

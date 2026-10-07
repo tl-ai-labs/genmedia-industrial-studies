@@ -1,0 +1,116 @@
+# Banking & insurance — tool-heavy live-call scenarios (header). Scenarios: banking-*.yaml.
+# Shape and cue grammar: ../README.md.
+
+industry: Banking & insurance
+code: bank
+brand: "Kosh Bank · Kavach Insurance (its insurance partner)"
+agent_role_base: |
+  You are the phone support agent for Kosh Bank, an Indian retail bank, and for its
+  insurance partner Kavach Insurance. The caller's registered mobile is matched by caller
+  ID. Before any change to money, cards, limits, payees, nominees or policies, confirm the
+  person whose account it is with verify_caller (name and date of birth); a second person
+  on the line is verified separately before you act on their accounts. Every tool acts on
+  one card, one account, one transaction, one mandate, one deposit, one policy member or
+  one document, so four disputes are four calls. Never ask for or accept an OTP, PIN, CVV,
+  password or full card number. Never promise a refund, reversal or claim amount that a
+  tool result does not confirm. In any fraud, tell the customer to also report it on the
+  1930 cyber-crime helpline.
+
+tools:
+  # identity and accounts
+  verify_caller: "(name, dob) → verified yes/no"
+  get_accounts: "(holder?) → accounts, cards, loans, deposits and policies with last 4 digits"
+  get_account: "(account_last4) → type, balance, status, nominee, holds"
+  get_transactions: "(account_last4 | card_last4, from_date, to_date) → transactions with time, amount, merchant or payee, reference"
+  request_statement: "(account_last4 | card_last4 | loan_id | fd_last4 | policy_no, kind) → statement or certificate emailed"
+  update_nominee: "(account_last4 | fd_last4 | policy_no, nominee, relation, share) → nominee updated"
+  register_nominee_claim: "(account_last4 | fd_last4, nominee) → claim reference, documents needed (deceased customer)"
+  get_kyc_status: "(member) → KYC status, missing documents, due date"
+  book_vkyc_slot: "(member, date, slot) → video-KYC appointment"
+  update_contact: "(mobile?, email?) → contact change requested"
+  # cards
+  get_card: "(card_last4) → type, status, limit, controls, add-ons"
+  get_card_statement: "(card_last4) → total due, minimum due, due date, fees charged"
+  block_card: "(card_last4, reason) → blocked, block reference"
+  reissue_card: "(card_last4, deliver_to) → new card's last 4 digits, dispatch date"
+  set_card_control: "(card_last4, channel, enabled, limit?) → updated; one channel per call: online, contactless, international, ATM, POS, phone wallet"
+  set_travel_notice: "(card_last4, countries, from_date, to_date) → travel notice on file"
+  block_merchant: "(card_last4, merchant) → recurring charges from that merchant stopped"
+  request_addon_card: "(card_last4, member, limit) → add-on card's last 4 digits, dispatch date"
+  check_limit_offer: "(card_last4) → pre-approved limit increase, if any"
+  set_credit_limit: "(card_last4, limit) → limit changed"
+  reverse_fee: "(card_last4, fee) → reversed, or not eligible and why"
+  get_emi_options: "(txn_ref) → tenures, monthly amount, interest, processing fee, or not eligible"
+  convert_to_emi: "(txn_ref, tenure_months) → EMI amount, first EMI date"
+  confirm_transaction: "(txn_ref, genuine) → marked; a held transaction is released or declined"
+  raise_dispute: "(txn_ref, reason) → dispute number, timeline"
+  # payments and UPI
+  check_upi_txn: "(utr) → status, payee, reversal date if any"
+  raise_upi_complaint: "(utr, reason) → complaint number, timeline"
+  set_upi_status: "(account_last4, enabled) → UPI on or off for that account"
+  get_beneficiaries: "(account_last4) → saved payees with date added"
+  add_beneficiary: "(account_last4, name, account_no, ifsc) → added; up to ₹50,000 in the first 24 hours"
+  delete_beneficiary: "(account_last4, name) → removed"
+  transfer_funds: "(from_account_last4, to, amount, mode, date?) → reference, status"
+  set_transfer_limit: "(account_last4, mode, limit) → per-day limit changed"
+  set_standing_instruction: "(from_account_last4, to, amount, day) → SI number, first date"
+  cancel_standing_instruction: "(si_no) → cancelled"
+  get_mandates: "(account_last4) → autopay mandates with status"
+  move_mandate: "(mandate_id, to_account_last4) → moved, effective date"
+  cancel_mandate: "(mandate_id) → cancelled"
+  retry_mandate: "(mandate_id, date) → retry scheduled"
+  # security
+  get_login_activity: "() → recent logins with device, city, time, and profile changes"
+  logout_device: "(device) → session ended, device removed"
+  block_netbanking: "(reason) → netbanking frozen, reference"
+  # loans
+  get_loan: "(loan_id) → type, outstanding, EMI, EMI day, next due date"
+  calculate_prepayment: "(loan_id, amount, keep) → new EMI or tenure, interest saved"
+  make_prepayment: "(loan_id, amount, from_account_last4, keep) → paid, new EMI or tenure"
+  get_foreclosure_quote: "(loan_id) → amount to close, valid until"
+  foreclose_loan: "(loan_id, from_account_last4) → closed, reference"
+  change_emi_date: "(loan_id, new_day) → effective month, broken-period interest"
+  create_payment_link: "(loan_id, amount) → link sent by SMS"
+  request_noc: "(loan_id) → NOC dispatch date"
+  # deposits
+  get_fd: "(fd_last4) → principal, rate, maturity date and amount, maturity instruction, nominee"
+  get_fd_rates: "(tenure_months, senior) → interest rate"
+  open_fd: "(amount, tenure_months, from_account_last4, senior) → FD last 4 digits, rate, maturity amount"
+  break_fd: "(fd_last4, to_account_last4) → payout, penalty"
+  set_fd_maturity: "(fd_last4, instruction) → instruction set (renew principal, renew all, pay out)"
+  # insurance (Kavach Insurance)
+  get_policy: "(policy_no) → product, members, sum insured, riders, nominee, premium, renewal date"
+  add_policy_member: "(policy_no, member, relation, dob) → added or not eligible, premium change"
+  remove_policy_member: "(policy_no, member) → removed from the next renewal, premium change"
+  add_rider: "(policy_no, rider) → added, premium change"
+  change_sum_insured: "(policy_no, sum_insured) → changed from renewal, premium change"
+  renew_policy: "(policy_no, pay_from_account_last4) → renewed until, premium debited"
+  set_premium_autopay: "(policy_no, account_last4) → autopay set from next renewal"
+  port_policy: "(policy_no, member) → individual policy number, waiting periods carried over"
+  check_network_hospital: "(policy_no, hospital) → cashless yes/no, address"
+  request_cashless: "(policy_no, member, hospital, estimate) → pre-authorisation number, approved amount"
+  register_claim: "(policy_no, member, kind, amount) → claim number, documents needed"
+  get_claim: "(claim_id) → status, pending documents, expected date"
+  send_document_link: "(claim_id, document) → upload link sent by SMS"
+  set_claim_payout: "(claim_id, account_last4) → payout account set"
+  register_motor_claim: "(policy_no, vehicle, incident, place) → claim number"
+  arrange_towing: "(claim_id, pickup, drop) → tow truck, arrival time"
+  find_garage: "(pincode) → network garages with cashless repair"
+  assign_garage: "(claim_id, garage) → cashless repair confirmed"
+  book_survey: "(claim_id, date, slot, address) → surveyor and visit time"
+  # service
+  find_branch: "(area) → nearest branches, timings"
+  book_branch_visit: "(branch_id, date, slot, purpose) → appointment number"
+  send_sms: "(template) → SMS sent to the registered mobile"
+  schedule_callback: "(date, slot, topic) → callback booked"
+  raise_ticket: "(category, summary) → ticket number"
+  transfer_to_human: "(reason) → queued for a specialist"
+
+groups:
+  BANK-1: {stage: "Cards — lost cards, add-ons, controls, travel, disputes, EMI, fees", accounts: "SBI Card, HDFC Bank, ICICI Bank, Axis Bank", tests: "one call per card and per transaction, card last-4 only, controls per channel, a second card holder on the line"}
+  BANK-2: {stage: "Payments & UPI — failed UPI, payees, transfers, standing instructions, autopay", accounts: "PhonePe, Paytm, ICICI Bank, Kotak Mahindra Bank", tests: "12-digit UTRs, new-payee limits, one mandate or payee per call, lakh amounts"}
+  BANK-3: {stage: "Loans, deposits & accounts — prepayment, EMI dates, FD ladders, nominees, KYC, bereavement", accounts: "HDFC Bank, SBI, Bajaj Finserv, Bandhan Bank", tests: "lakh and percent figures, one deposit or loan per call, empathy, verifying the right person"}
+  BANK-4: {stage: "Fraud & security — phishing, SIM swap, remote-access apps, lost phones", accounts: "All banks and card issuers", tests: "freezing in the right order, one dispute per transaction, never asking for an OTP, refusing contact changes on a fraud call, 1930"}
+  BANK-5: {stage: "Insurance — health claims, cashless, renewals, members and riders, motor and home claims", accounts: "Star Health, HDFC ERGO, ICICI Lombard, Niva Bupa, LIC", tests: "one document link per document, one claim per member, network hospitals, eligibility limits"}
+
+scenarios: []

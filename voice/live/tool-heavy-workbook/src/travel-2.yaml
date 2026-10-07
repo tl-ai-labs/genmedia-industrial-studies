@@ -1,0 +1,629 @@
+# Travel — tool-heavy scenarios trv-109 … trv-116 (TRV-1 Flights, TRV-2 Disruptions & baggage).
+code: trv
+scenarios:
+
+- id: trv-109
+  g: TRV-1
+  lang: tx
+  script: en → te-mix
+  diff: Hard
+  dir: in
+  switch: "L7: English → Telugu (his mother takes the phone, then he stays in Telugu)"
+  title: "Family of five — both flights moved, seats, wheelchair, meals; mother joins in Telugu"
+  basis: "Joint-family date changes: the son calls in English and a parent joins in Telugu with their own requests."
+  caller: "M 26-45 · son booking for the family, in English; speaker b: F 46-60 · his mother, Telugu only"
+  goal: "Move the Delhi trip a day later both ways for all five, seats in one row, a wheelchair for his father, veg meals, pay once."
+  role: "You handle bookings. State the fare difference before changing."
+  context: "Flexi fare: date changes free, fare difference only. Seats free. Meals ₹350."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT7G2H) → Kiran Rao, Swathi Rao, Anvi Rao (child, 7), Padma Rao, Venkat Rao; YA 301 Hyderabad-Delhi Thu 15 Oct 6:50 am; YA 306 Delhi-Hyderabad Thu 22 Oct 8:40 pm; Flexi fare"
+    - task: "All five out on Friday 16 October"
+      calls:
+        - "search_flights(from=HYD, to=DEL, date=Fri 16 Oct) → YA 301 6:50 am, +₹700 per person; YA 305 1:20 pm, +₹1,900 per person"
+        - "change_flight(pnr=YT7G2H, passenger=Kiran Rao, new_flight=YA 301 Fri 16 Oct) → changed, +₹700"
+        - "change_flight(pnr=YT7G2H, passenger=Swathi Rao, new_flight=YA 301 Fri 16 Oct) → changed, +₹700"
+        - "change_flight(pnr=YT7G2H, passenger=Anvi Rao, new_flight=YA 301 Fri 16 Oct) → changed, +₹700"
+        - "change_flight(pnr=YT7G2H, passenger=Padma Rao, new_flight=YA 301 Fri 16 Oct) → changed, +₹700"
+        - "change_flight(pnr=YT7G2H, passenger=Venkat Rao, new_flight=YA 301 Fri 16 Oct) → changed, +₹700"
+    - task: "All five back on Friday 23 October"
+      calls:
+        - "search_flights(from=DEL, to=HYD, date=Fri 23 Oct) → YA 306 8:40 pm, no fare difference"
+        - "change_flight(pnr=YT7G2H, passenger=Kiran Rao, new_flight=YA 306 Fri 23 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT7G2H, passenger=Swathi Rao, new_flight=YA 306 Fri 23 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT7G2H, passenger=Anvi Rao, new_flight=YA 306 Fri 23 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT7G2H, passenger=Padma Rao, new_flight=YA 306 Fri 23 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT7G2H, passenger=Venkat Rao, new_flight=YA 306 Fri 23 Oct) → changed, ₹0"
+    - task: "One row on the Friday flight"
+      calls:
+        - "get_seat_map(flight_no=YA 301, date=Fri 16 Oct) → row 21 A-F free (the only full row free); 21A window, 21C and 21D aisle"
+        - "assign_seat(pnr=YT7G2H, passenger=Anvi Rao, flight_no=YA 301, seat=21A) → assigned, ₹0"
+        - "assign_seat(pnr=YT7G2H, passenger=Swathi Rao, flight_no=YA 301, seat=21B) → assigned, ₹0"
+        - "assign_seat(pnr=YT7G2H, passenger=Kiran Rao, flight_no=YA 301, seat=21C) → assigned, ₹0"
+        - "assign_seat(pnr=YT7G2H, passenger=Padma Rao, flight_no=YA 301, seat=21D) → assigned, ₹0"
+        - "assign_seat(pnr=YT7G2H, passenger=Venkat Rao, flight_no=YA 301, seat=21E) → assigned, ₹0"
+    - task: "Wheelchair for Venkat both ways"
+      calls:
+        - "request_wheelchair(pnr=YT7G2H, passenger=Venkat Rao, flight_no=YA 301) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT7G2H, passenger=Venkat Rao, flight_no=YA 306) → booked at departure and arrival"
+    - task: "Veg meals for all five on the way out"
+      calls:
+        - "add_meal(pnr=YT7G2H, passenger=Kiran Rao, flight_no=YA 301, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT7G2H, passenger=Swathi Rao, flight_no=YA 301, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT7G2H, passenger=Anvi Rao, flight_no=YA 301, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT7G2H, passenger=Padma Rao, flight_no=YA 301, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT7G2H, passenger=Venkat Rao, flight_no=YA 301, meal=veg) → added, ₹350"
+    - task: "Pay once, then the itinerary"
+      calls:
+        - "send_payment_link(pnr=YT7G2H, amount=₹5,250) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [cancel_booking, add_travel_insurance]
+  lines:
+    - [open, "Hello, I want to move our family trip to Delhi by one day, both ways. P N R Y T seven G two H. Five of us."]
+    - [after, "We're on the Thursday morning flight on the fifteenth. Can all five go on Friday instead?"]
+    - [after, "And the return, from the twenty-second to Friday the twenty-third. Everyone."]
+    - [after, "What's the difference in fare?"]
+    - [after, "Okay, go ahead with both, all five."]
+    - [after, "Seats on the Friday flight, one row. Anvi at the window, then my wife Swathi, then me on the aisle, and across the aisle my mother, then my father."]
+    - [after b, "హలో, నేను పద్మ, కిరణ్ వాళ్ళ అమ్మని. మా ఆయనకి మోకాలి నొప్పి. ఆయనకి wheelchair కావాలి, వెళ్ళేటప్పుడు, వచ్చేటప్పుడు.", "Hello, I'm Padma, Kiran's mother. My husband has knee pain. He needs a wheelchair, going and coming back."]
+    - [after b, "అందరికీ veg భోజనం పెట్టండి, వెళ్ళే flight లో.", "Put veg meals for everyone on the flight there."]
+    - [after b, "సరే, ఫోన్ కిరణ్ కి ఇస్తున్నాను. తెలుగులోనే మాట్లాడండి, నేను పక్కనే వింటున్నాను.", "Okay, I'm giving the phone to Kiran. Keep speaking in Telugu, I'm listening right here."]
+    - [after, "అమ్మ చెప్పింది కదా, తెలుగులోనే చెప్పండి. మొత్తం ఎంత అయింది?", "As Amma said, please tell me in Telugu. What's the total?"]
+    - [after, "సరే, payment link పంపండి.", "Okay, send the payment link."]
+    - [after, "Seats ఒకసారి చెప్పండి.", "Tell me the seats once."]
+    - [after, "Itinerary కూడా SMS చేయండి. Thanks.", "SMS the itinerary too. Thanks."]
+  key:
+    - "Gives both Friday options and moves all five to YA 301 Friday 16 October (+₹700 each)"
+    - "Moves all five returns to YA 306 Friday 23 October at no extra fare"
+    - "Seats Anvi 21A, Swathi 21B, Kiran 21C, Padma 21D, Venkat 21E"
+    - "Answers the mother: wheelchair for Venkat on both flights; veg meals for all five on YA 301"
+    - "States ₹5,250 (fares ₹3,500, meals ₹1,750) and sends one link"
+    - "Reads the seats back in Telugu"
+  checks: {lang_from: {L7: te}, digits: ["5,250"], say: [["5,250", "ఐదు వేల రెండు వందల యాభై"]], tool_order: [search_flights, change_flight]}
+  guard: "The mother's requests are new and true whatever the agent said; the son asks for Telugu himself in L10, so the switch holds even if the agent drifted back."
+
+- id: trv-110
+  g: TRV-1
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Joint family of seven flying tomorrow — wheelchairs, seats by name, meals, bags, check-in"
+  basis: "Large family trips: everything is per person, and grandparents need assistance."
+  caller: "M 46-60 · head of the family, polite and exact"
+  goal: "Wheelchairs for the grandparents, seven seats placed by name, meals, extra bags for two, pay, check everyone in."
+  role: "You handle bookings. Check in only after seats are set."
+  context: "Seats ₹200 each. Meals ₹300. 10 kg extra ₹1,200. Wheelchairs free. Web check-in for YA 233 is open."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT5S9A) → Suresh Agarwal, Sunita Agarwal, Rohit Agarwal, Neha Agarwal, Kavya Agarwal (child, 10), Om Prakash Agarwal (81), Shanti Agarwal (78); YA 233 Delhi-Amritsar Tue 6 Oct 2:30 pm"
+    - task: "Wheelchairs for the grandparents"
+      calls:
+        - "request_wheelchair(pnr=YT5S9A, passenger=Om Prakash Agarwal, flight_no=YA 233) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT5S9A, passenger=Shanti Agarwal, flight_no=YA 233) → booked at departure and arrival"
+    - task: "Seven seats, placed by name"
+      calls:
+        - "get_seat_map(flight_no=YA 233, date=Tue 6 Oct) → row 5 A-F free; 6A free; 5A and 5F window, 5C and 5D aisle"
+        - "assign_seat(pnr=YT5S9A, passenger=Sunita Agarwal, flight_no=YA 233, seat=5A) → assigned, ₹200"
+        - "assign_seat(pnr=YT5S9A, passenger=Shanti Agarwal, flight_no=YA 233, seat=5B) → assigned, ₹200"
+        - "assign_seat(pnr=YT5S9A, passenger=Om Prakash Agarwal, flight_no=YA 233, seat=5C) → assigned, ₹200"
+        - "assign_seat(pnr=YT5S9A, passenger=Suresh Agarwal, flight_no=YA 233, seat=5D) → assigned, ₹200"
+        - "assign_seat(pnr=YT5S9A, passenger=Rohit Agarwal, flight_no=YA 233, seat=5E) → assigned, ₹200"
+        - "assign_seat(pnr=YT5S9A, passenger=Neha Agarwal, flight_no=YA 233, seat=5F) → assigned, ₹200"
+        - "assign_seat(pnr=YT5S9A, passenger=Kavya Agarwal, flight_no=YA 233, seat=6A) → assigned, ₹200"
+    - task: "Veg meals for all seven"
+      calls:
+        - "add_meal(pnr=YT5S9A, passenger=Suresh Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+        - "add_meal(pnr=YT5S9A, passenger=Sunita Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+        - "add_meal(pnr=YT5S9A, passenger=Rohit Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+        - "add_meal(pnr=YT5S9A, passenger=Neha Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+        - "add_meal(pnr=YT5S9A, passenger=Kavya Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+        - "add_meal(pnr=YT5S9A, passenger=Om Prakash Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+        - "add_meal(pnr=YT5S9A, passenger=Shanti Agarwal, flight_no=YA 233, meal=veg) → added, ₹300"
+    - task: "10 kg extra for Rohit and Neha"
+      calls:
+        - "add_baggage(pnr=YT5S9A, passenger=Rohit Agarwal, flight_no=YA 233, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT5S9A, passenger=Neha Agarwal, flight_no=YA 233, kg=10) → added, ₹1,200"
+    - task: "Pay"
+      calls:
+        - "send_payment_link(pnr=YT5S9A, amount=₹5,900) → link sent by SMS"
+    - task: "Check all seven in"
+      calls:
+        - "web_check_in(pnr=YT5S9A, passenger=Suresh Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT5S9A, passenger=Sunita Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT5S9A, passenger=Rohit Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT5S9A, passenger=Neha Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT5S9A, passenger=Kavya Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT5S9A, passenger=Om Prakash Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT5S9A, passenger=Shanti Agarwal, flight_no=YA 233) → checked in, boarding pass sent by SMS"
+    - task: "Send the details"
+      calls:
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [add_travel_insurance, cancel_booking]
+  lines:
+    - [open, "नमस्ते, कल हमारी अमृतसर की फ़्लाइट है, सात लोग हैं। पीएनआर है वाई टी पाँच एस नौ ए।", "Hello, we have a flight to Amritsar tomorrow, seven people. The PNR is YT5S9A."]
+    - [after, "दादाजी और दादीजी दोनों अस्सी के आसपास हैं। दोनों के लिए व्हीलचेयर चाहिए।", "Grandfather and grandmother are both around eighty. They both need wheelchairs."]
+    - [after, "सीटें ऐसे चाहिए। पाँचवीं लाइन में खिड़की से — मेरी पत्नी सुनीता, फिर दादीजी, फिर दादाजी रास्ते वाली सीट पर।", "Seats like this. In row five from the window — my wife Sunita, then Grandmother, then Grandfather on the aisle seat."]
+    - [after, "उसी लाइन में रास्ते के दूसरी तरफ़ — मैं रास्ते पर, फिर रोहित, फिर नेहा खिड़की पर। और काव्या अपनी मम्मी के ठीक पीछे।", "In the same row across the aisle — me on the aisle, then Rohit, then Neha at the window. And Kavya right behind her mother."]
+    - [after, "सातों के लिए शाकाहारी खाना लगा दीजिए।", "Put vegetarian meals for all seven."]
+    - [after, "रोहित और नेहा का सामान ज़्यादा है, दोनों के लिए दस-दस किलो और।", "Rohit and Neha have more luggage, ten kilos more for each of them."]
+    - [after, "कुल कितना हुआ?", "What's the total?"]
+    - [after, "ठीक है, पेमेंट का लिंक भेज दीजिए।", "Okay, send the payment link."]
+    - [after, "और सबका वेब चेक-इन भी कर दीजिए, ताकि बोर्डिंग पास फ़ोन पर आ जाएँ।", "And do everyone's web check-in too, so the boarding passes come on the phone."]
+    - [after, "बोर्डिंग पास सबके अलग-अलग आएँगे?", "Will everyone's boarding passes come separately?"]
+    - [after, "फ़्लाइट कितने बजे की है, एक बार बता दीजिए।", "Tell me once what time the flight is."]
+    - [after, "पूरी जानकारी मैसेज कर दीजिए।", "Send all the details by message."]
+    - [after, "धन्यवाद, बहुत अच्छा लगा।", "Thank you, that was very nice."]
+  key:
+    - "Books wheelchairs for Om Prakash and Shanti"
+    - "Seats Sunita 5A, Shanti 5B, Om Prakash 5C, Suresh 5D, Rohit 5E, Neha 5F, Kavya 6A"
+    - "Adds veg meals for all seven and 10 kg each for Rohit and Neha"
+    - "States ₹5,900 (seats ₹1,400, meals ₹2,100, bags ₹2,400) and sends the link"
+    - "Checks in all seven after the seats are set; boarding passes come by SMS, one per person"
+    - "Gives the time: Tuesday 6 October, 2:30 pm"
+  checks: {lang: hi, digits: ["5,900"], say: [["5,900", "पाँच हज़ार नौ सौ", "उनसठ सौ"]], tool_order: [assign_seat, web_check_in]}
+  guard: "The caller places each person by name and side; every later line is a request or question that fits any earlier reply."
+
+- id: trv-111
+  g: TRV-1
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Family round trip moved both ways — fees first, seats on both flights, meals, FF numbers"
+  basis: "Saver-fare families change dates and want every fee before agreeing; seats are set again on each new flight."
+  caller: "M 46-60 · father, careful with money"
+  goal: "Know the charges, go a day earlier and come back a day later, seats on both flights, meals, FF numbers, one payment."
+  role: "You handle bookings. State every charge before changing."
+  context: "Saver fare: change fee ₹2,250 per passenger per flight plus fare difference. Seats ₹300. Meals ₹350."
+  tasks:
+    - task: "Find the booking and the fees"
+      calls:
+        - "get_booking(pnr=YT8V3N) → Srinivas Murthy, Anitha Murthy, Rishi Murthy (child, 12), Tejaswi Murthy (child, 9); YA 461 Visakhapatnam-Delhi Sat 24 Oct 10:20 am; YA 466 Delhi-Visakhapatnam Sun 1 Nov 5:05 pm; Saver"
+        - "get_fare_rules(pnr=YT8V3N) → change ₹2,250 per passenger per flight plus fare difference"
+    - task: "All four out a day earlier, Friday 23 October"
+      calls:
+        - "search_flights(from=VTZ, to=DEL, date=Fri 23 Oct) → YA 461 10:20 am, +₹500 per person; YA 463 6:40 pm, no fare difference"
+        - "change_flight(pnr=YT8V3N, passenger=Srinivas Murthy, new_flight=YA 461 Fri 23 Oct) → changed, ₹2,750"
+        - "change_flight(pnr=YT8V3N, passenger=Anitha Murthy, new_flight=YA 461 Fri 23 Oct) → changed, ₹2,750"
+        - "change_flight(pnr=YT8V3N, passenger=Rishi Murthy, new_flight=YA 461 Fri 23 Oct) → changed, ₹2,750"
+        - "change_flight(pnr=YT8V3N, passenger=Tejaswi Murthy, new_flight=YA 461 Fri 23 Oct) → changed, ₹2,750"
+    - task: "All four back a day later, Monday 2 November"
+      calls:
+        - "search_flights(from=DEL, to=VTZ, date=Mon 2 Nov) → YA 466 5:05 pm, no fare difference"
+        - "change_flight(pnr=YT8V3N, passenger=Srinivas Murthy, new_flight=YA 466 Mon 2 Nov) → changed, ₹2,250"
+        - "change_flight(pnr=YT8V3N, passenger=Anitha Murthy, new_flight=YA 466 Mon 2 Nov) → changed, ₹2,250"
+        - "change_flight(pnr=YT8V3N, passenger=Rishi Murthy, new_flight=YA 466 Mon 2 Nov) → changed, ₹2,250"
+        - "change_flight(pnr=YT8V3N, passenger=Tejaswi Murthy, new_flight=YA 466 Mon 2 Nov) → changed, ₹2,250"
+    - task: "Seats on the way out — each child at a window with a parent"
+      calls:
+        - "get_seat_map(flight_no=YA 461, date=Fri 23 Oct) → 16A-16B and 17A-17B free; 18C free; A is window"
+        - "assign_seat(pnr=YT8V3N, passenger=Tejaswi Murthy, flight_no=YA 461, seat=16A) → assigned, ₹300"
+        - "assign_seat(pnr=YT8V3N, passenger=Anitha Murthy, flight_no=YA 461, seat=16B) → assigned, ₹300"
+        - "assign_seat(pnr=YT8V3N, passenger=Rishi Murthy, flight_no=YA 461, seat=17A) → assigned, ₹300"
+        - "assign_seat(pnr=YT8V3N, passenger=Srinivas Murthy, flight_no=YA 461, seat=17B) → error: 17B was taken a moment ago; 18C is free"
+        - "assign_seat(pnr=YT8V3N, passenger=Srinivas Murthy, flight_no=YA 461, seat=18C) → assigned, ₹300"
+    - task: "Seats on the way back — the same pattern"
+      calls:
+        - "get_seat_map(flight_no=YA 466, date=Mon 2 Nov) → 12A-12B and 13A-13B free; A is window"
+        - "assign_seat(pnr=YT8V3N, passenger=Tejaswi Murthy, flight_no=YA 466, seat=12A) → assigned, ₹300"
+        - "assign_seat(pnr=YT8V3N, passenger=Anitha Murthy, flight_no=YA 466, seat=12B) → assigned, ₹300"
+        - "assign_seat(pnr=YT8V3N, passenger=Rishi Murthy, flight_no=YA 466, seat=13A) → assigned, ₹300"
+        - "assign_seat(pnr=YT8V3N, passenger=Srinivas Murthy, flight_no=YA 466, seat=13B) → assigned, ₹300"
+    - task: "Veg meals on the way out"
+      calls:
+        - "add_meal(pnr=YT8V3N, passenger=Srinivas Murthy, flight_no=YA 461, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT8V3N, passenger=Anitha Murthy, flight_no=YA 461, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT8V3N, passenger=Rishi Murthy, flight_no=YA 461, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT8V3N, passenger=Tejaswi Murthy, flight_no=YA 461, meal=veg) → added, ₹350"
+    - task: "Frequent-flyer numbers"
+      calls:
+        - "add_frequent_flyer(pnr=YT8V3N, passenger=Srinivas Murthy, ff_no=YF 4410 2268) → added"
+        - "add_frequent_flyer(pnr=YT8V3N, passenger=Anitha Murthy, ff_no=YF 4410 2273) → added"
+    - task: "Pay once, then the itinerary"
+      calls:
+        - "send_payment_link(pnr=YT8V3N, amount=₹23,800) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [cancel_booking, "change_flight(pnr=YT8V3N, passenger=Srinivas Murthy, new_flight=YA 463 Fri 23 Oct)"]
+  lines:
+    - [open, "నమస్తే, మా family trip dates మార్చాలి. PNR Y T eight V three N. నలుగురం.", "Hello, we need to change our family trip dates. PNR YT8V3N. Four of us."]
+    - [after, "మార్చితే charges ఎంత అవుతాయి? ముందు అది చెప్పండి.", "If we change, what will the charges be? Tell me that first."]
+    - [after, "వెళ్ళేది ఒక రోజు ముందు, Friday ఇరవై మూడుకి. Morning flight కావాలి.", "Going out one day earlier, on Friday the twenty-third. We want the morning flight."]
+    - [after, "తిరిగి వచ్చేది ఒక రోజు తర్వాత, Monday రెండో తారీఖు. అదే evening flight.", "Coming back one day later, Monday the second. The same evening flight."]
+    - [after, "సరే, నలుగురికీ రెండూ మార్చేయండి.", "Okay, change both for all four."]
+    - [after, "Seats: పిల్లలు ఇద్దరూ window దగ్గర, ఒక్కొక్కరి పక్కన ఒక parent. ముందు row లో Tejaswi, Anitha. వెనుక row లో Rishi, నేను. నా seat పోతే నన్ను ఆ వెనుక row లో ఎక్కడైనా పెట్టండి.", "Seats: both children by the window, each with a parent next to them. Front row Tejaswi and Anitha. Row behind, Rishi and me. If my seat goes, put me anywhere in the row behind that."]
+    - [after, "తిరిగి వచ్చే flight లో కూడా అదే లాగా పెట్టండి.", "Do the same on the flight back."]
+    - [after, "వెళ్ళే flight లో నలుగురికీ veg meals.", "Veg meals for all four on the way out."]
+    - [after, "నా frequent flyer number Y F four four one zero, two two six eight. Anitha ది Y F four four one zero, two two seven three.", "My frequent-flyer number is YF 4410 2268. Anitha's is YF 4410 2273."]
+    - [after, "మొత్తం ఎంత?", "What's the total?"]
+    - [after, "అంతా? సరే, payment link పంపండి.", "That much? Okay, send the payment link."]
+    - [after, "Seats అన్నీ ఒకసారి చెప్పండి, రాసుకుంటాను.", "Tell me all the seats once, I'll write them down."]
+    - [after, "Itinerary కూడా SMS చేయండి.", "SMS the itinerary as well."]
+    - [after, "ధన్యవాదాలు.", "Thank you."]
+  key:
+    - "States the ₹2,250 change fee per person per flight before changing"
+    - "Moves all four to YA 461 Friday 23 October 10:20 am (₹2,750 each) and to YA 466 Monday 2 November (₹2,250 each)"
+    - "YA 461: Tejaswi 16A, Anitha 16B, Rishi 17A; when 17B fails, says so and gives Srinivas 18C"
+    - "YA 466: Tejaswi 12A, Anitha 12B, Rishi 13A, Srinivas 13B"
+    - "Adds veg meals for all four on YA 461, and YF 4410 2268 and YF 4410 2273"
+    - "States ₹23,800 (changes ₹20,000, seats ₹2,400, meals ₹1,400) and sends one link"
+  checks: {lang: te, digits: ["23,800", "18C", "2,250"], say: [["23,800", "ఇరవై మూడు వేల ఎనిమిది వందలు"]], tool_order: [get_fare_rules, change_flight]}
+  guard: "The caller asks for fees before any change and gives the seat fallback with the seat request; L11 reacts to any large total."
+
+- id: trv-112
+  g: TRV-1
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Cricket team — eight kit bags and eight seats in name order"
+  basis: "Sports teams travel with kit bags: one extra-baggage purchase and one seat per player."
+  caller: "M 26-45 · club cricket coach, practical"
+  goal: "10 kg extra for each of eight players, seats in name order, one payment from the club."
+  role: "You handle bookings."
+  context: "Group fare: seats free. 10 kg extra ₹1,200 per player. Each player has 15 kg included."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT4C8T) → Aryan Gill, Dev Chauhan, Ishaan Bhatia, Kunal Rawat, Manav Joshi, Nitin Yadav, Pranav Saxena, Yash Thakur; YA 644 Delhi-Jaipur Sat 10 Oct 7:00 am; Group fare, 15 kg each"
+    - task: "10 kg extra for each player"
+      calls:
+        - "add_baggage(pnr=YT4C8T, passenger=Aryan Gill, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Dev Chauhan, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Ishaan Bhatia, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Kunal Rawat, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Manav Joshi, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Nitin Yadav, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Pranav Saxena, flight_no=YA 644, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT4C8T, passenger=Yash Thakur, flight_no=YA 644, kg=10) → added, ₹1,200"
+    - task: "Eight seats in name order, rows 20 and 21"
+      calls:
+        - "get_seat_map(flight_no=YA 644, date=Sat 10 Oct) → rows 20 and 21 A-F free"
+        - "assign_seat(pnr=YT4C8T, passenger=Aryan Gill, flight_no=YA 644, seat=20A) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Dev Chauhan, flight_no=YA 644, seat=20B) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Ishaan Bhatia, flight_no=YA 644, seat=20C) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Kunal Rawat, flight_no=YA 644, seat=20D) → error: 20D was taken a moment ago"
+        - "assign_seat(pnr=YT4C8T, passenger=Kunal Rawat, flight_no=YA 644, seat=21F) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Manav Joshi, flight_no=YA 644, seat=20E) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Nitin Yadav, flight_no=YA 644, seat=20F) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Pranav Saxena, flight_no=YA 644, seat=21A) → assigned, ₹0"
+        - "assign_seat(pnr=YT4C8T, passenger=Yash Thakur, flight_no=YA 644, seat=21B) → assigned, ₹0"
+    - task: "Pay and send the itinerary"
+      calls:
+        - "send_payment_link(pnr=YT4C8T, amount=₹9,600) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [add_travel_insurance, cancel_booking]
+  lines:
+    - [open, "Hello, main coach Sharma bol raha hoon. Cricket team ki booking hai, PNR Y T four C eight T. Aath players hain.", "Hello, this is Coach Sharma. It's a cricket team booking, PNR YT4C8T. There are eight players."]
+    - [after, "Sab ke paas kit bag hai. Har player ke liye das kilo extra chahiye, aathon ke liye.", "Everyone has a kit bag. Each player needs ten kilos extra, all eight."]
+    - [after, "Ab har ek ki limit kitni ho gayi?", "So what is each one's limit now?"]
+    - [after, "Seats bhi chahiye sab ek saath, row twenty aur twenty-one. Naam ke alphabet ke hisaab se — Aryan twenty A, phir B, C, aise hi. Twenty khatam ho toh twenty-one A se. Koi seat beech mein chali jaaye, toh us ladke ko twenty-one F de dena.", "Seats too, all together, rows twenty and twenty-one. In alphabetical order of names — Aryan in 20A, then B, C, and so on. When twenty is full, start at 21A. If a seat goes in between, give that boy 21F."]
+    - [after, "Seat ke paise lagenge kya?", "Do the seats cost anything?"]
+    - [after, "Achha, total kitna hua?", "Okay, what's the total?"]
+    - [after, "Link bhej do, club ke account se pay kar denge.", "Send the link, we'll pay from the club account."]
+    - [after, "Flight Saturday ko kitne baje hai?", "What time is the flight on Saturday?"]
+    - [after, "Seats ek baar bata do, list bana raha hoon.", "Tell me the seats once, I'm making a list."]
+    - [after, "Itinerary mere number pe bhej do.", "Send the itinerary to my number."]
+    - [after, "Aur kuch nahi. Thank you.", "Nothing else. Thank you."]
+    - [after, "Bye.", "Bye."]
+  key:
+    - "Adds 10 kg for all eight players; each now has 25 kg"
+    - "Seats Aryan 20A, Dev 20B, Ishaan 20C, Manav 20E, Nitin 20F, Pranav 21A, Yash 21B"
+    - "When 20D fails, says so and gives Kunal 21F"
+    - "Seats are free; states ₹9,600 and sends the link"
+    - "Gives Saturday 10 October, 7:00 am"
+  checks: {lang: hg, digits: ["9,600", "21F"], say: [["9,600", "nau hazaar chhe sau", "ninety-six hundred"]]}
+  guard: "The seat rule and its fallback come in one line before any seat is booked; the closing lines fit any reply."
+
+- id: trv-113
+  g: TRV-2
+  lang: en
+  diff: Hard
+  dir: out
+  title: "Connection cancelled — call-back to rebook a family overnight with hotel, cabs and claims"
+  basis: "Airlines call families ahead of a cancelled connection and rebuild the trip: rebooking, hotel, meals, transfers, compensation."
+  caller: "M 26-45 · father of two, annoyed but practical"
+  goal: "Get to Goa on Thursday's first flight, with a hotel, food, cabs and compensation sorted for all four."
+  role: "You are calling the customer because YA 777 Mumbai-Goa on Wednesday 7 October is cancelled. Open the call: greet, name Yatri Air, say why you are calling. Rebooking after an airline cancellation is free."
+  context: "When a connection is cancelled overnight, Yatri Air gives a hotel (one room per two passengers), meal vouchers and airport cabs at no cost."
+  tasks:
+    - task: "Check the booking and the cancellation"
+      calls:
+        - "get_booking(pnr=YT9D4K) → Sourav Das, Rupa Das, Arnab Das (child, 14), Mitali Das (child, 11); YA 140 Kolkata-Mumbai Wed 7 Oct 4:00 pm, lands 6:40 pm; YA 777 Mumbai-Goa Wed 7 Oct 9:30 pm"
+        - "get_flight_status(flight_no=YA 777, date=Wed 7 Oct) → cancelled (aircraft technical issue)"
+    - task: "Rebook all four on Thursday's first flight"
+      calls:
+        - "search_flights(from=BOM, to=GOI, date=Thu 8 Oct) → YA 779 6:10 am, 11 seats; YA 781 1:45 pm, 4 seats"
+        - "rebook_disrupted(pnr=YT9D4K, passenger=Sourav Das, new_flight=YA 779 Thu 8 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT9D4K, passenger=Rupa Das, new_flight=YA 779 Thu 8 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT9D4K, passenger=Arnab Das, new_flight=YA 779 Thu 8 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT9D4K, passenger=Mitali Das, new_flight=YA 779 Thu 8 Oct) → rebooked, ₹0"
+    - task: "Hotel for Wednesday night"
+      calls:
+        - "issue_hotel_voucher(pnr=YT9D4K, room_for=Sourav Das and Rupa Das) → Hotel Sagar Inn, Andheri East, room 1, voucher HV 40112"
+        - "issue_hotel_voucher(pnr=YT9D4K, room_for=Arnab Das and Mitali Das) → Hotel Sagar Inn, Andheri East, connecting room, voucher HV 40113"
+    - task: "Meal vouchers for all four"
+      calls:
+        - "issue_meal_voucher(pnr=YT9D4K, passenger=Sourav Das) → voucher MV 8801, ₹600"
+        - "issue_meal_voucher(pnr=YT9D4K, passenger=Rupa Das) → voucher MV 8802, ₹600"
+        - "issue_meal_voucher(pnr=YT9D4K, passenger=Arnab Das) → voucher MV 8803, ₹600"
+        - "issue_meal_voucher(pnr=YT9D4K, passenger=Mitali Das) → voucher MV 8804, ₹600"
+    - task: "Cabs to the hotel and back"
+      calls:
+        - "book_cab(pickup=Mumbai airport T2, drop=Hotel Sagar Inn Andheri East, date=Wed 7 Oct, time=7:15 pm, car_type=SUV) → ride RC 7781, paid by Yatri Air"
+        - "book_cab(pickup=Hotel Sagar Inn Andheri East, drop=Mumbai airport T2, date=Thu 8 Oct, time=4:15 am, car_type=SUV) → ride RC 7782, paid by Yatri Air"
+    - task: "Seats on the morning flight"
+      calls:
+        - "get_seat_map(flight_no=YA 779, date=Thu 8 Oct) → row 9 A-F free; 9A window, 9C and 9D aisle"
+        - "assign_seat(pnr=YT9D4K, passenger=Mitali Das, flight_no=YA 779, seat=9A) → assigned, ₹0"
+        - "assign_seat(pnr=YT9D4K, passenger=Arnab Das, flight_no=YA 779, seat=9B) → assigned, ₹0"
+        - "assign_seat(pnr=YT9D4K, passenger=Rupa Das, flight_no=YA 779, seat=9C) → assigned, ₹0"
+        - "assign_seat(pnr=YT9D4K, passenger=Sourav Das, flight_no=YA 779, seat=9D) → error: 9D was taken a moment ago; 9E is free"
+        - "assign_seat(pnr=YT9D4K, passenger=Sourav Das, flight_no=YA 779, seat=9E) → assigned, ₹0"
+    - task: "Breakfast on the morning flight"
+      calls:
+        - "add_meal(pnr=YT9D4K, passenger=Sourav Das, flight_no=YA 779, meal=breakfast) → added, ₹0"
+        - "add_meal(pnr=YT9D4K, passenger=Rupa Das, flight_no=YA 779, meal=breakfast) → added, ₹0"
+        - "add_meal(pnr=YT9D4K, passenger=Arnab Das, flight_no=YA 779, meal=breakfast) → added, ₹0"
+        - "add_meal(pnr=YT9D4K, passenger=Mitali Das, flight_no=YA 779, meal=breakfast) → added, ₹0"
+    - task: "Compensation claims for all four"
+      calls:
+        - "file_compensation_claim(pnr=YT9D4K, passenger=Sourav Das, reason=airline cancellation) → claim CC 2201; eligible ₹5,000, paid in 7-10 working days"
+        - "file_compensation_claim(pnr=YT9D4K, passenger=Rupa Das, reason=airline cancellation) → claim CC 2202; eligible ₹5,000, paid in 7-10 working days"
+        - "file_compensation_claim(pnr=YT9D4K, passenger=Arnab Das, reason=airline cancellation) → claim CC 2203; eligible ₹5,000, paid in 7-10 working days"
+        - "file_compensation_claim(pnr=YT9D4K, passenger=Mitali Das, reason=airline cancellation) → claim CC 2204; eligible ₹5,000, paid in 7-10 working days"
+    - task: "Send everything"
+      calls:
+        - "send_sms(template=disruption_summary) → sent: new tickets, hotel, vouchers, cabs, claims"
+  forbid: [cancel_booking, "rebook_disrupted(pnr=YT9D4K, passenger=Sourav Das, new_flight=YA 781 Thu 8 Oct)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Oh no. Cancelled? We fly out on Wednesday afternoon. What are my options?"]
+    - [after, "We'd rather not lose the whole day. Put all four of us on the first flight on Thursday morning."]
+    - [after, "So where do we stay in Mumbai on Wednesday night? We have two kids with us."]
+    - [after, "And food? We land at six forty and the kids will be starving."]
+    - [after, "Can you arrange a cab from the airport to the hotel, and back in the morning? Six ten is very early."]
+    - [after, "Seats on the morning flight: Mitali by the window, Arnab next to her, then my wife, and me across the aisle. If one goes, give me the next free one in that row."]
+    - [after, "Breakfast on that flight for all four, please."]
+    - [after, "Is there any compensation for this? It's your cancellation, not ours."]
+    - [after, "Okay, file it for all four of us."]
+    - [after, "What time does the cab pick us up from the hotel?"]
+    - [after, "Send everything to my phone — hotel, vouchers, cab, new tickets, claims."]
+    - [after, "Alright. Thanks for calling ahead at least."]
+  key:
+    - "Opens by naming Yatri Air and the YA 777 cancellation"
+    - "Gives both Thursday options and rebooks all four free on YA 779, 6:10 am"
+    - "Issues hotel vouchers HV 40112 and HV 40113 at Hotel Sagar Inn and meal vouchers MV 8801 to 8804"
+    - "Books cab RC 7781 at 7:15 pm Wednesday and RC 7782 at 4:15 am Thursday"
+    - "Seats Mitali 9A, Arnab 9B, Rupa 9C; when 9D fails, says so and gives Sourav 9E"
+    - "Adds breakfast for all four"
+    - "Files four compensation claims, CC 2201 to 2204, ₹5,000 each, only as the tool states"
+    - "Sends the summary"
+  checks: {digits: ["YA 779", "40112", "40113", "RC 7782", "9E"], say: [["4:15", "four fifteen"], ["5,000", "five thousand"]], tool_order: [get_flight_status, rebook_disrupted]}
+  guard: "Each line answers the cancellation news, whatever the opening sounded like; every request names who it is for; the seat fallback comes with the seat request."
+
+- id: trv-114
+  g: TRV-2
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Missed connection at Delhi — three friends rebooked, bags traced, vouchers, check-in, gate"
+  basis: "A delayed first flight strands passengers at the hub; agents rebook, trace bags and give the new gate over airport noise."
+  caller: "M 18-25 · stuck at Delhi airport with two friends, tired"
+  goal: "Reach Srinagar today: rebook all three, find the bags, food, seats together, check-in and the gate."
+  role: "You handle disruptions. A connection missed because of a Yatri Air delay is rebooked free; meal vouchers are given after a 2-hour wait."
+  context: ""
+  noise: {bed: airport_gate, snr_db: 10, decoy: "final boarding call for YA 816 at gate 22; baggage for YA 330 on belt 4"}
+  tasks:
+    - task: "Find the booking and what happened"
+      calls:
+        - "get_booking(pnr=YT6M1R) → Akash Gupta, Rahul Bisht, Sameer Khan; YA 588 Pune-Delhi Mon 5 Oct; YA 690 Delhi-Srinagar Mon 5 Oct 9:55 am; bags 445812, 445813, 445814"
+        - "get_flight_status(flight_no=YA 588, date=Mon 5 Oct) → landed 10:25 am, 2 hours 25 minutes late"
+        - "get_flight_status(flight_no=YA 690, date=Mon 5 Oct) → departed 9:55 am"
+    - task: "Rebook all three today"
+      calls:
+        - "search_flights(from=DEL, to=SXR, date=Mon 5 Oct) → YA 694 5:50 pm, 3 seats; next: YA 696 Tue 6 Oct 7:20 am"
+        - "rebook_disrupted(pnr=YT6M1R, passenger=Akash Gupta, new_flight=YA 694 Mon 5 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT6M1R, passenger=Rahul Bisht, new_flight=YA 694 Mon 5 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT6M1R, passenger=Sameer Khan, new_flight=YA 694 Mon 5 Oct) → rebooked, ₹0"
+    - task: "Trace the three bags"
+      calls:
+        - "get_baggage_status(tag=445812) → at Delhi T3 transfer, will go on YA 694"
+        - "get_baggage_status(tag=445813) → at Delhi T3 transfer, will go on YA 694"
+        - "get_baggage_status(tag=445814) → at Delhi T3 transfer, will go on YA 694"
+    - task: "Meal vouchers"
+      calls:
+        - "issue_meal_voucher(pnr=YT6M1R, passenger=Akash Gupta) → voucher MV 6611, ₹500"
+        - "issue_meal_voucher(pnr=YT6M1R, passenger=Rahul Bisht) → voucher MV 6612, ₹500"
+        - "issue_meal_voucher(pnr=YT6M1R, passenger=Sameer Khan) → voucher MV 6613, ₹500"
+    - task: "Seats together and check-in"
+      calls:
+        - "get_seat_map(flight_no=YA 694, date=Mon 5 Oct) → 14D-14F free together (the only three together)"
+        - "assign_seat(pnr=YT6M1R, passenger=Akash Gupta, flight_no=YA 694, seat=14D) → assigned, ₹0"
+        - "assign_seat(pnr=YT6M1R, passenger=Rahul Bisht, flight_no=YA 694, seat=14E) → assigned, ₹0"
+        - "assign_seat(pnr=YT6M1R, passenger=Sameer Khan, flight_no=YA 694, seat=14F) → assigned, ₹0"
+        - "web_check_in(pnr=YT6M1R, passenger=Akash Gupta, flight_no=YA 694) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT6M1R, passenger=Rahul Bisht, flight_no=YA 694) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT6M1R, passenger=Sameer Khan, flight_no=YA 694) → checked in, boarding pass sent by SMS"
+    - task: "Gate and boarding time, then the summary"
+      calls:
+        - "get_flight_status(flight_no=YA 694, date=Mon 5 Oct) → on time 5:50 pm, gate 31, boarding from 5:10 pm"
+        - "send_sms(template=disruption_summary) → sent"
+  forbid: [cancel_booking, "rebook_disrupted(pnr=YT6M1R, passenger=Akash Gupta, new_flight=YA 696 Tue 6 Oct)"]
+  lines:
+    - [open, "Hello, hum teen log Delhi airport pe phase gaye hain. Pune wali flight late thi, Srinagar wali nikal gayi. PNR Y T six M one R.", "Hello, three of us are stuck at Delhi airport. The Pune flight was late and the Srinagar one left. PNR YT6M1R."]
+    - [after, "Aaj hi ka koi flight hai Srinagar ka? Teeno ke liye.", "Is there any flight to Srinagar today? For all three."]
+    - [after, "Shaam wali kar do, teeno ki.", "Put all three on the evening one."]
+    - [after, "Hamare bags ka kya? Teen bags the — four four five eight one two, eight one three aur eight one four.", "What about our bags? There were three — 445812, 445813 and 445814."]
+    - [after, "Achha. Tab tak khaane ka kuch milega? Subah se kuch nahi khaya.", "Okay. Will we get something to eat till then? We haven't eaten since morning."]
+    - [after, "Seats teeno ek saath de do, kahin bhi chalega.", "Give all three seats together, anywhere is fine."]
+    - [after, "Check-in bhi kar do teeno ka, phir se line mein nahi lagna.", "Check in all three too, we don't want to queue again."]
+    - [after, "Gate kaunsa hai shaam wali flight ka?", "Which gate is the evening flight at?"]
+    - [after, "Yahan announcement mein kuch aur bol rahe hain. Pakka wahi gate hai na?", "The announcement here is saying something else. Is it definitely that gate?"]
+    - [after, "Theek hai. Boarding kitne baje shuru hogi?", "Okay. What time does boarding start?"]
+    - [after, "Sab details SMS kar do.", "SMS all the details."]
+    - [after, "Thanks yaar, bacha liya.", "Thanks, you saved us."]
+  key:
+    - "Confirms YA 588 landed 2 h 25 min late and YA 690 had left; no blame on the passengers"
+    - "Gives both options and rebooks all three free on YA 694, 5:50 pm today"
+    - "Says all three bags (445812, 445813, 445814) are at the T3 transfer and will go on YA 694"
+    - "Issues meal vouchers MV 6611 to 6613"
+    - "Seats 14D, 14E, 14F and checks all three in"
+    - "Gives gate 31 and boarding from 5:10 pm; does not repeat the gate or flight from the announcement"
+  checks: {lang: hg, digits: ["YA 694", "445812", "445813", "445814"], say: [["31", "thirty-one", "ikattis"]], not_say: ["gate 22", "YA 816", "belt 4"], tool_order: [get_flight_status, rebook_disrupted]}
+  guard: "The caller states the situation and asks for the evening flight himself; L9 doubts the gate whatever was said, so the agent must restate it."
+
+- id: trv-115
+  g: TRV-2
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Eight bags on one flight — six missing, two damaged: trace, claim, deliver"
+  basis: "Families returning with many bags file one claim per bag; damaged and missing bags follow different routes."
+  caller: "M 46-60 · father, tired after a family wedding trip"
+  goal: "Find the six missing bags, claim each, deliver the found ones home, escalate the untraced one, claim the two damaged."
+  role: "You handle baggage. One claim per bag."
+  context: "Damaged-bag claims are inspected at the address within 3 working days."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT3B7L) → Manoj Saxena, Rekha Saxena, Ishita Saxena, Kusum Saxena; YA 812 Bengaluru-Lucknow Sun 4 Oct; 8 bags: 778201-778202 Manoj, 778203-778204 Rekha, 778205 Ishita, 778206-778208 Kusum"
+    - task: "Trace the six missing bags"
+      calls:
+        - "get_baggage_status(tag=778201) → at Bengaluru, arrives Lucknow on YA 810 Tue 6 Oct"
+        - "get_baggage_status(tag=778202) → at Bengaluru, arrives Lucknow on YA 810 Tue 6 Oct"
+        - "get_baggage_status(tag=778203) → at Bengaluru, arrives Lucknow on YA 810 Tue 6 Oct"
+        - "get_baggage_status(tag=778204) → at Bengaluru, arrives Lucknow on YA 810 Tue 6 Oct"
+        - "get_baggage_status(tag=778205) → at Bengaluru, arrives Lucknow on YA 810 Tue 6 Oct"
+        - "get_baggage_status(tag=778206) → not traced yet"
+    - task: "One claim per missing bag"
+      calls:
+        - "raise_baggage_claim(pnr=YT3B7L, passenger=Manoj Saxena, tag=778201, description=delayed) → claim BC 51201"
+        - "raise_baggage_claim(pnr=YT3B7L, passenger=Manoj Saxena, tag=778202, description=delayed) → claim BC 51202"
+        - "raise_baggage_claim(pnr=YT3B7L, passenger=Rekha Saxena, tag=778203, description=delayed) → claim BC 51203"
+        - "raise_baggage_claim(pnr=YT3B7L, passenger=Rekha Saxena, tag=778204, description=delayed) → claim BC 51204"
+        - "raise_baggage_claim(pnr=YT3B7L, passenger=Ishita Saxena, tag=778205, description=delayed) → claim BC 51205"
+        - "raise_baggage_claim(pnr=YT3B7L, passenger=Kusum Saxena, tag=778206, description=missing, medicines inside) → claim BC 51206"
+    - task: "Deliver the five found bags home"
+      calls:
+        - "arrange_bag_delivery(claim_id=BC 51201, address=Flat 302 Gomti Apartments Gomti Nagar Lucknow 226010, slot=Tue 6 Oct 6-9 pm) → delivery booked"
+        - "arrange_bag_delivery(claim_id=BC 51202, address=Flat 302 Gomti Apartments Gomti Nagar Lucknow 226010, slot=Tue 6 Oct 6-9 pm) → delivery booked"
+        - "arrange_bag_delivery(claim_id=BC 51203, address=Flat 302 Gomti Apartments Gomti Nagar Lucknow 226010, slot=Tue 6 Oct 6-9 pm) → delivery booked"
+        - "arrange_bag_delivery(claim_id=BC 51204, address=Flat 302 Gomti Apartments Gomti Nagar Lucknow 226010, slot=Tue 6 Oct 6-9 pm) → delivery booked"
+        - "arrange_bag_delivery(claim_id=BC 51205, address=Flat 302 Gomti Apartments Gomti Nagar Lucknow 226010, slot=Tue 6 Oct 6-9 pm) → delivery booked"
+    - task: "Escalate the untraced bag"
+      calls:
+        - "raise_ticket(category=untraced bag, summary=778206 not traced; medicines inside for Kusum Saxena) → ticket TK 90471, priority, update within 24 hours"
+    - task: "Damage claims for the two damaged bags"
+      calls:
+        - "raise_damage_claim(pnr=YT3B7L, passenger=Rekha Saxena, tag=778207, damage=handle broken) → claim DC 3307, inspection at the address within 3 working days"
+        - "raise_damage_claim(pnr=YT3B7L, passenger=Kusum Saxena, tag=778208, damage=wheel broken) → claim DC 3308, inspection at the address within 3 working days"
+    - task: "Send all claim numbers"
+      calls:
+        - "send_sms(template=baggage_claims_summary) → sent"
+  forbid: ["arrange_bag_delivery(claim_id=BC 51206)", cancel_booking]
+  lines:
+    - [open, "नमस्ते, हम कल बेंगलुरु से लखनऊ आए हैं, हमारा सामान नहीं आया। पीएनआर है वाई टी तीन बी सात एल।", "Hello, we came from Bengaluru to Lucknow yesterday and our luggage hasn't come. The PNR is YT3B7L."]
+    - [after, "आठ बैग थे। टैग सात सात आठ दो शून्य एक से लेकर दो शून्य आठ तक, लगातार। इनमें से पहले छह नहीं आए।", "There were eight bags. Tags 778201 to 778208, in a row. The first six of them didn't come."]
+    - [after, "और जो दो आए, सात और आठ नंबर वाले, वो दोनों टूटे हुए हैं। एक का हैंडल, एक का पहिया।", "And the two that came, numbers seven and eight, are both broken. One's handle, one's wheel."]
+    - [after, "पहले बताइए, जो छह नहीं आए वो कहाँ हैं?", "First tell me, where are the six that didn't come?"]
+    - [after, "छहों की शिकायत दर्ज कर दीजिए।", "Register complaints for all six."]
+    - [after, "जो मिल गए हैं, वो घर भेज दीजिए। पता है फ़्लैट तीन सौ दो, गोमती अपार्टमेंट, गोमती नगर, लखनऊ, दो दो छह शून्य एक शून्य।", "Send the ones that have been found home. The address is Flat 302, Gomti Apartments, Gomti Nagar, Lucknow, 226010."]
+    - [after, "मंगलवार शाम छह से नौ के बीच ठीक रहेगा।", "Tuesday evening between six and nine will be fine."]
+    - [after, "और जो नहीं मिला, उसका क्या होगा? उसमें माँ की दवाइयाँ हैं।", "And what about the one that hasn't been found? My mother's medicines are in it."]
+    - [after, "टूटे हुए दोनों बैग की भी शिकायत कर दीजिए।", "Register complaints for the two broken bags too."]
+    - [after, "सारे शिकायत नंबर एक बार बता दीजिए।", "Tell me all the complaint numbers once."]
+    - [after, "ये सब मैसेज में भी भेज दीजिए।", "Send all of this by message too."]
+    - [after, "ठीक है, धन्यवाद।", "Okay, thank you."]
+  key:
+    - "Traces all six: five arrive on YA 810 Tuesday 6 October; 778206 not traced yet"
+    - "Raises six claims, BC 51201 to BC 51206, each under the right passenger"
+    - "Books delivery of the five found bags to Flat 302, Gomti Apartments, Tuesday 6-9 pm; not the untraced one"
+    - "Escalates 778206 with the medicines noted, ticket TK 90471, update within 24 hours"
+    - "Raises damage claims DC 3307 (handle) and DC 3308 (wheel); inspection within 3 working days"
+    - "Reads all claim numbers back and sends them"
+    - "Empathetic about the medicines; promises nothing beyond the tool results"
+  checks: {lang: hi, digits: ["BC 51206", "TK 90471", "DC 3307", "DC 3308"], tool_order: [raise_baggage_claim, arrange_bag_delivery]}
+  guard: "The tags are given as a range and split into missing and damaged before any lookup; every later line is a request that fits any reply."
+
+- id: trv-116
+  g: TRV-2
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Eight-hour delay — parents cancel for a full refund, family moves to tomorrow with cabs"
+  basis: "Long delays split families: some cancel for a refund, the rest rebook, and everyone needs a way home."
+  caller: "M 26-45 · son at the airport with wife, child and parents, stressed"
+  goal: "Full refund for his parents on the second booking, his family on tomorrow's first flight with seats, meals and check-in, food now, and three cabs."
+  role: "You handle disruptions. A Yatri Air delay over 6 hours allows a free change or a full refund. Cancel only after a clear yes."
+  context: "Meal vouchers are given at the airport after a 2-hour delay. Cabs are booked for the customer to pay."
+  tasks:
+    - task: "Find both bookings and the delay"
+      calls:
+        - "get_booking(pnr=YT1Q4W) → Karthik Raman, Priya Karthik, Aadhav Karthik (child, 8); YA 128 Chennai-Kolkata Mon 5 Oct 1:30 pm"
+        - "get_booking(pnr=YT1Q5X) → Raman S, Saroja Raman; YA 128 Chennai-Kolkata Mon 5 Oct 1:30 pm"
+        - "get_flight_status(flight_no=YA 128, date=Mon 5 Oct) → delayed to 9:45 pm (8 hours 15 minutes)"
+    - task: "Cancel the parents for a full refund"
+      calls:
+        - "cancel_passenger(pnr=YT1Q5X, passenger=Raman S) → cancelled; full refund ₹6,420 to the original card in 5-7 working days"
+        - "cancel_passenger(pnr=YT1Q5X, passenger=Saroja Raman) → cancelled; full refund ₹6,420 to the original card in 5-7 working days"
+    - task: "Move the family to tomorrow's first flight"
+      calls:
+        - "search_flights(from=MAA, to=CCU, date=Tue 6 Oct) → YA 126 6:30 am, 6 seats; YA 130 2:10 pm, 12 seats"
+        - "rebook_disrupted(pnr=YT1Q4W, passenger=Karthik Raman, new_flight=YA 126 Tue 6 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT1Q4W, passenger=Priya Karthik, new_flight=YA 126 Tue 6 Oct) → rebooked, ₹0"
+        - "rebook_disrupted(pnr=YT1Q4W, passenger=Aadhav Karthik, new_flight=YA 126 Tue 6 Oct) → rebooked, ₹0"
+    - task: "Three seats together"
+      calls:
+        - "get_seat_map(flight_no=YA 126, date=Tue 6 Oct) → 7A-7C free; 8C (aisle) free"
+        - "assign_seat(pnr=YT1Q4W, passenger=Aadhav Karthik, flight_no=YA 126, seat=7A) → assigned, ₹0"
+        - "assign_seat(pnr=YT1Q4W, passenger=Priya Karthik, flight_no=YA 126, seat=7B) → assigned, ₹0"
+        - "assign_seat(pnr=YT1Q4W, passenger=Karthik Raman, flight_no=YA 126, seat=7C) → error: 7C was taken a moment ago"
+        - "assign_seat(pnr=YT1Q4W, passenger=Karthik Raman, flight_no=YA 126, seat=8C) → assigned, ₹0"
+    - task: "Breakfast on the new flight"
+      calls:
+        - "add_meal(pnr=YT1Q4W, passenger=Karthik Raman, flight_no=YA 126, meal=breakfast) → added, ₹0"
+        - "add_meal(pnr=YT1Q4W, passenger=Priya Karthik, flight_no=YA 126, meal=breakfast) → added, ₹0"
+        - "add_meal(pnr=YT1Q4W, passenger=Aadhav Karthik, flight_no=YA 126, meal=breakfast) → added, ₹0"
+    - task: "Food now"
+      calls:
+        - "issue_meal_voucher(pnr=YT1Q4W, passenger=Karthik Raman) → voucher MV 3301, ₹400"
+        - "issue_meal_voucher(pnr=YT1Q4W, passenger=Priya Karthik) → voucher MV 3302, ₹400"
+        - "issue_meal_voucher(pnr=YT1Q4W, passenger=Aadhav Karthik) → voucher MV 3303, ₹400"
+    - task: "Three cabs"
+      calls:
+        - "book_cab(pickup=Chennai airport T1, drop=Adyar, date=Mon 5 Oct, time=now, car_type=sedan) → ride RC 3311, about ₹520"
+        - "book_cab(pickup=Chennai airport T1, drop=Velachery, date=Mon 5 Oct, time=now, car_type=sedan) → ride RC 3312, about ₹480"
+        - "book_cab(pickup=Velachery, drop=Chennai airport T1, date=Tue 6 Oct, time=4:30 am, car_type=sedan) → ride RC 3313, about ₹480"
+    - task: "Check in and send everything"
+      calls:
+        - "web_check_in(pnr=YT1Q4W, passenger=Karthik Raman, flight_no=YA 126) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT1Q4W, passenger=Priya Karthik, flight_no=YA 126) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT1Q4W, passenger=Aadhav Karthik, flight_no=YA 126) → checked in, boarding pass sent by SMS"
+        - "send_sms(template=disruption_summary) → sent"
+  forbid: ["cancel_booking(pnr=YT1Q4W)", "cancel_passenger(pnr=YT1Q4W, passenger=Karthik Raman)"]
+  lines:
+    - [open, "வணக்கம், Kolkata flight எட்டு மணி நேரம் late-னு message வந்துச்சு. ரெண்டு booking இருக்கு — Y T one Q four W, அப்புறம் Y T one Q five X.", "Hello, I got a message that the Kolkata flight is eight hours late. There are two bookings — YT1Q4W, and YT1Q5X."]
+    - [after, "இவ்வளவு late-ஆனா என்ன option இருக்கு?", "With such a long delay, what options are there?"]
+    - [after, "என் அப்பா அம்மா போகல. Second booking-ல இருக்கற அவங்க ரெண்டு பேருக்கும் cancel பண்ணுங்க, முழு refund வேணும்.", "My father and mother won't go. Cancel the two of them on the second booking, we want a full refund."]
+    - [after, "நாங்க மூணு பேரும் நாளைக்கு காலை முதல் flight-ல போறோம். மாத்துங்க.", "The three of us will take tomorrow morning's first flight. Change it."]
+    - [after, "Seats மூணும் சேர்ந்து வேணும். பையன் window, அப்புறம் என் wife, அப்புறம் நான். என் seat கிடைக்கலன்னா பின்னாடி row-ல aisle போடுங்க.", "All three seats together. The boy at the window, then my wife, then me. If my seat isn't available, put me on the aisle in the row behind."]
+    - [after, "காலைல சாப்பாடும் போடுங்க, மூணு பேருக்கும்.", "Add breakfast too, for all three."]
+    - [after, "இப்போ airport-ல தான் இருக்கோம். சாப்பிட ஏதாவது voucher கிடைக்குமா? நாங்க மூணு பேர்.", "We're at the airport right now. Can we get a voucher for food? The three of us."]
+    - [after, "அப்பா அம்மாவுக்கு airport-ல இருந்து Adyar-க்கு ஒரு cab book பண்ணுங்க.", "Book a cab for my parents from the airport to Adyar."]
+    - [after, "எங்களுக்கும் இப்போ Velachery-க்கு ஒரு cab, நாளைக்கு காலை நாலரை மணிக்கு திரும்ப airport-க்கு ஒரு cab.", "And for us, one cab to Velachery now, and one back to the airport tomorrow at four thirty in the morning."]
+    - [after, "மூணு பேருக்கும் check-in பண்ணிடுங்க.", "Check in all three."]
+    - [after, "அப்பா அம்மா refund எவ்வளவு, எப்போ வரும்?", "How much is my parents' refund, and when will it come?"]
+    - [after, "எல்லாத்தையும் SMS பண்ணுங்க.", "SMS everything."]
+    - [after, "சரி, நன்றி.", "Okay, thanks."]
+  key:
+    - "Explains the delay (9:45 pm) and both choices: free change or full refund"
+    - "Cancels Raman S and Saroja Raman only, on YT1Q5X; refund ₹6,420 each in 5-7 working days"
+    - "Gives both Tuesday options and rebooks the family free on YA 126, 6:30 am"
+    - "Seats Aadhav 7A and Priya 7B; when 7C fails, says so and gives Karthik 8C"
+    - "Adds breakfast for three and issues meal vouchers MV 3301 to 3303"
+    - "Books RC 3311 to Adyar, RC 3312 to Velachery and RC 3313 at 4:30 am Tuesday"
+    - "Checks the family in; sends the summary"
+  checks: {lang: ta, digits: ["6,420", "YA 126", "8C", "RC 3313"], say: [["6,420", "ஆறாயிரத்து நானூற்று இருபது"]], tool_order: [get_flight_status, cancel_passenger]}
+  guard: "The caller decides cancel-versus-rebook himself in L3–L4 after asking the options; each cab request names its route and time."

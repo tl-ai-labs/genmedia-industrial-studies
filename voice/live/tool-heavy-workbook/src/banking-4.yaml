@@ -1,0 +1,612 @@
+# Banking & insurance — tool-heavy scenarios bank-125 … bank-132 (BANK-5 Insurance, Kavach Insurance).
+code: bank
+scenarios:
+
+- id: bank-125
+  g: BANK-5
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Father's surgery at a non-network hospital — three reimbursement claims, nine documents, mother's pending claim, renewal"
+  basis: "Reimbursement claims split into hospitalisation, pre-hospitalisation and ambulance, each with its own documents."
+  caller: "F 26-45 · daughter and policyholder in Bengaluru, tired after a week at the hospital"
+  goal: "File every claim for her father's surgery with the right documents, finish her mother's pending claim, renew the policy and set the payout account."
+  role: "You handle health claims for Kavach Insurance. Post-hospitalisation expenses are claimed after the treatment, with the bills, within 60 days of discharge."
+  context: "The parents' policy covers 30 days before and 60 days after a hospital stay, and ambulance up to ₹5,000."
+  tasks:
+    - task: "Verify and read the policy"
+      calls:
+        - "verify_caller(name=Meera Krishnan, dob=4 Apr 1988) → verified; proposer on KV-H-610292"
+        - "get_policy(policy_no=KV-H-610292) → Kavach parents' health: Ramanathan K (68), Saraswathi R (63); sum insured ₹5,00,000; ambulance up to ₹5,000; renews 20 Oct, premium ₹42,800; no nominee"
+        - "check_network_hospital(policy_no=KV-H-610292, hospital=Lakeside Hospital, Jayanagar) → not in network; reimbursement only"
+    - task: "Hospitalisation claim and its documents"
+      calls:
+        - "register_claim(policy_no=KV-H-610292, member=Ramanathan K, kind=hospitalisation, amount=₹2,84,000) → claim KC 77301; documents: discharge summary, final bill, payment receipts, pharmacy bills, lab reports, cancelled cheque"
+        - "send_document_link(claim_id=KC 77301, document=discharge summary) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 77301, document=final bill) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 77301, document=payment receipts) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 77301, document=pharmacy bills) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 77301, document=lab reports) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 77301, document=cancelled cheque) → upload link sent by SMS"
+    - task: "Pre-hospitalisation tests"
+      calls:
+        - "register_claim(policy_no=KV-H-610292, member=Ramanathan K, kind=pre-hospitalisation, amount=₹18,500) → claim KC 77302; documents: prescriptions, test bills"
+        - "send_document_link(claim_id=KC 77302, document=prescriptions) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 77302, document=test bills) → upload link sent by SMS"
+    - task: "Ambulance"
+      calls:
+        - "register_claim(policy_no=KV-H-610292, member=Ramanathan K, kind=ambulance, amount=₹3,500) → claim KC 77303; documents: ambulance receipt"
+        - "send_document_link(claim_id=KC 77303, document=ambulance receipt) → upload link sent by SMS"
+    - task: "Payout account on all three"
+      calls:
+        - "set_claim_payout(claim_id=KC 77301, account_last4=5521) → payout account set"
+        - "set_claim_payout(claim_id=KC 77302, account_last4=5521) → payout account set"
+        - "set_claim_payout(claim_id=KC 77303, account_last4=5521) → payout account set"
+    - task: "Her mother's pending claim"
+      calls:
+        - "get_claim(claim_id=KC 77120) → Saraswathi R, cataract, ₹38,000; pending: pharmacy bills"
+        - "send_document_link(claim_id=KC 77120, document=pharmacy bills) → error: link service timed out"
+        - "send_document_link(claim_id=KC 77120, document=pharmacy bills) → upload link sent by SMS"
+    - task: "Renewal, autopay, nominee"
+      calls:
+        - "renew_policy(policy_no=KV-H-610292, pay_from_account_last4=5521) → renewed until 19 Oct 2027; ₹42,800 debited"
+        - "set_premium_autopay(policy_no=KV-H-610292, account_last4=5521) → autopay set from the next renewal"
+        - "update_nominee(policy_no=KV-H-610292, nominee=Meera Krishnan, relation=daughter, share=100%) → nominee updated"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Thu 15 Oct, slot=5-6 pm, topic=status of KC 77301, 77302, 77303) → booked"
+        - "send_sms(template=claims_summary) → sent"
+  forbid: ["register_claim(policy_no=KV-H-610292, member=Ramanathan K, kind=post-hospitalisation)"]
+  lines:
+    - [open, "Hi, my father had gallbladder surgery last week and I need to file the insurance claim. The policy is in my name, for my parents."]
+    - [after, "Meera Krishnan, fourth April nineteen eighty-eight."]
+    - [after, "He was at Lakeside Hospital in Jayanagar. They said it isn't cashless there, so we paid. The bill was two lakh eighty-four thousand."]
+    - [after, "What documents do you need? Send me a link for each one, it's easier for me to upload from my phone."]
+    - [after, "There were also tests before the surgery, about eighteen and a half thousand. And the ambulance was three and a half thousand."]
+    - [after, "Claim those too, with their links."]
+    - [after, "He'll have follow-up visits and medicines for the next two months. Can you register that claim now as well, to save time?"]
+    - [after, "Okay, I'll do it later then. Where will the money be paid? Use my savings account ending five five two one, for all of them."]
+    - [after, "My mother had a cataract claim in August that's stuck. Can you check it?"]
+    - [after, "Send me that link too."]
+    - [after, "The policy renews this month, right? Renew it now from the same account, and set autopay for next year."]
+    - [after, "There's no nominee on it? Put me."]
+    - [after, "Can someone call me in ten days with an update?"]
+    - [after, "Thanks. Send me the claim numbers by SMS."]
+  key:
+    - "Checks Lakeside is not a network hospital and files a reimbursement claim of ₹2,84,000 (KC 77301) with six document links"
+    - "Files pre-hospitalisation ₹18,500 (KC 77302) and ambulance ₹3,500 (KC 77303) with their links"
+    - "Explains post-hospitalisation is claimed after the treatment, with bills, within 60 days; does not register it now"
+    - "Sets 5521 as payout on all three claims"
+    - "Finds KC 77120 pending pharmacy bills; when the link fails, says so and resends"
+    - "Renews for ₹42,800, sets autopay and Meera as nominee; books the call-back for 15 October"
+  checks: {digits: ["KC 77301", "KC 77302", "KC 77303", "42,800"], tool_order: [check_network_hospital, register_claim]}
+  guard: "Each claim's amount is given with it; L7 must be refused whatever the agent offered; L8 accepts the refusal and gives the payout account for all claims."
+
+- id: bank-126
+  g: BANK-5
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Renewal month — newborn added, father refused, cover raised, OPD, car and scooter renewed with riders"
+  basis: "Families renew health and motor policies together and change members and riders at renewal."
+  caller: "M 26-45 · new father in Noida, cheerful, sleep-deprived"
+  goal: "Add his baby to the family floater, raise the cover and add OPD, check the hospital, renew all three policies with autopay and nominees."
+  role: "You handle policies for Kavach Insurance. The family floater accepts members up to age 65 at entry; a separate senior policy is available for older parents."
+  context: ""
+  noise: {bed: kids_home, snr_db: 14}
+  tasks:
+    - task: "Verify and read the floater"
+      calls:
+        - "verify_caller(name=Amit Saxena, dob=21 Jan 1989) → verified"
+        - "get_policy(policy_no=KV-H-720115) → family floater for Amit and Pallavi Saxena; ₹5,00,000; entry age up to 65; renews 10 Oct; premium ₹21,400"
+    - task: "Baby, cover, OPD"
+      calls:
+        - "add_policy_member(policy_no=KV-H-720115, member=Kiaan Saxena, relation=son, dob=12 Aug 2026) → added; premium +₹3,900"
+        - "change_sum_insured(policy_no=KV-H-720115, sum_insured=₹10,00,000) → from renewal; premium +₹6,300"
+        - "add_rider(policy_no=KV-H-720115, rider=OPD cover) → added; premium +₹2,800"
+        - "check_network_hospital(policy_no=KV-H-720115, hospital=Kailash Hospital, Noida) → cashless yes"
+    - task: "Renew the floater"
+      calls:
+        - "renew_policy(policy_no=KV-H-720115, pay_from_account_last4=6611) → renewed until 9 Oct 2027; ₹34,400 debited"
+        - "set_premium_autopay(policy_no=KV-H-720115, account_last4=6611) → autopay set from the next renewal"
+        - "update_nominee(policy_no=KV-H-720115, nominee=Pallavi Saxena, relation=wife, share=100%) → nominee updated"
+    - task: "The car"
+      calls:
+        - "get_policy(policy_no=KV-M-720231) → Hyundai Creta UP16 DK 2210; renews 18 Oct; premium ₹14,200; NCB 35%; no zero-depreciation"
+        - "add_rider(policy_no=KV-M-720231, rider=zero depreciation) → added; premium +₹3,100"
+        - "add_rider(policy_no=KV-M-720231, rider=roadside assistance) → added; premium +₹450"
+        - "renew_policy(policy_no=KV-M-720231, pay_from_account_last4=6611) → renewed until 17 Oct 2027; ₹17,750 debited"
+        - "update_nominee(policy_no=KV-M-720231, nominee=Pallavi Saxena, relation=wife, share=100%) → owner-driver cover nominee updated"
+    - task: "The scooter"
+      calls:
+        - "get_policy(policy_no=KV-M-720249) → Honda Activa UP16 EK 9034; renews 25 Oct; premium ₹1,850"
+        - "renew_policy(policy_no=KV-M-720249, pay_from_account_last4=6611) → renewed until 24 Oct 2027; ₹1,850 debited"
+    - task: "Autopay on both vehicles, tax certificate, summary"
+      calls:
+        - "set_premium_autopay(policy_no=KV-M-720231, account_last4=6611) → autopay set from the next renewal"
+        - "set_premium_autopay(policy_no=KV-M-720249, account_last4=6611) → autopay set from the next renewal"
+        - "request_statement(policy_no=KV-H-720115, kind=80D premium certificate) → emailed"
+        - "send_sms(template=renewals_summary) → sent"
+  forbid: ["add_policy_member(policy_no=KV-H-720115, member=Ravi Saxena)"]
+  lines:
+    - [open, "Hello! Main Amit Saxena. Hamari family health policy renew honi hai, aur ghar mein ek naya member aaya hai.", "Hello! I'm Amit Saxena. Our family health policy is due for renewal, and there's a new member at home."]
+    - [after, "Date of birth ikkees January unnees sau navaasi.", "Date of birth twenty-first January 1989."]
+    - [after, "Beta hua hai, Kiaan, baarah August ko. Usko policy mein daal do.", "We've had a son, Kiaan, on the twelfth of August. Add him to the policy."]
+    - [after, "Aur mere papa bhi, Ravi Saxena, sadsath saal ke. Unko bhi isi mein daal do.", "And my father too, Ravi Saxena, sixty-seven. Add him to this one as well."]
+    - [after, "Achha, unke liye baad mein alag dekhenge. Cover paanch se das lakh kar do. Aur OPD bhi chahiye, bachche ke doctor visits bahut hain.", "Okay, we'll look at a separate one for him later. Raise the cover from five to ten lakh. And I want OPD too — lots of doctor visits for the baby."]
+    - [after, "Kailash Hospital Noida mein cashless hai na? Wahin dikhate hain.", "Kailash Hospital in Noida is cashless, right? That's where we go."]
+    - [after, "Theek hai, renew kar do, mere account chhe chhe ek ek se. Agle saal se autopay. Nominee meri wife Pallavi.", "Okay, renew it from my account 6611. Autopay from next year. Nominee my wife Pallavi."]
+    - [after, "Car aur scooter ki policy bhi isi mahine hai. Car mein zero dep aur roadside assistance add kar do.", "The car and scooter policies are this month too. Add zero-dep and roadside assistance on the car."]
+    - [after, "Dono renew kar do, usi account se. Car mein bhi nominee Pallavi.", "Renew both from the same account. Pallavi as nominee on the car too."]
+    - [after, "Dono gaadiyon pe bhi autopay laga do.", "Set autopay on both vehicles as well."]
+    - [after, "Aaj kul kitna kata?", "How much was debited in total today?"]
+    - [after, "Tax ke liye health wala certificate email kar do.", "Email the health certificate for tax."]
+    - [after, "Bas, SMS bhej do. Thank you!", "That's it, send an SMS. Thank you!"]
+  key:
+    - "Adds Kiaan (+₹3,900); explains Ravi, at 67, is above the floater's entry age and suggests a senior policy; does not add him"
+    - "Raises cover to ₹10,00,000 and adds OPD before renewing; confirms Kailash Hospital is cashless"
+    - "Renews the floater for ₹34,400 from 6611 with autopay and Pallavi as nominee"
+    - "Adds zero-dep and roadside assistance and renews the car for ₹17,750; renews the scooter for ₹1,850; autopay on both"
+    - "States ₹54,000 debited today; emails the 80D certificate"
+  checks: {lang: hg, digits: ["34,400", "17,750"], say: [["54,000", "chauvan hazaar", "fifty-four thousand"]], tool_order: [add_policy_member, renew_policy]}
+  guard: "Changes to each policy are asked for before its renewal; L5 accepts the refusal whatever words it came in; L11 asks for the total whatever was said."
+
+- id: bank-127
+  g: BANK-5
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Car hit from behind, wife hurt — motor claim, garage, towing, survey, documents, and cashless admission for her"
+  basis: "A road accident brings a motor claim and a health claim in the same call, each with its own steps."
+  caller: "M 46-60 · businessman in Jaipur, at the roadside, shaken but organised"
+  goal: "Start the car claim with towing to his dealer's garage and a survey, and get his wife admitted cashless."
+  role: "You handle motor and health claims for Kavach Insurance. Ask whether anyone is hurt before anything else."
+  context: "Towing is covered up to ₹2,500."
+  noise: {bed: street_traffic, snr_db: 10}
+  tasks:
+    - task: "Verify and read the car policy"
+      calls:
+        - "verify_caller(name=Mahesh Choudhary, dob=6 Jun 1971) → verified"
+        - "get_policy(policy_no=KV-M-830412) → Maruti Ciaz RJ14 CD 4521; comprehensive with zero-depreciation; towing up to ₹2,500; NCB 25%"
+    - task: "Car claim, garage, towing, survey"
+      calls:
+        - "register_motor_claim(policy_no=KV-M-830412, vehicle=RJ14 CD 4521, incident=hit from behind by a tempo, place=Tonk Road, Jaipur) → claim MC 41290"
+        - "find_garage(pincode=302018) → Rathi Motors (Maruti dealer), Sharma Auto Works"
+        - "assign_garage(claim_id=MC 41290, garage=Rathi Motors) → cashless repair confirmed"
+        - "arrange_towing(claim_id=MC 41290, pickup=Tonk Road near Durgapura flyover, drop=Rathi Motors) → tow truck in about 40 minutes"
+        - "book_survey(claim_id=MC 41290, date=Tue 6 Oct, slot=10 am-12 pm, address=Rathi Motors) → surveyor Anil Mathur"
+    - task: "Car documents"
+      calls:
+        - "send_document_link(claim_id=MC 41290, document=RC) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 41290, document=driving licence) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 41290, document=FIR copy) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 41290, document=accident photos) → upload link sent by SMS"
+    - task: "His wife's admission"
+      calls:
+        - "get_policy(policy_no=KV-H-830420) → family floater for Mahesh, Sunita, Aditi, Rohan Choudhary; ₹5,00,000"
+        - "check_network_hospital(policy_no=KV-H-830420, hospital=Shubh Hospital, Malviya Nagar) → cashless yes"
+        - "request_cashless(policy_no=KV-H-830420, member=Sunita Choudhary, hospital=Shubh Hospital, Malviya Nagar, estimate=₹45,000) → pre-authorisation PA 41301; ₹40,000 approved now"
+        - "send_document_link(claim_id=PA 41301, document=doctor's admission note) → upload link sent by SMS"
+        - "send_document_link(claim_id=PA 41301, document=ID proof) → upload link sent by SMS"
+    - task: "The other driver, status, follow-up"
+      calls:
+        - "raise_ticket(category=third-party recovery, summary=MC 41290; tempo RJ14 GB 8812 hit from behind) → ticket TP 41310"
+        - "get_claim(claim_id=MC 41290) → registered; pending: RC, driving licence, FIR copy, accident photos"
+        - "schedule_callback(date=Tue 6 Oct, slot=1-2 pm, topic=survey outcome MC 41290) → booked"
+        - "send_sms(template=accident_claims_summary) → sent"
+  forbid: ["assign_garage(claim_id=MC 41290, garage=Sharma Auto Works)"]
+  lines:
+    - [open, "हैलो, मेरी गाड़ी का एक्सीडेंट हुआ है, टोंक रोड पर। पीछे से टेम्पो ने ठोक दिया।", "Hello, my car has had an accident on Tonk Road. A tempo hit it from behind."]
+    - [after, "मैं ठीक हूँ। पत्नी के हाथ में चोट है, शायद हड्डी टूटी है। एम्बुलेंस बुला ली है।", "I'm fine. My wife has hurt her arm, maybe a fracture. We've called an ambulance."]
+    - [after, "महेश चौधरी। जन्मतिथि छह जून उन्नीस सौ इकहत्तर।", "Mahesh Choudhary. Date of birth sixth June 1971."]
+    - [after, "गाड़ी चल नहीं रही। सियाज़ है, आर जे चौदह सी डी चार पाँच दो एक। क्लेम कर दीजिए।", "The car won't move. It's a Ciaz, RJ14 CD 4521. File the claim."]
+    - [after, "गाड़ी मारुति के डीलर के पास ही जाए। पास में कौन-सा है?", "The car should go to the Maruti dealer. Which one is near?"]
+    - [after, "हाँ, राठी मोटर्स ठीक है। टो ट्रक भेज दीजिए, दुर्गापुरा फ्लाईओवर के पास खड़े हैं।", "Yes, Rathi Motors is fine. Send a tow truck, we're near the Durgapura flyover."]
+    - [after, "सर्वेयर कब आएगा? कल सुबह हो सकता है?", "When will the surveyor come? Can it be tomorrow morning?"]
+    - [after, "कौन-कौन से कागज़ चाहिए? हर एक का लिंक भेज दीजिए। एफ़आईआर करवा ली है।", "Which papers are needed? Send a link for each. We've filed the FIR."]
+    - [after, "अब पत्नी को शुभ हॉस्पिटल, मालवीय नगर ले जा रहे हैं। वहाँ कैशलेस है? उनका नाम सुनीता चौधरी।", "Now we're taking my wife to Shubh Hospital, Malviya Nagar. Is it cashless there? Her name is Sunita Choudhary."]
+    - [after, "डॉक्टर ने अंदाज़ा पैंतालीस हज़ार बताया है। कैशलेस शुरू कर दीजिए।", "The doctor has estimated forty-five thousand. Start the cashless process."]
+    - [after, "टेम्पो का नंबर आर जे चौदह जी बी आठ आठ एक दो। उसका क्या होगा?", "The tempo's number is RJ14 GB 8812. What happens about him?"]
+    - [after, "मेरी कार क्लेम में अभी क्या-क्या बाक़ी है?", "What is still pending on my car claim?"]
+    - [after, "कल सर्वे के बाद मुझे फ़ोन कर दीजिए। और सब कुछ SMS में भेज दीजिए।", "Call me tomorrow after the survey. And send everything by SMS."]
+    - [after, "धन्यवाद, आपने बहुत मदद की।", "Thank you, you've been a great help."]
+  key:
+    - "Asks first whether anyone is hurt"
+    - "Registers MC 41290, assigns Rathi Motors, sends a tow truck (about 40 minutes) and books the survey for Tue 6 Oct, 10 am-12 pm"
+    - "Sends four document links: RC, licence, FIR, photos"
+    - "Confirms Shubh Hospital is cashless and gets pre-authorisation PA 41301 with ₹40,000 approved now"
+    - "Raises third-party recovery TP 41310 for the tempo; reads what is pending on MC 41290"
+    - "Books the call-back after the survey and sends the SMS"
+  checks: {lang: hi, digits: ["MC 41290", "PA 41301", "40,000"], tool_order: [register_motor_claim, assign_garage]}
+  guard: "L2 answers the injury question whether or not it was asked; L6 accepts the dealer once the agent names it; each document and hospital request names what it is for."
+
+- id: bank-128
+  g: BANK-5
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Two planned surgeries for parents — network hospitals, two cashless requests with caps, documents, early renewal"
+  basis: "Families plan surgeries around network hospitals and policy caps, member by member."
+  caller: "F 26-45 · daughter in Hyderabad, planning ahead, asks for every limit"
+  goal: "Get cashless approval for her father's knee replacement and her mother's cataract, understand the caps, and renew early with higher cover."
+  role: "You handle health policies for Kavach Insurance. Explain room-rent and cataract limits when they reduce an approval."
+  context: "Room rent is capped at 1% of the sum insured per day. Cataract is capped at ₹40,000 per eye. Changes made at renewal do not apply to a stay before the renewal date."
+  tasks:
+    - task: "Verify and read the policy"
+      calls:
+        - "verify_caller(name=Sravani Goud, dob=12 Dec 1991) → verified; proposer on KV-H-940117"
+        - "get_policy(policy_no=KV-H-940117) → parents' policy: Narasimha Rao (66), Rajeshwari (61); ₹5,00,000; room rent 1% a day; cataract ₹40,000 per eye; renews 28 Oct, premium ₹38,800"
+    - task: "Which hospitals are cashless"
+      calls:
+        - "check_network_hospital(policy_no=KV-H-940117, hospital=Medisree Hospital, Kukatpally) → not in network"
+        - "check_network_hospital(policy_no=KV-H-940117, hospital=Apex Ortho Hospital, Begumpet) → cashless yes"
+        - "check_network_hospital(policy_no=KV-H-940117, hospital=Netra Eye Hospital, Ameerpet) → cashless yes"
+    - task: "Two cashless requests"
+      calls:
+        - "request_cashless(policy_no=KV-H-940117, member=Narasimha Rao, hospital=Apex Ortho Hospital, Begumpet, estimate=₹3,20,000) → pre-authorisation PA 94101; ₹2,80,000 approved (room-rent limit)"
+        - "request_cashless(policy_no=KV-H-940117, member=Rajeshwari, hospital=Netra Eye Hospital, Ameerpet, estimate=₹55,000) → pre-authorisation PA 94102; ₹40,000 approved (cataract limit)"
+    - task: "Documents for each"
+      calls:
+        - "send_document_link(claim_id=PA 94101, document=doctor's recommendation) → upload link sent by SMS"
+        - "send_document_link(claim_id=PA 94101, document=X-ray and MRI reports) → upload link sent by SMS"
+        - "send_document_link(claim_id=PA 94101, document=ID proof) → upload link sent by SMS"
+        - "send_document_link(claim_id=PA 94102, document=eye test report) → upload link sent by SMS"
+        - "send_document_link(claim_id=PA 94102, document=ID proof) → upload link sent by SMS"
+    - task: "Last month's physio claim"
+      calls:
+        - "get_claim(claim_id=KC 93880) → Narasimha Rao physiotherapy; settled ₹12,400 on 2 Sep"
+    - task: "Early renewal with more cover"
+      calls:
+        - "change_sum_insured(policy_no=KV-H-940117, sum_insured=₹10,00,000) → from renewal; premium +₹9,800"
+        - "add_rider(policy_no=KV-H-940117, rider=room rent waiver) → from renewal; premium +₹4,200"
+        - "renew_policy(policy_no=KV-H-940117, pay_from_account_last4=3418) → renewed from 28 Oct until 27 Oct 2027; ₹52,800 debited"
+        - "set_premium_autopay(policy_no=KV-H-940117, account_last4=3418) → autopay set from the next renewal"
+        - "update_nominee(policy_no=KV-H-940117, nominee=Sravani Goud, relation=daughter, share=100%) → nominee updated"
+    - task: "Final approval call, summary"
+      calls:
+        - "schedule_callback(date=Fri 16 Oct, slot=4-5 pm, topic=final approval PA 94101 before the knee surgery) → booked"
+        - "send_sms(template=cashless_summary) → sent"
+  forbid: ["request_cashless(policy_no=KV-H-940117, member=Narasimha Rao, hospital=Medisree Hospital, Kukatpally)"]
+  lines:
+    - [open, "హలో, మా నాన్నగారికి knee replacement, అమ్మకి cataract operation plan చేశాం. Cashless గురించి మాట్లాడాలి.", "Hello, we've planned a knee replacement for my father and a cataract operation for my mother. I want to talk about cashless."]
+    - [after, "Sravani Goud. Date of birth పన్నెండు December, పంతొమ్మిది వందల తొంభై ఒకటి.", "Sravani Goud. Date of birth twelfth December 1991."]
+    - [after, "నాన్నగారి doctor Kukatpally Medisree లో ఉన్నారు, కానీ Begumpet Apex Ortho లో కూడా చేస్తారు. రెండూ check చేయండి. అమ్మది Ameerpet Netra Eye Hospital.", "My father's doctor is at Medisree in Kukatpally, but he also operates at Apex Ortho in Begumpet. Check both. My mother's is Netra Eye Hospital in Ameerpet."]
+    - [after, "సరే, నాన్నగారిది Apex Ortho లో చేయిస్తాం. Estimate మూడు లక్షల ఇరవై వేలు, పంతొమ్మిదో తేదీ surgery.", "Okay, we'll have my father's done at Apex Ortho. The estimate is three lakh twenty thousand; surgery on the nineteenth."]
+    - [after, "అమ్మది పదిహేనో తేదీ, estimate యాభై ఐదు వేలు.", "My mother's is on the fifteenth; the estimate is fifty-five thousand."]
+    - [after, "ఎందుకు పూర్తిగా approve కాలేదు? ఎంత మేము కట్టాలి?", "Why wasn't it fully approved? How much do we have to pay?"]
+    - [after, "ఏ documents కావాలి? ఒక్కొక్క దానికి link పంపండి.", "Which documents are needed? Send a link for each one."]
+    - [after, "పోయిన నెల నాన్నగారి physiotherapy claim పెట్టాం, అది వచ్చిందా?", "We filed a physiotherapy claim for my father last month — has it been paid?"]
+    - [after, "Policy ఈ నెలలోనే renew అవుతుంది కదా. Cover పది లక్షలు చేయండి, room rent limit తీసేసే rider కూడా పెట్టండి.", "The policy renews this month, doesn't it? Make the cover ten lakh, and add the rider that removes the room-rent limit."]
+    - [after, "అంటే పంతొమ్మిదో తేదీ surgery కి ఇది పనికి రాదా? సరే, అయినా renew చేయండి, account three four one eight నుంచి.", "So it won't help for the surgery on the nineteenth? Okay, renew it anyway, from account 3418."]
+    - [after, "Autopay పెట్టండి, nominee నేనే.", "Set autopay, and I'm the nominee."]
+    - [after, "Surgery ముందు final approval కోసం పదహారో తేదీ నాకు call చేయండి.", "Call me on the sixteenth for the final approval before the surgery."]
+    - [after, "అన్నీ SMS లో పంపండి. Thank you అండి.", "Send everything by SMS. Thank you."]
+  key:
+    - "Says Medisree is not in the network and Apex Ortho and Netra Eye are; requests cashless only at those two"
+    - "PA 94101: ₹2,80,000 of ₹3,20,000 approved, because of the room-rent limit; PA 94102: ₹40,000 of ₹55,000, the cataract cap; states the ₹40,000 and ₹15,000 the family pays"
+    - "Sends three document links for the knee and two for the cataract"
+    - "Says the physio claim KC 93880 was settled for ₹12,400 on 2 September"
+    - "Explains the new cover and rider start on 28 October, after both surgeries; renews for ₹52,800 with autopay and Sravani as nominee"
+    - "Books the 16 October call-back; speaks Telugu, keeping her English words"
+  checks: {lang: te, digits: ["PA 94101", "PA 94102", "2,80,000", "52,800"], tool_order: [check_network_hospital, request_cashless]}
+  guard: "Both hospitals for the father are given in L3, before any request; L6 asks about the shortfall whatever the agent already said; L10 reacts to the renewal-date rule given in the context."
+
+- id: bank-129
+  g: BANK-5
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Joint family's five policies renewed together — riders, cover changes, a failed payment, autopay and nominees"
+  basis: "Joint families hold several policies with the same insurer and renew them together, policy by policy."
+  caller: "M 46-60 · head of a joint family in Madurai, methodical, holds the papers"
+  goal: "Renew all five policies with the changes he wants, pay from one account and then the other, and set autopay, nominees and tax certificates."
+  role: "You handle policies for Kavach Insurance. Make changes before renewing a policy. The family floater accepts members up to age 65 at entry."
+  context: ""
+  tasks:
+    - task: "Verify and read all five"
+      calls:
+        - "verify_caller(name=Karthikeyan Subramanian, dob=19 May 1972) → verified"
+        - "get_policy(policy_no=KV-H-510301) → family floater: Karthikeyan, Meena, Arun, Divya; ₹10,00,000; renews 12 Oct; premium ₹29,200"
+        - "get_policy(policy_no=KV-H-510319) → senior policy: Subramanian (74), Valli (69); ₹5,00,000; renews 14 Oct; premium ₹71,500; nominee none"
+        - "get_policy(policy_no=KV-M-510327) → Toyota Innova TN58 AK 4410; renews 20 Oct; premium ₹19,600"
+        - "get_policy(policy_no=KV-M-510335) → TVS Jupiter TN58 BM 7721 (Arun); renews 22 Oct; premium ₹2,100"
+        - "get_policy(policy_no=KV-P-510343) → home: building ₹30,00,000, contents ₹5,00,000; renews 30 Oct; premium ₹6,800; nominee none"
+    - task: "Changes before renewal"
+      calls:
+        - "add_rider(policy_no=KV-H-510301, rider=OPD cover) → from renewal; premium +₹3,600"
+        - "change_sum_insured(policy_no=KV-H-510301, sum_insured=₹15,00,000) → from renewal; premium +₹5,400"
+        - "add_rider(policy_no=KV-M-510327, rider=zero depreciation) → from renewal; premium +₹4,200"
+        - "add_rider(policy_no=KV-M-510327, rider=engine protection) → from renewal; premium +₹1,800"
+        - "change_sum_insured(policy_no=KV-P-510343, sum_insured=₹40,00,000) → building cover raised from renewal; premium +₹2,400"
+    - task: "Renew all five: 7731 first, 7748 if a payment fails"
+      calls:
+        - "renew_policy(policy_no=KV-H-510301, pay_from_account_last4=7731) → renewed until 11 Oct 2027; ₹38,200 debited"
+        - "renew_policy(policy_no=KV-H-510319, pay_from_account_last4=7731) → error: payment from 7731 failed, insufficient balance"
+        - "renew_policy(policy_no=KV-H-510319, pay_from_account_last4=7748) → renewed until 13 Oct 2027; ₹71,500 debited"
+        - "renew_policy(policy_no=KV-M-510327, pay_from_account_last4=7748) → renewed until 19 Oct 2027; ₹25,600 debited"
+        - "renew_policy(policy_no=KV-M-510335, pay_from_account_last4=7748) → renewed until 21 Oct 2027; ₹2,100 debited"
+        - "renew_policy(policy_no=KV-P-510343, pay_from_account_last4=7748) → renewed until 29 Oct 2027; ₹9,200 debited"
+    - task: "Autopay on all five from 7748"
+      calls:
+        - "set_premium_autopay(policy_no=KV-H-510301, account_last4=7748) → autopay set from the next renewal"
+        - "set_premium_autopay(policy_no=KV-H-510319, account_last4=7748) → autopay set from the next renewal"
+        - "set_premium_autopay(policy_no=KV-M-510327, account_last4=7748) → autopay set from the next renewal"
+        - "set_premium_autopay(policy_no=KV-M-510335, account_last4=7748) → autopay set from the next renewal"
+        - "set_premium_autopay(policy_no=KV-P-510343, account_last4=7748) → autopay set from the next renewal"
+    - task: "Nominees"
+      calls:
+        - "update_nominee(policy_no=KV-H-510319, nominee=Karthikeyan Subramanian, relation=son, share=100%) → nominee updated"
+        - "update_nominee(policy_no=KV-M-510327, nominee=Meena Karthikeyan, relation=wife, share=100%) → owner-driver cover nominee updated"
+        - "update_nominee(policy_no=KV-P-510343, nominee=Meena Karthikeyan, relation=wife, share=100%) → nominee updated"
+    - task: "Parents' hospital, tax certificates, summary"
+      calls:
+        - "check_network_hospital(policy_no=KV-H-510319, hospital=Vaigai Hospital, Madurai) → cashless yes"
+        - "request_statement(policy_no=KV-H-510301, kind=80D premium certificate) → emailed"
+        - "request_statement(policy_no=KV-H-510319, kind=80D premium certificate) → emailed"
+        - "schedule_callback(date=Thu 15 Oct, slot=11 am-12 pm, topic=policy documents received) → booked"
+        - "send_sms(template=renewals_summary) → sent"
+  forbid: ["add_policy_member(policy_no=KV-H-510301, member=Subramanian)"]
+  lines:
+    - [open, "வணக்கம். நான் Karthikeyan Subramanian, Madurai. எங்க குடும்பத்தோட அஞ்சு policy யும் இந்த மாசம் renew ஆகணும். ஒரே தடவையில முடிச்சிடலாம்.", "Hello. I'm Karthikeyan Subramanian, Madurai. All five of our family's policies renew this month. Let's finish them in one go."]
+    - [after, "Date of birth பத்தொன்பது May, ஆயிரத்து தொள்ளாயிரத்து எழுபத்தி ரெண்டு.", "Date of birth nineteenth May 1972."]
+    - [after, "அஞ்சையும் ஒவ்வொன்னா படிச்சு சொல்லுங்க.", "Read all five out one by one."]
+    - [after, "அப்பாவ எங்க family floater ல சேர்த்துட்டா premium குறையுமா? அவருக்கு எழுபத்தி நாலு வயசு.", "If we move my father into our family floater, will the premium come down? He's seventy-four."]
+    - [after, "சரி, அது வேண்டாம். Family floater ல OPD சேருங்க, cover பதினஞ்சு லட்சமா ஏத்துங்க.", "Okay, never mind that. Add OPD on the family floater, and raise the cover to fifteen lakh."]
+    - [after, "Innova க்கு zero depreciation, engine protection ரெண்டும் சேருங்க. வீட்டு building cover நாப்பது லட்சமா ஏத்துங்க.", "Add zero depreciation and engine protection on the Innova. Raise the home's building cover to forty lakh."]
+    - [after, "இப்ப அஞ்சையும் renew பண்ணுங்க. என் account seven seven three one ல இருந்து. ஏதாவது payment fail ஆனா, அதையும் மீதியையும் seven seven four eight ல இருந்து எடுங்க.", "Now renew all five. From my account 7731. If any payment fails, take that one and the rest from 7748."]
+    - [after, "மொத்தம் எவ்வளவு ஆச்சு? எந்த account ல இருந்து எவ்வளவு?", "How much was it in total? How much from which account?"]
+    - [after, "அடுத்த வருஷத்துல இருந்து அஞ்சுக்கும் autopay, seven seven four eight ல இருந்து.", "From next year, autopay on all five, from 7748."]
+    - [after, "அப்பா அம்மா policy க்கு nominee நான். Car, வீடு ரெண்டுக்கும் என் மனைவி Meena.", "I'm the nominee on my parents' policy. My wife Meena on both the car and the house."]
+    - [after, "அப்பாவுக்கு Vaigai Hospital ல தான் treatment. அங்க cashless இருக்கா?", "My father is treated at Vaigai Hospital. Is it cashless there?"]
+    - [after, "Income tax க்கு ரெண்டு health policy க்கும் certificate email பண்ணுங்க.", "Email the certificates for both health policies, for income tax."]
+    - [after, "Policy papers வந்துதான்னு ஒரு வாரம் கழிச்சு call பண்ணுங்க.", "Call me in a week to check the policy papers have come."]
+    - [after, "எல்லாம் SMS ல அனுப்புங்க. நன்றி.", "Send it all by SMS. Thank you."]
+  key:
+    - "Reads all five policies; explains his father, at 74, cannot join the floater (entry up to 65) and does not add him"
+    - "Makes every change before renewing: OPD and ₹15,00,000 on the floater, zero-dep and engine protection on the Innova, ₹40,00,000 building cover"
+    - "Renews the floater from 7731 (₹38,200); when the parents' payment fails, says so and pays it and the rest from 7748"
+    - "States ₹1,46,600 in all: ₹38,200 from 7731 and ₹1,08,400 from 7748"
+    - "Sets autopay on all five from 7748; nominees Karthikeyan on the parents' policy and Meena on the car and house"
+    - "Confirms Vaigai Hospital is cashless, emails both 80D certificates and books the call-back"
+    - "Speaks Tamil, keeping his English words"
+  checks: {lang: ta, digits: ["38,200", "71,500"], say: [["1,46,600", "ஒரு லட்சத்து நாற்பத்தி ஆறாயிரத்து அறுநூறு", "one lakh forty-six thousand six hundred"], ["1,08,400", "ஒரு லட்சத்து எட்டாயிரத்து நானூறு", "one lakh eight thousand four hundred"]], tool_order: [add_rider, renew_policy]}
+  guard: "Every change comes before L7's renewal request; the payment fallback comes with it; L8 asks for the split whatever the agent said."
+
+- id: bank-130
+  g: BANK-5
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Claims team calls — two claims missing documents, payout account, a new physio claim, an old deduction queried"
+  basis: "Insurers call customers when claims stall on missing documents; the call often turns into new requests."
+  caller: "F 26-45 · mother of two in Ludhiana, busy, a little irritated at first"
+  goal: "Get the missing documents in for both claims, set where the money goes, file her son's physio bills, and query an old deduction."
+  role: "You are calling from Kavach Insurance's claims team because claims KC 66010 and KC 66024 are waiting for documents and will close on 15 Oct. Open the call: greet, name Kavach Insurance, say why you are calling. Verify the policyholder before giving details. Don't register a second claim for a stay that already has one."
+  context: ""
+  tasks:
+    - task: "Verify and read both claims"
+      calls:
+        - "verify_caller(name=Harpreet Gill, dob=1 Feb 1987) → verified; policyholder on KV-H-660502"
+        - "get_claim(claim_id=KC 66010) → Jaspreet Gill, dengue hospitalisation ₹1,12,000; pending: final bill, discharge summary, lab reports; closes 15 Oct if not received"
+        - "get_claim(claim_id=KC 66024) → Arjan Gill, fractured wrist ₹46,500; pending: X-ray report, pharmacy bills; closes 15 Oct if not received"
+    - task: "Links for each missing document"
+      calls:
+        - "send_document_link(claim_id=KC 66010, document=final bill) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 66010, document=discharge summary) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 66010, document=lab reports) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 66024, document=X-ray report) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 66024, document=pharmacy bills) → upload link sent by SMS"
+    - task: "Payout account"
+      calls:
+        - "set_claim_payout(claim_id=KC 66010, account_last4=8820) → payout account set"
+        - "set_claim_payout(claim_id=KC 66024, account_last4=8820) → payout account set"
+    - task: "Arjan's physiotherapy"
+      calls:
+        - "get_policy(policy_no=KV-H-660502) → floater for Harpreet, Jaspreet, Arjan, Simar Gill; ₹5,00,000, ₹3,10,000 left this year; post-hospitalisation 60 days"
+        - "register_claim(policy_no=KV-H-660502, member=Arjan Gill, kind=post-hospitalisation physiotherapy, amount=₹8,400) → claim KC 66031; documents: physio bills, doctor's prescription"
+        - "send_document_link(claim_id=KC 66031, document=physio bills) → upload link sent by SMS"
+        - "send_document_link(claim_id=KC 66031, document=doctor's prescription) → upload link sent by SMS"
+        - "set_claim_payout(claim_id=KC 66031, account_last4=8820) → payout account set"
+    - task: "Cover running low"
+      calls:
+        - "add_rider(policy_no=KV-H-660502, rider=sum insured restore) → from the next renewal; premium +₹2,900"
+    - task: "The July claim's deduction"
+      calls:
+        - "get_claim(claim_id=KC 65890) → Simar Gill, settled ₹22,300 on 14 Aug; ₹4,100 deducted for non-medical items"
+        - "raise_ticket(category=claim deduction query, summary=KC 65890 ₹4,100 non-medical deduction) → ticket CQ 66040"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Mon 12 Oct, slot=6-7 pm, topic=documents received for KC 66010, 66024, 66031) → booked"
+        - "send_sms(template=claims_summary) → sent"
+  forbid: ["register_claim(policy_no=KV-H-660502, member=Jaspreet Gill, kind=hospitalisation)"]
+  lines:
+    - [open, "Hello? Who is this?"]
+    - [after, "Oh, the claims. Yes. Harpreet Gill, first February nineteen eighty-seven."]
+    - [after, "Which documents? I thought I sent everything."]
+    - [after, "Send me a link for each one. The hospital gave me everything in a folder, I'll upload tonight."]
+    - [after, "Wait — for my husband's dengue, should I just file a fresh claim instead? Would that be faster?"]
+    - [after, "Fine. Where will the money go? Use my account ending eight eight two zero for both."]
+    - [after, "Arjan has been going for physio for his wrist since the cast came off. Eight thousand four hundred so far. Can I claim that?"]
+    - [after, "Yes, file it. Same account."]
+    - [after, "How much cover is left this year? We've had a bad year."]
+    - [after, "Is there something so the cover refills if it runs out?"]
+    - [after, "Add that at renewal then."]
+    - [after, "And while I have you — my daughter's claim in July, you cut four thousand from it. Why?"]
+    - [after, "I want that looked at again."]
+    - [after, "Call me next Monday evening to check you've got everything. And send me all the numbers."]
+    - [after, "Okay, thanks for calling."]
+  key:
+    - "Opens naming Kavach Insurance and the two stalled claims; verifies before giving details; mentions the 15 October closing date"
+    - "Lists and sends a link for each missing document: three for KC 66010, two for KC 66024"
+    - "Advises against a fresh claim for the dengue stay and does not register one"
+    - "Sets 8820 as payout on KC 66010, KC 66024 and the new KC 66031 (physio ₹8,400, with two document links)"
+    - "Says ₹3,10,000 of cover is left and adds the restore rider from the next renewal"
+    - "Explains the ₹4,100 non-medical deduction on KC 65890 and raises review ticket CQ 66040"
+    - "Books Monday's call-back and sends the SMS"
+  checks: {digits: ["KC 66031", "CQ 66040", "3,10,000"], tool_order: [verify_caller, get_claim]}
+  guard: "Each line reacts to news the agent must give or asks a new question; L5 must be advised against whatever the agent said before."
+
+- id: bank-131
+  g: BANK-5
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Basement flooded — two cars and the flat's contents: three claims, garages, towing, surveys, eleven documents"
+  basis: "Urban floods damage several insured things at once; each car and the home contents is its own claim."
+  caller: "M 26-45 · IT consultant in Mumbai, rain still heavy, stressed but practical"
+  goal: "Start claims for both flooded cars and the home contents, get both cars towed to their dealers, book every survey and send every document."
+  role: "You handle motor and home claims for Kavach Insurance. Tell the customer not to start a flooded engine. The home policy covers contents only, not the building."
+  context: ""
+  noise: {bed: rain_window, snr_db: 10}
+  tasks:
+    - task: "Verify and read the three policies"
+      calls:
+        - "verify_caller(name=Kunal Shah, dob=30 Jan 1985) → verified"
+        - "get_policy(policy_no=KV-M-770118) → Honda City MH02 EK 7781; comprehensive with engine protection"
+        - "get_policy(policy_no=KV-M-770126) → Tata Nexon EV MH02 FG 3320 (Riya Shah, joint holder); comprehensive; battery covered for flood"
+        - "get_policy(policy_no=KV-P-770134) → home contents ₹8,00,000, Flat 102, Sea Breeze CHS, Andheri West; building not covered"
+    - task: "Two car claims"
+      calls:
+        - "register_motor_claim(policy_no=KV-M-770118, vehicle=MH02 EK 7781, incident=flooded in the building basement, place=Andheri West, Mumbai) → claim MC 77201"
+        - "register_motor_claim(policy_no=KV-M-770126, vehicle=MH02 FG 3320, incident=flooded in the building basement, place=Andheri West, Mumbai) → claim MC 77202"
+    - task: "Garages and towing"
+      calls:
+        - "find_garage(pincode=400053) → Sai Honda, Andheri (Honda dealer); Western Tata Service, Jogeshwari (Tata EV dealer)"
+        - "assign_garage(claim_id=MC 77201, garage=Sai Honda, Andheri) → cashless repair confirmed"
+        - "assign_garage(claim_id=MC 77202, garage=Western Tata Service, Jogeshwari) → cashless repair confirmed"
+        - "arrange_towing(claim_id=MC 77201, pickup=Sea Breeze CHS basement, drop=Sai Honda, Andheri) → flatbed in about 2 hours (waterlogging)"
+        - "arrange_towing(claim_id=MC 77202, pickup=Sea Breeze CHS basement, drop=Western Tata Service, Jogeshwari) → flatbed in about 2 hours (waterlogging)"
+    - task: "Home contents claim"
+      calls:
+        - "register_claim(policy_no=KV-P-770134, member=Kunal Shah, kind=flood damage to contents, amount=₹1,85,000) → claim HC 77210; documents: photos, purchase bills, list of damaged items"
+    - task: "Three surveys"
+      calls:
+        - "book_survey(claim_id=MC 77201, date=Tue 6 Oct, slot=10 am-12 pm, address=Sai Honda, Andheri) → surveyor Prakash Rane"
+        - "book_survey(claim_id=MC 77202, date=Tue 6 Oct, slot=2-4 pm, address=Western Tata Service, Jogeshwari) → surveyor Prakash Rane"
+        - "book_survey(claim_id=HC 77210, date=Wed 7 Oct, slot=11 am-1 pm, address=Flat 102, Sea Breeze CHS, Andheri West) → surveyor Neha Kulkarni"
+    - task: "Documents for each claim"
+      calls:
+        - "send_document_link(claim_id=MC 77201, document=RC) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 77201, document=driving licence) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 77201, document=photos) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 77202, document=RC) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 77202, document=driving licence) → upload link sent by SMS"
+        - "send_document_link(claim_id=MC 77202, document=photos) → upload link sent by SMS"
+        - "send_document_link(claim_id=HC 77210, document=photos) → upload link sent by SMS"
+        - "send_document_link(claim_id=HC 77210, document=purchase bills) → upload link sent by SMS"
+        - "send_document_link(claim_id=HC 77210, document=list of damaged items) → upload link sent by SMS"
+    - task: "Payout, follow-up, summary"
+      calls:
+        - "set_claim_payout(claim_id=HC 77210, account_last4=2204) → payout account set"
+        - "schedule_callback(date=Wed 7 Oct, slot=5-6 pm, topic=survey outcomes MC 77201, MC 77202, HC 77210) → booked"
+        - "send_sms(template=flood_claims_summary) → sent"
+  forbid: ["register_claim(policy_no=KV-P-770134, member=Kunal Shah, kind=building damage)"]
+  lines:
+    - [open, "Hello, humari building ke basement mein paani bhar gaya hai. Meri dono gaadiyan doobi hui hain, aur ghar mein bhi paani aaya.", "Hello, our building's basement has flooded. Both my cars are under water, and water has come into the flat too."]
+    - [after, "Kunal Shah. Date of birth tees January unnees sau pachaasi.", "Kunal Shah. Date of birth thirtieth January 1985."]
+    - [after, "Ek Honda City hai, doosri meri wife ki Nexon EV. Dono ka claim karna hai. Main City start karke dekhoon?", "One is a Honda City, the other my wife's Nexon EV. I need to claim on both. Should I try starting the City?"]
+    - [after, "Theek hai, start nahi karunga. Dono ko unke dealer ke paas bhej do. Paas mein kaun hai?", "Okay, I won't start it. Send both to their dealers. Who's nearby?"]
+    - [after, "Haan, wahi dono. Tow kab tak aayega?", "Yes, those two. When will the tow come?"]
+    - [after, "Ghar mein bhi nuksaan hua hai — sofa, fridge, washing machine, kaafi saamaan. Lagbhag ek lakh pachaasi hazaar.", "There's damage in the flat too — sofa, fridge, washing machine, lots of things. About one lakh eighty-five thousand."]
+    - [after, "Aur deewar mein bhi seelan aa gayi hai, plaster gir raha hai. Uska bhi claim daal do.", "And the walls have got damp, the plaster is falling. Add a claim for that too."]
+    - [after, "Achha, building cover nahi hai. Theek hai. Surveyor kab aayenge? Gaadiyon ke liye kal, ghar ke liye parso chalega.", "Okay, the building isn't covered. Fine. When will the surveyors come? Tomorrow for the cars and the day after for the flat works."]
+    - [after, "Kaunse documents chahiye? Har claim ke har document ka link bhej do.", "Which documents are needed? Send a link for every document on every claim."]
+    - [after, "Ghar wale claim ka paisa mere account mein, ending do do shunya chaar.", "The money for the home claim to my account, ending 2204."]
+    - [after, "Survey ke baad parso shaam ko call karna.", "Call me the evening after the surveys, the day after tomorrow."]
+    - [after, "Sab SMS kar do. Thanks yaar, bahut help hui.", "SMS it all. Thanks, that helped a lot."]
+  key:
+    - "Tells him not to start a flooded engine"
+    - "Registers MC 77201 and MC 77202 and assigns Sai Honda and Western Tata Service, with a flatbed to each (about 2 hours)"
+    - "Registers the ₹1,85,000 contents claim HC 77210; explains the building is not covered and does not claim it"
+    - "Books surveys: City Tue 6 Oct 10 am-12 pm, Nexon 2-4 pm, flat Wed 7 Oct 11 am-1 pm"
+    - "Sends nine document links, three per claim"
+    - "Sets 2204 as payout for HC 77210, books Wednesday's call-back and sends the SMS"
+  checks: {lang: hg, digits: ["MC 77201", "MC 77202", "HC 77210"], tool_order: [register_motor_claim, assign_garage]}
+  guard: "L3 asks about starting the car whether or not the agent warned; L5 accepts the dealers once named; L7 must be refused, and L8 accepts the refusal."
+
+- id: bank-132
+  g: BANK-5
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Father retires, group cover ends — port three family members to their own policies, cover, riders, autopay, hospitals"
+  basis: "When an employer's group cover ends at retirement, each family member is ported to an individual policy to keep waiting-period credit."
+  caller: "M 26-45 · son in Pune who will pay the premiums, thorough; speaker b: M 60+ · his father Dinesh, the retiring employee"
+  goal: "Port his father, mother and sister to individual policies before the deadline, raise each cover, add the right riders, pay from his account and check the hospitals they use."
+  role: "You handle policies for Kavach Insurance. Only members of the group policy can be ported, and the employee must agree. Verify the son before setting his account for payment."
+  context: "Group policy KV-G-880001 ends on 31 Oct with Dinesh Joshi's retirement. Porting must be done by 15 Oct; waiting periods carry over."
+  tasks:
+    - task: "Verify the father and read the group policy"
+      calls:
+        - "verify_caller(name=Dinesh Joshi, dob=14 Oct 1964) → verified; employee on group policy KV-G-880001"
+        - "get_policy(policy_no=KV-G-880001) → group cover ₹5,00,000 for Dinesh, Vandana and Pooja Joshi; ends 31 Oct; port by 15 Oct; diabetes declared for Dinesh in 2019"
+    - task: "Port each member"
+      calls:
+        - "port_policy(policy_no=KV-G-880001, member=Dinesh Joshi) → individual policy KV-H-880210 from 1 Nov; waiting periods carried over"
+        - "port_policy(policy_no=KV-G-880001, member=Vandana Joshi) → individual policy KV-H-880228 from 1 Nov; waiting periods carried over"
+        - "port_policy(policy_no=KV-G-880001, member=Pooja Joshi) → individual policy KV-H-880236 from 1 Nov; waiting periods carried over"
+        - "get_policy(policy_no=KV-H-880210) → Dinesh Joshi, ₹5,00,000, premium ₹38,900"
+        - "get_policy(policy_no=KV-H-880228) → Vandana Joshi, ₹5,00,000, premium ₹24,600"
+        - "get_policy(policy_no=KV-H-880236) → Pooja Joshi, ₹5,00,000, premium ₹7,800"
+    - task: "Raise each cover to ₹10 lakh"
+      calls:
+        - "change_sum_insured(policy_no=KV-H-880210, sum_insured=₹10,00,000) → from start; premium +₹14,200"
+        - "change_sum_insured(policy_no=KV-H-880228, sum_insured=₹10,00,000) → from start; premium +₹9,100"
+        - "change_sum_insured(policy_no=KV-H-880236, sum_insured=₹10,00,000) → from start; premium +₹2,400"
+    - task: "Riders for each"
+      calls:
+        - "add_rider(policy_no=KV-H-880210, rider=chronic care for diabetes) → added; premium +₹6,500"
+        - "add_rider(policy_no=KV-H-880210, rider=room rent waiver) → added; premium +₹3,200"
+        - "add_rider(policy_no=KV-H-880228, rider=critical illness) → added; premium +₹4,300"
+        - "add_rider(policy_no=KV-H-880228, rider=room rent waiver) → added; premium +₹2,700"
+        - "add_rider(policy_no=KV-H-880236, rider=maternity) → added; premium +₹3,900"
+    - task: "The son pays"
+      calls:
+        - "verify_caller(name=Ankit Joshi, dob=2 Jun 1993) → verified"
+        - "get_account(account_last4=4802) → balance ₹2,64,000"
+        - "set_premium_autopay(policy_no=KV-H-880210, account_last4=4802) → first debit 25 Oct, then yearly"
+        - "set_premium_autopay(policy_no=KV-H-880228, account_last4=4802) → first debit 25 Oct, then yearly"
+        - "set_premium_autopay(policy_no=KV-H-880236, account_last4=4802) → first debit 25 Oct, then yearly"
+    - task: "Nominees"
+      calls:
+        - "update_nominee(policy_no=KV-H-880210, nominee=Vandana Joshi, relation=wife, share=100%) → nominee updated"
+        - "update_nominee(policy_no=KV-H-880228, nominee=Dinesh Joshi, relation=husband, share=100%) → nominee updated"
+        - "update_nominee(policy_no=KV-H-880236, nominee=Vandana Joshi, relation=mother, share=100%) → nominee updated"
+    - task: "Their hospitals"
+      calls:
+        - "check_network_hospital(policy_no=KV-H-880210, hospital=Shreeyash Hospital, Kothrud) → cashless yes"
+        - "check_network_hospital(policy_no=KV-H-880228, hospital=Pune Heart Institute, Aundh) → cashless yes"
+        - "check_network_hospital(policy_no=KV-H-880236, hospital=Greenfield Hospital, Whitefield, Bengaluru) → not in network; reimbursement only"
+    - task: "Continuity letter, follow-up, summary"
+      calls:
+        - "raise_ticket(category=porting, summary=continuity letter from employer for KV-G-880001; three members ported) → ticket PT 88050"
+        - "schedule_callback(date=Mon 26 Oct, slot=6-7 pm, topic=confirm KV-H-880210, 880228, 880236 issued) → booked"
+        - "send_sms(template=porting_summary) → sent"
+  forbid: ["port_policy(policy_no=KV-G-880001, member=Ankit Joshi)"]
+  lines:
+    - [open, "Hello, main Ankit Joshi, Pune se. Papa is mahine retire ho rahe hain, unki company ki health policy khatam ho jayegi. Mummy, papa aur behen sab usi mein hain.", "Hello, I'm Ankit Joshi from Pune. Papa retires this month, and his company's health policy will end. Mummy, Papa and my sister are all on it."]
+    - [after, "Papa yahin hain, unse baat kar lijiye.", "Papa is right here, please speak to him."]
+    - [after b, "Haan ji, Dinesh Joshi. Janam tithi chaudah October unnees sau chaunsath.", "Yes, Dinesh Joshi. Date of birth fourteenth October 1964."]
+    - [after b, "Teenon ki policy alag-alag kar dijiye. Purani bimariyon ka waiting period phir se shuru nahi hona chahiye.", "Make separate policies for all three. The waiting period for old illnesses shouldn't start again."]
+    - [after, "Main bhi papa ki company policy mein aa sakta hoon kya? Saath mein port ho jaaye?", "Can I also come under Papa's company policy? Get ported along with them?"]
+    - [after, "Theek hai. Teenon ka cover das lakh kar dijiye.", "Okay. Make the cover ten lakh for all three."]
+    - [after, "Papa ko sugar hai — unke liye chronic care wala rider, aur room rent ki limit hatane wala bhi. Mummy ke liye critical illness aur room rent wala. Pooja ki shaadi agle saal hai, uske liye maternity.", "Papa has diabetes — for him the chronic-care rider, and the one that removes the room-rent limit. For Mummy, critical illness and the room-rent one. Pooja's getting married next year, maternity for her."]
+    - [after, "Premium main bharunga, mere account se. Ankit Joshi, do June unnees sau tirannave. Account chaar aath shunya do.", "I'll pay the premiums, from my account. Ankit Joshi, second June 1993. Account 4802."]
+    - [after, "Teenon ka saal ka kul premium kitna hua?", "What is the total yearly premium for the three?"]
+    - [after, "Nominee — papa ki policy mein mummy, mummy ki mein papa, Pooja ki mein mummy.", "Nominees — Mummy on Papa's policy, Papa on Mummy's, Mummy on Pooja's."]
+    - [after, "Papa Kothrud ke Shreeyash mein dikhate hain, Mummy Aundh ke Pune Heart Institute mein. Pooja Bengaluru mein hai, Whitefield ka Greenfield Hospital.", "Papa sees doctors at Shreeyash in Kothrud, Mummy at Pune Heart Institute in Aundh. Pooja is in Bengaluru — Greenfield Hospital in Whitefield."]
+    - [after, "Papa ki company se kuch letter chahiye hoga kya?", "Will we need some letter from Papa's company?"]
+    - [after, "Policies aa jaayein toh confirm karne ke liye chhabbees tareekh ko shaam ko call kar dena.", "Call on the twenty-sixth in the evening to confirm the policies have come."]
+    - [after, "Sab SMS kar do. Bahut shukriya.", "SMS everything. Thanks a lot."]
+  key:
+    - "Verifies Dinesh, the employee, before porting; ports Dinesh, Vandana and Pooja with waiting periods carried over"
+    - "Explains Ankit was never on the group policy and cannot be ported; does not port him"
+    - "Raises each cover to ₹10,00,000 and adds chronic care and room rent waiver for Dinesh, critical illness and room rent waiver for Vandana, maternity for Pooja"
+    - "Verifies Ankit before setting 4802 for all three autopays (first debit 25 Oct)"
+    - "States the yearly total ₹1,17,600 (₹62,800, ₹40,700 and ₹14,100)"
+    - "Sets the three nominees; Shreeyash and Pune Heart Institute are cashless, Greenfield is not"
+    - "Raises PT 88050 for the employer's continuity letter and books the 26 October call-back"
+  checks: {lang: hg, digits: ["KV-H-880210", "KV-H-880228", "KV-H-880236", "PT 88050"], say: [["1,17,600", "ek lakh satrah hazaar chhe sau", "one lakh seventeen thousand six hundred"]], tool_order: [port_policy, change_sum_insured]}
+  guard: "The father consents before any porting; L5 must be refused; each rider and nominee is named with its person; L9 asks for the total whatever was said."
