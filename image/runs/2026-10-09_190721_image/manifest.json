@@ -1,0 +1,209 @@
+{
+  "run_id": "2026-10-09_190721_image",
+  "created": "2026-10-09T13:37:21.369Z",
+  "state": "scored",
+  "modality": "image",
+  "git_sha": "289d9373b6ede0a504401e7a38f861ca77f2b640",
+  "budget_usd": 2.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-10-09T13:37:21.389Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-10-09T13:37:21.407Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-10-09T13:37:22.559Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-10-09T13:42:44.905Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-10-09T13:43:38.988Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-10-09T13:43:39.037Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-nano-banana-2-1-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-nano-banana-2.1",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-10-07",
+      "voice_map": null
+    },
+    {
+      "id": "gpt-image-2-5-sunburst-high",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2.5-sunburst-2026-09-08",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-10-09",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "abf51b241a61ab9032ffd9517fc945e464af309014dc461fe80ed62c44378bce",
+    "image_edit": "8881785a9ed8196c39d3462418e2d650d2e5d107826de9564f6c2b23a6b84372"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ],
+    "image_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMGGEN-011": {
+      "text_accuracy": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGEDIT-005": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "CHR-FLM-05": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "visual_quality": 0.080808,
+      "physics_plausibility": 0.080809
+    },
+    "SHT-FLM-04": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "reference_fidelity": 0.222223
+    }
+  },
+  "scenario_set_hash": "21e8cf259ff7a2aa645aa1fbb02d19a6b567278f14a761a3a423c0b50a6c0200",
+  "inputs": {
+    "IMGGEN-011": [],
+    "IMGEDIT-005": [
+      {
+        "role": "source",
+        "sha256": "01cd75be61dd701e5e99f22a6342068856ac5366451d1be419499fbf97d04985",
+        "path": "inputs/IMGEDIT-005/IMGEDIT-005.png"
+      }
+    ],
+    "CHR-FLM-05": [
+      {
+        "role": "source",
+        "sha256": "cbe0b3023257197c5f72645fc0302cff52af423a187e837b48cc18cae9c35648",
+        "path": "inputs/CHR-FLM-05/src-927f13e08dcf.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "fb8b47156d275c13c5dce641d78cef5c89bd56be6eb56c56e31076f69ca21d42",
+        "path": "inputs/CHR-FLM-05/src-e86cdbe0d2f8.png"
+      }
+    ],
+    "SHT-FLM-04": [
+      {
+        "role": "source",
+        "sha256": "cbe0b3023257197c5f72645fc0302cff52af423a187e837b48cc18cae9c35648",
+        "path": "inputs/SHT-FLM-04/src-927f13e08dcf.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "fb8b47156d275c13c5dce641d78cef5c89bd56be6eb56c56e31076f69ca21d42",
+        "path": "inputs/SHT-FLM-04/src-e86cdbe0d2f8.png"
+      }
+    ]
+  },
+  "cells": {
+    "IMGGEN-011::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-011",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-011::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-011",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-005::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-005",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-005::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-005",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "CHR-FLM-05": "completed",
+    "IMGEDIT-005": "completed",
+    "IMGGEN-011": "completed",
+    "SHT-FLM-04": "completed"
+  }
+}
