@@ -117,8 +117,109 @@ def build_judge_prompt(scenario: Scenario, judge_criteria, measured_facts: list[
         f"{json.dumps(schema)}")
 
 
+def build_checklist_judge_prompt(scenario: Scenario, judge_crits, input_roles: list[str],
+                                 n_outputs: int, measured_facts: list[str],
+                                 measured_names: list[str]) -> str:
+    """Scenario-bank v2/v3 judging: every checklist question answered yes/no
+    with evidence BEFORE any score, then each criterion scored 0-10 in the
+    light of its own checks. The check -> criterion mapping is fixed in the
+    scenario (the same for both arms), never chosen here."""
+    names = [c.name for c in judge_crits]
+    lines = []
+    n_in = len(input_roles)
+    if n_in:
+        lines.append("IMAGES: the first %d image(s) are the INPUTS the generator was given: "
+                     % n_in + "; ".join(f"image {i + 1} = {r}"
+                                        for i, r in enumerate(input_roles)) + ".")
+    if n_outputs > 1:
+        lines.append(f"The next {n_outputs} images (images {n_in + 1}-{n_in + n_outputs}) are "
+                     f"the OUTPUT SET you are scoring, in frame order. Judge them together.")
+    else:
+        lines.append(f"Image {n_in + 1} is the OUTPUT you are scoring.")
+    brief = f"BRIEF (given to the generator, verbatim):\n{scenario.gen_text}\n"
+    if scenario.set_members:
+        brief += ("\nEach output was its own request: the brief above plus this line "
+                  "for that frame:\n" + "\n".join(
+                      f"  frame {k}: {m['name']} — {m['brief']}"
+                      for k, m in enumerate(scenario.set_members, start=1)))
+    keep = (scenario.output_set or {}).get("keep") or []
+    if keep:
+        brief += "\nMust stay the same across the set:\n" + "\n".join(
+            f"  - {x}" for x in keep)
+    if scenario.meta.get("bank") == "v2" and scenario.expected:
+        brief += f"\nEXPECTED RESULT:\n{scenario.expected}"
+    if scenario.deliverable:
+        import re as _re
+        target = _re.sub(r"\s*\d{3,4}\s*x\s*\d{3,4}\s*/?\s*", " ", scenario.deliverable).strip()
+        brief += f"\nTARGET FORMAT (from the scenario bank, not part of the brief): {target}"
+    if scenario.required_text:
+        brief += ("\nREQUIRED TEXT, exact (check spelling and correctly formed script "
+                  f"letter by letter):\n{scenario.required_text}")
+    facts_block = ""
+    if measured_facts:
+        facts_block = ("\nMEASURED FACTS (established by code — treat as true, do not "
+                       "re-estimate):\n" + "\n".join(f"  - {f}" for f in measured_facts))
+        if measured_names:
+            facts_block += (f"\nThe criteria {measured_names} are scored from these "
+                            f"measurements by code, not by you.")
+    crit_label = {c.name: c.name for c in judge_crits}
+    checks = scenario.checklist or []
+    check_lines = "\n".join(
+        f"  {i}. [{c.get('scope') or 'image'}]"
+        + (f" ({crit_label.get(c.get('dim'), c.get('dim'))})" if c.get("dim") else "")
+        + f" {c['q']}" for i, c in enumerate(checks))
+    criteria_lines = "\n".join(f"- {c.name}: {c.description}" for c in judge_crits)
+    schema = {"checks": [{"i": 0, "evidence": "...", "answer": "yes"}],
+              "criteria": [{"name": n, "reasoning": "...", "score": 0} for n in names],
+              "overall_note": "..."}
+    return (
+        "You are evaluating generated images against a brief. Score only what you "
+        "can observe. You will never be told which system produced them.\n\n"
+        + "\n".join(lines) + "\n\n" + brief + "\n" + facts_block + "\n\n"
+        "CHECKLIST — answer EVERY question first, in order. For each: one sentence of "
+        "evidence citing what you see (name the frame for a set), then \"yes\" or "
+        "\"no\". \"yes\" only when it fully holds; anything partial, missing or "
+        "unreadable is \"no\".\n" + check_lines + "\n\n"
+        "CRITERIA — then score each from 0 to 10, reasoning first. The checks tagged "
+        "with a criterion are its evidence: start from the share answered yes "
+        "(all yes = 10) and take off more for a severe failure than a slight one. "
+        "A criterion with no tagged checks is scored on its description.\n"
+        f"{criteria_lines}\n\n"
+        "Return JSON only, exactly this shape: every check once, in order; criteria "
+        "in exactly this order; evidence/reasoning before answer/score:\n"
+        f"{json.dumps(schema)}")
+
+
 class JudgeSchemaError(ValueError):
     pass
+
+
+def parse_checklist_response(text: str, expected_names: list[str], n_checks: int) -> dict:
+    """parse_judge_response, plus every check answered exactly once yes/no."""
+    parsed = parse_judge_response(text, expected_names)
+    data = json.loads(text)
+    items = data.get("checks")
+    if not isinstance(items, list):
+        raise JudgeSchemaError("missing checks array")
+    answers: dict[int, dict] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            raise JudgeSchemaError("checks entries must be objects")
+        i, ans, ev = item.get("i"), str(item.get("answer", "")).strip().lower(), item.get("evidence")
+        if not isinstance(i, int) or isinstance(i, bool) or not (0 <= i < n_checks):
+            raise JudgeSchemaError(f"check index out of range: {i!r}")
+        if ans not in ("yes", "no"):
+            raise JudgeSchemaError(f"check {i}: answer must be yes or no, got {ans!r}")
+        if not isinstance(ev, str) or not ev.strip():
+            raise JudgeSchemaError(f"check {i}: empty evidence")
+        if i in answers:
+            raise JudgeSchemaError(f"check {i} answered more than once")
+        answers[i] = {"i": i, "answer": ans == "yes", "evidence": ev.strip()}
+    missing = [i for i in range(n_checks) if i not in answers]
+    if missing:
+        raise JudgeSchemaError(f"unanswered checks: {missing}")
+    parsed["checks"] = [answers[i] for i in range(n_checks)]
+    return parsed
 
 
 def parse_judge_response(text: str, expected_names: list[str]) -> dict:
@@ -214,6 +315,7 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path,
                 by_scenario.setdefault(cell["scenario_id"], []).append(cell["model_id"])
 
     counts = {"judged": 0, "unjudged": 0, "skipped_existing": len(already)}
+    jobs = []
     for scenario_id in sorted(by_scenario):
         s = scenarios.get(scenario_id)
         if s is None:
@@ -227,88 +329,126 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path,
         blind_map = {LABELS[i]: mid for i, mid in enumerate(order)}
 
         for label, model_id in blind_map.items():
-            out_dir = run_dir / "outputs" / s.modality / s.id
-            path = _find_existing_output(out_dir, model_id)
-            if path is None:
-                continue
-            clean_bytes = strip_image_metadata(path)
+            jobs.append((s, rubric, judge_crits, measured_names, blind_map,
+                         label, model_id))
 
-            check_row = checks_by_cell.get((s.id, model_id), {})
-            measures = check_row.get("measures", {})
-            facts = []
-            if measures.get("width"):
-                facts.append(f"resolution: {measures['width']}x{measures['height']}")
-            ocr_fact = ""
-            if "ocr_match" in measures:
-                ocr_fact = (f"text found by OCR: {json.dumps(measures.get('ocr_text', ''))} "
-                            f"(fuzzy match {measures['ocr_match']:.2f} against the "
-                            f"required text)")
-                facts.append(ocr_fact)
-            if "preservation_phash_distance" in measures:
-                facts.append(f"measured preservation (global pHash distance vs source): "
-                             f"{measures['preservation_phash_distance']}")
-            if "preservation_ssim_outside" in measures:
-                facts.append(f"measured preservation (SSIM outside declared region): "
-                             f"{measures['preservation_ssim_outside']:.4f}")
+    def _judge_one(s, rubric, judge_crits, measured_names, blind_map, label, model_id):
+        out_dir = run_dir / "outputs" / s.modality / s.id
+        path = _find_existing_output(out_dir, model_id)
+        if path is None:
+            return None
+        clean_bytes = strip_image_metadata(path)
 
+        check_row = checks_by_cell.get((s.id, model_id), {})
+        measures = check_row.get("measures", {})
+        facts = []
+        if measures.get("width"):
+            facts.append(f"resolution: {measures['width']}x{measures['height']}")
+        ocr_fact = ""
+        if "ocr_match" in measures:
+            ocr_fact = (f"text found by OCR: {json.dumps(measures.get('ocr_text', ''))} "
+                        f"(fuzzy match {measures['ocr_match']:.2f} against the "
+                        f"required text)")
+            facts.append(ocr_fact)
+        if "preservation_phash_distance" in measures:
+            facts.append(f"measured preservation (global pHash distance vs source): "
+                         f"{measures['preservation_phash_distance']}")
+        if "preservation_ssim_outside" in measures:
+            facts.append(f"measured preservation (SSIM outside declared region): "
+                         f"{measures['preservation_ssim_outside']:.4f}")
+
+        if s.checklist is not None:
+            # bank v2/v3: no resolution fact (identical sizes are requested
+            # from both arms, and a size can name a vendor); every input
+            # and reference is shown, then every output of the set
+            facts = [f for f in facts if not f.startswith("resolution:")]
+            ins = [i for i in manifest.data.get("inputs", {}).get(s.id, [])
+                   if i["role"] not in ("mask", "bbox")]
+            outs = [path]
+            if s.set_members:
+                from .generate import _find_member_outputs
+                mem = _find_member_outputs(path.parent, model_id)
+                outs = [mem[k] for k in sorted(mem)]
+            prompt = build_checklist_judge_prompt(
+                s, judge_crits, [_role_label(i["role"]) for i in ins], len(outs),
+                facts, measured_names)
+            media = [(strip_image_metadata(run_dir / i["path"]), "image/png") for i in ins]
+            media += [(strip_image_metadata(p), "image/png") for p in outs]
+        else:
             prompt = build_judge_prompt(s, judge_crits, facts, measured_names)
             media = []
-            if s.task in ("image_edit", "inpaint_mask"):
-                src_rel = next((i for i in manifest.data.get("inputs", {}).get(s.id, [])
-                                if i["role"] == "source"), None)
-                if src_rel:
-                    media.append((strip_image_metadata(run_dir / src_rel["path"]),
-                                  "image/png"))
-                    prompt = ("The FIRST image is the untouched SOURCE; the SECOND is "
-                              "the edited RESULT you are scoring.\n\n") + prompt
+        if s.checklist is None and s.task in ("image_edit", "inpaint_mask"):
+            src_rel = next((i for i in manifest.data.get("inputs", {}).get(s.id, [])
+                            if i["role"] == "source"), None)
+            if src_rel:
+                media.append((strip_image_metadata(run_dir / src_rel["path"]),
+                              "image/png"))
+                prompt = ("The FIRST image is the untouched SOURCE; the SECOND is "
+                          "the edited RESULT you are scoring.\n\n") + prompt
+        if s.checklist is None:
             media.append((clean_bytes, "image/png"))
 
-            terms = ({m["id"] for m in manifest.data["models"]}
-                     | {m["provider"] for m in manifest.data["models"]}
-                     | {m["provider_model"] for m in manifest.data["models"]})
-            # OCR output is scanned under a word-boundary rule; everything a
-            # human authored is still matched as a raw substring.
-            leaked = blind_leaks(terms,
-                                 prompt.replace(ocr_fact, "") if ocr_fact else prompt,
-                                 measures.get("ocr_text", ""))
-            if leaked:
-                # blinding is structurally impossible for this scenario — an
-                # unjudged cell with a loud reason, never a silently-unblind call
-                key = f"{s.id}::{model_id}"
-                reason = f"blind violation: {leaked} would appear in the judge prompt"
-                files.judge.append({"ts": utcnow(), "run_id": run_id,
-                                    "scenario_id": s.id, "model_id": model_id,
-                                    "task": s.task, "status": "unjudged",
-                                    "error": reason})
-                manifest.set_cell_state(key, "unjudged", reason)
-                counts["unjudged"] += 1
-                continue
-            prompt_sha = hashlib.sha256(prompt.encode()).hexdigest()
-
-            row = {"ts": utcnow(), "run_id": run_id, "scenario_id": s.id,
-                   "model_id": model_id, "task": s.task, "blind_label": label,
-                   "blind_map": blind_map,
-                   "judge": {"adapter": judge_cfg.adapter,
-                             "provider_model": judge_cfg.provider_model,
-                             "temperature": judge_cfg.temperature},
-                   "rubric_version": rubric.version, "rubric_hash": rubric.rubric_hash,
-                   "prompt_sha256": prompt_sha}
-
-            outcome = _call_judge(adapter, prompt, media,
-                                  [c.name for c in judge_crits])
-            row.update(outcome)
-            if outcome.get("usage") is not None:
-                row["cost"] = compute_cost(judge_cfg.price, outcome["usage"])
-            files.judge.append(row)
-
+        terms = ({m["id"] for m in manifest.data["models"]}
+                 | {m["provider"] for m in manifest.data["models"]}
+                 | {m["provider_model"] for m in manifest.data["models"]})
+        # OCR output is scanned under a word-boundary rule; everything a
+        # human authored is still matched as a raw substring.
+        leaked = blind_leaks(terms,
+                             prompt.replace(ocr_fact, "") if ocr_fact else prompt,
+                             measures.get("ocr_text", ""))
+        if leaked:
+            # blinding is structurally impossible for this scenario — an
+            # unjudged cell with a loud reason, never a silently-unblind call
             key = f"{s.id}::{model_id}"
-            if outcome["status"] == "judged":
-                manifest.set_cell_state(key, "judged")
-                counts["judged"] += 1
-            else:
-                manifest.set_cell_state(key, "unjudged", outcome.get("error", ""))
-                counts["unjudged"] += 1
-            print(f"  [{outcome['status']:>8}] {s.id} x {model_id} (blind {label})")
+            reason = f"blind violation: {leaked} would appear in the judge prompt"
+            files.judge.append({"ts": utcnow(), "run_id": run_id,
+                                "scenario_id": s.id, "model_id": model_id,
+                                "task": s.task, "status": "unjudged",
+                                "error": reason})
+            manifest.set_cell_state(key, "unjudged", reason)
+            return "unjudged"
+        prompt_sha = hashlib.sha256(prompt.encode()).hexdigest()
+
+        row = {"ts": utcnow(), "run_id": run_id, "scenario_id": s.id,
+               "model_id": model_id, "task": s.task, "blind_label": label,
+               "blind_map": blind_map,
+               "judge": {"adapter": judge_cfg.adapter,
+                         "provider_model": judge_cfg.provider_model,
+                         "temperature": judge_cfg.temperature,
+                         "thinking_level": judge_cfg.thinking_level},
+               "rubric_version": rubric.version, "rubric_hash": rubric.rubric_hash,
+               "prompt_sha256": prompt_sha, "media_count": len(media)}
+
+        outcome = _call_judge(adapter, prompt, media,
+                              [c.name for c in judge_crits],
+                              n_checks=(len(s.checklist)
+                                        if s.checklist is not None else None))
+        row.update(outcome)
+        if outcome.get("usage") is not None:
+            row["cost"] = compute_cost(judge_cfg.price, outcome["usage"])
+        files.judge.append(row)
+
+        key = f"{s.id}::{model_id}"
+        if outcome["status"] == "judged":
+            manifest.set_cell_state(key, "judged")
+        else:
+            manifest.set_cell_state(key, "unjudged", outcome.get("error", ""))
+        print(f"  [{outcome['status']:>8}] {s.id} x {model_id} (blind {label})")
+        return outcome["status"]
+
+    # Cells are independent: each call is blind and absolute, so order does
+    # not matter. GENMEDIA_JUDGE_WORKERS > 1 judges that many at once.
+    workers = max(1, int(os.environ.get("GENMEDIA_JUDGE_WORKERS", "1")))
+    if workers == 1:
+        results = [_judge_one(*j) for j in jobs]
+    else:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            results = list(pool.map(lambda j: _judge_one(*j), jobs))
+    for r in results:
+        if r in ("judged", "unjudged"):
+            counts[r] += 1
+
 
     manifest.set_run_state("judged")
     from .summary import refresh_scenario_status
@@ -316,7 +456,17 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path,
     return counts
 
 
-def _call_judge(adapter, prompt: str, media, expected_names: list[str]) -> dict:
+def _role_label(role: str) -> str:
+    if role == "source":
+        return "the image to edit"
+    if role.startswith("reference"):
+        n = role[len("reference"):]
+        return f"reference {n}" if n else "reference"
+    return role
+
+
+def _call_judge(adapter, prompt: str, media, expected_names: list[str],
+                n_checks: int | None = None) -> dict:
     """API error -> retry x2; unparseable/invalid JSON -> one repair retry.
     Anything beyond that is `unjudged` — never a zero."""
     raw, error = None, None
@@ -339,11 +489,17 @@ def _call_judge(adapter, prompt: str, media, expected_names: list[str]) -> dict:
                     "raw_response": None, "usage": None}
         raw = result.text
         try:
-            parsed = parse_judge_response(raw, expected_names)
-            return {"status": "judged", "criteria": parsed["criteria"],
-                    "overall_note": parsed["overall_note"], "raw_response": raw,
-                    "usage": result.usage,
-                    "judge_provider_version": result.provider_version}
+            if n_checks is None:
+                parsed = parse_judge_response(raw, expected_names)
+            else:
+                parsed = parse_checklist_response(raw, expected_names, n_checks)
+            out = {"status": "judged", "criteria": parsed["criteria"],
+                   "overall_note": parsed["overall_note"], "raw_response": raw,
+                   "usage": result.usage,
+                   "judge_provider_version": result.provider_version}
+            if "checks" in parsed:
+                out["checks"] = parsed["checks"]
+            return out
         except JudgeSchemaError as e:
             error = str(e)
             if not repair_used:

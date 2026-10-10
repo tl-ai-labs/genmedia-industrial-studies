@@ -9,6 +9,20 @@ from ..adapters.google_client import _make_client  # noqa: F401 — re-exported;
 _SIZE_MAP = {"1024x1024": "1K", "2048x2048": "2K", "4096x4096": "4K"}
 
 
+def _image_size_for(value) -> str | None:
+    """A WxH request -> Gemini's size tier. Gemini takes a tier plus an aspect
+    ratio, not pixels: its 1K tier spans 1024x1024 to 1584x672 (21:9), so a
+    long edge up to 1600 is 1K, up to 3200 is 2K, beyond that 4K."""
+    if value in _SIZE_MAP:
+        return _SIZE_MAP[value]
+    try:
+        w, h = (int(v) for v in str(value).lower().split("x"))
+    except ValueError:
+        return None
+    edge = max(w, h)
+    return "1K" if edge <= 1600 else "2K" if edge <= 3200 else "4K"
+
+
 class GeminiImageAdapter(Adapter):
     def __init__(self, model_cfg, timeout_s: float):
         from google import genai
@@ -30,9 +44,10 @@ class GeminiImageAdapter(Adapter):
                 image_cfg_kwargs["aspect_ratio"] = value
                 applied[key] = value
             elif key == "size":
-                if value in _SIZE_MAP:
-                    image_cfg_kwargs["image_size"] = _SIZE_MAP[value]
-                    applied[key] = f"{value} (as image_size={_SIZE_MAP[value]})"
+                tier = _image_size_for(value)
+                if tier:
+                    image_cfg_kwargs["image_size"] = tier
+                    applied[key] = f"{value} (as image_size={tier})"
                 else:
                     unsupported.append(key)
             elif key == "seed":
@@ -70,6 +85,8 @@ class GeminiImageAdapter(Adapter):
             if "SAFETY" in finish or "PROHIBITED" in finish:
                 raise SafetyRefusal(f"generation blocked: finish_reason={finish}")
             for part in (getattr(cand.content, "parts", None) or []):
+                if getattr(part, "thought", None):
+                    continue  # interim "thinking" image, not the final render
                 inline = getattr(part, "inline_data", None)
                 if inline is not None and getattr(inline, "data", None):
                     image_parts.append(inline)
@@ -82,6 +99,7 @@ class GeminiImageAdapter(Adapter):
             usage.update({
                 "prompt_token_count": getattr(usage_md, "prompt_token_count", None),
                 "candidates_token_count": getattr(usage_md, "candidates_token_count", None),
+                "thoughts_token_count": getattr(usage_md, "thoughts_token_count", None),
                 "total_token_count": getattr(usage_md, "total_token_count", None),
             })
 

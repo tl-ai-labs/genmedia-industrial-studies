@@ -84,3 +84,31 @@ def test_vertex_model_without_adc_is_rejected(project, fake_models_yaml,
     models = enabled_models(load_models(vertex_yaml), "image")
     with pytest.raises(RunRejected, match="application-default"):
         run_generation(project, scenarios, models, "image", budget_usd=5.0)
+
+
+def test_thought_images_are_skipped(monkeypatch):
+    # Thinking image models can return interim "thought" images before the
+    # final render; the adapter must return the final one, not the first.
+    from types import SimpleNamespace as NS
+
+    final = NS(thought=None, inline_data=NS(data=b"FINAL", mime_type="image/png"))
+    interim = NS(thought=True, inline_data=NS(data=b"DRAFT", mime_type="image/png"))
+    resp = NS(prompt_feedback=None, model_version="gemini-nano-banana-2.1",
+              response_id="r", candidates=[NS(finish_reason="STOP",
+                                              content=NS(parts=[interim, final]))],
+              usage_metadata=NS(prompt_token_count=10, candidates_token_count=1120,
+                                thoughts_token_count=300, total_token_count=1430))
+
+    class FakeClient:
+        def __init__(self, **kw):
+            self.models = NS(generate_content=lambda **kw: resp)
+
+    import google.genai as genai_mod
+    monkeypatch.setattr(genai_mod, "Client", FakeClient)
+
+    from runner.adapters.base import GenRequest
+    from runner.image.gemini_image import build
+    adapter = build(_model(vertex={"project": "p", "location": "global"}), timeout_s=60)
+    out = adapter.run(GenRequest(task="text_to_image", text="x", params={}, inputs=[]))
+    assert out.data == b"FINAL"
+    assert out.usage["thoughts_token_count"] == 300

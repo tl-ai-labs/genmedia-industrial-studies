@@ -342,6 +342,54 @@ def _find_existing_output(out_dir: Path, model_id: str) -> Path | None:
     return None
 
 
+FRAMES_DIR = "frames"   # set members live below the scenario folder, so tools
+                        # that treat every file there as one arm never see them
+
+
+def _find_member_outputs(out_dir: Path, model_id: str) -> dict[int, Path]:
+    """Set members on disk: <scenario>/frames/<model_id>__f<k>.<ext>, k from 1."""
+    found: dict[int, Path] = {}
+    frames = out_dir / FRAMES_DIR
+    if not frames.exists():
+        return found
+    for f in sorted(frames.glob(f"{model_id}__f*.*")):
+        if ".invalid" in f.name or f.suffix == ".json":
+            continue
+        try:
+            found[int(f.stem.rsplit("__f", 1)[1])] = f
+        except ValueError:
+            continue
+    return found
+
+
+def write_contact_sheet(paths: list[Path], dest: Path) -> None:
+    """All members of a set on one PNG, at native size, up to 3 per row —
+    the cell's single output for resume, reports and the people's panel."""
+    from PIL import Image
+    ims = []
+    for p in paths:
+        try:
+            ims.append(Image.open(p).convert("RGB"))
+        except Exception:
+            # an undecodable member still gets a (grey) tile, so the cell
+            # reaches the check phase, where the member is regenerated once
+            ims.append(Image.new("RGB", (512, 512), (128, 128, 128)))
+    cols = min(3, len(ims))
+    rows = (len(ims) + cols - 1) // cols
+    cw = max(i.width for i in ims)
+    ch = max(i.height for i in ims)
+    gap = 16
+    sheet = Image.new("RGB", (cols * cw + (cols - 1) * gap,
+                              rows * ch + (rows - 1) * gap), (255, 255, 255))
+    for n, im in enumerate(ims):
+        r, c = divmod(n, cols)
+        sheet.paste(im, (c * (cw + gap) + (cw - im.width) // 2,
+                         r * (ch + gap) + (ch - im.height) // 2))
+    tmp = dest.with_suffix(".tmp.png")
+    sheet.save(tmp, format="PNG")
+    os.replace(tmp, dest)
+
+
 def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
              manifest: Manifest, sem: threading.BoundedSemaphore,
              pacer: RpmPacer | None, budget: BudgetGuard,
@@ -350,6 +398,10 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
     out_dir = run_dir / "outputs" / scenario.modality / scenario.id
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    if manifest.data["cells"][key].get("state") == "invalid":
+        # the cell already used its one regeneration (plan §18); a resume
+        # must not pay again for an output the record keeps as invalid
+        return {"cell": key, "status": "invalid", "path": None}
     existing = _find_existing_output(out_dir, model.id)
     if existing is not None:  # resume: never pay twice for the same cell
         state = manifest.data["cells"][key].get("state", "planned")
@@ -358,12 +410,9 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
         return {"cell": key, "status": "resumed", "path": existing}
 
     params = {**model.params, **scenario.params}
-    req = GenRequest(task=scenario.task, text=scenario.text,
-                     inputs=[Asset(role=r, path=p, mime=_guess_mime(p), sha256=next(
-                         (row["sha256"] for row in input_sha_rows if row["role"] == r), ""))
-                             for r, p in assets.items()],
-                     params=params)
-
+    inputs = [Asset(role=r, path=p, mime=_guess_mime(p), sha256=next(
+                  (row["sha256"] for row in input_sha_rows if row["role"] == r), ""))
+              for r, p in assets.items()]
     base_row = {
         "run_id": run_id, "scenario_id": scenario.id, "modality": scenario.modality,
         "task": scenario.task, "model_id": model.id, "provider": model.provider,
@@ -371,10 +420,58 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
         "params": params, "inputs": input_sha_rows,
     }
 
+    members = scenario.set_members
+    if not members:
+        req = GenRequest(task=scenario.task, text=scenario.gen_text, inputs=inputs,
+                         params=params)
+        got = _generate(req, out_dir / model.id, base_row, model, adapter, files,
+                        sem, pacer, budget, scenario.task, run_dir)
+        if got["path"] is not None:
+            manifest.set_cell_state(key, "generated")
+            return {"cell": key, "status": "ok", "path": got["path"]}
+        exc, attempt = got["exc"], got["attempt"]
+        status = getattr(exc, "status", "provider_error") if exc else "provider_error"
+        manifest.set_cell_state(key, "failed", f"{status} after {attempt} attempt(s): {exc}")
+        return {"cell": key, "status": status, "path": None}
+
+    # A set: one request per member, from the same inputs; each member is
+    # resumable on its own, and the cell is generated only when all exist.
+    have = _find_member_outputs(out_dir, model.id)
+    for k, member in enumerate(members, start=1):
+        if k in have:
+            continue
+        m_params = {**params, **(member.get("params") or {})}
+        req = GenRequest(task=scenario.task, text=scenario.member_text(member),
+                         inputs=inputs, params=m_params)
+        row = {**base_row, "params": m_params, "member": k,
+               "member_name": member.get("name")}
+        (out_dir / FRAMES_DIR).mkdir(exist_ok=True)
+        got = _generate(req, out_dir / FRAMES_DIR / f"{model.id}__f{k}", row, model,
+                        adapter, files, sem, pacer, budget, scenario.task, run_dir)
+        if got["path"] is None:
+            exc, attempt = got["exc"], got["attempt"]
+            status = getattr(exc, "status", "provider_error") if exc else "provider_error"
+            manifest.set_cell_state(
+                key, "failed",
+                f"member {k} ({member.get('name')}): {status} after {attempt} "
+                f"attempt(s): {exc}")
+            return {"cell": key, "status": status, "path": None}
+        have[k] = got["path"]
+    sheet = out_dir / f"{model.id}.png"
+    write_contact_sheet([have[k] for k in sorted(have)], sheet)
+    manifest.set_cell_state(key, "generated")
+    return {"cell": key, "status": "ok", "path": sheet}
+
+
+def _generate(req: GenRequest, out_stem: Path, base_row: dict, model, adapter,
+              files: RunFiles, sem, pacer, budget: BudgetGuard, task: str,
+              run_dir: Path) -> dict:
+    """Up to MAX_ATTEMPTS calls for ONE image, one telemetry row each.
+    Returns {"path": Path | None, "exc": last error, "attempt": n}."""
     last_exc: Exception | None = None
     attempt = 0
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        est_micro = estimate_call_micro_usd(model.price, scenario.task)
+        est_micro = estimate_call_micro_usd(model.price, task)
         budget.before_call(est_micro, model.provider)
         # Whatever happens below — success, refusal, retry, early return — the
         # reservation must come back, or a failed attempt holds budget for the
@@ -403,7 +500,7 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
                     continue
 
             ext = _EXT.get(res.mime, "bin")
-            path = out_dir / f"{model.id}.{ext}"
+            path = out_stem.with_name(f"{out_stem.name}.{ext}")
             path.write_bytes(res.data)
             cost = compute_cost(model.price, res.usage)
             billed_micro = cost["micro_usd"]
@@ -424,14 +521,11 @@ def one_cell(run_id, scenario, model, adapter, run_dir: Path, files: RunFiles,
                 "applied_params": res.applied_params,
                 "latency_ms": latency_ms, "request_id": res.request_id,
                 "output": out_meta, "usage": res.usage, "cost": cost})
-            manifest.set_cell_state(key, "generated")
-            return {"cell": key, "status": "ok", "path": path}
+            return {"path": path, "exc": None, "attempt": attempt}
         finally:
             budget.settle(est_micro, billed_micro, model.provider)
 
-    status = getattr(last_exc, "status", "provider_error") if last_exc else "provider_error"
-    manifest.set_cell_state(key, "failed", f"{status} after {attempt} attempt(s): {last_exc}")
-    return {"cell": key, "status": status, "path": None}
+    return {"path": None, "exc": last_exc, "attempt": attempt}
 
 
 def _guess_mime(path: Path) -> str:
@@ -476,14 +570,17 @@ def run_generation(project_root: Path, scenarios, models, modality: str,
     todo = [c for c in cells if c.state == "planned"
             and _find_existing_output(run_dir / "outputs" / c.modality / c.scenario_id,
                                       c.model_id) is None]
+    # a set bills one call per member, not one per cell
+    calls = {c.key: max(1, len(scen_by_id[c.scenario_id].set_members)) for c in todo}
     est_micro = sum(estimate_call_micro_usd(model_by_id[c.model_id].price, c.task)
-                    for c in todo)
+                    * calls[c.key] for c in todo)
     spent_micro = sum(r.get("cost", {}).get("micro_usd", 0) for r in files.read("telemetry"))
     est_by_provider: dict[str, int] = {}
     for c in todo:
         m = model_by_id[c.model_id]
         est_by_provider[m.provider] = (est_by_provider.get(m.provider, 0)
-                                       + estimate_call_micro_usd(m.price, c.task))
+                                       + estimate_call_micro_usd(m.price, c.task)
+                                       * calls[c.key])
     # resume: what each provider has already been billed on this run
     spent_by_provider: dict[str, int] = {}
     for r in files.read("telemetry"):
@@ -580,6 +677,43 @@ def run_generation(project_root: Path, scenarios, models, modality: str,
     return run_dir
 
 
+def _regenerate(one_cell_fn, *args) -> dict:
+    """The check phase's one regeneration. A budget stop or runner error here
+    must not end the whole check phase: the cell is recorded as not
+    regenerated and the loop carries on to the remaining cells."""
+    try:
+        return one_cell_fn(*args)
+    except Exception as e:  # noqa: BLE001 — recorded, never silent
+        print(f"  [regen-failed ] {args[1].id} x {args[2].id}: {e}")
+        return {"path": None, "status": f"regeneration failed: {e}"}
+
+
+def _bad_members(out_dir: Path, model_id: str, scenario) -> list[int]:
+    """Members that are missing, do not decode, are near-blank or too small."""
+    import numpy as np
+    from PIL import Image
+    have = _find_member_outputs(out_dir, model_id)
+    checks = scenario.checks or {}
+    bad = []
+    for k in range(1, len(scenario.set_members) + 1):
+        f = have.get(k)
+        if f is None:
+            bad.append(k)
+            continue
+        try:
+            with Image.open(f) as im:
+                im.load()
+                w, h = im.size
+                std = float(np.asarray(im.convert("L"), dtype=np.float64).std())
+        except Exception:
+            bad.append(k)
+            continue
+        if std <= 4.0 or w < (checks.get("min_width") or 0) \
+                or h < (checks.get("min_height") or 0):
+            bad.append(k)
+    return bad
+
+
 def run_deterministic_checks(run_dir, manifest, scen_by_id, model_by_id,
                              adapter_by_model, files: RunFiles, frozen_assets,
                              budget, sems, pacers) -> None:
@@ -600,6 +734,35 @@ def run_deterministic_checks(run_dir, manifest, scen_by_id, model_by_id,
         path = _find_existing_output(out_dir, cell["model_id"])
         if path is None:
             continue
+        if s.set_members:
+            # every member must decode and not be blank; a bad member is
+            # regenerated once (the rest are kept), then the sheet is rebuilt
+            bad = _bad_members(out_dir, cell["model_id"], s)
+            if bad:
+                for k in bad:
+                    f = _find_member_outputs(out_dir, cell["model_id"]).get(k)
+                    if f is not None:
+                        f.rename(f.with_name(f"{f.stem}.invalid-1{f.suffix}"))
+                path.unlink()
+                m = model_by_id[cell["model_id"]]
+                result = _regenerate(one_cell, run_id, s, m, adapter_by_model[m.id],
+                                     run_dir, files, manifest, sems[m.provider],
+                                     pacers[m.provider], budget,
+                                     frozen_assets.get(s.id, {}),
+                                     manifest.data["inputs"].get(s.id, []))
+                path = result.get("path")
+                bad = _bad_members(out_dir, cell["model_id"], s) if path else bad
+            if bad or path is None:
+                from .checks import CheckOutcome, _gate
+                outcome = CheckOutcome()
+                outcome.gates.append(_gate("set_members", False,
+                                           f"invalid member(s): {bad}"))
+                files.checks.append({"ts": utcnow(), "run_id": run_id, "scenario_id": s.id,
+                                     "model_id": cell["model_id"], "task": s.task,
+                                     "gates": outcome.gates, "measures": {},
+                                     "passed": False})
+                manifest.set_cell_state(key, "invalid", f"failed gates: set_members {bad}")
+                continue
         outcome = run_checks(s, path, frozen_assets.get(s.id, {}))
 
         if not outcome.passed:
@@ -607,10 +770,11 @@ def run_deterministic_checks(run_dir, manifest, scen_by_id, model_by_id,
             bad = path.with_name(f"{path.stem}.invalid-1{path.suffix}")
             path.rename(bad)
             m = model_by_id[cell["model_id"]]
-            result = one_cell(run_id, s, m, adapter_by_model[m.id], run_dir, files,
-                              manifest, sems[m.provider], pacers[m.provider],
-                              budget, frozen_assets.get(s.id, {}),
-                              manifest.data["inputs"].get(s.id, []))
+            result = _regenerate(one_cell, run_id, s, m, adapter_by_model[m.id],
+                                 run_dir, files, manifest, sems[m.provider],
+                                 pacers[m.provider], budget,
+                                 frozen_assets.get(s.id, {}),
+                                 manifest.data["inputs"].get(s.id, []))
             path2 = result.get("path")
             outcome = run_checks(s, path2, frozen_assets.get(s.id, {})) if path2 else outcome
 

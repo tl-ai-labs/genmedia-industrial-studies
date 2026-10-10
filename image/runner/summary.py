@@ -98,6 +98,7 @@ def summarize_run(run_dir: Path) -> dict:
             "state": cell["state"], "score": None, "score_status": None,
             "latency_ms": None, "attempts": 0, "cost_usd": None, "error": ""}
 
+    ok_cells: set = set()
     for r in telemetry:
         key = (r["scenario_id"], r["model_id"])
         m = models.get(r["model_id"])
@@ -106,13 +107,23 @@ def summarize_run(run_dir: Path) -> dict:
         cells[key]["attempts"] += 1
         m["statuses"][r["status"]] = m["statuses"].get(r["status"], 0) + 1
         if r["status"] == "ok":
-            m["ok"] += 1
+            # a set cell writes one ok row per member: count the cell once,
+            # and add its members' cost and latency up
+            if key not in ok_cells:
+                ok_cells.add(key)
+                m["ok"] += 1
             m["latencies"].append(r.get("latency_ms") or 0)
             m["attempts"].append(r.get("attempt", 1))
             cost = r.get("cost", {})
             m["gen_micro"] += cost.get("micro_usd", 0)
-            cells[key]["latency_ms"] = r.get("latency_ms")
-            cells[key]["cost_usd"] = round(cost.get("micro_usd", 0) / 1e6, 6)
+            if "member" in r:   # set: members add up
+                cells[key]["latency_ms"] = ((cells[key]["latency_ms"] or 0)
+                                            + (r.get("latency_ms") or 0))
+                cells[key]["cost_usd"] = round((cells[key]["cost_usd"] or 0)
+                                               + cost.get("micro_usd", 0) / 1e6, 6)
+            else:               # single image: the latest ok row, as before
+                cells[key]["latency_ms"] = r.get("latency_ms")
+                cells[key]["cost_usd"] = round(cost.get("micro_usd", 0) / 1e6, 6)
             for k, v in (r.get("usage") or {}).items():
                 if isinstance(v, (int, float)) and not isinstance(v, bool):
                     m["usage"][k] = m["usage"].get(k, 0) + v

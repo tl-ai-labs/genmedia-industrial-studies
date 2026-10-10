@@ -61,9 +61,17 @@ def check_image(scenario, output_path: Path, assets: dict | None = None) -> Chec
         # a single string = one contiguous phrase (a headline); a list = each
         # string matched independently (UI labels interleaved with other text)
         items = required if isinstance(required, list) else [required]
+        # The reader knows Latin letters and digits only. A string with
+        # nothing left after normalising (Hindi, Telugu ...) cannot be read
+        # back, and used to score a free 1.0 — so it is left unmeasured.
+        readable = [item for item in items if _normalize_ocr(item)]
+        unreadable = [item for item in items if not _normalize_ocr(item)]
+        if unreadable:
+            out.measures["ocr_unreadable_required"] = unreadable
+    if required and readable:
         fragments = _get_ocr()(output_path)
         joined = _normalize_ocr(" ".join(fragments))
-        per_item = {item: _match_ratio(joined, item) for item in items}
+        per_item = {item: _match_ratio(joined, item) for item in readable}
         out.measures["ocr_text"] = " ".join(fragments)
         out.measures["ocr_required"] = required
         out.measures["ocr_match"] = round(sum(per_item.values()) / len(per_item), 4)

@@ -175,6 +175,50 @@ image:
       source: developers.openai.com/api/docs/pricing
       as_of: 2026-09-02
 
+  # Nano Banana 2.1 vs GPT Image 2.5 Sunburst (high): Gaurav's pairing on the
+  # 2026-10-09 weekly call ("2.1 is at 3.4 cents ... maps to a high segment for
+  # GPT 2.5"). Both arms run together from configs/models-nb21-vs-gpt25.yaml;
+  # they stay off here so the default run is unchanged.
+  - id: gemini-nano-banana-2-1-vertex   # Nano Banana 2.1 — the Flash slot since 2026-10-06
+    display: Gemini Nano Banana 2.1
+    enabled: false
+    adapter: gemini_image
+    provider: google-vertex
+    provider_model: "gemini-nano-banana-2.1"   # GA 2026-10-06; Google publishes no dated snapshot
+    vertex: {project: temp-genmedia-study, location: global}   # global is its only region
+    supports: [text_to_image, image_edit]
+    limits: {max_concurrency: 1, rpm: 2}   # same project quota as the flash/pro/lite twins
+    params: {size: "1024x1024"}      # 1K, the tier Gaurav priced. Never set seed: Vertex
+                                     # rejects seed/temperature/topP/topK on this model
+    price:
+      unit: per_token                # not per_image: thinking tokens are billed on top
+      usd_in_per_1m: 1.50            # text, image and video input
+      usd_out_per_1m: 30.00          # image output; a 1K image is 1,120 tokens = $0.0336
+      usd_thinking_per_1m: 7.50      # thinking runs at Google's default level (medium)
+      est_usd_per_call: 0.05         # 1K image + thinking + input; pre-flight only
+      source: cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing
+      as_of: 2026-10-07
+
+  - id: gpt-image-2-5-sunburst-high  # GPT Image 2.5 Sunburst, OpenAI's most capable 2.5 model
+    display: GPT Image 2.5 Sunburst (high)
+    enabled: false
+    adapter: openai_image            # same adapter — model swap is config only
+    provider: openai
+    provider_model: "gpt-image-2.5-sunburst-2026-09-08"   # dated snapshot, NOT the moving alias
+    auth_env: OPENAI_API_KEY
+    supports: [text_to_image, image_edit, inpaint_mask]
+    limits: {max_concurrency: 2, rpm: 8}
+    params: {size: "1024x1024", quality: high}   # quality stated: 2.5 defaults to auto.
+                                     # 2.5 high spends the output tokens GPT Image 2 medium did
+    price:
+      unit: per_token                # billed from returned usage, same rates as gpt-image-2
+      usd_in_per_1m: 8.00            # image input; text input is $5/1M (billed at the
+                                     # image-in rate conservatively, as for the 2 arms)
+      usd_out_per_1m: 30.00          # 1024x1024 high ~1,756 tokens = ~$0.053 (OpenAI calculator)
+      est_usd_per_call: 0.07         # output + input tokens; pre-flight only
+      source: developers.openai.com/api/docs/pricing
+      as_of: 2026-10-09
+
 voice:                               # Phase 2 — configured, not yet enabled
   - id: elevenlabs-flash-v2-5
     enabled: false
@@ -216,10 +260,12 @@ judge:
     provider_model: "gemini-3-flash-preview"   # the plan's Gemini 3 Flash, as Vertex names it
     vertex: {project: temp-genmedia-study, location: global}
     temperature: 0
+    thinking_level: high             # stated, not left to the default; 2026-10-09
     price:
       unit: per_token
       usd_in_per_1m: 0.50
       usd_out_per_1m: 3.00
+      usd_thinking_per_1m: 3.00      # thinking bills at the output rate; was unrecorded
       est_usd_per_call: 0.003        # pre-flight only
       source: ai.google.dev/gemini-api/docs/pricing
       as_of: 2026-08-31

@@ -44,3 +44,49 @@ criteria:
       to 10; below 0.6 maps to 0; linear in between. Scenarios with no
       on-image text drop this criterion and redistribute its weight
       proportionally (recorded in the run manifest).
+
+  # ---- Optional criteria (weight 0) -------------------------------------
+  # Never scored by default: effective_criteria() drops zero-weight criteria
+  # unless a scenario names them in its own criteria/weights. Added
+  # 2026-10-09 for the scenario-bank v2/v3 rubrics (October run).
+  - name: set_consistency
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Across every image in the set (or every panel on the sheet), what the
+      brief says must stay the same does: the same person, face, costume,
+      product, palette, light and style; a change the brief orders (damage
+      building up, age, time of day) happens in order and never resets.
+
+  - name: reference_fidelity
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      The output matches the supplied input and reference images as the
+      brief defines: identity (face, marks, skin tone), product, costume,
+      logo or layout carried over exactly, not reinterpreted.
+
+  - name: physics_plausibility
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Light, shadow, reflection, contact, gravity, materials and perspective
+      behave as they would physically; nothing floats, intersects or casts
+      the wrong shadow.
+
+  - name: text_accuracy_judged
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Read by the judge, for text the OCR cannot read back (Indian scripts)
+      or for briefs that demand no text at all: every required string is
+      present, spelled exactly, correctly formed in its script and legible;
+      no unrequested text appears.
+
+  - name: preservation_judged
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Compared with the input image: everything the instruction said to
+      keep is unchanged — identity, layout, colours, background, lighting —
+      and only the asked-for change was made.

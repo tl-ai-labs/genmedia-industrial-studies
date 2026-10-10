@@ -85,6 +85,26 @@ def measured_criterion_score(name: str, measures: dict) -> float | None:
     return None
 
 
+def checklist_verdict(scenario, checks: list[dict], score: float) -> dict:
+    """The bank's pass rule, applied from the judge's yes/no answers.
+
+    pass = every check of every gate criterion is yes AND the score reaches
+    pass_min_score. A scenario with neither a gate nor a floor has no pass
+    rule (pass = None) — its checklist is evidence for the scores only.
+    """
+    gates = set(scenario.gate_criteria or [])
+    items = scenario.checklist or []
+    yes = sum(1 for c in checks if c["answer"])
+    failed = [c["i"] for c in checks
+              if not c["answer"] and c["i"] < len(items)
+              and items[c["i"]].get("dim") in gates]
+    out = {"checks_yes": yes, "checks_n": len(checks)}
+    if gates or scenario.pass_min_score is not None:
+        out["gate_failed_checks"] = failed
+        out["pass"] = (not failed) and round(score, 4) >= (scenario.pass_min_score or 0.0)
+    return out
+
+
 # --------------------------------------------------------------------------
 # scores.jsonl — one row per scenario x model, final numbers
 # --------------------------------------------------------------------------
@@ -119,8 +139,10 @@ def score_run(project_root: Path, run_dir: Path) -> dict:
     # momentary rate limit permanently discards a clip we already paid for.
     # Rows that DO carry a score are never recomputed here; re-scoring appends
     # and aggregate() takes the latest row per cell.
+    # The same holds for a cell that FAILED at first and was regenerated on a
+    # resume: its old `failed` row must not shadow the new judge record.
     existing = {(r["scenario_id"], r["model_id"]) for r in files.read("scores")
-                if r.get("status") != "unjudged"
+                if r.get("status") in ("scored", "invalid")
                 or (r["scenario_id"], r["model_id"]) not in judged_by_cell}
     counts = {"scored": 0, "invalid": 0, "unjudged": 0, "other": 0}
 
@@ -141,6 +163,8 @@ def score_run(project_root: Path, run_dir: Path) -> dict:
             # the one earned zero: the model produced something unusable
             row.update({"status": "invalid", "score": 0.0,
                         "reason": cell.get("reason", "")})
+            if s.gate_criteria or s.pass_min_score is not None:
+                row.update({"pass": False, "gate_failed_checks": []})  # bank: a fail
             counts["invalid"] += 1
         elif cell["state"] in ("judged", "scored"):
             jrow = judged_by_cell.get((sid, mid))
@@ -171,6 +195,8 @@ def score_run(project_root: Path, run_dir: Path) -> dict:
                 score = sum(weights[n] * crit_scores[n]["score"] for n in weights)
                 row.update({"status": "scored", "score": round(score, 4),
                             "criteria": crit_scores})
+                if s.checklist is not None and jrow.get("checks"):
+                    row.update(checklist_verdict(s, jrow["checks"], score))
                 counts["scored"] += 1
                 manifest.set_cell_state(key, "scored")
         elif cell["state"] == "unjudged":
@@ -232,7 +258,7 @@ def aggregate(run_dir: Path) -> dict:
             "eligible": 0, "skipped": 0, "numeric": [], "scored": 0, "invalid": 0,
             "unjudged": 0, "failed": 0, "latencies": [], "attempts": [],
             "gen_micro": 0, "judge_micro": 0, "cost_estimated": False,
-            "refused": 0, "by_scenario": {}})
+            "refused": 0, "by_scenario": {}, "pass_n": 0, "pass_eligible": 0})
         if cell["state"] == "skipped":
             m["skipped"] += 1
             continue
@@ -242,6 +268,9 @@ def aggregate(run_dir: Path) -> dict:
             m["numeric"].append(srow["score"])
             m["by_scenario"][cell["scenario_id"]] = srow["score"]
             m[srow["status"]] += 1
+            if srow.get("pass") is not None:  # invalid rows carry pass=False
+                m["pass_eligible"] += 1
+                m["pass_n"] += bool(srow["pass"])
         elif srow and srow["status"] == "unjudged" or cell["state"] == "unjudged":
             m["unjudged"] += 1
         if cell["state"] == "failed":
@@ -299,6 +328,8 @@ def aggregate(run_dir: Path) -> dict:
             m["below_5"] = sum(1 for v in nums if v < 5)
             m["judged_n"] = len(nums)
             m["coverage"] = len(nums) / m["eligible"] if m["eligible"] else 0.0
+            m["pass_rate"] = (m["pass_n"] / m["pass_eligible"]
+                              if m["pass_eligible"] else None)
             m["latency_p50_ms"] = _p50(m["latencies"])
             m["latency_min_ms"] = min(m["latencies"]) if m["latencies"] else None
             m["latency_max_ms"] = max(m["latencies"]) if m["latencies"] else None

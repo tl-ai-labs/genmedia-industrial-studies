@@ -168,3 +168,25 @@ def test_shipped_models_config():
     assert mf.judge["image"].temperature == 0
     assert mf.judge["image"].vertex is not None
     assert enabled_models(mf, "voice") == []  # phase 2 blocks exist but are off
+
+
+def test_nb21_vs_gpt25_run_config_matches_models_yaml():
+    # The run file copies two blocks from models.yaml (where they sit
+    # disabled). Everything but `enabled` must stay identical, or the run
+    # would bill or call something models.yaml does not record.
+    base = {m.id: m for m in load_models(REPO_ROOT / "configs" / "models.yaml").image}
+    run = load_models(REPO_ROOT / "configs" / "models-nb21-vs-gpt25.yaml")
+    ids = [m.id for m in enabled_models(run, "image")]
+    assert ids == ["gemini-nano-banana-2-1-vertex", "gpt-image-2-5-sunburst-high"]
+    for m in run.image:
+        assert not base[m.id].enabled
+        assert (m.model_dump(exclude={"enabled"})
+                == base[m.id].model_dump(exclude={"enabled"}))
+    nb21, gpt = run.image
+    assert nb21.provider_model == "gemini-nano-banana-2.1"
+    assert "seed" not in nb21.params  # Vertex rejects seed on this model
+    assert nb21.price.usd_thinking_per_1m
+    assert gpt.provider_model == "gpt-image-2.5-sunburst-2026-09-08"
+    assert gpt.params["quality"] == "high"  # 2.5 defaults to auto
+    assert run.judge["image"].model_dump() == load_models(
+        REPO_ROOT / "configs" / "models.yaml").judge["image"].model_dump()

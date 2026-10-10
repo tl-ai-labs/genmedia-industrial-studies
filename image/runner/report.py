@@ -149,8 +149,19 @@ def _build_context(project_root: Path, run_dir: Path,
         d = _yaml.safe_load(f.read_text())
         scenarios_meta[d["id"]] = d
 
-    ok_rows = {(r["scenario_id"], r["model_id"]): r for r in telemetry
-               if r.get("status") == "ok"}
+    ok_rows: dict = {}
+    for r in telemetry:
+        if r.get("status") != "ok":
+            continue
+        k = (r["scenario_id"], r["model_id"])
+        if "member" in r and k in ok_rows:
+            # a set cell has one ok row per member: its cost and time add up
+            acc = ok_rows[k]
+            acc["cost"]["micro_usd"] = (acc["cost"].get("micro_usd", 0)
+                                        + (r.get("cost") or {}).get("micro_usd", 0))
+            acc["latency_ms"] = (acc.get("latency_ms") or 0) + (r.get("latency_ms") or 0)
+        else:   # a single image: the latest ok row is the output shown
+            ok_rows[k] = {**r, "cost": dict(r.get("cost") or {})}
 
     # industry overlay from the sheet's mapping (configs/industry_map.yaml);
     # runs stay immutable — this is a report-side join keyed by scenario id

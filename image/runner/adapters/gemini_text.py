@@ -24,13 +24,16 @@ class GeminiTextAdapter:
         types = self._types
         contents: list = [types.Part.from_bytes(data=d, mime_type=m) for d, m in media]
         contents.append(prompt)
+        config_kwargs: dict = {"temperature": self.cfg.temperature,
+                               "response_mime_type": "application/json"}
+        if getattr(self.cfg, "thinking_level", None):
+            config_kwargs["thinking_config"] = types.ThinkingConfig(
+                thinking_level=self.cfg.thinking_level)
         try:
             resp = self.client.models.generate_content(
                 model=self.cfg.provider_model,
                 contents=contents,
-                config=types.GenerateContentConfig(
-                    temperature=self.cfg.temperature,
-                    response_mime_type="application/json"))
+                config=types.GenerateContentConfig(**config_kwargs))
         except Exception as e:
             raise _translate(e) from e
 
@@ -47,6 +50,7 @@ class GeminiTextAdapter:
             usage = {
                 "prompt_token_count": getattr(usage_md, "prompt_token_count", None),
                 "candidates_token_count": getattr(usage_md, "candidates_token_count", None),
+                "thoughts_token_count": getattr(usage_md, "thoughts_token_count", None),
                 "total_token_count": getattr(usage_md, "total_token_count", None),
             }
         return JudgeResult(
