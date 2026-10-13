@@ -108,6 +108,14 @@ SPELLING_VARIANTS = {
     "programme": "program", "dialogue": "dialog", "judgement": "judgment",
     # An ASR writes "2 lakhs" where the script says "2 lakh"; same amount.
     "lakhs": "lakh", "crores": "crore",
+    # Brand names the transcriber spells as an ordinary word. A hint does not
+    # move it: "Croma" came back "chroma" for both models, with or without
+    # the hotword (2026-10-09, ret-en-01). Same sound, so one spelling.
+    "chroma": "croma",
+    # लाख as the transcriber also writes it, without the final aspirate:
+    # "पाँच लाक", "एक लाग" for a clear "lakh" - a Hindi lakh check failed a
+    # correct read on the spelling (2026-10-09, bank-hi-21).
+    "लाक": "लाख", "लाग": "लाख",
 }
 
 _ROMAN_RE = re.compile(r"^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$")
@@ -150,10 +158,41 @@ _DIGIT_ORDINAL = re.compile(r"\b(\d+)(st|nd|rd|th)\b", re.IGNORECASE)
 _THOUSANDS = re.compile(r"\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b")
 _DECIMAL = re.compile(r"\b\d+\.\d+\b")
 _MERIDIEM = re.compile(r"\b([ap])\.\s?m\.", re.IGNORECASE)
+# "5.30 pm" -> "5:30 pm". Indian English writes a clock time with a dot, and
+# the transcriber does too: a correct "five thirty pm" came back as "5.30 pm"
+# (2026-10-09, bank-en-01) and the decimal rule read it "five point three
+# zero", costing both models three words. Only beside am/pm, where the dot
+# cannot be a decimal; a bare "5.30" stays a number.
+_DOT_CLOCK = re.compile(r"\b([01]?\d|2[0-3])\.([0-5]\d)(?=\s*[ap]m\b)")
+# The same dotted time with no am/pm, after a word that only a time follows:
+# "at 6.40 tomorrow morning" came back "six point four zero" for both models
+# (2026-10-09, md-en-13). A bare "6.40" elsewhere stays a decimal.
+_DOT_CLOCK_AFTER_WORD = re.compile(
+    r"\b(at|by|till|until|from|before|after)(\s+)([01]?\d|2[0-3])\.([0-5]\d)\b"
+)
+# International grouping of a rupee amount of a lakh or more: "340,000",
+# "1,500,000". The writer - a script author or a transcriber - grouped it in
+# threes, which is evidence the amount was read "three hundred forty
+# thousand", not "three lakh forty thousand". Below a lakh both systems write
+# and read the same, so this only ever decides amounts where they differ.
+_INTL_GROUPED_LAKH_PLUS = re.compile(r"\d{1,3}(?:,\d{3}){2,}(?:\.\d+)?|\d{3},\d{3}(?:\.\d+)?")
 _ABBREV = re.compile(r"\b([A-Za-z]{2,7})\.")
-_PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
+# Devanagari and Telugu vowel signs are combining marks, not \w, so the
+# plain strip shredded "तीन लाख" into "त न ल ख" and no Hindi transcript could
+# ever match a phrase (2026-10-09). Both blocks are kept whole; their own
+# full stops (danda) are still punctuation.
+_PUNCT = re.compile(r"[^\w\s\u0900-\u0963\u0966-\u097F\u0C00-\u0C7F]|[\u0964\u0965]", re.UNICODE)
 _WS = re.compile(r"\s+")
 _UNDERSCORE = re.compile(r"_+")
+_SCALE_WORDS = "lakhs|lakh|crores|crore|million|billion|thousand"
+_POSSESSIVE = re.compile(r"(?<=\w)['\u2019]s\b")
+_DR_BARE = re.compile(r"\bdr\b(?!\.)")
+# ISO currency codes a script or a transcriber may put beside an amount.
+# Matched lower-case: normalize() lowercases before the currency passes.
+_CURRENCY_CODES = ("aed|usd|eur|gbp|sgd|sar|qar|omr|kwd|bhd|aud|cad|nzd|jpy|cny|hkd|"
+                   "chf|myr|thb|lkr|npr|bdt|inr")
+_CODE_BEFORE = re.compile(rf"\b({_CURRENCY_CODES})\s+(\d[\d,]*(?:\.\d+)?)\b")
+_CODE_AFTER = re.compile(rf"\b(\d[\d,]*(?:\.\d+)?)\s+({_CURRENCY_CODES})\b")
 
 
 def _roman_to_int(tok: str) -> int | None:
@@ -172,7 +211,12 @@ def _roman_to_int(tok: str) -> int | None:
 # stripped a fixed list of ASCII punctuation and missed `XLIV.”` - a curly
 # quote was enough to defeat it, which is exactly the kind of near-miss a
 # hand-written strip list produces.
-_ROMAN_TOKEN = re.compile(r"\b[IVXLCDM]{2,}\b")
+#
+# Not when the letters lead straight into digits: "XX-4219" is the masked
+# half of a PAN, not "twenty four two one nine" - the transcriber hyphenated
+# a correct read of "X, X, four, two, one, nine" and the Roman rule failed it
+# (2026-10-09, bank-en-06). A numeral followed by a number is a code.
+_ROMAN_TOKEN = re.compile(r"\b[IVXLCDM]{2,}\b(?!\s?[-/]?\s?\d)")
 
 
 def _expand_roman(text: str) -> str:
@@ -227,7 +271,8 @@ def _decimal_words(whole: str, frac: str) -> str:
     return f" {_words_int(int(whole or 0))} point {tail} "
 
 
-def _money_words(whole: str, frac: str, unit: str, force_indian: bool = False) -> str:
+def _money_words(whole: str, frac: str, unit: str, force_indian: bool = False,
+                 force_intl: bool = False) -> str:
     """
     "$137.50" -> "one hundred and thirty seven dollars and fifty cents".
 
@@ -241,7 +286,8 @@ def _money_words(whole: str, frac: str, unit: str, force_indian: bool = False) -
     # A rupee amount is read in the Indian system - "two lakh fifty thousand
     # rupees", not "two hundred fifty thousand rupees". Both sides go through
     # here, so this decides how the amount is COMPARED, not who is right.
-    indian = force_indian or unit in ("rupees", "paise")
+    # The written grouping, when it is international, beats the unit.
+    indian = force_indian or (unit in ("rupees", "paise") and not force_intl)
     head = f" {_words_int(int(whole or 0), indian)} {unit} "
     if not frac or not minor:
         return head
@@ -286,8 +332,16 @@ def normalize(text: str) -> str:
 
     text = text.lower()
 
+    # 1b. A possessive "'s" stays on its word: "lab's" -> "labs". Stripped as
+    #     punctuation it left a lone "s", so a correct "Dr Lal PathLabs" written
+    #     "Path Lab's" became three words against one and failed the gate
+    #     (2026-10-09, hlt-en-03).
+    text = _POSSESSIVE.sub("s", text)
+
     # 2. "3:47 a.m." -> "3:47 am"; the bare dots would otherwise become "a m".
     text = _MERIDIEM.sub(lambda m: f"{m.group(1)}m", text)
+    text = _DOT_CLOCK.sub(lambda m: f"{m.group(1)}:{m.group(2)}", text)
+    text = _DOT_CLOCK_AFTER_WORD.sub(lambda m: f"{m.group(1)}{m.group(2)}{m.group(3)}:{m.group(4)}", text)
 
     # 2b. "Rs"/"Rs."/"INR" before a number IS the rupee symbol. Rewriting it
     #     here means the currency pass below handles rupees exactly like every
@@ -299,6 +353,13 @@ def normalize(text: str) -> str:
     def _money(m: re.Match) -> str:
         unit = CURRENCY[m.group(1)]
         amount = m.group(2)
+        if m.group(3):
+            # "Rs 3 crore" is said "three crore rupees" - the scale word
+            # belongs to the number and the currency comes last. Read as
+            # money it became "three rupees crore", and "Rs 2.5 lakh" became
+            # "two rupees and fifty paise lakh": two words lost on every
+            # correct read (2026-10-09, md-en-01).
+            return f" {_cardinal(amount).strip()} {m.group(3)} {unit} "
         whole, _, frac = amount.replace(",", "").partition(".")
         # THE GROUPING BEATS THE SYMBOL. "2,50,000" is grouped 2-2-3, which
         # is Indian whatever precedes it. A transcriber that heard rupees and
@@ -307,21 +368,34 @@ def normalize(text: str) -> str:
         # very must_not_say gate that exists to catch that reading. The
         # written form is the evidence; the symbol is the guess.
         return _money_words(whole, frac, unit,
-                            force_indian=bool(_INDIAN_GROUPED.fullmatch(amount)))
+                            force_indian=bool(_INDIAN_GROUPED.fullmatch(amount)),
+                            force_intl=bool(_INTL_GROUPED_LAKH_PLUS.fullmatch(amount)))
 
-    text = re.sub(rf"([{''.join(CURRENCY)}])\s?(\d[\d,]*(?:\.\d+)?)", _money, text)
+    text = re.sub(
+        rf"([{''.join(CURRENCY)}])\s?(\d[\d,]*(?:\.\d+)?)(?:\s+({_SCALE_WORDS})\b)?",
+        _money, text,
+    )
 
     # A bare number FOLLOWED by a currency word is unambiguously a quantity,
     # so it must read as a cardinal rather than falling through to the
     # digit-by-digit identifier rule. Without this, "£7,654.32" and
     # "7654 pounds 32 pence" - the same amount, written two ways - normalize
     # to "seven thousand six hundred..." and "seven six five four...".
-    _UNITS = "pounds|pence|euros|yen|dollars|cents|rupees|paise"
+    _UNITS = "pounds|pence|euros|yen|dollars|cents|rupees|paise|dirhams|dirham"
     text = re.sub(
         rf"\b(\d[\d,]*(?:\.\d+)?)\s+({_UNITS})\b",
-        lambda m: f"{_cardinal(m.group(1), m.group(2) in ('rupees', 'paise'))}{m.group(2)} ",
+        lambda m: f"{_cardinal(m.group(1), m.group(2) in ('rupees', 'paise') and not _INTL_GROUPED_LAKH_PLUS.fullmatch(m.group(1)))}{m.group(2)} ",
         text,
     )
+
+    # 3a. A bare number beside a currency CODE is an amount too, on either
+    #     side: "AED 1250", "1250 AED". The transcriber wrote "AED 1250" for a
+    #     correct read of the script's "AED 1,250" (2026-10-09, bank-en-04),
+    #     and the identifier rule read it "one two five zero" - four wrong
+    #     words and a failed gate. Codes only, so "AWB 660231458" and other
+    #     reference numbers still read digit by digit.
+    text = _CODE_BEFORE.sub(lambda m: f"{m.group(1)} {_cardinal(m.group(2))} ", text)
+    text = _CODE_AFTER.sub(lambda m: f"{_cardinal(m.group(1))} {m.group(2)} ", text)
 
     # 3c. Percent, before the strip turns "%" into nothing.
     text = _PERCENT.sub(" percent", text)
@@ -341,6 +415,10 @@ def normalize(text: str) -> str:
         return f" {rep} " if rep else m.group(0)
 
     text = _ABBREV.sub(_ab, text)
+    # "Dr" without its full stop is the same title. The script wrote "Dr Lal
+    # PathLabs", the transcriber "Dr. Lal", and one became "doctor" while the
+    # other stayed "dr" - a word lost on a correct read (hlt-en-03).
+    text = _DR_BARE.sub("doctor", text)
 
     # 4a. On-the-hour clock times, before the bare-digit pass reads the zeros.
     text = _CLOCK_HOUR.sub(lambda m: f" {m.group(1)} ", text)
@@ -418,6 +496,38 @@ class WerResult:
         }
 
 
+def _join_against(tokens: list[str], other_vocab: set[str]) -> list[str]:
+    out: list[str] = []
+    i = 0
+    while i < len(tokens):
+        if i + 1 < len(tokens):
+            a, b = tokens[i], tokens[i + 1]
+            if a + b in other_vocab and not (a in other_vocab and b in other_vocab):
+                out.append(a + b)
+                i += 2
+                continue
+        out.append(tokens[i])
+        i += 1
+    return out
+
+
+def join_split_compounds(ref: str, hyp: str) -> tuple[str, str]:
+    """
+    "cut off" on one side and "cutoff" on the other are one word, spaced two
+    ways - a spelling difference, not a speech difference. The script's
+    "cut-off" became "cut off" while the transcriber wrote "cutoff"
+    (2026-10-09, bank-en-01), and one model lost two words for a correct read.
+
+    Two adjacent words on one side are joined only when the joined form is a
+    word on the OTHER side and the two halves are not both words there too,
+    so a real "a part" / "apart" difference in both texts is left alone.
+    Symmetric: each side is joined against the other's original words.
+    """
+    r, h = ref.split(), hyp.split()
+    r_vocab, h_vocab = set(r), set(h)
+    return " ".join(_join_against(r, h_vocab)), " ".join(_join_against(h, r_vocab))
+
+
 def normalized_wer(script: str, transcript: str) -> WerResult:
     """
     THE number every voice gate and the text_accuracy criterion use.
@@ -435,6 +545,7 @@ def normalized_wer(script: str, transcript: str) -> WerResult:
         )
     if not hyp:
         return WerResult(1.0, ref, "", len(ref.split()), 0)
+    ref, hyp = join_split_compounds(ref, hyp)
     return WerResult(
         float(jiwer.wer(ref, hyp)),
         ref,

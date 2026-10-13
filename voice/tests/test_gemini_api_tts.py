@@ -288,3 +288,49 @@ def test_a_secret_manager_refusal_is_an_auth_error(monkeypatch):
 def test_the_board_says_gemini_api_not_vertex():
     assert _spec().served_from == "Gemini API · no region choice"
     assert _spec().auth_env == "GEMINI_API_KEY_SECRET"
+
+
+def test_the_language_reaches_gemini_as_it_reaches_elevenlabs():
+    adapter = GeminiApiTtsAdapter.__new__(GeminiApiTtsAdapter)
+    adapter.supports = ("text_to_speech", "styled_tts")
+    req = dataclasses.replace(_req(), language="hi-IN")
+    body, applied = adapter.build_body(req)
+    assert body["generationConfig"]["speechConfig"]["languageCode"] == "hi-IN"
+    assert applied["language"] == "hi-IN"
+
+
+def test_a_two_voice_scene_binds_each_label_to_its_own_voice():
+    adapter = GeminiApiTtsAdapter.__new__(GeminiApiTtsAdapter)
+    adapter.supports = ("text_to_speech", "styled_tts")
+    req = GenRequest(task="styled_tts", text="A: Where were you?\nB: At home!",
+                     params={}, voice_id="Sadaltager", voice_logical="male_older",
+                     speakers=(("A", "Sadaltager", "male_older", "cold"),
+                               ("B", "Achird", "male_young", "defensive")))
+    body, applied = adapter.build_body(req)
+    sc = body["generationConfig"]["speechConfig"]
+    assert "voiceConfig" not in sc
+    assert sc["multiSpeakerVoiceConfig"]["speakerVoiceConfigs"] == [
+        {"speaker": "A", "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Sadaltager"}}},
+        {"speaker": "B", "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Achird"}}},
+    ]
+    # One part per turn, each naming its speaker and carrying that speaker's
+    # direction - the API refuses a two-voice part without a speaker
+    # (400 INVALID_ARGUMENT, 2026-10-09).
+    assert body["contents"][0]["parts"] == [
+        {"text": "Where were you?", "speech_metadata": {"speaker": "A", "style": "cold"}},
+        {"text": "At home!", "speech_metadata": {"speaker": "B", "style": "defensive"}},
+    ]
+    assert applied["style"] == "A: cold; B: defensive"
+    assert applied["speakers"] == ["A", "B"]
+
+
+def test_a_two_voice_scene_without_directions_still_names_each_speaker():
+    adapter = GeminiApiTtsAdapter.__new__(GeminiApiTtsAdapter)
+    adapter.supports = ("text_to_speech", "styled_tts")
+    req = GenRequest(task="text_to_speech", text="A: Hi.\nB: Hello.\nA: Bye.",
+                     params={}, voice_id="Charon", voice_logical="male_mid",
+                     speakers=(("A", "Charon", "male_mid", None), ("B", "Fenrir", "male_older", None)))
+    body, applied = adapter.build_body(req)
+    assert [p["speech_metadata"] for p in body["contents"][0]["parts"]] == [
+        {"speaker": "A"}, {"speaker": "B"}, {"speaker": "A"}]
+    assert "style" not in applied

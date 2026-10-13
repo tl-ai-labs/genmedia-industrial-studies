@@ -42,7 +42,7 @@ from typing import Any, Callable
 
 from . import checks as checks_mod
 from .adapters import AdapterError, GenRequest, Timeout, build_adapter, params_unsupported
-from .asr import Asr, AsrFailure
+from .asr import Asr, AsrFailure, spelled_pass_problem
 from .cost import Usage, compute_cost, estimate_scenario_cost
 from .matrix import Cell, Matrix
 from .mos import QualityPredictor
@@ -286,6 +286,15 @@ def _generate_one(
         return CellOutcome(cell, "ok", 0, output_path=out_path, resumed=True)
 
     voice_id, voice_logical = model.resolve_voice(scenario.params.get("voice"))
+    # A two-voice scene names one logical voice per speaker label. Every
+    # label goes through the same voice_map as a single voice, so each arm's
+    # cast is a declared, human-chosen mapping and never a runner default.
+    speakers: list[tuple[str, str, str, str | None]] = []
+    for sp in scenario.params.get("speakers") or []:
+        sid_, slog = model.resolve_voice(sp["voice"])
+        speakers.append((str(sp["label"]), sid_, slog, sp.get("style")))
+    if speakers and not voice_id:
+        voice_id, voice_logical = speakers[0][1], speakers[0][2]
     requested = {**model.params, **scenario.params}
     req = GenRequest(
         task=scenario.task,
@@ -295,11 +304,13 @@ def _generate_one(
         voice_logical=voice_logical,
         language=scenario.language,
         style=scenario.style,
+        speakers=tuple(speakers),
         timeout_s=timeout_s,
         # Stream only when the scenario asks for a latency number. Streaming
         # changes how a response is assembled, and a latency claim should not
         # silently alter how every other clip in the bank is produced.
-        measure_ttfa="max_ttfa_ms" in (scenario.checks or {}),
+        measure_ttfa=("max_ttfa_ms" in (scenario.checks or {})
+                      or bool((scenario.checks or {}).get("measure_ttfa"))),
     )
 
     last_error = "unknown failure"
@@ -403,7 +414,9 @@ def _generate_one(
                 "status": "ok",
                 "params": requested,
                 "params_unsupported": unsupported,
-                "voice": {"logical": voice_logical, "provider_voice_id": voice_id},
+                "voice": {"logical": voice_logical, "provider_voice_id": voice_id,
+                          **({"speakers": [{"label": s[0], "logical": s[2], "provider_voice_id": s[1]}
+                                           for s in speakers]} if speakers else {})},
                 "latency_ms": latency,
                 "request_id": result.provider_request_id,
                 "output": {
@@ -437,6 +450,62 @@ def _generate_one(
 
     log(f"  FAIL     {scenario.id:9} {model.id:26} {last_status}: {last_error[:80]}")
     return CellOutcome(cell, last_status, MAX_ATTEMPTS, error=last_error)
+
+
+_PHRASE_CHECKS = ("must_say", "must_say_any", "must_not_say")
+
+
+def needs_spelled_pass(scenario) -> bool:
+    """The spelled-out pass feeds only the phrase checks, so only those need it."""
+    # Also when the transcript is not scored: the phrase checks still run
+    # there (a Hinglish "lakh" check), and they read this pass.
+    checks = scenario.checks or {}
+    return any(checks.get(k) for k in _PHRASE_CHECKS)
+
+
+def _spelled_pass(scenario, model, outcome, paths, tel, asr, budget, lanes, tpath) -> str | None:
+    """
+    The second transcription: same transcriber, digits banned. Kept beside the
+    clip as <model>.spelled.txt. A failure here is recorded and leaves the
+    phrase checks on the normal transcript - never a gate failure of its own.
+    """
+    spath = tpath.with_name(f"{model.id}.spelled.txt")
+    if spath.exists() and spath.read_text(encoding="utf-8").strip():
+        return spath.read_text(encoding="utf-8").strip()
+    label = f"asr-spelled {scenario.id} x {model.id}"
+    try:
+        duration = checks_mod.decode(outcome.output_path).duration_s
+        budget.guard(label, asr.spec.provider)
+
+        def _guarded():
+            return call_with_deadline(
+                lambda: asr.transcribe(
+                    outcome.output_path, duration, scenario.language,
+                    hotwords=list((scenario.checks or {}).get("asr_hotwords") or []),
+                    spelled=True,
+                ),
+                180.0 + DEADLINE_GRACE_S, label,
+            )
+
+        res = lanes.run(asr.spec.provider, _guarded) if lanes is not None else _guarded()
+    except Exception as exc:  # noqa: BLE001 - recorded, never fatal
+        res = AsrFailure(error=f"{type(exc).__name__}: {exc}", attempts=1,
+                         provider_model=asr.spec.provider_model)
+    # step "asr", so every reader books it as transcription; `pass` tells the
+    # two transcriptions apart.
+    row: dict[str, Any] = {"scenario_id": scenario.id, "model_id": model.id,
+                           "step": "asr", "pass": "spelled"}
+    if isinstance(res, AsrFailure):
+        tel.write("telemetry", {**row, "status": "asr_failed", "attempts": res.attempts,
+                                "error": res.error[:1000]})
+        return None
+    spath.write_text(res.text + "\n", encoding="utf-8")
+    budget.add(res.cost.micro_usd, asr.spec.provider)
+    tel.write("telemetry", {**row, "status": "ok", "provider_model": res.provider_model,
+                            "attempts": res.attempts, "latency_ms": res.latency_ms,
+                            "transcript_path": str(spath.relative_to(paths.dir)),
+                            "cost": res.cost.as_record})
+    return res.text
 
 
 def measure_cell(
@@ -537,9 +606,19 @@ def measure_cell(
                     },
                 )
 
+    spelled = spelled_problem = None
+    if transcript is not None and asr is not None and needs_spelled_pass(scenario):
+        spelled = _spelled_pass(scenario, model, outcome, paths, tel, asr, budget, lanes, tpath)
+        # Checked here, not in _spelled_pass, so a resumed run is held to it too.
+        spelled_problem = spelled_pass_problem(transcript, spelled) if spelled else None
+        if spelled_problem:
+            log(f"  ASR-FIX  {scenario.id:9} {model.id:26} spelled-out pass unusable "
+                f"({spelled_problem}); phrase checks read the normal transcript")
+
     report = checks_mod.run_checks(
         scenario, model.id, outcome.output_path, transcript, asr_error, predictor,
-        extra={"ttfa_ms": outcome.ttfa_ms},
+        extra={"ttfa_ms": outcome.ttfa_ms}, spelled_transcript=spelled,
+        spelled_problem=spelled_problem,
     )
     outcome.check_report = report
     outcome.transcript_path = tpath if transcript else None

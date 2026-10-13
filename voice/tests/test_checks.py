@@ -659,3 +659,244 @@ def test_scenarios_without_the_gate_are_untouched(tmp_path, predictor):
     r = run_checks(FakeScenario(), "m1", p, None, None, predictor, extra={"ttfa_ms": 9999})
     assert not any(g.name == "ttfa_within_max" for g in r.gates)
     assert "ttfa_ms" not in r.measurements
+
+
+def test_a_scenario_can_keep_its_transcript_without_scoring_it(tmp_path, predictor):
+    """A Hinglish script in Roman letters against a Devanagari transcript is
+    a writing-system mismatch, not a reading error. Opted out, the transcript
+    is kept as evidence and text_accuracy is unmeasured - never a huge WER."""
+    p = write(tmp_path, "hi.wav", speechlike(4.0))
+    scenario = FakeScenario(
+        text="Aapka EMI amount Rs 1,25,475 hai",
+        # Phrase checks run here too since 2026-10-09, so a check on a
+        # Hinglish scene lists the word in both writing systems.
+        checks={"duration_s": {"min": 2, "max": 10}, "max_wer": 0.08, "asr_scored": False,
+                "must_say_any": [["lakh", "लाख"]]},
+    )
+    report = run_checks(scenario, "m1", p, "आपका ईएमआई अमाउंट एक लाख पच्चीस हज़ार है", None, predictor)
+    assert report.passed, report.failed_gates
+    assert report.transcript.startswith("आपका")
+    assert report.measurements["text_accuracy_unmeasured"] is True
+    assert "normalized_wer" not in report.measurements
+    assert any(g.name.startswith("must_say_any") for g in report.gates)
+
+
+def test_time_to_first_audio_can_be_measured_without_a_gate(tmp_path, predictor):
+    p = write(tmp_path, "t.wav", speechlike(4.0))
+    scenario = FakeScenario(checks={"duration_s": {"min": 2, "max": 10}, "measure_ttfa": True})
+    report = run_checks(scenario, "m1", p, None, None, predictor, extra={"ttfa_ms": 2400})
+    assert report.passed
+    assert report.measurements["ttfa_ms"] == 2400
+    assert "ttfa_within_max" not in [g.name for g in report.gates]
+
+
+def test_must_not_say_matches_with_or_without_the_number_and():
+    from runner.checks import says
+    from runner.normalize import normalize
+
+    heard = normalize("To send 340,000 rupees from Axis Bank")
+    assert says(heard, "three hundred forty thousand")
+    assert says(heard, "three hundred and forty thousand")
+    assert not says(heard, "lakh")
+    assert says(normalize("To send Rs 3,40,000"), "lakh")
+
+
+def test_only_wording_check_failures_still_reach_the_judge():
+    from runner.checks import judge_may_hear
+
+    assert judge_may_hear([])
+    assert judge_may_hear(["wer_within_max", "must_say[lakh]", "must_not_say[three hundred]"])
+    assert judge_may_hear(["must_say_any[a|b]", "digits_exact", "alnum_exact", "no_overlong_digit_run"])
+    # Unusable audio blocks the judge, alone or alongside a wording failure.
+    for gate in ("decodes", "not_silent", "duration_in_range", "silence_within_bounds",
+                 "no_clipping", "loudness_sane", "speech_rate_in_range", "ttfa_within_max"):
+        assert not judge_may_hear([gate])
+        assert not judge_may_hear(["wer_within_max", gate])
+
+
+
+def test_phrase_checks_read_the_spelled_out_transcript(tmp_path, predictor):
+    """
+    bank-en-01, 2026-10-09: the normal transcript wrote "3,40,000" either
+    way; the spelled-out pass shows the words. The phrase checks follow the
+    spelled-out pass, the word error rate stays on the normal one, and a
+    disagreement between the two is written into the check's detail.
+    """
+    p = write(tmp_path, "amt.wav", speechlike(4.0))
+    scenario = FakeScenario(
+        text="To send Rs 3,40,000 today.",
+        checks={"must_say": ["lakh"], "must_not_say": ["three hundred forty thousand"]},
+    )
+    rep = run_checks(scenario, "m1", p, "To send Rs 3,40,000 today.", None, predictor,
+                     spelled_transcript="To send three hundred forty thousand rupees today.")
+    assert set(rep.failed_gates) == {"must_say[lakh]", "must_not_say[three hundred forty thou]"}
+    details = {g.name: g.detail for g in rep.gates}
+    assert "normal transcript disagrees (pass)" in details["must_say[lakh]"]
+    assert rep.measurements["normalized_wer"] == 0.0
+    assert rep.as_record["transcript_spelled_raw"].startswith("To send three hundred")
+
+    agree = run_checks(scenario, "m1", p, "To send Rs 3,40,000 today.", None, predictor,
+                       spelled_transcript="To send three lakh forty thousand rupees today.")
+    assert agree.passed, agree.failed_gates
+    assert "disagrees" not in " ".join(g.detail for g in agree.gates)
+
+
+def test_only_scenarios_with_phrase_checks_get_the_spelled_pass():
+    from runner.generate import needs_spelled_pass
+
+    assert needs_spelled_pass(FakeScenario(text="x", checks={"must_say": ["lakh"]}))
+    assert needs_spelled_pass(FakeScenario(text="x", checks={"must_not_say": ["y"]}))
+    assert not needs_spelled_pass(FakeScenario(text="x", checks={"max_wer": 0.08}))
+    # An unscored transcript still gets it when there are phrase checks.
+    assert needs_spelled_pass(
+        FakeScenario(text="x", checks={"must_say": ["lakh"], "asr_scored": False})
+    )
+    assert not needs_spelled_pass(FakeScenario(text="x", checks={"asr_scored": False}))
+
+
+def test_the_spelled_pass_never_bans_whisper_special_tokens():
+    """
+    Timestamp markers like "<|0.00|>" contain digits. Banning them broke
+    large-v3 outright (a whole clip came back as "*", 2026-10-09), so the
+    ban covers text tokens only - every id below <|endoftext|>.
+    """
+    from runner.asr import LocalWhisperBackend
+
+    vocab = ["one", "2", "x3", "<|endoftext|>", "<|0.00|>", "<|1.20|>"]
+
+    class Tok:
+        def token_to_id(self, t):
+            return vocab.index(t)
+
+        def get_vocab_size(self):
+            return len(vocab)
+
+        def decode(self, ids):
+            return vocab[ids[0]]
+
+    b = LocalWhisperBackend.__new__(LocalWhisperBackend)
+    b._model = type("M", (), {"hf_tokenizer": Tok()})()
+    b._digit_tokens = None
+    assert b._banned_digit_tokens() == [1, 2]
+
+
+def test_measure_cell_runs_both_transcriptions_and_reuses_them_on_resume(tmp_path, predictor):
+    """The generation step end to end, with a fake transcriber."""
+    import json
+    from types import SimpleNamespace
+
+    from runner import generate as gen
+    from runner.asr import AsrResult
+    from runner.cost import Cost
+    from runner.telemetry import RunPaths, Telemetry
+
+    paths = RunPaths(tmp_path, "run1").ensure()
+    out = paths.output_path("voice", "s1", "m1", "wav")
+    out.parent.mkdir(parents=True)
+    write(out.parent, "m1.wav", speechlike(5.0))
+
+    calls = []
+
+    class FakeAsr:
+        spec = SimpleNamespace(provider="local", provider_model="fake")
+
+        def transcribe(self, path, duration, language, hotwords=None, spelled=False):
+            calls.append(spelled)
+            text = ("To send three lakh forty thousand rupees today." if spelled
+                    else "To send Rs 3,40,000 today.")
+            return AsrResult(text, "fake", 1, Cost(0, "", "", "", "estimated", True), 1)
+
+    scenario = FakeScenario(id="s1", text="To send Rs 3,40,000 today.",
+                            checks={"must_say": ["lakh"], "max_wer": 0.08})
+    scenario.modality = "voice"
+    outcome = gen.CellOutcome(cell=SimpleNamespace(scenario=scenario, model=SimpleNamespace(id="m1")),
+                              status="ok", attempts=1, output_path=out)
+    tel = Telemetry(paths, "run1")
+    gen.measure_cell(outcome, paths, tel, FakeAsr(), predictor, gen.Budget(1.0), None, lambda *a: None)
+
+    assert calls == [False, True]
+    assert (out.parent / "m1.spelled.txt").read_text().startswith("To send three lakh")
+    assert outcome.check_report.passed, outcome.check_report.failed_gates
+    rows = [json.loads(l) for l in paths.stream("telemetry").read_text().splitlines()]
+    assert [r.get("pass") for r in rows if r.get("step") == "asr"] == [None, "spelled"]
+
+    # Resume: both transcripts on disk are reused, nothing is transcribed again.
+    calls.clear()
+    gen.measure_cell(outcome, paths, tel, FakeAsr(), predictor, gen.Budget(1.0), None, lambda *a: None)
+    assert calls == []
+
+
+def test_a_looping_or_short_spelled_pass_is_not_trusted():
+    from runner.asr import spelled_pass_problem
+
+    normal = "A transaction of AED 1250 at Dubai Duty Free was declined on your card."
+    looped = "A transaction of AED Rs. Rs. Rs. Rs. Rs. Rs. Rs. Rs."
+    assert spelled_pass_problem(normal, looped)
+    assert "words against" in spelled_pass_problem(normal, "A transaction of")
+    assert spelled_pass_problem(normal, "") == "empty"
+    good = "A transaction of AED twelve fifty at Dubai Duty Free was declined on your card."
+    assert spelled_pass_problem(normal, good) is None
+    # A repeat the speaker really said is in the normal transcript too.
+    chant = "no no no no I said no"
+    assert spelled_pass_problem(chant, chant) is None
+
+
+def test_an_unusable_spelled_pass_sends_the_phrase_checks_back_to_the_normal_transcript(tmp_path, predictor):
+    p = write(tmp_path, "amt.wav", speechlike(4.0))
+    scenario = FakeScenario(text="To send Rs 3,40,000 today.", checks={"must_say": ["lakh"]})
+    rep = run_checks(scenario, "m1", p, "To send Rs 3,40,000 today.", None, predictor,
+                     spelled_transcript="To send Rs. Rs. Rs. Rs.", spelled_problem="'rs' repeated 4+ times in a row")
+    assert rep.passed, rep.failed_gates
+    detail = {g.name: g.detail for g in rep.gates}["must_say[lakh]"]
+    assert "spelled-out pass unusable" in detail
+    assert rep.as_record["spelled_pass_unusable"].startswith("'rs'")
+    assert rep.as_record["transcript_spelled_raw"] == "To send Rs. Rs. Rs. Rs."
+
+
+def test_a_spelled_pass_that_drops_a_number_is_not_trusted():
+    """bank-en-05, 2026-10-09: the number vanished and the sentence stayed."""
+    from runner.asr import spelled_pass_problem
+
+    normal = "Alert! A transaction of 114,999 rupees was just made. Press 1 right now."
+    dropped = "Alert! A transaction of ¥, was just made. Press one right now."
+    assert spelled_pass_problem(normal, dropped) == "1 of 2 numbers missing"
+    kept = ("Alert! A transaction of one hundred fourteen thousand nine hundred and "
+            "ninety nine rupees was just made. Press one right now.")
+    assert spelled_pass_problem(normal, kept) is None
+    # Ordinals, digit-by-digit codes and "1 million" all count as numbers spoken.
+    assert spelled_pass_problem("Debited on the 5th.", "Debited on the fifth.") is None
+    assert spelled_pass_problem("Last six: X, X, 4, 2, 1, 9.", "Last six: X, X, four, two, one, nine.") is None
+    assert spelled_pass_problem("Deposit of 1 million rupees.", "Deposit of one million rupees.") is None
+
+
+def test_phrase_checks_run_when_the_transcript_is_not_scored(tmp_path, predictor):
+    """Hinglish lakh scenes, 2026-10-09: asr_scored false skipped them entirely."""
+    p = write(tmp_path, "amt.wav", speechlike(4.0))
+    scenario = FakeScenario(text="Rs 3,40,000 bhejne ke liye",
+                            checks={"asr_scored": False, "must_say_any": [["lakh", "लाख"]],
+                                    "must_not_say": ["three hundred forty thousand"]})
+    good = run_checks(scenario, "m1", p, "तीन लाख चालीस हज़ार रुपये भेजने के लिए", None, predictor)
+    assert good.passed, good.failed_gates
+    assert "normalized_wer" not in good.measurements
+    bad = run_checks(scenario, "m1", p, "three hundred forty thousand रुपये भेजने के लिए", None, predictor)
+    assert set(bad.failed_gates) == {"must_say_any[lakh|लाख]", "must_not_say[three hundred forty thou]"}
+
+
+def test_a_hindi_spelled_pass_counts_its_numbers():
+    """2026-10-09: "तीन लाख चालीस हजार" counted as no number, so every Hindi
+    spelled-out pass was set aside."""
+    from runner.asr import spelled_pass_problem
+
+    normal = "आईडीएफसी फर्स्ट बैंक में 3,40,000 रुपे भेजने के लिए"
+    spelled = "आईडीएफसी फर्स्ट बैंक में तीन लाख चालीस हजार रुपे भेजने के लिए"
+    assert spelled_pass_problem(normal, spelled) is None
+    assert spelled_pass_problem("EMI 1,25,475 और 5 तारीख", "EMI एक लाग पचीस अजार चार सो पचचतर और पांच तारीख") is None
+    assert spelled_pass_problem(normal, "आईडीएफसी फर्स्ट बैंक में ₹. रुपे भेजने के लिए") == "1 of 1 numbers missing"
+
+
+def test_a_hindi_lakh_check_accepts_the_transcriber_spellings(tmp_path, predictor):
+    """bank-hi-21, 2026-10-09: "पाँच लाक" failed a lakh check on spelling."""
+    p = write(tmp_path, "amt.wav", speechlike(4.0))
+    scenario = FakeScenario(text="Rs 5,00,000", checks={"asr_scored": False, "must_say_any": [["lakh", "लाख"]]})
+    for heard in ("पाँच लाक रुपे", "एक लाग पचीस", "पांच लाख रुपए"):
+        assert run_checks(scenario, "m1", p, heard, None, predictor).passed, heard

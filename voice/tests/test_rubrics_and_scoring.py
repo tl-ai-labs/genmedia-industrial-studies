@@ -301,3 +301,17 @@ def test_unjudged_is_excluded_from_the_mean_while_invalid_counts_as_zero():
     s = summarise(cells, "a", "text_to_speech")
     assert s.mean == pytest.approx(4.0)  # (8 + 0) / 2, the unjudged cell excluded
     assert s.judged == 2 and s.attempted == 3 and s.unjudged == 1 and s.invalid == 1
+
+
+def test_a_wording_failure_that_was_judged_still_scores_zero():
+    """
+    Since 2026-10-09 a clip that failed only wording checks is still sent to
+    the judge, as a second ear. Its judge scores must not reach the total.
+    """
+    check = FakeCheck(
+        measurements={"normalized_wer": 0.0, "audio_quality_1_5": 4.0},
+        passed=False, failed_gates=["must_say[lakh]"],
+    )
+    cell = score_cell(FakeScenario(), _rubric(), "m1", check, FakeJudge(JUDGE_ALL), True)
+    assert cell.status == "invalid"
+    assert cell.score == 0.0
