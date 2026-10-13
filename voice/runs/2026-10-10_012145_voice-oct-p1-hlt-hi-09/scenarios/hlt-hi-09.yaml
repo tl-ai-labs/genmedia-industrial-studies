@@ -1,0 +1,44 @@
+# hlt-hi-09 - Lab report ready — sample ID and HbA1c value (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-09: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-09
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Lab reports & home collection.
+# TARGET CUSTOMER. Diagnostic Labs.
+# WHAT THIS TESTS. A lab brand, a letter/digit sample ID, a mixed-case test name (HbA1c) and a decimal percentage
+# SPEECH SKILLS. Numbers: codes, units/%; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-09
+modality: voice
+task: text_to_speech
+title: "Lab report ready — sample ID and HbA1c value - Hindi"
+
+input:
+  script: |
+    आपकी Dr Lal PathLabs report तैयार है। Sample ID है L, P, L, seven, seven, zero, four, one, nine। आपका HbA1c 7.8% है, जो normal range से ज़्यादा है।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "LPL770419" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) "HbA1c" read as "H-B-A-one-C" (judge)
+  3) "7.8%" read with a decimal point
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, healthcare-pharma, lab-reports-home-collection, hard, even-contest, v2-bank]

@@ -1,0 +1,37 @@
+# bank-en-13 - IFSC and account number readback (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-07 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-07): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Payments & transfers - UPI ID, IFSC, NEFT/IMPS/RTGS, cheques.
+# TARGET CUSTOMER. Retail Banks, Payment Apps.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest.
+
+id: bank-en-13
+modality: voice
+task: text_to_speech
+title: "IFSC and account number readback - English"
+
+input:
+  script: |
+    Let me read the beneficiary details back to you. Bank: Kotak Mahindra Bank, Andheri branch. IFSC code: KKBK0001234. Account number: 50100123456789. Shall I add this beneficiary?
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "KKBK0001234" recoverable character for character; zero not read as "O"
+  2) 14-digit account number recoverable, read in chunks
+  3) "IFSC" as letters
+
+checks:
+  duration_s: {min: 5.2, max: 26.9}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, banking-financial-services, payments-transfers, hard, even-contest, new-english]

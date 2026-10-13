@@ -1,0 +1,41 @@
+# ret-en-09 - Shipment left hub: 12-digit AWB and two cities (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-15 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-15): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Order confirmation & tracking - order IDs, AWBs, couriers, delays.
+# TARGET CUSTOMER. E-commerce Marketplaces, Logistics & Courier Companies.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest - Indian names and words inside English.
+
+id: ret-en-09
+modality: voice
+task: text_to_speech
+title: "Shipment left hub: 12-digit AWB and two cities - English"
+
+input:
+  script: |
+    Your shipment has left the Delhivery hub in Bhiwandi. The AWB number is 143440987622, and it should reach Indore by tomorrow.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) AWB recoverable digit for digit, read in groups
+  2) "Delhivery", "Bhiwandi", "Indore" natural (judge)
+  3) "AWB" as letters
+
+checks:
+  duration_s: {min: 4.2, max: 22.5}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+  # The transcriber wrote "Bhivandi"/"Bivandi" and "delivery" for a correct
+  # read by both models (2026-10-09, round 1). A hint removes its ignorance
+  # of the names; it does not make a wrong reading right.
+  asr_hotwords: ["Delhivery", "Bhiwandi"]
+
+tags: [oct-2026, english, ecommerce-retail, order-confirmation-tracking, hard, even-contest, new-english]

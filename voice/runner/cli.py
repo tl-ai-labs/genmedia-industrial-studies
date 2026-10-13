@@ -25,6 +25,7 @@ from pathlib import Path
 from . import calibration as calib
 from . import matrix as matrix_mod
 from .asr import Asr
+from .checks import judge_may_hear
 from .cost import fmt_usd
 from .dashboard import render_dashboard
 from .generate import Budget, preflight_estimate, run_generation
@@ -422,7 +423,14 @@ def cmd_judge(args: argparse.Namespace) -> int:
     rubrics = _rubrics_for(configs, modality, sorted({s.task for s in scenarios}))
     tel = Telemetry(paths, paths.run_id)
 
-    already = {f"{r['scenario_id']}|{r['model_id']}" for r in read_stream(paths, "judge")}
+    # Only a SUCCESSFUL judgement is final. An unjudged cell (a 429 from the
+    # judge's quota, 2026-10-09, bank-en-07) is tried again on the next run;
+    # its failed row stays in judge.jsonl as history, and every reader keys
+    # the stream by cell, so the newer row is the one that counts.
+    already = {
+        f"{r['scenario_id']}|{r['model_id']}"
+        for r in read_stream(paths, "judge") if r.get("status") == "judged"
+    }
     checks = read_stream(paths, "checks")
     backend = build_judge(spec)
     # In the chained `all` flow, args.budget is the GENERATION cap. Judging
@@ -448,12 +456,17 @@ def cmd_judge(args: argparse.Namespace) -> int:
         if key in already:
             print(f"  resume   {sid:9} {mid:26} already judged")
             continue
-        if not rec.get("passed"):
-            # Gate failure -> the judge is never called and no judge cost is
+        if not rec.get("passed") and not judge_may_hear(rec.get("failed_gates") or []):
+            # Unusable audio -> the judge is never called and no judge cost is
             # incurred. The cell scores 0 as an earned invalid, not unjudged.
             print(f"  gated    {sid:9} {mid:26} failed {rec.get('failed_gates')} - judge not called")
             skipped += 1
             continue
+        if not rec.get("passed"):
+            # Only wording checks failed: the judge listens anyway, as a second
+            # ear on a check that reads the transcriber's spelling. The cell
+            # still scores 0 - scoring.py stops at the failed check.
+            print(f"  wording  {sid:9} {mid:26} failed {rec.get('failed_gates')} - judged, still scores 0")
 
         audio = paths.dir / f"outputs/{modality}/{sid}/{mid}.wav"
         if not audio.exists():

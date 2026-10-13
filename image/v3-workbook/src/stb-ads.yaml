@@ -1,0 +1,347 @@
+# Storyboards — Advertising & agencies scenarios. Slots: stb.yaml.
+code: STB
+scenarios:
+
+- id: STB-ADS-01
+  seed: true
+  title: "20-second chips commercial board with the brand mascot, eight time-coded panels"
+  persona: "Art director at a Mumbai agency preparing the client board for a snack commercial; the animation studio will build the film from it."
+  evidence: "Call at 23:45: storyboards with a lot of text are what customers compare tools on, and they make videos from them. Earlier bank IMG-GAME-39 (four-panel beat) held identity at one camera distance; this board changes shot size every panel and carries a mascot and a pack."
+  levers: [count, exact-text, time-code, identity, multi-ref, continuity, camera]
+  inputs:
+    - {source: SRC-ADS-MASCOT, role: source, note: "the mascot, Chotu Mirchi"}
+    - {source: SRC-ADS-CHIPS, role: reference, note: "the pack for panels 3, 7 and 8"}
+  prompt: |
+    Using this mascot and this chips pack, draw the client storyboard for a 20-second commercial
+    as one image: eight panels in a four-by-two grid, read left to right, top row first. Each
+    panel is a finished 3D animatic frame in the mascot's own polished 3D style, in 16:9, with a
+    caption bar underneath carrying exactly the text given:
+
+    1 · 0:00–0:03 · WS · Hostel room at night, books everywhere
+    2 · 0:03–0:05 · CU · Riya sighs at the clock: 2 a.m.
+    3 · 0:05–0:08 · MS · Chotu bursts out of the pack
+    4 · 0:08–0:11 · MCU · Chotu: Mood off? Mirchi on!
+    5 · 0:11–0:14 · WS · The room turns into a dance floor
+    6 · 0:14–0:16 · Insert · One chip cracks in slow motion
+    7 · 0:16–0:18 · MS · Friends pile in and grab the pack
+    8 · 0:18–0:20 · Packshot · Mirchi Mood Masala Blast, ₹20
+
+    Riya is a college student of about nineteen with a messy bun, round glasses and an oversized
+    purple sweatshirt; she is the same person in panels 1, 2, 5 and 7. The room is the same small
+    hostel room throughout: a desk with a green lamp on the left, a bunk bed on the right, a
+    window behind with the night sky; in panel 5 the same room is lit with pink and cyan party
+    light. Chotu must stay exactly the reference: the stalk quiff curling to his left, one gold
+    tooth on his right side, four-fingered white gloves, white sneakers with red laces. The pack
+    must stay exactly the reference wherever it appears, with "Mirchi Mood", "Masala Blast" and
+    "₹20" readable in panels 3 and 8. Each drawing matches its caption's shot size. Panel 8 is a
+    clean packshot: the pack upright, centred, Chotu leaning on its right side, on a red
+    background. No other text, no logos besides the pack, no extra characters beyond Riya, two
+    friends in panel 7 and Chotu.
+  exact_text:
+    - "1 · 0:00–0:03 · WS · Hostel room at night, books everywhere"
+    - "2 · 0:03–0:05 · CU · Riya sighs at the clock: 2 a.m."
+    - "3 · 0:05–0:08 · MS · Chotu bursts out of the pack"
+    - "4 · 0:08–0:11 · MCU · Chotu: Mood off? Mirchi on!"
+    - "5 · 0:11–0:14 · WS · The room turns into a dance floor"
+    - "6 · 0:14–0:16 · Insert · One chip cracks in slow motion"
+    - "7 · 0:16–0:18 · MS · Friends pile in and grab the pack"
+    - "8 · 0:18–0:20 · Packshot · Mirchi Mood Masala Blast, ₹20"
+  deliverable: "One landscape image, eight 16:9 panels in a 4×2 grid with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly eight panels in a four-by-two grid?"]
+    - [text_accuracy, "Does every caption match its given text exactly?"]
+    - [text_accuracy, "Do the time codes run 0:00 to 0:20 with no gap or overlap?"]
+    - [prompt_adherence, "Is panel 2 a close-up of Riya with a clock showing 2 o'clock?"]
+    - [prompt_adherence, "Is panel 6 a frame-filling insert of a single chip cracking?"]
+    - [prompt_adherence, "Is panel 5 a wide shot showing the whole room?"]
+    - [reference_fidelity, "Is Chotu's stalk quiff curling to his left in every panel he is in?"]
+    - [reference_fidelity, "Is Chotu's gold tooth on his right side wherever his grin shows?"]
+    - [reference_fidelity, "Does Chotu keep four-fingered white gloves and red-laced white sneakers throughout?"]
+    - [reference_fidelity, "Does the pack match the reference: red, yellow sunburst, mascot face, Mirchi Mood, Masala Blast, ₹20?"]
+    - [text_accuracy, "Are Mirchi Mood, Masala Blast and ₹20 readable on the pack in panels 3 and 8?"]
+    - [set_consistency, "Is Riya the same person (bun, round glasses, purple sweatshirt) in panels 1, 2, 5 and 7?"]
+    - [set_consistency, "Is it the same room in every interior panel: desk and green lamp left, bunk right, window behind?"]
+    - [prompt_adherence, "Is panel 5 lit with pink and cyan party light while the rest keep the lamp-lit night look?"]
+    - [prompt_adherence, "Are there exactly two friends besides Riya in panel 7, and no extra characters elsewhere?"]
+    - [composition, "Is panel 8 a clean packshot with the pack centred and Chotu leaning on its right side?"]
+    - [style, "Are all eight panels in the same 3D style as the mascot reference?"]
+    - [visual_quality, "Are hands and gloves drawn with the right number of fingers?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: "V2 and V5: panels 3 and 4 as storyboard panel to shot with the mascot and pack held."
+
+- id: STB-ADS-02
+  title: "Nine-panel SUV commercial board climbing the ghat road"
+  persona: "Agency art director boarding an SUV launch film for client approval."
+  evidence: "Car films are boarded tightly with shot sizes and moves; the car must stay one design."
+  levers: [count, exact-text, camera, identity, continuity]
+  inputs: [{source: SRC-ADS-SUV, role: source}]
+  prompt: |
+    Using this hero frame of a white badge-less SUV on a Western Ghats hairpin at golden hour,
+    draw a nine-panel commercial storyboard in marker sketch, three by three, 2.39:1 frame lines,
+    captions exactly:
+
+    1 · Mist in the valley · EWS · Crane down
+    2 · SUV enters the hairpin · WS · Pan left
+    3 · Tyre grips the bend · Insert · Static
+    4 · Driver's hands on the wheel · CU · Static
+    5 · SUV climbs past camera · MS · Whip pan
+    6 · Aerial, road like a ribbon · EWS · Drone
+    7 · Sunlight across the bonnet · CU · Track
+    8 · SUV parks at the top · WS · Static
+    9 · End frame, sun behind · WS · Static
+
+    The SUV keeps its exact shape in every panel, with no badges. It climbs from frame right to
+    frame left through panels 2 to 5. The low sun stays on the right. No other text.
+  exact_text:
+    - "1 · Mist in the valley · EWS · Crane down"
+    - "5 · SUV climbs past camera · MS · Whip pan"
+    - "9 · End frame, sun behind · WS · Static"
+  deliverable: "One landscape image, nine panels."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [reference_fidelity, "Is the SUV the same design in every panel?"]
+    - [set_consistency, "Does it climb from frame right to left in panels 2 to 5?"]
+    - [prompt_adherence, "Is the sun on the right throughout?"]
+    - [prompt_adherence, "Is panel 3 an insert of a tyre on the bend?"]
+    - [prompt_adherence, "Is panel 6 an aerial of the winding road?"]
+    - [prompt_adherence, "Do the moves carry arrows or marks?"]
+    - [prompt_adherence, "Are there no badges or lettering on the car?"]
+    - [style, "Is the marker style consistent?"]
+    - [visual_quality, "Are the car's proportions consistent?"]
+    - [prompt_adherence, "Is panel 9 an end frame with the sun behind the car?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-ADS-03
+  title: "Six-panel colour board of the Diwali ad with Hindi voice-over captions"
+  persona: "Agency copywriter and art director presenting a festive spot in Hindi to the client."
+  evidence: "Devanagari captions on a board are where garbled matras show."
+  levers: [count, exact-text, script, identity, locale, light-lock]
+  inputs: [{source: SRC-ADS-DIWALI-FAMILY, role: source}]
+  prompt: |
+    Using this frame of a family on a Diwali balcony, draw a six-panel colour storyboard in warm
+    gouache tones, two rows of three, 16:9 frame lines. Under each panel, the voice-over line in
+    Devanagari, exactly:
+
+    1 · "हर साल की तरह..."
+    2 · "दादाजी की कहानियाँ,"
+    3 · "माँ के हाथों के दीये,"
+    4 · "पापा की मिठाइयाँ,"
+    5 · "और गुड़िया की रंगोली।"
+    6 · "दिवाली, घर जैसी।"
+
+    Panel 2 shows the grandfather telling a story; 3 the mother lighting diyas; 4 the father with
+    sweets; 5 the girl's rangoli; 6 the whole family together, the fireworks above. Each person
+    looks the same as in the photo. The diyas are the warm main light. No other text.
+  exact_text:
+    - "हर साल की तरह..."
+    - "दादाजी की कहानियाँ,"
+    - "माँ के हाथों के दीये,"
+    - "पापा की मिठाइयाँ,"
+    - "और गुड़िया की रंगोली।"
+    - "दिवाली, घर जैसी।"
+  deliverable: "One landscape image, six colour panels."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [text_accuracy, "Is every Devanagari line exact, including punctuation?"]
+    - [prompt_adherence, "Does each panel show the person its line names?"]
+    - [reference_fidelity, "Are the four family members the same as in the photo?"]
+    - [prompt_adherence, "Is the whole family of four in panel 6?"]
+    - [prompt_adherence, "Is warm diya light the main light throughout?"]
+    - [prompt_adherence, "Is the rangoli round in panel 5?"]
+    - [style, "Is the gouache style consistent?"]
+    - [prompt_adherence, "Are fireworks visible in panel 6?"]
+    - [visual_quality, "Are faces and hands clean?"]
+    - [prompt_adherence, "Are there no extra people?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-ADS-04
+  title: "Eight-panel race board for a sportswear spot; the sprinter keeps running left to right"
+  persona: "Director of a sportswear commercial boarding the race."
+  evidence: "Screen direction is broken more often in sports boards than in drama."
+  levers: [count, exact-text, continuity, identity, camera, locale]
+  inputs: [{source: SRC-ADS-RUNNER, role: source}]
+  prompt: |
+    Using this frame of a sprinter in lane 4, draw an eight-panel storyboard in pencil, two rows of
+    four, 2.39:1 frame lines, captions exactly:
+
+    1 · Blocks, lane 4 · MS · Static
+    2 · Gun smoke · Insert · Static
+    3 · Drive phase · WS · Track right
+    4 · Eyes forward · ECU · Static
+    5 · Overtakes lane 5 · LS · Track right
+    6 · Shoe strike, slow motion · Insert · Static
+    7 · Dip at the line · MS · Static
+    8 · Arms up, empty stands · WS · Crane up
+
+    She runs left to right in every running panel. Her bib reads 214. Two other runners appear in
+    panels 3 and 5 in lanes 3 and 5. No other text.
+  exact_text:
+    - "1 · Blocks, lane 4 · MS · Static"
+    - "5 · Overtakes lane 5 · LS · Track right"
+    - "214"
+  deliverable: "One landscape image, eight panels."
+  checks:
+    - [prompt_adherence, "Are there exactly eight panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [set_consistency, "Does she run left to right in every running panel?"]
+    - [text_accuracy, "Is her bib 214 wherever readable?"]
+    - [prompt_adherence, "Is she in lane 4 with others in lanes 3 and 5 in panels 3 and 5?"]
+    - [prompt_adherence, "Is panel 4 an extreme close-up of her eyes?"]
+    - [prompt_adherence, "Is panel 6 an insert of a shoe striking the track?"]
+    - [reference_fidelity, "Is she the same athlete throughout?"]
+    - [prompt_adherence, "Are there exactly two other runners in panels 3 and 5?"]
+    - [style, "Is the pencil style consistent?"]
+    - [visual_quality, "Is running anatomy plausible?"]
+    - [prompt_adherence, "Are the stands empty in panel 8?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-ADS-05
+  title: "Six-panel marker board of the perfume in the rain; the bottle true to the packshot"
+  persona: "Agency art director boarding a fragrance film."
+  evidence: "Product boards drift from the real product's shape in stylised rendering."
+  levers: [count, exact-text, identity, physics, camera]
+  inputs: [{source: SRC-ADS-PERFUME, role: source}]
+  prompt: |
+    Using this packshot of Varsha No. 3, draw a six-panel marker-rendered storyboard, two rows of
+    three, 16:9 frame lines, in blacks, ambers and cool blues. Captions exactly: "1 · Rain on a
+    window · Insert", "2 · A woman's silhouette · WS", "3 · Her hand lifts the bottle · CU",
+    "4 · One spray in the rain light · ECU", "5 · Drops slide down the bevel · Macro",
+    "6 · Packshot on wet stone · Hero". The bottle is exactly the packshot's: heavy rectangular
+    glass, bevelled edges, amber liquid, black cylindrical cap, cream label with VARSHA and No. 3.
+    In panel 6 the label reads clearly. No other text.
+  exact_text:
+    - "1 · Rain on a window · Insert"
+    - "6 · Packshot on wet stone · Hero"
+    - "VARSHA"
+  deliverable: "One landscape image, six panels."
+  checks:
+    - [prompt_adherence, "Are there six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [reference_fidelity, "Is the bottle the same shape in every panel that shows it?"]
+    - [reference_fidelity, "Is the cap black and cylindrical?"]
+    - [text_accuracy, "Does the label read VARSHA in panel 6?"]
+    - [physics_plausibility, "Do drops slide down a bevelled edge in panel 5?"]
+    - [prompt_adherence, "Is panel 4 an extreme close-up of a spray?"]
+    - [style, "Is the marker rendering consistent?"]
+    - [prompt_adherence, "Is the palette blacks, ambers and cool blues?"]
+    - [prompt_adherence, "Is there one woman only?"]
+    - [visual_quality, "Is her hand drawn cleanly in panel 3?"]
+    - [prompt_adherence, "Is panel 6 on wet stone?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-ADS-06
+  title: "From a written script: a 15-second biryani delivery spot as six vertical panels"
+  persona: "Agency writer boarding a food-delivery app's 9:16 social spot."
+  evidence: "Vertical social spots are boarded in 9:16; panel count and order from a script is the test."
+  levers: [count, exact-text, time-code, locale, camera]
+  prompt: |
+    Draw a storyboard of six tall 9:16 panels in one row, in pencil with one accent colour (saffron),
+    for this 15-second spot. A student in a hostel room is hungry at midnight; she taps her phone;
+    a rider on a scooter rides through the rain; the bag arrives at her door; she lifts the lid of
+    a biryani box and steam rises; her roommates crowd in. Captions exactly: "1 · 0:00–0:02 ·
+    Midnight hunger", "2 · 0:02–0:04 · Tap to order", "3 · 0:04–0:08 · Rider in the rain",
+    "4 · 0:08–0:10 · Knock at the door", "5 · 0:10–0:13 · Steam rises", "6 · 0:13–0:15 · Roommates
+    crowd in". Saffron is used only for the steam and the delivery bag. No other text.
+  exact_text:
+    - "1 · 0:00–0:02 · Midnight hunger"
+    - "3 · 0:04–0:08 · Rider in the rain"
+    - "6 · 0:13–0:15 · Roommates crowd in"
+  deliverable: "One wide image of six 9:16 panels."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels, each 9:16?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [text_accuracy, "Do the time codes run 0:00 to 0:15 with no gaps?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [style, "Is saffron used only on the steam and the bag?"]
+    - [set_consistency, "Is the student the same person in panels 1, 2, 5 and 6?"]
+    - [physics_plausibility, "Is rain drawn in panel 3?"]
+    - [prompt_adherence, "Is panel 2 a close view of a phone?"]
+    - [composition, "Do the vertical frames keep action away from the sides?"]
+    - [prompt_adherence, "Are there at least two roommates in panel 6?"]
+    - [style, "Is the pencil style consistent?"]
+    - [visual_quality, "Are faces and hands clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: STB-ADS-07
+  title: "Nine watercolour panels for a life-insurance film: a grandfather teaches his granddaughter to cycle"
+  persona: "Agency creative director presenting an emotional insurance film."
+  evidence: "Emotional brand films are boarded in painted styles; style drift and character drift across nine panels is the test."
+  levers: [count, exact-text, identity, continuity, locale]
+  prompt: |
+    Paint a nine-panel storyboard in soft watercolour, three by three, 16:9 frame lines, one palette
+    of warm ochres and greens. A grandfather in a white kurta and a brown sleeveless sweater, with a
+    walking stick, teaches his eight-year-old granddaughter in a yellow frock with two pigtails to
+    ride a small red bicycle on a lane lined with gulmohar trees in Pune. Captions exactly: "1 ·
+    The red bicycle", "2 · He holds the seat", "3 · She wobbles", "4 · She falls", "5 · He lifts
+    her up", "6 · Again", "7 · He lets go", "8 · She rides alone", "9 · He waves his stick". The
+    grandfather's stick is in his right hand in every panel except 2, when it leans against a tree.
+    No other text.
+  exact_text:
+    - "1 · The red bicycle"
+    - "7 · He lets go"
+    - "9 · He waves his stick"
+  deliverable: "One landscape image, nine panels."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [style, "Is the watercolour palette and brushwork consistent?"]
+    - [set_consistency, "Is the grandfather the same in every panel: white kurta, brown sweater?"]
+    - [set_consistency, "Is the girl the same: yellow frock, two pigtails?"]
+    - [set_consistency, "Is the bicycle red and small in every panel?"]
+    - [set_consistency, "Is the stick in his right hand except in panel 2, where it leans on a tree?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [prompt_adherence, "Are gulmohar trees along the lane?"]
+    - [prompt_adherence, "Are there only the two of them?"]
+    - [visual_quality, "Are figures drawn cleanly?"]
+    - [prompt_adherence, "Is the light warm throughout?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: STB-ADS-08
+  title: "Eight-panel pet-food spot: a wet dog finds its way home; collar and patch tracked"
+  persona: "Agency art director boarding a pet-food commercial."
+  evidence: "An animal's markings are the identity cue boards lose."
+  levers: [count, exact-text, continuity, identity, light-lock]
+  prompt: |
+    Draw an eight-panel storyboard in pencil with grey wash, two rows of four, 16:9 frame lines. A
+    medium-sized brown dog with a white patch over its left eye and a blue collar with a round
+    brass tag is lost in heavy rain in a city at dusk; it shelters under a bus stop; sniffs a
+    familiar lamp post; runs down a lane; sees a lit window; scratches at a green door; a boy opens
+    it; the dog eats from a steel bowl by a heater. Captions exactly: "1 · Lost in the rain",
+    "2 · Bus-stop shelter", "3 · A familiar smell", "4 · Down the lane", "5 · The lit window",
+    "6 · Scratch at the door", "7 · The boy opens it", "8 · Home, the bowl". The patch is over
+    the left eye and the collar blue in every panel showing them. No other text.
+  exact_text:
+    - "1 · Lost in the rain"
+    - "8 · Home, the bowl"
+  deliverable: "One landscape image, eight panels."
+  checks:
+    - [prompt_adherence, "Are there exactly eight panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [set_consistency, "Is the white patch over the dog's left eye in every panel that shows the face?"]
+    - [set_consistency, "Is the collar blue with a round tag in every panel that shows it?"]
+    - [physics_plausibility, "Is it raining in panels 1 to 6?"]
+    - [prompt_adherence, "Is panel 8 warm and dry by a heater?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [set_consistency, "Is the door green in panels 6 and 7?"]
+    - [style, "Is the pencil and wash style consistent?"]
+    - [prompt_adherence, "Is there one dog and one boy only?"]
+    - [visual_quality, "Is the dog's anatomy plausible?"]
+    - [prompt_adherence, "Is the bowl steel?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

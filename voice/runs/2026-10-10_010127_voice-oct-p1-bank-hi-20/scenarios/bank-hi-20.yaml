@@ -1,0 +1,45 @@
+# bank-hi-20 - EMI amount and due date — Devanagari (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-20: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-20
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Loans & EMI - EMI reminders, approvals, prepayment, gold loans, collections.
+# TARGET CUSTOMER. Retail Banks, NBFCs & Lenders.
+# WHAT THIS TESTS. The same raw numeral (₹1,25,475) as its Romanized pair, converted to spoken Indian numbering inside a Devanagari-matrix sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-20
+modality: voice
+task: text_to_speech
+title: "EMI amount and due date — Devanagari - Hindi"
+
+input:
+  script: |
+    सर, आपका इस महीने का EMI amount है ₹1,25,475, और यह पाँच तारीख को आपके account से auto-debit हो जाएगा। कृपया sufficient balance maintain करें।
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount spoken in the Indian system (lakh/crore), not the international convention — the numeral was sent as-written, the model decides how to say it
+  2) The international-convention reading (must_not_say list) does not appear
+  3) Currency named as rupees
+  4) Delivery matches its Romanized pair — any difference is the script effect
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, loans-emi, medium, gemini-lean, v2-bank]

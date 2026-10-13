@@ -1,0 +1,126 @@
+# Depth, light and physics — Gaming scenarios. Slots: phy.yaml.
+code: PHY
+scenarios:
+
+- id: PHY-GAM-01
+  title: "A heroine in a hall of angled mirrors over a chrome floor; every reflection in the right place"
+  persona: "Rendering engineer comparing generated art against path-traced reference for a boss arena."
+  evidence: "Multiple mirrors and a reflective floor multiply reflection errors."
+  levers: [physics, layout, camera, count]
+  prompt: |
+    A stylised 3D render, 16:9: a heroine in red armour with a white cape stands at the centre of an
+    octagonal hall whose walls are eight tall mirror panels and whose floor is polished chrome. The
+    camera is at her waist height, three metres away, looking at her from the front. In the mirror
+    panel behind her we see her back and the camera's side of the hall; in the angled panels to the
+    left and right we see her from the side; the chrome floor reflects her upside down beneath her
+    feet; repeated reflections recede into the depth of the opposing mirrors, smaller and dimmer each
+    time. A single warm light hangs above her. No other figures, no text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [physics_plausibility, "Does the panel behind her show her back?"]
+    - [physics_plausibility, "Do the angled side panels show her side views?"]
+    - [physics_plausibility, "Does the floor reflect her upside down beneath her feet?"]
+    - [physics_plausibility, "Do repeated reflections recede smaller and dimmer?"]
+    - [prompt_adherence, "Is there one actual figure, all others reflections?"]
+    - [prompt_adherence, "Are there eight mirror panels in an octagon?"]
+    - [physics_plausibility, "Are the cape's colour and side consistent in every reflection?"]
+    - [prompt_adherence, "Is there one warm light above her, reflected consistently?"]
+    - [prompt_adherence, "Is the camera at waist height in front of her?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are reflections free of melted shapes?"]
+    - [style, "Is it a stylised 3D render?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-GAM-02
+  title: "A causeway lined with twenty identical lamp posts receding to the horizon, shrinking correctly"
+  persona: "Level artist checking depth cues in concept art."
+  evidence: "Repeated identical objects make perspective errors measurable."
+  levers: [physics, count, camera, light-lock]
+  prompt: |
+    A stylised 3D render at golden hour, 21:9: a straight stone causeway runs from the camera's feet
+    across a shallow lake to a distant island temple on the horizon. Along its right edge stand twenty
+    identical iron lamp posts at equal spacing, each 4 metres tall with a lantern lit warm. They shrink
+    in a steady perspective towards the vanishing point at the temple; their spacing on screen tightens
+    evenly; their reflections in the lake shrink with them. The sun sets behind the temple. No figures,
+    no text.
+  deliverable: "One image, 21:9."
+  checks:
+    - [prompt_adherence, "Are there twenty lamp posts?"]
+    - [physics_plausibility, "Do they shrink steadily towards the vanishing point?"]
+    - [physics_plausibility, "Does their on-screen spacing tighten evenly?"]
+    - [physics_plausibility, "Do their reflections in the lake shrink with them?"]
+    - [prompt_adherence, "Are they along the right edge of the causeway?"]
+    - [prompt_adherence, "Does the causeway run straight to the temple?"]
+    - [prompt_adherence, "Is the sun setting behind the temple?"]
+    - [prompt_adherence, "Are the lanterns lit warm?"]
+    - [prompt_adherence, "Are the lamp posts identical?"]
+    - [prompt_adherence, "Are there no figures?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are the posts clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-GAM-03
+  title: "A hover-bike's cyan under-glow and an orange streetlight mixing on a wet road"
+  persona: "Lighting artist testing mixed light in a racing game's key art."
+  evidence: "Each coloured light must fall where its source reaches; mixes happen only where both reach."
+  levers: [physics, light-lock, layout, exclude]
+  prompt: |
+    A stylised 3D render at night, 16:9: a graphite hover-bike floats half a metre above a wet asphalt
+    road, side-on, its two turbine pods glowing cyan underneath. A single sodium streetlight stands
+    five metres behind it on the left, throwing an orange cone onto the road. On the road, a cyan pool
+    lies directly under the bike; an orange pool lies under the streetlight; where they overlap
+    between them, the wet road shows a mixed, desaturated tone. The bike's underside is lit cyan, its
+    top lit orange from behind. Both pools reflect in the wet road. No rider, no text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Is there a cyan pool directly under the bike?"]
+    - [prompt_adherence, "Is there an orange pool under the streetlight?"]
+    - [prompt_adherence, "Is the overlap between them a mixed tone?"]
+    - [prompt_adherence, "Is the bike's underside cyan and top orange?"]
+    - [physics_plausibility, "Do the pools reflect in the wet road?"]
+    - [prompt_adherence, "Is the streetlight behind on the left?"]
+    - [physics_plausibility, "Is the bike floating half a metre up?"]
+    - [prompt_adherence, "Is there no rider?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is the bike's shape clean?"]
+    - [prompt_adherence, "Is it night?"]
+    - [style, "Is it a stylised 3D render?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-GAM-04
+  title: "Add six shoppers at different depths to the market street; pillars and stalls hide them correctly"
+  persona: "Level artist populating a screenshot for a marketing still."
+  evidence: "Inserted figures must be occluded by nearer geometry and sized by depth."
+  levers: [physics, count, layout, keep-rest, locale]
+  inputs: [{source: SRC-GAM-CYBER-STREET, role: source}]
+  prompt: |
+    Add six shoppers to this empty market-street screenshot, in the same stylised 3D look: one close to
+    the camera on the left at the first stall, partly hidden by the stall's front post; two in the
+    middle distance, one half hidden behind the second concrete pillar on the right; two farther down
+    by the fourth stall; and one tiny figure near the holographic lotus at the far end. Each is sized
+    for its distance; nearer pillars and stalls hide the parts of them they should; each casts a long
+    shadow towards the camera from the low sun at the far end. The street, stalls, pillars, metro and
+    lotus are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Are there exactly six shoppers?"]
+    - [physics_plausibility, "Is the nearest shopper partly hidden by the stall's front post?"]
+    - [physics_plausibility, "Is one middle shopper half hidden behind the second pillar?"]
+    - [physics_plausibility, "Is each shopper sized for their distance?"]
+    - [physics_plausibility, "Do their shadows fall towards the camera?"]
+    - [prompt_adherence, "Is one tiny figure near the lotus?"]
+    - [preservation, "Are the stalls, pillars, metro and lotus unchanged?"]
+    - [style, "Do the shoppers match the stylised 3D look?"]
+    - [prompt_adherence, "Are they lit by the low sun from the far end?"]
+    - [visual_quality, "Are figures clean?"]
+    - [text_accuracy, "Is there no text?"]
+    - [physics_plausibility, "Do their feet touch the ground?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

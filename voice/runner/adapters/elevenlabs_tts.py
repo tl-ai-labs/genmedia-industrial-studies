@@ -27,6 +27,7 @@ from .base import (
     RateLimited,
     SafetyRefusal,
     Timeout,
+    split_dialogue,
 )
 
 API_ROOT = "https://api.elevenlabs.io/v1"
@@ -58,37 +59,73 @@ class ElevenLabsTtsAdapter(BaseAdapter):
             )
         self._output_format, self.ext = mapped
 
-    def run(self, req: GenRequest) -> GenResult:
-        if not req.voice_id:
-            raise ProviderError(
-                f"model '{self.id}': ElevenLabs needs a voice id - the scenario's "
-                f"logical voice is not in this model's voice_map"
-            )
+    def _tagged(self, text: str, style: str | None) -> str:
+        """The text with its delivery direction as a leading audio tag.
+
+        eleven_v3 and eleven_v4 read bracketed tags ("[whispers]") as
+        direction, not as words, so a style directive can reach them the way
+        `speech_metadata.style` reaches Gemini. Only when the model block
+        opts in: older ElevenLabs models would speak the brackets aloud.
+        """
+        if style and self.spec.params.get("style_as_audio_tags"):
+            return f"[{style.strip().rstrip('.')}] {text}"
+        return text
+
+    def build_request(self, req: GenRequest) -> tuple[str, dict[str, Any], dict[str, Any], int]:
+        """(path, body, applied, characters billed). Split out so tests can see it."""
         requested: dict[str, Any] = {**self.spec.params, **req.params}
         applied: dict[str, Any] = {
             "format": self.spec.params.get("format"),
             "sample_rate": self.spec.params.get("sample_rate"),
             "voice": requested.get("voice", req.voice_logical),
         }
-
-        body: dict[str, Any] = {
-            "text": req.text,
-            "model_id": self.spec.provider_model,
-        }
-        # ElevenLabs has no free-text style directive; expressiveness is set
-        # through voice_settings. Style is therefore NOT recorded as applied -
-        # it shows up in params_unsupported, which is the honest report.
-        if req.language:
-            body["language_code"] = req.language.split("-")[0]
-            applied["language"] = req.language
-
+        tags = bool(self.spec.params.get("style_as_audio_tags"))
+        if tags:
+            applied["style_as_audio_tags"] = True
         # The streaming route returns the same audio, chunked, so the first
         # chunk can be timed. Same model, same voice, same body - only the
         # transport differs, which is what keeps the TTFA number comparable
         # with the non-streamed clip's own gates.
-        route = "stream" if req.measure_ttfa else ""
-        url = (f"{API_ROOT}/text-to-speech/{req.voice_id}"
-               f"{'/' + route if route else ''}?output_format={self._output_format}")
+        stream = "/stream" if req.measure_ttfa else ""
+
+        if req.speakers:
+            # A two-voice scene goes to Text to Dialogue: one input per line,
+            # each with its speaker's voice, the "<label>: " prefix removed
+            # (it is a script convention, not words to speak).
+            voices = {label: (vid, s) for label, vid, _, s in req.speakers}
+            inputs: list[dict[str, str]] = []
+            for label, line in split_dialogue(req.text, list(voices)):
+                vid, s = voices[label]
+                inputs.append({"text": self._tagged(line, s or req.style), "voice_id": vid})
+            body: dict[str, Any] = {"inputs": inputs, "model_id": self.spec.provider_model}
+            applied["speakers"] = list(voices)
+            if tags and (req.style or any(s for _, s in voices.values())):
+                applied["style"] = req.style or "; ".join(
+                    f"{lb}: {s}" for lb, (_, s) in voices.items() if s)
+            path = f"/text-to-dialogue{stream}"
+            billed = sum(len(i["text"]) for i in inputs)
+        else:
+            if not req.voice_id:
+                raise ProviderError(
+                    f"model '{self.id}': ElevenLabs needs a voice id - the scenario's "
+                    f"logical voice is not in this model's voice_map"
+                )
+            body = {"text": self._tagged(req.text, req.style), "model_id": self.spec.provider_model}
+            # Without opting in to tags, style reaches no ElevenLabs field and is
+            # NOT recorded as applied - it shows up in params_unsupported, which
+            # is the honest report.
+            if tags and req.style:
+                applied["style"] = req.style
+            path = f"/text-to-speech/{req.voice_id}{stream}"
+            billed = len(body["text"])
+        if req.language:
+            body["language_code"] = req.language.split("-")[0]
+            applied["language"] = req.language
+        return path, body, applied, billed
+
+    def run(self, req: GenRequest) -> GenResult:
+        path, body, applied, billed = self.build_request(req)
+        url = f"{API_ROOT}{path}?output_format={self._output_format}"
         request = urllib.request.Request(
             url,
             data=json.dumps(body).encode("utf-8"),
@@ -144,7 +181,7 @@ class ElevenLabsTtsAdapter(BaseAdapter):
             provider_version=self.spec.provider_model,
             usage=Usage(
                 reported=False,
-                characters=len(req.text),
+                characters=billed,
                 raw={"note": "ElevenLabs bills on characters sent; no usage object is returned"},
             ),
             applied_params=applied,

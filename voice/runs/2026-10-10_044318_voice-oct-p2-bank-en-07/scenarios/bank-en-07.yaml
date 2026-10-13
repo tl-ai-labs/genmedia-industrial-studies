@@ -1,0 +1,42 @@
+# bank-en-07 - Personal loan approval: amount, rate, tenure (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-21 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-21): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Loans & EMI - EMI reminders, approvals, prepayment, gold loans, collections.
+# TARGET CUSTOMER. Retail Banks, NBFCs & Lenders.
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: bank-en-07
+modality: voice
+task: text_to_speech
+title: "Personal loan approval: amount, rate, tenure - English"
+
+input:
+  script: |
+    Congratulations, your personal loan of Rs 5,00,000 is approved at 11.5% per annum for a tenure of 24 months. The first EMI of Rs 23,418 is due on 7 November.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it
+  2) "11.5%" read with the decimal point
+  3) Both amounts recoverable and not confused
+  4) "7 November" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "five hundred thousand"
+
+tags: [oct-2026, english, banking-financial-services, loans-emi, hard, gemini-lean, new-english]

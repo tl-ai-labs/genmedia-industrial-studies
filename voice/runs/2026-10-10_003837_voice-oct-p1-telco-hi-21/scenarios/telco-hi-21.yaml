@@ -1,0 +1,44 @@
+# telco-hi-21 - Wrong VAS charge reversed — complaint ID (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-21: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-21
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Complaints & service requests.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A VAS brand name, a repeated raw amount and a letter/digit complaint ID
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-21
+modality: voice
+task: text_to_speech
+title: "Wrong VAS charge reversed — complaint ID - Hinglish"
+
+input:
+  script: |
+    Aapke number par galti se Hello Tunes ka Rs 49 ka VAS pack activate ho gaya tha. Humne use deactivate kar diya hai, aur Rs 49 aapke main balance mein wapas aa gaye hain. Complaint ID hai V, A, S, two, two, nine, one.
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "VAS2291" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) "VAS" as letters
+  3) "Hello Tunes" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, complaints-service-requests, medium, gemini-lean, v2-bank]

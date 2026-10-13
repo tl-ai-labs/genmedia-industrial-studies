@@ -1,0 +1,38 @@
+# trv-en-03 - Flight cancelled: apology, rebooking, refund (Travel & mobility)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 trv-hi-09 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-09): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Flights - PNR, flight numbers, gates, delays, baggage.
+# TARGET CUSTOMER. Airlines, Online Travel Agencies.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: names, brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: trv-en-03
+modality: voice
+task: text_to_speech
+title: "Flight cancelled: apology, rebooking, refund - English"
+
+input:
+  script: |
+    We're very sorry. Due to bad weather, your IndiGo flight 6E 5217 from Srinagar to Delhi has been cancelled. We have rebooked you on flight 6E 2046 at 8:05 tomorrow morning, or you can take a full refund of Rs 8,436. For the inconvenience, Rs 1,500 travel credit has also been added.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Sincere apology, not formulaic (judge)
+  2) Both flight codes read as "six-E" plus digits
+  3) Time and refund recoverable
+  4) The two options clearly separated
+
+checks:
+  duration_s: {min: 10.4, max: 49.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, travel-mobility, flights, hard, even-contest, new-english]

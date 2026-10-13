@@ -1,0 +1,649 @@
+# Product and brand — E-commerce, D2C & retail scenarios. Slots: prd.yaml.
+code: PRD
+scenarios:
+
+- id: PRD-ECM-03
+  seed: true
+  title: "Four colourways of a leather tote in one line-up, each to an exact hex"
+  persona: "Merchandiser at a D2C leather brand who needs colourway images for pre-orders before the new leathers come back from the tannery."
+  evidence: "Earlier bank IMG-BRAND-09 (colourway variant) was one colour change and scored 9.5 on Lite; IMG-GAME-50 (palette-swap family) was in the high tier. This needs four colours at once with the leather grain, stitching rule and lock held, and one stitching exception."
+  levers: [identity, count, layout, keep-rest, exclude, long-brief]
+  inputs:
+    - {source: SRC-ECM-HANDBAG, role: source, note: "the tan tote, the only photo"}
+  prompt: |
+    From this one photo of our tan tote, make a single wide product line-up of four copies of the
+    same bag side by side on the same seamless off-white background, all in the same straight front
+    view, the same size, evenly spaced along one baseline, lit the same way as the photo. Left to
+    right, the body leather is:
+
+    1. Tan, #B5763A, exactly as photographed
+    2. Oxblood, #5C1A1B
+    3. Forest green, #2F4B3A
+    4. Ivory, #EDE4D3
+
+    On each bag the handles are a darker shade of that bag's body colour. The pebbled grain, the
+    shape, the flap, the brass turn-lock, the slight twist in one handle and the blind-embossed
+    "KOSU" below the lock are identical on all four. The stitching is cream on the first three
+    bags; on the ivory bag only, the stitching is tan #B5763A so it stays visible. Each bag has
+    its own soft contact shadow. Remove the dust specks on all four. No labels, no swatches, no
+    text, no props.
+  exact_text: []
+  deliverable: "One landscape image, about 3:1, four bags in a row."
+  checks:
+    - [prompt_adherence, "Are there exactly four bags in a row on one baseline?"]
+    - [prompt_adherence, "Are the colours, left to right, tan, oxblood, forest green and ivory?"]
+    - [prompt_adherence, "Is each body colour visibly close to its hex value?"]
+    - [reference_fidelity, "Is the first bag the same tan as the photo?"]
+    - [reference_fidelity, "Are all four the same shape, size and front view as the photo?"]
+    - [reference_fidelity, "Is the pebbled grain visible on all four bags?"]
+    - [reference_fidelity, "Is the brass turn-lock still brass on all four?"]
+    - [reference_fidelity, "Is the blind-embossed KOSU below the lock on all four?"]
+    - [reference_fidelity, "Does each bag keep the slight twist in the same handle?"]
+    - [prompt_adherence, "Are the handles a darker shade of each bag's own body colour?"]
+    - [prompt_adherence, "Is the stitching cream on the first three bags and tan on the ivory bag?"]
+    - [preservation, "Are the dust specks gone from all four?"]
+    - [prompt_adherence, "Are the four bags lit the same way, each with its own soft contact shadow?"]
+    - [prompt_adherence, "Is there no text, swatch, label or prop?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V5: a 4-second turntable of the oxblood bag with grain and lock held."
+
+- id: PRD-ECM-01
+  title: "The can in a beach cooler full of ice; script and pineapple drawing intact"
+  persona: "D2C beverage brand's content lead making a summer lifestyle image."
+  evidence: "Partly buried, wet, curved products lose their print."
+  levers: [identity, exact-text, physics, light-lock, keep-rest]
+  inputs: [{source: SRC-ECM-SODA-CAN, role: source}]
+  prompt: |
+    Place this exact can, Ananas & Co. pineapple fizz, in a blue plastic cooler full of crushed ice on
+    a sunny Goa beach, 4:5, shot from slightly above. The can is pushed into the ice up to about a
+    third of its height, tilted slightly back, label facing the camera. Crushed ice is in front of the
+    lower part of the can, hiding it; the visible part shows "Ananas" in the yellow diagonal script,
+    "PINEAPPLE FIZZ" and the white pineapple drawing, beaded with cold condensation. Harsh midday sun,
+    sand and sea soft behind. No other cans, no other text.
+  exact_text: ["Ananas", "PINEAPPLE FIZZ"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the can the same: cobalt blue, yellow diagonal script?"]
+    - [text_accuracy, "Are Ananas and PINEAPPLE FIZZ exact and readable?"]
+    - [reference_fidelity, "Is the pineapple line drawing visible?"]
+    - [physics_plausibility, "Is the can buried in ice to about a third, with ice in front hiding the lower part?"]
+    - [physics_plausibility, "Is condensation beaded on the can?"]
+    - [prompt_adherence, "Is it harsh midday sun?"]
+    - [physics_plausibility, "Is the can tilted slightly back?"]
+    - [prompt_adherence, "Is it in a blue cooler on a beach?"]
+    - [prompt_adherence, "Is there one can only?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the can's curve and edges clean?"]
+    - [physics_plausibility, "Do the ice crystals look real?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-02
+  title: "The serum on a bathroom shelf among stones and a towel; bottle shape exact"
+  persona: "Beauty brand's content lead making lifestyle images from the packshot."
+  evidence: "Small glass bottles change proportions when placed in scenes."
+  levers: [identity, exact-text, physics, keep-rest, layout]
+  inputs: [{source: SRC-ECM-SERUM, role: source}]
+  prompt: |
+    Place this exact serum bottle, Tara, on a narrow white marble bathroom shelf in soft morning
+    light, 4:5. Beside it, two smooth river stones on the left and a folded sage-green towel on the
+    right; a small round mirror on the wall behind reflects part of the bottle's back. The bottle's
+    proportions are exact: 30 ml amber glass about 9 cm tall with the dropper, white bulb, gold collar,
+    label "TARA", "Niacinamide 10%" and "30 ml". Soft shadows to the right. No other text.
+  exact_text: ["TARA", "Niacinamide 10%", "30 ml"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the bottle's shape and proportion exactly the packshot's?"]
+    - [reference_fidelity, "Are the white bulb and gold collar the same?"]
+    - [text_accuracy, "Is the label text exact?"]
+    - [physics_plausibility, "Is the bottle's size plausible next to the stones and towel?"]
+    - [physics_plausibility, "Does the mirror reflect part of the bottle's back?"]
+    - [prompt_adherence, "Are stones on the left and the towel on the right?"]
+    - [prompt_adherence, "Is it soft morning light with shadows to the right?"]
+    - [physics_plausibility, "Is it sitting flat on the shelf?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the glass free of artefacts?"]
+    - [style, "Is the marble natural?"]
+    - [prompt_adherence, "Is there one bottle?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-04
+  title: "The 9 cm serum bottle held between two fingers; true size against the hand"
+  persona: "Beauty brand's e-commerce lead adding a size-reference image."
+  evidence: "Earlier bank IMG-BRAND-08 (scale reference with a hand) was medium tier."
+  levers: [identity, physics, exact-text, keep-rest]
+  inputs: [{source: SRC-ECM-SERUM, role: source}]
+  prompt: |
+    Show this exact serum bottle held upright between the thumb and index finger of a woman's hand
+    with medium-brown skin and short unpainted nails, against a plain blush-pink background, 4:5. The
+    bottle is its true size: about 9 cm tall including the dropper, so it is a little shorter than the
+    length of her index finger plus thumb span; the label "TARA" faces the camera. Soft studio light
+    from the upper left, a soft shadow on the background. The bottle's design is unchanged. No other
+    text, no rings or jewellery.
+  exact_text: ["TARA"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Is the bottle about 9 cm relative to the hand?"]
+    - [physics_plausibility, "Is it held between thumb and index finger with natural contact?"]
+    - [reference_fidelity, "Is the bottle's design unchanged?"]
+    - [text_accuracy, "Is TARA facing the camera and exact?"]
+    - [visual_quality, "Does the hand have five natural fingers?"]
+    - [reference_fidelity, "Are nails short and unpainted with no jewellery?"]
+    - [prompt_adherence, "Is the light from the upper left?"]
+    - [prompt_adherence, "Is the background plain blush pink?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [physics_plausibility, "Is there a soft shadow on the background?"]
+    - [style, "Is the skin natural, not plastic?"]
+    - [reference_fidelity, "Is the skin medium brown?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-05
+  title: "The tea tin on a breakfast table at a tilt; embossed logo and curved lettering keep their geometry"
+  persona: "Tea brand's content lead making a lifestyle image of the tin."
+  evidence: "Earlier bank IMG-BRAND-04 (logo geometry on packaging) was high tier."
+  levers: [identity, exact-text, physics, light-lock, locale]
+  inputs: [{source: SRC-ECM-TEA-TIN, role: source}]
+  prompt: |
+    Place this exact tea tin, Chai Jaan, on an Assam-style breakfast table at golden hour, 4:5, the
+    tin turned about 30 degrees to the left so its round front curves away. Around it: a brass kettle,
+    two glass cups of red tea, a plate of biscuits on a white lace cloth. The embossed gold logo (a cup
+    in a circle with three steam lines) keeps its geometry as it curves with the tin; the circular
+    text "CHAI JAAN · ASSAM" follows the circle; "250 g" stays below. Golden light from the right
+    catches the emboss. No other text.
+  exact_text: ["CHAI JAAN · ASSAM", "250 g"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the logo a cup in a circle with three steam lines?"]
+    - [physics_plausibility, "Does the logo curve correctly with the tin's surface at 30 degrees?"]
+    - [text_accuracy, "Does the curved text read CHAI JAAN · ASSAM, following the circle?"]
+    - [text_accuracy, "Is 250 g below the logo?"]
+    - [reference_fidelity, "Is the tin emerald with a gold lid?"]
+    - [prompt_adherence, "Does golden light from the right catch the emboss?"]
+    - [prompt_adherence, "Are a brass kettle, two glass cups and biscuits on lace around it?"]
+    - [physics_plausibility, "Does the tin sit flat on the table?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the tin's cylinder clean?"]
+    - [prompt_adherence, "Does it read as an Assam breakfast table?"]
+    - [prompt_adherence, "Is there one tin?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-06
+  title: "The biryani handi moved onto an Eid family table at night; light and copper reflections match"
+  persona: "Restaurant marketplace's content lead making a festive variant of a listing photo."
+  evidence: "Moving a product photo into a new light is where pasted looks show."
+  levers: [identity, physics, light-lock, locale, keep-rest]
+  inputs: [{source: SRC-ECM-BIRYANI, role: source}]
+  prompt: |
+    Take the copper handi of biryani from this photo, with its leaning lid, saffron rice, chicken
+    pieces, fried onions and mint, and place it at the centre of an Eid family dinner table at night,
+    16:9: a white embroidered tablecloth, plates of sheer khurma and kebabs, glass lanterns and hands
+    of family reaching in from the edges. The new warm lantern light from above and the right
+    replaces the old daylight on the handi; its copper reflects the lanterns; it casts a soft shadow
+    on the cloth. The food in the handi is unchanged. No text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [reference_fidelity, "Is it the same handi with the same lid leaning on its left?"]
+    - [reference_fidelity, "Is the food in the handi unchanged?"]
+    - [prompt_adherence, "Is the handi lit by warm lantern light from above and the right?"]
+    - [physics_plausibility, "Does the copper reflect the lanterns?"]
+    - [physics_plausibility, "Does it cast a soft shadow on the cloth?"]
+    - [prompt_adherence, "Is it at the table's centre?"]
+    - [prompt_adherence, "Are sheer khurma, kebabs and lanterns on the table?"]
+    - [prompt_adherence, "Do hands reach in from the edges?"]
+    - [prompt_adherence, "Does it read as an Eid dinner?"]
+    - [visual_quality, "Are hands natural?"]
+    - [text_accuracy, "Is there no text?"]
+    - [style, "Does the handi match the new scene's colour?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-07
+  title: "The three spice jars on a kitchen spice rack at an angle; every Tamil and English label exact"
+  persona: "Spice brand's content lead making an in-kitchen image."
+  evidence: "Tamil labels on small curved jars at an angle are a hard rendering test."
+  levers: [identity, exact-text, script, small-text, physics]
+  inputs: [{source: SRC-ECM-SPICE-JARS, role: source}]
+  prompt: |
+    Place these three Aadi spice jars on a wooden wall spice rack in a sunny Madurai kitchen, 4:5, the
+    rack seen at a 30-degree angle from the left. The jars stand in the same order, turmeric, chilli,
+    cumin, labels facing out, each label curving with its jar: "மஞ்சள்" over "TURMERIC", "மிளகாய்" over
+    "CHILLI", "சீரகம்" over "CUMIN", each with "Aadi" at the top and "100 g" at the bottom. Other plain
+    unlabelled steel containers fill the rest of the rack. Morning light from the right. No other
+    text.
+  exact_text: ["மஞ்சள்", "மிளகாய்", "சீரகம்", "TURMERIC", "CHILLI", "CUMIN", "100 g"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Is every Tamil name exact and correctly formed?"]
+    - [text_accuracy, "Is every English name exact?"]
+    - [text_accuracy, "Are Aadi and 100 g on each label?"]
+    - [prompt_adherence, "Are the jars in order turmeric, chilli, cumin?"]
+    - [physics_plausibility, "Do the labels curve with the jars at the 30-degree view?"]
+    - [reference_fidelity, "Are the jars the same: black lids, kraft labels?"]
+    - [reference_fidelity, "Are the contents yellow, red and brown seeds?"]
+    - [prompt_adherence, "Are other containers unlabelled?"]
+    - [prompt_adherence, "Is morning light from the right?"]
+    - [text_accuracy, "Are the labels readable at this size?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are jars clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-08
+  title: "A millet snack pouch from a written brand spec with exact hex colours and copy"
+  persona: "D2C snack founder visualising a new pouch before the designer starts."
+  evidence: "Text-spec packaging tests colour and copy accuracy."
+  levers: [exact-text, layout, small-text, long-brief, light-lock]
+  prompt: |
+    A product photo of a stand-up snack pouch, 4:5, on a terracotta tile surface with a scatter of
+    millet grains and two curry leaves, soft daylight. The pouch, from this spec: matte mustard yellow
+    (#E3A82B) with a deep plum (#5B2245) panel in the middle; the brand "RAAGI RAJA" in cream capitals
+    on the plum panel; under it "Masala Millet Puffs"; a white flash at the top right "High protein";
+    at the bottom "70 g · Baked, not fried". A small window shows the puffs inside. No other text.
+  exact_text: ["RAAGI RAJA", "Masala Millet Puffs", "High protein", "70 g · Baked, not fried"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [prompt_adherence, "Is the pouch mustard close to #E3A82B?"]
+    - [prompt_adherence, "Is the panel plum close to #5B2245?"]
+    - [text_accuracy, "Is RAAGI RAJA exact in cream on the plum panel?"]
+    - [text_accuracy, "Is the product line exact?"]
+    - [text_accuracy, "Is the flash exact at the top right?"]
+    - [text_accuracy, "Is the bottom line exact?"]
+    - [prompt_adherence, "Is there a window showing the puffs?"]
+    - [physics_plausibility, "Does the pouch stand with a natural shape?"]
+    - [prompt_adherence, "Are millet grains and curry leaves scattered?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the pouch clean?"]
+    - [style, "Is it matte?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PRD-ECM-09
+  title: "The saree draped on a dress form from the flat-lay; colours exact, pallu pattern right"
+  persona: "Marketplace cataloguer producing a draped image without a model."
+  evidence: "Draping from a flat-lay must put border and pallu in the right places with colours exact."
+  levers: [identity, physics, locale, layout, keep-rest]
+  inputs: [{source: SRC-ECM-SAREE-FLAT, role: source}]
+  prompt: |
+    Drape this silk saree on a white headless dress form against a light grey backdrop, 3:4, in the
+    nivi style: pleats tucked at the front, the magenta border with the gold temple pattern running
+    along the hem and up the pleats' edges, the magenta pallu over the form's left shoulder falling
+    down the back with its gold stripes and peacocks visible from the front at the shoulder. The
+    body's peacock green (#0F5257) with gold buttis and the border's magenta (#B0186A) match the
+    flat-lay. The matching magenta blouse piece is on the form. Soft even light. No text.
+  deliverable: "One image, 3:4."
+  checks:
+    - [reference_fidelity, "Is the body peacock green with gold buttis?"]
+    - [reference_fidelity, "Is the border magenta with a gold temple pattern?"]
+    - [prompt_adherence, "Does the border run along the hem and pleat edges?"]
+    - [prompt_adherence, "Is the pallu over the left shoulder?"]
+    - [reference_fidelity, "Are the pallu's gold stripes and peacocks visible?"]
+    - [physics_plausibility, "Do the pleats fall like silk?"]
+    - [prompt_adherence, "Do the colours match the flat-lay?"]
+    - [reference_fidelity, "Is the blouse magenta?"]
+    - [prompt_adherence, "Is it on a headless white dress form?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the drape clean with no melted patterns?"]
+    - [prompt_adherence, "Is the light soft and even?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-10
+  title: "The jacket as an invisible-mannequin shot; cut, pockets, marigold and frayed cuff in place"
+  persona: "Apparel brand's studio producing ghost-mannequin images from flat-lays."
+  evidence: "Turning a flat-lay into a 3D garment shape keeps or loses details."
+  levers: [identity, physics, unseen, layout, keep-rest]
+  inputs: [{source: SRC-ECM-JACKET-FLAT, role: source}]
+  prompt: |
+    Turn this denim jacket flat-lay into an invisible-mannequin catalogue photo on white, 4:5: the
+    jacket shown in three dimensions as if worn by an invisible body, front view, buttoned to the
+    chest, collar standing, sleeves hanging naturally with a slight bend at the elbow, the inside of
+    the back collar visible at the neck. All details are as in the flat-lay: mid-blue stone wash,
+    copper buttons, two chest pockets with pointed flaps, the embroidered yellow marigold on the left
+    chest flap, the frayed patch on the right cuff. Soft even light. No text, no tags.
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Does the jacket hold a 3D worn shape with no visible body?"]
+    - [reference_fidelity, "Is the marigold on the left chest flap?"]
+    - [reference_fidelity, "Is the frayed patch on the right cuff?"]
+    - [reference_fidelity, "Are the buttons copper?"]
+    - [prompt_adherence, "Are there two chest pockets with pointed flaps?"]
+    - [prompt_adherence, "Is the inside of the back collar visible at the neck?"]
+    - [reference_fidelity, "Is the denim mid-blue stone wash?"]
+    - [physics_plausibility, "Do the sleeves hang with a slight elbow bend?"]
+    - [text_accuracy, "Is there no text or tag?"]
+    - [prompt_adherence, "Is the light soft and even?"]
+    - [visual_quality, "Are seams and edges clean?"]
+    - [prompt_adherence, "Is it a front view?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-11
+  title: "The model moved from the studio to a Jaipur street at golden hour; light matches the street"
+  persona: "Fashion marketplace's content lead making a lifestyle variant of a studio photo."
+  evidence: "Background swaps leave studio light on the subject; matching the new light is the test."
+  levers: [identity, physics, light-lock, locale, keep-rest]
+  inputs: [{source: SRC-ECM-KURTA-MODEL, role: source}]
+  prompt: |
+    Move this model, in her mustard kurta with the white block print, white palazzos, white dupatta
+    and silver jhumkas, from the beige studio to a pink-walled street in Jaipur's old city at golden
+    hour, 4:5, standing in the same pose. Re-light her for the street: warm low sun from the right
+    now lights her right side and casts her long shadow to the left on the stone paving; the pink wall
+    bounces a soft warm fill onto her left side. Her face, skin tone, outfit and pose are unchanged.
+    The street is empty but for a parked bicycle. No text.
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is she unchanged: face, skin tone, outfit, jhumkas?"]
+    - [preservation, "Is her pose the same?"]
+    - [prompt_adherence, "Is she lit by warm low sun from the right?"]
+    - [physics_plausibility, "Does her shadow fall long to the left on the paving?"]
+    - [prompt_adherence, "Is there warm pink bounce on her left side?"]
+    - [prompt_adherence, "Is the studio's window light from the left gone?"]
+    - [prompt_adherence, "Is the setting a pink-walled Jaipur street?"]
+    - [prompt_adherence, "Is the street empty except for a bicycle?"]
+    - [visual_quality, "Are her edges clean, not cut out?"]
+    - [text_accuracy, "Is there no text?"]
+    - [physics_plausibility, "Do her feet stand on the paving correctly?"]
+    - [style, "Does she match the scene's colour and grain?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-12
+  title: "The creator holding the serum to the camera; label sharp, readable and exact"
+  persona: "Beauty brand's influencer team making a UGC-style product image."
+  evidence: "Labels held towards the camera in a selfie frame often garble or flip."
+  levers: [identity, multi-ref, exact-text, physics, keep-rest]
+  inputs:
+    - {source: SRC-ECM-CREATOR, role: source, note: "the creator's frame"}
+    - {source: SRC-ECM-SERUM, role: reference, note: "the product"}
+  prompt: |
+    In this vertical selfie frame of a beauty creator, put the Tara serum bottle in her right hand,
+    held up close to the camera beside her face, the label facing the lens: "TARA", "Niacinamide
+    10%", "30 ml", sharp and readable, the right way round (not mirrored). The bottle is in focus and
+    the right size for her hand; its amber glass catches the ring light with a ring-shaped highlight.
+    Her face, smile, hair and top are unchanged; she smiles towards the camera. No other text.
+  exact_text: ["TARA", "Niacinamide 10%", "30 ml"]
+  deliverable: "One image, 9:16."
+  checks:
+    - [text_accuracy, "Is the label exact and not mirrored?"]
+    - [text_accuracy, "Is the label sharp and readable?"]
+    - [reference_fidelity, "Is the bottle the same design?"]
+    - [prompt_adherence, "Is it in her right hand beside her face?"]
+    - [physics_plausibility, "Is it the right size for her hand?"]
+    - [physics_plausibility, "Does the glass show a ring-shaped highlight from the ring light?"]
+    - [reference_fidelity, "Is her face unchanged?"]
+    - [preservation, "Are her hair and top unchanged?"]
+    - [visual_quality, "Is her hand natural?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [preservation, "Is the room unchanged?"]
+    - [style, "Does it look like a natural selfie?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-ECM-13
+  title: "The creator carrying the 32 cm tote on her forearm on a street; bag the right size"
+  persona: "Leather brand's influencer team making a styled street image."
+  evidence: "Bags are routinely shrunk or enlarged when placed on people."
+  levers: [identity, multi-ref, physics, locale, light-lock]
+  inputs:
+    - {source: SRC-ECM-CREATOR, role: source, note: "the creator"}
+    - {source: SRC-ECM-HANDBAG, role: reference, note: "the bag"}
+  prompt: |
+    Show this creator walking on a Pune street at golden hour, full length, 4:5, in her sage-green top
+    with wide white trousers, carrying the Kosu tote on her left forearm. The tote is its true size:
+    32 cm wide and 26 cm tall, about the width of her torso at the waist; tan pebbled leather, rolled
+    darker handles, brass turn-lock, cream stitching, KOSU blind-embossed. Warm sun from the left,
+    her shadow to the right. Her face and hair are unchanged. No text other than the emboss.
+  exact_text: ["KOSU"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Is the bag about the width of her torso at the waist?"]
+    - [reference_fidelity, "Is the bag the same design: tan, lock, stitching, handles?"]
+    - [text_accuracy, "Is KOSU embossed below the lock?"]
+    - [prompt_adherence, "Is it on her left forearm?"]
+    - [reference_fidelity, "Is she recognisably the creator?"]
+    - [prompt_adherence, "Is warm sun from the left?"]
+    - [physics_plausibility, "Does her shadow fall to the right?"]
+    - [physics_plausibility, "Does the bag hang naturally from her forearm?"]
+    - [prompt_adherence, "Is she walking on a street, full length?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are hands natural?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-ECM-14
+  title: "A girl walking to school in Kochi wearing the backpack; straps over shoulders, strips catching light"
+  persona: "Kids' bag brand's content lead making a lifestyle image."
+  evidence: "Backpacks are worn wrongly (straps through the body, wrong size) in generated images."
+  levers: [identity, physics, locale, light-lock, keep-rest]
+  inputs: [{source: SRC-ECM-SCHOOLBAG, role: source}]
+  prompt: |
+    Show a girl of about eight in a white school uniform with two plaits walking to school on a
+    Kochi street in morning light, seen from behind and slightly to the side, 4:5, wearing this exact
+    backpack: sky blue, the yellow cloud-shaped front pocket, the mesh bottle pockets, the orange
+    rocket zip puller, and the reflective silver strips on the shoulder straps catching the sun. Both
+    straps go over her shoulders; the bag sits at the right size on her back (about 38 cm tall, from
+    shoulder to lower back). No text, no logos.
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the backpack the same: sky blue, cloud pocket, rocket puller?"]
+    - [physics_plausibility, "Do both straps go over her shoulders correctly?"]
+    - [physics_plausibility, "Is the bag the right size for an eight-year-old's back?"]
+    - [prompt_adherence, "Do the reflective strips catch the sun?"]
+    - [reference_fidelity, "Are the mesh bottle pockets on the sides?"]
+    - [prompt_adherence, "Is she seen from behind and slightly to the side?"]
+    - [prompt_adherence, "Is she in a white uniform with two plaits?"]
+    - [prompt_adherence, "Is it morning light?"]
+    - [prompt_adherence, "Does it read as a Kochi street?"]
+    - [text_accuracy, "Is there no text or logo?"]
+    - [visual_quality, "Is the girl's anatomy natural?"]
+    - [prompt_adherence, "Is she the only child in focus?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-15
+  title: "The 2 × 3 m rug laid in the room under the armchair; true size, perspective and sunlight across it"
+  persona: "Home-décor marketplace's content lead making a room-placement image."
+  evidence: "Rugs placed in rooms are routinely the wrong size and perspective."
+  levers: [identity, multi-ref, physics, keep-rest, light-lock]
+  inputs:
+    - {source: SRC-ECM-ARMCHAIR-ROOM, role: source, note: "the room"}
+    - {source: SRC-ECM-RUG, role: reference, note: "the rug"}
+  prompt: |
+    Lay this 2 by 3 metre rug on the oak floor of this living room, long side parallel to the window
+    wall, under the front legs of the armchair and the side table. It follows the floor's perspective
+    exactly; its pattern (rust and indigo diamonds on cream, indigo border, fringes on the short ends)
+    is the rug's own, foreshortened correctly. The window's rectangle of sunlight falls across it,
+    warming its colours. The chair's and table's front legs press slightly into the pile. Everything
+    else in the room is unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [physics_plausibility, "Is the rug about 2 by 3 metres relative to the armchair?"]
+    - [physics_plausibility, "Does it follow the floor's perspective?"]
+    - [reference_fidelity, "Is the pattern the rug's own: rust and indigo diamonds, indigo border?"]
+    - [reference_fidelity, "Are fringes on the short ends only?"]
+    - [prompt_adherence, "Is it under the front legs of the chair and table?"]
+    - [prompt_adherence, "Does the sunlight rectangle fall across the rug?"]
+    - [physics_plausibility, "Do the front legs press into the pile?"]
+    - [preservation, "Is the rest of the room unchanged?"]
+    - [visual_quality, "Is the pattern undistorted except by perspective?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is the long side parallel to the window wall?"]
+    - [style, "Does it match the photo's colour?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-ECM-16
+  title: "The armchair in three fabric options in three crops, each to a given hex"
+  persona: "Furniture brand's merchandiser making fabric-option images."
+  evidence: "Colour accuracy across several variants of one product."
+  levers: [identity, count, layout, keep-rest, light-lock]
+  inputs: [{source: SRC-ECM-ARMCHAIR-ROOM, role: source}]
+  prompt: |
+    From this room photo, make one image of three side-by-side square crops of the armchair in the
+    same room and light, each crop showing the chair from the same angle, re-upholstered in a
+    different bouclé colour, left to right: sage (#9CAF88), terracotta (#C1663C), ink blue (#2C3E5C).
+    The walnut frame, tapered legs, shape and bouclé texture are identical in all three; the side
+    table, lamp and sunlight are the same in each crop. The bouclé loops should read clearly in each
+    colour, with the late-afternoon sun warming each fabric the same way, so a shopper can compare
+    the three colours fairly. A thin white gap separates the crops. No labels, no text.
+  deliverable: "One image: three square crops side by side."
+  checks:
+    - [prompt_adherence, "Are there three crops side by side?"]
+    - [prompt_adherence, "Is the left chair sage close to #9CAF88?"]
+    - [prompt_adherence, "Is the middle chair terracotta close to #C1663C?"]
+    - [prompt_adherence, "Is the right chair ink blue close to #2C3E5C?"]
+    - [reference_fidelity, "Is the walnut frame and shape identical in all three?"]
+    - [reference_fidelity, "Is the bouclé texture visible in all three?"]
+    - [prompt_adherence, "Is the angle the same in all three?"]
+    - [preservation, "Are the table, lamp and light the same in each?"]
+    - [prompt_adherence, "Are there no labels or text?"]
+    - [visual_quality, "Are edges clean?"]
+    - [prompt_adherence, "Is the sunlight the same in each crop?"]
+    - [reference_fidelity, "Are the tapered legs the same?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-17
+  title: "An indie dog curled asleep in the pet bed; the cushion compresses under it"
+  persona: "Pet brand's content lead making a lifestyle image of the bed."
+  evidence: "Soft products must deform under weight; generated pets float on cushions."
+  levers: [identity, physics, light-lock, keep-rest]
+  inputs: [{source: SRC-ECM-DOG-BED, role: source}]
+  prompt: |
+    Show this exact pet bed (charcoal corduroy rim, oatmeal sherpa cushion, terracotta tab at the
+    front) on a sunny living-room floor, 4:5, with a tan Indian pariah dog curled asleep in it, chin on
+    the rim. The cushion visibly compresses under the dog's body; the rim bends slightly under its chin;
+    fur meets fleece with no gap. A patch of afternoon sun falls across the bed from a window on the
+    left. The bed's colours and the tab are unchanged. No text.
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the bed the same: charcoal rim, oatmeal fleece, terracotta tab?"]
+    - [physics_plausibility, "Does the cushion compress under the dog?"]
+    - [physics_plausibility, "Does the rim bend under its chin?"]
+    - [physics_plausibility, "Is there no gap between fur and fleece?"]
+    - [prompt_adherence, "Is a tan pariah dog curled asleep?"]
+    - [prompt_adherence, "Does sun fall across the bed from the left?"]
+    - [physics_plausibility, "Is the bed's size right for the dog?"]
+    - [prompt_adherence, "Is the tab at the front?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the dog's anatomy natural?"]
+    - [style, "Are the textures (fur, fleece, corduroy) distinct?"]
+    - [prompt_adherence, "Is there one dog?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-18
+  title: "The tent pitched in Spiti at golden hour; guy ropes, shadows and wind match the valley"
+  persona: "Outdoor brand's content lead making an adventure image of the tent."
+  evidence: "Products placed outdoors keep studio light and float on the ground."
+  levers: [identity, physics, light-lock, locale, keep-rest]
+  inputs: [{source: SRC-ECM-TENT, role: source}]
+  prompt: |
+    Pitch this exact tent (burnt-orange fly, charcoal base panels, door half open, four reflective
+    guy ropes) on a gravel flat beside a river in the Spiti valley at golden hour, 3:2. Bare brown
+    mountains rise behind under a deep blue sky. The tent sits on the ground with its pegs in the
+    gravel; low sun from the right lights its orange fly and throws a long shadow to the left; a
+    steady wind ripples the fly on the windward right side; the guy ropes are taut and catch the light.
+    No people, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [reference_fidelity, "Is the tent the same: orange fly, charcoal base, door half open?"]
+    - [physics_plausibility, "Are the pegs in the gravel and the tent grounded?"]
+    - [prompt_adherence, "Is it lit by low sun from the right?"]
+    - [physics_plausibility, "Does its shadow fall long to the left?"]
+    - [physics_plausibility, "Does the fly ripple on the right side?"]
+    - [physics_plausibility, "Are the guy ropes taut and catching light?"]
+    - [prompt_adherence, "Are there four guy ropes?"]
+    - [prompt_adherence, "Do the mountains and river read as Spiti?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [physics_plausibility, "Is the tent's scale right for the landscape?"]
+    - [visual_quality, "Is the tent clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-19
+  title: "Five friends on a rooftop toasting with the can; every can's script readable at its own angle"
+  persona: "D2C beverage brand's agency making a party image."
+  evidence: "Repeating a label on several products at different angles multiplies text errors."
+  levers: [identity, exact-text, count, physics, locale]
+  inputs: [{source: SRC-ECM-SODA-CAN, role: source}]
+  prompt: |
+    Five friends in their twenties on a Mumbai rooftop at dusk with fairy lights, 16:9, raising five
+    of these Ananas & Co. cans in a toast in the centre of the frame. Each can is the same can: cobalt
+    blue, "Ananas" in yellow script running diagonally upward, "PINEAPPLE FIZZ", the pineapple
+    drawing. The cans are at different angles in different hands, and on each one the script is
+    readable at its own angle, curving with that can. City lights behind. No other text, no other
+    brands.
+  exact_text: ["Ananas", "PINEAPPLE FIZZ"]
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Are there five friends and five cans?"]
+    - [reference_fidelity, "Is every can the same design?"]
+    - [text_accuracy, "Is Ananas readable on every can?"]
+    - [text_accuracy, "Is PINEAPPLE FIZZ readable where its face is visible?"]
+    - [physics_plausibility, "Does the script curve correctly with each can's angle?"]
+    - [prompt_adherence, "Are the cans raised in a toast in the centre?"]
+    - [prompt_adherence, "Is it dusk with fairy lights?"]
+    - [visual_quality, "Are all hands natural?"]
+    - [prompt_adherence, "Is there no other text or brand?"]
+    - [prompt_adherence, "Does it read as a Mumbai rooftop?"]
+    - [physics_plausibility, "Are the cans the right size in hands?"]
+    - [style, "Is it photoreal?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ECM-20
+  title: "A toy brand's box from a written logo spec, with its mascot printed on two faces"
+  persona: "Toy start-up founder visualising packaging from the brand book."
+  evidence: "Logo geometry from a text spec, repeated on two faces of a box in perspective."
+  levers: [exact-text, layout, physics, long-brief, identity]
+  prompt: |
+    A product photo of a toy box, 1:1, three-quarter view on white so two faces show. The brand book:
+    the logo is a yellow (#FFD23F) circle with a smiling blue (#2E86AB) robot head inside it, the head a
+    rounded square with two round eyes and a single antenna; to its right, the wordmark "BOLTBOT" in
+    chunky blue capitals with the O's drawn as gears. On the front face: the logo top left, a large
+    illustration of the robot mascot waving, and "Build-your-own robot · Ages 6+" at the bottom. On the
+    side face: the logo again, smaller, and "40 pieces". Logo geometry is identical on both faces,
+    foreshortened correctly. No other text.
+  exact_text: ["BOLTBOT", "Build-your-own robot · Ages 6+", "40 pieces"]
+  deliverable: "One image, 1:1."
+  checks:
+    - [prompt_adherence, "Is the logo a yellow circle with a blue robot head with one antenna?"]
+    - [prompt_adherence, "Are the O's in BOLTBOT drawn as gears?"]
+    - [text_accuracy, "Is BOLTBOT spelled exactly?"]
+    - [text_accuracy, "Is the front line exact?"]
+    - [text_accuracy, "Is 40 pieces on the side?"]
+    - [prompt_adherence, "Is the logo identical on both faces, foreshortened correctly?"]
+    - [physics_plausibility, "Is the box in correct three-quarter perspective?"]
+    - [prompt_adherence, "Is the robot mascot waving on the front?"]
+    - [prompt_adherence, "Are the colours close to the given hex values?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are edges clean?"]
+    - [prompt_adherence, "Is the logo top left on the front?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

@@ -1,0 +1,43 @@
+# telco-hi-03 - eKYC successful, activation window (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-03: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-03
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. SIM, eKYC & activation.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A single acronym (eKYC) and an hour window inside a short Hinglish sentence
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-03
+modality: voice
+task: text_to_speech
+title: "eKYC successful, activation window - Hinglish"
+
+input:
+  script: |
+    Aapka Airtel SIM ka eKYC successful raha. Agle chaar ghante mein aapka number activate ho jaayega.
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "eKYC" said as "e-K-Y-C" (judge)
+  2) "chaar ghante" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, sim-ekyc-activation, easy, even-contest, v2-bank]

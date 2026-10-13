@@ -1,0 +1,61 @@
+# Typography and layout — Advertising & agencies scenarios. Slots: typ.yaml.
+code: TYP
+scenarios:
+
+- id: TYP-ADS-01
+  seed: true
+  title: "Full-page newspaper ad for an electric scooter: English, Hindi, price, specs and fine print"
+  persona: "Copywriter and art director at a Bengaluru agency signing off a launch press ad that runs in English and Hindi dailies the same morning."
+  evidence: "Call at 26:48: customers compare text rendering against a type-led tool. Earlier bank IMG-TXT-05 (bilingual signage) had one Devanagari line; this needs a strict size order across seven text levels, a rupee price with an asterisk and a legal line at small size."
+  levers: [exact-text, script, small-text, layout, exclude, long-brief]
+  prompt: |
+    Design a full-page newspaper advertisement, portrait 1:1.414, as flat print-ready artwork
+    (not a photo of a newspaper), for a fictional electric scooter, the Hawa E1. Brand colours:
+    teal #1F7A7A and white, with black for small text. The scooter is shown large in the lower
+    left two-thirds in left side profile: matte teal body, gloss-white front apron, tan seat,
+    black five-spoke wheels, on a white floor with a soft shadow. The text, with exactly these
+    words and in this order of size from largest to smallest:
+
+    1. Headline across the top: "Ride the breeze."
+    2. Product name under it: "Hawa E1"
+    3. Price in a teal circle at the upper right of the scooter: "₹89,999*"
+    4. A Hindi line under the product name, in Devanagari: "हर दिन 120 किमी, एक चार्ज में"
+    5. Three spec blocks in a row along the right side, each a simple line icon with a label:
+       a battery with "120 km range", a plug with "3.5 hr charge", a speedometer with
+       "75 km/h top speed"
+    6. Above the footer: "Book a test ride: 1800 266 4292"
+    7. Fine print in the footer, one line: "*Ex-showroom Bengaluru. Range tested under ideal conditions. T&C apply."
+
+    Clean modern sans throughout, one family, with clear spacing; generous white space on the
+    right of the headline. No other words, no logos of any other company, no QR code, no
+    website address.
+  exact_text:
+    - "Ride the breeze."
+    - "Hawa E1"
+    - "₹89,999*"
+    - "हर दिन 120 किमी, एक चार्ज में"
+    - "120 km range"
+    - "3.5 hr charge"
+    - "75 km/h top speed"
+    - "Book a test ride: 1800 266 4292"
+    - "*Ex-showroom Bengaluru. Range tested under ideal conditions. T&C apply."
+  deliverable: "One portrait image at A-series proportion, flat artwork."
+  checks:
+    - [text_accuracy, "Is the headline exactly Ride the breeze. with the full stop?"]
+    - [text_accuracy, "Is the product name exactly Hawa E1?"]
+    - [text_accuracy, "Is the price exactly ₹89,999* with the rupee sign, comma and asterisk?"]
+    - [text_accuracy, "Is the Hindi line exact and correctly formed Devanagari, including किमी and चार्ज?"]
+    - [text_accuracy, "Are the three spec labels exact: 120 km range, 3.5 hr charge, 75 km/h top speed?"]
+    - [text_accuracy, "Is the test-ride line exact, phone number included?"]
+    - [text_accuracy, "Is the fine print exact and complete on one line?"]
+    - [prompt_adherence, "Do the text sizes follow the order given, headline largest and fine print smallest?"]
+    - [prompt_adherence, "Is the price in a teal circle at the upper right of the scooter?"]
+    - [prompt_adherence, "Are the three spec blocks in a row on the right, each with the right icon?"]
+    - [prompt_adherence, "Does the scooter match the description: teal body, white apron, tan seat, five-spoke black wheels?"]
+    - [prompt_adherence, "Is it flat print artwork, not a photo of a newspaper page?"]
+    - [style, "Is one sans family used throughout with consistent spacing?"]
+    - [prompt_adherence, "Is there no other text, logo, QR code or web address?"]
+    - [composition, "Is there clear white space to the right of the headline?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Recraft arm is not wired today; compare against the existing arms until it is."}
+  video_followon: "V9: the same layout animated, each text level arriving in order, the Hindi line exact in every frame."

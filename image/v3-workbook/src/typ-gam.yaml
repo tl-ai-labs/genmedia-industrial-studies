@@ -1,0 +1,148 @@
+# Typography and layout — Gaming scenarios. Slots: typ.yaml.
+code: TYP
+scenarios:
+
+- id: TYP-GAM-01
+  title: "Title lock-up for the game: logo, season line, tagline and platform line"
+  persona: "Brand designer at a game publisher finalising the season's title lock-up."
+  evidence: "Lock-ups need a strict hierarchy and exact strings at several sizes."
+  levers: [exact-text, layout, small-text, exclude]
+  prompt: |
+    A game title lock-up on a dark stormy magenta-and-teal background, 16:9. Centred: the logo text
+    "SHADOW RAAGA" in tall angular silver letters with a thin teal glow; above it, small, "SEASON 3";
+    below it, "MONSOON RIFT" in wide-spaced white capitals; under that, the tagline "Every storm has
+    a song." in italic; at the very bottom, small, "Mobile · PC · Console". The sizes from largest to
+    smallest: SHADOW RAAGA, MONSOON RIFT, the tagline, SEASON 3, the platform line. No other text, no
+    other logos.
+  exact_text:
+    - "SHADOW RAAGA"
+    - "SEASON 3"
+    - "MONSOON RIFT"
+    - "Every storm has a song."
+    - "Mobile · PC · Console"
+  deliverable: "One image, 16:9."
+  checks:
+    - [text_accuracy, "Is every line exact?"]
+    - [prompt_adherence, "Do the sizes follow the order given?"]
+    - [prompt_adherence, "Is SEASON 3 above the logo and MONSOON RIFT below?"]
+    - [style, "Is the logo tall angular silver with a teal glow?"]
+    - [style, "Is the tagline italic?"]
+    - [prompt_adherence, "Is the platform line at the bottom?"]
+    - [prompt_adherence, "Is the lock-up centred?"]
+    - [style, "Is the background stormy magenta and teal?"]
+    - [text_accuracy, "Is the platform line readable at small size?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [visual_quality, "Are letterforms clean?"]
+    - [style, "Is MONSOON RIFT wide-spaced?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V9: the lock-up animating in."
+
+- id: TYP-GAM-02
+  title: "Esports final poster: two team names in Hindi and English, date, venue and prize pool"
+  persona: "Esports league's designer making the final's poster for Hindi and English audiences."
+  evidence: "Mixed-script posters with numbers are a string-exactness test."
+  levers: [exact-text, script, layout, locale, small-text]
+  prompt: |
+    An esports final poster, portrait 4:5, black background with neon green and electric blue. Two
+    team shields face each other in the middle. Text, exactly: at the top "GRAND FINAL"; under the
+    left shield "मुंबई मेवरिक्स" and below it "MUMBAI MAVERICKS"; under the right shield "चेन्नई चार्ज"
+    and below it "CHENNAI CHARGE"; a "VS" between the shields; at the bottom "21 DECEMBER · NSCI DOME,
+    MUMBAI" and "PRIZE POOL ₹1,00,00,000". No other text, no logos.
+  exact_text:
+    - "GRAND FINAL"
+    - "मुंबई मेवरिक्स"
+    - "MUMBAI MAVERICKS"
+    - "चेन्नई चार्ज"
+    - "CHENNAI CHARGE"
+    - "21 DECEMBER · NSCI DOME, MUMBAI"
+    - "PRIZE POOL ₹1,00,00,000"
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Are both Hindi team names exact and correctly formed?"]
+    - [text_accuracy, "Are both English team names exact?"]
+    - [text_accuracy, "Is the date and venue line exact?"]
+    - [text_accuracy, "Is the prize pool exact with Indian digit grouping?"]
+    - [prompt_adherence, "Is each team's Hindi name above its English name under its shield?"]
+    - [prompt_adherence, "Is VS between the shields?"]
+    - [text_accuracy, "Is GRAND FINAL at the top?"]
+    - [style, "Is the palette black, neon green and electric blue?"]
+    - [prompt_adherence, "Are there two shields?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [visual_quality, "Are shields clean?"]
+    - [text_accuracy, "Is every line readable?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-GAM-03
+  title: "An in-game item card in Telugu: item name, rarity, four stats and flavour text"
+  persona: "Localisation lead on a mobile RPG reviewing the Telugu UI."
+  evidence: "Game UI in Indian scripts is a growing localisation need; small stat text must be exact."
+  levers: [exact-text, script, small-text, count, layout]
+  prompt: |
+    An in-game item card, portrait 2:3, dark slate frame with a gold border, a glowing orange flaming
+    sword illustrated in the top half. Text in Telugu with numbers, exactly: the item name "అగ్ని
+    ఖడ్గం" at the top; the rarity "లెజెండరీ" in gold under it; four stat rows with labels and numbers:
+    "దాడి 120", "వేగం 45", "రక్షణ 30", "అదృష్టం 15"; and the flavour text in italic at the bottom
+    "జ్వాల ఎప్పుడూ ఆరదు." No English, no other text.
+  exact_text:
+    - "అగ్ని ఖడ్గం"
+    - "లెజెండరీ"
+    - "దాడి 120"
+    - "వేగం 45"
+    - "రక్షణ 30"
+    - "అదృష్టం 15"
+    - "జ్వాల ఎప్పుడూ ఆరదు."
+  deliverable: "One image, 2:3."
+  checks:
+    - [text_accuracy, "Is the item name exact and correctly formed?"]
+    - [text_accuracy, "Is the rarity exact?"]
+    - [prompt_adherence, "Are there four stat rows?"]
+    - [text_accuracy, "Is every stat label and number exact?"]
+    - [text_accuracy, "Is the flavour text exact?"]
+    - [prompt_adherence, "Is the name at the top and the flavour text at the bottom?"]
+    - [style, "Is the rarity in gold?"]
+    - [prompt_adherence, "Is the illustration a flaming sword?"]
+    - [text_accuracy, "Is there no English text?"]
+    - [style, "Is the frame dark slate with a gold border?"]
+    - [text_accuracy, "Is the small text readable?"]
+    - [visual_quality, "Is the card clean?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-GAM-04
+  title: "Localise the store banner into Tamil; logo stays English, every other block keeps its place"
+  persona: "Game publisher's localisation designer preparing regional store art."
+  evidence: "Localising a banner while keeping the English logo is a standard store task."
+  levers: [exact-text, script, keep-rest, layout, locale]
+  inputs: [{source: SRC-GAM-STORE-BANNER, role: source}]
+  prompt: |
+    Localise this game store banner into Tamil. The logo "SHADOW RAAGA" stays exactly as it is in
+    English. Replace the other text, in the same positions, sizes and colours: "Season 3: Monsoon
+    Rift" becomes "சீசன் 3: மான்சூன் ரிஃப்ட்"; the yellow button's "Pre-register now" becomes
+    "இப்போதே முன்பதிவு செய்யுங்கள்" and the button widens just enough to fit it; "Available 21
+    November" becomes "நவம்பர் 21 முதல்". The heroine, the sky and the layout are unchanged.
+  exact_text:
+    - "SHADOW RAAGA"
+    - "சீசன் 3: மான்சூன் ரிஃப்ட்"
+    - "இப்போதே முன்பதிவு செய்யுங்கள்"
+    - "நவம்பர் 21 முதல்"
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Is the logo unchanged in English?"]
+    - [text_accuracy, "Is the Tamil season line exact and correctly formed?"]
+    - [text_accuracy, "Is the Tamil button text exact?"]
+    - [text_accuracy, "Is the Tamil date line exact?"]
+    - [prompt_adherence, "Is each Tamil block where its English one was?"]
+    - [prompt_adherence, "Has the button widened only enough to fit the text?"]
+    - [preservation, "Is the heroine unchanged?"]
+    - [preservation, "Is the sky unchanged?"]
+    - [style, "Are colours the same: white lines, yellow button?"]
+    - [text_accuracy, "Is no other English left?"]
+    - [visual_quality, "Are there no smudges where English was?"]
+    - [text_accuracy, "Is every line readable?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

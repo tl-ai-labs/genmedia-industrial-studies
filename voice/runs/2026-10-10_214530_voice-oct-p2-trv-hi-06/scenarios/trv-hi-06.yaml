@@ -1,0 +1,44 @@
+# trv-hi-06 - IndiGo PNR, flight number and gate (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-06: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-06
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Flights - PNR, flight numbers, gates, delays, baggage.
+# TARGET CUSTOMER. Airlines, Online Travel Agencies.
+# WHAT THIS TESTS. An airline code with a digit ("6E"), a flight number, a six-character PNR, a gate code and a boarding time
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-06
+modality: voice
+task: text_to_speech
+title: "IndiGo PNR, flight number and gate - Hindi"
+
+input:
+  script: |
+    आपकी IndiGo flight 6E 2134, Delhi से Bengaluru, का PNR है X, seven, K, Q, P, M। Boarding gate 42B है, और boarding शाम 7:25 पर बंद होगा।
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) PNR "X7KQPM" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) "6E" read as "six-E" (judge)
+  3) Gate "42B" and time "7:25" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, travel-mobility, flights, hard, even-contest, v2-bank]

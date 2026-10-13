@@ -1,0 +1,37 @@
+# telco-en-07 - Long-validity plan with OTT bundle (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-09 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-09): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Recharge & plans.
+# TARGET CUSTOMER. Mobile Network Operators.
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: telco-en-07
+modality: voice
+task: text_to_speech
+title: "Long-validity plan with OTT bundle - English"
+
+input:
+  script: |
+    Your Airtel plan is Rs 979, with 84 days validity, 2GB data a day, and a free Airtel Xstream Play subscription.
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Price "nine hundred and seventy-nine" recoverable
+  2) "84 days" and "2GB" recoverable
+  3) "Xstream Play" natural
+
+checks:
+  duration_s: {min: 4.2, max: 22.5}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.1
+
+tags: [oct-2026, english, telecom, recharge-plans, hard, even-contest, new-english]

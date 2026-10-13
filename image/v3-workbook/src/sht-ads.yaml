@@ -1,0 +1,295 @@
+# Production sheets — Advertising & agencies scenarios. Slots: sht.yaml.
+code: SHT
+scenarios:
+
+- id: SHT-ADS-02
+  seed: true
+  title: "Adaptation master: one Diwali key visual laid out in six formats on one sheet"
+  persona: "Studio lead at a Delhi agency handing the adaptation team one master sheet so every size is built the same way across 40 media slots."
+  evidence: "Agencies adapt one key visual into dozens of sizes; Sahil's product-bible example (232–233) shows customers testing dense, multi-section sheets. Earlier bank IMG-UI-06 (responsive pair) was in the high tier: reflowing two layouts with nothing dropped split the arms."
+  levers: [exact-text, script, layout, small-text, count, identity, long-brief]
+  inputs:
+    - {source: SRC-ADS-KEYVISUAL, role: source, note: "the approved master key visual"}
+  prompt: |
+    Using this approved key visual, design one adaptation master sheet on a light grey page,
+    landscape. At the top left, the title "SAANJH GHEE — DIWALI 2026 — ADAPTATION MASTER" in a
+    plain dark sans. Below it, six tiles, each drawn at its true proportion and labelled
+    underneath with exactly:
+
+    "TV end frame · 16:9"
+    "Feed · 1:1"
+    "Story · 9:16"
+    "Banner · 300×250"
+    "Leaderboard · 728×90"
+    "Press · A4 portrait"
+
+    Rules for each tile. TV end frame: the key visual as it is. Feed: jar centred in the lower
+    half, the Devanagari headline across the top on two lines, the price starburst lower right,
+    the English line "Pure cow ghee since 1962" dropped. Story: headline at the top, jar in the
+    middle with the diyas, price starburst bottom centre, and the top and bottom bands marked as
+    hatched strips labelled "SAFE ZONE" with nothing inside them. Banner: jar on the left, the
+    brand name "साँझ" and the price on the right, no headline. Leaderboard: a small jar on the
+    left, the headline on one line in the middle, the price on the right. Press: everything from
+    the key visual plus a line at the bottom, "Available at all leading stores".
+
+    Every tile keeps the same jar, the same red-and-gold label, the same maroon background and
+    the same Devanagari headline "इस दिवाली, घर की ख़ुशबू" wherever it appears, letter for letter.
+    The price everywhere is "₹349". Nothing is stretched: the jar keeps its proportions in every
+    size. No other text.
+  exact_text:
+    - "SAANJH GHEE — DIWALI 2026 — ADAPTATION MASTER"
+    - "TV end frame · 16:9"
+    - "Feed · 1:1"
+    - "Story · 9:16"
+    - "Banner · 300×250"
+    - "Leaderboard · 728×90"
+    - "Press · A4 portrait"
+    - "इस दिवाली, घर की ख़ुशबू"
+    - "साँझ"
+    - "₹349"
+    - "SAFE ZONE"
+    - "Available at all leading stores"
+  deliverable: "One landscape image, the full sheet, readable at full size."
+  checks:
+    - [text_accuracy, "Is the sheet title spelled exactly as given?"]
+    - [prompt_adherence, "Are there exactly six tiles, each with its label spelled exactly?"]
+    - [prompt_adherence, "Is each tile drawn at its true proportion (16:9, 1:1, 9:16, 300×250, 728×90, A4 portrait)?"]
+    - [text_accuracy, "Is the Devanagari headline exact and correctly formed in every tile that carries it?"]
+    - [prompt_adherence, "Do the Banner and only the Banner leave out the headline?"]
+    - [prompt_adherence, "Is the English line dropped from the Feed tile?"]
+    - [prompt_adherence, "In the Story tile, are the top and bottom bands hatched, labelled SAFE ZONE and empty?"]
+    - [prompt_adherence, "In the Leaderboard, is the headline on a single line between a small jar and the price?"]
+    - [text_accuracy, "Does the Press tile carry the line Available at all leading stores?"]
+    - [text_accuracy, "Is the price ₹349 in every tile?"]
+    - [reference_fidelity, "Is the jar and its label the same as the key visual in every tile, with साँझ and SAANJH GHEE on the label?"]
+    - [visual_quality, "Does the jar keep its proportions in every tile, with nothing stretched or squashed?"]
+    - [set_consistency, "Do all tiles share the same maroon background, diya warmth and colour?"]
+    - [text_accuracy, "Is every word readable, with no garbled or invented text anywhere?"]
+    - [style, "Does the sheet read as a clean production document, with the title and labels in one plain sans?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input; judge at high resolution for the small tiles."}
+  video_followon: "V5: the 9:16 Story tile as a 6-second vertical with the diyas flickering and the price landing last."
+
+- id: SHT-ADS-01
+  title: "Perfume campaign bible from one packshot: hero views, set, lighting, palette, type"
+  persona: "Agency art director preparing the campaign bible for a fragrance shoot."
+  evidence: "Sahil's product-bible example (232–233), here for a glass product where bevels and label must survive every view."
+  levers: [identity, exact-text, small-text, unseen, count, layout]
+  inputs: [{source: SRC-ADS-PERFUME, role: source}]
+  prompt: |
+    From this packshot of Varsha No. 3 perfume, design a campaign bible on one landscape page,
+    charcoal background, thin amber rules, small white sans labels. Title: "VARSHA No. 3 —
+    CAMPAIGN BIBLE". Section "HERO VIEWS": five views of this exact bottle labelled "FRONT",
+    "BACK", "SIDE", "TOP", "CAP". Section "SET": a wet black-stone set with rain, one frame.
+    Section "LIGHTING": a top-down diagram with "KEY", "RIM" and "CAMERA" markers. Section
+    "PALETTE": four swatches labelled "Amber", "Ink", "Rain blue", "Stone". Section "TYPE": the word
+    VARSHA set in the label's spaced capitals beside a note "Spaced caps, 200 tracking". The bottle
+    is the same in every view: bevels, amber liquid, black cap, cream label. No other text.
+  exact_text:
+    - "VARSHA No. 3 — CAMPAIGN BIBLE"
+    - "HERO VIEWS"
+    - "LIGHTING"
+    - "PALETTE"
+    - "Spaced caps, 200 tracking"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are all five sections present with headings?"]
+    - [prompt_adherence, "Are there five labelled hero views?"]
+    - [reference_fidelity, "Is it the same bottle in every view?"]
+    - [reference_fidelity, "Does the BACK view show the label through the glass, mirrored?"]
+    - [reference_fidelity, "Is the cap black and cylindrical in the CAP view?"]
+    - [prompt_adherence, "Does the lighting diagram show KEY, RIM and CAMERA?"]
+    - [prompt_adherence, "Are there four palette swatches with exact labels?"]
+    - [prompt_adherence, "Do the swatches match amber liquid, black, blue and stone?"]
+    - [text_accuracy, "Is the type note exact?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [style, "Is the sheet consistent: charcoal, amber rules, white labels?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-ADS-03
+  title: "Sportswear launch mood board around the shoe, with hex swatches taken from it"
+  persona: "Brand designer building the launch mood board for a running shoe."
+  evidence: "Palette swatches that claim to come from a product often don't match it."
+  levers: [identity, exact-text, layout, count, locale]
+  inputs: [{source: SRC-ADS-SHOE, role: source}]
+  prompt: |
+    Using this running shoe (coral knit upper fading to off-white, white midsole with a navy stripe,
+    black outsole, DAUD on the heel tab), design a launch mood board on one landscape page, white
+    background. Title: "DAUD ONE — LAUNCH MOOD". Centre: the shoe large in side profile. Around it,
+    six mood photos at harsh noon: a red running track, a Mumbai sea-face promenade at dawn, chalk
+    on hands, a coral sunset over a stadium, a navy tracksuit on a hanger, sweat on a forearm. A
+    palette strip of four swatches with labels and hex values exactly: "Coral #FF6F59",
+    "Off-white #F4EFE6", "Navy #1D2A5B", "Black #111111". No other text.
+  exact_text:
+    - "DAUD ONE — LAUNCH MOOD"
+    - "Coral #FF6F59"
+    - "Navy #1D2A5B"
+    - "Black #111111"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [reference_fidelity, "Is the shoe the reference shoe: coral fade, navy stripe, DAUD tab?"]
+    - [prompt_adherence, "Are there six mood photos?"]
+    - [prompt_adherence, "Do the mood photos match their descriptions?"]
+    - [prompt_adherence, "Are there four swatches?"]
+    - [text_accuracy, "Are the swatch labels and hex values exact?"]
+    - [prompt_adherence, "Does each swatch visibly match its colour on the shoe?"]
+    - [prompt_adherence, "Is the shoe central and largest?"]
+    - [style, "Is the board clean on white?"]
+    - [text_accuracy, "Is DAUD the only brand text?"]
+    - [visual_quality, "Are the photos free of artefacts?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-ADS-04
+  title: "Animation key-pose sheet: the mascot's jump in six keys with timings"
+  persona: "Animation director handing the 3D studio the mascot's jump keys."
+  evidence: "Earlier bank IMG-GAME-53 (four-frame jog cycle) was high tier; a jump with start and end poses and frame numbers is harder."
+  levers: [identity, count, time-code, exact-text, continuity]
+  inputs: [{source: SRC-ADS-MASCOT, role: source}]
+  prompt: |
+    Using this mascot, Chotu Mirchi, draw an animation key-pose sheet on white, landscape, in his
+    own 3D style. Six keys in a row on one ground line, each labelled with its key name and frame
+    number exactly: "Anticipation · f01", "Crouch · f06", "Take-off · f10", "Apex · f16",
+    "Landing · f22", "Settle · f28". A dotted arc traces his head's path from take-off to landing.
+    His design holds in every key: the stalk quiff curling to his left, the gold tooth on his right
+    side, four-fingered white gloves, white sneakers with red laces. Title at top: "CHOTU — JUMP —
+    KEYS". No other text.
+  exact_text:
+    - "CHOTU — JUMP — KEYS"
+    - "Anticipation · f01"
+    - "Apex · f16"
+    - "Settle · f28"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there six keys on one ground line?"]
+    - [text_accuracy, "Are the key labels and frame numbers exact and in order?"]
+    - [prompt_adherence, "Is the apex the highest pose?"]
+    - [prompt_adherence, "Is the crouch the lowest pose?"]
+    - [physics_plausibility, "Does a dotted arc trace a plausible jump path?"]
+    - [reference_fidelity, "Does the quiff curl to his left in every key?"]
+    - [reference_fidelity, "Is the gold tooth on his right side wherever visible?"]
+    - [reference_fidelity, "Are the gloves four-fingered in every key?"]
+    - [set_consistency, "Is his size the same in every key?"]
+    - [style, "Is every key in the reference's 3D style?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [visual_quality, "Are poses clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V4: the jump animated from these keys."
+
+- id: SHT-ADS-05
+  title: "Pitch board for a cricket-season drink campaign in Tamil Nadu"
+  persona: "Agency planner presenting a regional campaign in Tamil."
+  evidence: "Regional pitch boards mix Tamil headlines with English structure."
+  levers: [exact-text, script, count, layout, locale, long-brief]
+  prompt: |
+    Design a pitch board on one landscape page, deep blue background, yellow and white type, for a
+    fictional lime soda's cricket-season campaign in Tamil Nadu. Title: "சிக்ஸர் சோடா — PITCH".
+    Sections with exact headings: "BIG IDEA" with the Tamil line "ஒவ்வொரு பந்தும் ஒரு கொண்டாட்டம்";
+    "MANIFESTO" with four short English lines; "KEY VISUALS" with three thumbnails (a boy in a
+    lungi hitting a tennis ball on a beach; a family cheering at a TV; a bottle sweating in a fan's
+    hand in a stadium); "MEDIA" with a grid of five rows: "TV", "Outdoor", "Instagram", "YouTube",
+    "Stadium" against columns "Apr", "May". No other text.
+  exact_text:
+    - "சிக்ஸர் சோடா — PITCH"
+    - "ஒவ்வொரு பந்தும் ஒரு கொண்டாட்டம்"
+    - "BIG IDEA"
+    - "KEY VISUALS"
+    - "Stadium"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact, Tamil correctly formed?"]
+    - [text_accuracy, "Is the Tamil big-idea line exact?"]
+    - [prompt_adherence, "Are all four sections present with exact headings?"]
+    - [prompt_adherence, "Are there four manifesto lines?"]
+    - [prompt_adherence, "Are there three key-visual thumbnails?"]
+    - [prompt_adherence, "Do the thumbnails match their descriptions?"]
+    - [prompt_adherence, "Does the media grid have five rows and two columns?"]
+    - [style, "Is the palette deep blue, yellow and white?"]
+    - [prompt_adherence, "Are the scenes recognisably Tamil Nadu?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [visual_quality, "Are thumbnails clean?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: SHT-ADS-06
+  title: "30-second scooter commercial shooting script: eight beats with time codes, Telugu voice-over"
+  persona: "Agency producer preparing a Telugu commercial's shooting script."
+  evidence: "Sahil's beat sheet (236–237) in a regional language; time codes must add up to 0:30."
+  levers: [time-code, exact-text, script, count, small-text, locale]
+  prompt: |
+    Design a shooting script sheet on one landscape page, white background, black and teal type, for
+    a 30-second commercial for a fictional electric scooter in Hyderabad. Title: "HAWA E1 — 30s TVC".
+    Eight beat boxes in two rows of four, each with a 16:9 thumbnail, the time code, and a Telugu
+    voice-over line. Time codes exactly: 0:00–0:04, 0:04–0:07, 0:07–0:11, 0:11–0:15, 0:15–0:19,
+    0:19–0:23, 0:23–0:27, 0:27–0:30. Voice-over lines in beats 1, 4 and 8 only, exactly: beat 1
+    "ఉదయం ట్రాఫిక్?"; beat 4 "హవా తో గాలిలా"; beat 8 "హవా E1 — ఈరోజే బుక్ చేయండి". The scooter in
+    the thumbnails is a matte teal scooter with a white front apron and a tan seat. No other text.
+  exact_text:
+    - "HAWA E1 — 30s TVC"
+    - "ఉదయం ట్రాఫిక్?"
+    - "హవా తో గాలిలా"
+    - "హవా E1 — ఈరోజే బుక్ చేయండి"
+    - "0:27–0:30"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there eight beat boxes?"]
+    - [text_accuracy, "Are all eight time codes exact and contiguous to 0:30?"]
+    - [text_accuracy, "Are the three Telugu lines exact and correctly formed?"]
+    - [prompt_adherence, "Are voice-over lines only in beats 1, 4 and 8?"]
+    - [set_consistency, "Is the scooter the same teal scooter in every thumbnail?"]
+    - [prompt_adherence, "Do the thumbnails read as Hyderabad streets?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [composition, "Are thumbnails 16:9?"]
+    - [style, "Is the sheet consistent: white, black and teal?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [visual_quality, "Are thumbnails clean?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: SHT-ADS-07
+  title: "Food-styling sheet for a burger ad: exploded layers, plating notes, palette"
+  persona: "Food stylist preparing the spec for a burger shoot."
+  evidence: "Exploded-view sheets test layer order and labelled leader lines."
+  levers: [count, exact-text, layout, small-text, physics]
+  prompt: |
+    Design a food-styling sheet on one landscape page, warm white, black labels. Title "THE
+    SMOKEHOUSE — STYLING SPEC". On the left, an exploded side view of a burger with seven layers
+    floating apart on one vertical axis, top to bottom, each with a leader line and label exactly:
+    "Sesame bun top", "Pickled onion", "Smoked cheddar", "Beef patty 180 g", "Tomato x2", "Iceberg",
+    "Bun base". On the right, the assembled burger as a hero photo. Below, "PLATING NOTES" with three
+    lines exactly: "Cheese melted over the edge", "Two tomato slices, not one", "Sesame on top only".
+    A palette strip of four swatches labelled "Bun", "Cheddar", "Patty", "Lettuce". No other text.
+  exact_text:
+    - "THE SMOKEHOUSE — STYLING SPEC"
+    - "Beef patty 180 g"
+    - "Tomato x2"
+    - "PLATING NOTES"
+    - "Two tomato slices, not one"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there seven floating layers in the stated order?"]
+    - [text_accuracy, "Are the seven labels exact?"]
+    - [prompt_adherence, "Does each leader line point to its layer?"]
+    - [prompt_adherence, "Are there two tomato slices in both the exploded and assembled views?"]
+    - [set_consistency, "Does the assembled burger match the exploded layers?"]
+    - [prompt_adherence, "Is the cheese melted over the edge in the hero?"]
+    - [prompt_adherence, "Is sesame only on the top bun?"]
+    - [text_accuracy, "Are the plating notes exact?"]
+    - [prompt_adherence, "Are there four palette swatches with labels?"]
+    - [prompt_adherence, "Do the swatches match the food colours?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [visual_quality, "Is the food free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

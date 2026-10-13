@@ -1,0 +1,45 @@
+# md-hi-51 - Couple banter — late again (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-51: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-51
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Multi-voice scenes (2–3 characters, one narrator).
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# WHAT THIS TESTS. Two voices trading short Hinglish lines with a punchline
+# SPEECH SKILLS. Emotion; Conversation: narrated, 2 characters.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch; several distinct voices.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-hi-51
+modality: voice
+task: styled_tts
+title: "Couple banter — late again - Hinglish"
+
+input:
+  script: |
+    "Tum phir late ho." "Traffic tha, I swear!" "Har baar traffic?" "Okay fine, main so gaya tha. Happy?"
+  language: hi-IN
+  style: "playful couple banter, two distinct voices"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) Two voices distinguishable (judge)
+  3) Punchline lands (judge)
+
+checks:
+  duration_s: {min: 3.6, max: 19.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, micro-drama-entertainment, multi-voice-scenes-2-3-characters-one-narrator, medium, gemini-lean, v2-bank]

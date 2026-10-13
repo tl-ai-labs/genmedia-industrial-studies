@@ -1,0 +1,207 @@
+# Storyboard to shot — Advertising & agencies scenarios. Slots: vstb.yaml.
+code: VSTB
+scenarios:
+
+- id: VSTB-ADS-01
+  seed: true
+  title: "Panel 3 of the chips commercial: Chotu bursts out of the pack, in the board's style and timing"
+  persona: "Animation director at a Mumbai studio turning the approved client board into the first animated shot."
+  evidence: "Sahil's storyboard example (234–235): boards become videos. A mascot with one-sided details and a timed caption is where shots drift from the board."
+  levers: [identity, multi-ref, timing, continuity, camera, layout]
+  inputs:
+    - {source: SRC-VBOARD-MASCOT-TVC, role: still1, note: "the client board; this shot is panel 3"}
+    - {source: SRC-ADS-MASCOT, role: character, note: "the mascot reference"}
+  prompt: |
+    The first image is the approved client board; this shot is its panel 3, "3 · 0:05–0:08 · MS · Chotu
+    bursts out of the pack". The second image is the mascot reference. Animate the three-second shot in
+    the board's polished 3D style: a medium shot of a hostel desk at night lit by a green desk lamp
+    from the left, books and a clock beside a red chips pack that sits upright. At 0.5 s the pack
+    trembles; at 1 s its top seal tears open with a pop; at 1.2 s Chotu leaps out towards frame right in
+    an arc, chips spraying; at 2.5 s he lands on the desk beside the pack, knees bent, arms wide,
+    grinning at camera. He is exactly the reference: glossy red chilli, stalk quiff curling to his
+    left, gold tooth on his right side, four-fingered white gloves, white sneakers with red laces. The
+    pack's red, the yellow sunburst and the mascot face on it stay as on the board. Locked-off
+    camera, as the panel shows. No text.
+  clip: {duration: 3, aspect: "16:9", camera: "locked off, medium shot"}
+  deliverable: "One 3-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a locked-off medium shot matching panel 3's framing?"]
+    - [prompt_adherence, "Does the seal tear at about 1 s and Chotu land at about 2.5 s?"]
+    - [prompt_adherence, "Does he leap out towards frame right, as on the board?"]
+    - [reference_fidelity, "Does the quiff curl to his left throughout?"]
+    - [reference_fidelity, "Is the gold tooth on his right side when he grins?"]
+    - [reference_fidelity, "Are his gloves four-fingered and his laces red?"]
+    - [motion_coherence, "Is the leap a smooth arc with no morphing of his body?"]
+    - [physics_plausibility, "Do the chips spray out and fall with gravity?"]
+    - [reference_fidelity, "Does the pack keep its red, sunburst and mascot face?"]
+    - [prompt_adherence, "Is the desk lit by a green lamp from the left?"]
+    - [style, "Is the 3D style the board's polished animated look?"]
+    - [prompt_adherence, "Is Chotu the only character?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-ADS-02
+  title: "Panel 8: the packshot end card held to the panel's layout, the pack's print exact"
+  persona: "Agency producer checking the snack TVC's end card against the client-approved board."
+  evidence: "End cards are where clients reject: pack print and mascot pose must match the board and the pack."
+  levers: [multi-ref, layout, identity, timing, keep-rest, end-frame]
+  inputs:
+    - {source: SRC-VBOARD-MASCOT-TVC, role: still1, note: "the board; this shot is panel 8"}
+    - {source: SRC-ADS-CHIPS, role: product, note: "the real pack, its print exactly"}
+  prompt: |
+    The first image is the commercial's storyboard; this shot is its panel 8, the packshot.
+    The second image is the real pack. Make a 3-second end card in the board's polished 3D style: the
+    pack drops into frame from the top, lands upright and centred on a flat red background with a small
+    bounce and settles by 0.8 seconds; Chotu, the glossy red chilli with the green quiff curling to his
+    left and the gold tooth on his right, slides in from the right and leans his elbow on the pack's
+    right side, giving a wink at 1.5 seconds. The pack's print is exactly the real pack: the name, the
+    sunburst with the mascot face, the green flag, the price circle bottom right, the weight bottom
+    left, no letters changed. Hold the last second still.
+  clip: {duration: 3, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 3-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is the pack upright and centred on red, as in panel 8?"]
+    - [prompt_adherence, "Does Chotu lean on the pack's right side?"]
+    - [text_accuracy, "Is the pack's print the same as the real pack, with no changed letters?"]
+    - [prompt_adherence, "Is the price circle bottom right and the weight bottom left?"]
+    - [prompt_adherence, "Does the pack settle by about 0.8 seconds?"]
+    - [prompt_adherence, "Does Chotu wink at about 1.5 seconds?"]
+    - [reference_fidelity, "Does the quiff curl to his left and the gold tooth sit on his right?"]
+    - [physics_plausibility, "Does the pack land with a small believable bounce?"]
+    - [motion_coherence, "Is the last second held still?"]
+    - [style, "Is it in the board's polished 3D style?"]
+    - [visual_quality, "Is the pack free of warping?"]
+    - [reference_fidelity, "Does he wear white four-fingered gloves?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-ADS-03
+  title: "Panel 5: the SUV climbs past a low camera right to left and the camera whip-pans after it"
+  persona: "Car-commercial director checking the board's whip-pan beat before the shoot."
+  evidence: "Whip pans and close passes break vehicle shape; the board fixes direction and framing."
+  levers: [multi-ref, camera-move, continuity, light-lock, physics]
+  inputs:
+    - {source: SRC-VBOARD-SUV, role: still1, note: "the board; this shot is panel 5"}
+    - {source: SRC-ADS-SUV, role: product, note: "the SUV, the road and the light"}
+  prompt: |
+    The first image is the agency storyboard; this shot is its panel 5, "SUV climbs past camera · MS ·
+    Whip pan". The second image is the SUV on the hairpin road. Make a 4-second shot from a low camera on
+    the road edge: the white badge-less SUV climbs towards the camera, its front-left three-quarter filling
+    the left half of the frame as it passes close, travelling right to left; at 2.5 seconds the camera
+    whip-pans left after it, motion-blurred, and settles on its rear as it rounds the bend. Low golden sun
+    from the right, warm on the right flank, the orange sky reflected in the bonnet, mist in the valley.
+    No badges, no lettering on the car, no text.
+  clip: {duration: 4, aspect: "2.39:1", camera: "low on the road edge, whip pan left"}
+  deliverable: "One 4-second clip, 2.39:1."
+  checks:
+    - [motion_coherence, "Does the SUV travel right to left?"]
+    - [composition, "Does its front-left three-quarter fill the left half as it passes?"]
+    - [prompt_adherence, "Does the whip pan start at about 2.5 seconds?"]
+    - [prompt_adherence, "Is the whip pan to the left and does it settle on the rear?"]
+    - [prompt_adherence, "Is the camera low at the road edge?"]
+    - [reference_fidelity, "Is the SUV the same white badge-less model?"]
+    - [prompt_adherence, "Is the sun from the right, warm on the right flank?"]
+    - [physics_plausibility, "Does the bonnet reflect the orange sky?"]
+    - [motion_coherence, "Does the SUV keep its shape through the pan?"]
+    - [physics_plausibility, "Do the wheels turn at a speed matching the car's?"]
+    - [text_accuracy, "Is there no badge or lettering?"]
+    - [visual_quality, "Is the motion blur natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-ADS-04
+  title: "Panel 3: the mother lights the fourth diya; the three already lit stay lit"
+  persona: "Agency creative on a Diwali spot checking the lighting beat against the board."
+  evidence: "Counted lit and unlit objects drift across frames; the fourth of seven is the test."
+  levers: [multi-ref, count, light-lock, physics, locale, identity]
+  inputs:
+    - {source: SRC-VBOARD-DIWALI, role: still1, note: "the board; this shot is panel 3"}
+    - {source: SRC-ADS-DIWALI-FAMILY, role: environment, note: "the family, the balcony and the light"}
+  prompt: |
+    The first image is the Diwali storyboard; this shot is its panel 3, a medium shot of the mother.
+    The second image is the family on the balcony. Make a 6-second medium shot: the mother in the red
+    silk sari kneels at the ledge with a long match. Seven clay diyas stand along the ledge: the first
+    three from the left are already lit and stay lit throughout; at 2 seconds she touches the match to
+    the fourth and it catches; the last three stay unlit. Her face is lit from below by the flames and
+    grows warmer as the fourth catches. The fairy lights glow along the railing; the girl's rangoli is
+    soft in the foreground. Keep the board's composition. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, medium shot"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Are there seven diyas along the ledge?"]
+    - [prompt_adherence, "Are the first three lit throughout?"]
+    - [prompt_adherence, "Does the fourth catch at about 2 seconds?"]
+    - [prompt_adherence, "Do the last three stay unlit?"]
+    - [prompt_adherence, "Is her face lit from below and warmer after the fourth catches?"]
+    - [reference_fidelity, "Is she the mother in the red silk sari?"]
+    - [composition, "Is it a medium shot as in panel 3?"]
+    - [physics_plausibility, "Do the flames flicker naturally?"]
+    - [prompt_adherence, "Is the rangoli soft in the foreground?"]
+    - [motion_coherence, "Is her movement natural?"]
+    - [visual_quality, "Is her hand natural?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-ADS-05
+  title: "Panel 3: the drive phase out of the blocks, running right, with the camera tracking"
+  persona: "Sportswear brand's film producer checking the hero sprint beat from the board."
+  evidence: "Sprinting form, lane numbers and direction all slip in generated running shots."
+  levers: [camera-move, continuity, count, physics, layout]
+  inputs: [{source: SRC-VBOARD-RACE, role: still1, note: "the board; this shot is panel 3"}]
+  prompt: |
+    This is the commercial's storyboard; make the live-action shot for its panel 3, "Drive phase · WS ·
+    Track right". A stadium at harsh noon: the woman sprinter in a teal vest with bib 214 rises out of
+    the blocks in lane 4, body angled forward low for the first strides and gradually rising, running
+    left to right; the camera on a track alongside keeps pace. Rivals in lanes 3 and 5 rise a fraction
+    behind her. The lane lines and numbers pass beneath. Short shadows under the runners. Photoreal,
+    5 seconds. No logos, no text except the bib.
+  clip: {duration: 5, aspect: "2.39:1", camera: "wide, tracking right alongside"}
+  deliverable: "One 5-second clip, 2.39:1."
+  checks:
+    - [motion_coherence, "Does she run left to right throughout?"]
+    - [physics_plausibility, "Is her drive phase believable, low then rising?"]
+    - [prompt_adherence, "Does the camera track right, keeping pace?"]
+    - [prompt_adherence, "Is she in lane 4 with rivals in lanes 3 and 5?"]
+    - [prompt_adherence, "Are there three runners?"]
+    - [reference_fidelity, "Is she in a teal vest with bib 214?"]
+    - [prompt_adherence, "Are shadows short under noon sun?"]
+    - [composition, "Is it a wide shot as in panel 3?"]
+    - [motion_coherence, "Are legs and arms free of glitches?"]
+    - [style, "Is it photoreal?"]
+    - [text_accuracy, "Is there no text except the bib?"]
+    - [visual_quality, "Are faces natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}
+
+- id: VSTB-ADS-06
+  title: "Panel 5: the biryani lid lifts in a vertical top shot and steam rises into the top of frame"
+  persona: "Food-delivery brand's content lead checking the hero steam beat for the 15-second spot."
+  evidence: "Steam is the hardest food effect in video; it must rise naturally and fill the right part of the frame."
+  levers: [physics, timing, layout, locale, camera]
+  inputs: [{source: SRC-VBOARD-BIRYANI, role: still1, note: "the board; this shot is panel 5"}]
+  prompt: |
+    This is the delivery spot's storyboard; make the live-action shot for its panel 5, "0:10–0:13 ·
+    Steam rises", a 3-second vertical shot from directly above. A student's hands lift the lid of a
+    round foil biryani box on a hostel desk at 0.5 seconds; a thick plume of steam rises and drifts up
+    into the top of the frame, lit warm; the biryani shows long grains of rice with saffron streaks, a
+    piece of chicken and half a boiled egg. The hands hold the lid to the side. Warm practical light
+    from a desk lamp. Photoreal, locked off. No text, no logos.
+  clip: {duration: 3, aspect: "9:16", camera: "top-down, locked off"}
+  deliverable: "One 3-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Is it straight top-down and locked off?"]
+    - [prompt_adherence, "Does the lid lift at about 0.5 seconds?"]
+    - [physics_plausibility, "Does the steam rise and drift naturally into the top of the frame?"]
+    - [prompt_adherence, "Does the steam fill the top of the frame as in panel 5?"]
+    - [prompt_adherence, "Does the biryani show saffron-streaked rice, chicken and half an egg?"]
+    - [prompt_adherence, "Is it warm practical light?"]
+    - [visual_quality, "Are both hands natural?"]
+    - [motion_coherence, "Is the lid motion smooth?"]
+    - [style, "Is it photoreal?"]
+    - [text_accuracy, "Is there no text or logo?"]
+    - [prompt_adherence, "Is the box a round foil box?"]
+    - [composition, "Is it a vertical frame?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}

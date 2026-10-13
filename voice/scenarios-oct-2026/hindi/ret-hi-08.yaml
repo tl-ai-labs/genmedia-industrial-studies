@@ -1,0 +1,45 @@
+# ret-hi-08 - No-cost EMI breakdown on a phone order (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-08: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-08
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Checkout & payments - COD, no-cost EMI, Pay Later, failed payments.
+# TARGET CUSTOMER. E-commerce Marketplaces, Consumer Electronics Brands.
+# WHAT THIS TESTS. A product name with a model number, three raw amounts including a paise decimal, and a tenure, in one passage
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-08
+modality: voice
+task: text_to_speech
+title: "No-cost EMI breakdown on a phone order - Hindi"
+
+input:
+  script: |
+    आपके iPhone 16 के order पर no-cost EMI चुना गया है — ₹79,900 को 6 महीने में, हर महीने ₹13,316.67। Processing fee ₹199 अलग से लगेगी।
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "iPhone 16" read as "iPhone sixteen"
+  2) Total "उन्यासी हज़ार नौ सौ" recoverable, not the international convention
+  3) Monthly amount read with rupees and paise (judge)
+  4) Processing fee "एक सौ निन्यानवे" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, ecommerce-retail, checkout-payments, hard, gemini-lean, v2-bank]

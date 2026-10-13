@@ -1,0 +1,38 @@
+# telco-en-02 - Unlimited plan: price, validity, rollover, night window (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-08 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-08): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Recharge & plans.
+# TARGET CUSTOMER. Mobile Network Operators.
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: telco-en-02
+modality: voice
+task: text_to_speech
+title: "Unlimited plan: price, validity, rollover, night window - English"
+
+input:
+  script: |
+    The Vi Hero Unlimited plan at Rs 365 gives you 28 days validity, 2GB data a day, weekend data rollover, and free unlimited data from 12 midnight to 6 am.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Price and validity recoverable
+  2) "2GB" with GB as letters
+  3) Time window recoverable
+  4) "Vi Hero Unlimited" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, telecom, recharge-plans, hard, even-contest, new-english]

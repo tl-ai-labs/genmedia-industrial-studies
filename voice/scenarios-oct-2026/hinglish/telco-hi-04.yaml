@@ -1,0 +1,44 @@
+# telco-hi-04 - Recharge plan amount and validity (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-04: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-04
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Recharge & plans.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A currency amount, a validity-days figure and a data quota, stacked in one sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%.
+# PICKED AS. Even contest - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-04
+modality: voice
+task: text_to_speech
+title: "Recharge plan amount and validity - Hinglish"
+
+input:
+  script: |
+    Aapka recharge plan hai, do sau assi rupaye ka, jo ikkees din tak valid rahega, roz do GB data ke saath.
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount "do sau assi rupaye" recoverable exactly
+  2) Validity "ikkees din" recoverable exactly
+  3) "do GB" read with GB as individual letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, recharge-plans, medium, even-contest, v2-bank]

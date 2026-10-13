@@ -1,0 +1,134 @@
+# Precision editing — Real estate, interiors & architecture scenarios. Slots: edt.yaml.
+code: EDT
+scenarios:
+
+- id: EDT-RES-01
+  title: "Listing clean-up: newspapers, laundry rack and wires gone, TV on, lights on, plant moved"
+  persona: "Property portal's retoucher preparing a listing photo to the portal's standard."
+  evidence: "Listing clean-ups stack several edits; one is usually missed."
+  levers: [multi-step, keep-rest, layout, light-lock, locale]
+  inputs: [{source: SRC-RES-LIVING-FLAT, role: source}]
+  prompt: |
+    Make exactly these six changes to this living-room listing photo, and nothing else.
+    1. Remove the pile of newspapers from the sofa's left cushion.
+    2. Remove the laundry rack from the balcony outside the glass door.
+    3. Remove the loose wires hanging below the TV console.
+    4. Switch the TV on, showing a calm blurred beach scene.
+    5. Switch on the four recessed ceiling lights with a soft warm glow, keeping the daylight.
+    6. Move the snake plant from beside the kitchen doorway to the right of the balcony door.
+    The sofa, print, coffee table, rug, console, fan, floor tiles and the camera's straight verticals
+    are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Are the newspapers gone?"]
+    - [prompt_adherence, "Is the laundry rack gone from the balcony?"]
+    - [prompt_adherence, "Are the wires gone?"]
+    - [prompt_adherence, "Is the TV on with a blurred beach scene?"]
+    - [prompt_adherence, "Are the four recessed lights on with a warm glow?"]
+    - [preservation, "Is the daylight still there?"]
+    - [prompt_adherence, "Is the snake plant now right of the balcony door?"]
+    - [preservation, "Is the kitchen doorway now clear of the plant?"]
+    - [preservation, "Are the sofa, table and rug unchanged?"]
+    - [visual_quality, "Are verticals still straight?"]
+    - [visual_quality, "Are there no smudges?"]
+    - [prompt_adherence, "Are all six changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-RES-02
+  title: "Repaint the far wall to a hex and lay oak flooring; the window view and sun panels stay"
+  persona: "Builder's sales team showing a buyer a finish option on the show-flat photo."
+  evidence: "Global surface changes spill onto light and views."
+  levers: [multi-step, keep-rest, light-lock, physics]
+  inputs: [{source: SRC-RES-BEDROOM, role: source}]
+  prompt: |
+    Make exactly these two changes to this empty bedroom photo, and nothing else.
+    1. Paint the far wall around the window a muted terracotta, #C9775A; the other walls stay
+       off-white.
+    2. Replace the grey-beige tiles with wide-plank natural oak flooring running towards the window.
+    The three panels of golden sunlight still fall on the floor in the same places, now warming the
+    oak; the window frame, the view of the hill, the wardrobe on the right and the switchboard on the
+    left are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the far wall terracotta close to #C9775A?"]
+    - [preservation, "Are the other walls still off-white?"]
+    - [prompt_adherence, "Is the floor wide-plank oak running towards the window?"]
+    - [prompt_adherence, "Are the three sun panels in the same places on the new floor?"]
+    - [preservation, "Is the window frame and view unchanged?"]
+    - [preservation, "Is the wardrobe unchanged?"]
+    - [preservation, "Is the switchboard unchanged?"]
+    - [physics_plausibility, "Does the oak follow the room's perspective?"]
+    - [visual_quality, "Are wall edges clean?"]
+    - [preservation, "Is the room still empty?"]
+    - [preservation, "Is the golden light unchanged?"]
+    - [prompt_adherence, "Are both changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-RES-03
+  title: "Day to twilight: sky to dusk, interior lights on, porch light on; the architecture unchanged"
+  persona: "Real-estate photographer making the standard twilight version of a villa photo."
+  evidence: "Day-to-dusk conversions often redraw the building; that over-edit is the target."
+  levers: [multi-step, keep-rest, light-lock, physics, locale]
+  inputs: [{source: SRC-RES-VILLA-EXT, role: source}]
+  prompt: |
+    Turn this daytime villa photo into a twilight photo with exactly these changes, and nothing else.
+    1. The clear blue sky becomes a deep blue dusk sky with a warm orange glow low on the left.
+    2. Every window glows with warm interior light; the glass door on the right shows a lit interior.
+    3. A warm porch light comes on under the overhang, lighting the swing.
+    4. A soft garden light uplights the frangipani.
+    The building's shape, materials (teak, white, concrete), windows, overhang, gate, granite wall and
+    straight verticals are unchanged, line for line.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the sky deep blue dusk with an orange glow on the left?"]
+    - [prompt_adherence, "Are all windows glowing warm?"]
+    - [prompt_adherence, "Is the porch light on, lighting the swing?"]
+    - [prompt_adherence, "Is the frangipani uplit?"]
+    - [preservation, "Is the building's shape unchanged?"]
+    - [preservation, "Are materials unchanged?"]
+    - [preservation, "Are windows in the same places?"]
+    - [preservation, "Are the gate and wall unchanged?"]
+    - [visual_quality, "Are verticals still straight?"]
+    - [physics_plausibility, "Do lit windows cast light onto the lawn plausibly?"]
+    - [visual_quality, "Is there no redrawn or warped edge?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-RES-04
+  title: "Plot preparation: boundary wall, gate at the track, path to the trees, the smaller cashew removed"
+  persona: "Land developer's planner showing an investor the prepared plot."
+  evidence: "Landscape edits stack; one is usually missed and landmarks drift."
+  levers: [multi-step, keep-rest, layout, physics, locale]
+  inputs: [{source: SRC-RES-PLOT-LAND, role: source}]
+  prompt: |
+    Make exactly these four changes to this photo of an empty Goa plot, and nothing else.
+    1. Build a low laterite boundary wall, about a metre high, along the bottom edge of the plot from
+       the survey marker to the right edge of the frame.
+    2. Put a simple black iron gate in the wall where the access track meets it, at the centre.
+    3. Lay a gravel path from the gate up to the larger cashew tree.
+    4. Remove the smaller cashew tree on the right, leaving dry grass.
+    The survey marker, the larger cashew, the dry stream bed, the electricity pole, the palms, the sea
+    and the low sun from the right are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is there a low laterite wall along the bottom edge?"]
+    - [prompt_adherence, "Is there a black iron gate at the centre where the track meets?"]
+    - [prompt_adherence, "Is there a gravel path from the gate to the larger cashew?"]
+    - [prompt_adherence, "Is the smaller cashew gone?"]
+    - [prompt_adherence, "Is there one cashew tree now?"]
+    - [preservation, "Is the survey marker unchanged?"]
+    - [preservation, "Is the stream bed unchanged?"]
+    - [preservation, "Is the pole unchanged?"]
+    - [prompt_adherence, "Do the new wall and gate cast shadows to the left?"]
+    - [physics_plausibility, "Does the wall follow the ground's slope?"]
+    - [visual_quality, "Is there no seam where the tree was?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

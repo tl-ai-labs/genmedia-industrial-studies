@@ -1,0 +1,44 @@
+# ret-hi-01 - Flash-sale discount percentage (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-01: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-01
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Sale events & offers - festive sales, coupons, bank offers, restock.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# WHAT THIS TESTS. A sale-event brand name plus a percentage figure, delivered at high energy
+# SPEECH SKILLS. Numbers: dates/times, units/%; Pronunciation: brands; Emotion.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-01
+modality: voice
+task: text_to_speech
+title: "Flash-sale discount percentage - Hinglish"
+
+input:
+  script: |
+    Humari Big Billion Days sale mein, is item par pachattar percent tak ka discount hai — sirf agle do ghante ke liye!
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "pachattar percent" recoverable exactly
+  2) Any accompanying figure recoverable exactly
+  3) Energetic/promotional tone does not cost digit accuracy
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, ecommerce-retail, sale-events-offers, easy, even-contest, v2-bank]

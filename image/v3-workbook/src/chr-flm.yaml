@@ -1,0 +1,711 @@
+# Character continuity — Film, OTT & micro-drama scenarios. Slots: chr.yaml.
+code: CHR
+scenarios:
+
+- id: CHR-FLM-04
+  seed: true
+  title: "One joint family from three casting photos, held across four micro-drama frames"
+  persona: "Producer of a Malayalam micro-drama series for a vertical-video app, making the episode's key frames from the three cast members' casting photos before the shoot is approved."
+  evidence: "Call at 17:26: storyboarding 'multiple storyboards for one character' is the most common image use; earlier bank IMG-GAME-12 (squad line-up from three references) was in the high tier for blending features between references."
+  levers: [set, identity, multi-ref, layout, locale, continuity, exclude]
+  inputs:
+    - {source: SRC-ACTOR-M, role: source, note: "the son, Arjun"}
+    - {source: SRC-ACTOR-F, role: reference, note: "his wife, Meera"}
+    - {source: SRC-ELDER-PORCH, role: reference, note: "his grandmother, Ammamma"}
+  prompt: |
+    These three photos are the cast of a family drama: the man is Arjun, the younger woman is
+    Meera, his wife, and the elderly woman is Ammamma, his grandmother. Create one frame of
+    their story, described below, as a still from the series. Each face must stay exactly the
+    person in their own photo; do not mix their features, do not make them look related to each
+    other beyond what the photos show, and do not lighten or smooth anyone's skin. Keep each
+    person's marks: Arjun's moustache, the small scar through his right eyebrow and the steel
+    kada on his right wrist; Meera's gold stud in her left nostril, the mole above the right
+    corner of her lip and her black-bead mangalsutra; Ammamma's round wire spectacles, grey bun
+    and off-white sari with the thin dark-green border. Heights stay true to life: Arjun is the
+    tallest, Meera about a head shorter, Ammamma small and slightly stooped. Only these three
+    people appear unless the frame says otherwise. Cinematic, natural colour, 9:16 vertical
+    frame for a phone screen, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Arjun: face, moustache, scar through the right eyebrow, steel kada on the right wrist"
+      - "Meera: face, gold stud in the left nostril, mole above the right corner of the lip, mangalsutra"
+      - "Ammamma: face, round wire spectacles, grey bun, off-white sari with a dark-green border"
+      - "Each person's skin tone as in their own photo"
+      - "Height order: Arjun tallest, then Meera, then Ammamma"
+    members:
+      - name: "Breakfast"
+        prompt: "Morning, a small dining table by a window. Ammamma sits at the head of the table in the middle of the frame, Arjun on her left side of the table, Meera on her right, all three laughing at something Ammamma said. Soft window daylight."
+        checks:
+          - [prompt_adherence, "Is Ammamma at the head of the table with Arjun and Meera on either side?"]
+          - [prompt_adherence, "Are all three laughing?"]
+          - [prompt_adherence, "Is the light soft daylight from a window?"]
+      - name: "The argument"
+        prompt: "Night, a narrow corridor lit by one ceiling bulb. Arjun and Meera stand facing each other in profile, arguing, Arjun on the left; Ammamma is a small figure in a doorway at the far end, watching."
+        checks:
+          - [prompt_adherence, "Are Arjun and Meera in profile facing each other, Arjun on the left?"]
+          - [prompt_adherence, "Is Ammamma small in the background doorway?"]
+          - [visual_quality, "Are both profiles anatomically right, with no warping?"]
+      - name: "Temple steps"
+        prompt: "Dusk, the stone steps of a small temple with oil lamps. Ammamma stands between them on a step holding Arjun's hand on her right and Meera's on her left; all three face the camera."
+        checks:
+          - [prompt_adherence, "Is Ammamma between them, holding Arjun's hand on her right and Meera's on her left?"]
+          - [reference_fidelity, "Is Arjun's steel kada still on his right wrist, the hand Ammamma is not holding?"]
+          - [prompt_adherence, "Is the main light warm from the oil lamps at dusk?"]
+      - name: "Hospital waiting room"
+        prompt: "Night, a hospital waiting area with blue plastic chairs under cold tube light. Meera sleeps with her head on Arjun's shoulder; Arjun is awake, staring ahead. Ammamma stands at a window behind them, back half-turned, looking out."
+        checks:
+          - [prompt_adherence, "Is Meera asleep on Arjun's shoulder with Ammamma standing at the window behind them?"]
+          - [prompt_adherence, "Is the light cold tube light?"]
+          - [reference_fidelity, "Is Ammamma recognisable from her half-turned side: spectacles, bun, border of the sari?"]
+  deliverable: "Four images, 9:16 vertical, one per member."
+  checks:
+    - [set_consistency, "In every frame, is Arjun recognisably the man in the first photo?"]
+    - [set_consistency, "In every frame, is Meera recognisably the woman in the second photo?"]
+    - [set_consistency, "In every frame, is Ammamma recognisably the woman in the third photo?"]
+    - [set_consistency, "Are the three faces clearly distinct from each other, with no feature borrowed between them?"]
+    - [set_consistency, "Is Arjun's scar through the right eyebrow visible in every frame where that side of his face shows?"]
+    - [set_consistency, "Is the steel kada on Arjun's right wrist in every frame where that wrist shows?"]
+    - [set_consistency, "Is Meera's nose stud on the left nostril in every frame where that side shows?"]
+    - [set_consistency, "Is Meera's mole above the right corner of the lip wherever her face is near enough to see it?"]
+    - [set_consistency, "Does Ammamma wear her spectacles and the off-white sari with a dark-green border in every frame?"]
+    - [set_consistency, "Does each person's skin tone stay as in their own photo across all four frames, without lightening?"]
+    - [set_consistency, "Does the height order hold in every frame where they stand: Arjun, then Meera, then Ammamma?"]
+    - [prompt_adherence, "Are there exactly three people in each frame, with no extra figures?"]
+    - [composition, "Is every frame a true 9:16 vertical composition rather than a cropped landscape?"]
+    - [text_accuracy, "Is there no text in any frame?"]
+    - [visual_quality, "Are hands, especially the held hands in the temple frame, free of extra or fused fingers?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each frame is one image edit with three inputs (adapters pass every input). The judge scores one image at a time; whole-set identity needs the set review."}
+  video_followon: "V4: the breakfast frame as a first frame, three-second performance clip with all three identities held."
+
+- id: CHR-FLM-01
+  title: "The lead across four micro-drama frames: office, autorickshaw at night, rain, wedding stage"
+  persona: "Producer of a Hindi micro-drama making an episode's key frames from the lead's casting photo."
+  evidence: "Call at 17:26: 'generating multiple storyboards for one character and using that to create videos' is the most common image use."
+  levers: [set, identity, locale, light-lock, continuity]
+  inputs: [{source: SRC-ACTOR-M, role: source}]
+  prompt: |
+    This casting photo is the lead actor: medium-brown skin, short wavy black hair parted on his
+    left, a thick moustache, light stubble, a small scar through his right eyebrow and a steel
+    kada on his right wrist. Make one key frame of him for the episode, as described below, as a
+    cinematic still. His face, scar, moustache, hair and kada stay exactly his; his skin is not
+    lightened under any light. He is the only character in focus; anyone else in the frame is
+    an anonymous background figure, soft and small. Match the natural grain and colour of a phone-
+    first drama shot on a cinema camera. 9:16 vertical, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Face, hair parting, moustache, stubble"
+      - "Scar through the right eyebrow; kada on the right wrist"
+      - "Medium-brown skin tone under every light"
+    members:
+      - {name: "Office", prompt: "Morning, a crowded open-plan office, he is at a desk in a light blue shirt, typing, cool overhead light.", checks: [[reference_fidelity, "Is the scar on his right eyebrow?"], [reference_fidelity, "Is the kada on his right wrist at the keyboard?"]]}
+      - {name: "Autorickshaw", prompt: "Night, in the back of an autorickshaw, his face lit by passing neon signs in magenta and green.", checks: [[prompt_adherence, "Is his face lit by coloured neon?"], [reference_fidelity, "Is his skin tone still medium brown under neon?"]]}
+      - {name: "Rain", prompt: "Dusk, he stands soaked in rain at a bus stop, shirt clinging, looking at his phone.", checks: [[physics_plausibility, "Is he visibly wet?"], [reference_fidelity, "Is his hair still parted on his left?"]]}
+      - {name: "Wedding stage", prompt: "Night, on a decorated wedding stage in a cream sherwani, garland in his hands, warm stage light.", checks: [[reference_fidelity, "Is the kada visible on his right wrist?"], [set_consistency, "Is he recognisably the same man?"]]}
+  deliverable: "Four images, 9:16."
+  checks:
+    - [set_consistency, "Is he the man in the casting photo in all four frames?"]
+    - [set_consistency, "Is the scar on the right eyebrow in every frame that shows it?"]
+    - [set_consistency, "Is the kada on the right wrist in every frame that shows it?"]
+    - [set_consistency, "Is the moustache the same in all four?"]
+    - [set_consistency, "Is the hair parted on his left in all four?"]
+    - [set_consistency, "Is his skin tone the same in all four, not lightened?"]
+    - [prompt_adherence, "Does each frame have its described light: cool office, neon, dusk, warm stage?"]
+    - [composition, "Is each frame a true 9:16 composition?"]
+    - [prompt_adherence, "Is he the only clear face in each frame, with others background?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Are hands and face free of artefacts?"]
+    - [prompt_adherence, "Does each frame show its described scene?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one reference; set agreement needs the set review."}
+  video_followon: "V4: the autorickshaw frame as a 3-second performance clip."
+
+- id: CHR-FLM-02
+  title: "The actor at 20, 40 and 65 for a generational drama; mole and nose stud stay"
+  persona: "Casting and prosthetics team on a generational drama checking an age-progression look."
+  evidence: "Earlier bank IMG-GAME-13 (same operator fifteen years on) was medium tier; three ages with fixed marks is harder."
+  levers: [set, identity, continuity, locale, exclude]
+  inputs: [{source: SRC-ACTOR-F, role: source}]
+  prompt: |
+    This casting photo is the actor: dusky medium-dark skin, long black hair in a low braid, a gold
+    stud in her left nostril, a small mole just above the right corner of her upper lip, a black-bead
+    mangalsutra. Show her at the age described below, as a portrait from the waist up against a
+    plain warm grey backdrop, soft daylight, in a plain cotton saree. She must be unmistakably the
+    same woman: bone structure, eyes, the mole and the nose stud stay; age shows in skin, hair and
+    posture only. Her skin tone stays dusky at every age. No text. 4:5.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Bone structure and eyes"
+      - "Mole above the right corner of the lip; gold stud on the left nostril"
+      - "Dusky skin tone"
+    members:
+      - {name: "Age 20", prompt: "At twenty: fuller cheeks, smooth skin, hair long and loose, a light yellow saree.", checks: [[reference_fidelity, "Does she look about twenty?"], [reference_fidelity, "Is the mole above the right lip corner?"]]}
+      - {name: "Age 40", prompt: "At forty: a few fine lines, a strand of grey, hair in a bun, a maroon saree.", checks: [[reference_fidelity, "Does she look about forty?"], [reference_fidelity, "Is the nose stud on the left?"]]}
+      - {name: "Age 65", prompt: "At sixty-five: deep lines, mostly grey hair in a thin braid, slightly stooped, reading glasses, a white saree with a thin blue border.", checks: [[reference_fidelity, "Does she look about sixty-five?"], [set_consistency, "Is she still recognisably the same woman?"]]}
+  deliverable: "Three images, 4:5."
+  checks:
+    - [set_consistency, "Is she recognisably the same woman at all three ages?"]
+    - [set_consistency, "Is the mole above the right corner of the lip at all three ages?"]
+    - [set_consistency, "Is the nose stud on the left nostril at all three ages?"]
+    - [set_consistency, "Is the skin tone dusky at all three ages?"]
+    - [prompt_adherence, "Do the three ages read as about 20, 40 and 65?"]
+    - [prompt_adherence, "Does age show in skin, hair and posture, not a different face?"]
+    - [set_consistency, "Are the backdrop and light the same in all three?"]
+    - [set_consistency, "Is the bone structure the same?"]
+    - [prompt_adherence, "Is she alone in each?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces free of artefacts?"]
+    - [prompt_adherence, "Are the saree colours as described for each age?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-03
+  title: "The two children in four new scenes: classroom, river, festival, school bus"
+  persona: "Director of a children's feature building key frames from the location still."
+  evidence: "Child identity across scenes is fragile; two children together makes swaps visible."
+  levers: [set, identity, layout, locale, continuity]
+  inputs: [{source: SRC-KIDS-TREE, role: source}]
+  prompt: |
+    This still shows two ten-year-old Indian schoolchildren: a boy with short side-parted hair, a
+    white shirt and navy shorts, and a girl with two plaits tied with red ribbons, a white shirt
+    and a navy pinafore. Make one new frame of the same two children, in the scene described below,
+    as a cinematic still. Both faces stay exactly theirs; their ages, builds and uniforms stay the
+    same unless the scene says otherwise. The boy is always on the girl's right when they stand or
+    sit side by side. 16:9, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Both children's faces, ages and builds"
+      - "Girl's two plaits with red ribbons; boy's side-parted hair"
+      - "The boy on the girl's right when side by side"
+    members:
+      - {name: "Classroom", prompt: "In a village classroom, sharing a wooden bench, writing on slates, morning light from the windows.", checks: [[prompt_adherence, "Is the boy on the girl's right on the bench?"], [reference_fidelity, "Are the red ribbons visible?"]]}
+      - {name: "River", prompt: "Wading in a shallow river with their school shoes in their hands, uniforms rolled up, afternoon sun.", checks: [[set_consistency, "Are both faces the same children?"], [physics_plausibility, "Is the water at their shins?"]]}
+      - {name: "Festival", prompt: "At a village fair at night in festival clothes (she in a green langa, he in a kurta), holding a paper windmill, lights behind.", checks: [[reference_fidelity, "Are the plaits and ribbons still there?"], [prompt_adherence, "Are they lit by festival lights?"]]}
+      - {name: "School bus", prompt: "Looking out of a school bus window side by side, rain on the glass.", checks: [[prompt_adherence, "Is the boy on the girl's right?"], [physics_plausibility, "Are raindrops on the glass in front of them?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is the boy the same boy in all four?"]
+    - [set_consistency, "Is the girl the same girl in all four?"]
+    - [set_consistency, "Do they stay about ten years old in all four?"]
+    - [set_consistency, "Are the girl's plaits and ribbons in all four?"]
+    - [set_consistency, "Is the boy on the girl's right whenever they are side by side?"]
+    - [set_consistency, "Are uniforms the same where they wear them?"]
+    - [prompt_adherence, "Are the two of them the clear subjects, with any others in the background?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces and hands clean?"]
+    - [style, "Is the cinematic look the same as the still?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: "V4: the bus frame as a short clip with the rain running."
+
+- id: CHR-FLM-05
+  title: "The actor in the 1940s costume across four scenes, getting muddier in a fixed order"
+  persona: "Costume continuity supervisor on a Telugu period film."
+  evidence: "Progressive costume damage is a continuity sheet staple; it must accumulate, not reset."
+  levers: [set, multi-ref, identity, continuity, multi-step, locale]
+  inputs:
+    - {source: SRC-ACTOR-F, role: source, note: "the actor"}
+    - {source: SRC-COSTUME-REF, role: reference, note: "the costume"}
+  prompt: |
+    The first photo is the actor; the second is her costume: an indigo handloom sari with a mustard
+    checked border, a maroon elbow-sleeve blouse and silver anklets. Make one frame of her wearing
+    this costume in the scene below, cinematic, monsoon light. The costume's damage builds up in
+    order and never resets: frame 1 clean; frame 2 mud splashed to the knees; frame 3 mud to the
+    knees plus a torn left sleeve; frame 4 all of that plus the sari soaked dark. Her face, nose
+    stud on the left, mole and braid stay hers. 16:9, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, nose stud on the left, mole above the right lip corner, braid"
+      - "Indigo sari with mustard checked border, maroon blouse, silver anklets"
+      - "Damage accumulates in order: clean, mud, torn left sleeve, soaked"
+    members:
+      - {name: "1 Clean", prompt: "A village temple courtyard, she lights a lamp, costume clean.", checks: [[reference_fidelity, "Is the costume clean?"], [reference_fidelity, "Is the border mustard check?"]]}
+      - {name: "2 Mud", prompt: "A paddy field bund, she runs, mud splashed to her knees.", checks: [[prompt_adherence, "Is mud to the knees?"], [reference_fidelity, "Are the sleeves intact?"]]}
+      - {name: "3 Torn sleeve", prompt: "A forest path, she pushes through branches; the left sleeve is torn at the elbow.", checks: [[reference_fidelity, "Is the tear on the left sleeve?"], [reference_fidelity, "Is the mud from frame 2 still there?"]]}
+      - {name: "4 Soaked", prompt: "Heavy rain on a riverbank, she stands soaked, the sari darker and clinging.", checks: [[physics_plausibility, "Is the sari soaked and darker?"], [reference_fidelity, "Are the mud and the torn left sleeve still there?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is she the same woman in all four?"]
+    - [set_consistency, "Is it the same costume in all four?"]
+    - [set_consistency, "Does the damage build up in order without resetting?"]
+    - [set_consistency, "Is the tear on the left sleeve in frames 3 and 4 only?"]
+    - [set_consistency, "Are the silver anklets on both feet in every frame showing her feet?"]
+    - [set_consistency, "Is the nose stud on the left in every frame?"]
+    - [set_consistency, "Is her skin tone the same in all four?"]
+    - [prompt_adherence, "Is the light monsoon-soft in all four?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands and feet natural?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits with two inputs each; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-06
+  title: "Six frames of the anime heroine: six named expressions and poses, design unchanged"
+  persona: "Animation director preparing an acting sheet for the heroine."
+  evidence: "Earlier bank IMG-GAME-09 (six-expression grid from one reference) was medium tier; full-body acting adds pose and design."
+  levers: [set, identity, continuity, count, exact-text]
+  inputs: [{source: SRC-ANIME-HEROINE, role: source}]
+  prompt: |
+    Using this anime heroine, draw one full-body acting frame of her on the same neon rooftop, with
+    the expression and pose named below, in the same clean line art and cel shading. Her design is
+    exactly the reference: bob longer on her right with the teal streak, grey hoodie with the yellow
+    "07" patch on the left sleeve, red scarf, black cargo shorts, bandage on the left knee, white
+    high-tops with red laces. Only expression and pose change. 16:9.
+  exact_text: ["07"]
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Streak on her right; 07 patch on the left sleeve; bandage on the left knee"
+      - "Hoodie, scarf, shorts, high-tops with red laces"
+      - "Line weight and cel shading"
+    members:
+      - {name: "Joy", prompt: "Jumping with both fists up, laughing.", checks: [[prompt_adherence, "Is she laughing with fists up?"], [reference_fidelity, "Is the streak on her right?"]]}
+      - {name: "Anger", prompt: "Stamping a foot, pointing, shouting.", checks: [[prompt_adherence, "Is she shouting and pointing?"], [reference_fidelity, "Is the patch on her left sleeve?"]]}
+      - {name: "Fear", prompt: "Backing away, arms raised to her face.", checks: [[prompt_adherence, "Is she backing away in fear?"], [reference_fidelity, "Is the bandage on her left knee?"]]}
+      - {name: "Sadness", prompt: "Sitting hugging her knees, scarf over her mouth.", checks: [[prompt_adherence, "Is she hugging her knees?"], [reference_fidelity, "Are the laces red?"]]}
+      - {name: "Smug", prompt: "Leaning on the parapet, one eyebrow up, smirking.", checks: [[prompt_adherence, "Is she smirking with one eyebrow up?"], [reference_fidelity, "Is the streak still on her right?"]]}
+      - {name: "Surprise", prompt: "Frozen mid-step, eyes wide, mouth open.", checks: [[prompt_adherence, "Are her eyes wide and mouth open?"], [set_consistency, "Is the hoodie the same grey?"]]}
+  deliverable: "One image: six frames on one sheet."
+  checks:
+    - [prompt_adherence, "Are there six frames on the sheet?"]
+    - [set_consistency, "Is the streak on her right in all six?"]
+    - [set_consistency, "Is the 07 patch on her left sleeve in all six where visible?"]
+    - [set_consistency, "Is the bandage on her left knee in all six where visible?"]
+    - [set_consistency, "Are her proportions the same in all six?"]
+    - [style, "Is the line weight the same in all six?"]
+    - [prompt_adherence, "Is each named expression clearly readable?"]
+    - [text_accuracy, "Is 07 the only text?"]
+    - [set_consistency, "Is the rooftop background consistent?"]
+    - [visual_quality, "Are hands drawn cleanly?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [set_consistency, "Is the scarf red in all six?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit producing the whole sheet."}
+  video_followon: ""
+
+- id: CHR-FLM-07
+  title: "The headphone man in four later scenes; headphones and shirt carried"
+  persona: "Director of an OTT drama planning the lead's arc from the approved crosswalk still."
+  evidence: "Signature props drift or vanish across scenes; a costume with one prop is the simplest test."
+  levers: [set, identity, continuity, light-lock, exclude]
+  inputs: [{source: SRC-CROSSWALK, role: source}]
+  prompt: |
+    This still shows a man of about thirty on a crossing in a mustard-yellow short-sleeved
+    camp-collar shirt, dark jeans and black over-ear headphones. Make one later frame of the same
+    man in the scene described below, as a cinematic still. He keeps the same face, the same shirt
+    and the same headphones (worn on his head or round his neck as described); nothing about his
+    look changes between scenes. Only he is in focus; other people are soft background. No readable
+    text or logos. 16:9, cinema grain, natural colour.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face and build"
+      - "Mustard camp-collar shirt; dark jeans"
+      - "Black over-ear headphones"
+    members:
+      - {name: "Hospital corridor", prompt: "Night, a hospital corridor under cold tube light; he sits on a bench, headphones round his neck.", checks: [[reference_fidelity, "Are the headphones round his neck?"], [prompt_adherence, "Is the light cold tube light?"]]}
+      - {name: "Metro", prompt: "A crowded metro carriage at evening; he stands holding a rail, headphones on.", checks: [[reference_fidelity, "Are the headphones on his head?"], [reference_fidelity, "Is the shirt mustard?"]]}
+      - {name: "Rooftop", prompt: "Dusk on a rooftop, he leans on a railing looking at the city.", checks: [[set_consistency, "Is it the same man?"], [prompt_adherence, "Is it dusk light?"]]}
+      - {name: "Dawn beach", prompt: "Dawn on an empty beach, he walks barefoot at the waterline, headphones on.", checks: [[set_consistency, "Are the headphones the same model?"], [physics_plausibility, "Are his footprints behind him in the wet sand?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is he the same man in all four?"]
+    - [set_consistency, "Is the shirt the same mustard camp-collar shirt in all four?"]
+    - [set_consistency, "Are the headphones the same black over-ear model in all four?"]
+    - [set_consistency, "Are the jeans the same?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [prompt_adherence, "Is he the only person in focus?"]
+    - [text_accuracy, "Is there no readable text or logo?"]
+    - [set_consistency, "Is his skin tone the same?"]
+    - [visual_quality, "Are hands clean?"]
+    - [style, "Is the look cinematic in all four?"]
+    - [prompt_adherence, "Are headphones worn as described in each?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-08
+  title: "The astronaut in three frames deeper in the forest; arm band and wrist device stay on the left"
+  persona: "Concept artist on a sci-fi short building the sequence from the key frame."
+  evidence: "One-sided suit details flip across generated frames."
+  levers: [set, identity, continuity, light-lock, layout]
+  inputs: [{source: SRC-ASTRO-FOREST, role: source}]
+  prompt: |
+    This key frame shows an astronaut in a bulky white suit with one orange band on the upper left
+    arm, a boxy grey life-support pack, a gold-tinted visor and a small device with a green screen
+    strapped to the left forearm, in a dark alien forest of tall trunks with glowing teal veins.
+    Make one further frame of the same astronaut deeper in the same forest, as described below.
+    The suit's details stay on their sides: the band and the device are on the left arm. The face
+    is never seen. Teal and black palette, 16:9, film grain, no text or insignia.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "White bulky suit, grey pack, gold visor"
+      - "Orange band on the upper left arm; device on the left forearm"
+      - "Forest of straight trunks with teal veins; floating spores"
+    members:
+      - {name: "Kneeling", prompt: "Kneeling at a glowing pool, seen from the right, reaching in with the right hand.", checks: [[reference_fidelity, "Is the device on the far (left) arm, partly hidden?"], [prompt_adherence, "Is the right hand reaching into the pool?"]]}
+      - {name: "From behind", prompt: "From directly behind, walking into a clearing.", checks: [[reference_fidelity, "Is the band on the arm at frame left?"], [reference_fidelity, "Is the pack visible on the back?"]]}
+      - {name: "Close on the device", prompt: "Close on the left forearm device showing a green pulse line.", checks: [[reference_fidelity, "Is it on the left forearm?"], [reference_fidelity, "Is the screen green?"]]}
+  deliverable: "Three images, 16:9."
+  checks:
+    - [set_consistency, "Is the band on the upper left arm in every frame that shows it?"]
+    - [set_consistency, "Is the device on the left forearm in every frame that shows it?"]
+    - [set_consistency, "Is the suit the same in all three?"]
+    - [set_consistency, "Is the visor gold and the face never seen?"]
+    - [prompt_adherence, "Is the palette teal and black in all three?"]
+    - [set_consistency, "Is the forest the same forest?"]
+    - [prompt_adherence, "Does each frame show its action?"]
+    - [prompt_adherence, "Is there one astronaut?"]
+    - [text_accuracy, "Is there no text or insignia?"]
+    - [visual_quality, "Are gloved hands natural?"]
+    - [style, "Is the film grain consistent?"]
+    - [physics_plausibility, "Do the spores float in each frame?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-09
+  title: "The grandmother's day in five frames: kitchen, temple, market, bus, verandah at night"
+  persona: "Director of a Malayalam slice-of-life film boarding the grandmother's day."
+  evidence: "Elderly faces and small accessories (spectacles, sari border) drift across scenes."
+  levers: [set, identity, continuity, locale, light-lock]
+  inputs: [{source: SRC-ELDER-PORCH, role: source}]
+  prompt: |
+    This still shows a Kerala grandmother of about seventy-five: deep brown wrinkled skin, grey hair
+    in a low bun, round wire spectacles, an off-white cotton sari with a thin dark-green border.
+    Make one frame of her day, as described below, as a cinematic still in natural light. Her face,
+    spectacles, bun and sari stay exactly hers in every scene; she never looks younger and her skin
+    is never lightened. Other people, where present, are soft background. 3:2, no readable text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face and deep brown skin"
+      - "Round wire spectacles; grey low bun"
+      - "Off-white sari with a dark-green border"
+    members:
+      - {name: "Kitchen", prompt: "Dawn, she stirs a pot on a wood stove in a smoky kitchen, light through a window.", checks: [[reference_fidelity, "Are the spectacles on?"], [prompt_adherence, "Is it dawn light through smoke?"]]}
+      - {name: "Temple", prompt: "Morning, at a temple's brass lamp-tower, palms joined.", checks: [[reference_fidelity, "Is the sari border dark green?"], [prompt_adherence, "Are her palms joined?"]]}
+      - {name: "Market", prompt: "Noon, choosing bananas at a market stall.", checks: [[set_consistency, "Is it the same face?"], [prompt_adherence, "Is it bright noon?"]]}
+      - {name: "Bus", prompt: "Afternoon, seated by the window of a private bus, rain outside.", checks: [[physics_plausibility, "Is rain on the window?"], [set_consistency, "Is the bun the same?"]]}
+      - {name: "Verandah at night", prompt: "Night, back on her verandah by the lit brass lamp.", checks: [[prompt_adherence, "Is she lit by the lamp?"], [set_consistency, "Is she still the same woman?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [set_consistency, "Is she the same woman in all five?"]
+    - [set_consistency, "Are the spectacles the same round wire frames in all five?"]
+    - [set_consistency, "Is the sari off-white with a dark-green border in all five?"]
+    - [set_consistency, "Is her skin tone the same in all five?"]
+    - [set_consistency, "Is the bun the same in all five?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [prompt_adherence, "Is she the only person in focus?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [style, "Is the look consistent?"]
+    - [prompt_adherence, "Do the places read as Kerala?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-10
+  title: "The same horse in four frames: village, river crossing, fair, stable"
+  persona: "Animal coordinator on a period film checking that generated key frames keep the hero horse's markings."
+  evidence: "Animal markings are as identifying as a face and as easily lost."
+  levers: [set, identity, continuity, locale, light-lock]
+  inputs: [{source: SRC-HORSE-RIDER, role: source}]
+  prompt: |
+    This still shows a dark-bay Marwari horse with inward-curving ear tips, a white blaze down its
+    face and one white sock on the front left leg, with a red and gold saddle cloth. Make one frame
+    of the same horse in the scene described below, cinematic, natural light. The markings never
+    change or move: the blaze, and the white sock only on the front left leg. The saddle cloth is on
+    whenever the horse is saddled. Any rider is the same man in white with an orange turban. 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Dark-bay coat; inward-curving ear tips"
+      - "White blaze; one white sock on the front left leg only"
+      - "Red and gold saddle cloth when saddled"
+    members:
+      - {name: "Village", prompt: "Morning, tied outside a mud house, children watching from a doorway.", checks: [[reference_fidelity, "Is the white sock on the front left leg?"], [reference_fidelity, "Are the ear tips curved inward?"]]}
+      - {name: "River crossing", prompt: "Midday, wading a river with the rider, water to its belly.", checks: [[reference_fidelity, "Is the blaze visible?"], [physics_plausibility, "Is the water at belly height with splashes?"]]}
+      - {name: "Fair", prompt: "Evening, at a cattle fair among lanterns, unsaddled.", checks: [[reference_fidelity, "Is the saddle cloth off?"], [set_consistency, "Is it the same horse?"]]}
+      - {name: "Stable", prompt: "Night, in a stone stable, eating from a manger, lantern light.", checks: [[prompt_adherence, "Is it lit by a lantern?"], [reference_fidelity, "Is the sock still on the front left?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is the white sock on the front left leg only, in every frame?"]
+    - [set_consistency, "Is the blaze present in every frame that shows the face?"]
+    - [set_consistency, "Are the ear tips curved inward in every frame?"]
+    - [set_consistency, "Is the coat dark bay in all four?"]
+    - [set_consistency, "Is the rider, when present, the same man?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [visual_quality, "Is the horse's anatomy correct in all four?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is there one horse in focus?"]
+    - [style, "Is the look consistent?"]
+    - [prompt_adherence, "Is the saddle cloth on only when saddled?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-11
+  title: "Rider and motorcycle in four towns along the route; dent and thread never flip"
+  persona: "Continuity supervisor on a road film."
+  evidence: "One-sided vehicle details flip when frames are generated independently."
+  levers: [set, identity, continuity, locale, unseen]
+  inputs: [{source: SRC-HERO-BIKE, role: source}]
+  prompt: |
+    This still shows a rider with aviator sunglasses, a brown leather jacket over a white kurta and
+    a short beard on a classic black motorcycle with a round headlamp, olive saddlebags on both
+    sides, a dent on the right side of the tank and a red thread on the left grip. Make one frame of
+    the same rider and bike in the town described below, cinematic, natural light. The dent is only
+    ever on the right of the tank; the thread only on the left grip. No brand marks, no number
+    plate text. 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Rider: sunglasses, brown jacket, white kurta, beard"
+      - "Bike: black, round headlamp, olive saddlebags"
+      - "Dent on the right of the tank; red thread on the left grip"
+    members:
+      - {name: "Jaisalmer", prompt: "Parked by a golden sandstone fort gate at noon, seen from the bike's right.", checks: [[reference_fidelity, "Is the dent visible on this right side?"], [prompt_adherence, "Is it harsh noon?"]]}
+      - {name: "Pushkar", prompt: "Riding past ghats at dusk, seen from the bike's left.", checks: [[reference_fidelity, "Is there no dent on this left side?"], [reference_fidelity, "Is the red thread on the near grip?"]]}
+      - {name: "Udaipur", prompt: "Parked by a lake at dawn, head-on.", checks: [[reference_fidelity, "Is the thread on the grip at frame right?"], [prompt_adherence, "Is it dawn?"]]}
+      - {name: "Highway dhaba", prompt: "Night, parked at a highway dhaba, the rider drinking tea beside it.", checks: [[set_consistency, "Is it the same rider?"], [prompt_adherence, "Is it lit by the dhaba's bulbs?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is the dent only ever on the right of the tank?"]
+    - [set_consistency, "Is the thread only ever on the left grip?"]
+    - [set_consistency, "Is the rider the same in all four?"]
+    - [set_consistency, "Are the saddlebags olive on both sides?"]
+    - [set_consistency, "Is it the same bike in all four?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its town?"]
+    - [text_accuracy, "Are there no brand marks or plate text?"]
+    - [prompt_adherence, "Is the rider the only person in focus?"]
+    - [visual_quality, "Is the bike's geometry consistent?"]
+    - [style, "Is the look consistent?"]
+    - [reference_fidelity, "Is the headlamp round and chrome?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-12
+  title: "The wanderer in four close frames: calm, grief, anger, release"
+  persona: "Director of an independent short testing whether generated close-ups can carry a performance arc."
+  evidence: "Earlier bank IMG-LE-08 (expression change only) was low tier for one change; four strong emotions with identity held is the harder test."
+  levers: [set, identity, continuity, camera, light-lock]
+  inputs: [{source: SRC-RIDGE-WANDERER, role: source}]
+  prompt: |
+    This still shows a man in his late fifties with a short grey beard and a weathered face, in a
+    long charcoal wool coat and a rust knitted scarf, on a misty ridge at dawn. Make one close-up of
+    him, head and shoulders, with the emotion described below, under the same pale dawn light from
+    frame left. His face, beard and scarf stay exactly his; only his expression changes, and it must
+    be acted with the whole face (eyes, brow, mouth), not a mask. 2.39:1, muted grade, film grain,
+    misty valley soft behind him, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face, grey beard, weathered skin"
+      - "Charcoal coat collar and rust scarf"
+      - "Pale dawn light from frame left; misty background"
+    members:
+      - {name: "Calm", prompt: "Calm, eyes half closed, breathing the cold air.", checks: [[prompt_adherence, "Does he read as calm?"], [set_consistency, "Is it the same man?"]]}
+      - {name: "Grief", prompt: "Grief, eyes wet and red-rimmed, mouth tight, chin trembling.", checks: [[prompt_adherence, "Does he read as grieving?"], [set_consistency, "Is the beard the same?"]]}
+      - {name: "Anger", prompt: "Anger, jaw clenched, brow down, nostrils flared, shouting at the sky.", checks: [[prompt_adherence, "Does he read as angry?"], [visual_quality, "Is the open mouth anatomically right?"]]}
+      - {name: "Release", prompt: "Release, a small smile, tears drying, looking down into the valley.", checks: [[prompt_adherence, "Does he read as at peace?"], [prompt_adherence, "Is the light still from frame left?"]]}
+  deliverable: "Four images, 2.39:1."
+  checks:
+    - [set_consistency, "Is he the same man in all four?"]
+    - [set_consistency, "Is the beard the same length and shape in all four?"]
+    - [set_consistency, "Is the scarf rust and the coat charcoal in all four?"]
+    - [prompt_adherence, "Are the four emotions clearly different?"]
+    - [prompt_adherence, "Is each emotion acted with eyes, brow and mouth together?"]
+    - [prompt_adherence, "Is the light pale dawn from frame left in all four?"]
+    - [prompt_adherence, "Is every frame a head-and-shoulders close-up?"]
+    - [composition, "Is every frame 2.39:1?"]
+    - [prompt_adherence, "Is he alone in every frame?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the faces free of artefacts?"]
+    - [style, "Is the grade muted with grain in all four?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: "V4: the grief close-up as a 3-second performance clip."
+
+- id: CHR-FLM-13
+  title: "A Telugu village postman described in text, held across four frames from noon sun to lamp light"
+  persona: "Writer-director of a Telugu feature visualising the lead before casting."
+  evidence: "Skin tone drifting lighter under bright or mixed light is a known failure on darker skin."
+  levers: [set, identity, light-lock, locale, long-brief]
+  prompt: |
+    A village postman in coastal Andhra Pradesh, cinematic stills, 3:2. He is about fifty, lean, with
+    very dark brown skin, a grey-and-black moustache, a receding hairline with short grey hair, and
+    thick black-rimmed glasses. He wears a faded khaki uniform shirt with a brass name badge on the
+    left pocket, khaki trousers and rubber sandals, and carries a worn brown leather mail bag on his
+    right shoulder. He rides an old black bicycle. Make the frame described below. His skin stays the
+    same very dark brown in every light: never lightened by sun, never greyed by shade.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Face, moustache, glasses, receding grey hair"
+      - "Very dark brown skin tone"
+      - "Khaki uniform with brass badge on the left pocket; mail bag on the right shoulder"
+    members:
+      - {name: "Noon", prompt: "Harsh noon, cycling along a paddy-field bund.", checks: [[prompt_adherence, "Is it harsh noon light?"], [set_consistency, "Is his skin very dark brown, not washed out?"]]}
+      - {name: "Shade", prompt: "Under a neem tree, handing a letter to an old woman, deep shade with dappled light.", checks: [[prompt_adherence, "Is he in shade with dapples?"], [set_consistency, "Is his skin tone the same as at noon?"]]}
+      - {name: "Golden hour", prompt: "Golden hour, walking his bicycle past a temple tank.", checks: [[prompt_adherence, "Is it warm golden light?"], [set_consistency, "Is the bag on his right shoulder?"]]}
+      - {name: "Lamp light", prompt: "Night, reading a letter aloud by a kerosene lamp in a hut.", checks: [[prompt_adherence, "Is he lit by the lamp?"], [set_consistency, "Are the glasses the same?"]]}
+  deliverable: "Four images, 3:2."
+  checks:
+    - [set_consistency, "Is he the same man in all four?"]
+    - [set_consistency, "Is his skin tone the same very dark brown in all four lights?"]
+    - [set_consistency, "Are the glasses thick and black-rimmed in all four?"]
+    - [set_consistency, "Is the badge on the left pocket in every frame that shows it?"]
+    - [set_consistency, "Is the bag on his right shoulder in every frame that shows it?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [prompt_adherence, "Do the places read as coastal Andhra?"]
+    - [prompt_adherence, "Is he the main subject in each frame?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Are hands natural?"]
+    - [style, "Is the look cinematic and consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four text-to-image calls with one description; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-14
+  title: "Three described siblings across four frames of a family drama"
+  persona: "Show creator visualising three leads of a family drama from the series bible."
+  evidence: "Several described characters in one frame blend features; holding three across four frames is the test."
+  levers: [set, identity, count, layout, long-brief, locale]
+  prompt: |
+    Three adult siblings in a Lucknow family drama, cinematic stills, 16:9. The eldest, a man of
+    forty-five, is heavy-set with a full grey beard, a white kurta and a black Nehru jacket. The
+    middle sister, forty, is tall and thin with a short bob, round gold glasses and a mustard
+    cotton saree. The youngest brother, thirty, is clean-shaven with curly hair, a denim shirt and
+    a silver chain. Make the frame described below. Each sibling keeps their own face and look and
+    never borrows another's features; they stand or sit in the order eldest, sister, youngest from
+    left to right whenever in a line.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Eldest: heavy-set, full grey beard, white kurta, black Nehru jacket"
+      - "Sister: tall, short bob, round gold glasses, mustard saree"
+      - "Youngest: clean-shaven, curly hair, denim shirt, silver chain"
+    members:
+      - {name: "Father's funeral", prompt: "Morning, the three in white at a cremation ghat, in a line.", checks: [[prompt_adherence, "Are they in order eldest, sister, youngest from left?"], [prompt_adherence, "Are there exactly three siblings?"]]}
+      - {name: "Dinner", prompt: "Night, around a dining table, arguing.", checks: [[set_consistency, "Is the sister's bob and glasses the same?"], [prompt_adherence, "Is it warm interior light?"]]}
+      - {name: "Courtyard", prompt: "Afternoon, the youngest alone in the family courtyard.", checks: [[set_consistency, "Is the silver chain on?"], [prompt_adherence, "Is he alone?"]]}
+      - {name: "Reconciliation", prompt: "Dusk on a rooftop, the eldest hugging the youngest while the sister watches.", checks: [[set_consistency, "Is the eldest's beard grey and full?"], [prompt_adherence, "Is the eldest hugging the youngest?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is each sibling the same person across the frames they appear in?"]
+    - [set_consistency, "Are the three faces clearly distinct with no blended features?"]
+    - [set_consistency, "Is the order eldest, sister, youngest from left whenever they stand in a line?"]
+    - [set_consistency, "Are the eldest's beard and build the same?"]
+    - [set_consistency, "Are the sister's glasses round and gold in every frame?"]
+    - [set_consistency, "Is the youngest clean-shaven with curly hair in every frame?"]
+    - [prompt_adherence, "Are they in white in the funeral frame?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Are the right number of siblings in each frame?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands and faces clean?"]
+    - [prompt_adherence, "Does the setting read as Lucknow?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four text-to-image calls; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-15
+  title: "A 3D animated character from text: turnaround plus two action frames, one design"
+  persona: "Visual development lead on an animated feature exploring the lead before the model is built."
+  evidence: "Earlier bank IMG-GAME-03 (four-view turnaround from text) was high tier; adding action frames that hold the design is harder."
+  levers: [set, identity, unseen, long-brief, continuity]
+  prompt: |
+    An original character for a 3D animated feature, rendered in a polished stylised 3D look with
+    soft daylight. Bittu is a nine-year-old boy with oversized ears, a gap in his front teeth, a
+    shock of black hair with one cowlick standing up at the back, and brown skin. He wears a
+    striped red-and-white T-shirt, blue shorts with a patch on the right knee, one green sock on his
+    left foot and one yellow sock on his right, and worn canvas shoes. He carries a home-made
+    cardboard telescope. Make the frame described below. His design is identical in every frame.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Oversized ears, tooth gap, cowlick at the back, brown skin"
+      - "Red-and-white striped T-shirt; blue shorts with a patch on the right knee"
+      - "Green sock on the left foot, yellow on the right; cardboard telescope"
+    members:
+      - {name: "Front", prompt: "Front view, standing straight, neutral, plain light grey background.", checks: [[set_consistency, "Is the green sock on his left foot?"], [set_consistency, "Is the patch on the right knee?"]]}
+      - {name: "Back", prompt: "Back view, same background.", checks: [[set_consistency, "Is the cowlick visible at the back?"], [set_consistency, "Is the green sock now on frame left?"]]}
+      - {name: "Side", prompt: "Left side view, same background.", checks: [[set_consistency, "Is the near sock green?"], [set_consistency, "Are the ears oversized in profile?"]]}
+      - {name: "Climbing", prompt: "Climbing a mango tree, telescope in his teeth.", checks: [[set_consistency, "Is the telescope the cardboard one?"], [physics_plausibility, "Are his hands gripping the branch?"]]}
+      - {name: "Stargazing", prompt: "Night, lying on a rooftop looking through the telescope, moonlight.", checks: [[set_consistency, "Is the striped shirt the same?"], [prompt_adherence, "Is he lit by moonlight?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is his design identical in all five?"]
+    - [set_consistency, "Is the green sock on his left foot and the yellow on his right wherever visible?"]
+    - [set_consistency, "Is the knee patch on the right in every frame that shows it?"]
+    - [set_consistency, "Is the cowlick at the back in every frame that shows it?"]
+    - [set_consistency, "Is the tooth gap visible wherever he smiles?"]
+    - [set_consistency, "Are his proportions the same in all five?"]
+    - [style, "Is the 3D style the same in all five?"]
+    - [prompt_adherence, "Do the action frames show their actions?"]
+    - [prompt_adherence, "Is he the only character?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean?"]
+    - [set_consistency, "Is his skin tone the same?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five text-to-image calls; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-FLM-16
+  title: "Pencil character study: one boy at 6, 10, 14 and 18"
+  persona: "Character designer on a coming-of-age animated series showing the lead's growth."
+  evidence: "Age progression from text alone, with fixed identifying marks, in a sketch style."
+  levers: [set, identity, continuity, long-brief, exclude]
+  prompt: |
+    A character study on white paper in soft graphite pencil, the same boy at four ages side by
+    side on one sheet, full body, standing, same pose, a height line behind him. He is South Asian,
+    with thick wavy hair parted in the middle, a small round birthmark under his left eye, large
+    dark eyes and a wide mouth. He always wears a wristwatch on his right wrist and a red thread
+    bracelet on his left. At each age show his height and build changing realistically while his
+    face stays recognisably his. Small age labels only, below each figure: 6, 10, 14 and 18.
+  exact_text: ["6", "10", "14", "18"]
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Hair parted in the middle; birthmark under the left eye"
+      - "Watch on the right wrist; red thread on the left wrist"
+      - "Same standing pose; one height line"
+    members:
+      - {name: "6", prompt: "Age six: small, round-faced, in a school uniform.", checks: [[set_consistency, "Is the birthmark under his left eye?"], [prompt_adherence, "Does he look about six?"]]}
+      - {name: "10", prompt: "Age ten: taller, thinner, in a T-shirt and shorts.", checks: [[set_consistency, "Is the watch on his right wrist?"], [prompt_adherence, "Does he look about ten?"]]}
+      - {name: "14", prompt: "Age fourteen: lanky, gangly, in a school blazer.", checks: [[set_consistency, "Is the thread on his left wrist?"], [prompt_adherence, "Does he look about fourteen?"]]}
+      - {name: "18", prompt: "Age eighteen: adult height, light moustache, in a shirt and jeans.", checks: [[set_consistency, "Is he recognisably the same person?"], [prompt_adherence, "Does he look about eighteen?"]]}
+  deliverable: "One image: four figures on one sheet."
+  checks:
+    - [prompt_adherence, "Are there four figures on one sheet?"]
+    - [text_accuracy, "Are the age labels 6, 10, 14 and 18?"]
+    - [set_consistency, "Is the birthmark under his left eye at every age?"]
+    - [set_consistency, "Is the watch on his right wrist at every age?"]
+    - [set_consistency, "Is the red thread on his left wrist at every age?"]
+    - [set_consistency, "Is the hair parted in the middle at every age?"]
+    - [set_consistency, "Is he recognisably the same person at every age?"]
+    - [physics_plausibility, "Do height and build change realistically against the height line?"]
+    - [style, "Is the graphite style consistent?"]
+    - [prompt_adherence, "Are the four figures in the same pose?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are hands drawn cleanly?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

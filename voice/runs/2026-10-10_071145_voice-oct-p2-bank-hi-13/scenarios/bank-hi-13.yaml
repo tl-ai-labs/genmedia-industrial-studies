@@ -1,0 +1,45 @@
+# bank-hi-13 - Credit card minimum-due reminder (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-13: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-13
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Cards - dispatch, limits, dues, rewards, declines, replacement.
+# TARGET CUSTOMER. Credit Card Issuers, Retail Banks.
+# WHAT THIS TESTS. Currency amount plus a due-date phrase in one short sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times.
+# PICKED AS. Even contest - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-13
+modality: voice
+task: text_to_speech
+title: "Credit card minimum-due reminder - Hinglish"
+
+input:
+  script: |
+    Aapki credit card ki minimum due amount, do hazaar teen sau rupaye, pandrah tareek tak pending hai. Please time par payment karein taaki late fee na lage.
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount stated in the Indian numbering system, not the international convention
+  2) Date/validity phrase ("pandrah tareek") recoverable exactly
+  3) English domain terms (EMI/due/auto-debit etc.) stay intelligible inside the Hindi sentence
+  4) Calm, unhurried call-centre pace, every digit distinct
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, banking-financial-services, cards, easy, even-contest, v2-bank]

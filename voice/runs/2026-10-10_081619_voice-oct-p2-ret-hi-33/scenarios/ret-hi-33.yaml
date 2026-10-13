@@ -1,0 +1,45 @@
+# ret-hi-33 - Angry repeat-complaint customer — de-escalation (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-33: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-33
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Returns, refunds, exchange & warranty.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# WHAT THIS TESTS. An empathetic de-escalation register sustained while reading an order code and a goodwill amount
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: brands; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-33
+modality: voice
+task: text_to_speech
+title: "Angry repeat-complaint customer — de-escalation - Hinglish"
+
+input:
+  script: |
+    Sir, main samajh sakti hoon aap kitne pareshaan hain — yeh teesri baar hai ki aapka Croma replacement delay hua hai. Main abhi aapka order O, R, D, seven, seven, one, zero, five priority par daal rahi hoon, aur Rs 500 ka goodwill voucher bhi add kar rahi hoon.
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Genuine empathy, not scripted or defensive (judge)
+  2) "ORD77105" recoverable character-for-character
+  3) Voucher amount "paanch sau" recoverable
+  4) Tone stays calm and warm through the code readback
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, ecommerce-retail, returns-refunds-exchange-warranty, hard, gemini-lean, v2-bank]

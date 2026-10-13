@@ -1,0 +1,45 @@
+# ret-hi-05 - Big Billion Days bank offer — percent, cap, launch date (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-05: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-05
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Sale events & offers - festive sales, coupons, bank offers, restock.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# WHAT THIS TESTS. A sale brand, a bank brand, a raw percentage, a capped amount and a numeral date + midnight time, stacked
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-05
+modality: voice
+task: text_to_speech
+title: "Big Billion Days bank offer — percent, cap, launch date - Hindi"
+
+input:
+  script: |
+    Flipkart Big Billion Days में HDFC Bank credit card पर 10% instant discount मिलेगा, maximum ₹1,750 तक। Sale 27 सितंबर को रात 12 बजे शुरू होगी!
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "10%" read as "दस प्रतिशत" or "ten percent"
+  2) Cap "सत्रह सौ पचास" recoverable
+  3) Date "सत्ताईस सितंबर" and time "रात बारह बजे" recoverable
+  4) "Big Billion Days" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, ecommerce-retail, sale-events-offers, hard, gemini-lean, v2-bank]

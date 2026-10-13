@@ -1,0 +1,43 @@
+# md-en-08 - Startup pitch, confident hustle (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-30 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-30): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone).
+
+id: md-en-08
+modality: voice
+task: styled_tts
+title: "Startup pitch, confident hustle - English"
+
+input:
+  script: |
+    Investors, our product has already reached 2,00,000 users in just three months, and this is only the beginning. Give us the funding, and we'll show you real scale.
+  language: en-IN
+  style: "confident, energetic pitch delivery"
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "2,00,000" read as "two lakh"
+  2) Confident energy without rushing the numbers (judge)
+  3) Full text read
+
+checks:
+  duration_s: {min: 5.6, max: 28.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  # Expected item 1 is the lakh reading; added 2026-10-09 so it is checked,
+  # as in the banking scenarios, and not left to the judge alone.
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "two hundred thousand"
+
+tags: [oct-2026, english, micro-drama-entertainment, corporate-business, medium, gemini-lean, new-english]

@@ -1,0 +1,383 @@
+# Storyboard to shot — Film, OTT & micro-drama scenarios. Slots: vstb.yaml.
+code: VSTB
+scenarios:
+
+- id: VSTB-FLM-01
+  seed: true
+  sahil: storyboard
+  title: "Storyboard panel 4, the visor ECU reflecting the forest, as a live shot"
+  persona: "Director of a sci-fi short turning the approved board into shots, panel by panel."
+  evidence: "Sahil's screen-share (screenshots 234–235): customers make videos from storyboards like these; the shot must honour the panel's size and move and the key frame's world."
+  levers: [camera, identity, physics, multi-ref, layout, exclude]
+  inputs:
+    - {source: SRC-VBOARD-ASTRO, role: still1, note: "the board; this shot is panel 4"}
+    - {source: SRC-ASTRO-FOREST, role: environment, note: "the key frame: suit, forest and light"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 4, "Trees reflected in the visor · ECU ·
+    Static". The second image is the key frame for the look. Make the live-action shot for panel 4:
+    an extreme close-up of the astronaut's gold-tinted visor, locked off, filling the 2.39:1 frame as
+    the panel does, the visor's curve running from frame left to right. In the visor we see the forest
+    reflected and curved by the glass: tall straight dark trunks with glowing teal veins, floating
+    spores, and the single shaft of white light from the upper right of the key frame, which appears in
+    the reflection mirrored on the visor's left. Over six seconds the spores drift through the
+    reflection and the veins pulse once, slowly, at about three seconds; the astronaut's breath fogs
+    the inside of the visor faintly at the bottom edge and clears. The face behind the visor is never
+    seen. The orange band on the left arm and the wrist device are out of frame. Teal and black, film
+    grain, no text.
+  clip: {duration: 6, aspect: "2.39:1", camera: "locked off, extreme close-up"}
+  deliverable: "One 6-second clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Is it an extreme close-up of the visor, filling the frame like panel 4?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [composition, "Does the visor's curve run across the frame as in the panel?"]
+    - [physics_plausibility, "Does the visor reflect the forest, curved by the glass?"]
+    - [physics_plausibility, "Is the light shaft reflected mirrored, on the visor's left?"]
+    - [reference_fidelity, "Do the trunks, teal veins and spores match the key frame?"]
+    - [prompt_adherence, "Do the veins pulse once at about 3 seconds?"]
+    - [temporal_consistency, "Do spores drift smoothly through the reflection?"]
+    - [physics_plausibility, "Does breath fog the inside of the visor faintly and clear?"]
+    - [prompt_adherence, "Is the face behind the visor never seen?"]
+    - [style, "Is it teal and black with film grain, matching the key frame?"]
+    - [temporal_consistency, "Is there no morphing of the visor's shape?"]
+    - [text_accuracy, "Is there no text or caption in the shot?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+  video_followon: ""
+
+- id: VSTB-FLM-02
+  title: "Panel 8, the whole forest pulsing, as a crane up that leaves the astronaut tiny"
+  persona: "Director of a sci-fi short turning the approved board into shots, panel by panel."
+  evidence: "Board arrows name a move; generated cameras often push in or orbit instead of craning."
+  levers: [camera-move, multi-ref, off-centre, light-lock, timing]
+  inputs:
+    - {source: SRC-VBOARD-ASTRO, role: still1, note: "the board; this shot is panel 8"}
+    - {source: SRC-ASTRO-FOREST, role: environment, note: "the key frame: suit, forest and light"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 8, "Whole forest pulses at once · EWS ·
+    Crane up". The second image is the key frame for the look. Make the live-action shot: start at
+    the astronaut's waist height, the astronaut standing still on the left third, and over eight
+    seconds crane straight up past the trunks until the camera is above the canopy edge, looking down,
+    the astronaut a tiny white figure off-centre at lower left in a sea of dark trunks. At 5 seconds
+    every teal vein in every trunk pulses brighter at once, a single wave of light, then fades back.
+    The shaft of white light stays at the upper right. Spores drift. Teal and black, film grain, no
+    text.
+  clip: {duration: 8, aspect: "2.39:1", camera: "crane straight up from waist height to above the canopy edge"}
+  deliverable: "One 8-second clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Does the camera crane straight up rather than push in or orbit?"]
+    - [prompt_adherence, "Does it end as an extreme wide looking down?"]
+    - [composition, "Is the astronaut tiny and off-centre at lower left at the end?"]
+    - [prompt_adherence, "Do all the veins pulse together at about 5 seconds?"]
+    - [prompt_adherence, "Does the light shaft stay at the upper right?"]
+    - [reference_fidelity, "Do the suit and orange band match the key frame?"]
+    - [reference_fidelity, "Do the trunks and veins match the key frame?"]
+    - [motion_coherence, "Does the astronaut stay still while the camera rises?"]
+    - [physics_plausibility, "Do the trunks pass with correct parallax as the camera rises?"]
+    - [temporal_consistency, "Is there no morphing of the trunks?"]
+    - [style, "Is it teal and black with film grain?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-03
+  title: "Chase panel 2: the hoodie man bolts left to right from the chai stall in the rain, pan right"
+  persona: "First AD on a Hindi OTT thriller, previewing the chase from the board and the location still."
+  evidence: "Screen direction across a chase must hold; models often flip the runner's direction."
+  levers: [multi-ref, camera-move, continuity, physics, locale, layout]
+  inputs:
+    - {source: SRC-VBOARD-CHASE, role: still1, note: "the board; this shot is panel 2"}
+    - {source: SRC-CHAI-STALL, role: environment, note: "the location: the stall, the rain, the light"}
+  prompt: |
+    The first image is the chase storyboard; this shot is its panel 2, "The hoodie man bolts left to
+    right · WS · Pan right". The second image is the tea stall where the chase begins. Make a 6-second
+    wide shot: the young man in the wet grey hoodie springs up from the blue stool at the stall and runs
+    left to right along the lane, small in the frame as in the panel; the camera pans right to follow
+    him, the stall sliding out of frame left. The delivery rider in the red jacket stays at the counter
+    and turns his head to watch. Heavy rain, puddles splashing under his feet, the cyan-white tube light
+    on the wet road. He never runs towards camera or right to left. No text other than the stall board.
+  clip: {duration: 6, aspect: "2.39:1", camera: "wide, pan right following the runner"}
+  deliverable: "One 6-second clip, 2.39:1."
+  checks:
+    - [motion_coherence, "Does the hoodie man run left to right throughout?"]
+    - [prompt_adherence, "Does the camera pan right to follow him?"]
+    - [composition, "Is he small in a wide frame as in panel 2?"]
+    - [prompt_adherence, "Does the stall slide out of frame left?"]
+    - [reference_fidelity, "Is he in the wet grey hoodie from the location still?"]
+    - [reference_fidelity, "Does the rider in the red jacket stay at the counter?"]
+    - [physics_plausibility, "Do puddles splash under his feet?"]
+    - [physics_plausibility, "Does the rain fall consistently?"]
+    - [prompt_adherence, "Is the cyan-white tube light reflected on the wet road?"]
+    - [motion_coherence, "Is his run natural, without limb glitches?"]
+    - [prompt_adherence, "Is the rider turning to watch?"]
+    - [text_accuracy, "Is there no text other than the stall board?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-04
+  title: "Chase panel 5: the vault over the banana handcart, same hoodie, same direction"
+  persona: "Stunt coordinator checking the vault from the board before the rehearsal."
+  evidence: "A vault needs believable weight; the handcart and bananas must react without passing through him."
+  levers: [physics, continuity, camera, layout, locale]
+  inputs: [{source: SRC-VBOARD-CHASE, role: first_frame, note: "panel 5 is cropped and used as the start"}]
+  prompt: |
+    This is the chase storyboard; make the live-action shot for panel 5, "Hoodie man vaults a handcart ·
+    MS · Static", starting from the framing panel 5 shows. A locked-off medium shot in heavy rain on a
+    Mumbai lane at night: the young man in the wet grey hoodie runs in from frame left, plants both
+    hands on the edge of a wooden handcart heaped with green and yellow banana bunches, swings his legs
+    over to the right, lands on the far side and keeps running out of frame right. The cart rocks once
+    and two bananas fall onto the road. His hands never pass through the bananas. Rain and puddles,
+    cyan street light. Photoreal live action, not a drawing.
+  clip: {duration: 5, aspect: "2.39:1", camera: "locked off, medium shot"}
+  deliverable: "One 5-second clip, 2.39:1, photoreal."
+  checks:
+    - [motion_coherence, "Does he run in from the left and leave to the right?"]
+    - [physics_plausibility, "Does he plant his hands on the cart's edge and vault with believable weight?"]
+    - [physics_plausibility, "Do his hands and legs never pass through the cart or bananas?"]
+    - [physics_plausibility, "Does the cart rock once and do two bananas fall?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [composition, "Is it a medium shot as in panel 5?"]
+    - [reference_fidelity, "Is he in a wet grey hoodie?"]
+    - [style, "Is it photoreal, not a drawing?"]
+    - [physics_plausibility, "Does the rain fall consistently and puddles splash?"]
+    - [visual_quality, "Are his hands natural?"]
+    - [prompt_adherence, "Are exactly two bananas knocked off?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call; the panel crop is the first frame."}
+
+- id: VSTB-FLM-05
+  title: "Panel 5: the boy lifts her bag with his left hand under the banyan, as the still's world"
+  persona: "Director of a Kannada coming-of-age feature previewing a quiet beat from the board."
+  evidence: "Small hand-side details (left hand, looking frame right) are what boards fix and models drop."
+  levers: [multi-ref, identity, layout, light-lock, locale, continuity]
+  inputs:
+    - {source: SRC-VBOARD-KIDS, role: still1, note: "the board; this shot is panel 5"}
+    - {source: SRC-KIDS-TREE, role: environment, note: "the key frame: children, tree and light"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 5, "He picks up her bag · MS · Static".
+    The second image is the key frame. The girl has already walked off frame right. Make a locked-off
+    6-second medium shot of the boy alone on the banyan root, in his white shirt and navy shorts: he
+    looks towards frame right where she went, then reaches across with his left hand and lifts her brown
+    canvas bag by its strap, setting it on his knee. The aerial roots hang at the left; the fence runs
+    off to the right behind him. Low sun behind the tree, warm rim light on his hair and shoulders, his
+    face in soft shade. Fine film grain. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, medium shot"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does he lift the bag with his left hand?"]
+    - [prompt_adherence, "Does he look towards frame right?"]
+    - [prompt_adherence, "Is the boy alone in frame?"]
+    - [reference_fidelity, "Does he match the boy in the key frame?"]
+    - [reference_fidelity, "Is the bag brown canvas, lifted by its strap?"]
+    - [composition, "Is it a medium shot as in panel 5?"]
+    - [prompt_adherence, "Is he rim-lit from behind with his face in soft shade?"]
+    - [prompt_adherence, "Are the aerial roots left and the fence right?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [motion_coherence, "Is the reach natural and unhurried?"]
+    - [visual_quality, "Is his hand natural with five fingers?"]
+    - [style, "Is there fine film grain?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-06
+  title: "Panel 2: the over-the-shoulder onto the suspect, held to the panel's composition"
+  persona: "Cinematographer on a crime series checking the OTS framing the director boarded."
+  evidence: "Over-the-shoulder framing (who is foreground, which third) is routinely ignored."
+  levers: [multi-ref, off-centre, camera, light-lock, identity]
+  inputs:
+    - {source: SRC-VBOARD-INTERROGATION, role: still1, note: "the board; this shot is panel 2"}
+    - {source: SRC-INTERROGATION, role: environment, note: "the key frame: room, cast and lamp"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 2, "OTS". The second image is the key
+    frame. Make a 6-second over-the-shoulder shot held exactly to panel 2: over the detective's right
+    shoulder, her shoulder and the back of her short hair large and soft in the left third; the
+    suspect's face in the right third under the lamp's hard top light, the bruise on his left
+    cheekbone visible. He looks down at his hands, then up into her eyes at 4 seconds. A very slow push
+    in. The constable at the door is soft in the background, arms folded. Green walls, deep shadow,
+    no text.
+  clip: {duration: 6, aspect: "16:9", camera: "over-the-shoulder, very slow push in"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [composition, "Is it over her right shoulder, her shoulder and hair in the left third?"]
+    - [composition, "Is his face in the right third as in panel 2?"]
+    - [prompt_adherence, "Is the foreground soft and his face in focus?"]
+    - [reference_fidelity, "Is the bruise on his left cheekbone?"]
+    - [prompt_adherence, "Is he lit by a hard top light from the lamp?"]
+    - [prompt_adherence, "Does he look up at about 4 seconds?"]
+    - [prompt_adherence, "Is there a very slow push in?"]
+    - [reference_fidelity, "Is the detective in a maroon kurta?"]
+    - [prompt_adherence, "Is the constable soft at the door behind?"]
+    - [motion_coherence, "Is his movement natural?"]
+    - [visual_quality, "Is his face free of artefacts?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-07
+  title: "Panel 2: the gallop over the crest, moving right with the pan"
+  persona: "Director of a period Rajasthani film previewing the hero gallop from the board."
+  evidence: "Earlier video bank: horse gaits break and direction flips; the board fixes both."
+  levers: [multi-ref, camera-move, physics, continuity, light-lock]
+  inputs:
+    - {source: SRC-VBOARD-HORSE, role: still1, note: "the board; this shot is panel 2"}
+    - {source: SRC-HORSE-RIDER, role: character, note: "the horse and rider"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 2, "Gallop over the crest · WS · Pan
+    right". The second image is the rider and horse: the dark-bay Marwari with inward-curving ears, a
+    white blaze, one white sock on the front left leg, red and gold saddle cloth; the rider in white
+    with an orange turban. Make a 6-second wide shot: the horse gallops up over the crest of a dune
+    from frame left towards centre-right, front legs reaching, sand thrown up behind, and the camera
+    pans right with it. The sun stays just above the dunes at frame left, so the long shadows run to the
+    right. A real four-beat gallop; the turban tail streams behind. No text.
+  clip: {duration: 6, aspect: "2.39:1", camera: "wide, pan right"}
+  deliverable: "One 6-second clip, 2.39:1."
+  checks:
+    - [motion_coherence, "Is the gallop a believable four-beat gait?"]
+    - [motion_coherence, "Does the horse move left to right throughout?"]
+    - [prompt_adherence, "Does the camera pan right to follow?"]
+    - [composition, "Is it a wide shot, horse cresting the dune as in panel 2?"]
+    - [reference_fidelity, "Does the horse have the white blaze and one white sock on the front left?"]
+    - [reference_fidelity, "Does the rider wear white and an orange turban?"]
+    - [prompt_adherence, "Is the sun at frame left with shadows to the right?"]
+    - [physics_plausibility, "Is sand thrown up behind the hooves?"]
+    - [physics_plausibility, "Does the turban tail stream behind?"]
+    - [prompt_adherence, "Does the horse have four legs throughout?"]
+    - [visual_quality, "Are there no glitches in the legs?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-08
+  title: "Panel 9: the bike leaves the road into the dunes as the camera cranes up"
+  persona: "Director of an action film checking the chase's final board panel."
+  evidence: "Screen direction (leftward) plus a crane-up and a stopped vehicle: three things to keep."
+  levers: [multi-ref, camera-move, continuity, layout, physics]
+  inputs:
+    - {source: SRC-VBOARD-BIKE, role: still1, note: "the board; this shot is panel 9"}
+    - {source: SRC-HERO-BIKE, role: character, note: "the bike and rider"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 9, "He leaves the road into the dunes ·
+    EWS · Crane up". The second image is the bike and rider: black classic motorcycle with a round
+    chrome headlamp, olive saddlebags, a red thread on the left grip; the rider in aviators and a brown
+    leather jacket. Make an 8-second shot: the camera starts low at the roadside and cranes up as the
+    bike swerves off the road towards frame left and races into the dunes, a dust trail rising behind
+    it. The jeep is stopped on the road at frame right and stays stopped. At the end the bike is tiny,
+    still heading left. Harsh noon sun, short shadows. No text.
+  clip: {duration: 8, aspect: "2.39:1", camera: "low start, crane up to an extreme wide"}
+  deliverable: "One 8-second clip, 2.39:1."
+  checks:
+    - [motion_coherence, "Does the bike travel towards frame left throughout?"]
+    - [prompt_adherence, "Does the camera crane up from low to an extreme wide?"]
+    - [prompt_adherence, "Is the jeep stopped on the road at frame right throughout?"]
+    - [physics_plausibility, "Does a dust trail rise behind the bike?"]
+    - [physics_plausibility, "Does the bike ride over the sand believably?"]
+    - [reference_fidelity, "Is the bike the black classic with olive saddlebags?"]
+    - [reference_fidelity, "Is the rider in aviators and a brown jacket?"]
+    - [composition, "Is the bike tiny at the end, as in panel 9?"]
+    - [prompt_adherence, "Are shadows short under harsh noon sun?"]
+    - [temporal_consistency, "Is there no morphing of the bike?"]
+    - [prompt_adherence, "Is there one bike and one jeep?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-09
+  title: "The whole six-panel previs crane move as one continuous shot, gate to figure"
+  persona: "Previs supervisor on a period epic turning the grey previs into a lit shot."
+  evidence: "A six-panel move in one take tests counting (seven arches, which windows lit) through motion."
+  levers: [camera-move, count, layout, multi-step, light-lock, end-frame]
+  inputs: [{source: SRC-VBOARD-PALACE, role: still1, note: "the six-panel previs"}]
+  prompt: |
+    This previs board shows one crane move in six panels. Make it as one continuous 12-second shot, a
+    lit 3D render of the palace at night in sandstone and dark wood: start low at the central gate
+    with its two torches burning (panel 1); rise past the ground storey (panel 2) to the middle storey
+    (panel 3) and on to the top storey (panel 4); then push in (panel 5) and end on the lone figure in
+    white standing in the centre middle-storey window (panel 6), the only middle-storey window lit.
+    Each storey has seven arched windows; on the top storey only the 2nd and 6th are lit warm. Moonlit
+    sky. The figure stays still. No text.
+  clip: {duration: 12, aspect: "2.39:1", camera: "crane up from the gate and push in to the window"}
+  deliverable: "One 12-second continuous clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Is it one continuous crane move with no cuts?"]
+    - [prompt_adherence, "Does it follow the six panels in order, gate to figure?"]
+    - [prompt_adherence, "Does each storey have seven arched windows?"]
+    - [prompt_adherence, "Are only the 2nd and 6th top-storey windows lit?"]
+    - [prompt_adherence, "Is only the centre middle-storey window lit?"]
+    - [composition, "Does it end on the figure in the centre window as in panel 6?"]
+    - [physics_plausibility, "Do the torches flicker at the gate?"]
+    - [motion_coherence, "Does the figure stay still?"]
+    - [temporal_consistency, "Is the facade stable, without warping?"]
+    - [style, "Is it a lit 3D render in sandstone and dark wood?"]
+    - [prompt_adherence, "Is the sky moonlit?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the previs as a reference."}
+
+- id: VSTB-FLM-10
+  title: "Panel 3: the rooftop leap as a cel-animated shot in the board's style"
+  persona: "Animation director on an original anime series checking a key leap from the board."
+  evidence: "Earlier image bank: anime character details drift; in motion the scarf and patch sides flip."
+  levers: [multi-ref, identity, layout, physics, camera]
+  inputs:
+    - {source: SRC-VBOARD-ANIME, role: still1, note: "the board; this shot is panel 3"}
+    - {source: SRC-ANIME-HEROINE, role: character, note: "the heroine's sheet"}
+  prompt: |
+    The first image is the anime storyboard; this shot is its panel 3, "Leap, scarf trailing · LS ·
+    Static". The second image is the heroine. Make a 5-second cel-animated shot in clean line art and
+    flat cel colour: a locked-off long shot across the gap between two neon-lit rooftops at night; she
+    sprints in from frame left, kicks off the parapet and flies across the gap to the right, the red
+    scarf streaming behind her, the street far below with tiny car lights. Keep her details: bob longer
+    on her right with the teal streak, yellow 07 patch on the left sleeve, bandage on the left knee,
+    red laces. Pink rim light from the left, cyan from the right. No other text.
+  clip: {duration: 5, aspect: "16:9", camera: "locked off, long shot"}
+  deliverable: "One 5-second clip, 16:9."
+  checks:
+    - [motion_coherence, "Does she leap from frame left to the right?"]
+    - [physics_plausibility, "Does the scarf stream behind her?"]
+    - [reference_fidelity, "Is the bob longer on her right with the teal streak?"]
+    - [reference_fidelity, "Is the 07 patch on the left sleeve?"]
+    - [reference_fidelity, "Is the bandage on the left knee?"]
+    - [style, "Is it cel-animated with clean line art and flat colour?"]
+    - [prompt_adherence, "Is the camera locked off on a long shot?"]
+    - [composition, "Does it match panel 3, the gap and street below?"]
+    - [prompt_adherence, "Is pink rim light from the left and cyan from the right?"]
+    - [motion_coherence, "Is the leap arc believable?"]
+    - [visual_quality, "Are lines stable without boiling?"]
+    - [text_accuracy, "Is there no text other than the 07 patch?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-FLM-11
+  title: "Panel 6: the match reaches the lamp's wick and it catches, push in"
+  persona: "Director of a Malayalam family drama checking the lamp-lighting insert from the board."
+  evidence: "Flame catching and the light change it causes are where generated clips cheat."
+  levers: [multi-ref, physics, light-lock, camera-move, timing, identity]
+  inputs:
+    - {source: SRC-VBOARD-ELDER, role: still1, note: "the board; this shot is panel 6"}
+    - {source: SRC-ELDER-PORCH, role: character, note: "the woman, her verandah and the lamp"}
+  prompt: |
+    The first image is the storyboard; this shot is its panel 6, "She lights the brass lamp · CU · Push
+    in". The second image is the woman and the lamp. Make a 6-second close-up at dusk: the tall brass
+    lamp's bowl fills the lower half of the frame; her hand enters from the right holding a lit match
+    and touches it to the wick at 2 seconds; the wick catches, the flame rises and steadies, and warm
+    light blooms on the brass and on her face, soft behind, spectacles catching the glow. A slow push
+    in throughout. Monsoon rain falls beyond, out of focus. The match goes out by itself at 4 seconds. No
+    text.
+  clip: {duration: 6, aspect: "16:9", camera: "close-up, slow push in"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [composition, "Does the lamp's bowl fill the lower half as in panel 6?"]
+    - [prompt_adherence, "Does her hand enter from the right?"]
+    - [prompt_adherence, "Does the match touch the wick at about 2 seconds?"]
+    - [physics_plausibility, "Does the wick catch and the flame rise and steady?"]
+    - [prompt_adherence, "Does warm light bloom on the brass and on her face?"]
+    - [prompt_adherence, "Does the match go out at about 4 seconds?"]
+    - [prompt_adherence, "Is there a slow push in?"]
+    - [reference_fidelity, "Is she the woman from the still, spectacles and grey bun?"]
+    - [physics_plausibility, "Does rain fall beyond, out of focus?"]
+    - [visual_quality, "Is her hand natural?"]
+    - [motion_coherence, "Is the flame's motion natural?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}

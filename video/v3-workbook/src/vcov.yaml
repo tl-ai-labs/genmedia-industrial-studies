@@ -1,0 +1,72 @@
+# V1 — Coverage clips and a camera move through a space (header). Built on image family COV.
+# Scenarios: vcov-*.yaml. Slot fields and rules: ../README.md.
+
+family: Coverage and camera move
+code: VCOV
+number: 1
+about: "The same moment or space as a set of coverage clips from several positions, or one continuous camera move through it. The space must hold in 3D as the camera travels."
+outputs: "4 clips (set) or 1 move"
+set: {min: 3, max: 5, required: false}
+
+rubric:
+  weights: {prompt_adherence: 3, motion_coherence: 3, set_consistency: 3, physics_plausibility: 2, reference_fidelity: 2, temporal_consistency: 2, text_accuracy: 1, visual_quality: 1, style: 1, preservation: 1, composition: 1}
+  gate: [motion_coherence, temporal_consistency, set_consistency]
+  gate_rule: "The space must hold together as the camera moves, with no warping or morphing, and the clips of a set must agree."
+
+targets:
+  angle-wrong: "A clip's camera position is not the one asked for"
+  layout-drift: "Objects or people move between clips or during the move"
+  identity-drift: "Faces, wardrobe or object details change between clips or during the move"
+  light-drift: "The light direction does not follow the camera"
+  unseen-invent: "What the start frame never shows is invented inconsistently as it comes into view"
+  headcount: "People appear or vanish during the move or between clips"
+  move-wrong: "The camera move is not the one described (wrong direction, speed or path)"
+  parallax-flat: "The space does not hold depth as the camera moves; layers slide together like a flat picture"
+
+slots:
+  # Film, OTT & micro-drama — 12 (3 t2v, 9 i2v · 7 hard, 5 extreme)
+  - {id: VCOV-FLM-01, task: i2v, subject: child-elderly, style: cinematic, light: golden, locale: IN, diff: extreme, target: unseen-invent, sources: [SRC-KIDS-TREE], from_image: COV-FLM-01, idea: "Sahil's angles test in motion: one continuous arc from the original two-shot round the banyan to the reverse behind the children"}
+  - {id: VCOV-FLM-02, task: i2v, subject: person, style: cinematic, light: daylight, locale: global, diff: extreme, target: angle-wrong, sources: [SRC-CROSSWALK], from_image: COV-FLM-02, idea: "Four coverage clips of the headphone man: reverse, profile, high, low; the frozen accident behind him"}
+  - {id: VCOV-FLM-03, task: i2v, subject: group, style: cinematic, light: daylight, locale: IN, diff: hard, target: headcount, sources: [SRC-HALDI], from_image: COV-FLM-03, idea: "A slow orbit round the haldi stool; six people throughout, no one gained or lost"}
+  - {id: VCOV-FLM-04, task: i2v, subject: group, style: cinematic, light: neon, locale: IN, diff: hard, target: light-drift, sources: [SRC-CHAI-STALL], from_image: COV-FLM-04, idea: "Crane up from puddle height to a first-floor window; the tube light keeps lighting the stall from where it hangs"}
+  - {id: VCOV-FLM-05, task: i2v, subject: interior, style: cinematic, light: daylight, locale: IN, diff: hard, target: parallax-flat, sources: [SRC-TRAIN], from_image: COV-FLM-05, idea: "Dolly along the aisle into the sleeper bay; berths, trunk and window hold depth as the camera enters"}
+  - {id: VCOV-FLM-06, task: i2v, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: angle-wrong, sources: [SRC-INTERROGATION], from_image: COV-FLM-07, idea: "Four interrogation clips: both over-the-shoulders, top-down past the lamp, hands insert"}
+  - {id: VCOV-FLM-07, task: i2v, subject: vehicle, style: cinematic, light: noon, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-HERO-BIKE], from_image: COV-FLM-08, idea: "A full 360-degree orbit round the stopped bike; the dent stays on the right and the thread on the left"}
+  - {id: VCOV-FLM-08, task: i2v, subject: animal, style: cinematic, light: golden, locale: IN, diff: hard, target: move-wrong, sources: [SRC-HORSE-RIDER], from_image: COV-FLM-09, idea: "A drone rise from knee height to 30 m straight up over the horse, ending top-down"}
+  - {id: VCOV-FLM-09, task: i2v, subject: food, style: cinematic, light: practical, locale: IN, diff: hard, target: layout-drift, sources: [SRC-THALI-DINNER], from_image: COV-FLM-11, idea: "Four dinner coverage clips: overhead master, a leaf insert, the grandfather's eyeline, the sambar bucket"}
+  - {id: VCOV-FLM-10, task: t2v, subject: interior, style: cinematic, light: night, locale: global, diff: extreme, target: layout-drift, sources: [], from_image: COV-FLM-13, idea: "A Steadicam walk through a described 1960s Bombay jazz bar from the door to the stage; the room holds as it is revealed"}
+  - {id: VCOV-FLM-11, task: t2v, subject: landscape, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: parallax-flat, sources: [], from_image: COV-FLM-14, idea: "A drone pass over the described waterfall and temple ruin; foreground trees, temple and falls move at their own depths"}
+  - {id: VCOV-FLM-12, task: t2v, subject: architecture, style: 3d, light: daylight, locale: global, diff: hard, target: move-wrong, sources: [], from_image: COV-FLM-15, idea: "A grey previs crane move across the described brutalist courtyard from the entrance to the balcony"}
+  # Advertising & agencies — 5 (1 t2v, 4 i2v · 3 hard, 2 extreme)
+  - {id: VCOV-ADS-01, task: i2v, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: extreme, target: move-wrong, sources: [SRC-ADS-SUV], from_image: COV-ADS-01, idea: "A drone orbit round the parked SUV on the hairpin, half a circle at constant height"}
+  - {id: VCOV-ADS-02, task: i2v, subject: interior, style: cinematic, light: daylight, locale: IN, diff: hard, target: parallax-flat, sources: [SRC-ADS-KITCHEN], from_image: COV-ADS-03, idea: "A slow dolly along the commercial kitchen counter from the fridge to the masala dabba"}
+  - {id: VCOV-ADS-03, task: i2v, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: identity-drift, sources: [SRC-ADS-PERFUME], from_image: COV-ADS-04, idea: "A macro orbit round the perfume bottle; bevels and label hold, the label reads mirrored through the back"}
+  - {id: VCOV-ADS-04, task: i2v, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: hard, target: unseen-invent, sources: [SRC-ADS-BILLBOARD-SITE], idea: "Drive-by along the flyover: the blank hoarding passes from front to its unseen back structure"}
+  - {id: VCOV-ADS-05, task: t2v, subject: fashion, style: photoreal, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [], from_image: COV-ADS-06, idea: "No base: the described bridal lehenga look as four clips: front walk, back reveal, twirl, hem close-up"}
+  # E-commerce, D2C & retail — 5 (1 t2v, 4 i2v · 3 hard, 2 extreme)
+  - {id: VCOV-ECM-01, task: i2v, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: unseen-invent, sources: [SRC-ECM-HANDBAG], script: latin, from_image: COV-ECM-01, idea: "A full turntable orbit of the tote from its one front packshot; back pocket and side gussets appear consistently"}
+  - {id: VCOV-ECM-02, task: i2v, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-ECM-KURTA-MODEL], from_image: COV-ECM-02, idea: "An orbit round the standing model from front to back; face, print and dupatta side hold"}
+  - {id: VCOV-ECM-03, task: i2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: layout-drift, sources: [SRC-ECM-BIRYANI], from_image: COV-ECM-03, idea: "An arc from top-down to eye level round the biryani table; raita, napkin and spoon stay put"}
+  - {id: VCOV-ECM-04, task: i2v, subject: interior, style: photoreal, light: golden, locale: global, diff: hard, target: parallax-flat, sources: [SRC-ECM-ARMCHAIR-ROOM], from_image: COV-ECM-04, idea: "A dolly from the window round the armchair; table, lamp and floor hold depth"}
+  - {id: VCOV-ECM-05, task: t2v, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: layout-drift, sources: [], script: latin, from_image: COV-ECM-06, idea: "No base: the described seven-piece skincare tray in a slow 180-degree orbit; the clockwise order holds"}
+  # Gaming — 6 (2 t2v, 4 i2v · 4 hard, 2 extreme)
+  - {id: VCOV-GAM-01, task: i2v, subject: architecture, style: 3d, light: golden, locale: IN, diff: extreme, target: layout-drift, sources: [SRC-GAM-TEMPLE-LEVEL], from_image: COV-GAM-01, idea: "A level fly-through from the entrance down the colonnade to the gopuram; every landmark where the screenshot puts it"}
+  - {id: VCOV-GAM-02, task: i2v, subject: stylised, style: 3d, light: neon, locale: global, diff: hard, target: identity-drift, sources: [SRC-GAM-HERO], from_image: COV-GAM-02, idea: "A slow orbit round the heroine in her idle pose; cape, rune and sword sides held all the way round"}
+  - {id: VCOV-GAM-03, task: i2v, subject: vehicle, style: 3d, light: night, locale: global, diff: hard, target: unseen-invent, sources: [SRC-GAM-MECH], script: latin, from_image: COV-GAM-03, idea: "An orbit round the hover-bike from its one side render; the other side appears without the dent"}
+  - {id: VCOV-GAM-04, task: i2v, subject: group, style: illustration, light: daylight, locale: IN, diff: extreme, target: headcount, sources: [SRC-GAM-SQUAD], from_image: COV-GAM-04, idea: "A dolly along the squad line on the rampart; five characters, in order, no one doubled"}
+  - {id: VCOV-GAM-05, task: t2v, subject: interior, style: 3d, light: practical, locale: global, diff: hard, target: light-drift, sources: [], from_image: COV-GAM-05, idea: "A camera move through the described tavern level; the hearth and two lanterns light every view consistently"}
+  - {id: VCOV-GAM-06, task: t2v, subject: landscape, style: illustration, light: fog-rain, locale: global, diff: hard, target: parallax-flat, sources: [], from_image: COV-GAM-06, idea: "A drone glide over the described valley: tower, river and bridge hold their depths as the camera passes"}
+  # Real estate, interiors & architecture — 9 (2 t2v, 7 i2v · 5 hard, 4 extreme)
+  - {id: VCOV-RES-01, task: i2v, subject: interior, style: photoreal, light: daylight, locale: IN, diff: extreme, target: unseen-invent, sources: [SRC-RES-LIVING-FLAT], from_image: COV-RES-01, idea: "Sahil's 'same room from five positions' as one walkthrough: entrance to balcony, then turn back to the unseen entrance wall"}
+  - {id: VCOV-RES-02, task: i2v, subject: interior, style: photoreal, light: golden, locale: IN, diff: hard, target: layout-drift, sources: [SRC-RES-BEDROOM], from_image: COV-RES-02, idea: "A slow 360-degree pan from the middle of the empty bedroom; window, wardrobe and door come round in order"}
+  - {id: VCOV-RES-03, task: i2v, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: extreme, target: unseen-invent, sources: [SRC-RES-VILLA-EXT], from_image: COV-RES-03, idea: "A drone orbit from the villa's front round its side to the rear garden and pool it never showed"}
+  - {id: VCOV-RES-04, task: i2v, subject: architecture, style: photoreal, light: noon, locale: IN, diff: hard, target: move-wrong, sources: [SRC-RES-TOWER-SITE], from_image: COV-RES-04, idea: "A half orbit of the tower at constant height and distance, south-east to north-west"}
+  - {id: VCOV-RES-05, task: i2v, subject: interior, style: 3d, light: practical, locale: global, diff: extreme, target: angle-wrong, sources: [SRC-RES-PLAN], from_image: COV-RES-05, idea: "From the floor plan, a rendered walkthrough from camera mark 1 to mark 2 that agrees with the plan"}
+  - {id: VCOV-RES-06, task: i2v, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: parallax-flat, sources: [SRC-RES-PLOT-LAND], from_image: COV-RES-06, idea: "A drone rise from the access track up over the plot to the ridge; marker, trees and pole hold depth"}
+  - {id: VCOV-RES-07, task: i2v, subject: interior, style: photoreal, light: practical, locale: global, diff: hard, target: light-drift, sources: [SRC-RES-HOTEL-LOBBY], from_image: COV-RES-07, idea: "A Steadicam walk from the entrance to the reception under the chandelier; its reflection tracks in the floor"}
+  - {id: VCOV-RES-08, task: t2v, subject: architecture, style: sketch, light: daylight, locale: global, diff: hard, target: layout-drift, sources: [], from_image: COV-RES-08, idea: "An animated pencil walkaround of the described garden pavilion; wall, steps and tree hold their places"}
+  - {id: VCOV-RES-09, task: t2v, subject: person, style: photoreal, light: golden, locale: IN, diff: extreme, target: identity-drift, sources: [], from_image: COV-RES-09, idea: "Four coverage clips of the described architect on her terrace garden; she and the garden consistent"}
+  # Media, publishing & events — 3 (1 t2v, 2 i2v · 2 hard, 1 extreme)
+  - {id: VCOV-MED-01, task: i2v, subject: group, style: photoreal, light: neon, locale: IN, diff: extreme, target: angle-wrong, sources: [SRC-MED-CONCERT], from_image: COV-MED-01, idea: "Four festival clips from the stage-left wing, drum riser, crowd from the stage and truss; the band where it stands"}
+  - {id: VCOV-MED-02, task: i2v, subject: person, style: photoreal, light: practical, locale: IN, diff: hard, target: move-wrong, sources: [SRC-MED-NEWSROOM], from_image: COV-MED-02, idea: "A jib move from the anchor's MCU up and back to the studio wide, revealing the studio floor the frame never showed"}
+  - {id: VCOV-MED-03, task: t2v, subject: food, style: photoreal, light: practical, locale: IN, diff: hard, target: layout-drift, sources: [], idea: "A slow overhead orbit of a Bengali feast spread for a food magazine; eleven dishes hold their places"}

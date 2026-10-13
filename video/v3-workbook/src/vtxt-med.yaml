@@ -1,0 +1,209 @@
+# Text in motion — Media, publishing & events scenarios. Slots: vtxt.yaml.
+code: VTXT
+scenarios:
+
+- id: VTXT-MED-01
+  seed: true
+  sahil: typography
+  title: "The club-night poster animates in: every line on cue and exact on every frame"
+  persona: "Motion designer at a Bengaluru events company turning the week's poster into a 9:16 story."
+  evidence: "Sahil's typography example (screenshot 238), compared against a type-led tool. In motion, every line must also stay exact on every frame and arrive in order."
+  levers: [exact-text, script, small-text, timing, layout, exclude, long-brief]
+  prompt: |
+    An 8-second vertical 9:16 animated poster on warm off-white paper with a light grain, black type and
+    one red accent. 0–1 s: a photo of a packed dance floor under white stage lights slides down into the
+    top 40 percent, hands moving, with a thin white circle in its top-left corner holding "DIALOGUE
+    LOUNGE". 1–2 s: the huge lower-case word "wknd" rises into place across the full width, its tops
+    overlapping the photo's bottom edge. 2–3 s: "DIALOGUE SATURDAYS" on two lines appears on the left and
+    "01 FEB" on the right at the same size. 3–4 s: the Hindi line "हर शनिवार, देर रात तक" on the left
+    and "AARAV · KIRA" on the right. 4–5 s: a round red sticker, tilted, slaps onto the photo's lower-left
+    edge with "City's favourite 2-word party". 5–6 s: the body line "Doors 9 pm. Entry on guest list
+    only. Dress code: all black." types in. 6–7 s: the footer "XXY" and "THE MAJESTIC RETREAT, MG ROAD,
+    BENGALURU". 7–8 s: everything holds still. Every line stays exactly as written on every frame once it
+    appears; nothing re-spells, shimmers or drifts. No other text, no logos.
+  exact_text:
+    - "DIALOGUE LOUNGE"
+    - "wknd"
+    - "DIALOGUE SATURDAYS"
+    - "01 FEB"
+    - "हर शनिवार, देर रात तक"
+    - "AARAV · KIRA"
+    - "City's favourite 2-word party"
+    - "Doors 9 pm. Entry on guest list only. Dress code: all black."
+    - "THE MAJESTIC RETREAT, MG ROAD, BENGALURU"
+  clip: {duration: 8, aspect: "9:16", camera: "locked-off motion graphic"}
+  deliverable: "One 8-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Do the elements arrive in the stated order at about one-second steps?"]
+    - [text_accuracy, "Is wknd exact, lower case, overlapping the photo's bottom edge?"]
+    - [text_accuracy, "Are DIALOGUE SATURDAYS and 01 FEB exact?"]
+    - [text_accuracy, "Is the Hindi line exact and correctly formed on every frame?"]
+    - [text_accuracy, "Is AARAV · KIRA exact?"]
+    - [text_accuracy, "Is the sticker text exact, with the apostrophe and the 2?"]
+    - [text_accuracy, "Is the body line exact and readable once typed in?"]
+    - [text_accuracy, "Is the footer exact?"]
+    - [temporal_consistency, "Does no line flicker, shimmer or re-spell between frames once it appears?"]
+    - [prompt_adherence, "Does the final layout match the poster: photo top, wknd full width, two columns, footer?"]
+    - [style, "Is red the only accent colour?"]
+    - [motion_coherence, "Does everything hold still from 7 to 8 s?"]
+    - [text_accuracy, "Is there no other text or logo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VTXT-MED-02
+  title: "A Hindi news programme's title sequence: the title and the anchor's name super, stable on every frame"
+  persona: "News channel's promo designer making a new show's opener."
+  evidence: "Devanagari motion titles flicker and re-form letters between frames."
+  levers: [exact-text, script, timing, layout, light-lock]
+  prompt: |
+    A 6-second title sequence for a Hindi evening news programme. 0–3 s: on a deep blue background with
+    slow-moving light streaks, the title "आज की बात" builds in large white Devanagari, the headline bar
+    (shirorekha) drawing across first from left to right and the letters dropping into place beneath it by
+    2 seconds, then holding. 3–6 s: cut to a medium shot of a woman anchor of about forty with short hair and
+    a maroon blazer at a glass desk; a white lower third slides in at 3.5 seconds with her name "रवि शर्मा"
+    in dark blue Devanagari, and holds. Both texts are crisp and identical on every frame once in place.
+  exact_text: ["आज की बात", "रवि शर्मा"]
+  clip: {duration: 6, aspect: "16:9", camera: "graphic, then locked-off medium shot"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Does the title read आज की बात in correct Devanagari?"]
+    - [text_accuracy, "Does the lower third read रवि शर्मा correctly?"]
+    - [prompt_adherence, "Does the headline bar draw first and the letters land by about 2 seconds?"]
+    - [prompt_adherence, "Does the lower third slide in at about 3.5 seconds?"]
+    - [temporal_consistency, "Are both texts stable on every frame once in place?"]
+    - [prompt_adherence, "Is the lower third in the lower third of the frame?"]
+    - [prompt_adherence, "Is the anchor in a maroon blazer with short hair?"]
+    - [prompt_adherence, "Is the anchor lit like a news studio?"]
+    - [style, "Is the title on deep blue with light streaks?"]
+    - [motion_coherence, "Is the anchor's motion natural?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the letters crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VTXT-MED-03
+  title: "A Telugu cooking-show opener: title and five ingredient names pop in over sizzling food"
+  persona: "Telugu food channel's editor making a show opener."
+  evidence: "Telugu script in generated video is garbled more than Devanagari; six strings must all be exact."
+  levers: [exact-text, script, count, timing, locale]
+  prompt: |
+    An 8-second opener for a Telugu cooking show. Over a top-down shot of a sizzling iron kadai of tempering
+    in warm light, the title "అమ్మ వంట" pops in at the centre in large bold yellow Telugu letters with a dark
+    outline at 0.5 seconds and holds. Then five ingredient labels pop in one by one, a second apart from 2
+    seconds, in small white Telugu on dark rounded tags, each beside its bowl around the kadai: "చింతపండు"
+    by the tamarind, "మిరపకాయ" by the red chillies, "కరివేపాకు" by the curry leaves, "ఆవాలు" by the mustard
+    seeds and "బెల్లం" by the jaggery. All six stay exact and still once in place.
+  exact_text: ["అమ్మ వంట", "చింతపండు", "మిరపకాయ", "కరివేపాకు", "ఆవాలు", "బెల్లం"]
+  clip: {duration: 8, aspect: "16:9", camera: "top-down, locked off"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Does the title read అమ్మ వంట in correct Telugu?"]
+    - [text_accuracy, "Do the five labels read చింతపండు, మిరపకాయ, కరివేపాకు, ఆవాలు and బెల్లం correctly?"]
+    - [prompt_adherence, "Are there five ingredient labels?"]
+    - [prompt_adherence, "Is each label beside its own bowl?"]
+    - [prompt_adherence, "Does the title pop at about 0.5 s and the labels a second apart from 2 s?"]
+    - [temporal_consistency, "Are all texts stable once in place?"]
+    - [physics_plausibility, "Does the tempering sizzle in the kadai?"]
+    - [prompt_adherence, "Is it top-down and locked off?"]
+    - [prompt_adherence, "Is it warm light?"]
+    - [prompt_adherence, "Does it read as a Telugu kitchen?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the letters crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VTXT-MED-04
+  title: "Localise the broadcast graphics into Telugu: lower third, scrolling ticker, same bands and timing"
+  persona: "Regional news network's graphics editor making the Telugu feed from the Hindi master."
+  evidence: "Script swaps on scrolling tickers lose speed or garble letters mid-scroll."
+  levers: [exact-text, script, keep-rest, timing, layout]
+  inputs: [{source: SRC-VCLIP-NEWS-BROADCAST, role: source}]
+  prompt: |
+    This 8-second Hindi news clip has a red lower third and a blue scrolling ticker. On every frame, replace
+    the lower third's Hindi with "ముంబైలో భారీ వర్షం" in white Telugu at the same size and position, and
+    replace the ticker's Hindi with "రైళ్లు 20 నిమిషాలు ఆలస్యం" repeating, scrolling right to left at exactly
+    the same speed. The bands, their colours and positions, the clock at the top right, the anchor, his
+    glance down at 4 seconds, the skyline and the light are unchanged.
+  exact_text: ["ముంబైలో భారీ వర్షం", "రైళ్లు 20 నిమిషాలు ఆలస్యం"]
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged locked off"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does the lower third read ముంబైలో భారీ వర్షం in correct Telugu?"]
+    - [text_accuracy, "Does the ticker read రైళ్లు 20 నిమిషాలు ఆలస్యం correctly?"]
+    - [prompt_adherence, "Does the ticker scroll at the same speed, right to left?"]
+    - [temporal_consistency, "Is the Telugu stable mid-scroll, with no garbling?"]
+    - [preservation, "Are the bands unchanged in colour and position?"]
+    - [preservation, "Is the clock unchanged?"]
+    - [preservation, "Is the anchor unchanged?"]
+    - [prompt_adherence, "Does he glance down at 4 seconds?"]
+    - [text_accuracy, "Is no Hindi left?"]
+    - [preservation, "Is the skyline unchanged?"]
+    - [prompt_adherence, "Is the lower third at the same size and position?"]
+    - [visual_quality, "Are the letters crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VTXT-MED-05
+  title: "Add a location title in Tamil and English carved into the granite wall, stuck to it through the handheld move"
+  persona: "Travel publication's video editor adding an in-world location title."
+  evidence: "Text placed in the scene must track a surface under handheld motion and look carved, not overlaid."
+  levers: [exact-text, script, physics, light-lock, keep-rest]
+  inputs: [{source: SRC-VCLIP-TRAVEL-TEMPLE, role: source}]
+  prompt: |
+    In this 8-second handheld clip at a Thanjavur temple, a broad plain granite wall at the tower's base
+    fills the left of the frame from about 5 seconds. Add a location title carved into that wall, on every
+    frame it is visible: "பெருவுடையார் கோயில்" in large Tamil letters with "THANJAVUR" in smaller spaced
+    capitals below. The letters are cut into the stone: the sun from the right throws shadow into their
+    left edges and lights their right edges, and they follow the wall's perspective and the handheld sway
+    without sliding. The rest of the clip, the tower, the people, the drone and the walk are unchanged.
+  exact_text: ["பெருவுடையார் கோயில்", "THANJAVUR"]
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged handheld walk and tilt"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does the title read பெருவுடையார் கோயில் in correct Tamil?"]
+    - [text_accuracy, "Does the line below read THANJAVUR?"]
+    - [physics_plausibility, "Do the letters look carved, with shadow in the left edges?"]
+    - [physics_plausibility, "Do they follow the wall's perspective?"]
+    - [motion_coherence, "Do they stick to the wall through the sway, without sliding?"]
+    - [prompt_adherence, "Do they appear only once the wall is in frame from about 5 seconds?"]
+    - [prompt_adherence, "Do they take the sun from the right?"]
+    - [prompt_adherence, "Is the English line smaller and below?"]
+    - [preservation, "Is the rest of the clip unchanged?"]
+    - [text_accuracy, "Is there no other new text?"]
+    - [preservation, "Is the walk and tilt unchanged?"]
+    - [visual_quality, "Are the letter edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VTXT-MED-06
+  title: "Replace the magazine's cover lines through the tilt and the corner lift, in the cover's own fonts"
+  persona: "Magazine's digital editor making the next issue's promo from last month's footage."
+  evidence: "Cover-line swaps on a hand-held, tilting page lose the fonts and slip during the lift."
+  levers: [exact-text, small-text, keep-rest, timing, physics]
+  inputs: [{source: SRC-VCLIP-MAG-SHOOT, role: source}]
+  prompt: |
+    In this 6-second clip, two hands hold the ORBIT magazine; it tilts towards the camera at 3 seconds and
+    the cover's corner lifts in a breeze at 5 seconds. On every frame replace the cover lines, in the
+    cover's own fonts and positions: "THE MONSOON EDIT" becomes "THE FESTIVE EDIT"; "48 looks for the rains"
+    becomes "36 looks for Diwali"; the red box becomes "Designers to watch: 12 new names"; the date line
+    becomes "NOVEMBER 2026 · ₹150". The masthead, the model, the coral background, the hands and the push
+    in are unchanged. The new text follows the tilt and bends with the corner lift.
+  exact_text: ["THE FESTIVE EDIT", "36 looks for Diwali", "Designers to watch: 12 new names", "NOVEMBER 2026 · ₹150"]
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does it read THE FESTIVE EDIT?"]
+    - [text_accuracy, "Does it read 36 looks for Diwali?"]
+    - [text_accuracy, "Does the red box read Designers to watch: 12 new names?"]
+    - [text_accuracy, "Does the date line read NOVEMBER 2026 · ₹150?"]
+    - [prompt_adherence, "Is each new line in the position of the line it replaces, on every frame?"]
+    - [style, "Are the cover's own fonts kept?"]
+    - [physics_plausibility, "Does the text follow the tilt at 3 seconds?"]
+    - [physics_plausibility, "Does it bend with the corner lift at 5 seconds?"]
+    - [preservation, "Is the masthead ORBIT unchanged?"]
+    - [preservation, "Are the model and hands unchanged?"]
+    - [temporal_consistency, "Is there no flicker or sliding?"]
+    - [text_accuracy, "Is no old cover line left?"]
+    - [visual_quality, "Is the small text crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

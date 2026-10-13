@@ -1,0 +1,77 @@
+# Family 1 — Multi-angle coverage of one shot or room (header). Scenarios: cov-*.yaml.
+# Slot fields and rules: ../README.md. Slots are written one industry at a time.
+
+family: Multi-angle coverage
+code: COV
+number: 1
+about: "The same moment or space from several camera positions: wide, two-shot, close-ups, reverse, overhead. Judged as one set."
+outputs: "5–8 (set)"
+set: {min: 5, max: 8}
+
+rubric:
+  weights: {set_consistency: 4, prompt_adherence: 3, reference_fidelity: 3, physics_plausibility: 2, text_accuracy: 1, style: 1, visual_quality: 1, preservation: 1}
+  gate: [set_consistency]
+  gate_rule: "The outputs must show one subject, one space and one moment."
+
+targets:
+  angle-wrong: "The delivered camera position is not the one asked for (asked for a reverse, got the same side)"
+  layout-drift: "Objects or people change places between angles"
+  identity-drift: "Faces, wardrobe or object details change between angles"
+  light-drift: "The light direction does not follow the camera move (sun swaps sides)"
+  unseen-invent: "What the base never shows is invented in a way that contradicts it"
+  headcount: "People are added or lost between angles"
+  scale-drift: "Relative sizes change between angles"
+  lens-ignored: "The named lens or shot size is not honoured"
+
+slots:
+  # Film, OTT & micro-drama — 15 (3 t2i, 12 edit · 9 hard, 6 extreme)
+  - {id: COV-FLM-01, task: edit, subject: child-elderly, style: cinematic, light: golden, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-KIDS-TREE], idea: "Sahil's angles test: six shots of the two children under the banyan — wide, two-shot, two angled close-ups, reverse, overhead"}
+  - {id: COV-FLM-02, task: edit, subject: person, style: cinematic, light: daylight, locale: global, diff: extreme, target: unseen-invent, sources: [SRC-CROSSWALK], idea: "Sahil's opposite-side test: reverse angle on the headphone man plus profile, high and low angles; the street behind camera is invented"}
+  - {id: COV-FLM-03, task: edit, subject: group, style: cinematic, light: daylight, locale: IN, diff: hard, target: headcount, sources: [SRC-HALDI], idea: "Five angles on the haldi courtyard; all six people in every angle where they are in view"}
+  - {id: COV-FLM-04, task: edit, subject: group, style: cinematic, light: neon, locale: IN, diff: extreme, target: light-drift, sources: [SRC-CHAI-STALL], idea: "Rainy chai stall from five positions; the tube light and red board must light each angle from the right side"}
+  - {id: COV-FLM-05, task: edit, subject: interior, style: cinematic, light: daylight, locale: IN, diff: hard, target: scale-drift, sources: [SRC-TRAIN], idea: "Sleeper bay from the window, the aisle, the upper berth and floor level; berth and trunk sizes hold"}
+  - {id: COV-FLM-06, task: edit, subject: child-elderly, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: lens-ignored, sources: [SRC-ELDER-PORCH], idea: "The grandmother on the verandah at 24 mm, 50 mm, 85 mm and 135 mm from the garden through the rain"}
+  - {id: COV-FLM-07, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: angle-wrong, sources: [SRC-INTERROGATION], idea: "Interrogation coverage: over-the-shoulder each way, top-down through the lamp, hands insert, constable's view"}
+  - {id: COV-FLM-08, task: edit, subject: vehicle, style: cinematic, light: noon, locale: IN, diff: hard, target: identity-drift, sources: [SRC-HERO-BIKE], idea: "Hero and motorcycle from low front, side, rear, drone and tank close-up; dent and red thread stay put"}
+  - {id: COV-FLM-09, task: edit, subject: animal, style: cinematic, light: golden, locale: IN, diff: hard, target: light-drift, sources: [SRC-HORSE-RIDER], idea: "Horse and rider on the dunes from five sides; the low sun and the shadows move with each camera position"}
+  - {id: COV-FLM-10, task: edit, subject: interior, style: cinematic, light: practical, locale: IN, diff: hard, target: layout-drift, sources: [SRC-SET-LIVING], idea: "The 1970s drawing-room set from five positions in the room; every prop stays where it is"}
+  - {id: COV-FLM-11, task: edit, subject: food, style: cinematic, light: practical, locale: IN, diff: hard, target: layout-drift, sources: [SRC-THALI-DINNER], idea: "Family dinner coverage with inserts of single leaves; each leaf's dish layout matches the wide"}
+  - {id: COV-FLM-12, task: edit, subject: stylised, style: illustration, light: neon, locale: global, diff: extreme, target: identity-drift, sources: [SRC-ANIME-HEROINE], idea: "Anime key frames of the heroine from four angles including the back; streak side and sleeve patch stay correct"}
+  - {id: COV-FLM-13, task: t2i, subject: interior, style: cinematic, light: night, locale: global, diff: extreme, target: light-drift, sources: [], idea: "No base image: a described noir bar from six positions, one practical lamp layout held across all"}
+  - {id: COV-FLM-14, task: t2i, subject: landscape, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: layout-drift, sources: [], idea: "Location recce from text: a Western Ghats waterfall and temple ruin from five described positions"}
+  - {id: COV-FLM-15, task: t2i, subject: architecture, style: 3d, light: daylight, locale: global, diff: hard, target: angle-wrong, sources: [], idea: "Grey-shaded previs of a described brutalist courtyard set from four numbered camera marks"}
+  # Advertising & agencies — 6 (1 t2i, 5 edit · 4 hard, 2 extreme)
+  - {id: COV-ADS-01, task: edit, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: extreme, target: angle-wrong, sources: [SRC-ADS-SUV], idea: "SUV commercial coverage from the hero frame: low front, rear three-quarter, side track, drone, wheel close-up, driver's view"}
+  - {id: COV-ADS-02, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: headcount, sources: [SRC-ADS-DIWALI-FAMILY], idea: "Diwali balcony from five angles; four people and seven diyas in every angle that sees them"}
+  - {id: COV-ADS-03, task: edit, subject: interior, style: cinematic, light: daylight, locale: IN, diff: hard, target: layout-drift, sources: [SRC-ADS-KITCHEN], idea: "Cooking-commercial kitchen from five set-ups: master, counter top-down, stove close, window side, fridge side"}
+  - {id: COV-ADS-04, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: identity-drift, sources: [SRC-ADS-PERFUME], script: latin, idea: "Perfume campaign coverage: hero, top-down, cap macro, low angle, back through the glass; label and bevels exact"}
+  - {id: COV-ADS-05, task: edit, subject: person, style: cinematic, light: noon, locale: IN, diff: hard, target: lens-ignored, sources: [SRC-ADS-RUNNER], script: latin, idea: "The sprinter's same stride at 24 mm low, 50 mm, 200 mm head-on telephoto and 400 mm from the stands"}
+  - {id: COV-ADS-06, task: t2i, subject: fashion, style: photoreal, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [], idea: "No base: a described bridal lehenga on a model in a Jaipur courtyard from five angles including the embroidered back"}
+  # E-commerce, D2C & retail — 6 (1 t2i, 5 edit · 3 hard, 3 extreme)
+  - {id: COV-ECM-01, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: unseen-invent, sources: [SRC-ECM-HANDBAG], idea: "Six listing angles of the tote from one front packshot: back, side, top, three-quarter, open interior, base"}
+  - {id: COV-ECM-02, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-ECM-KURTA-MODEL], idea: "On-model catalogue set: front, back, left side, walking, print close-up; model and print exact"}
+  - {id: COV-ECM-03, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: layout-drift, sources: [SRC-ECM-BIRYANI], idea: "Biryani listing set: top-down, eye level, macro, opposite side, hero; raita, napkin and spoon stay put"}
+  - {id: COV-ECM-04, task: edit, subject: interior, style: photoreal, light: golden, locale: global, diff: hard, target: scale-drift, sources: [SRC-ECM-ARMCHAIR-ROOM], idea: "Armchair in its room from five positions; chair, table and lamp keep their real sizes"}
+  - {id: COV-ECM-05, task: edit, subject: child-elderly, style: photoreal, light: golden, locale: IN, diff: hard, target: lens-ignored, sources: [SRC-ECM-WATCH-ELDER], script: latin, idea: "Smartwatch lifestyle set at 24, 50, 85 and 135 mm plus a macro of the watch face on her wrist"}
+  - {id: COV-ECM-06, task: t2i, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: layout-drift, sources: [], script: latin, idea: "No base: a described seven-piece skincare kit arranged on a tray, seen top-down, 45 degrees, eye level, macro, from behind"}
+  # Gaming — 6 (2 t2i, 4 edit · 4 hard, 2 extreme)
+  - {id: COV-GAM-01, task: edit, subject: architecture, style: 3d, light: golden, locale: IN, diff: extreme, target: layout-drift, sources: [SRC-GAM-TEMPLE-LEVEL], idea: "Six camera positions in the temple-courtyard level for a fly-through: every pillar, the chariot and the tank where they are"}
+  - {id: COV-GAM-02, task: edit, subject: stylised, style: 3d, light: neon, locale: global, diff: hard, target: identity-drift, sources: [SRC-GAM-HERO], idea: "The heroine from five in-game cameras: over the shoulder, low hero, top-down, back, side; cape and rune sides held"}
+  - {id: COV-GAM-03, task: edit, subject: vehicle, style: 3d, light: night, locale: global, diff: hard, target: unseen-invent, sources: [SRC-GAM-MECH], script: latin, idea: "The hover-bike from one side render to front, rear, top, other side and three-quarter views"}
+  - {id: COV-GAM-04, task: edit, subject: group, style: illustration, light: daylight, locale: IN, diff: hard, target: headcount, sources: [SRC-GAM-SQUAD], idea: "The squad on the rampart from five angles; five characters, in order, in each view that sees them"}
+  - {id: COV-GAM-05, task: t2i, subject: interior, style: 3d, light: practical, locale: global, diff: extreme, target: light-drift, sources: [], idea: "No base: a described tavern level from five cameras; the hearth and two lanterns light every view consistently"}
+  - {id: COV-GAM-06, task: t2i, subject: landscape, style: illustration, light: fog-rain, locale: global, diff: hard, target: scale-drift, sources: [], idea: "An open-world vista from text, seen from four points: ruined tower, river and bridge keep their sizes"}
+  # Real estate, interiors & architecture — 10 (3 t2i, 7 edit · 6 hard, 4 extreme)
+  - {id: COV-RES-01, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: extreme, target: layout-drift, sources: [SRC-RES-LIVING-FLAT], idea: "Sahil's 'same room from five positions': the listing living room from the balcony, the sofa, the TV, the kitchen door and a high corner"}
+  - {id: COV-RES-02, task: edit, subject: interior, style: photoreal, light: golden, locale: IN, diff: hard, target: scale-drift, sources: [SRC-RES-BEDROOM], idea: "The empty bedroom from all four corners and from the window; the window and wardrobe keep their sizes"}
+  - {id: COV-RES-03, task: edit, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: extreme, target: unseen-invent, sources: [SRC-RES-VILLA-EXT], idea: "The villa from its front: left side, right side under the overhang, rear garden and a drone view"}
+  - {id: COV-RES-04, task: edit, subject: architecture, style: 3d, light: noon, locale: IN, diff: hard, target: angle-wrong, sources: [SRC-RES-TOWER-SITE], idea: "Drone orbit of the tower at four compass bearings; each face shows what it should"}
+  - {id: COV-RES-05, task: edit, subject: interior, style: 3d, light: practical, locale: global, diff: extreme, target: angle-wrong, sources: [SRC-RES-PLAN], idea: "From the floor plan's five numbered camera marks, five eye-level rendered views that agree with the plan"}
+  - {id: COV-RES-06, task: edit, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: layout-drift, sources: [SRC-RES-PLOT-LAND], idea: "The Goa plot from its four corners and a drone; marker, trees, stream bed and pole stay put"}
+  - {id: COV-RES-07, task: edit, subject: interior, style: photoreal, light: practical, locale: global, diff: hard, target: lens-ignored, sources: [SRC-RES-HOTEL-LOBBY], idea: "The hotel lobby at 14 mm, 35 mm, 85 mm on the chandelier and 50 mm from the mezzanine"}
+  - {id: COV-RES-08, task: t2i, subject: architecture, style: sketch, light: daylight, locale: global, diff: hard, target: scale-drift, sources: [], idea: "Architect's pencil perspectives of a described garden pavilion from four points"}
+  - {id: COV-RES-09, task: t2i, subject: person, style: photoreal, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [], idea: "A described architect on a described terrace garden, four angles; she and the garden consistent"}
+  - {id: COV-RES-10, task: t2i, subject: group, style: 3d, light: night, locale: global, diff: extreme, target: headcount, sources: [], idea: "A described penthouse terrace party of eight people from five angles"}
+  # Media, publishing & events — 2 (2 edit · 1 hard, 1 extreme)
+  - {id: COV-MED-01, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: extreme, target: angle-wrong, sources: [SRC-MED-CONCERT], idea: "Festival coverage from six positions: front of house, stage-left wing, drum riser, crowd from the stage, truss overhead, singer close"}
+  - {id: COV-MED-02, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: hard, target: identity-drift, sources: [SRC-MED-NEWSROOM], idea: "Studio cameras on the news anchor: wide, MCU, jib, profile, over the floor manager's shoulder"}

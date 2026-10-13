@@ -35,7 +35,10 @@ ROOT = Path(__file__).resolve().parent.parent
 # scored. They are still validated here, so they are correct the day the
 # capability they wait on lands.
 SCENARIO_ROOTS = [ROOT / "scenarios", ROOT / "demo" / "scenarios",
-                  ROOT / "blocked" / "scenarios"]
+                  ROOT / "blocked" / "scenarios",
+                  # The October 2026 text-to-speech run (200 scenarios), kept
+                  # out of the default run path so it only runs when named.
+                  ROOT / "scenarios-oct-2026"]
 
 # A human read sits inside this band. Copy whose length and duration target
 # imply something outside it is testing the copywriting, not the model.

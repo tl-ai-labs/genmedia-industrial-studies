@@ -1,0 +1,487 @@
+# Character continuity in motion — Film, OTT & micro-drama scenarios. Slots: vchr.yaml.
+code: VCHR
+scenarios:
+
+- id: VCHR-FLM-07
+  seed: true
+  title: "Three siblings in three clips together; faces never borrow from each other as they move"
+  persona: "Showrunner of a Lucknow family drama making motion tests of the three leads from their casting photo."
+  evidence: "Earlier bank IMG-GAME-12 (three references, zero blending) was high tier for stills; in motion, faces that turn and cross each other blend more."
+  levers: [set, identity, count, layout, locale, continuity]
+  inputs:
+    - {source: SRC-VREF-SIBLINGS, role: character, note: "the three siblings, left to right: eldest, sister, youngest"}
+  prompt: |
+    This casting photo shows three siblings: the eldest, a heavy-set man of forty-five with a full grey
+    beard in a white kurta and black Nehru jacket; the sister, forty, tall and thin with a short bob and
+    round gold glasses in a mustard saree; the youngest, thirty, clean-shaven with curly hair, a denim
+    shirt and a silver chain. Make one clip of the three together, as described below, cinematic, warm
+    natural colour. Each keeps their own face, build and look as they move, turn and pass each other;
+    no feature passes from one face to another, and the eldest's beard and the sister's glasses never
+    vanish or move to another face. 16:9, no text, no one else in focus.
+  clip: {duration: 6, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Three faces exactly as in the photo"
+      - "Beard on the eldest, glasses on the sister, chain on the youngest"
+      - "Their clothes and builds"
+    members:
+      - {name: "The courtyard argument", prompt: "Afternoon in an old Lucknow courtyard. The eldest and the youngest argue face to face, circling each other; the sister steps between them. Handheld, medium wide.", checks: [[prompt_adherence, "Are all three in the clip?"], [reference_fidelity, "Do the eldest and youngest keep distinct faces as they circle?"]]}
+      - {name: "The rooftop", prompt: "Dusk on a rooftop with kites in the sky. The sister and the youngest sit on the parapet; the eldest walks into frame behind them and puts a hand on each shoulder. Slow push in.", checks: [[prompt_adherence, "Does the eldest stand behind the other two at the end?"], [set_consistency, "Are the glasses on the sister throughout?"]]}
+      - {name: "The dinner", prompt: "Night, at a dining table lit by a warm pendant lamp. The three sit side by side, eldest, sister, youngest, left to right, passing a dish of kebabs from right to left.", checks: [[prompt_adherence, "Are they seated in the order eldest, sister, youngest from left?"], [motion_coherence, "Does the dish pass right to left from hand to hand?"]]}
+  deliverable: "Three 6-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is each sibling the person in the photo in every clip?"]
+    - [set_consistency, "Do the three faces stay distinct throughout, with no blending?"]
+    - [set_consistency, "Is the grey beard on the eldest only, in every clip?"]
+    - [set_consistency, "Are the round gold glasses on the sister only, in every clip?"]
+    - [set_consistency, "Is the silver chain on the youngest in every clip where visible?"]
+    - [set_consistency, "Are clothes the same in all three clips?"]
+    - [temporal_consistency, "Do faces stay stable as heads turn, with no morphing?"]
+    - [motion_coherence, "Are movements natural: circling, walking, passing a dish?"]
+    - [prompt_adherence, "Are exactly three people in focus in each clip?"]
+    - [prompt_adherence, "Does each clip have its described light?"]
+    - [prompt_adherence, "Do the settings read as Lucknow?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural, especially passing the dish?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Each clip is one image-to-video call with the casting photo as a character reference; whole-set identity needs the set review."}
+
+- id: VCHR-FLM-01
+  title: "The lead in three action clips: sprinting through rain, a fight at an autorickshaw stand, dancing at a baraat"
+  persona: "Casting director making motion tests of the lead actor before the producer signs off."
+  evidence: "Earlier image bank CHR-FLM-01 held the face in stills; fast action makes faces morph mid-clip."
+  levers: [set, identity, physics, locale, light-lock]
+  inputs: [{source: SRC-ACTOR-M, role: character}]
+  prompt: |
+    The image is the lead actor: about thirty-four, medium-brown skin, short wavy hair parted on his
+    left, a thick black moustache, light stubble, a small pale scar cutting through his RIGHT eyebrow, a
+    white shirt with sleeves rolled and a steel kada on his RIGHT wrist. Make three 5-second clips of him
+    in fast action, cinematic, each in its own light. His face does not change mid-clip however fast he
+    moves or turns: the scar stays on the right eyebrow, the kada on the right wrist. 2.39:1, no text.
+  clip: {duration: 5, aspect: "2.39:1", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face, moustache and the scar through the right eyebrow"
+      - "Steel kada on the right wrist"
+      - "White shirt with rolled sleeves"
+    members:
+      - {name: "Rain sprint", prompt: "Night, neon-lit Mumbai street in heavy rain: he sprints towards the camera, which backs away, shirt soaked.", checks: [[physics_plausibility, "Is the shirt soaked and clinging?"], [motion_coherence, "Is the sprint natural?"]]}
+      - {name: "Auto-stand fight", prompt: "Dusk at an autorickshaw stand: he blocks a punch and shoves an attacker against a yellow-green auto, handheld.", checks: [[reference_fidelity, "Is the kada on his right wrist?"], [physics_plausibility, "Does the auto rock with the impact?"]]}
+      - {name: "Baraat dance", prompt: "Night baraat on a street lit by tube-light chandeliers carried on heads: he dances with arms up in the middle of the crowd.", checks: [[reference_fidelity, "Is the scar on his right eyebrow?"], [motion_coherence, "Is the dancing natural?"]]}
+  deliverable: "Three 5-second clips, 2.39:1."
+  checks:
+    - [set_consistency, "Is it the actor in the photo in all three?"]
+    - [temporal_consistency, "Does his face stay stable mid-clip, with no morphing?"]
+    - [set_consistency, "Is the scar on the right eyebrow in every clip?"]
+    - [set_consistency, "Is the kada on the right wrist in every clip?"]
+    - [set_consistency, "Is the shirt the same in all three?"]
+    - [prompt_adherence, "Does each clip have its own described light?"]
+    - [set_consistency, "Does his skin tone stay the same across the lights?"]
+    - [physics_plausibility, "Do rain and impacts behave believably?"]
+    - [prompt_adherence, "Do the settings read as Indian?"]
+    - [prompt_adherence, "Is he clearly the subject in each clip?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one character reference; identity across clips needs the set review."}
+
+- id: VCHR-FLM-02
+  title: "The headphone man in three clips: metro, hospital corridor, dawn beach; headphones and shirt held through movement"
+  persona: "Director of a short film placing the protagonist from the key art into three new scenes."
+  evidence: "Earlier image bank CHR-FLM-07: props like headphones vanish or change once the head turns."
+  levers: [set, identity, unseen, light-lock, camera]
+  inputs: [{source: SRC-CROSSWALK, role: character, note: "the man on the crossing"}]
+  prompt: |
+    The man in this photo stands on a zebra crossing: about thirty, a mustard-yellow short-sleeved
+    camp-collar shirt, dark jeans and black over-ear headphones. Make three 5-second clips of him in new
+    places, each with its own light. The headphones stay on his head, over his ears, in every clip, and
+    turn with his head; the shirt keeps its colour and collar. His back, never shown, is plain mustard with no print. His
+    hair, short and black, stays the same length and parting throughout. Cinematic grade, natural motion.
+    No text, nobody else in focus.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face and build"
+      - "Black over-ear headphones over his ears"
+      - "Mustard camp-collar shirt and dark jeans"
+    members:
+      - {name: "Metro", prompt: "Night, a near-empty metro carriage: he stands holding a strap, swaying as the train brakes, then turns to look out of the window.", checks: [[physics_plausibility, "Does he sway believably as the train brakes?"], [reference_fidelity, "Do the headphones turn with his head?"]]}
+      - {name: "Hospital corridor", prompt: "Cold fluorescent hospital corridor: he walks away from camera, then stops and turns back.", checks: [[reference_fidelity, "Is his back plain mustard?"], [prompt_adherence, "Is the light cold fluorescent?"]]}
+      - {name: "Dawn beach", prompt: "Dawn on an empty beach: he walks along the waterline towards camera, wind in his shirt, lifting the headphones off and around his neck at the end.", checks: [[physics_plausibility, "Does the wind move the shirt?"], [motion_coherence, "Does he lift the headphones naturally?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is it the man from the photo in all three?"]
+    - [set_consistency, "Are the headphones the same black over-ear pair in all three?"]
+    - [set_consistency, "Is the shirt mustard with a camp collar in all three?"]
+    - [motion_coherence, "Do the headphones stay on his ears as he turns, until lifted?"]
+    - [prompt_adherence, "Does each clip have its own described light?"]
+    - [prompt_adherence, "Does each clip's framing match its description?"]
+    - [motion_coherence, "Is his movement natural?"]
+    - [physics_plausibility, "Is the train sway believable?"]
+    - [prompt_adherence, "Is he the only person in focus?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is his face free of artefacts?"]
+    - [set_consistency, "Does his skin tone hold across the lights?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-FLM-03
+  title: "The astronaut in three clips deeper in the forest; band and device stay on the left arm while moving"
+  persona: "Director of the sci-fi short extending the forest sequence with new shots."
+  evidence: "Earlier image bank CHR-FLM-08: arm-side details flip when the figure turns."
+  levers: [set, identity, layout, light-lock, physics]
+  inputs: [{source: SRC-ASTRO-FOREST, role: character}]
+  prompt: |
+    The astronaut in this still wears a bulky white suit with ONE orange band round the upper LEFT arm, a
+    grey life-support pack, a small rectangular device with a green screen strapped to the LEFT forearm,
+    and a gold-tinted visor. Make three 5-second clips deeper in the same glowing forest: tall dark trunks
+    with teal veins, glowing moss, floating spores. The band and the device stay on the left arm as the
+    astronaut walks, kneels and turns. Teal and black, film grain, no text.
+  clip: {duration: 5, aspect: "2.39:1", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Orange band on the upper left arm"
+      - "Device with green screen on the left forearm"
+      - "Gold visor, white suit, grey pack"
+    members:
+      - {name: "Walk", prompt: "Side tracking shot as the astronaut walks left to right between trunks, left arm towards camera.", checks: [[prompt_adherence, "Is the band on the arm towards camera, the left?"], [motion_coherence, "Is the walk heavy and believable in the suit?"]]}
+      - {name: "Kneel", prompt: "Medium shot from the front: the astronaut kneels and touches the glowing moss with the right glove; the moss brightens under it.", checks: [[prompt_adherence, "Is the device on the left forearm, away from the touching hand?"], [prompt_adherence, "Does the moss brighten under the glove?"]]}
+      - {name: "Turn", prompt: "From behind, the astronaut turns a full circle slowly, looking up at the canopy.", checks: [[prompt_adherence, "Does the band stay on the left arm through the turn?"], [physics_plausibility, "Do spores drift around the turning figure?"]]}
+  deliverable: "Three 5-second clips, 2.39:1."
+  checks:
+    - [set_consistency, "Is the orange band on the upper left arm in every clip?"]
+    - [set_consistency, "Is the device on the left forearm in every clip?"]
+    - [prompt_adherence, "Is there only one orange band?"]
+    - [set_consistency, "Is the suit the same in all three?"]
+    - [set_consistency, "Is the forest the same as the still?"]
+    - [prompt_adherence, "Is the teal glow consistent across clips?"]
+    - [temporal_consistency, "Is there no morphing of the suit as it moves?"]
+    - [physics_plausibility, "Is the suit's weight believable?"]
+    - [prompt_adherence, "Does each clip match its framing?"]
+    - [style, "Is there film grain in all three?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the gloves clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-FLM-04
+  title: "Three performance clips of the wanderer: grief building, anger breaking, release; identity held through the acting"
+  persona: "Director testing whether a generated performance can carry a scene for the beat-sheet short."
+  evidence: "Strong expressions pull faces off model; the beard and weathering must hold through the acting."
+  levers: [set, identity, timing, light-lock, camera]
+  inputs: [{source: SRC-RIDGE-WANDERER, role: character}]
+  prompt: |
+    The man in this still is in his late fifties with a short grey beard, a weathered face, a dark
+    charcoal coat and a rust scarf. Make three 6-second performance clips in close-up on the same fog-
+    filled ridge at dawn, the light pale gold from the left. In each he goes through one emotion over the
+    clip, with real acting: small, building, not mugging. His face, beard and the lines of his face stay
+    his through every expression. Muted grade, fine grain, no text.
+  clip: {duration: 6, aspect: "2.39:1", camera: "close-up, slow push in"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face, beard and weathering"
+      - "Coat collar and rust scarf"
+      - "Pale gold light from the left"
+    members:
+      - {name: "Grief", prompt: "He looks down at the radio; his jaw trembles and his eyes fill, building to a single tear by 5 seconds.", checks: [[prompt_adherence, "Does the tear fall at about 5 seconds?"], [set_consistency, "Is it the same face through the grief?"]]}
+      - {name: "Anger", prompt: "He stares out, breath fast; at 3 seconds he shouts once into the valley, veins on his neck.", checks: [[prompt_adherence, "Does he shout at about 3 seconds?"], [motion_coherence, "Is the shout natural, with no face distortion?"]]}
+      - {name: "Release", prompt: "He closes his eyes, breathes out slowly, and a small smile comes.", checks: [[motion_coherence, "Is the release subtle and natural?"], [reference_fidelity, "Is the beard unchanged?"]]}
+  deliverable: "Three 6-second clips, 2.39:1."
+  checks:
+    - [set_consistency, "Is it the man in the still in all three?"]
+    - [motion_coherence, "Does his face stay on model through every expression?"]
+    - [set_consistency, "Is the beard the same in all three?"]
+    - [set_consistency, "Are the coat and scarf the same in all three?"]
+    - [prompt_adherence, "Is the light pale gold from the left in all three?"]
+    - [prompt_adherence, "Is each emotion readable and building, not mugging?"]
+    - [prompt_adherence, "Do the timed moments land?"]
+    - [prompt_adherence, "Is each a close-up with a slow push in?"]
+    - [style, "Is the grade muted with fine grain?"]
+    - [prompt_adherence, "Is he alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are eyes and teeth natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-FLM-05
+  title: "The twelve-year-old girl from the dinner in three clips: homework, running down stairs, at a temple"
+  persona: "Casting director for a Tamil family film checking a child's continuity across scenes."
+  evidence: "Children's faces age or change between generated clips; the girl must stay the same child."
+  levers: [set, identity, unseen, locale, light-lock]
+  inputs: [{source: SRC-THALI-DINNER, role: character, note: "the girl in the yellow frock, third from left"}]
+  prompt: |
+    The image is a family dinner; the character is the girl of about twelve, third from the left, in a
+    yellow frock. Make three 5-second clips of her alone in new scenes, each with its own light: she is the
+    same child, same age, face, hair and yellow frock, in every clip; she does not grow older or younger.
+    Her hair, seen only from the front in the photo, is in a single plait down her back. Chennai settings.
+    No text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face and age, about twelve"
+      - "Yellow frock"
+      - "Single plait down her back"
+    members:
+      - {name: "Homework", prompt: "Night, at a desk under a tube light: she chews a pencil and writes, then looks up.", checks: [[prompt_adherence, "Is it cool tube light?"], [motion_coherence, "Is the writing natural?"]]}
+      - {name: "Stairs", prompt: "Day, a stairwell in an apartment block: she runs down two flights towards the camera, plait bouncing.", checks: [[physics_plausibility, "Does the plait bounce as she runs?"], [motion_coherence, "Are her steps natural on the stairs?"]]}
+      - {name: "Temple", prompt: "Evening, a temple corridor lit by oil lamps: she rings the bell and folds her hands.", checks: [[prompt_adherence, "Is it warm oil-lamp light?"], [prompt_adherence, "Does it read as a Tamil temple?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is she the girl from the photo in all three?"]
+    - [set_consistency, "Is she the same age in all three?"]
+    - [set_consistency, "Is the yellow frock the same in all three?"]
+    - [set_consistency, "Is the plait the same in all three?"]
+    - [set_consistency, "Does her skin tone stay the same under the three lights?"]
+    - [prompt_adherence, "Does each clip have its own described light?"]
+    - [motion_coherence, "Is her motion natural for a child?"]
+    - [prompt_adherence, "Is she alone in each clip?"]
+    - [prompt_adherence, "Do the settings read as Chennai?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is her face free of artefacts?"]
+    - [prompt_adherence, "Does each clip match its framing?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-FLM-06
+  title: "Bittu animated in three clips: climbing, running, stargazing; socks and knee patch on their sides"
+  persona: "Animation director on a 3D feature testing the hero's model in motion."
+  evidence: "Earlier image bank CHR-FLM-15: odd socks swap sides; in motion they swap mid-clip."
+  levers: [set, identity, layout, physics, camera-move]
+  inputs: [{source: SRC-VREF-BITTU, role: character}]
+  prompt: |
+    The image is Bittu's turnaround: a nine-year-old with oversized ears, a gap in his front teeth, a
+    cowlick at the back, brown skin, a red-and-white striped T-shirt, blue shorts with a patch on the RIGHT
+    knee, a GREEN sock on his LEFT foot and a YELLOW sock on his RIGHT, worn canvas shoes, a cardboard
+    telescope in his right hand. Make three 5-second clips in the same polished stylised 3D, each in a
+    village setting. The socks and the knee patch never swap sides, however he moves. No text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Green sock left, yellow sock right; patch on the right knee"
+      - "Ears, tooth gap, cowlick"
+      - "Striped T-shirt and blue shorts"
+    members:
+      - {name: "Climbing", prompt: "Day: he climbs a mango tree, legs gripping the trunk, telescope tucked in his shorts.", checks: [[prompt_adherence, "Are the socks on their sides as he climbs?"], [physics_plausibility, "Does he grip the trunk believably?"]]}
+      - {name: "Running", prompt: "Afternoon: he runs along a field bund towards camera, which tracks back.", checks: [[prompt_adherence, "Is the patch on the right knee?"], [motion_coherence, "Is the run cartoon-natural?"]]}
+      - {name: "Stargazing", prompt: "Night on a rooftop: he lies on his back looking through the telescope, one leg crossed over the other, slow crane down.", checks: [[prompt_adherence, "Is the green sock on the left foot when crossed?"], [prompt_adherence, "Is it moonlit?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is the green sock on the left foot in every clip?"]
+    - [set_consistency, "Is the yellow sock on the right foot in every clip?"]
+    - [set_consistency, "Is the knee patch on the right in every clip?"]
+    - [reference_fidelity, "Does he match the turnaround: ears, tooth gap, cowlick?"]
+    - [style, "Is it the same polished stylised 3D in all three?"]
+    - [motion_coherence, "Does nothing swap sides mid-clip?"]
+    - [prompt_adherence, "Does each clip have its described time of day?"]
+    - [prompt_adherence, "Does each clip match its camera?"]
+    - [physics_plausibility, "Is his weight believable?"]
+    - [prompt_adherence, "Is he alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are his hands clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-FLM-08
+  title: "A described street dog with one torn ear in three clips across a day in a Kolkata lane"
+  persona: "Indie director whose short film's lead is a street dog, previewing scenes before casting a real one."
+  evidence: "Animals from text alone drift in markings between clips."
+  levers: [set, identity, locale, light-lock, long-brief]
+  prompt: |
+    A Kolkata street dog: a medium-sized Indian pariah dog with a short tan coat, a white chest blaze shaped
+    like a diamond, white tips on all four paws, a curled tail, and a torn tip on the LEFT ear; the right
+    ear stands upright; a faded red cloth collar. Make three 5-second clips of the same dog in the same old
+    north Kolkata lane of crumbling red-brick houses with green shutters, a hand-pulled rickshaw parked by
+    a tea stall, across one day. The markings, the torn left ear and the collar are the same in every clip.
+    Photoreal, no text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Torn tip on the left ear; right ear upright"
+      - "Diamond chest blaze, white paws, curled tail"
+      - "Faded red collar"
+    members:
+      - {name: "Morning", prompt: "Soft morning light: the dog stretches and yawns on the steps of a house, low angle.", checks: [[set_consistency, "Is the torn ear on the left?"], [motion_coherence, "Is the stretch natural?"]]}
+      - {name: "Noon", prompt: "Harsh noon: the dog trots along the lane past the rickshaw, tracked from the side.", checks: [[motion_coherence, "Is the trot a natural dog gait?"], [prompt_adherence, "Are shadows short?"]]}
+      - {name: "Dusk", prompt: "Dusk, the stall's bulb on: the dog sits by the tea stall and is thrown a biscuit, which it catches.", checks: [[physics_plausibility, "Is the catch believable?"], [prompt_adherence, "Is it lit warm by the bulb?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is it the same dog in all three?"]
+    - [set_consistency, "Is the torn ear on the left in every clip?"]
+    - [set_consistency, "Are the chest blaze and white paws the same in all three?"]
+    - [set_consistency, "Is the collar the same in all three?"]
+    - [prompt_adherence, "Does each clip have its time of day?"]
+    - [prompt_adherence, "Is it the same lane in all three?"]
+    - [motion_coherence, "Is the dog's motion natural?"]
+    - [prompt_adherence, "Does the lane read as north Kolkata?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Is there one dog?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the paws and face clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-FLM-09
+  title: "A described old fisherman in three clips from noon sun to lantern light; skin tone held"
+  persona: "Cinematographer on a coastal Kerala film testing how lights render a dark-skinned lead."
+  evidence: "Earlier image bank CHR skin-tone tests: generated lighting lightens dark skin; in motion it flickers."
+  levers: [set, identity, light-lock, locale, long-brief]
+  prompt: |
+    An old Kerala fisherman of about seventy: very dark brown skin with deep wrinkles, a white stubble beard,
+    a bald head with a white towel tied round it, a gold hoop in his LEFT ear, a checked blue-and-white
+    mundu folded to the knee, bare chest, a thin black thread on his right upper arm. Make three 5-second
+    clips of him at the same beach with wooden boats, from noon to night. His skin is the same very dark
+    brown in every light; the light changes, his skin tone does not lighten or grey. Photoreal, no text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face, beard, towel and the hoop in the left ear"
+      - "Very dark brown skin tone"
+      - "Checked mundu and the thread on the right arm"
+    members:
+      - {name: "Noon", prompt: "Harsh noon sun: he hauls a net out of a boat, sweat shining.", checks: [[prompt_adherence, "Is it harsh overhead sun?"], [set_consistency, "Is his skin still very dark brown in bright sun?"]]}
+      - {name: "Golden hour", prompt: "Golden hour: he sits on the boat's edge mending the net, slow push in.", checks: [[prompt_adherence, "Is it warm golden light?"], [motion_coherence, "Is the mending natural?"]]}
+      - {name: "Lantern", prompt: "Night: he lights a kerosene lantern and holds it up, lit only by its flame.", checks: [[prompt_adherence, "Is he lit only by the lantern?"], [set_consistency, "Is his skin still very dark, not greyed?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is his skin the same very dark brown in all three lights?"]
+    - [set_consistency, "Is it the same man in all three?"]
+    - [set_consistency, "Is the hoop in the left ear in all three?"]
+    - [set_consistency, "Is the towel and mundu the same in all three?"]
+    - [prompt_adherence, "Does each clip have its described light?"]
+    - [motion_coherence, "Is his motion natural for his age?"]
+    - [physics_plausibility, "Does the lantern flame flicker and light him believably?"]
+    - [prompt_adherence, "Does it read as coastal Kerala?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Is he alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are his hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-FLM-10
+  title: "A described bride in a red Banarasi in three clips under haldi sun, mehendi lamps and stage lights"
+  persona: "Wedding-film producer testing a described bride across the three wedding functions."
+  evidence: "Saree patterns and jewellery details swim and change between generated clips."
+  levers: [set, identity, light-lock, locale, long-brief]
+  prompt: |
+    A bride of about twenty-six: medium brown skin, a round face, a small dimple on her LEFT cheek, a gold
+    nath on her LEFT nostril with a chain to her ear, a maang tikka; she wears a red Banarasi silk saree with
+    gold zari buttis and a broad gold border, the pallu over her head. Make three 5-second clips of her at
+    three wedding functions, each in its own light. The saree, the nath on the left and her skin tone stay
+    the same in every clip. Photoreal, no text.
+  clip: {duration: 5, aspect: "4:5", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, dimple on the left cheek, nath on the left"
+      - "Red Banarasi with gold zari buttis and border"
+      - "Her medium brown skin tone"
+    members:
+      - {name: "Haldi sun", prompt: "Bright morning sun in a courtyard: she laughs as turmeric is dabbed on her cheeks, head tilting back.", checks: [[prompt_adherence, "Is it bright morning sun?"], [motion_coherence, "Is the laugh natural?"]]}
+      - {name: "Mehendi lamps", prompt: "Evening under hanging lamps: she raises her hennaed hands to look at them, slow push in.", checks: [[prompt_adherence, "Is it warm lamp light?"], [visual_quality, "Are the hands natural with henna?"]]}
+      - {name: "Stage lights", prompt: "Night on a reception stage under bright white spotlights: she turns to face the guests and smiles.", checks: [[prompt_adherence, "Is it bright white stage light?"], [set_consistency, "Is her skin tone unchanged under the spotlights?"]]}
+  deliverable: "Three 5-second clips, 4:5."
+  checks:
+    - [set_consistency, "Is it the same bride in all three?"]
+    - [set_consistency, "Is the nath on her left nostril in all three?"]
+    - [set_consistency, "Is the saree's pattern the same in all three?"]
+    - [set_consistency, "Is her skin tone the same in all three lights?"]
+    - [set_consistency, "Is the dimple on her left cheek?"]
+    - [prompt_adherence, "Does each clip have its described light?"]
+    - [temporal_consistency, "Does the zari pattern stay stable without swimming?"]
+    - [prompt_adherence, "Does each function read correctly?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Is she the subject in each?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the jewellery clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-FLM-11
+  title: "Three edits of the corridor clip, each changing her outfit; her face and walk stay identical"
+  persona: "Costume designer on a crime series comparing three costumes on the same take."
+  evidence: "Video re-dressing tends to regenerate the person; face, gait and timing must be untouched."
+  levers: [set, keep-rest, identity, timing, multi-step]
+  inputs: [{source: SRC-VCLIP-CORRIDOR, role: source}]
+  prompt: |
+    This 8-second clip follows a woman of about forty with short hair in a maroon kurta and black trousers,
+    a case file under her left arm, down a police-station corridor at night; a constable crosses the far end
+    at 3 seconds and she glances at the notice board at 6 seconds. Make three edited versions, each changing
+    only her outfit as described. Her face, hair, walk, the file under her left arm, the camera, the
+    corridor, the constable and every timing stay exactly as in the clip.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged handheld follow"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, hair and walk, frame for frame"
+      - "The file under her left arm"
+      - "Corridor, constable at 3 s, glance at 6 s"
+    members:
+      - {name: "Khaki uniform", prompt: "Dress her in a khaki police inspector's uniform with a black belt and shoulder badges.", checks: [[prompt_adherence, "Is she in a khaki uniform with a belt and badges?"], [preservation, "Is her walk unchanged?"]]}
+      - {name: "Cotton sari", prompt: "Dress her in a starched grey cotton sari with a thin black border.", checks: [[physics_plausibility, "Does the sari move with her walk?"], [reference_fidelity, "Is her face unchanged at the glance?"]]}
+      - {name: "Leather jacket", prompt: "Dress her in a black leather jacket over a white tee and jeans.", checks: [[prompt_adherence, "Is she in a black leather jacket and jeans?"], [preservation, "Is the file still under her left arm?"]]}
+  deliverable: "Three 8-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is her face the same as the source at the 6-second glance in all three?"]
+    - [preservation, "Is her walk frame for frame the source's in all three?"]
+    - [prompt_adherence, "Does the constable cross at 3 s and she glance at 6 s in all three?"]
+    - [preservation, "Is the corridor unchanged?"]
+    - [preservation, "Is the camera move unchanged?"]
+    - [set_consistency, "Is each outfit stable across its whole clip?"]
+    - [physics_plausibility, "Do the new clothes move with her body?"]
+    - [prompt_adherence, "Do the new clothes take the tube light correctly?"]
+    - [temporal_consistency, "Is there no flicker at the clothing edges?"]
+    - [preservation, "Is her hair unchanged?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three video edits of one source clip; set agreement needs the set review."}
+
+- id: VCHR-FLM-12
+  title: "Three edits of the sangeet clip, each re-dressing the lead only; the other four dancers untouched"
+  persona: "Wedding-film costume stylist comparing three lehengas for the lead dancer on the same take."
+  evidence: "Edits aimed at one person leak onto neighbours in a synced line."
+  levers: [set, keep-rest, count, layout, timing]
+  inputs: [{source: SRC-VCLIP-WEDDING-DANCE, role: source}]
+  prompt: |
+    This 8-second clip shows five women dancing in a line on a sangeet stage, left to right in pink,
+    green, the lead in sky-blue with a silver dupatta, yellow and orange; the lead spins once at 4 seconds;
+    the camera dollies right. Make three edited versions, each re-dressing ONLY the lead in the centre as
+    described. The other four dancers, their lehengas, the choreography, the spin at 4 seconds, the lights,
+    the guests and the dolly stay exactly as in the clip.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged dolly right"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "The four other dancers and their lehengas"
+      - "Choreography and the spin at 4 s"
+      - "Lead's face and hair"
+    members:
+      - {name: "Ruby", prompt: "A deep ruby-red velvet lehenga with gold zardozi and a gold dupatta.", checks: [[prompt_adherence, "Is the lead in ruby velvet with gold?"], [preservation, "Is the dancer in pink unchanged?"]]}
+      - {name: "Ivory", prompt: "An ivory organza lehenga with pastel floral embroidery and a sheer ivory dupatta.", checks: [[physics_plausibility, "Does the organza flare in the spin?"], [preservation, "Is the dancer in yellow unchanged?"]]}
+      - {name: "Black", prompt: "A black silk lehenga with silver mirror work and a black dupatta.", checks: [[prompt_adherence, "Do the mirrors catch the fairy lights?"], [preservation, "Is the dancer in green unchanged?"]]}
+  deliverable: "Three 8-second clips, 16:9."
+  checks:
+    - [preservation, "Are the other four dancers untouched in all three?"]
+    - [prompt_adherence, "Are there five dancers in all three?"]
+    - [preservation, "Is the lead still in the centre?"]
+    - [prompt_adherence, "Does she spin at 4 s in all three?"]
+    - [reference_fidelity, "Is the lead's face unchanged?"]
+    - [set_consistency, "Is each new lehenga stable through the clip?"]
+    - [physics_plausibility, "Does each new skirt flare in the spin?"]
+    - [preservation, "Are the guests and lights unchanged?"]
+    - [preservation, "Is the dolly unchanged?"]
+    - [temporal_consistency, "Is there no flicker at the costume edges?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three video edits of one source clip; set agreement needs the set review."}

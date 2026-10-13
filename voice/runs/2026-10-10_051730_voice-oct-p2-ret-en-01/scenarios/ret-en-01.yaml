@@ -1,0 +1,38 @@
+# ret-en-01 - Angry repeat-complaint customer: de-escalation (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-33 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-33): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Returns, refunds, exchange & warranty.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: ret-en-01
+modality: voice
+task: text_to_speech
+title: "Angry repeat-complaint customer: de-escalation - English"
+
+input:
+  script: |
+    Sir, I completely understand how frustrating this is. This is the third time your Croma replacement has been delayed. I'm moving your order, ORD77105, to priority right now, and adding a Rs 500 goodwill voucher to your account.
+  language: en-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Genuine empathy, not scripted or defensive (judge)
+  2) "ORD77105" recoverable character for character
+  3) Voucher amount recoverable
+  4) Tone stays warm through the code readback
+
+checks:
+  duration_s: {min: 7.6, max: 37.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, ecommerce-retail, returns-refunds-exchange-warranty, hard, even-contest, new-english]

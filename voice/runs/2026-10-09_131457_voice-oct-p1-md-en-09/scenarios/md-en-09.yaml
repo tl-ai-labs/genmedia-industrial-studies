@@ -1,0 +1,37 @@
+# md-en-09 - Grandmother's blessing (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-04 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-04): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Easy. SETTING. Serialised drama.
+# USE CASE. Family drama.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Emotion.
+# PICKED AS. Even contest - delivery directions to follow (Gemini held pace and tone).
+
+id: md-en-09
+modality: voice
+task: styled_tts
+title: "Grandmother's blessing - English"
+
+input:
+  script: |
+    My child, my blessings are always with you. Whatever you do in life, listen to your heart. That's the only advice I have for you.
+  language: en-IN
+  style: "warm, slow, elder tenderness"
+
+params:
+  voice: female_elder
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) Slow, warm elder register (judge)
+  3) Voice sounds 60+, not a young voice slowed down (judge)
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, family-drama, easy, even-contest, new-english]

@@ -1,0 +1,102 @@
+# Composition and aesthetic — Real estate, interiors & architecture scenarios. Slots: cmp.yaml.
+code: CMP
+scenarios:
+
+- id: CMP-RES-01
+  seed: true
+  title: "Villa hero shot: house on the right third, path as a leading line, verticals straight"
+  persona: "Marketing lead at a Kerala developer briefing the hero image for a villa project's brochure cover."
+  evidence: "Call at 23:45: 'Gemini models tend to center-frame everything'. Real-estate photography adds a hard technical rule the default look breaks: verticals must stay vertical (two-point perspective), and the cover needs clean space for the project name."
+  levers: [off-centre, camera, light-lock, layout, exclude, locale, long-brief]
+  prompt: |
+    A brochure-cover photograph of a contemporary Kerala villa at golden hour, 3:2 landscape, shot
+    at 1.6 metres with a 24 mm lens and a shift lens so all vertical lines stay perfectly vertical:
+    no converging verticals. The villa is a two-storey house with two overlapping sloping roofs in
+    dark clay tiles, white plastered walls, deep wooden-framed verandahs and laterite stone at the
+    base. Place the house on the right third: its body sits between the middle and the right edge
+    and takes up about 40 percent of the frame width. A curving path of laterite stepping stones
+    starts at the lower-left corner and leads the eye to the front door. At the left edge, a
+    frangipani tree in flower, partly cut by the frame, in the foreground. The sky in the upper
+    left is a clean warm gradient with no clouds, left empty for the project's name. Low sun from
+    the left warms the walls; windows glow softly from inside; long shadows of the tree reach
+    across the lawn towards the house. A wet sheen on the lawn from an earlier shower. No people,
+    no cars, no text, no lens flare.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is the house on the right third, between the middle and the right edge?"]
+    - [composition, "Does the house take up about 40 percent of the frame width?"]
+    - [composition, "Does the stepping-stone path start at the lower-left corner and lead to the door?"]
+    - [composition, "Is the frangipani at the left edge, partly cut by the frame?"]
+    - [composition, "Is the upper-left sky clean and empty enough for a title?"]
+    - [prompt_adherence, "Are all vertical lines of the house vertical, with no converging verticals?"]
+    - [prompt_adherence, "Does the perspective read as about 24 mm at eye height?"]
+    - [prompt_adherence, "Does the house have two overlapping sloping clay-tile roofs, white walls, wooden verandahs and laterite at the base?"]
+    - [prompt_adherence, "Is the low sun from the left, warming the walls?"]
+    - [prompt_adherence, "Do the windows glow softly from inside?"]
+    - [physics_plausibility, "Do the tree's shadows reach across the lawn towards the house, away from the sun?"]
+    - [style, "Is there a wet sheen on the lawn?"]
+    - [prompt_adherence, "Are there no people, cars, text or lens flare?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Midjourney arm is not wired today."}
+  video_followon: "V8: a slow lateral move along the path with the house held on the right third."
+
+- id: CMP-RES-02
+  title: "A hill-station plot in mist with 70 percent of the frame given to fog"
+  persona: "Developer's marketing lead pitching a moody plot image for a hill project."
+  evidence: "Negative space filled with fog is a common real-estate mood; models fill it with detail."
+  levers: [off-centre, light-lock, locale, exclude]
+  prompt: |
+    A real-estate landscape photo of a hillside plot in Munnar in thick monsoon mist, 3:2. In the
+    lower right thirty percent: a sloping tea garden's neat rows, a single silver oak tree and a
+    narrow red-earth path with a small wooden marker post. Everything above and to the left, about
+    seventy percent of the frame, is soft white fog with only the faintest ghost of a far ridge. Soft
+    diffused light, muted greens, cool tones. No buildings, no people, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is about seventy percent of the frame fog?"]
+    - [composition, "Is the detail confined to the lower right thirty percent?"]
+    - [prompt_adherence, "Are there tea rows, one silver oak and a red path with a marker post?"]
+    - [prompt_adherence, "Is the light soft and diffused?"]
+    - [style, "Are the greens muted and cool?"]
+    - [physics_plausibility, "Does the fog thin realistically into the detail?"]
+    - [prompt_adherence, "Is only a faint ghost of a far ridge visible?"]
+    - [prompt_adherence, "Are there no buildings or people?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is the fog smooth without banding?"]
+    - [prompt_adherence, "Does it read as Munnar tea country?"]
+    - [prompt_adherence, "Is there one tree?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-RES-03
+  title: "Recompose the centred lobby photo into a 4:5 with the chandelier cut by the top edge"
+  persona: "Hotel's social media designer adapting the website hero for a vertical post."
+  evidence: "Recomposition edits tend to re-centre; a deliberate edge cut is the test."
+  levers: [off-centre, keep-rest, layout, camera]
+  inputs: [{source: SRC-RES-HOTEL-LOBBY, role: source}]
+  prompt: |
+    This photo shows a hotel lobby with a ring chandelier of brass hoops centred in the double-height
+    space, a marble reception with backlit onyx at the back, green velvet sofas on the left and
+    bookshelves with a ladder on the right. Recompose it as a vertical 4:5 frame: the chandelier is
+    cut by the top edge so only its lower half shows; the frame shifts right so the bookshelves and
+    ladder fill the right third and the reception sits left of centre; the terrazzo floor with the
+    chandelier's reflection fills the bottom. Keep everything as it is; only the framing changes,
+    with straight verticals.
+  deliverable: "One image, 4:5."
+  checks:
+    - [composition, "Is the chandelier cut by the top edge, lower half showing?"]
+    - [composition, "Do the bookshelves fill the right third?"]
+    - [composition, "Is the reception left of centre?"]
+    - [composition, "Is the frame 4:5?"]
+    - [physics_plausibility, "Is the chandelier's reflection in the floor at the bottom?"]
+    - [preservation, "Are the furnishings unchanged?"]
+    - [prompt_adherence, "Are verticals straight?"]
+    - [preservation, "Is the light unchanged?"]
+    - [visual_quality, "Is any extended area seamless?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [reference_fidelity, "Is the onyx still backlit?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit; output size 4:5."}
+  video_followon: ""

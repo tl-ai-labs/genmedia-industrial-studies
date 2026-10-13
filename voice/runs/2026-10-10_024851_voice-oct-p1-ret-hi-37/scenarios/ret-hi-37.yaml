@@ -1,0 +1,44 @@
+# ret-hi-37 - Membership auto-renewal — date, amount, card ending (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-37: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-37
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Loyalty & subscriptions - SuperCoins, Prime, tiers, NeuCoins.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# WHAT THIS TESTS. A membership brand, a numeral date, a raw amount and a four-digit card ending, with a disclosure limit
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times; Pronunciation: brands.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-37
+modality: voice
+task: text_to_speech
+title: "Membership auto-renewal — date, amount, card ending - Hindi"
+
+input:
+  script: |
+    आपकी Nykaa Prive membership 12 नवंबर को ₹999 में auto-renew होगी, आपके card ending four, four, zero, one से।
+  language: hi-IN
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Date "बारह नवंबर" recoverable
+  2) Amount "नौ सौ निन्यानवे" recoverable
+  3) Card digits "4401" recoverable; no longer run spoken
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, ecommerce-retail, loyalty-subscriptions, hard, gemini-lean, v2-bank]

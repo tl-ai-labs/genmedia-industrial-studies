@@ -1,0 +1,37 @@
+# hlt-en-03 - Lab report ready: sample ID and HbA1c value (Healthcare & pharma)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 hlt-hi-09 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-09): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Lab reports & home collection.
+# TARGET CUSTOMER. Diagnostic Labs.
+# SPEECH SKILLS. Numbers: codes, units/%; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest.
+
+id: hlt-en-03
+modality: voice
+task: text_to_speech
+title: "Lab report ready: sample ID and HbA1c value - English"
+
+input:
+  script: |
+    Your Dr Lal PathLabs report is ready. Sample ID: LPL770419. Your HbA1c is 7.8%, which is above the normal range.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "LPL770419" recoverable character for character
+  2) "HbA1c" read as "H-B-A-one-C" (judge)
+  3) "7.8%" read with the decimal point
+
+checks:
+  duration_s: {min: 4.0, max: 21.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, healthcare-pharma, lab-reports-home-collection, hard, even-contest, new-english]

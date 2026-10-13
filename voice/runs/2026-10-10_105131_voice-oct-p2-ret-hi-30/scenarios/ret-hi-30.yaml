@@ -1,0 +1,44 @@
+# ret-hi-30 - Refund to credit card — 12-digit reference (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-30: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-30
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Returns, refunds, exchange & warranty.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# WHAT THIS TESTS. A raw amount, a bank brand, a day window and a 12-digit refund reference in one passage
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-30
+modality: voice
+task: text_to_speech
+title: "Refund to credit card — 12-digit reference - Hindi"
+
+input:
+  script: |
+    आपका ₹4,199 का refund process हो गया है। यह आपके ICICI credit card में 5 से 7 working days में दिखेगा। Refund reference number है seven, four, two, one, nine, nine, zero, three, six, four, one, eight।
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Reference "742199036418" recoverable digit-for-digit
+  2) Amount "चार हज़ार एक सौ निन्यानवे" recoverable
+  3) "5 से 7 working days" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, ecommerce-retail, returns-refunds-exchange-warranty, hard, gemini-lean, v2-bank]

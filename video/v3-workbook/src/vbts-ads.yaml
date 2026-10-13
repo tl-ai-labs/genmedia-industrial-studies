@@ -1,0 +1,294 @@
+# Story beats — Advertising & agencies scenarios. Slots: vbts.yaml.
+code: VBTS
+scenarios:
+
+- id: VBTS-ADS-04
+  seed: true
+  title: "The ghee key visual comes alive in three beats: diyas light one by one, the jar glows, the headline settles"
+  persona: "Motion designer at a Delhi agency turning the approved Diwali key visual into a 9-second social film."
+  evidence: "Key visuals are routinely animated for social; the Devanagari headline must stay exact on every frame while light changes."
+  levers: [set, timing, exact-text, script, count, light-lock, locale]
+  inputs:
+    - {source: SRC-ADS-KEYVISUAL, role: first_frame, note: "the approved key visual; beat 1 starts from it with the diyas unlit"}
+  prompt: |
+    Animate this Diwali key visual for Saanjh Ghee in three beats that run on from each other, 9
+    seconds in all. The layout, jar, label and colours are exactly the key visual's. Beat 1 starts with
+    all seven diyas unlit and the headline area empty. The headline is "इस दिवाली, घर की ख़ुशबू" with
+    "Pure cow ghee since 1962" below it, and the price starburst reads "₹349", exactly as in the key
+    visual, on every frame where they appear. Warm light rises only as the diyas light.
+  exact_text: ["इस दिवाली, घर की ख़ुशबू", "Pure cow ghee since 1962", "₹349"]
+  clip: {duration: 9, aspect: "16:9", camera: "locked off, with a slow 5 percent push in during beat 2"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The jar, its red-and-gold label and its centred position"
+      - "Seven diyas in an arc; maroon background with bokeh"
+      - "Headline, English line and price exactly as in the key visual once shown"
+    members:
+      - {name: "Beat 1 · 0–3 s · Diyas light", prompt: "The seven diyas light one at a time from left to right, one every 0.4 seconds, each flame flaring and steadying; the jar is lit more warmly with each one.", checks: [[prompt_adherence, "Do the seven diyas light left to right about every 0.4 s?"], [prompt_adherence, "Does the jar warm up as each diya lights?"]]}
+      - {name: "Beat 2 · 3–6 s · The jar glows", prompt: "A slow push in of about 5 percent towards the jar; the ghee inside catches the light and glows gold; marigold petals drift down in front.", checks: [[prompt_adherence, "Is there a slow push in of about 5 percent?"], [physics_plausibility, "Do the petals drift down naturally in front of the jar?"]]}
+      - {name: "Beat 3 · 6–9 s · Headline settles", prompt: "The headline fades up and settles across the top, then the English line under it, then the price starburst pops in at the bottom right at 8 s.", checks: [[text_accuracy, "Is the headline exact and correctly formed on every frame it appears?"], [prompt_adherence, "Does the starburst pop in at about 8 s?"]]}
+  deliverable: "One 9-second sequence in three chained beats, 16:9."
+  checks:
+    - [prompt_adherence, "Are there seven diyas, all lit by the end of beat 1?"]
+    - [text_accuracy, "Is the Devanagari headline exact once shown, with no flicker or re-spelling?"]
+    - [text_accuracy, "Is the English line exact?"]
+    - [text_accuracy, "Is the price ₹349?"]
+    - [reference_fidelity, "Is the jar and label unchanged, with साँझ and SAANJH GHEE readable?"]
+    - [set_consistency, "Do the beats run on from each other without jumps?"]
+    - [prompt_adherence, "Does warm light rise only as diyas light?"]
+    - [prompt_adherence, "Do the beats land at 0–3, 3–6 and 6–9 s?"]
+    - [temporal_consistency, "Do the flames flicker naturally once lit?"]
+    - [prompt_adherence, "Does the layout match the key visual?"]
+    - [temporal_consistency, "Is there no morphing of the jar or label?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Beat 1 runs from the key visual as a first frame; chaining beats 2 and 3 from the previous last frame is not in the runner, and starting with unlit diyas needs a first frame edited to remove the flames."}
+
+- id: VBTS-ADS-01
+  title: "Three timed beats of a ghee spot: jar on the counter, lid twisted off, ghee spooned onto a hot roti"
+  persona: "Agency producer timing a 10-second ghee spot to the client's beat sheet."
+  evidence: "Ad edits hang on exact beat lengths; the jar's label must survive every cut."
+  levers: [set, timing, time-code, identity, physics, locale]
+  inputs: [{source: SRC-ADS-GHEE-JAR, role: product}]
+  prompt: |
+    The image is the real ghee jar: round glass, golden grainy ghee, gold lid, deep red label with the
+    brand name in gold Devanagari and a 500 ml badge at the lower right. Make three clips timed to the
+    beat sheet, each starting on the last frame of the one before: 0:00–0:03, 0:03–0:06 and 0:06–0:10,
+    10 seconds in all. A warm home kitchen at morning, a brass plate and a tawa on the counter, soft
+    window light from the left. The label is the same in every clip and never changes letters. No other
+    text.
+  clip: {duration: 10, aspect: "4:5", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The jar, its label and its gold lid"
+      - "The counter, brass plate and tawa"
+      - "Soft window light from the left"
+    members:
+      - {name: "0:00–0:03 · The jar", prompt: "Slow push in on the jar standing on the counter, the label to camera.", checks: [[prompt_adherence, "Does it last about 3 seconds?"], [reference_fidelity, "Is the label the real one?"]]}
+      - {name: "0:03–0:06 · The lid", prompt: "Close-up: a woman's hand twists the gold lid off and sets it down; the grainy ghee surface shows.", checks: [[prompt_adherence, "Does it last about 3 seconds?"], [physics_plausibility, "Does the lid twist off believably?"]]}
+      - {name: "0:06–0:10 · The roti", prompt: "Top shot: a steel spoon puts ghee on a hot roti on the brass plate; it melts and spreads, glistening, with a wisp of steam.", checks: [[prompt_adherence, "Does it last about 4 seconds?"], [physics_plausibility, "Does the ghee melt and spread on the hot roti?"]]}
+  deliverable: "Three chained clips, 3, 3 and 4 seconds, 4:5."
+  checks:
+    - [prompt_adherence, "Do the clips last about 3, 3 and 4 seconds?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is the jar's label the same in every clip, letters unchanged?"]
+    - [prompt_adherence, "Is the 500 ml badge at the lower right of the label?"]
+    - [physics_plausibility, "Does the ghee melt naturally on the roti?"]
+    - [prompt_adherence, "Is the window light from the left throughout?"]
+    - [prompt_adherence, "Are the shots push in, close-up, top shot in that order?"]
+    - [motion_coherence, "Is the hand natural?"]
+    - [prompt_adherence, "Does it read as a home kitchen in the morning?"]
+    - [visual_quality, "Is the jar free of warping?"]
+    - [text_accuracy, "Is there no text other than the label?"]
+    - [style, "Is the look consistent across the three?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One product reference; chaining is not in the runner."}
+
+- id: VBTS-ADS-02
+  title: "Three beats: the scooter parked, its rider arrives and sits, she rides off down the street"
+  persona: "EV startup's brand manager previewing a launch film from the product photo."
+  evidence: "Product colour, the side lettering and the wheels drift once a rider is added and it moves."
+  levers: [set, identity, continuity, physics, locale, unseen]
+  inputs: [{source: SRC-ADS-SCOOTER, role: product}]
+  prompt: |
+    The image is the real electric scooter: matte teal body, gloss-white front apron, round LED headlamp
+    ringed in white, tan stitched seat, five-spoke black wheels, a silver grab rail and small white
+    lettering on the side panel. Place it on a tree-lined Pune street at golden hour and make three
+    chained clips, each starting on the last frame of the one before, 4 + 4 + 4 seconds. The rider is a
+    woman in her twenties in a white shirt, denim jacket and a matte white open-face helmet. Its right
+    side, never shown in the photo, matches the left. No readable text except the side lettering.
+  clip: {duration: 12, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The scooter's colour, apron, seat and wheels"
+      - "The rider's face, helmet and clothes"
+      - "The street and the low sun from frame right"
+    members:
+      - {name: "Beat 1 · Parked (4 s)", prompt: "Slow dolly along the parked scooter at the kerb, left side to camera, leaves falling.", checks: [[reference_fidelity, "Is it the real scooter?"], [prompt_adherence, "Is it a slow dolly?"]]}
+      - {name: "Beat 2 · She sits (4 s)", prompt: "She walks into frame, puts on the helmet and sits, switching on the headlamp.", checks: [[motion_coherence, "Does she sit naturally?"], [prompt_adherence, "Does the headlamp switch on?"]]}
+      - {name: "Beat 3 · She rides (4 s)", prompt: "Wide from behind and to the right as she rides off down the street, the right side of the scooter visible.", checks: [[reference_fidelity, "Does the right side match the left?"], [physics_plausibility, "Do the wheels turn at a speed matching the ride?"]]}
+  deliverable: "Three chained clips of 4 seconds, 16:9."
+  checks:
+    - [set_consistency, "Is it the same scooter in all three?"]
+    - [set_consistency, "Is the rider the same in beats 2 and 3?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [reference_fidelity, "Is the body matte teal with the white apron?"]
+    - [prompt_adherence, "Is the low sun from the same side throughout?"]
+    - [physics_plausibility, "Does the scooter ride without sliding?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [temporal_consistency, "Is there no morphing of the scooter?"]
+    - [prompt_adherence, "Does it read as a Pune street?"]
+    - [text_accuracy, "Is there no readable text except the side lettering?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [prompt_adherence, "Are the shots dolly, medium, wide from behind in that order?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One product reference; chaining is not in the runner."}
+
+- id: VBTS-ADS-03
+  title: "Three beats of a shoe film: laces pulled tight, foot strikes the track, sole flexes in slow motion"
+  persona: "Sportswear brand's creative lead previewing a 9-second shoe film."
+  evidence: "Earlier image bank PRD: shoe stripes and heel tabs drift; slow motion exposes it."
+  levers: [set, identity, physics, timing, small-text]
+  inputs: [{source: SRC-ADS-SHOE, role: product}]
+  prompt: |
+    The image is the real running shoe, right foot: coral knit fading to off-white at the heel, a thick
+    white foam midsole with one navy stripe the full length, black outsole, flat white laces, a small navy
+    heel tab with white lettering. Make three chained clips on a red stadium track at harsh noon, each
+    starting on the last frame of the one before, 3 + 3 + 3 seconds; the runner is a man whose face is
+    never seen. The shoe is the same in every clip: one navy stripe, never two; the heel tab small and
+    navy. No other text, no logos.
+  clip: {duration: 9, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The shoe's colours, single navy stripe and heel tab"
+      - "The red track and noon light"
+      - "Right foot throughout"
+    members:
+      - {name: "Beat 1 · Laces (3 s)", prompt: "Close-up: his hands pull the white laces tight and tie them on the right shoe.", checks: [[visual_quality, "Are the hands natural?"], [reference_fidelity, "Is it the right shoe?"]]}
+      - {name: "Beat 2 · Strike (3 s)", prompt: "Low side tracking shot at real speed: the right foot strikes the track mid-stride, toe to frame right.", checks: [[motion_coherence, "Is the strike natural at real speed?"], [reference_fidelity, "Is there a single navy stripe?"]]}
+      - {name: "Beat 3 · Flex (3 s)", prompt: "The same strike in extreme slow motion, close: the foam midsole compresses and the sole flexes, grit lifting off the track.", checks: [[physics_plausibility, "Does the midsole compress and the sole flex believably?"], [prompt_adherence, "Is it clearly slow motion?"]]}
+  deliverable: "Three chained clips of 3 seconds, 16:9."
+  checks:
+    - [set_consistency, "Is it the same shoe in all three?"]
+    - [set_consistency, "Is there a single navy stripe in every clip?"]
+    - [reference_fidelity, "Is the heel tab small and navy?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is it the right foot throughout?"]
+    - [physics_plausibility, "Is the slow-motion flex believable?"]
+    - [prompt_adherence, "Is it harsh noon light throughout?"]
+    - [prompt_adherence, "Do the clips last about 3 seconds each?"]
+    - [prompt_adherence, "Is the runner's face never seen?"]
+    - [temporal_consistency, "Is there no morphing of the shoe?"]
+    - [text_accuracy, "Is there no text other than the heel tab?"]
+    - [visual_quality, "Is the knit texture stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One product reference; chaining is not in the runner."}
+
+- id: VBTS-ADS-05
+  title: "Three beats at the shop door: the poster is taped up, a shopper reads it, she walks in"
+  persona: "Retail chain's marketing lead turning a sale poster photo into a short social spot."
+  evidence: "Text on glass with reflections must survive a hand covering it and a door opening."
+  levers: [set, continuity, physics, layout, locale]
+  inputs: [{source: SRC-ADS-STORE-POSTER, role: first_frame}]
+  prompt: |
+    This is a yellow sale poster taped inside the glass door of a clothes shop in a Hyderabad market,
+    seen from the street at a slight angle, a streak of reflected daylight across its lower right.
+    Make three chained clips, each starting on the last frame of the one before, 4 + 4 + 4 seconds. The
+    poster's words, sizes and tape strips stay exactly as in the photo once it is up; when the door opens
+    the poster swings with the glass and its reflection streak moves with it. Overcast daylight. No other
+    text.
+  clip: {duration: 12, aspect: "3:2", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The poster's words, layout and tape at each corner"
+      - "The door, the clothes rail behind and the street angle"
+      - "Overcast daylight"
+    members:
+      - {name: "Beat 1 · Taped up (4 s)", prompt: "From the street: a shop assistant's hands inside the door press the last tape strip onto the poster's top right corner.", checks: [[physics_plausibility, "Does the tape press flat on the glass?"], [prompt_adherence, "Is there tape at every corner by the end?"]]}
+      - {name: "Beat 2 · She reads (4 s)", prompt: "A woman in a green salwar with shopping bags stops on the street, reads the poster and smiles, her reflection faint in the glass.", checks: [[physics_plausibility, "Is her reflection faint in the glass?"], [motion_coherence, "Does she stop naturally?"]]}
+      - {name: "Beat 3 · She walks in (4 s)", prompt: "She pushes the door open and walks in; the poster swings with the glass and the reflection streak slides across it.", checks: [[physics_plausibility, "Does the poster swing with the door?"], [physics_plausibility, "Does the reflection streak move with the glass?"]]}
+  deliverable: "Three chained clips of 4 seconds, 3:2."
+  checks:
+    - [set_consistency, "Are the poster's words and layout the same once it is up?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [physics_plausibility, "Does the poster swing with the door as one piece?"]
+    - [physics_plausibility, "Do reflections behave like reflections on glass?"]
+    - [set_consistency, "Is the shopper the same in beats 2 and 3?"]
+    - [prompt_adherence, "Is it overcast daylight throughout?"]
+    - [prompt_adherence, "Is the camera angle the same throughout?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [motion_coherence, "Is her motion natural?"]
+    - [prompt_adherence, "Does it read as a Hyderabad market?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining is not in the runner."}
+
+- id: VBTS-ADS-06
+  title: "Three beats of a billboard reveal: blank hoarding, the flex unrolls, the finished Myna Pay ad with commuters looking up"
+  persona: "Payments brand's media planner previewing the launch-day reveal film."
+  evidence: "The flex must land in the frame's perspective, and the logo must stay correct in the last beat."
+  levers: [set, end-frame, multi-ref, physics, layout, camera]
+  inputs:
+    - {source: SRC-ADS-BILLBOARD-SITE, role: first_frame, note: "the blank hoarding"}
+    - {source: SRC-ADS-LOGO, role: logo, note: "the brand's symbol and wordmark"}
+  prompt: |
+    The first image is a blank hoarding beside a Bengaluru flyover, seen from below and to the left, its
+    left edge nearer; four lamp brackets cast short shadows on its top edge. The second is the brand's
+    logo: an indigo circle with a white myna head and saffron beak, and the lower-case wordmark beside it.
+    Make three chained clips, each starting on the last frame of the one before, 4 + 4 + 4 seconds. The
+    finished ad is deep indigo with the logo large and centred in white, nothing else on
+    it. The flex follows the hoarding's perspective exactly. Morning sun. No other text.
+  clip: {duration: 12, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The hoarding's frame, catwalk and four lamp brackets"
+      - "Its perspective from below left"
+      - "Morning sun from behind the camera on the left"
+    members:
+      - {name: "Beat 1 · Blank (4 s)", prompt: "Static: the blank hoarding with traffic passing below; two workers climb onto the catwalk.", checks: [[prompt_adherence, "Are there two workers?"], [motion_coherence, "Is the traffic motion natural?"]]}
+      - {name: "Beat 2 · Unroll (4 s)", prompt: "The workers let the rolled flex drop from the top; it unrolls down the panel and they pull it taut.", checks: [[physics_plausibility, "Does the flex unroll and hang believably?"], [prompt_adherence, "Does it follow the panel's perspective?"]]}
+      - {name: "Beat 3 · Finished (4 s)", prompt: "Slow tilt down from the finished ad to the flyover: commuters on an orange bus look up at it.", checks: [[reference_fidelity, "Is the logo correct: myna facing right, saffron beak?"], [prompt_adherence, "Is it a slow tilt down?"]]}
+  deliverable: "Three chained clips of 4 seconds, 16:9."
+  checks:
+    - [reference_fidelity, "Is the logo correct in the finished ad?"]
+    - [prompt_adherence, "Does the finished flex follow the hoarding's perspective exactly?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Are there four lamp brackets throughout?"]
+    - [prompt_adherence, "Is the morning sun from the same side throughout?"]
+    - [physics_plausibility, "Does the flex unroll believably?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [motion_coherence, "Do the workers move naturally?"]
+    - [prompt_adherence, "Do commuters look up at the ad?"]
+    - [text_accuracy, "Is there no text other than the wordmark?"]
+    - [visual_quality, "Is the wordmark clean?"]
+    - [prompt_adherence, "Are the shots static, static, tilt down in that order?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "First frame plus a logo reference; chaining is not in the runner."}
+
+- id: VBTS-ADS-07
+  title: "Three cooking beats in the commercial kitchen: oil heats, seeds crackle, the dal is tempered"
+  persona: "Food-brand director previewing a tadka sequence in the dressed kitchen."
+  evidence: "Cooking effects (shimmer, crackle, smoke) and a fixed kitchen layout must both hold across cuts."
+  levers: [set, physics, layout, continuity, locale, timing]
+  inputs: [{source: SRC-ADS-KITCHEN, role: first_frame}]
+  prompt: |
+    This is a dressed kitchen for a cooking commercial: fridge on the left, window and sink with a tulsi
+    plant, a two-burner stove with a steel kadhai and a pressure cooker, a chopping board with tomatoes
+    and green chillies, steel dabbas on open shelves, a brass spice box on the right end of the counter.
+    Make three chained clips, each starting on the last frame of the one before, 4 + 3 + 4 seconds. A cook
+    in a sage apron whose face is not shown does the work. The kitchen keeps its layout in every shot.
+    Late-morning daylight from the window. No text.
+  clip: {duration: 11, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The kitchen layout left to right"
+      - "Kadhai on the left burner, cooker on the right"
+      - "Daylight from the window"
+    members:
+      - {name: "Beat 1 · Oil (4 s)", prompt: "Wide, static: the cook turns on the burner under the kadhai and pours in oil; it shimmers as it heats.", checks: [[physics_plausibility, "Does the oil shimmer as it heats?"], [prompt_adherence, "Is the layout as in the photo?"]]}
+      - {name: "Beat 2 · Seeds (3 s)", prompt: "Close-up into the kadhai: mustard seeds from the spice box drop in and crackle, jumping.", checks: [[physics_plausibility, "Do the seeds crackle and jump?"], [prompt_adherence, "Does it last about 3 seconds?"]]}
+      - {name: "Beat 3 · Tadka (4 s)", prompt: "Medium: the cook pours the sizzling tadka over a bowl of yellow dal on the counter; smoke curls up.", checks: [[physics_plausibility, "Does the tadka sizzle and smoke as it hits the dal?"], [prompt_adherence, "Is the bowl on the counter by the stove?"]]}
+  deliverable: "Three chained clips, 4, 3 and 4 seconds, 16:9."
+  checks:
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Does the kitchen keep its layout in every shot?"]
+    - [physics_plausibility, "Are the cooking effects believable?"]
+    - [prompt_adherence, "Is the daylight from the window throughout?"]
+    - [prompt_adherence, "Is the cook's face never shown?"]
+    - [prompt_adherence, "Do the clips last about 4, 3 and 4 seconds?"]
+    - [prompt_adherence, "Are the shots wide, close-up, medium in that order?"]
+    - [motion_coherence, "Are the hands natural?"]
+    - [set_consistency, "Is the cook in a sage apron throughout?"]
+    - [prompt_adherence, "Does it read as an Indian home kitchen?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining is not in the runner."}

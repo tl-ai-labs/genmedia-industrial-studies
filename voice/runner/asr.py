@@ -25,6 +25,7 @@ from typing import Protocol
 
 from .cost import Cost, Usage, compute_cost
 from .models import ServiceSpec
+from .normalize import _PUNCT  # keeps Devanagari and Telugu words whole
 
 ASR_MAX_ATTEMPTS = 3  # the first call plus the plan's two retries
 
@@ -95,6 +96,86 @@ def strip_tail_hallucination(text: str) -> tuple[str, list[str]]:
 
 def _strip(word: str) -> str:
     return word.lower().strip(".,;:!?\"'()[]")
+
+
+# A number as a transcriber writes it in digits. Space-separated groups are
+# one number ("481 902 773", "4, 2, 1, 9"), as normalize() also treats them.
+_DIGIT_GROUP = re.compile(r"\d[\d,.:]*(?:\s+\d[\d,.:]*)*")
+_NUMBER_WORDS = frozenset(
+    "zero oh one two three four five six seven eight nine ten eleven twelve thirteen "
+    "fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty "
+    "sixty seventy eighty ninety hundred thousand lakh lakhs crore crores million "
+    "billion first second third fourth fifth sixth seventh eighth ninth tenth eleventh "
+    "twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth "
+    "nineteenth twentieth thirtieth".split()
+    # Hindi, as the transcriber writes a Hinglish or Hindi read in Devanagari.
+    # Without these a correct "तीन लाख चालीस हजार" counted as no number at
+    # all and every Hindi spelled-out pass was set aside (2026-10-09).
+    + """शून्य एक दो तीन चार पांच पाँच छह छः छे सात आठ नौ दस ग्यारह ग्यारा बारह बारा
+    तेरह तेरा चौदह पंद्रह पन्द्रह सोलह सत्रह अठारह उन्नीस बीस इक्कीस बाईस तेईस
+    चौबीस पच्चीस पचीस पच्चिस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस
+    तैंतीस चौंतीस पैंतीस छत्तीस सैंतीस अड़तीस उनतालीस चालीस इकतालीस बयालीस
+    तैंतालीस चवालीस पैंतालीस छियालीस सैंतालीस अड़तालीस उनचास पचास इक्यावन बावन
+    तिरपन चौवन पचपन छप्पन सत्तावन अट्ठावन उनसठ साठ इकसठ बासठ तिरसठ चौंसठ
+    पैंसठ छियासठ सड़सठ अड़सठ उनहत्तर सत्तर इकहत्तर बहत्तर तिहत्तर चौहत्तर
+    पचहत्तर पचचतर छिहत्तर सतहत्तर अठहत्तर उन्यासी अस्सी इक्यासी बयासी तिरासी
+    चौरासी पचासी छियासी सत्तासी अट्ठासी नवासी नब्बे इक्यानवे बानवे तिरानवे
+    चौरानवे पचानवे छियानवे सत्तानवे अट्ठानवे निन्यानवे सौ सो हज़ार हजार अजार
+    लाख लाक लाग करोड़ करोड""".split()
+)
+_NUMBER_JOINERS = frozenset({"and", "point"})
+
+
+def _number_word_runs(text: str) -> int:
+    """How many separate spoken numbers a words-only transcript contains."""
+    runs, inside = 0, False
+    for w in _PUNCT.sub(" ", text.lower()).split():
+        if w in _NUMBER_WORDS:
+            runs += 0 if inside else 1
+            inside = True
+        elif not (inside and w in _NUMBER_JOINERS):
+            inside = False
+    return runs
+
+
+SPELLED_LOOP_RUN = 4          # the same word this many times in a row is a loop
+SPELLED_MIN_LENGTH_RATIO = 0.7  # spelled-out words vs normal-transcript words
+
+
+def spelled_pass_problem(normal: str, spelled: str) -> str | None:
+    """
+    Why the spelled-out transcript cannot be trusted, or None when it can.
+
+    With digits banned, the recogniser sometimes has no way out: on a clip it
+    heard as "1250" it wrote "AED Rs. Rs. Rs. Rs. ..." and dropped the rest of
+    the sentence (2026-10-09, bank-en-04, both large-v3 and medium). Read as
+    evidence, that loop would fail a must_say for a correct read. Spelled-out
+    numbers only ever ADD words, so a pass much shorter than the normal one,
+    or one stuck on a word the normal pass never repeats, is the recogniser
+    failing - and the phrase checks go back to the normal transcript.
+    """
+    def words(t: str) -> list[str]:
+        return [w for w in _PUNCT.sub(" ", t.lower()).split() if w]
+
+    n, s = words(normal), words(spelled)
+    if not s:
+        return "empty"
+    if len(s) < SPELLED_MIN_LENGTH_RATIO * len(n):
+        return f"{len(s)} words against {len(n)} in the normal transcript"
+    run = 1
+    for i in range(1, len(s)):
+        run = run + 1 if s[i] == s[i - 1] else 1
+        if run >= SPELLED_LOOP_RUN and " ".join([s[i]] * SPELLED_LOOP_RUN) not in " ".join(n):
+            return f"'{s[i]}' repeated {run}+ times in a row"
+    # Every number the normal pass heard must come back as number words. The
+    # pass can also DROP a number and keep the sentence: "A transaction of
+    # ¥, was just made" for a clip the normal pass wrote "114,999 rupees"
+    # (2026-10-09, bank-en-05) - not short, not looping, and it passed a
+    # must_not_say on a number it never wrote down.
+    heard, spelled_out = len(_DIGIT_GROUP.findall(normal)), _number_word_runs(spelled)
+    if spelled_out < heard:
+        return f"{heard - spelled_out} of {heard} numbers missing"
+    return None
 
 
 def collapse_repeated_transcript(text: str) -> tuple[str, bool]:
@@ -267,19 +348,28 @@ class Asr:
         self.spec = spec
         self._backend = build_backend(spec)
 
+    def _call_backend(self, audio_path: Path, language: str | None,
+                      hotwords: list[str] | None, spelled: bool) -> str:
+        if spelled:
+            # Only a backend that can ban tokens offers this pass; any other
+            # raises here, and the pass is recorded as failed.
+            return self._backend.transcribe(audio_path, language, hotwords, spelled=True)
+        try:
+            return self._backend.transcribe(audio_path, language, hotwords)
+        except TypeError:
+            # Backends that predate biasing keep working unchanged.
+            return self._backend.transcribe(audio_path, language)
+
     def transcribe(
         self, audio_path: Path, duration_s: float, language: str | None = None,
         hotwords: list[str] | None = None,
+        spelled: bool = False,
     ) -> AsrResult | AsrFailure:
         last = "unknown failure"
         started = time.perf_counter()
         for attempt in range(1, ASR_MAX_ATTEMPTS + 1):
             try:
-                try:
-                    text = self._backend.transcribe(Path(audio_path), language, hotwords)
-                except TypeError:
-                    # Backends that predate biasing keep working unchanged.
-                    text = self._backend.transcribe(Path(audio_path), language)
+                text = self._call_backend(Path(audio_path), language, hotwords, spelled)
             except Exception as exc:  # noqa: BLE001 - any ASR failure is the same state
                 last = f"{type(exc).__name__}: {exc}"
                 if attempt < ASR_MAX_ATTEMPTS:
@@ -346,10 +436,37 @@ class LocalWhisperBackend:
             spec.provider_model or "small.en", device="cpu", compute_type="int8"
         )
         self.last_usage: Usage | None = None
+        self._digit_tokens: list[int] | None = None
+
+    def _banned_digit_tokens(self) -> list[int]:
+        """
+        Every TEXT token that contains a digit - computed once.
+
+        Only ids below <|endoftext|>: the special tokens after it include the
+        timestamp markers ("<|0.00|>"), which contain digits too, and banning
+        them broke decoding outright - large-v3 returned "*" for a whole clip
+        (2026-10-09). The bug is in the list, not the model.
+        """
+        if self._digit_tokens is None:
+            tok = self._model.hf_tokenizer
+            first_special = tok.token_to_id("<|endoftext|>")
+            self._digit_tokens = [
+                i for i in range(first_special)
+                if any(ch.isdigit() for ch in tok.decode([i]))
+            ]
+        return self._digit_tokens
 
     def transcribe(self, audio_path: Path, language: str | None,
-                   hotwords: list[str] | None = None) -> str:
+                   hotwords: list[str] | None = None, spelled: bool = False) -> str:
         kwargs: dict = {"beam_size": 5}
+        if spelled:
+            # THE SPELLED-OUT PASS. Every token containing a digit is banned,
+            # so a number must come back as the words that were spoken. The
+            # normal pass writes "340,000" whether the speaker said "three
+            # lakh forty thousand" or "three hundred forty thousand"; this
+            # one cannot. No prompt and no hint toward either reading - the
+            # ban is the only difference from the normal pass.
+            kwargs["suppress_tokens"] = [-1] + self._banned_digit_tokens()
         if hotwords:
             # Bias the recogniser toward names it has no reason to know. A
             # coined brand or place name is not in its vocabulary, so a

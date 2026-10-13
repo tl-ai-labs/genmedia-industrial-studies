@@ -1,0 +1,44 @@
+# ret-hi-25 - Open-box delivery — 15-digit IMEI (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-25: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-25
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Delivery - OTP, address and pincode, agent, failed delivery, open-box.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# WHAT THIS TESTS. A retailer, a phone model and a 15-digit IMEI read back in one passage
+# SPEECH SKILLS. Numbers: codes; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-25
+modality: voice
+task: text_to_speech
+title: "Open-box delivery — 15-digit IMEI - Hinglish"
+
+input:
+  script: |
+    Aapka Croma se Samsung Galaxy S24 open-box delivery ke saath aa raha hai. Delivery agent aapke saamne IMEI number verify karega — three, five, six, seven, eight, nine, one, zero, two, four, six, eight, one, three, five.
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) IMEI "356789102468135" recoverable digit-for-digit
+  2) "Galaxy S24" read as "S twenty-four"
+  3) "IMEI" as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, ecommerce-retail, delivery, hard, even-contest, v2-bank]

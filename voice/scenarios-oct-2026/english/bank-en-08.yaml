@@ -1,0 +1,37 @@
+# bank-en-08 - Cheque bounce charge notice (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-10 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-10): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Payments & transfers - UPI ID, IFSC, NEFT/IMPS/RTGS, cheques.
+# TARGET CUSTOMER. Retail Banks, Payment Apps.
+# SPEECH SKILLS. Numbers: codes, amounts.
+# PICKED AS. Even contest - rupee amounts.
+
+id: bank-en-08
+modality: voice
+task: text_to_speech
+title: "Cheque bounce charge notice - English"
+
+input:
+  script: |
+    Your cheque number 540 has been returned due to insufficient funds. A cheque return charge of Rs 150 will be applied to your account.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Cheque number "five forty" recoverable
+  2) Charge "one hundred and fifty rupees" recoverable
+  3) Neutral, non-accusing tone
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, banking-financial-services, payments-transfers, easy, even-contest, new-english]

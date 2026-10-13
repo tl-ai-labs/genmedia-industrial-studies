@@ -1,0 +1,145 @@
+# Typography and layout — Film, OTT & micro-drama scenarios. Slots: typ.yaml.
+code: TYP
+scenarios:
+
+- id: TYP-FLM-01
+  title: "Telugu film one-sheet: Telugu title, English tagline, full billing block"
+  persona: "Publicity designer on a Telugu feature preparing the theatrical poster."
+  evidence: "Call at 26:48: text rendering is compared against a type-led tool; billing blocks are the hardest small text on a poster."
+  levers: [exact-text, script, small-text, layout, locale, long-brief]
+  prompt: |
+    A theatrical one-sheet poster for a fictional Telugu film, portrait 2:3, night palette of deep
+    blue and ember orange. Key art: a man in a dhoti stands with his back to us on a burning village
+    street, holding a lantern, small in the lower middle. Text, exactly, nothing else: at the top in
+    small spaced capitals "A FILM BY RAVI TEJA KONDA"; across the upper third the Telugu title
+    "నిశ్శబ్దం" in a huge hand-cut display face, ember orange; under it in English italic "Some
+    silences are louder than war."; at the bottom, a billing block in condensed capitals on three
+    lines: "SURYA VARMA  LAKSHMI REDDY  ARJUN RAO", "MUSIC BY KEERTHI SAI  CINEMATOGRAPHY BY ANAND
+    NAIR  EDITED BY PRIYA MENON", "PRODUCED BY GODAVARI TALKIES"; and under it "IN CINEMAS 9 JANUARY".
+  exact_text:
+    - "A FILM BY RAVI TEJA KONDA"
+    - "నిశ్శబ్దం"
+    - "Some silences are louder than war."
+    - "SURYA VARMA  LAKSHMI REDDY  ARJUN RAO"
+    - "PRODUCED BY GODAVARI TALKIES"
+    - "IN CINEMAS 9 JANUARY"
+  deliverable: "One portrait image, 2:3."
+  checks:
+    - [text_accuracy, "Is the Telugu title exact and correctly formed?"]
+    - [text_accuracy, "Is the English tagline exact?"]
+    - [text_accuracy, "Is the director line exact?"]
+    - [text_accuracy, "Are all three billing lines exact?"]
+    - [text_accuracy, "Is the release line exact?"]
+    - [prompt_adherence, "Is the title in the upper third and the billing block at the bottom?"]
+    - [prompt_adherence, "Is the title the largest text?"]
+    - [text_accuracy, "Is the billing block readable at small size?"]
+    - [composition, "Is the man small in the lower middle?"]
+    - [style, "Is the palette deep blue and ember orange?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [visual_quality, "Is the key art free of artefacts?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Recraft arm is not wired today."}
+  video_followon: ""
+
+- id: TYP-FLM-02
+  title: "OTT series title card: a distressed Devanagari title over a cinematic still"
+  persona: "Main-titles designer on a Hindi OTT series."
+  evidence: "Distressed or textured Devanagari breaks matras and the shirorekha more often than clean type."
+  levers: [exact-text, script, locale, layout, exclude]
+  prompt: |
+    A main title card for a fictional Hindi OTT series, 16:9. Background: a cinematic still of a dusty
+    Rajasthan village street at golden hour, a lone camel cart far away, dust in the air, slightly
+    desaturated. Centred in the lower third, the series title "धूल" in a huge, rough, sand-worn
+    Devanagari display face, cream, with the headline bar (shirorekha) unbroken and the letters
+    eroded at the edges like weathered stone. Under it, smaller, "एक ओरिजिनल सीरीज़" in a clean
+    Devanagari sans. Nothing else.
+  exact_text:
+    - "धूल"
+    - "एक ओरिजिनल सीरीज़"
+  deliverable: "One image, 16:9."
+  checks:
+    - [text_accuracy, "Is the title exactly धूल, correctly formed?"]
+    - [text_accuracy, "Is the shirorekha unbroken across the title?"]
+    - [style, "Is the title worn and eroded at the edges but still readable?"]
+    - [text_accuracy, "Is the subtitle exact, including the nuqta?"]
+    - [prompt_adherence, "Is the title centred in the lower third?"]
+    - [prompt_adherence, "Is the subtitle under the title, smaller?"]
+    - [style, "Is the title cream?"]
+    - [prompt_adherence, "Is the background golden hour with dust?"]
+    - [prompt_adherence, "Is there a lone camel cart far away?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the background free of artefacts?"]
+    - [style, "Is the background slightly desaturated?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V9: the title assembling from blowing dust."
+
+- id: TYP-FLM-03
+  title: "A film frame with burned-in two-line subtitles, Tamil above English, in the safe area"
+  persona: "Subtitling lead checking how generated frames handle bilingual subtitles."
+  evidence: "Subtitle placement in the safe area and Tamil glyphs are both common failures."
+  levers: [exact-text, script, layout, locale, small-text]
+  prompt: |
+    A film still from a Tamil family drama, 16:9: a grandmother and her grandson at a kitchen table
+    at night under a single bulb, she holding his hand. Burned-in subtitles at the bottom, centred,
+    inside the title-safe area (above the bottom tenth of the frame), white with a thin black outline,
+    two lines: the Tamil line "நான் திரும்பி வருவேன், பாட்டி." above, and the English line "I will
+    come back, Paati." below, the Tamil slightly larger. No other text.
+  exact_text:
+    - "நான் திரும்பி வருவேன், பாட்டி."
+    - "I will come back, Paati."
+  deliverable: "One image, 16:9."
+  checks:
+    - [text_accuracy, "Is the Tamil line exact and correctly formed?"]
+    - [text_accuracy, "Is the English line exact?"]
+    - [prompt_adherence, "Is the Tamil line above the English line?"]
+    - [prompt_adherence, "Are the subtitles centred and above the bottom tenth?"]
+    - [style, "Are they white with a thin black outline?"]
+    - [prompt_adherence, "Is the Tamil line slightly larger?"]
+    - [prompt_adherence, "Are there exactly two people in the frame?"]
+    - [prompt_adherence, "Is the scene lit by a single bulb?"]
+    - [prompt_adherence, "Is she holding his hand?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are faces and hands natural?"]
+    - [text_accuracy, "Are the subtitles readable over the image?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V9: subtitles over a moving shot."
+
+- id: TYP-FLM-04
+  title: "Localise the English noir poster into Hindi; every block keeps its place, size and treatment"
+  persona: "Distribution designer localising a poster for Hindi markets."
+  evidence: "Earlier bank IMG-STY-07 (poster style with readable text) was low tier; full localisation with layout held is the harder task."
+  levers: [exact-text, script, keep-rest, layout, small-text, locale]
+  inputs: [{source: SRC-POSTER-NOIR, role: source}]
+  prompt: |
+    Localise this English film poster into Hindi. Replace every line of English text with the Hindi
+    below, in the same position, at the same size and weight, in a Devanagari face that matches each
+    original's character (tall condensed serif feel for the title, italic feel for the tagline,
+    condensed capitals feel for the billing): "A FILM BY MEERA DAS" becomes "मीरा दास की फ़िल्म"; "THE
+    LAST MONSOON" becomes "आख़िरी मानसून"; "Some debts are paid in rain." becomes "कुछ कर्ज़ बारिश में
+    चुकाए जाते हैं।"; the billing block becomes "विक्रम सेठी अंजलि रॉय कबीर मलिक संगीत अरुण नायर
+    छायांकन लीला अय्यर"; "IN CINEMAS 14 NOVEMBER" becomes "14 नवंबर से सिनेमाघरों में". Colours,
+    image, rain and layout stay exactly as they are. No English remains.
+  exact_text:
+    - "मीरा दास की फ़िल्म"
+    - "आख़िरी मानसून"
+    - "कुछ कर्ज़ बारिश में चुकाए जाते हैं।"
+    - "14 नवंबर से सिनेमाघरों में"
+  deliverable: "One image, 2:3."
+  checks:
+    - [text_accuracy, "Is the Hindi title exact, nuqta included?"]
+    - [text_accuracy, "Is the Hindi tagline exact, with the danda?"]
+    - [text_accuracy, "Is the director line exact?"]
+    - [text_accuracy, "Is the billing block exact and complete?"]
+    - [text_accuracy, "Is the release line exact?"]
+    - [prompt_adherence, "Is each block in the same position as the English original?"]
+    - [prompt_adherence, "Is each block at a similar size and weight?"]
+    - [style, "Does each Hindi block echo its original's treatment (condensed title, italic-like tagline)?"]
+    - [preservation, "Is the image, rain and colour unchanged?"]
+    - [text_accuracy, "Is no English left?"]
+    - [text_accuracy, "Is the billing block readable at small size?"]
+    - [visual_quality, "Are there no smudges where English was?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

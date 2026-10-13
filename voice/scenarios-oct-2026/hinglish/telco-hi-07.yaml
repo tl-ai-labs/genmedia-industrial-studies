@@ -1,0 +1,45 @@
+# telco-hi-07 - Daily data exhausted — add-on pack — mixed script (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-07: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-07
+# LANGUAGE. Hinglish (Mixed script). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Recharge & plans.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A small raw amount and a data quantity inside a short Devanagari sentence — the local language written in both native script and Latin letters in one prompt
+# SPEECH SKILLS. Numbers: amounts, units/%.
+# PICKED AS. Even contest - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-07
+modality: voice
+task: text_to_speech
+title: "Daily data exhausted — add-on pack — mixed script - Hinglish"
+
+input:
+  script: |
+    आपका aaj ka data खत्म हो गया hai। ₹19 का 1GB data pack lijiye, jo आपके current plan की validity tak chalega।
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount "उन्नीस रुपये" recoverable
+  2) "1GB" as "one GB" / "एक GB"
+  3) Words written in Latin letters but belonging to the local language are pronounced as that language, not read as English spellings (judge)
+  4) No seam, accent change or pause where the script switches mid-sentence (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, recharge-plans, easy, even-contest, v2-bank]

@@ -1,0 +1,197 @@
+# Storyboard to shot — Gaming scenarios. Slots: vstb.yaml.
+code: VSTB
+scenarios:
+
+- id: VSTB-GAM-01
+  seed: true
+  title: "Trailer panel 5: Ira leaps the gap left to right; cape and sword sides held mid-air"
+  persona: "Trailer director at a game publisher turning the board into the hero's signature shot."
+  evidence: "Sahil's storyboard example (234–235): boards become shots. A leap mirrors easily, which flips the cape and sword to the wrong sides."
+  levers: [identity, multi-ref, camera-move, continuity, physics, layout]
+  inputs:
+    - {source: SRC-VBOARD-TRAILER, role: still1, note: "the trailer board; this shot is panel 5"}
+    - {source: SRC-VREF-IRA-SHEET, role: character, note: "Ira's model sheet"}
+  prompt: |
+    The first image is the trailer board; this shot is panel 5, "She leaps the gap · WS · Track right".
+    The second image is the heroine's model sheet. Make the 4-second shot in the game's stylised 3D
+    look, at night on rain-wet neon rooftops: a wide shot, the camera tracking right with her. 0–1 s
+    she sprints from frame left towards the roof edge; 1–3 s she leaps across a gap of about four metres
+    between two buildings, the street far below; 3–4 s she lands in a crouch on the far roof at frame
+    right. She is exactly the model sheet: high ponytail with three gold rings, nose ring on her left,
+    charcoal armour with copper plates, the red sash-cape on her right shoulder only, the rune on the
+    back of her left glove, the curved sword with the veena-head guard in her right hand throughout.
+    Mid-air the cape streams behind her; rain streaks; neon signs blur. No text.
+  clip: {duration: 4, aspect: "16:9", camera: "wide, tracking right with her"}
+  deliverable: "One 4-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a wide shot tracking right, like panel 5?"]
+    - [prompt_adherence, "Does she move left to right throughout?"]
+    - [prompt_adherence, "Does she take off at about 1 s and land at about 3 s?"]
+    - [reference_fidelity, "Is the cape on her right shoulder throughout, including mid-air?"]
+    - [reference_fidelity, "Is the sword in her right hand throughout?"]
+    - [reference_fidelity, "Is the rune on her left glove where visible?"]
+    - [reference_fidelity, "Does she match the model sheet: ponytail rings, nose ring, armour?"]
+    - [physics_plausibility, "Does the leap follow a believable arc across a four-metre gap?"]
+    - [physics_plausibility, "Does the cape stream behind her mid-air?"]
+    - [temporal_consistency, "Is there no morphing of her body or the sword during the leap?"]
+    - [physics_plausibility, "Does she land in a crouch with weight?"]
+    - [style, "Is it the game's stylised 3D look?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two references."}
+
+- id: VSTB-GAM-02
+  title: "Trailer panel 4: the rune flares on the back of her left glove, a frame-filling insert"
+  persona: "Game studio's trailer editor checking an insert from the launch board."
+  evidence: "Hand sides flip in inserts; the rune is on the left glove only."
+  levers: [identity, light-lock, camera, timing, exclude]
+  inputs: [{source: SRC-VBOARD-TRAILER, role: still1, note: "the board; this shot is panel 4"}]
+  prompt: |
+    This is the launch-trailer storyboard; make the shot for its panel 4, "Rune flares on her glove ·
+    Insert · Static", as a 3-second stylised 3D game-cinematic insert at night in the rain. The back of
+    Ira's left glove fills the frame: dark leather with a carved circular rune; the hand is a left hand,
+    thumb towards frame right. At 1 second the rune flares cyan from its centre outwards, lighting the
+    raindrops on the leather and the near edge of her red sash-cape; it pulses once more at 2.5
+    seconds. Locked off. Her sword, face and right hand are not in frame. No text.
+  clip: {duration: 3, aspect: "16:9", camera: "locked off insert"}
+  deliverable: "One 3-second clip, 16:9."
+  checks:
+    - [reference_fidelity, "Is it a left hand, thumb towards frame right?"]
+    - [composition, "Does the glove fill the frame as in panel 4?"]
+    - [prompt_adherence, "Does the rune flare at about 1 second?"]
+    - [prompt_adherence, "Does it pulse again at about 2.5 seconds?"]
+    - [prompt_adherence, "Does the cyan light the raindrops and the cape's edge?"]
+    - [physics_plausibility, "Do raindrops land on and run off the leather?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Are the sword, face and right hand out of frame?"]
+    - [temporal_consistency, "Is the rune's shape stable as it flares?"]
+    - [style, "Is it stylised 3D game-cinematic?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the glove free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}
+
+- id: VSTB-GAM-03
+  title: "Intro panel 2: push through the gateway into the courtyard, framing the chariot and gopuram"
+  persona: "Level designer turning the cutscene board into the intro's second shot."
+  evidence: "A push through a frame must keep what lies beyond in place: the broken tier, the fallen pillar."
+  levers: [camera-move, layout, count, light-lock, locale]
+  inputs: [{source: SRC-VBOARD-TEMPLE-INTRO, role: still1, note: "the board; this shot is panel 2"}]
+  prompt: |
+    This is the cutscene storyboard; make its panel 2, "Through the gate · WS", as a 6-second lit 3D
+    game cinematic in weathered granite at golden hour. The camera starts outside the entrance gateway,
+    its dark carved edges framing the courtyard, and pushes slowly through it. Beyond: the stone chariot
+    in the centre; the gopuram behind it with its top tier broken; six pillars on the left, the third
+    from the entrance fallen across the ground; the dry tank and shrine on the right. Low sun from the
+    right, long shadows to the left. Dust motes in the light. No characters, no text.
+  clip: {duration: 6, aspect: "16:9", camera: "push in through the gateway"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the camera push through the gateway?"]
+    - [composition, "Does the gateway frame the chariot and gopuram at the start, as in panel 2?"]
+    - [prompt_adherence, "Is the chariot in the centre and the tank and shrine on the right?"]
+    - [prompt_adherence, "Are there six pillars on the left with the third fallen?"]
+    - [reference_fidelity, "Is the gopuram's top tier broken?"]
+    - [prompt_adherence, "Is the sun from the right with long shadows to the left?"]
+    - [physics_plausibility, "Do the gateway edges pass with correct parallax?"]
+    - [motion_coherence, "Is the push smooth with no warping?"]
+    - [physics_plausibility, "Do dust motes drift in the light?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [style, "Is it a lit 3D cinematic in weathered granite?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}
+
+- id: VSTB-GAM-04
+  title: "Battle panel 5: the heavy man kneels and fires right; smoke trails left; the squad stays in its order"
+  persona: "Cinematics lead checking a battle beat from the cel-shaded board."
+  evidence: "Groups lose their order and facing in motion; recoil and smoke direction give it away."
+  levers: [physics, layout, count, continuity, identity]
+  inputs: [{source: SRC-VBOARD-SQUAD-BATTLE, role: still1, note: "the board; this shot is panel 5"}]
+  prompt: |
+    This is the battle storyboard; make its panel 5, "Rocket fired · MS", as a 4-second cel-shaded
+    animated shot in the board's clean style, on a fort rampart in daylight. The heavy man with the
+    grey moustache kneels in the foreground, facing frame right, and fires the rocket launcher at 1.5
+    seconds: the launcher kicks back into his shoulder, a smoke trail streams out behind him to the left,
+    and the rocket streaks off towards the masked grey enemies on the far wall at frame right. Behind
+    him the other four squad members stay in their line, all facing right. No text.
+  clip: {duration: 4, aspect: "16:9", camera: "locked off, medium shot"}
+  deliverable: "One 4-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does he fire at about 1.5 seconds?"]
+    - [physics_plausibility, "Does the launcher kick back into his shoulder?"]
+    - [physics_plausibility, "Does the smoke trail stream behind him to the left?"]
+    - [motion_coherence, "Does the rocket streak towards frame right?"]
+    - [prompt_adherence, "Are the enemies on the far wall at frame right?"]
+    - [prompt_adherence, "Are four other squad members behind him?"]
+    - [prompt_adherence, "Do all squad members face right?"]
+    - [reference_fidelity, "Is he the heavy man with the grey moustache?"]
+    - [composition, "Is it a medium shot as in panel 5?"]
+    - [style, "Is it cel-shaded in the board's style?"]
+    - [visual_quality, "Are lines stable?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}
+
+- id: VSTB-GAM-05
+  title: "Race panel 4: the launch off the grid left to right with a whip pan"
+  persona: "Racing game's trailer lead checking the launch beat from the race-intro board."
+  evidence: "Fast vehicle launches lose decals and stripe placement under motion blur."
+  levers: [camera-move, identity, timing, small-text, physics]
+  inputs: [{source: SRC-VBOARD-HOVER-RACE, role: still1, note: "the board; this shot is panel 4"}]
+  prompt: |
+    This is the race-intro storyboard; make its panel 4, "Launch · WS · Whip pan", as a 3-second 3D
+    game cinematic on a neon-lit start grid at night. The graphite hover-bike with the orange stripe
+    along its side, cyan glowing thruster pods and the small 07 decal on its nose hovers on the grid at
+    frame left; at 1 second the pods flare and it launches left to right with a blur trail; the camera
+    whip-pans right after it and settles on its tail as it streaks away. The stripe and decal stay
+    in place on the bike. The grid lights streak past. No other text.
+  clip: {duration: 3, aspect: "2.39:1", camera: "wide, whip pan right"}
+  deliverable: "One 3-second clip, 2.39:1."
+  checks:
+    - [motion_coherence, "Does the bike launch left to right?"]
+    - [prompt_adherence, "Do the pods flare and the bike launch at about 1 second?"]
+    - [prompt_adherence, "Does the camera whip-pan right and settle on the tail?"]
+    - [reference_fidelity, "Is the bike graphite with an orange stripe and cyan pods?"]
+    - [reference_fidelity, "Does the 07 decal stay on the nose?"]
+    - [physics_plausibility, "Does the bike hover rather than roll?"]
+    - [physics_plausibility, "Is there a blur trail behind it?"]
+    - [composition, "Does it start at frame left as in panel 4?"]
+    - [motion_coherence, "Does the bike keep its shape through the pan?"]
+    - [prompt_adherence, "Do the grid lights streak past?"]
+    - [style, "Is it a 3D game cinematic?"]
+    - [text_accuracy, "Is there no text other than the decal?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}
+
+- id: VSTB-GAM-06
+  title: "Panel 5: the eagle leaps off the cliff with the prince, animated in the board's Kalamkari style"
+  persona: "Indie studio's art director animating the game's mythic intro in a textile style."
+  evidence: "Flat traditional styles drift to generic 3D shading once they move."
+  levers: [identity, layout, physics, locale, camera]
+  inputs: [{source: SRC-VBOARD-GARUDA, role: still1, note: "the board; this shot is panel 5"}]
+  prompt: |
+    This is the storyboard painted in the Kalamkari textile style; make its panel 5, "The leap", as a
+    5-second animation that stays in that style throughout: natural indigo, madder red and ochre, black
+    outlines, flat decorative patterns, no shading or 3D lighting. The giant eagle with a white head,
+    red-brown body and gold-tipped wings, the young prince in a red dhoti and gold crown on its back,
+    leaps off the cliff edge towards frame right; its wings rise and beat down once at 2 seconds and it
+    glides out over the valley. The camera holds still. The patterns on the wings move with the wings,
+    not sliding across them. No text.
+  clip: {duration: 5, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 5-second clip, 16:9."
+  checks:
+    - [style, "Does it stay in the Kalamkari style, flat with black outlines, throughout?"]
+    - [style, "Is there no shading or 3D lighting?"]
+    - [motion_coherence, "Does the eagle leap towards frame right?"]
+    - [prompt_adherence, "Do the wings beat down at about 2 seconds?"]
+    - [reference_fidelity, "Is the eagle white-headed with red-brown body and gold-tipped wings?"]
+    - [reference_fidelity, "Is the prince in a red dhoti and gold crown?"]
+    - [physics_plausibility, "Do the wing patterns move with the wings?"]
+    - [composition, "Does it match panel 5?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [prompt_adherence, "Is there one eagle and one prince?"]
+    - [visual_quality, "Are outlines stable?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}

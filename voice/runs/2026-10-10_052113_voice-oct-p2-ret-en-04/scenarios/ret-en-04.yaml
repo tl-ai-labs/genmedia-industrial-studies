@@ -1,0 +1,37 @@
+# ret-en-04 - Courier brand plus tracking ID (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-12 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-12): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Order confirmation & tracking - order IDs, AWBs, couriers, delays.
+# TARGET CUSTOMER. E-commerce Marketplaces, Logistics & Courier Companies.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: brands.
+# PICKED AS. Even contest.
+
+id: ret-en-04
+modality: voice
+task: text_to_speech
+title: "Courier brand plus tracking ID - English"
+
+input:
+  script: |
+    Your order has been shipped through Blue Dart. Your tracking ID is B, D, seven, seven, two, four, four, one.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "BD772441" recoverable character for character
+  2) Read in confirmable chunks
+  3) "Blue Dart" natural
+
+checks:
+  duration_s: {min: 4.0, max: 21.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, ecommerce-retail, order-confirmation-tracking, medium, even-contest, new-english]

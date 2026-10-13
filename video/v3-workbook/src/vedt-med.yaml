@@ -1,0 +1,162 @@
+# Precision video edits — Media, publishing & events scenarios. Slots: vedt.yaml.
+code: VEDT
+scenarios:
+
+- id: VEDT-MED-01
+  title: "Update the broadcast: new Hindi lower third, new scrolling ticker, clock to 09:40; the anchor untouched"
+  persona: "News channel's graphics editor reusing a bulletin clip with updated captions."
+  evidence: "Earlier image bank EDT-MED-01: Devanagari caption edits on a still; a scrolling ticker must scroll at the same speed."
+  levers: [exact-text, script, multi-step, keep-rest, timing]
+  inputs: [{source: SRC-VCLIP-NEWS-BROADCAST, role: source}]
+  prompt: |
+    Make exactly these three changes to this 8-second news clip, on every frame, and nothing else.
+    1. The red lower third now reads "दिल्ली में घना कोहरा" in the same white Devanagari, same size.
+    2. The blue ticker now scrolls "उड़ानें 2 घंटे देरी से" repeating, right to left at the same speed.
+    3. The clock at the top right reads 09:40.
+    The anchor, his glasses, suit and tie, his reading and glance down at 4 seconds, the skyline screen and
+    the light are unchanged.
+  exact_text: ["दिल्ली में घना कोहरा", "उड़ानें 2 घंटे देरी से"]
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged locked off"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does the lower third read दिल्ली में घना कोहरा correctly?"]
+    - [text_accuracy, "Does the ticker read उड़ानें 2 घंटे देरी से correctly?"]
+    - [prompt_adherence, "Does the ticker scroll right to left at the same speed?"]
+    - [text_accuracy, "Does the clock read 09:40?"]
+    - [temporal_consistency, "Is the new text stable with no flicker?"]
+    - [preservation, "Is the anchor unchanged?"]
+    - [prompt_adherence, "Does he glance down at 4 seconds?"]
+    - [preservation, "Is the skyline screen unchanged?"]
+    - [text_accuracy, "Is no old text left?"]
+    - [prompt_adherence, "Are the bands in the same place?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [visual_quality, "Are the Devanagari letters crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-MED-02
+  title: "Remove the three filming phones through the push-in, add confetti; the band and beams untouched"
+  persona: "Festival's video editor making a cleaner hero clip for the recap film."
+  evidence: "Earlier image bank EDT-MED-02: removing raised phones from a crowd; in motion hands must stay."
+  levers: [multi-step, keep-rest, count, physics, light-lock]
+  inputs: [{source: SRC-VCLIP-CONCERT-CROWD, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second concert clip, on every frame, and nothing else.
+    1. Remove the three glowing phones held up in the crowd; the hands stay raised, open, as if waving.
+    2. Add a burst of silver and gold confetti falling from above the stage from 5 seconds, catching the
+       magenta and cyan beams as it drifts down over the crowd.
+    The band, the singer's move to stage right at 3 seconds and back by 6, the LED gradient, the beams, the
+    jumping crowd and the push in are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Are all three phones gone?"]
+    - [preservation, "Are the three hands still raised, open?"]
+    - [prompt_adherence, "Does confetti fall from 5 seconds?"]
+    - [physics_plausibility, "Does the confetti drift down naturally?"]
+    - [prompt_adherence, "Does the confetti catch the coloured beams?"]
+    - [preservation, "Is the singer's move unchanged?"]
+    - [preservation, "Are the band and LED unchanged?"]
+    - [preservation, "Are the beams unchanged?"]
+    - [motion_coherence, "Do the hands move naturally without phones?"]
+    - [preservation, "Is the push in unchanged?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Is there no smear where the phones were?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-MED-03
+  title: "Remove the podium logo and change the backdrop to a teal wave; the speaker neither re-drawn nor smoothed"
+  persona: "Events company's editor re-branding a keynote clip for a partner."
+  evidence: "Edits near a speaking person tend to redraw or smooth the face."
+  levers: [multi-step, keep-rest, identity, light-lock, timing]
+  inputs: [{source: SRC-VCLIP-PODIUM-SPEECH, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second keynote clip, on every frame, and nothing else.
+    1. Remove the small blue lotus logo from the front of the wooden podium; the wood grain continues.
+    2. Change the LED backdrop's orange abstract wave to a teal abstract wave of the same shape and motion,
+       its light on the stage turning cooler to match.
+    The speaker, her short grey hair, face, wrinkles and navy blazer, her gestures at 2 and 5 seconds, the
+    palms, the warm key light on her and the push in are unchanged, not redrawn or smoothed.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the podium logo gone with the wood grain continued?"]
+    - [prompt_adherence, "Is the backdrop a teal wave of the same shape?"]
+    - [prompt_adherence, "Does the backdrop's spill on the stage turn cooler?"]
+    - [reference_fidelity, "Is her face unchanged, not smoothed?"]
+    - [preservation, "Are her gestures at 2 s and 5 s unchanged?"]
+    - [preservation, "Is the warm key on her unchanged?"]
+    - [preservation, "Are the palms unchanged?"]
+    - [preservation, "Is the push in unchanged?"]
+    - [motion_coherence, "Does the backdrop keep its motion?"]
+    - [text_accuracy, "Is there no new text or logo?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Is there no halo around her?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-MED-04
+  title: "Remove the camera-trap box and the tyre tracks from the tiger shot, through the long-lens pan"
+  persona: "Wildlife documentary editor cleaning human traces out of a hero shot."
+  evidence: "Removals under a long-lens pan with soft foreground grass smear easily."
+  levers: [multi-step, keep-rest, physics, camera-move, locale]
+  inputs: [{source: SRC-VCLIP-WILDLIFE, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second Kaziranga tiger shot, on every frame, and nothing else.
+    1. Remove the small grey camera-trap box and its strap from the tree trunk the tiger passes at about 4
+       seconds; the bark continues underneath.
+    2. Remove the two muddy jeep tyre tracks across the open ground in the foreground; replace them with
+       short trampled grass and earth matching the rest.
+    The tiger, its walk left to right, its stripes, the tall elephant grass in front and behind, the mist,
+    the morning light and the long-lens pan are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged long-lens pan"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the camera-trap box gone with the bark rebuilt?"]
+    - [prompt_adherence, "Are the tyre tracks gone?"]
+    - [preservation, "Does the ground match the rest of the scene?"]
+    - [motion_coherence, "Do the cleaned areas track with the pan?"]
+    - [preservation, "Is the tiger unchanged?"]
+    - [prompt_adherence, "Does it pass the tree at about 4 seconds?"]
+    - [preservation, "Is the grass in front unchanged?"]
+    - [preservation, "Is the morning light unchanged?"]
+    - [physics_plausibility, "Does the grass blur stay consistent?"]
+    - [preservation, "Is the pan unchanged?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Is there no smear?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-MED-05
+  title: "Clean the travel clip: remove the drone and the selfie-stick tourist, turn the umbrella yellow"
+  persona: "Travel publication's video editor cleaning a contributor's clip for publishing."
+  evidence: "Three edits of different kinds in one handheld clip: one tends to be skipped."
+  levers: [multi-step, keep-rest, count, timing, unseen]
+  inputs: [{source: SRC-VCLIP-TRAVEL-TEMPLE, role: source}]
+  prompt: |
+    Make exactly these three changes to this 8-second handheld clip at a Thanjavur temple, on every frame,
+    and nothing else.
+    1. Remove the small white drone hovering at the upper right; clean blue sky.
+    2. Remove the tourist in the red cap with the selfie stick who crosses left to right at about 2 seconds;
+       rebuild the sunlit courtyard and the temple behind them.
+    3. Recolour the woman's blue umbrella in the middle distance to a bright yellow.
+    The tower, the courtyard, the granite wall filling the left from 5 seconds, the woman, the light and
+    the walk and tilt are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged handheld walk and tilt"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the drone gone on every frame?"]
+    - [prompt_adherence, "Is the selfie-stick tourist gone?"]
+    - [preservation, "Is the courtyard rebuilt where they crossed?"]
+    - [prompt_adherence, "Is the umbrella bright yellow?"]
+    - [preservation, "Is the woman otherwise unchanged?"]
+    - [preservation, "Is the woman with the umbrella still there?"]
+    - [prompt_adherence, "Does the wall fill the left from 5 seconds?"]
+    - [motion_coherence, "Do the cleaned areas follow the handheld move?"]
+    - [preservation, "Is the tower unchanged?"]
+    - [preservation, "Is the sunlight unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [visual_quality, "Is there no smear?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

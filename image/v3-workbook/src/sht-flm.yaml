@@ -1,0 +1,384 @@
+# Production sheets — Film, OTT & micro-drama scenarios. Slots: sht.yaml.
+code: SHT
+scenarios:
+
+- id: SHT-FLM-01
+  seed: true
+  sahil: beat-sheet
+  title: "Time-coded beat sheet for a 45-second solo segment, 'The Last Transmission'"
+  persona: "Director's assistant on an independent short, preparing the one-page beat sheet the editor and composer will both cut to."
+  evidence: "Sahil's screen-share (screenshots 236–237): 'THE LAST TRANSMISSION — SEGMENT: DESCENT & FAREWELL', a solo character piece 0:00–0:45, nine beats each with a start and end frame, camera, sound and voice-over notes, plus key character, environment and props, on-screen text, music and sound plan and tech specs. Both tools produced it; the test is the density and accuracy."
+  levers: [time-code, exact-text, small-text, count, identity, continuity, long-brief]
+  inputs:
+    - {source: SRC-RIDGE-WANDERER, role: source, note: "the lead character and the location"}
+  prompt: |
+    Using the man in this photo as the only character and this ridge and valley as the
+    location, design a single landscape beat sheet for a film segment, on a warm off-white page
+    with clean editorial typography. At the top, the title
+    "THE LAST TRANSMISSION — SEGMENT: DESCENT & FAREWELL"
+    and under it, smaller, "Solo character piece · 0:00–0:45 · 2.39:1 delivery".
+
+    The main area is nine beat boxes in a three-by-three grid, in story order left to right, top
+    to bottom. Each box has: an orange tag with the beat number and title, the time code at the
+    top right, a START FRAME and an END FRAME side by side with an arrow between them (small
+    photographic frames of the man in this location), and three short lines labelled CAMERA,
+    SOUND and VO. The beats, with their exact titles and time codes:
+
+    B1 RIDGE · ARRIVAL 0:00–0:06
+    B2 RIDGE · STILLNESS 0:06–0:11
+    B3 VALLEY · REVEAL 0:11–0:17
+    B4 DESCENT · BEGIN 0:17–0:21
+    B5 DESCENT · FOG 0:21–0:27
+    B6 DETAIL · GRASS 0:27–0:30
+    B7 VALLEY FLOOR · RUIN 0:30–0:36
+    B8 GROUND · MEMORY 0:36–0:41
+    B9 FINAL · STILLNESS 0:41–0:45
+
+    The frames must show their beats: B1 he walks into frame on the ridge; B2 he stands still with
+    the radio; B3 a wide of the fog-filled valley; B4 his first steps down the slope; B5 he is half
+    lost in fog; B6 an extreme close-up of his hand brushing tall grass; B7 the stone ruin of a
+    small radio hut on the valley floor; B8 he kneels and sets the radio on the ground; B9 he walks
+    away into the fog, the radio left behind. Light moves from pale gold dawn in B1 to flat grey
+    fog by B9.
+
+    Only three beats have voice-over; write these lines exactly:
+    in B2, VO: "They said no one would hear it."
+    in B5, VO: "I kept talking anyway."
+    in B9, VO: "Goodbye. Properly, this time."
+    The other beats show VO: — .
+
+    Along the bottom, a row of five panels: KEY CHARACTER (the man front, side and back), ENVIRONMENT
+    & PROPS (ridge, valley, ruin, radio, satchel), ON-SCREEN TEXT (one overlay, "Day 41", in B1
+    only), MUSIC & SOUND PLAN (a timeline 0:00 to 0:45 with wind, radio static and a single cello
+    entering at 0:30) and TECH SPECS (2.39:1, 24 fps, 4K DCI, colour: muted, cool shadows). Every
+    word must be readable at full size; no placeholder or invented text.
+  exact_text:
+    - "THE LAST TRANSMISSION — SEGMENT: DESCENT & FAREWELL"
+    - "Solo character piece · 0:00–0:45 · 2.39:1 delivery"
+    - "RIDGE · ARRIVAL"
+    - "RIDGE · STILLNESS"
+    - "VALLEY · REVEAL"
+    - "DESCENT · BEGIN"
+    - "DESCENT · FOG"
+    - "DETAIL · GRASS"
+    - "VALLEY FLOOR · RUIN"
+    - "GROUND · MEMORY"
+    - "FINAL · STILLNESS"
+    - "They said no one would hear it."
+    - "I kept talking anyway."
+    - "Goodbye. Properly, this time."
+    - "Day 41"
+  deliverable: "One landscape image (at least 3:2), the full beat sheet, readable at full size."
+  checks:
+    - [text_accuracy, "Are the title and the subtitle spelled exactly as given?"]
+    - [prompt_adherence, "Are there exactly nine beat boxes, in a three-by-three grid?"]
+    - [text_accuracy, "Are all nine beat titles spelled exactly as given and in the right order?"]
+    - [text_accuracy, "Is every time code exactly as given (0:00–0:06 through 0:41–0:45)?"]
+    - [prompt_adherence, "Do the time codes run without gaps or overlaps and end at 0:45?"]
+    - [prompt_adherence, "Does every beat box have both a start frame and an end frame with an arrow between them?"]
+    - [text_accuracy, "Are the three voice-over lines exact and in beats B2, B5 and B9 only?"]
+    - [reference_fidelity, "Is the man in every frame recognisably the man in the photo: grey beard, charcoal coat, rust scarf?"]
+    - [set_consistency, "Does he carry the radio in every frame up to B8, and is it on the ground, left behind, in B9?"]
+    - [prompt_adherence, "Does B3 show a wide of the fog-filled valley and B6 a close-up of a hand in grass?"]
+    - [prompt_adherence, "Does B7 show a stone ruin of a small hut on the valley floor?"]
+    - [prompt_adherence, "Does the light move from pale gold dawn in B1 to flat grey fog by B9?"]
+    - [prompt_adherence, "Is there no second person anywhere on the sheet?"]
+    - [prompt_adherence, "Are all five bottom panels present with the given headings?"]
+    - [text_accuracy, "Does the on-screen text panel list only 'Day 41', for B1?"]
+    - [prompt_adherence, "Does the music and sound timeline show the cello entering at 0:30?"]
+    - [text_accuracy, "Do the tech specs read 2.39:1, 24 fps and 4K DCI?"]
+    - [text_accuracy, "Is every word on the sheet readable, with no garbled or placeholder text?"]
+    - [style, "Is the layout clean and editorial, with consistent type sizes for the same kind of label?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input; needs a high-resolution output setting so the small text can be judged."}
+  video_followon: "V3: beats B4 to B6 as three consecutive clips using the start and end frames."
+
+- id: SHT-FLM-02
+  title: "60-second vertical micro-drama beat sheet from the haldi photo, beat titles in Hindi"
+  persona: "Showrunner at a Hindi micro-drama app planning an episode from one location photo."
+  evidence: "Sahil's beat-sheet example (236–237) in English; micro-drama runs in Hindi, so the dense sheet must hold Devanagari beat titles."
+  levers: [time-code, exact-text, script, small-text, count, identity, locale]
+  inputs: [{source: SRC-HALDI, role: source}]
+  prompt: |
+    Using this haldi photo for its people and courtyard, design a one-page beat sheet for a
+    60-second vertical micro-drama episode, landscape page, cream background, clean sans. Title:
+    "हल्दी — एपिसोड 12". Six beat boxes in a row, each with a 9:16 thumbnail frame from this
+    courtyard, the Hindi beat title, the time code and one English note. The beats exactly:
+
+    1 · "हल्दी की रस्म" · 0:00–0:10
+    2 · "माँ का पानी" · 0:10–0:18
+    3 · "एक फ़ोन कॉल" · 0:18–0:30
+    4 · "दादाजी चुप" · 0:30–0:42
+    5 · "राज़ खुला" · 0:42–0:54
+    6 · "दुल्हन की नज़र" · 0:54–1:00
+
+    The six people in the thumbnails are the people in the photo. A bottom strip lists "CAST"
+    with the six roles in English. No other text.
+  exact_text:
+    - "हल्दी — एपिसोड 12"
+    - "हल्दी की रस्म"
+    - "माँ का पानी"
+    - "एक फ़ोन कॉल"
+    - "दादाजी चुप"
+    - "राज़ खुला"
+    - "दुल्हन की नज़र"
+  deliverable: "One landscape image, readable at full size."
+  checks:
+    - [text_accuracy, "Is the title exact in Devanagari?"]
+    - [prompt_adherence, "Are there exactly six beat boxes?"]
+    - [text_accuracy, "Is every Hindi beat title exact, including nuqtas?"]
+    - [text_accuracy, "Are the time codes exact and contiguous, ending at 1:00?"]
+    - [composition, "Is every thumbnail a 9:16 frame?"]
+    - [reference_fidelity, "Are the people in the thumbnails the people in the photo?"]
+    - [prompt_adherence, "Is the courtyard in the thumbnails the photo's courtyard?"]
+    - [prompt_adherence, "Does beat 3's thumbnail show a phone call?"]
+    - [prompt_adherence, "Is there a CAST strip at the bottom with six roles?"]
+    - [text_accuracy, "Is every word readable?"]
+    - [style, "Is the layout clean and consistent?"]
+    - [prompt_adherence, "Are there no extra people in the thumbnails?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V3: beats 2 to 4 as consecutive vertical clips."
+
+- id: SHT-FLM-03
+  title: "Production-design bible for the 1970s drawing-room set"
+  persona: "Production designer handing the art department a single page for the set's continuity."
+  evidence: "Bibles with palette swatches are where colours drift from the imagery."
+  levers: [exact-text, small-text, layout, count, locale, identity]
+  inputs: [{source: SRC-SET-LIVING, role: source}]
+  prompt: |
+    From this photo of a dressed 1970s drawing-room set, design a production-design bible on one
+    landscape page, white background, thin black rules, small grey sans labels. Title: "SET 04 —
+    SHARMA DRAWING ROOM, 1974". Sections: "HERO VIEW" (the set as photographed); "PROP LIST", eight
+    numbered callouts with leader lines touching the props in a second copy of the photo: 1 radio
+    cabinet, 2 wedding photo, 3 teal vinyl sofa, 4 lace curtains, 5 rattan armchair, 6 brass floor
+    lamp, 7 coffee table, 8 ceiling fan; "PALETTE", five swatches labelled "Wall green",
+    "Sofa teal", "Rattan", "Brass", "Floor red", each matching its colour in the photo;
+    "CONTINUITY FLAGS", listing exactly three anachronisms to remove: "Plastic bottle",
+    "Modular switchboard", "LED bulb". No other text.
+  exact_text:
+    - "SET 04 — SHARMA DRAWING ROOM, 1974"
+    - "PROP LIST"
+    - "PALETTE"
+    - "CONTINUITY FLAGS"
+    - "Plastic bottle"
+    - "Modular switchboard"
+    - "LED bulb"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are all four sections present with exact headings?"]
+    - [prompt_adherence, "Are there exactly eight numbered prop callouts?"]
+    - [prompt_adherence, "Does each leader line touch the right prop?"]
+    - [prompt_adherence, "Are there five palette swatches with the given labels?"]
+    - [prompt_adherence, "Does each swatch match its colour in the photo?"]
+    - [text_accuracy, "Are the three continuity flags exact?"]
+    - [reference_fidelity, "Is the hero view the set as photographed?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [style, "Is the layout clean with thin rules and grey labels?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are the photo copies sharp, not distorted?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-FLM-04
+  title: "Costume continuity bible in Telugu and English: the actor in three looks, front and back"
+  persona: "Costume designer on a Telugu period film preparing the continuity bible for the wardrobe team."
+  evidence: "Costume bibles combine identity, garment fidelity, swatches and bilingual labels on one page."
+  levers: [multi-ref, identity, exact-text, script, layout, locale]
+  inputs:
+    - {source: SRC-ACTOR-F, role: source, note: "the actor"}
+    - {source: SRC-COSTUME-REF, role: reference, note: "the costume"}
+  prompt: |
+    Using the actor in the first photo and the 1940s costume in the second, design a costume
+    continuity bible on one landscape page, warm white, clean sans. Title in Telugu and English:
+    "కాస్ట్యూమ్ కంటిన్యూటీ — COSTUME CONTINUITY". Three looks in three columns, each with a
+    front and a back full-length photo of the actor wearing the costume: column headed "లుక్ 1 —
+    Clean" (as new); "లుక్ 2 — Field" (hem muddy to the ankle, sleeves pushed up); "లుక్ 3 —
+    Monsoon" (sari soaked, darker, the pallu over her head). Under each column, a fabric swatch
+    strip (indigo body, mustard check, maroon blouse) and a line "Anklets: silver, both feet".
+    The actor's face, nose stud on the left, mole and braid are hers in every photo; her skin is
+    not lightened. No other text.
+  exact_text:
+    - "కాస్ట్యూమ్ కంటిన్యూటీ — COSTUME CONTINUITY"
+    - "లుక్ 1 — Clean"
+    - "లుక్ 2 — Field"
+    - "లుక్ 3 — Monsoon"
+    - "Anklets: silver, both feet"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact, with correctly formed Telugu?"]
+    - [prompt_adherence, "Are there three columns with front and back photos each (six figures)?"]
+    - [text_accuracy, "Are the three look headings exact?"]
+    - [reference_fidelity, "Is the actor recognisably the same woman in all six photos?"]
+    - [reference_fidelity, "Is the nose stud on her left nostril in the front photos?"]
+    - [reference_fidelity, "Is the costume the reference's: indigo with mustard check, maroon blouse?"]
+    - [prompt_adherence, "Is look 2's hem muddy to the ankle with sleeves pushed up?"]
+    - [prompt_adherence, "Is look 3 soaked with the pallu over her head?"]
+    - [prompt_adherence, "Is there a swatch strip with three swatches under each column?"]
+    - [prompt_adherence, "Are silver anklets on both feet in every look?"]
+    - [reference_fidelity, "Is her skin tone unchanged, not lightened?"]
+    - [text_accuracy, "Is every label readable?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: SHT-FLM-05
+  title: "Character model sheet: turnaround, six expressions, colour callouts with hex values"
+  persona: "Character designer handing the anime production its official model sheet."
+  evidence: "Earlier bank IMG-GAME-56 (flat colours with a palette strip that must match) was high tier."
+  levers: [identity, exact-text, count, unseen, layout]
+  inputs: [{source: SRC-ANIME-HEROINE, role: source}]
+  prompt: |
+    Using this anime character, draw her official model sheet on white, landscape, clean line art
+    and flat cel colour. Top row: a four-view turnaround on one baseline, labelled "FRONT", "SIDE",
+    "BACK", "3/4". Middle row: six head expressions labelled "Neutral", "Laughing", "Angry",
+    "Scared", "Smug", "Crying". Bottom row: five colour callouts, each a swatch with a leader line
+    to the part and a hex value: hair "#1A1A1F", streak "#2BB5A8", hoodie "#8C9096", scarf
+    "#C8232C", patch "#F2C230". Her asymmetries stay on the correct sides in every view: the
+    longer hair and streak on her right, the 07 patch on her left sleeve, the bandage on her left
+    knee. Title at top left: "KAIA — MODEL SHEET v1". No other text.
+  exact_text:
+    - "KAIA — MODEL SHEET v1"
+    - "FRONT"
+    - "BACK"
+    - "Neutral"
+    - "Crying"
+    - "#2BB5A8"
+    - "#C8232C"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there four turnaround views on one baseline?"]
+    - [text_accuracy, "Are the four view labels exact?"]
+    - [prompt_adherence, "Are there six expressions with exact labels?"]
+    - [text_accuracy, "Are the five hex values exact?"]
+    - [prompt_adherence, "Does each swatch match the colour of its part?"]
+    - [reference_fidelity, "Is the streak on her right side in every view?"]
+    - [reference_fidelity, "Is the 07 patch on her left sleeve in every view that shows it?"]
+    - [reference_fidelity, "Is the bandage on her left knee?"]
+    - [set_consistency, "Are proportions the same across the four views?"]
+    - [style, "Is the line weight consistent?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [visual_quality, "Are hands clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-FLM-06
+  title: "Location recce board for a Tamil period film: six captioned locations, map inset, sun path"
+  persona: "Location manager presenting recce options to a Tamil director."
+  evidence: "Location boards with bilingual captions and a sun-path diagram stack text, geography and light."
+  levers: [exact-text, script, count, layout, light-lock, locale]
+  prompt: |
+    Design a location recce board on one landscape page, off-white, clean sans, for a Tamil period
+    film set in 1930s Chettinad. Title: "இட ஆய்வு — LOCATION RECCE". Six photos in a two-by-three
+    grid of real-looking Chettinad locations at golden hour, each with a caption in Tamil then
+    English: "1 · மாளிகை முற்றம் · Mansion courtyard"; "2 · தெரு · Street of mansions"; "3 ·
+    குளம் · Temple tank"; "4 · வயல் · Paddy field"; "5 · சந்தை · Weekly market"; "6 · ரயில் நிலையம் ·
+    Old railway halt". A small map inset on the right shows the six numbered pins. Below it, a
+    sun-path diagram for the courtyard: a semicircle from E to W with the sun at 16:30 marked in
+    the west. No other text.
+  exact_text:
+    - "இட ஆய்வு — LOCATION RECCE"
+    - "மாளிகை முற்றம்"
+    - "தெரு"
+    - "குளம்"
+    - "வயல்"
+    - "சந்தை"
+    - "ரயில் நிலையம்"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact, with correctly formed Tamil?"]
+    - [prompt_adherence, "Are there six photos with numbered captions?"]
+    - [text_accuracy, "Is every Tamil caption exact?"]
+    - [prompt_adherence, "Does each photo show its captioned place?"]
+    - [prompt_adherence, "Does the map show six numbered pins?"]
+    - [prompt_adherence, "Does the sun path run E to W with the 16:30 sun in the west?"]
+    - [prompt_adherence, "Are the photos lit at golden hour?"]
+    - [prompt_adherence, "Do the locations read as 1930s Chettinad, with no modern objects?"]
+    - [text_accuracy, "Is every English caption exact?"]
+    - [style, "Is the layout clean?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [visual_quality, "Are the photos free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: SHT-FLM-07
+  title: "OTT thriller pitch board: key art, logline, three character cards, tone frames, episode grid"
+  persona: "Producer pitching a thriller series to an OTT platform with one board."
+  evidence: "Pitch boards are dense multi-section sheets; sections are often missed."
+  levers: [count, exact-text, small-text, layout, long-brief]
+  prompt: |
+    Design a pitch board on one landscape page, black background, white and red type. Title "THE
+    NINTH FLOOR" at top left. Sections, each with its exact heading: "KEY ART" (a woman in a red
+    coat in a dark corridor, 2:3); "LOGLINE" with exactly "A night auditor finds a floor that is not
+    on any plan."; "CHARACTERS" with three cards, each a portrait and a name: "MAYA — Auditor",
+    "DEV — Security chief", "MR. RAO — Owner"; "TONE" with four small frames (empty corridor, lift
+    buttons, rain on glass, flickering exit sign); "EPISODES" with a grid of eight boxes numbered
+    1 to 8. No other text.
+  exact_text:
+    - "THE NINTH FLOOR"
+    - "KEY ART"
+    - "LOGLINE"
+    - "A night auditor finds a floor that is not on any plan."
+    - "MAYA — Auditor"
+    - "DEV — Security chief"
+    - "MR. RAO — Owner"
+    - "EPISODES"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are all five sections present with exact headings?"]
+    - [text_accuracy, "Is the logline exact?"]
+    - [prompt_adherence, "Are there three character cards with exact names?"]
+    - [prompt_adherence, "Are there four tone frames?"]
+    - [prompt_adherence, "Is there an eight-box episode grid numbered 1 to 8?"]
+    - [prompt_adherence, "Is the key art a woman in a red coat in a corridor?"]
+    - [set_consistency, "Does Maya's card show the same woman as the key art?"]
+    - [style, "Is the palette black, white and red only?"]
+    - [text_accuracy, "Is every word readable?"]
+    - [prompt_adherence, "Are the sections clearly separated?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: SHT-FLM-08
+  title: "VFX breakdown sheet for a car-crash sequence: six shots with ids, durations and elements"
+  persona: "VFX producer bidding a car-crash sequence."
+  evidence: "Breakdown sheets carry shot ids and durations that must add up."
+  levers: [time-code, count, exact-text, small-text, layout]
+  prompt: |
+    Design a VFX breakdown sheet on one landscape page, dark grey background, white monospace
+    labels. Title "SEQ 32 — FLYOVER CRASH". Six rows, one per shot, each with a 16:9 thumbnail
+    (grey 3D previs of a sedan losing control on a wet flyover at night and hitting the barrier),
+    the shot id, the duration, the element list and a total running time at the end of the row.
+    Rows exactly: "032_010 · 48 fr · Plate, CG rain"; "032_020 · 36 fr · Plate, CG car"; "032_030
+    · 24 fr · CG car, CG sparks"; "032_040 · 60 fr · CG car, CG barrier, FX debris"; "032_050 · 30
+    fr · Plate, FX smoke"; "032_060 · 42 fr · Plate, CG rain, FX smoke". A total at the bottom:
+    "TOTAL 240 fr @ 24 fps = 10.0 s". No other text.
+  exact_text:
+    - "SEQ 32 — FLYOVER CRASH"
+    - "032_010 · 48 fr · Plate, CG rain"
+    - "032_040 · 60 fr · CG car, CG barrier, FX debris"
+    - "032_060 · 42 fr · Plate, CG rain, FX smoke"
+    - "TOTAL 240 fr @ 24 fps = 10.0 s"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there exactly six shot rows?"]
+    - [text_accuracy, "Are all shot ids, durations and element lists exact?"]
+    - [text_accuracy, "Is the total line exact?"]
+    - [prompt_adherence, "Do the six durations add up to 240 frames?"]
+    - [prompt_adherence, "Does each thumbnail match its shot's elements (sparks in 030, debris in 040)?"]
+    - [set_consistency, "Is it the same sedan in every thumbnail?"]
+    - [style, "Are thumbnails grey 3D previs?"]
+    - [prompt_adherence, "Is it night with rain in the thumbnails?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [style, "Is the sheet consistent: dark grey, white monospace?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

@@ -1,0 +1,47 @@
+# md-hi-31 - Market crash — Sensex points, percent, deadline (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-31: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-31
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. An index name, a raw points figure, a percentage and a time, under clipped command
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: names, brands; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-hi-31
+modality: voice
+task: styled_tts
+title: "Market crash — Sensex points, percent, deadline - Hindi"
+
+input:
+  script: |
+    Sensex आज 1,200 points गिरा, और हमारे shares 18% नीचे हैं। Board meeting चार बजे है — I need answers before that, Kapoor!
+  language: hi-IN
+  style: "tense, clipped, commanding"
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Hindi segments pronounced correctly (judge)
+  4) One continuous prosody; the emotion does not reset at the language switch
+  5) "1,200 points" and "18%" recoverable
+
+checks:
+  duration_s: {min: 4.6, max: 24.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, micro-drama-entertainment, corporate-business, hard, gemini-lean, v2-bank]

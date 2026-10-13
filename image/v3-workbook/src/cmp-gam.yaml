@@ -1,0 +1,92 @@
+# Composition and aesthetic — Gaming scenarios. Slots: cmp.yaml.
+code: CMP
+scenarios:
+
+- id: CMP-GAM-01
+  title: "Key art: a tiny hero before a colossal stone titan rising from a valley"
+  persona: "Key art director on a fantasy game pitching scale."
+  evidence: "Models make heroes large; a tiny hero against a colossus is the test."
+  levers: [off-centre, camera, light-lock, exclude]
+  prompt: |
+    Painted key art for a fantasy game, 16:9. A colossal stone titan, a thousand metres tall, rises
+    out of a misty valley, moss and waterfalls pouring off its shoulders, its face in shadow, a
+    single glowing amber eye. On a rocky outcrop in the lower right foreground stands a lone hero in
+    a red cloak with a spear, seen from behind, tiny, about three percent of the frame's height.
+    Golden hour light from the left, catching the titan's shoulder and the waterfalls' spray; deep
+    atmospheric haze between hero and titan. Painterly brushwork. No text, no logo.
+  deliverable: "One image, 16:9."
+  checks:
+    - [composition, "Is the hero about three percent of the frame's height?"]
+    - [composition, "Is the hero in the lower right foreground?"]
+    - [physics_plausibility, "Does the titan read as colossal?"]
+    - [physics_plausibility, "Is there atmospheric haze between hero and titan?"]
+    - [prompt_adherence, "Does the titan have a single glowing amber eye?"]
+    - [prompt_adherence, "Is golden light from the left catching the titan and spray?"]
+    - [prompt_adherence, "Do waterfalls pour off its shoulders?"]
+    - [prompt_adherence, "Is the hero in a red cloak with a spear, from behind?"]
+    - [style, "Is it painterly?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [visual_quality, "Is the image clean?"]
+    - [prompt_adherence, "Is there one hero?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-GAM-02
+  title: "Looking down a cliff city in the monsoon with the horizon in the top 15 percent"
+  persona: "Environment concept artist pitching a vertical city level."
+  evidence: "Horizons are placed by default on the middle; the top 15 percent is the test."
+  levers: [off-centre, camera, light-lock, locale]
+  prompt: |
+    Concept art in a stylised 3D look of a city carved into a vertical cliff in the Western Ghats
+    during the monsoon, 16:9. The camera looks down from a high ledge: the horizon, a misty line of
+    hills, is in the top fifteen percent of the frame. Below, terraces of houses with red-tiled roofs
+    cling to the cliff, connected by rope bridges and stone stairways; waterfalls pour between
+    them; lamps glow in windows. Heavy rain, low cloud drifting through the middle of the city. Grey
+    blue light with warm window glows. No characters, no text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [composition, "Is the horizon in the top fifteen percent?"]
+    - [prompt_adherence, "Is the camera looking down from a height?"]
+    - [prompt_adherence, "Are there terraced houses with red roofs on the cliff?"]
+    - [prompt_adherence, "Are there rope bridges and stairways?"]
+    - [physics_plausibility, "Do waterfalls pour between terraces?"]
+    - [physics_plausibility, "Is cloud drifting through the middle of the city?"]
+    - [prompt_adherence, "Is the light grey-blue with warm window glows?"]
+    - [physics_plausibility, "Is rain visible?"]
+    - [style, "Is the stylised 3D look consistent?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is the image clean?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-GAM-03
+  title: "Store banner art with the hero on the right and the left 55 percent clean"
+  persona: "Live-ops artist making a store banner background before the text is added."
+  evidence: "Banners need copy space on one side; models centre the hero."
+  levers: [off-centre, layout, light-lock, exclude]
+  prompt: |
+    Banner art for a game store page, 21:9, stylised 3D. A heroine in black armour with a glowing
+    teal blade leaps from right to left, placed in the right 45 percent of the frame, her blade
+    trailing light. The left 55 percent of the frame is a calm gradient sky, deep violet to magenta,
+    with only soft distant clouds, clean enough for a logo and text. A neon city skyline sits low
+    along the bottom right only. Rim light magenta from behind her. No text, no logo.
+  deliverable: "One image, 21:9."
+  checks:
+    - [composition, "Is the heroine in the right 45 percent?"]
+    - [composition, "Is the left 55 percent calm and clean for text?"]
+    - [composition, "Is the frame 21:9?"]
+    - [prompt_adherence, "Is she leaping right to left with a glowing teal blade?"]
+    - [prompt_adherence, "Is the skyline only along the bottom right?"]
+    - [prompt_adherence, "Is there magenta rim light from behind?"]
+    - [style, "Is the sky a violet-to-magenta gradient?"]
+    - [physics_plausibility, "Does the blade trail light in her direction of motion?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [visual_quality, "Is her anatomy clean mid-leap?"]
+    - [prompt_adherence, "Is there one character?"]
+    - [style, "Is the stylised 3D look consistent?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

@@ -1,0 +1,171 @@
+# Depth, light and physics — Film, OTT & micro-drama scenarios. Slots: phy.yaml.
+code: PHY
+scenarios:
+
+- id: PHY-FLM-01
+  seed: true
+  title: "Neon reflections on a wet Mumbai street: two signs, a woman and a taxi"
+  persona: "VFX supervisor on a Mumbai noir series, testing whether generated plates hold up to reflection checks before using them as backgrounds."
+  evidence: "Call at 17:26: customer feedback that 'spatial depth is off on certain kinds of images'. Reflections of text are a known failure: earlier banks only tested a reflective product (IMG-BRAND-06), never mirrored signage."
+  levers: [physics, exact-text, script, layout, light-lock, locale]
+  prompt: |
+    Night on a narrow Mumbai street just after heavy rain, shot at standing eye level with a
+    35 mm lens. Across the street on the left, a vertical neon sign on a building reads
+    "HOTEL SAGAR" in red letters stacked top to bottom; next to it, lower down, a horizontal green neon
+    sign reads "सागर" in Devanagari. The wet black road in the foreground carries both signs'
+    reflections: each reflection sits directly below its sign, flipped upside down, with the red
+    letters of the vertical sign reflected in reverse order from top to bottom, broken into
+    ripples where raindrops still hit the puddles. On the right, a woman in a yellow raincoat
+    with the hood down stands at a bus stop under a dripping shelter, facing left; her reflection
+    sits directly under her feet in a puddle. A black-and-yellow taxi is parked at the kerb in
+    front of her; its rear side window reflects her yellow coat. Red and green light from the
+    signs spills onto the wet road and the taxi's roof on their side only; the shelter's own white
+    tube light lights her from above. No other people, no other signs, no other text.
+  exact_text:
+    - "HOTEL SAGAR"
+    - "सागर"
+  deliverable: "One image, 16:9."
+  checks:
+    - [text_accuracy, "Does the vertical sign read HOTEL SAGAR, top to bottom, with every letter correct?"]
+    - [text_accuracy, "Does the horizontal sign read सागर in correctly formed Devanagari?"]
+    - [physics_plausibility, "Is each sign's reflection directly below the sign on the wet road?"]
+    - [physics_plausibility, "Is the vertical sign's reflection flipped, with the letter order reversed from top to bottom?"]
+    - [physics_plausibility, "Is the Devanagari reflection flipped upside down rather than copied the right way up?"]
+    - [physics_plausibility, "Are the reflections broken by ripples where rain hits?"]
+    - [physics_plausibility, "Is the woman's reflection directly under her feet?"]
+    - [physics_plausibility, "Does the taxi's rear side window reflect her yellow coat?"]
+    - [prompt_adherence, "Does red and green light spill onto the road and the taxi only on the signs' side?"]
+    - [prompt_adherence, "Is she lit from above by the shelter's white tube light?"]
+    - [physics_plausibility, "Is there no reflection of anything that is not in the scene?"]
+    - [prompt_adherence, "Are the signs on the left, the woman at the bus stop on the right, the taxi in front of her?"]
+    - [prompt_adherence, "Is she the only person in the frame?"]
+    - [text_accuracy, "Is there no text other than the two signs?"]
+    - [visual_quality, "Is the woman's anatomy natural, with no distortion in the raincoat or hands?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: the same street with rain falling and a slow lateral move; the reflections must slide with parallax."
+
+- id: PHY-FLM-02
+  title: "Five people around one candle; every shadow points away from the flame"
+  persona: "Gaffer on a period drama testing whether generated plates respect a single practical."
+  evidence: "Shadows disagreeing with the only light source is a classic physics failure."
+  levers: [physics, count, light-lock, locale, layout]
+  prompt: |
+    A film still, 16:9: five people in a 1940s Lucknow haveli sit around a low round table during a
+    power cut, lit only by one tall white candle in a brass holder at the centre of the table. Two sit
+    on the near side with their backs partly to the camera, three on the far side facing it. Every
+    face is lit from below and from the table's centre; every person's shadow falls on the walls and
+    floor behind them, pointing directly away from the candle; the candle's own small shadow falls
+    nowhere. The walls are pale lime-washed plaster with arched niches. Deep darkness at the frame's
+    edges. No other light source, no text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Are there five people, two near and three far?"]
+    - [prompt_adherence, "Is the candle the only light source?"]
+    - [prompt_adherence, "Are faces lit from below and from the table's centre?"]
+    - [physics_plausibility, "Does every shadow point directly away from the candle?"]
+    - [physics_plausibility, "Are the far people's shadows on the wall behind them, larger than they are?"]
+    - [physics_plausibility, "Are the near people's shadows falling towards the camera?"]
+    - [prompt_adherence, "Do the frame edges fall into darkness?"]
+    - [prompt_adherence, "Is the candle tall and white in a brass holder?"]
+    - [prompt_adherence, "Are the walls lime-washed with arched niches?"]
+    - [prompt_adherence, "Is there no other light source?"]
+    - [visual_quality, "Are faces and hands natural?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: the candle flickers and every shadow flickers with it."
+
+- id: PHY-FLM-03
+  title: "An office seen through two glass partitions with a person between them; layer order exact"
+  persona: "Production designer on a corporate thriller testing layered glass shots."
+  evidence: "Occlusion and reflection through several glass layers is a known depth failure."
+  levers: [physics, layout, camera, exclude]
+  prompt: |
+    A film still, 2.39:1: we look through two parallel glass partitions in a modern office at dusk.
+    Nearest to the camera, the first glass wall has a frosted horizontal band at waist height with
+    clear glass above. Between the two walls, in a narrow corridor, a man in a grey suit walks left to
+    right. Beyond the second glass wall, a meeting room with a long table and four people sitting. The
+    frosted band on the first glass hides the man's waist and the near half of the table; reflections
+    of the dusk city from behind the camera lie faintly on both glass walls; the far people are slightly
+    softer than the man. No text, no logos.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [physics_plausibility, "Does the frosted band hide the man's waist?"]
+    - [physics_plausibility, "Does the frosted band hide part of the far table too, at the same height in frame?"]
+    - [prompt_adherence, "Is the man between the two glass walls?"]
+    - [prompt_adherence, "Is the meeting room beyond the second wall?"]
+    - [prompt_adherence, "Are there four people at the table?"]
+    - [physics_plausibility, "Are faint city reflections on both glass walls?"]
+    - [prompt_adherence, "Are the far people slightly softer than the man?"]
+    - [physics_plausibility, "Does the man correctly hide part of the meeting room behind him?"]
+    - [prompt_adherence, "Is it dusk?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [visual_quality, "Are figures clean?"]
+    - [composition, "Is it 2.39:1?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-FLM-04
+  title: "Add a mirror to the compartment's partition wall that reflects the bay correctly"
+  persona: "VFX artist adding a mirror for a reflection shot in a train-set photo."
+  evidence: "Added mirrors usually show the wrong scene or a copy of the frame."
+  levers: [physics, unseen, keep-rest, layout, locale]
+  inputs: [{source: SRC-TRAIN, role: source}]
+  prompt: |
+    Add a rectangular mirror, about 40 by 60 cm, with a thin steel frame, to the empty grey partition
+    wall on the right of this sleeper-compartment photo, at a seated person's head height. The mirror
+    must reflect what is actually opposite it and towards the camera from its position: part of the
+    left berth with the elderly man reading, the green trunk under it, and part of the aisle the
+    camera stands in, mirrored left-to-right. It must not show the young woman beside it (she is out
+    of its view) or a copy of the photo. The daylight from the window catches its edge. Everything
+    else is unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is there a steel-framed mirror on the right partition at head height?"]
+    - [physics_plausibility, "Does it reflect the elderly man on the left berth?"]
+    - [physics_plausibility, "Is the reflection mirrored left-to-right?"]
+    - [physics_plausibility, "Does it show part of the aisle towards the camera?"]
+    - [physics_plausibility, "Does it avoid showing the young woman, who is beside it?"]
+    - [physics_plausibility, "Is it not a copy of the whole photo?"]
+    - [prompt_adherence, "Does window light catch its edge?"]
+    - [physics_plausibility, "Is its perspective correct on the wall?"]
+    - [preservation, "Is everything else unchanged?"]
+    - [visual_quality, "Is the frame clean?"]
+    - [preservation, "Are there still only two passengers?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PHY-FLM-05
+  title: "Relight the rooftop with a warm lantern in her hand; city glow stays as the cool fill"
+  persona: "Gaffer testing a relight for the micro-drama's rooftop scene."
+  evidence: "Relights must place each light's colour where its source is."
+  levers: [physics, light-lock, keep-rest, identity, locale]
+  inputs: [{source: SRC-ROOFTOP, role: source}]
+  prompt: |
+    Relight this night rooftop photo: put a small brass hurricane lantern, lit, in the woman's right
+    hand, held at her waist. It becomes the key light: warm amber light on the front of her shirt, the
+    underside of her chin and the near side of her face, falling off quickly with distance; a warm pool
+    on the parapet and floor around her; her shadow thrown long behind her onto the water tanks. The
+    city's orange-pink glow stays as a soft cool-warm fill from the far side. Her face, pose, the tanks,
+    the dish and the city are unchanged apart from the light.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is a lit brass lantern in her right hand at her waist?"]
+    - [prompt_adherence, "Is warm amber light on her shirt front and under her chin?"]
+    - [prompt_adherence, "Does the light fall off quickly with distance?"]
+    - [prompt_adherence, "Is there a warm pool on the parapet and floor?"]
+    - [physics_plausibility, "Is her shadow thrown long behind her onto the tanks?"]
+    - [preservation, "Is the city glow still a soft fill from the far side?"]
+    - [reference_fidelity, "Is her face unchanged apart from the light?"]
+    - [preservation, "Is her pose unchanged?"]
+    - [preservation, "Are the tanks, dish and city unchanged?"]
+    - [visual_quality, "Is her hand around the lantern natural?"]
+    - [physics_plausibility, "Does the lantern's flame glow inside its glass?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V7: the lantern swings and the shadows swing with it."

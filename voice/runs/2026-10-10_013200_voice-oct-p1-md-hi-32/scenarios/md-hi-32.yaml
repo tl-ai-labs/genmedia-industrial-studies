@@ -1,0 +1,46 @@
+# md-hi-32 - Business rivalry — two group names (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-32: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-32
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. Two fictional company names and a cold, quiet resolve held across the switch
+# SPEECH SKILLS. Pronunciation: brands; Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-hi-32
+modality: voice
+task: styled_tts
+title: "Business rivalry — two group names - Hindi"
+
+input:
+  script: |
+    Singhania Group ने हमारे तीन सबसे बड़े clients छीन लिए। Fine. अब हम उन्हें बताएँगे कि Oberoi Industries को हराना इतना आसान नहीं है।
+  language: hi-IN
+  style: "cold resolve, quiet ambition"
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Hindi segments pronounced correctly (judge)
+  4) One continuous prosody; the emotion does not reset at the language switch
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, micro-drama-entertainment, corporate-business, medium, gemini-lean, v2-bank]

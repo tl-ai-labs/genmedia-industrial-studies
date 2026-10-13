@@ -1,0 +1,109 @@
+# Product and brand — Gaming scenarios. Slots: prd.yaml.
+code: PRD
+scenarios:
+
+- id: PRD-GAM-01
+  seed: true
+  title: "The game's heroine as a 20 cm collectible figure, photographed as a real product"
+  persona: "Merchandise manager at a game publisher approving the store photo of a collectible figure before the factory sample exists."
+  evidence: "Earlier bank IMG-GAME-44 (operator, silhouette and lobby icon) and IMG-GAME-04 (low-poly under a budget) tested style conversion inside the game's look; turning a character into a believable physical object, with material and scale cues, is the merchandising use and a common failure (chibi proportions, plastic skin on everything)."
+  levers: [identity, physics, exact-text, camera, exclude, long-brief]
+  inputs:
+    - {source: SRC-GAM-HERO, role: source, note: "the character the figure is made from"}
+  prompt: |
+    Show this character as a real 20 cm painted collectible figure, photographed for an online
+    store. The figure stands in the same pose as the render on a round matte black base, 8 cm
+    across, with the name "IRA" engraved in silver capitals on the front edge of the base. It sits
+    on a walnut desk; behind it, out of focus, a monitor's glow and a shelf. Beside the figure, for
+    scale, a standard game controller lies flat, about 15 cm wide, in plain black with no logos.
+    The figure keeps the character's real proportions, not cartoon or chibi proportions. Materials
+    read as a real figure: matte painted skin with a slight satin sheen, metallic copper paint on
+    the plates, the red cape sculpted as a solid curved piece, the teal rune in translucent
+    plastic with a faint glow, the sword attached in her right hand. Side-specific details stay
+    true: cape on the right shoulder only, rune on the left glove, nose ring on the left. Soft key
+    light from upper left, a small reflection of the base in the desk's varnish. 85 mm, the figure
+    in the left half of the frame, 4:5. No packaging, no other text, no logos.
+  exact_text:
+    - "IRA"
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the figure recognisably the character, in the render's pose?"]
+    - [reference_fidelity, "Does the figure keep realistic proportions rather than chibi or cartoon ones?"]
+    - [reference_fidelity, "Is the cape on the right shoulder only and the rune on the left glove?"]
+    - [reference_fidelity, "Is the sword with the veena-head guard in her right hand?"]
+    - [physics_plausibility, "Do the materials read as a physical figure: painted matte skin, metallic paint, a solid sculpted cape?"]
+    - [physics_plausibility, "Is the rune translucent plastic with a faint glow?"]
+    - [physics_plausibility, "Is the figure about 20 cm tall judged against the 15 cm controller beside it?"]
+    - [text_accuracy, "Is IRA engraved in silver capitals on the front of the base, spelled correctly?"]
+    - [physics_plausibility, "Is there a small reflection of the base in the desk's varnish?"]
+    - [prompt_adherence, "Is the key light from the upper left, consistent on the figure and the controller?"]
+    - [composition, "Is the figure in the left half of the frame with the background out of focus?"]
+    - [prompt_adherence, "Is the controller plain black with no logos?"]
+    - [prompt_adherence, "Is there no packaging and no other text or logo?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V5: a 5-second turntable of the figure on the desk, materials and scale held."
+
+- id: PRD-GAM-02
+  title: "Merch hoodie with the game logo printed large on the back, worn by a fan at an expo"
+  persona: "Game publisher's merchandise team mocking up a hoodie for the store."
+  evidence: "Earlier bank IMG-BRAND-04 (logo geometry on packaging) was high tier; on fabric with folds it is harder."
+  levers: [identity, exact-text, physics, locale, keep-rest]
+  inputs: [{source: SRC-GAM-LOGO, role: source}]
+  prompt: |
+    A photo at a Bengaluru gaming expo, 4:5: a fan seen from behind and slightly to the side, wearing
+    a black hoodie with this exact game logo screen-printed large across the back: the teal crescent
+    on its back with the vertical silver sword through it and the veena-head guard, and the wordmark
+    "SHADOW RAAGA" below, twice the crescent's width. The print follows the hoodie's folds and the
+    curve of the shoulders, the fabric texture showing through the ink. Booths and screens glow soft
+    behind. No other logos or text.
+  exact_text: ["SHADOW RAAGA"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the logo symbol exactly the reference: crescent on its back, vertical sword, veena guard?"]
+    - [text_accuracy, "Is SHADOW RAAGA spelled exactly?"]
+    - [reference_fidelity, "Is the wordmark about twice the crescent's width?"]
+    - [physics_plausibility, "Does the print follow the folds and shoulder curve?"]
+    - [physics_plausibility, "Does fabric texture show through the ink?"]
+    - [prompt_adherence, "Is the crescent teal and the sword silver?"]
+    - [prompt_adherence, "Is the fan seen from behind and slightly to the side?"]
+    - [prompt_adherence, "Is the setting an expo with booths and screens?"]
+    - [prompt_adherence, "Are there no other logos or text?"]
+    - [visual_quality, "Is the print free of melted or broken shapes?"]
+    - [reference_fidelity, "Is the hoodie black?"]
+    - [prompt_adherence, "Is one fan the main subject?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-GAM-03
+  title: "A limited-edition game controller in a colourway given by hex values, on a desk at night"
+  persona: "Hardware partner's product marketer visualising a limited edition."
+  evidence: "Colour accuracy on a complex product shape from a text spec."
+  levers: [exact-text, layout, light-lock, long-brief, physics]
+  prompt: |
+    A product photo of a game controller on a dark desk at night, 16:9, lit by a monitor's cool glow
+    from behind and a small warm desk lamp from the left. The controller is a standard modern
+    two-handle shape with two thumbsticks, a D-pad on the left and four face buttons on the right. The
+    limited-edition colourway: body in deep teal (#0E6E6E); grips in matte black; thumbsticks in
+    copper (#B87333); face buttons translucent amber; a thin copper line where body meets grip; the
+    small text "LIMITED EDITION 0427/1000" printed in copper on the back of the right grip, visible
+    because the controller is turned slightly. No other text, no brand.
+  exact_text: ["LIMITED EDITION 0427/1000"]
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Is the body deep teal close to #0E6E6E?"]
+    - [prompt_adherence, "Are the thumbsticks copper close to #B87333?"]
+    - [prompt_adherence, "Are the grips matte black?"]
+    - [prompt_adherence, "Are the face buttons translucent amber?"]
+    - [prompt_adherence, "Is the D-pad on the left and four face buttons on the right?"]
+    - [prompt_adherence, "Are there two thumbsticks?"]
+    - [text_accuracy, "Is LIMITED EDITION 0427/1000 exact on the right grip?"]
+    - [prompt_adherence, "Is it lit by a cool monitor glow and a warm lamp from the left?"]
+    - [physics_plausibility, "Do the amber buttons show translucency?"]
+    - [prompt_adherence, "Is there no brand or other text?"]
+    - [visual_quality, "Is the controller's shape clean and symmetric?"]
+    - [prompt_adherence, "Is there a thin copper line where body meets grip?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

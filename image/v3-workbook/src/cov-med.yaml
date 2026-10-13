@@ -1,0 +1,91 @@
+# Multi-angle coverage — Media, publishing & events scenarios. Slots: cov.yaml.
+code: COV
+scenarios:
+
+- id: COV-MED-01
+  title: "Festival coverage from six positions: front of house to the truss"
+  persona: "Photo editor at a music publication commissioning a full gallery from one approved frame of a headline set."
+  evidence: "Call at 17:26: consistency across angles; a stage with four musicians in fixed places and coloured beams from fixed sides is easy to check."
+  levers: [set, camera, layout, light-lock, count, locale]
+  inputs: [{source: SRC-MED-CONCERT, role: source}]
+  prompt: |
+    This photo is a festival stage at night from the front-of-house desk: a singer in a silver
+    jacket at the centre mic, a guitarist on stage left, a bassist on stage right, a drummer on a
+    raised riser at the back, an LED screen with an orange-purple gradient, magenta beams from the
+    stage-left truss and cyan from the stage-right truss, three raised phones in the crowd. Produce
+    one more photo of the same moment from the position below. The musicians keep their places and
+    clothes; the magenta and cyan beams come from their trusses wherever the camera is. Photoreal,
+    16:9, no logos or readable text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Singer centre in silver; guitarist stage left; bassist stage right; drummer on the riser"
+      - "LED screen gradient; magenta from stage left, cyan from stage right"
+      - "Haze and crowd"
+    members:
+      - {name: "Stage-left wing", prompt: "From the stage-left wing at stage level, 35 mm, across the band.", checks: [[prompt_adherence, "Is the guitarist nearest the camera?"], [prompt_adherence, "Do the magenta beams come from just above the camera's side?"]]}
+      - {name: "Drum riser", prompt: "From behind the drummer on the riser, 24 mm, over the band to the crowd.", checks: [[prompt_adherence, "Is the singer between the camera and the crowd, with guitarist on frame right?"], [prompt_adherence, "Is the view over the drum kit?"]]}
+      - {name: "Crowd from the stage", prompt: "From the front of the stage looking out at the crowd, 20 mm.", checks: [[prompt_adherence, "Are raised phones visible in the crowd?"], [prompt_adherence, "Is the crowd lit by the beams from behind the camera?"]]}
+      - {name: "Truss overhead", prompt: "From the overhead truss looking straight down at the stage.", checks: [[prompt_adherence, "Is the band layout the same from above?"], [prompt_adherence, "Are there four musicians?"]]}
+      - {name: "Singer close", prompt: "Close on the singer, 135 mm from front of house.", checks: [[reference_fidelity, "Is she in the silver jacket?"], [prompt_adherence, "Is magenta on her one side and cyan on the other?"]]}
+      - {name: "Wide from the back", prompt: "From the very back of the field, 50 mm, the stage small.", checks: [[prompt_adherence, "Is the stage small with the whole crowd between?"], [prompt_adherence, "Is the LED screen centred behind the band?"]]}
+  deliverable: "Six images, 16:9."
+  checks:
+    - [prompt_adherence, "Are there four musicians wherever the whole band is seen?"]
+    - [set_consistency, "Are the musicians in the same places and outfits in all six?"]
+    - [prompt_adherence, "Do the magenta beams always come from stage left and cyan from stage right?"]
+    - [set_consistency, "Is the LED screen the same gradient in all six?"]
+    - [set_consistency, "Is the drummer on the riser in every view that shows him?"]
+    - [prompt_adherence, "Does each view match its position?"]
+    - [physics_plausibility, "Do beams show in the haze from their sources?"]
+    - [text_accuracy, "Are there no logos or readable text?"]
+    - [visual_quality, "Are faces and hands clean?"]
+    - [style, "Is the colour consistent across the six?"]
+    - [prompt_adherence, "Does each view read as the same moment?"]
+    - [set_consistency, "Is the singer recognisably the same?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Six image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a camera move from the back of the field to the stage."
+
+- id: COV-MED-02
+  title: "Studio camera set-ups on the news anchor: wide, MCU, jib, profile, floor manager's view"
+  persona: "Broadcast director planning a studio's new camera plot from one programme frame."
+  evidence: "Broadcast coverage with on-screen graphics is a common media use; the anchor must stay identical while studio cameras move."
+  levers: [set, identity, camera, unseen, locale]
+  inputs: [{source: SRC-MED-NEWSROOM, role: source}]
+  prompt: |
+    This frame is a Hindi news broadcast: an anchor of about forty with grey-flecked short hair,
+    rectangular black glasses, a navy suit and a maroon tie behind a curved white desk, a large
+    screen of a blurred skyline behind him, one soft key from front left. Produce one studio camera
+    view of the same moment from the position below, as a clean camera feed without on-screen
+    graphics. The studio beyond the frame, which the photo never shows, has a dark floor, a lighting
+    grid above and two other cameras on pedestals. Photoreal, 16:9, no logos.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Anchor's face, glasses, hair, navy suit, maroon tie"
+      - "Curved white desk; skyline screen behind"
+      - "Key light from front left; studio with dark floor and lighting grid"
+    members:
+      - {name: "Wide", prompt: "Camera 1 wide from the studio floor, 24 mm, the whole set and part of the grid.", checks: [[prompt_adherence, "Is the studio beyond the set shown with a dark floor and grid?"], [prompt_adherence, "Is the desk curved and centred on the set?"]]}
+      - {name: "MCU", prompt: "Camera 2 medium close-up, 85 mm.", checks: [[set_consistency, "Is it the same anchor, same glasses?"], [prompt_adherence, "Is the key from frame left?"]]}
+      - {name: "Jib", prompt: "Jib camera high and to the right, looking down at the desk.", checks: [[prompt_adherence, "Is it high from the right?"], [prompt_adherence, "Is the screen behind him?"]]}
+      - {name: "Profile", prompt: "Camera 3 from his right side, 50 mm, profile.", checks: [[prompt_adherence, "Is it a profile?"], [reference_fidelity, "Is the tie maroon?"]]}
+      - {name: "Floor manager's view", prompt: "From behind a floor manager with headphones, over the shoulder, at the anchor.", checks: [[prompt_adherence, "Is a person with headphones in the foreground?"], [prompt_adherence, "Is another pedestal camera visible?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is the anchor identical in all five?"]
+    - [set_consistency, "Are the glasses, suit and tie the same in all five?"]
+    - [set_consistency, "Is the desk and screen the same in all five?"]
+    - [prompt_adherence, "Is the key light from the front-left of the set in every view?"]
+    - [set_consistency, "Is the invented studio the same in the views that show it?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Are there no on-screen graphics in these camera feeds?"]
+    - [text_accuracy, "Is there no text or logo?"]
+    - [visual_quality, "Are hands and face clean?"]
+    - [style, "Is the colour consistent?"]
+    - [set_consistency, "Is his skin tone the same in all five?"]
+    - [prompt_adherence, "Does each view read as the same moment?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""

@@ -1,0 +1,42 @@
+# bank-en-02 - EMI amount and auto-debit date (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-19 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-19): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Loans & EMI - EMI reminders, approvals, prepayment, gold loans, collections.
+# TARGET CUSTOMER. Retail Banks, NBFCs & Lenders.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: bank-en-02
+modality: voice
+task: text_to_speech
+title: "EMI amount and auto-debit date - English"
+
+input:
+  script: |
+    Sir, your EMI for this month is Rs 1,25,475, and it will be auto-debited from your account on the 5th. Please keep sufficient balance.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it
+  2) The international reading ("one hundred twenty-five thousand") does not appear
+  3) "the 5th" recoverable
+  4) "EMI" as letters
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one hundred twenty five thousand four hundred seventy five"
+
+tags: [oct-2026, english, banking-financial-services, loans-emi, medium, gemini-lean, new-english]

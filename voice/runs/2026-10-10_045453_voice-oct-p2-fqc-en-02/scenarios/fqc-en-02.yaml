@@ -1,0 +1,37 @@
+# fqc-en-02 - Membership coupon: percent, cap, minimum order (Food & quick commerce)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 fqc-hi-07 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-07): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Refunds & coupons.
+# TARGET CUSTOMER. Food Delivery Apps.
+# SPEECH SKILLS. Numbers: codes, amounts, units/%; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: fqc-en-02
+modality: voice
+task: text_to_speech
+title: "Membership coupon: percent, cap, minimum order - English"
+
+input:
+  script: |
+    Today's Zomato Gold code is GOLD50: 50% off on orders above Rs 299, up to Rs 150.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "GOLD50" recoverable
+  2) Percent, cap and minimum all recoverable and not confused
+  3) "Zomato Gold" natural
+
+checks:
+  duration_s: {min: 3.4, max: 19.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, food-quick-commerce, refunds-coupons, hard, even-contest, new-english]

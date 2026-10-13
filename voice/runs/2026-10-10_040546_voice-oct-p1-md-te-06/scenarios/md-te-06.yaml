@@ -1,0 +1,47 @@
+# md-te-06 - Market crash — Telugu script (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-te-06: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-te-06
+# LANGUAGE. Telugu (Native script). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. An index name, a raw points figure and a percentage in a Telugu-script sentence, under command
+# SPEECH SKILLS. Numbers: amounts, units/%; Pronunciation: brands; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-te-06
+modality: voice
+task: styled_tts
+title: "Market crash — Telugu script - Telugu"
+
+input:
+  script: |
+    Sensex ఈరోజు 1,200 points పడిపోయింది, మన shares 18% కిందకి వచ్చాయి. Board meeting నాలుగింటికి — I need answers before that!
+  language: te-IN
+  style: "tense, clipped, commanding"
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Telugu segments pronounced correctly (judge)
+  4) One continuous prosody; the emotion does not reset at the language switch
+  5) Figures recoverable
+
+checks:
+  duration_s: {min: 3.8, max: 20.7}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, telugu, micro-drama-entertainment, corporate-business, hard, gemini-lean, v2-bank]

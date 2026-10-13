@@ -1,0 +1,43 @@
+# fqc-hi-08 - Missing-item refund to wallet (Food & quick commerce)
+#
+# SOURCE. v2 text-to-speech bank, scenario fqc-hi-08: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-08
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Refunds & coupons.
+# TARGET CUSTOMER. Food Delivery Apps.
+# WHAT THIS TESTS. A dish name, a raw amount and a wallet brand
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: brands.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: fqc-hi-08
+modality: voice
+task: text_to_speech
+title: "Missing-item refund to wallet - Hinglish"
+
+input:
+  script: |
+    Aapke order mein garlic naan missing tha, iske liye Rs 65 ka refund aapke Swiggy Money wallet mein aa gaya hai.
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount recoverable
+  2) "Swiggy Money" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, food-quick-commerce, refunds-coupons, medium, gemini-lean, v2-bank]

@@ -1,0 +1,134 @@
+# Precision editing — Gaming scenarios. Slots: edt.yaml.
+code: EDT
+scenarios:
+
+- id: EDT-GAM-01
+  title: "Winter variant of the tiger: armour to silver, saddle bag removed, snow; the tiger untouched"
+  persona: "Live-ops artist making a winter-event variant of the mount's art."
+  evidence: "Environment and costume edits around an animal tend to repaint the animal."
+  levers: [multi-step, keep-rest, identity, light-lock, locale]
+  inputs: [{source: SRC-GAM-MOUNT, role: source}]
+  prompt: |
+    Make exactly these four changes to this painted war-tiger, and nothing else.
+    1. The turquoise and brass saddle becomes polished silver with blue enamel inlays, same shape.
+    2. Remove the small leather saddle bag from its left flank, painting the flank's stripes in.
+    3. The sunlit savanna becomes a snowfield with light snow falling; the ground under the tiger is
+       snow with soft blue shadows.
+    4. The red tasselled saddle cloth becomes white fur with the same tassel shapes.
+    The tiger itself is unchanged: the torn left ear, the scar across the right eye, the V on the
+    forehead, every stripe, the pose and the painterly brushwork.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the saddle silver with blue enamel?"]
+    - [prompt_adherence, "Is the saddle bag gone with stripes painted in?"]
+    - [prompt_adherence, "Is the ground a snowfield with falling snow?"]
+    - [prompt_adherence, "Is the saddle cloth white fur?"]
+    - [reference_fidelity, "Is the torn left ear unchanged?"]
+    - [reference_fidelity, "Is the scar across the right eye unchanged?"]
+    - [reference_fidelity, "Is the V on the forehead unchanged?"]
+    - [preservation, "Are the stripes and pose unchanged?"]
+    - [style, "Is the painterly brushwork consistent?"]
+    - [prompt_adherence, "Is the light now cold with blue shadows?"]
+    - [visual_quality, "Is there no seam where the bag was?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-GAM-02
+  title: "Level art pass: remove the cube, vines on the gopuram, water in the tank, a second pillar fallen"
+  persona: "Environment artist doing a dressing pass on a level screenshot for a review."
+  evidence: "Several level edits; one is usually missed and the light changes."
+  levers: [multi-step, keep-rest, layout, physics, locale]
+  inputs: [{source: SRC-GAM-TEMPLE-LEVEL, role: source}]
+  prompt: |
+    Make exactly these four changes to this level screenshot, and nothing else.
+    1. Remove the grey placeholder cube by the chariot's right wheel, filling in the paving.
+    2. Grow green vines down the left side of the gopuram from its broken top tier.
+    3. Fill the dry stepped tank on the right with still green water up to the third step from the
+       top, reflecting the shrine.
+    4. Topple a second pillar: the fifth from the entrance, lying across the paving parallel to the
+       already fallen third pillar.
+    The gopuram's shape, the other pillars, the chariot, the paving and the low sun from the right are
+    unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the cube gone with paving filled in?"]
+    - [prompt_adherence, "Are vines growing down the gopuram's left side?"]
+    - [prompt_adherence, "Is the tank filled with green water to the third step?"]
+    - [physics_plausibility, "Does the water reflect the shrine?"]
+    - [prompt_adherence, "Are two pillars now fallen, the third and the fifth?"]
+    - [prompt_adherence, "Is the new fallen pillar parallel to the other?"]
+    - [preservation, "Are the other four pillars standing?"]
+    - [preservation, "Is the chariot unchanged?"]
+    - [preservation, "Is the sun still from the right with matching shadows on the new pillar?"]
+    - [style, "Is the stylised 3D look consistent?"]
+    - [visual_quality, "Are there no seams?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-GAM-03
+  title: "Swap one weapon, change the banner colour, add a storm sky; all five faces unchanged"
+  persona: "Marketing artist making an event variant of the squad key art."
+  evidence: "Group key-art edits tend to redraw faces."
+  levers: [multi-step, keep-rest, identity, count, locale]
+  inputs: [{source: SRC-GAM-SQUAD, role: source}]
+  prompt: |
+    Make exactly these three changes to this squad key art, and nothing else.
+    1. The heavy older man's rocket launcher becomes a large two-handed war hammer, held the same way.
+    2. The saffron banner behind the middle character becomes deep purple with a gold edge.
+    3. The clear sky becomes a dark storm sky with one lightning bolt at the far right; the light on
+       the squad stays as it is.
+    All five characters' faces, bodies, outfits and other props, their order along the rampart, the
+    rampart and the cel-shaded style are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the rocket launcher replaced by a war hammer held the same way?"]
+    - [prompt_adherence, "Is the banner deep purple with a gold edge?"]
+    - [prompt_adherence, "Is the sky a storm with lightning at the far right?"]
+    - [reference_fidelity, "Are all five faces unchanged?"]
+    - [preservation, "Are there still five characters?"]
+    - [preservation, "Are the other props unchanged (shield, drone, bow, skateboard)?"]
+    - [preservation, "Is the order unchanged?"]
+    - [preservation, "Is the light on the squad unchanged?"]
+    - [preservation, "Is the rampart unchanged?"]
+    - [preservation, "Is the cel-shaded style unchanged?"]
+    - [visual_quality, "Is the hammer drawn cleanly in his hands?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-GAM-04
+  title: "Launch-day update of the banner: button to Play now, date line to Out now; the logo untouched"
+  persona: "Live-ops designer updating store art on launch day."
+  evidence: "Text edits next to a stylised logo often damage the logo."
+  levers: [multi-step, exact-text, keep-rest, layout]
+  inputs: [{source: SRC-GAM-STORE-BANNER, role: source}]
+  prompt: |
+    Make exactly these two changes to this store banner, and nothing else.
+    1. The yellow button's text "Pre-register now" becomes "Play now", in the same font and colour;
+       the button shrinks to fit the shorter text, keeping its left edge.
+    2. The line "Available 21 November" becomes "Out now" in the same small white type.
+    The logo "SHADOW RAAGA" with its teal glow, the line "Season 3: Monsoon Rift", the heroine and the
+    sky are unchanged, letter for letter and pixel for pixel.
+  exact_text: ["Play now", "Out now", "SHADOW RAAGA", "Season 3: Monsoon Rift"]
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Does the button read Play now?"]
+    - [prompt_adherence, "Has the button shrunk to fit, keeping its left edge?"]
+    - [text_accuracy, "Does the date line read Out now?"]
+    - [style, "Do the new texts match their original fonts and colours?"]
+    - [text_accuracy, "Is SHADOW RAAGA unchanged, glow included?"]
+    - [text_accuracy, "Is the season line unchanged?"]
+    - [preservation, "Is the heroine unchanged?"]
+    - [preservation, "Is the sky unchanged?"]
+    - [visual_quality, "Are there no ghost letters?"]
+    - [text_accuracy, "Is no old text left?"]
+    - [prompt_adherence, "Are the new lines in the same places?"]
+    - [prompt_adherence, "Are both changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

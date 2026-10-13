@@ -1,0 +1,201 @@
+# Coverage and camera move — Gaming scenarios. Slots: vcov.yaml.
+code: VCOV
+scenarios:
+
+- id: VCOV-GAM-01
+  seed: true
+  title: "A level fly-through from the entrance down the colonnade to the gopuram"
+  persona: "Cinematics lead previewing a level-reveal camera path from the one approved screenshot."
+  evidence: "Call at 17:26: the video customers want is a camera moving through the same space. The image seed COV-GAM-01 checks six static views of this level; the fly-through must pass every landmark in order."
+  levers: [camera-move, layout, parallax, unseen, light-lock, timing, locale]
+  inputs:
+    - {source: SRC-GAM-TEMPLE-LEVEL, role: first_frame, note: "the screenshot from the entrance"}
+  prompt: |
+    Start exactly on this game-level screenshot taken from the courtyard entrance and make a 10-second
+    fly-through in the same stylised 3D look and late-afternoon light. The camera glides forward at two
+    metres' height. 0–3 s: straight in through the courtyard, the six carved pillars on the left
+    passing, the third from the entrance lying fallen across the paving and passing close on the left
+    at about 2.5 s. 3–6 s: drift right past the stone chariot on its four wheels, the grey placeholder
+    cube still by its right wheel, the dry stepped tank and its small shrine opening up on the right.
+    6–10 s: rise slowly to the gopuram's height and end framing its five tiers with the broken top
+    tier at the top of frame. The low sun stays on the right of the courtyard, so the pillars' long
+    shadows lie to the left the whole way. Parts the screenshot does not show (the sides of pillars,
+    the back of the chariot) are the same granite and carving. No characters, no interface, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "forward glide 0–3 s, drift right 3–6 s, rise 6–10 s"}
+  deliverable: "One 10-second clip, 16:9, starting on the screenshot."
+  checks:
+    - [prompt_adherence, "Does the clip start on the screenshot's framing?"]
+    - [prompt_adherence, "Does the camera glide forward, drift right, then rise, in that order?"]
+    - [prompt_adherence, "Does the fallen pillar pass on the left at about 2.5 s?"]
+    - [prompt_adherence, "Is it the third pillar from the entrance that is fallen?"]
+    - [prompt_adherence, "Does the chariot pass with the grey cube by its right wheel?"]
+    - [prompt_adherence, "Are the tank and shrine on the right?"]
+    - [temporal_consistency, "Is the gopuram's top tier broken at the end?"]
+    - [prompt_adherence, "Does the gopuram have five tiers?"]
+    - [physics_plausibility, "Do pillars, chariot and gopuram move at speeds set by their distance (parallax)?"]
+    - [prompt_adherence, "Do the shadows stay to the left the whole way?"]
+    - [motion_coherence, "Is the move smooth with no warping of stone or pillars?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [text_accuracy, "Is there no interface or text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-GAM-02
+  title: "A slow orbit round the heroine in her idle pose; cape, rune and sword sides held"
+  persona: "Gameplay camera designer previewing the character-select orbit."
+  evidence: "Mirroring flips one-sided details as a generated camera goes round a character."
+  levers: [camera-move, identity, unseen, continuity, light-lock]
+  inputs: [{source: SRC-GAM-HERO, role: first_frame}]
+  prompt: |
+    Start on this key render of the game heroine on a wet neon rooftop and make a 10-second 360-degree
+    orbit round her at chest height, the camera always facing her, while she holds her idle pose: weight
+    shifting slightly, breathing, the cape stirring. Her dark brown skin, ponytail with three gold rings,
+    nose ring on her left nostril, charcoal armour with copper plates, red sash-cape on her right
+    shoulder only, teal rune on the back of her left glove and the curved sword in her right hand all
+    stay on their sides the whole way round. The magenta and teal sign light stays fixed in the world,
+    sliding across her as the camera circles. Stylised 3D, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "360-degree orbit at chest height"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a full, steady 360-degree orbit?"]
+    - [reference_fidelity, "Is the cape on her right shoulder all the way round?"]
+    - [reference_fidelity, "Is the rune on her left glove whenever visible?"]
+    - [reference_fidelity, "Is the sword in her right hand throughout?"]
+    - [reference_fidelity, "Is the nose ring on her left?"]
+    - [prompt_adherence, "Do the magenta and teal lights stay fixed in the world?"]
+    - [motion_coherence, "Is her idle motion natural with no morphing?"]
+    - [physics_plausibility, "Does the cape stir naturally?"]
+    - [style, "Is the stylised 3D look consistent?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean on the sword?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-GAM-03
+  title: "An orbit round the hover-bike from its one side render; the other side appears without the dent"
+  persona: "Vehicle artist previewing a turnaround for modelling."
+  evidence: "A vehicle's unseen side must mirror the shape but not the side-specific damage."
+  levers: [camera-move, unseen, identity, exact-text, physics]
+  inputs: [{source: SRC-GAM-MECH, role: first_frame}]
+  prompt: |
+    Start on this render of a hover-bike in right side profile, floating half a metre over a dark
+    reflective floor, and make a 10-second 360-degree orbit round it at seat height. The graphite body,
+    the orange stripe from nose to tail, the two cyan-glowing pods, the curved windscreen and the quilted
+    orange seat stay the same all round. The white "07" decal is on both rear fairings; the dent with
+    scraped paint is only on the right front fairing, so the left side, which the render never shows,
+    is clean. The bike bobs very gently; its cyan glow reflects in the floor under it throughout.
+    Stylised 3D, no rider, no other text.
+  exact_text: ["07"]
+  clip: {duration: 10, aspect: "16:9", camera: "360-degree orbit at seat height"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a full, steady 360-degree orbit?"]
+    - [reference_fidelity, "Is the dent only on the right front fairing?"]
+    - [text_accuracy, "Is 07 on both rear fairings?"]
+    - [reference_fidelity, "Is the stripe continuous from nose to tail?"]
+    - [physics_plausibility, "Does the cyan glow reflect in the floor throughout?"]
+    - [motion_coherence, "Does the bike bob gently and keep its shape?"]
+    - [reference_fidelity, "Is the windscreen and seat the same all round?"]
+    - [style, "Is the stylised 3D look consistent?"]
+    - [prompt_adherence, "Is there no rider?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are hard edges clean?"]
+    - [physics_plausibility, "Does it hover at a constant height?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-GAM-04
+  title: "A dolly along the squad line on the rampart; five characters, in order, no one doubled"
+  persona: "Marketing artist previewing a squad reveal for the launch trailer."
+  evidence: "Earlier bank IMG-VIEW-58 (view along a group) was high tier; a dolly along a line doubles or drops people."
+  levers: [camera-move, count, layout, identity, locale]
+  inputs: [{source: SRC-GAM-SQUAD, role: first_frame}]
+  prompt: |
+    Start on this key art of a five-member squad in a line on a fort rampart and make an 8-second dolly
+    from the bearded shield-bearer at the left end of the line to the boy with the skateboard at the
+    right end, at chest height, a metre in front of them, each character passing through the centre of
+    frame in turn. Left to right: the bearded man with a shield and blue turban; the young woman with
+    goggles and a drone on her shoulder; the heavy older man with a grey moustache and a rocket launcher;
+    the archer with a white braid and green scarf; the boy with red headphones. Each nods as the camera
+    passes. The saffron banner flaps behind the middle character. Same cel-shaded style, no text.
+  clip: {duration: 8, aspect: "16:9", camera: "lateral dolly along the line at chest height"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Do exactly five characters pass, none doubled or dropped?"]
+    - [prompt_adherence, "Do they pass in the stated order?"]
+    - [reference_fidelity, "Does each keep their design and prop?"]
+    - [motion_coherence, "Does each nod as the camera passes?"]
+    - [prompt_adherence, "Is it a steady lateral dolly a metre in front?"]
+    - [physics_plausibility, "Does the banner flap behind the middle character?"]
+    - [prompt_adherence, "Is the sun high and to the left throughout?"]
+    - [style, "Is the cel-shaded style consistent?"]
+    - [temporal_consistency, "Is there no morphing of faces?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean?"]
+    - [prompt_adherence, "Is it the same rampart?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-GAM-05
+  title: "A camera move through the described tavern level; the hearth and two lanterns light every view"
+  persona: "Lighting artist testing whether a generated walkthrough keeps a level's light sources."
+  evidence: "Light that follows the camera instead of its sources is the giveaway in generated walkthroughs."
+  levers: [camera-move, light-lock, layout, long-brief, count]
+  prompt: |
+    A 10-second camera move through a fantasy tavern in a stylised 3D game at night. The room: a square
+    timber hall; a big stone hearth with a roaring fire on the far wall, the main warm light; a long bar
+    with a keg rack on the right wall; two tall shuttered windows on the left wall letting in cold blue
+    moonlight; two iron lanterns hanging from the central beam; five long tables with benches; a stag
+    head over the hearth; no characters. The camera enters from the door, walks between the tables to the
+    hearth and turns left to face the windows. In every frame the fire lights from the hearth, the
+    lanterns from the beam and the moonlight from the left windows; shadows move correctly as the camera
+    passes.
+  clip: {duration: 10, aspect: "16:9", camera: "walk from the door to the hearth, then turn left"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the fire light the room from the hearth in every frame?"]
+    - [prompt_adherence, "Does moonlight come from the left windows?"]
+    - [prompt_adherence, "Are there two lanterns and five tables?"]
+    - [prompt_adherence, "Is the bar on the right and the windows on the left as the camera enters?"]
+    - [prompt_adherence, "Does the camera walk to the hearth and turn left?"]
+    - [physics_plausibility, "Do shadows move correctly as the camera passes?"]
+    - [temporal_consistency, "Does the fire flicker naturally?"]
+    - [temporal_consistency, "Is the stag head over the hearth?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [style, "Is the stylised 3D look consistent?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the timber geometry stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCOV-GAM-06
+  title: "A drone glide over the described valley: tower, river and bridge hold their depths"
+  persona: "World designer previewing a vista flyover."
+  evidence: "Painted landscapes slide as one flat layer when a generated camera moves."
+  levers: [camera-move, parallax, layout, long-brief, physics]
+  prompt: |
+    A 10-second drone glide in a painterly game style over an open-world valley in misty rain. A wide
+    river runs from the mountains in the north down to the south; a ruined 40-metre stone tower stands on
+    a hill on the east bank; a single-arch stone bridge crosses just south of the tower; a village of
+    about a dozen red-roofed houses sits on the west bank opposite. The camera flies north along the
+    river at 30 metres, passing over the bridge at about 4 seconds, the tower sliding past on the right
+    and the village on the left, the mountains growing slowly. Near pines rush past at the frame edges;
+    far ridges barely move. No characters, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "drone glide north along the river at 30 m"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Do near pines rush past while far ridges barely move?"]
+    - [prompt_adherence, "Is the tower on the right (east) and the village on the left (west)?"]
+    - [prompt_adherence, "Does the camera pass over the bridge at about 4 s?"]
+    - [prompt_adherence, "Is the bridge a single arch and the tower a ruin?"]
+    - [prompt_adherence, "Is the village about a dozen red-roofed houses?"]
+    - [physics_plausibility, "Does the river flow and the rain fall?"]
+    - [prompt_adherence, "Is it a steady glide north?"]
+    - [style, "Is the painterly style consistent?"]
+    - [motion_coherence, "Is there no warping of the landscape?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is each frame clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

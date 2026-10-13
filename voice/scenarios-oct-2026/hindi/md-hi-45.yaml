@@ -1,0 +1,48 @@
+# md-hi-45 - Mughal court — news from the Deccan (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-45: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-45
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Mythological, devotional & period.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# WHAT THIS TESTS. Urdu-inflected courtly Hindi (nukta sounds) with an English report clause and a troop figure
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: names; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-hi-45
+modality: voice
+task: styled_tts
+title: "Mughal court — news from the Deccan - Hindi"
+
+input:
+  script: |
+    जहाँपनाह, दक्कन से ख़बर आई है — the Maratha forces have crossed the Narmada, और उनके साथ बीस हज़ार घुड़सवार हैं।
+  language: hi-IN
+  style: "formal courtly urgency"
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Hindi segments pronounced correctly (judge)
+  4) One continuous prosody; the emotion does not reset at the language switch
+  5) Nukta sounds (ख़बर) and "जहाँपनाह" natural
+  6) "बीस हज़ार" recoverable
+
+checks:
+  duration_s: {min: 4.2, max: 22.5}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, micro-drama-entertainment, mythological-devotional-period, medium, gemini-lean, v2-bank]

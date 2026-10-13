@@ -1,0 +1,273 @@
+# Precision editing — E-commerce, D2C & retail scenarios. Slots: edt.yaml.
+code: EDT
+scenarios:
+
+- id: EDT-ECM-02
+  seed: true
+  title: "Five catalogue fixes on an on-model kurta photo without regenerating the model"
+  persona: "Retoucher at an ethnic-wear marketplace turning one studio photo into the green colour variant and a square listing image."
+  evidence: "Earlier banks IMG-BRAND-09 (single colourway) and IMG-LE-08 (expression change only) were in the low tier as single edits. Five stacked edits on a person are where tools start re-drawing the face and body; the failure target is exactly that over-edit."
+  levers: [multi-step, keep-rest, identity, layout, locale, exclude]
+  inputs:
+    - {source: SRC-ECM-KURTA-MODEL, role: source, note: "the delivered studio photo"}
+  prompt: |
+    Make exactly these five changes to this catalogue photo and nothing else.
+    1. Recolour the kurta from mustard to bottle green, #2E6B4F. The white floral block print and
+       the five white buttons stay white and exactly where they are; the fabric's folds and
+       shading stay the same.
+    2. Remove the small safety pin at the kurta's right hem, leaving clean fabric.
+    3. Re-drape the white dupatta so it hangs straight and evenly down the front of her left
+       shoulder instead of crookedly.
+    4. Change the canvas from 4:5 to square 1:1 by extending the warm beige paper backdrop equally
+       on both sides, with the same texture and the same light falloff from the window on the left.
+    5. Replace her silver jhumka earrings with small plain gold studs.
+    Do not change her face, expression, hair, skin tone, body shape, pose, hands or the white
+    palazzo pants. No smoothing, slimming or brightening of her skin. Her position in the frame
+    stays centred.
+  exact_text: []
+  deliverable: "One square 1:1 image."
+  checks:
+    - [prompt_adherence, "Is the kurta bottle green, close to #2E6B4F?"]
+    - [preservation, "Is the white floral print unchanged in pattern and still white?"]
+    - [preservation, "Are the five white buttons still there and still white?"]
+    - [prompt_adherence, "Is the safety pin gone with clean fabric where it was?"]
+    - [prompt_adherence, "Does the dupatta now hang straight and evenly down the front of her left shoulder?"]
+    - [prompt_adherence, "Is the image square, with the backdrop extended equally on both sides?"]
+    - [prompt_adherence, "Does the extended backdrop match in texture and light falloff from the left?"]
+    - [prompt_adherence, "Are the jhumkas replaced by small plain gold studs?"]
+    - [reference_fidelity, "Is her face unchanged: same features, same expression?"]
+    - [reference_fidelity, "Is her skin tone unchanged, with no smoothing or brightening?"]
+    - [preservation, "Are her hair, pose, hands and body shape unchanged?"]
+    - [preservation, "Are the white palazzo pants unchanged?"]
+    - [preservation, "Is she still centred in the new square frame?"]
+    - [visual_quality, "Is there no seam, smear or repeated texture where the backdrop was extended?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input; the output size must be set to square."}
+  video_followon: "V6: the same recolour on a 5-second clip of the model turning, print held through the motion."
+
+- id: EDT-ECM-01
+  title: "Packshot clean-up: dust off, handle untwisted, background to a hex, new contact shadow"
+  persona: "E-commerce retoucher preparing a packshot for the marketplace's white-background rule."
+  evidence: "Packshot clean-up is the commonest e-commerce edit; over-smoothing the leather is the usual spill."
+  levers: [multi-step, keep-rest, identity, physics]
+  inputs: [{source: SRC-ECM-HANDBAG, role: source}]
+  prompt: |
+    Make exactly these four changes to this tote packshot, and nothing else.
+    1. Remove the dust specks from the front flap.
+    2. Untwist the twisted handle so both handles hang in the same clean arc.
+    3. Change the off-white background to pure white, #FFFFFF, edge to edge.
+    4. Replace the existing shadow with a soft, short contact shadow directly under the base.
+    The leather's pebbled grain, its tan colour, the cream stitching, the brass turn-lock and the
+    blind-embossed "KOSU" stay exactly as they are; the leather is not smoothed or brightened.
+  exact_text: ["KOSU"]
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Are the dust specks gone?"]
+    - [prompt_adherence, "Are both handles in the same clean arc?"]
+    - [prompt_adherence, "Is the background pure white edge to edge?"]
+    - [physics_plausibility, "Is there a soft contact shadow directly under the base?"]
+    - [preservation, "Is the pebbled grain unchanged and not smoothed?"]
+    - [preservation, "Is the leather the same tan?"]
+    - [preservation, "Is the stitching cream and unchanged?"]
+    - [preservation, "Is the brass lock unchanged?"]
+    - [text_accuracy, "Is KOSU still embossed below the lock?"]
+    - [visual_quality, "Is the bag's edge clean against the white?"]
+    - [preservation, "Is the bag's shape unchanged?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ECM-03
+  title: "Remove the plastic spoon, add steam, swap mint for coriander, napkin to green"
+  persona: "Food-delivery platform retoucher improving a restaurant's listing photo."
+  evidence: "Four small food edits; the rice and handi must not be re-styled."
+  levers: [multi-step, keep-rest, physics, locale]
+  inputs: [{source: SRC-ECM-BIRYANI, role: source}]
+  prompt: |
+    Make exactly these four changes to this biryani listing photo, and nothing else.
+    1. Remove the white plastic spoon from the napkin, leaving the napkin's fold intact.
+    2. Add a soft wisp of steam rising from the rice in the handi.
+    3. Replace the mint leaves on top of the rice with chopped coriander, in the same places.
+    4. Change the red-checked napkin to a green-checked one with the same check size and folds.
+    The rice, chicken pieces, fried onions, the handi, its leaning lid, the raita bowl with cucumber
+    and egg, the table and the light are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the plastic spoon gone?"]
+    - [preservation, "Is the napkin's fold intact?"]
+    - [prompt_adherence, "Is there a soft wisp of steam?"]
+    - [prompt_adherence, "Is the mint replaced by coriander in the same places?"]
+    - [prompt_adherence, "Is the napkin green-checked with the same check size?"]
+    - [preservation, "Are the rice and chicken unchanged?"]
+    - [preservation, "Is the handi and its lid unchanged?"]
+    - [preservation, "Is the raita unchanged?"]
+    - [preservation, "Is the table and light unchanged?"]
+    - [visual_quality, "Are there no smudges?"]
+    - [physics_plausibility, "Does the steam rise naturally?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ECM-04
+  title: "Room tidy for a listing: cable and slippers gone, a plant added, lampshade swapped, books to three"
+  persona: "Furniture brand's retoucher tidying a lifestyle photo for the product page."
+  evidence: "One of several small edits is usually missed."
+  levers: [multi-step, keep-rest, count, layout]
+  inputs: [{source: SRC-ECM-ARMCHAIR-ROOM, role: source}]
+  prompt: |
+    Make exactly these five changes to this living-room photo, and nothing else.
+    1. Remove the phone charger cable from the floor.
+    2. Remove the pair of slippers by the chair.
+    3. Add a tall fiddle-leaf fig in a white ceramic pot in the corner to the right of the floor lamp.
+    4. Replace the lamp's white drum shade with a cone-shaped linen shade in natural beige.
+    5. Add a third book to the stack on the side table, in dark green.
+    The armchair, side table, mug, window light, sunlight rectangle and floor are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the cable gone?"]
+    - [prompt_adherence, "Are the slippers gone?"]
+    - [prompt_adherence, "Is there a fiddle-leaf fig in a white pot right of the lamp?"]
+    - [prompt_adherence, "Is the shade a beige linen cone?"]
+    - [prompt_adherence, "Are there three books, the new one dark green?"]
+    - [preservation, "Is the armchair unchanged?"]
+    - [preservation, "Is the mug still on the table?"]
+    - [preservation, "Is the sunlight rectangle unchanged?"]
+    - [prompt_adherence, "Is the new plant lit consistently with the room?"]
+    - [visual_quality, "Are there no smudges where items were removed?"]
+    - [preservation, "Is the floor unchanged?"]
+    - [prompt_adherence, "Are all five changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ECM-05
+  title: "Tidy the creator's frame: plain shelf, no ring light in the mirror, top to white; face untouched"
+  persona: "Beauty brand's social editor cleaning a creator's frame for a paid post."
+  evidence: "Background edits around a face tend to retouch the face too."
+  levers: [multi-step, keep-rest, identity, light-lock]
+  inputs: [{source: SRC-ECM-CREATOR, role: source}]
+  prompt: |
+    Make exactly these three changes to this creator's selfie frame, and nothing else.
+    1. Clear the crowded shelf behind her so it holds only three plain white jars and a small plant.
+    2. Remove the ring light's reflection from the mirror on the right; the mirror reflects the plain
+       wall behind the camera instead.
+    3. Change her sage-green tank top to a plain white tank top with the same ribbing and fit.
+    Her face, bare skin, skin tone, the ring catchlights in her eyes, her hair, her gold hoops and the
+    fairy lights are unchanged; no smoothing or brightening of her skin.
+  deliverable: "One image, 9:16."
+  checks:
+    - [prompt_adherence, "Does the shelf hold only three white jars and a plant?"]
+    - [prompt_adherence, "Is the ring light gone from the mirror?"]
+    - [prompt_adherence, "Is the top white with the same ribbing?"]
+    - [reference_fidelity, "Is her face unchanged?"]
+    - [reference_fidelity, "Is her skin tone unchanged, with no smoothing?"]
+    - [preservation, "Are the ring catchlights still in her eyes?"]
+    - [preservation, "Are her hair and hoops unchanged?"]
+    - [preservation, "Are the fairy lights unchanged?"]
+    - [physics_plausibility, "Does the mirror now reflect a plain wall?"]
+    - [visual_quality, "Are there no smudges?"]
+    - [preservation, "Is her lighting unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ECM-06
+  title: "A price sticker on the chilli jar and a recoloured cumin lid, without touching any Tamil letter"
+  persona: "Spice brand's marketplace manager updating a listing image."
+  evidence: "Edits next to non-Latin text often damage it."
+  levers: [multi-step, keep-rest, exact-text, script, layout]
+  inputs: [{source: SRC-ECM-SPICE-JARS, role: source}]
+  prompt: |
+    Make exactly these two changes to this photo of three spice jars, and nothing else.
+    1. Add a small round orange price sticker reading "₹149" on the chilli jar's glass, below its
+       label, not overlapping any text.
+    2. Change the cumin jar's black lid to a terracotta lid of the same shape.
+    Every label stays exactly as it is, letter for letter: "மஞ்சள்" and "TURMERIC", "மிளகாய்" and
+    "CHILLI", "சீரகம்" and "CUMIN", each with "Aadi" and "100 g". The jars, contents and light are
+    unchanged.
+  exact_text: ["₹149", "மஞ்சள்", "மிளகாய்", "சீரகம்", "CUMIN"]
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is there an orange ₹149 sticker on the chilli jar below its label?"]
+    - [prompt_adherence, "Does the sticker overlap no text?"]
+    - [prompt_adherence, "Is the cumin lid terracotta, same shape?"]
+    - [text_accuracy, "Are all three Tamil names unchanged and correct?"]
+    - [text_accuracy, "Are all English names unchanged?"]
+    - [text_accuracy, "Are Aadi and 100 g unchanged on all labels?"]
+    - [preservation, "Are the other two lids still black?"]
+    - [preservation, "Are the contents unchanged?"]
+    - [preservation, "Is the light unchanged?"]
+    - [visual_quality, "Are there no smudges on the labels?"]
+    - [physics_plausibility, "Does the sticker follow the glass's curve?"]
+    - [prompt_adherence, "Are both changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ECM-07
+  title: "Strap to a new hex, watch time to 07:30, jogger removed; her face neither smoothed nor made younger"
+  persona: "Wearables brand's retoucher making a strap-colour variant of a lifestyle photo."
+  evidence: "Edits on older faces tend to smooth wrinkles; that over-edit is the target."
+  levers: [multi-step, keep-rest, identity, exact-text, locale]
+  inputs: [{source: SRC-ECM-WATCH-ELDER, role: source}]
+  prompt: |
+    Make exactly these three changes to this lifestyle photo, and nothing else.
+    1. Change the watch strap from sage green to a coral strap, #E8735A, same silicone texture.
+    2. Change the watch face's time from "06:45" to "07:30", same white digits.
+    3. Remove the jogger from the background on the right, rebuilding the path and trees.
+    Her face is unchanged in every detail: wrinkles, skin texture, dark brown skin tone, grey braid and
+    bindi. Do not smooth, brighten or make her look younger. The sari, bench, park and light are
+    unchanged.
+  exact_text: ["07:30"]
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the strap coral close to #E8735A?"]
+    - [text_accuracy, "Does the watch read 07:30?"]
+    - [prompt_adherence, "Is the jogger gone with the path rebuilt?"]
+    - [reference_fidelity, "Are her wrinkles and skin texture unchanged?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [reference_fidelity, "Does she look the same age?"]
+    - [preservation, "Are the braid and bindi unchanged?"]
+    - [preservation, "Is the sari unchanged?"]
+    - [preservation, "Is the bench and park unchanged?"]
+    - [visual_quality, "Is there no seam where the jogger was?"]
+    - [preservation, "Is the light unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ECM-08
+  title: "Colour variant of the knitted elephant: pink wool, blue patch, green collar, gold bell"
+  persona: "Toy brand's catalogue editor making colourway images from one photo."
+  evidence: "Several small recolours; one is usually missed and the knit gets smoothed."
+  levers: [multi-step, keep-rest, identity, count]
+  inputs: [{source: SRC-ECM-PLUSH, role: source}]
+  prompt: |
+    Make exactly these four changes to this photo of a knitted elephant toy, and nothing else.
+    1. Change the grey wool body to pastel pink, keeping every visible knit stitch.
+    2. Change the mustard patch on its left ear to sky blue.
+    3. Change the red ribbon collar to green.
+    4. Change the tiny brass bell to a shiny gold bell of the same size.
+    The button eyes, the trunk curled to its right, the shape, the pose, the white background and the
+    light are unchanged. The knit texture stays visible everywhere; nothing is smoothed.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the body pastel pink?"]
+    - [preservation, "Is the knit texture still visible?"]
+    - [prompt_adherence, "Is the ear patch sky blue?"]
+    - [prompt_adherence, "Is the collar green?"]
+    - [prompt_adherence, "Is the bell shiny gold, same size?"]
+    - [preservation, "Are the button eyes black?"]
+    - [preservation, "Is the trunk still curled to its right?"]
+    - [preservation, "Is the patch still on its left ear?"]
+    - [preservation, "Is the shape and pose unchanged?"]
+    - [preservation, "Is the background white?"]
+    - [visual_quality, "Is nothing smeared?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

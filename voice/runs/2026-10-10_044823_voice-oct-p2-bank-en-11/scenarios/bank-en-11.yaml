@@ -1,0 +1,37 @@
+# bank-en-11 - OTP for a fund transfer (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-26 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-26): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Fraud & security - OTP, fraud alerts, new-device login, scam warnings.
+# TARGET CUSTOMER. Retail Banks, Credit Card Issuers.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: acronyms.
+# PICKED AS. Even contest.
+
+id: bank-en-11
+modality: voice
+task: text_to_speech
+title: "OTP for a fund transfer - English"
+
+input:
+  script: |
+    Your OTP to verify this transaction is four, four, seven, one, nine, zero. Do not share this OTP with anyone. The bank will never ask you for it.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) All six digits recoverable in order, including the repeated four
+  2) "OTP" as letters
+  3) Warning clause clear
+
+checks:
+  duration_s: {min: 5.6, max: 28.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, banking-financial-services, fraud-security, medium, even-contest, new-english]

@@ -1,0 +1,345 @@
+# Depth, light and physics — Real estate, interiors & architecture scenarios. Slots: phy.yaml.
+code: PHY
+scenarios:
+
+- id: PHY-RES-01
+  seed: true
+  title: "Low sun through a twelve-pane window: the grid falls across the floor and climbs an armchair"
+  persona: "Interior visualiser at an architecture studio checking whether generated renders can replace ray-traced stills for client presentations."
+  evidence: "Call at 17:26: 'spatial depth is off on certain kinds of images'. Sunlight through a gridded window is the standard test of a renderer: the pane count, the stretch of the projected grid and the way it bends over furniture are all checkable."
+  levers: [physics, light-lock, count, layout, camera, long-brief]
+  prompt: |
+    A photoreal interior: a quiet reading room with white walls and a pale oak floor, late
+    afternoon. On the left wall, a tall window divided by thin black mullions into twelve panes,
+    three across and four high. Low sun, about 20 degrees above the horizon, shines through it
+    from the left, so the window's grid is projected across the floor as twelve bright stretched
+    parallelograms, longer than the panes are tall, running to the right. The projection reaches
+    a white armchair standing in the middle of the room: the grid's lines break where they meet
+    the chair, bend over its seat and climb up its front and back, then continue onto the right
+    wall behind it. A clear glass vase of water on the windowsill throws a small bright caustic on
+    the sill. Fine dust floats in the beams. The chair's legs cast thin shadows pointing right,
+    away from the window. Camera at 1.2 metres from the room's back corner looking towards the
+    window wall at an angle, 28 mm, verticals straight. No people, no other furniture, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [prompt_adherence, "Does the window have exactly twelve panes, three across and four high?"]
+    - [prompt_adherence, "Does the projected grid on the floor show twelve light patches matching the panes?"]
+    - [physics_plausibility, "Are the projected patches stretched longer than the panes, consistent with a low sun?"]
+    - [physics_plausibility, "Do the light patches run to the right, away from the window?"]
+    - [physics_plausibility, "Do the grid lines break and bend where they meet the armchair?"]
+    - [physics_plausibility, "Does the grid climb the chair's front and continue onto the wall behind?"]
+    - [physics_plausibility, "Do the chair legs' shadows point right, away from the window?"]
+    - [physics_plausibility, "Is there a small bright caustic from the vase on the sill?"]
+    - [prompt_adherence, "Are the dust beams aligned with the sun's direction through the window?"]
+    - [prompt_adherence, "Is the light warm late-afternoon light?"]
+    - [prompt_adherence, "Is the view from the back corner towards the window wall, with straight verticals?"]
+    - [prompt_adherence, "Is the armchair in the middle of the room with no other furniture?"]
+    - [prompt_adherence, "Are there no people and no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: the same room over ten seconds as the sun lowers; the grid stretches and climbs the chair."
+
+- id: PHY-RES-02
+  title: "A living room at night: warm lamps, a cool TV glow and the city through the window"
+  persona: "Archviz artist testing mixed interior light for a night render."
+  evidence: "Mixed light sources in one room are where generated renders go flat."
+  levers: [physics, light-lock, layout, locale]
+  prompt: |
+    A stylised architectural render of a Mumbai high-rise living room at night, 16:9. Three light
+    sources only: two warm table lamps at either end of a grey sofa on the left; a large TV on the right
+    wall playing a blue-lit scene, throwing a cool glow on the coffee table and the front of the sofa;
+    and a full-height window at the back showing the city's lights, giving a faint cool rim on the
+    sofa's back. The lamps' warm pools fall on the sofa arms and the wall behind them; the TV's cool
+    light falls only on surfaces facing it; where both reach, the coffee table shows mixed light. No
+    people, no text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Are there warm pools from the two lamps on the sofa arms and wall?"]
+    - [prompt_adherence, "Does the TV throw cool light only on surfaces facing it?"]
+    - [prompt_adherence, "Is there a faint cool rim on the sofa's back from the window?"]
+    - [prompt_adherence, "Does the coffee table show mixed light?"]
+    - [prompt_adherence, "Are there exactly three kinds of light source?"]
+    - [prompt_adherence, "Is the sofa on the left, TV on the right, window at the back?"]
+    - [physics_plausibility, "Do shadows agree with the lamps?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are lines clean?"]
+    - [prompt_adherence, "Does the view read as Mumbai at night?"]
+    - [style, "Is it a stylised architectural render?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-RES-03
+  title: "Bathroom with facing mirrors and a glass shower: repeating reflections recede correctly"
+  persona: "Interior designer testing generated bathroom visuals."
+  evidence: "Facing mirrors produce receding reflections that are easy to get wrong."
+  levers: [physics, count, layout, exclude]
+  prompt: |
+    A photoreal bathroom, 3:2, daylight. Two large mirrors face each other on opposite walls above two
+    white basins. Between them, a single green orchid in a white pot sits on the left basin's counter.
+    The camera stands to the side, so in each mirror we see the orchid repeated in a receding tunnel of
+    reflections, each smaller, dimmer and slightly greener than the last, alternating which side of the
+    pot faces us. A frameless glass shower screen on the right shows a faint reflection of the window.
+    No people (and the camera is not visible in the mirrors), no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [physics_plausibility, "Do the mirrors show a receding tunnel of orchid reflections?"]
+    - [physics_plausibility, "Is each reflection smaller and dimmer than the last?"]
+    - [physics_plausibility, "Do reflections take on a slight green tint with depth?"]
+    - [physics_plausibility, "Does the pot's facing side alternate in the reflections?"]
+    - [prompt_adherence, "Is there one real orchid?"]
+    - [physics_plausibility, "Is the camera not visible in the mirrors?"]
+    - [physics_plausibility, "Does the shower glass faintly reflect the window?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [prompt_adherence, "Is it daylight?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are lines clean?"]
+    - [prompt_adherence, "Are the mirrors on opposite walls above two basins?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-RES-04
+  title: "A palace corridor of fifteen identical arches receding, each smaller by the right amount"
+  persona: "Heritage hotel's photographer testing a generated corridor image."
+  evidence: "Repeated arches make perspective errors measurable."
+  levers: [physics, count, camera, locale, light-lock]
+  prompt: |
+    A photoreal corridor in a Rajasthani palace at noon, 2:3, camera centred at eye height, 24 mm.
+    Fifteen identical cusped arches in pink sandstone recede in a straight line; each arch's opening
+    is the same real size, so on screen each is smaller than the one before by a steady amount towards
+    a single vanishing point. Hard sunlight from openings on the left throws fifteen bright patches on
+    the floor, each smaller in the same proportion. The marble floor reflects the arches faintly. No
+    people, no text.
+  deliverable: "One image, 2:3."
+  checks:
+    - [prompt_adherence, "Are there fifteen arches?"]
+    - [physics_plausibility, "Does each arch shrink steadily towards one vanishing point?"]
+    - [prompt_adherence, "Are the arches identical cusped pink sandstone?"]
+    - [physics_plausibility, "Do the floor light patches shrink in the same proportion?"]
+    - [prompt_adherence, "Is hard sunlight from openings on the left?"]
+    - [physics_plausibility, "Does the floor reflect the arches faintly?"]
+    - [prompt_adherence, "Is the camera centred at eye height?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are arches clean, not merging?"]
+    - [prompt_adherence, "Does it read as a Rajasthani palace?"]
+    - [prompt_adherence, "Is it noon light?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-RES-05
+  title: "Watercolour of a courtyard house; the roof overhangs' shadows right for a west sun"
+  persona: "Architect presenting a watercolour rendering to a client who will check the shadows."
+  evidence: "Shadows in painted styles are usually decorative; here they must be correct."
+  levers: [physics, light-lock, locale, layout]
+  prompt: |
+    An architectural watercolour rendering, 3:2, of a Kerala nalukettu courtyard house seen from the
+    open central courtyard, late afternoon. The courtyard is square; sloping tiled roofs with deep
+    overhangs surround it on four sides, held on wooden pillars. The sun is low in the west, which is
+    on the right of the frame: the west roof's overhang throws no shadow into the courtyard; the east
+    roof on the left is lit; the shadows of the west pillars fall long across the courtyard floor to
+    the left; a tulsi plant in the centre casts its shadow to the left. Loose washes, ink lines. No
+    people, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [physics_plausibility, "Do the pillars' shadows fall long to the left?"]
+    - [physics_plausibility, "Does the tulsi plant's shadow fall to the left?"]
+    - [prompt_adherence, "Is the east (left) roof lit?"]
+    - [physics_plausibility, "Is the west roof's overhang casting no shadow into the courtyard?"]
+    - [prompt_adherence, "Is the courtyard square with roofs on four sides?"]
+    - [prompt_adherence, "Is there a tulsi plant in the centre?"]
+    - [style, "Is it loose watercolour with ink lines?"]
+    - [prompt_adherence, "Is it late afternoon?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [prompt_adherence, "Does it read as a nalukettu?"]
+    - [visual_quality, "Is it clean?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-RES-06
+  title: "Lakeside villas in Udaipur mirrored in still water, one boat breaking the reflection"
+  persona: "Hospitality developer's agency making a lakeside hero image."
+  evidence: "Reflections must mirror vertically and break where the water is disturbed."
+  levers: [physics, light-lock, locale, count]
+  prompt: |
+    A photo across a still lake in Udaipur at golden hour, 21:9. On the far shore, a row of five white
+    lakeside villas with arched balconies and domed chhatris, lit warm by the low sun from the left.
+    The lake mirrors them exactly upside down below the shoreline. One small wooden boat with a
+    boatman crosses from left to right in the middle distance; behind it, its wake breaks the
+    reflection into rippled streaks; everywhere else the reflection is crisp. Hills behind the villas,
+    mirrored too. No text.
+  deliverable: "One image, 21:9."
+  checks:
+    - [prompt_adherence, "Are there five villas?"]
+    - [physics_plausibility, "Is each villa mirrored exactly upside down below the shoreline?"]
+    - [physics_plausibility, "Is the reflection crisp except behind the boat?"]
+    - [physics_plausibility, "Does the wake break the reflection into streaks?"]
+    - [physics_plausibility, "Are the hills mirrored too?"]
+    - [prompt_adherence, "Are the villas lit warm by low sun from the left?"]
+    - [prompt_adherence, "Is there one boat with a boatman?"]
+    - [prompt_adherence, "Is the boat moving left to right with the wake behind it?"]
+    - [prompt_adherence, "Does it read as Udaipur?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is the architecture clean?"]
+    - [prompt_adherence, "Do the villas have arched balconies and chhatris?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: the boat crossing, the wake spreading through the reflection."
+
+- id: PHY-RES-07
+  title: "A styled dining table: a water carafe bends the cutlery and candles behind it correctly"
+  persona: "Interior stylist testing generated tablescapes."
+  evidence: "Refraction through a water-filled glass is easy to omit or fake."
+  levers: [physics, light-lock, layout, exclude]
+  prompt: |
+    A photoreal dining table at night, 4:5, close view. A clear glass carafe filled with water stands in
+    the foreground centre-left. Behind it: a row of brass cutlery laid on a linen napkin, and two lit
+    taper candles. Seen through the carafe, the cutlery is magnified, flipped left-to-right and broken
+    at the carafe's edges; the candle flames appear as small inverted points of light in the water;
+    above the water line the glass shows them only slightly distorted. Around the carafe everything
+    reads normally. Warm candlelight. No text.
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Is the cutlery magnified through the carafe?"]
+    - [physics_plausibility, "Is it flipped left-to-right through the water?"]
+    - [physics_plausibility, "Is it broken at the carafe's edges?"]
+    - [physics_plausibility, "Do the candle flames appear inverted in the water?"]
+    - [physics_plausibility, "Is distortion weaker above the water line?"]
+    - [physics_plausibility, "Does everything around the carafe read normally?"]
+    - [prompt_adherence, "Are the cutlery and candles behind the carafe?"]
+    - [prompt_adherence, "Is it warm candlelight?"]
+    - [prompt_adherence, "Are there two candles?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is the glass clean?"]
+    - [prompt_adherence, "Is the cutlery brass?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-RES-08
+  title: "Add a floor-to-ceiling aquarium wall to the lobby that refracts the sofas behind it"
+  persona: "Hotel's design consultant showing the client a feature wall idea in the real photo."
+  evidence: "Adding a refractive volume to a real photo requires the background to bend through it."
+  levers: [physics, keep-rest, layout, light-lock]
+  inputs: [{source: SRC-RES-HOTEL-LOBBY, role: source}]
+  prompt: |
+    In this hotel lobby photo, add a floor-to-ceiling aquarium, 1 metre deep, standing in front of the
+    green velvet sofas on the left, between the sofas and the camera. It is filled with clear blue-tinted
+    water, a few tropical fish and a sandy bottom with plants. Through it, the sofas and the brass table
+    behind are seen shifted and slightly magnified, blue-tinted, broken at the tank's vertical edges;
+    the chandelier's glow ripples on its top surface. The terrazzo floor reflects the tank. Everything
+    else is unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is there a floor-to-ceiling aquarium in front of the sofas?"]
+    - [physics_plausibility, "Are the sofas seen through it shifted and magnified?"]
+    - [physics_plausibility, "Are they blue-tinted through the water?"]
+    - [physics_plausibility, "Are they broken at the tank's edges?"]
+    - [prompt_adherence, "Does the chandelier's glow ripple on the water's top?"]
+    - [physics_plausibility, "Does the floor reflect the tank?"]
+    - [prompt_adherence, "Is the tank between the sofas and the camera?"]
+    - [preservation, "Is the rest of the lobby unchanged?"]
+    - [visual_quality, "Are the fish and plants clean?"]
+    - [physics_plausibility, "Is the tank's perspective correct?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PHY-RES-09
+  title: "Render the sketch as a photo; the glass facade reflects the rain tree, panel by panel"
+  persona: "Architect turning a design sketch into a client photo-render."
+  evidence: "Curtain walls reflect what is opposite them; each panel slightly differently."
+  levers: [physics, identity, layout, unseen, light-lock]
+  inputs: [{source: SRC-RES-ARCH-SKETCH, role: source}]
+  prompt: |
+    Render this ink sketch of a three-storey corner office as a photorealistic photo at mid-morning,
+    same viewpoint and two-point perspective: the left facade a glass curtain wall of 4 by 3 panels,
+    the right facade solid red brick with three deep vertical window slots, a flat roof with a thin
+    overhang, and the large rain tree across the street on the left. The glass facade reflects the rain
+    tree and the sky, each panel showing its own slightly different piece of the reflection with small
+    breaks at the mullions. The sun is behind the camera on the right, lighting the brick. No text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [reference_fidelity, "Does the building match the sketch: glass grid left, brick with three slots right?"]
+    - [prompt_adherence, "Is the glass a 4 by 3 panel grid?"]
+    - [physics_plausibility, "Does the glass reflect the rain tree?"]
+    - [physics_plausibility, "Does each panel show its own piece of the reflection with breaks at the mullions?"]
+    - [prompt_adherence, "Is the brick facade sunlit from behind the camera?"]
+    - [prompt_adherence, "Is the viewpoint the sketch's, with two-point perspective?"]
+    - [physics_plausibility, "Do the window slots show depth with shadow?"]
+    - [prompt_adherence, "Is the tree across the street on the left?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are lines straight?"]
+    - [prompt_adherence, "Is it mid-morning?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PHY-RES-10
+  title: "Five identical villas stepping up the plot towards the ridge, each at the right size for its distance"
+  persona: "Developer's planner visualising a villa layout on the real plot photo."
+  evidence: "Repeated buildings inserted at different depths make scale errors obvious."
+  levers: [physics, count, layout, keep-rest, locale]
+  inputs: [{source: SRC-RES-PLOT-LAND, role: source}]
+  prompt: |
+    On this Goa hillside plot photo, add five identical single-storey villas with white walls and
+    red-tiled pitched roofs, stepping up the slope from the middle of the plot towards the ridge in a
+    line, evenly spaced. Each villa is the same real size, so each is drawn smaller than the one below
+    it in correct perspective; each sits level on its own terrace cut into the slope; each casts a
+    shadow to the left from the low sun on the right. The cashew trees, survey marker, stream bed,
+    pole and palms stay, the trees partly in front of the nearest villa.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Are there five villas?"]
+    - [reference_fidelity, "Are they identical: white walls, red-tiled pitched roofs?"]
+    - [physics_plausibility, "Does each villa get smaller with distance by the right amount?"]
+    - [physics_plausibility, "Does each sit level on a terrace in the slope?"]
+    - [physics_plausibility, "Do their shadows fall to the left?"]
+    - [prompt_adherence, "Do they step up in an evenly spaced line?"]
+    - [physics_plausibility, "Are the trees partly in front of the nearest villa?"]
+    - [preservation, "Are the marker, stream bed, pole and palms unchanged?"]
+    - [prompt_adherence, "Do the villas take the same golden light?"]
+    - [visual_quality, "Are the villas clean?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Are there no people?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PHY-RES-11
+  title: "A grandmother sitting on the porch swing; the chains take her weight and the seat dips"
+  persona: "Developer's agency adding life to a villa photo."
+  evidence: "Added people float on seats; weight and contact are the test."
+  levers: [physics, keep-rest, locale, light-lock]
+  inputs: [{source: SRC-RES-VILLA-EXT, role: source}]
+  prompt: |
+    In this villa photo, seat a grandmother of about seventy on the empty wooden swing under the
+    porch overhang: grey hair in a bun, a cream cotton sari with a maroon border, reading a newspaper,
+    one foot touching the floor. The swing's two chains are pulled straight and taut by her weight;
+    the seat tilts slightly back and dips; her sari drapes over the seat's front edge; she sits in the
+    overhang's shade with soft bounce light on her face. Everything else in the photo is unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is a grandmother seated on the swing?"]
+    - [physics_plausibility, "Are both chains taut and straight?"]
+    - [physics_plausibility, "Does the seat tilt slightly and dip?"]
+    - [physics_plausibility, "Does one foot touch the floor?"]
+    - [physics_plausibility, "Does her sari drape over the seat's edge?"]
+    - [prompt_adherence, "Is she in the overhang's shade with soft bounce light?"]
+    - [reference_fidelity, "Is she in a cream sari with a maroon border?"]
+    - [preservation, "Is the villa unchanged?"]
+    - [preservation, "Is the lawn and frangipani unchanged?"]
+    - [visual_quality, "Are her hands natural on the newspaper?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is the newspaper unreadable?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V7: the swing moving gently with her on it."

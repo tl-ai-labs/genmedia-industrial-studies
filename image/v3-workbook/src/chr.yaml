@@ -1,0 +1,63 @@
+# Family 4 — Character and identity continuity sequences (header). Scenarios: chr-*.yaml.
+
+family: Character continuity
+code: CHR
+number: 4
+about: "The same character, or several, held across 3–6 frames of a story: new places, light, ages, costumes, poses."
+outputs: "3–6 (set)"
+set: {min: 3, max: 6}
+
+rubric:
+  weights: {set_consistency: 4, reference_fidelity: 3, prompt_adherence: 2, text_accuracy: 1, style: 1, visual_quality: 1, physics_plausibility: 1, composition: 1, preservation: 1}
+  gate: [set_consistency]
+  gate_rule: "The character must be the same person in every frame."
+
+targets:
+  identity-drift: "The face or character design changes between frames"
+  age-drift: "An asked-for age change is wrong, or identity is lost with it"
+  wardrobe-drift: "Costume details change when they should not, or do not change when asked"
+  prop-drift: "A signature prop or mark moves, flips sides or disappears"
+  expression: "The asked-for expression or pose is not delivered"
+  ensemble-blend: "Features blend between characters when several are in frame"
+  skin-tone: "Skin tone drifts lighter or darker across frames or light changes"
+
+slots:
+  # Film, OTT & micro-drama — 16 (4 t2i, 12 edit · 10 hard, 6 extreme)
+  - {id: CHR-FLM-01, task: edit, subject: person, style: cinematic, light: neon, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-ACTOR-M], idea: "The lead across four micro-drama frames: office, autorickshaw at night, rain, wedding stage"}
+  - {id: CHR-FLM-02, task: edit, subject: person, style: cinematic, light: daylight, locale: IN, diff: hard, target: age-drift, sources: [SRC-ACTOR-F], idea: "The actor at 20, 40 and 65 for a generational drama; mole and nose stud stay"}
+  - {id: CHR-FLM-03, task: edit, subject: child-elderly, style: cinematic, light: golden, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-KIDS-TREE], idea: "The two children in four new scenes: classroom, river, festival, school bus"}
+  - {id: CHR-FLM-04, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: ensemble-blend, sources: [SRC-ACTOR-M, SRC-ACTOR-F, SRC-ELDER-PORCH], idea: "Three references, one joint family, four frames; no features borrowed between faces"}
+  - {id: CHR-FLM-05, task: edit, subject: fashion, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: wardrobe-drift, sources: [SRC-ACTOR-F, SRC-COSTUME-REF], idea: "The actor in the 1940s costume across four scenes, getting muddier and torn in a fixed order"}
+  - {id: CHR-FLM-06, task: edit, subject: stylised, style: illustration, light: neon, locale: global, diff: hard, target: expression, sources: [SRC-ANIME-HEROINE], script: latin, idea: "Six frames of the heroine: six named expressions and poses, design unchanged"}
+  - {id: CHR-FLM-07, task: edit, subject: person, style: cinematic, light: night, locale: global, diff: hard, target: prop-drift, sources: [SRC-CROSSWALK], idea: "The headphone man in four later scenes: hospital corridor, metro, rooftop, dawn beach"}
+  - {id: CHR-FLM-08, task: edit, subject: person, style: cinematic, light: night, locale: global, diff: hard, target: wardrobe-drift, sources: [SRC-ASTRO-FOREST], idea: "The astronaut in three frames deeper in the forest; arm band and wrist device stay on the left"}
+  - {id: CHR-FLM-09, task: edit, subject: child-elderly, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: prop-drift, sources: [SRC-ELDER-PORCH], idea: "The grandmother's day in five frames: kitchen, temple, market, bus, verandah at night"}
+  - {id: CHR-FLM-10, task: edit, subject: animal, style: cinematic, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [SRC-HORSE-RIDER], idea: "The same horse in four frames: village, river crossing, fair, stable; blaze and one white sock held"}
+  - {id: CHR-FLM-11, task: edit, subject: vehicle, style: cinematic, light: noon, locale: IN, diff: hard, target: prop-drift, sources: [SRC-HERO-BIKE], idea: "Rider and motorcycle in four towns along the route; dent side and thread side never flip"}
+  - {id: CHR-FLM-12, task: edit, subject: person, style: cinematic, light: practical, locale: global, diff: extreme, target: expression, sources: [SRC-RIDGE-WANDERER], idea: "The wanderer in four close frames: calm, grief, anger, release; identity held through the acting"}
+  - {id: CHR-FLM-13, task: t2i, subject: person, style: cinematic, light: daylight, locale: IN, diff: hard, target: skin-tone, sources: [], idea: "A Telugu village postman described in text, held across four frames from noon sun to lamp light"}
+  - {id: CHR-FLM-14, task: t2i, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: identity-drift, sources: [], idea: "Three described siblings across four frames of a family drama"}
+  - {id: CHR-FLM-15, task: t2i, subject: stylised, style: 3d, light: daylight, locale: global, diff: extreme, target: identity-drift, sources: [], idea: "A 3D animated character described in text: turnaround plus two action frames, one design"}
+  - {id: CHR-FLM-16, task: t2i, subject: child-elderly, style: sketch, light: daylight, locale: global, diff: hard, target: age-drift, sources: [], script: latin, idea: "Pencil character study: one boy at 6, 10, 14 and 18, described in text"}
+  # Advertising & agencies — 4 (1 t2i, 3 edit · 2 hard, 2 extreme)
+  - {id: CHR-ADS-01, task: edit, subject: stylised, style: 3d, light: daylight, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-ADS-MASCOT], script: latin, idea: "The mascot in five campaign uses: kitchen, cricket stand, bus shelter poster, sticker, festival stage"}
+  - {id: CHR-ADS-02, task: edit, subject: person, style: photoreal, light: noon, locale: IN, diff: hard, target: wardrobe-drift, sources: [SRC-ADS-RUNNER], script: latin, idea: "The sprinter as brand ambassador in three campaign frames; kit changes only as briefed"}
+  - {id: CHR-ADS-03, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: ensemble-blend, sources: [SRC-ADS-DIWALI-FAMILY], idea: "The Diwali family across three frames of the festive campaign; four faces never merge"}
+  - {id: CHR-ADS-04, task: t2i, subject: animal, style: photoreal, light: daylight, locale: global, diff: hard, target: identity-drift, sources: [], idea: "A described pet-food dog with a heart-shaped patch, held across four campaign frames"}
+  # E-commerce, D2C & retail — 5 (1 t2i, 4 edit · 3 hard, 2 extreme)
+  - {id: CHR-ECM-01, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-ECM-KURTA-MODEL, SRC-ECM-SAREE-FLAT, SRC-ECM-JACKET-FLAT], idea: "Catalogue try-on: the same model in the saree and the jacket across four frames; face and garments exact"}
+  - {id: CHR-ECM-02, task: edit, subject: child-elderly, style: photoreal, light: golden, locale: IN, diff: hard, target: skin-tone, sources: [SRC-ECM-WATCH-ELDER], script: latin, idea: "The smartwatch wearer in three frames: yoga at dawn, market at noon, video call at night; skin tone held"}
+  - {id: CHR-ECM-03, task: edit, subject: stylised, style: photoreal, light: daylight, locale: global, diff: hard, target: prop-drift, sources: [SRC-ECM-PLUSH], idea: "The knitted elephant in four nursery scenes; trunk side, ear patch and bell collar never move"}
+  - {id: CHR-ECM-04, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: skin-tone, sources: [SRC-ECM-CREATOR], idea: "Makeup tutorial in four steps: bare, base, eyes, lips; the base matches her own dark skin, never lighter"}
+  - {id: CHR-ECM-05, task: t2i, subject: group, style: photoreal, light: night, locale: IN, diff: hard, target: identity-drift, sources: [], idea: "A described family of four in a mattress brand's three frames: bedtime story, pillow fight, morning"}
+  # Gaming — 10 (4 t2i, 6 edit · 6 hard, 4 extreme)
+  - {id: CHR-GAM-01, task: edit, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: wardrobe-drift, sources: [SRC-GAM-HERO], idea: "The heroine in four skins: default, monsoon festival, battle-damaged, gold legendary; silhouette identical, materials change"}
+  - {id: CHR-GAM-02, task: edit, subject: group, style: illustration, light: daylight, locale: IN, diff: hard, target: ensemble-blend, sources: [SRC-GAM-SQUAD], idea: "The five-member squad across three story frames; no character borrows another's features"}
+  - {id: CHR-GAM-03, task: edit, subject: stylised, style: sketch, light: daylight, locale: global, diff: hard, target: expression, sources: [SRC-GAM-VILLAIN], script: latin, idea: "Six named expressions of the villain in the same sketch style; mask stays on the left"}
+  - {id: CHR-GAM-04, task: edit, subject: vehicle, style: 3d, light: night, locale: global, diff: hard, target: prop-drift, sources: [SRC-GAM-MECH], script: latin, idea: "The hover-bike in four race levels; 07 decal, dent and stripe carried, damage accumulating"}
+  - {id: CHR-GAM-05, task: edit, subject: animal, style: illustration, light: golden, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-GAM-MOUNT], idea: "The war-tiger in four frames: charging, resting, wounded, armoured for winter; ear, scar and V stripe held"}
+  - {id: CHR-GAM-06, task: edit, subject: child-elderly, style: illustration, light: daylight, locale: IN, diff: hard, target: age-drift, sources: [SRC-GAM-SAGE], idea: "The sage at 25, 50 and 80 for a flashback quest; cloudy eye and bead stay true"}
+  - {id: CHR-GAM-07, task: t2i, subject: stylised, style: 3d, light: daylight, locale: global, diff: extreme, target: skin-tone, sources: [], idea: "A described dark-skinned heroine across four lighting set-ups; her skin tone holds under each"}
+  - {id: CHR-GAM-08, task: t2i, subject: fashion, style: illustration, light: daylight, locale: IN, diff: hard, target: wardrobe-drift, sources: [], idea: "A mobile-game character in a described ghagra and armour outfit across four poses"}
+  - {id: CHR-GAM-09, task: t2i, subject: product, style: 3d, light: practical, locale: global, diff: extreme, target: prop-drift, sources: [], idea: "A legendary sword in four states: in stone, in hand, broken, reforged; the glyph pattern holds"}
+  - {id: CHR-GAM-10, task: t2i, subject: stylised, style: illustration, light: daylight, locale: global, diff: hard, target: identity-drift, sources: [], idea: "A pixel-art hero at levels 1, 10 and 50; gear grows, identity stays"}

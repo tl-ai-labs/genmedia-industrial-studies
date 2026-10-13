@@ -1,0 +1,44 @@
+# hlt-hi-05 - Three medicines, strengths and dosing (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-05: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-05
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Pharmacy - medicine names, strengths, dosing, refills.
+# TARGET CUSTOMER. Online Pharmacies.
+# WHAT THIS TESTS. Three medicine brand names with numeric strengths and three different dosing instructions
+# SPEECH SKILLS. Numbers: dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-05
+modality: voice
+task: text_to_speech
+title: "Three medicines, strengths and dosing - Hindi"
+
+input:
+  script: |
+    आपके Tata 1mg order में ये दवाइयाँ हैं: Pan 40 — दिन में एक बार खाली पेट; Augmentin 625 — दिन में दो बार खाने के बाद; और Dolo 650 — ज़रूरत पड़ने पर।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every medicine name and strength recoverable exactly — "Pan 40", "Augmentin 625", "Dolo 650"
+  2) Dosing instructions intelligible and attached to the right medicine
+  3) "1mg" read as "one M G"
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, healthcare-pharma, pharmacy, hard, even-contest, v2-bank]

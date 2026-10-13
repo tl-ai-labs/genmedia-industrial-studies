@@ -1,0 +1,37 @@
+# telco-en-08 - Landline bill overdue: disconnection warning (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-13 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-13): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Postpaid & broadband billing.
+# TARGET CUSTOMER. Mobile Network Operators, Broadband Providers.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - rupee amounts.
+
+id: telco-en-08
+modality: voice
+task: text_to_speech
+title: "Landline bill overdue: disconnection warning - English"
+
+input:
+  script: |
+    Your BSNL landline bill of Rs 842 has been pending for 20 days. If payment is not received within 7 days, outgoing calls will be barred.
+  language: en-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount recoverable
+  2) "20 days" and "7 days" recoverable
+  3) "BSNL" as letters
+
+checks:
+  duration_s: {min: 5.2, max: 26.9}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, telecom, postpaid-broadband-billing, medium, even-contest, new-english]

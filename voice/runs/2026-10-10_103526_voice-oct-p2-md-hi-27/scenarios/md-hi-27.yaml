@@ -1,0 +1,53 @@
+# md-hi-27 - Cyber-crime briefing — FIR number, lakh amount, minutes (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-27: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-27
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Thriller / crime.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. An FIR number with a slash, a unit and city name, a raw lakh amount and a minute count in a clipped briefing
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times; Pronunciation: names, acronyms; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-hi-27
+modality: voice
+task: styled_tts
+title: "Cyber-crime briefing — FIR number, lakh amount, minutes - Hindi"
+
+input:
+  script: |
+    FIR number 0417/2025, Cyber Crime Cell, Gurugram। Victim के account से ₹18,75,000 सिर्फ़ 14 minute में निकाले गए — and every rupee went through crypto.
+  language: hi-IN
+  style: "urgent briefing, clipped"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Hindi segments pronounced correctly (judge)
+  4) One continuous prosody; the emotion does not reset at the language switch
+  5) FIR "0417/2025" read as a reference with the slash (judge)
+  6) Amount read in lakh ("अठारह लाख पचहत्तर हज़ार"), not the international convention
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+  # Expected item: the lakh reading of the amount written in Indian digit
+  # grouping. Added 2026-10-10 so it is checked, as in English and Hinglish;
+  # listed in both writing systems.
+  must_say_any:
+    - ["lakh", "लाख"]
+
+tags: [oct-2026, hindi, micro-drama-entertainment, thriller-crime, hard, gemini-lean, v2-bank]

@@ -48,6 +48,7 @@ from .base import (
     RateLimited,
     SafetyRefusal,
     Timeout,
+    split_dialogue,
 )
 from .gemini_tts import GEMINI_PCM_RATE, _wrap_pcm_as_wav
 
@@ -96,19 +97,52 @@ class GeminiApiTtsAdapter(BaseAdapter):
             "format": "wav",
             "sample_rate": GEMINI_PCM_RATE,
         }
-        if req.style and "styled_tts" in self.supports:
-            part["speech_metadata"] = {"style": req.style}
-            applied["style"] = req.style
+        style = req.style
+        parts: list[dict[str, Any]] = [part]
+        if req.speakers:
+            # ONE PART PER TURN. The API refuses a two-voice request whose
+            # text parts do not each name their speaker (400 "must specify
+            # speech_metadata.speaker for each text part", 2026-10-09,
+            # md-en-02). Each turn goes without its "<label>: " prefix, with
+            # its speaker and that speaker's direction - the same split the
+            # ElevenLabs arm sends to Text to Dialogue.
+            directions = {label: (s or style) for label, _, _, s in req.speakers}
+            styled = "styled_tts" in self.supports
+            parts = []
+            for label, line in split_dialogue(req.text, list(directions)):
+                meta: dict[str, Any] = {"speaker": label}
+                if styled and directions[label]:
+                    meta["style"] = directions[label]
+                parts.append({"text": line, "speech_metadata": meta})
+            if styled and any(directions.values()):
+                applied["style"] = style or "; ".join(
+                    f"{label}: {s}" for label, s in directions.items() if s)
+        elif style and "styled_tts" in self.supports:
+            part["speech_metadata"] = {"style": style}
+            applied["style"] = style
+        if req.speakers:
+            # Gemini's own two-voice mode: each label is bound to a prebuilt voice.
+            speech_config: dict[str, Any] = {"multiSpeakerVoiceConfig": {"speakerVoiceConfigs": [
+                {"speaker": label, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": vid}}}
+                for label, vid, _, _ in req.speakers
+            ]}}
+            applied["speakers"] = [label for label, _, _, _ in req.speakers]
+        else:
+            speech_config = {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": req.voice_id}}}
+        if req.language:
+            # The same language the ElevenLabs arm gets as `language_code`.
+            # Without it Gemini guesses from the text, and an Indian-English
+            # script read with no hint is an undeclared accent choice.
+            speech_config["languageCode"] = req.language
+            applied["language"] = req.language
         body = {
-            "contents": [{"role": "user", "parts": [part]}],
+            "contents": [{"role": "user", "parts": parts}],
             "generationConfig": {
                 "responseModalities": ["AUDIO"],
                 "responseFormat": {
                     "audio": {"mimeType": "AUDIO_L16", "sampleRate": GEMINI_PCM_RATE}
                 },
-                "speechConfig": {
-                    "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": req.voice_id}}
-                },
+                "speechConfig": speech_config,
             },
         }
         return body, applied

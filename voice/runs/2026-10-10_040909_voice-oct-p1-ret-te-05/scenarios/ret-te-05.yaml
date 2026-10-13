@@ -1,0 +1,47 @@
+# ret-te-05 - Prime renewal — Telugu script (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-te-05: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-te-05
+# LANGUAGE. Telugu (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Loyalty & subscriptions - SuperCoins, Prime, tiers, NeuCoins.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# WHAT THIS TESTS. A raw amount and a Telugu date phrase inside a Telugu-script sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-te-05
+modality: voice
+task: text_to_speech
+title: "Prime renewal — Telugu script - Telugu"
+
+input:
+  script: |
+    మీ Amazon Prime membership, వచ్చే నెల ఐదో తేదీన ₹1,499 కి renew అవుతుంది.
+  language: te-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount read correctly
+  2) Date recoverable
+  3) "Amazon Prime" natural
+
+checks:
+  # Minimum lowered from 6.0 s on 2026-10-10 (round 1), before running: a
+  # complete read of a short line can come in under 6 s. Now 0.2 s a word,
+  # as in the drama scenarios (a read faster than 5 words a second is too short).
+  duration_s: {min: 2.4, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, telugu, ecommerce-retail, loyalty-subscriptions, medium, gemini-lean, v2-bank]

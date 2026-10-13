@@ -1,0 +1,44 @@
+# bank-hi-02 - PAN masked-digit verification (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-02: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-02
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Onboarding & KYC - eKYC, Video KYC, masked PAN/Aadhaar, new account.
+# TARGET CUSTOMER. Retail Banks.
+# WHAT THIS TESTS. A masked alphanumeric string (letters standing in for hidden digits) read back exactly
+# SPEECH SKILLS. Numbers: codes; Pronunciation: acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-02
+modality: voice
+task: text_to_speech
+title: "PAN masked-digit verification - Hinglish"
+
+input:
+  script: |
+    Aapka PAN number verify karne ke liye, kripya confirm karein — last char digits hain, X, X, four, two, one, nine.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "XX4219" recoverable character-for-character
+  2) Confusable characters (0/O, 1/I) handled without ambiguity
+  3) Read in confirmable chunks, not run together
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, banking-financial-services, onboarding-kyc, medium, even-contest, v2-bank]

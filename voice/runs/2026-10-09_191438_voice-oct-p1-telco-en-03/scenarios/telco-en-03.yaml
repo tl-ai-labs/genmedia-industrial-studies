@@ -1,0 +1,37 @@
+# telco-en-03 - Postpaid bill due-date reminder (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-10 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-10): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Postpaid & broadband billing.
+# TARGET CUSTOMER. Mobile Network Operators, Broadband Providers.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: telco-en-03
+modality: voice
+task: text_to_speech
+title: "Postpaid bill due-date reminder - English"
+
+input:
+  script: |
+    Your Airtel postpaid bill of Rs 624 is due on the 10th of this month.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount recoverable
+  2) "the 10th" recoverable
+  3) "Airtel postpaid" natural
+
+checks:
+  duration_s: {min: 3.0, max: 17.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, telecom, postpaid-broadband-billing, medium, even-contest, new-english]

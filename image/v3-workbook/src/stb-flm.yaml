@@ -1,0 +1,636 @@
+# Storyboards — Film, OTT & micro-drama scenarios. Slots: stb.yaml.
+code: STB
+scenarios:
+
+- id: STB-FLM-01
+  seed: true
+  sahil: storyboard
+  title: "Nine-panel pencil storyboard of an astronaut entering an alien forest, from one base frame"
+  persona: "Storyboard artist on a science-fiction short, turning the production designer's one key frame into the shooting board the director will hand to the DP."
+  evidence: "Sahil's screen-share (screenshots 234–235): a base image of an astronaut in a dark forest and a 3×3 pencil storyboard with captions such as 'Visor reflection • ECU • Static'. Sahil: the competitor's board 'has more detailing'; customers make videos from boards like these."
+  levers: [count, exact-text, camera, continuity, identity, layout, long-brief]
+  inputs:
+    - {source: SRC-ASTRO-FOREST, role: source, note: "the key frame; sets the suit, the device, the forest and the light"}
+  prompt: |
+    Using this key frame as the world and the character, draw the shooting storyboard for the
+    scene as one image: nine panels in a three-by-three grid, read left to right, top to
+    bottom. Black-and-white pencil on white paper, with clean 2.39:1 frame lines inside each
+    panel, consistent line weight and tonal shading throughout, like a professional film
+    storyboard. Under each panel is a caption bar with exactly the text given, nothing more:
+
+    1 · Astronaut enters the forest · WS · Static
+    2 · Gloved hands tap the wrist device · CU · Push in
+    3 · POV: glowing trunks ahead · MS · Handheld
+    4 · Trees reflected in the visor · ECU · Static
+    5 · Palm on the bark, light spreads · MS · Pan right
+    6 · Device screen: pulse rising · Insert · Static
+    7 · Looks up, spores falling · MCU · Tilt up
+    8 · Whole forest pulses at once · EWS · Crane up
+    9 · Silhouette in a beam of light · WS · Static
+
+    Each drawing must match its own caption's shot size: WS shows the whole figure small in the
+    forest, CU and Insert fill the panel with the hands or the screen, ECU shows only the visor,
+    EWS makes the figure tiny. Panels with a camera move carry a drawn arrow showing it: a
+    push-in arrow toward the centre, a pan arrow to the right, a tilt arrow upward, a crane arrow
+    rising. Keep the astronaut exactly as in the key frame: the bulky white suit, the orange band
+    on the upper left arm, the device on the left forearm, the boxy back pack, the visor. The
+    astronaut moves left to right through panels 1 to 5. The forest is the one in the key frame:
+    tall straight trunks with glowing veins, low glowing moss, floating spores, one shaft of light
+    from the upper right. No colour, no extra characters, no title, no page numbers.
+  exact_text:
+    - "1 · Astronaut enters the forest · WS · Static"
+    - "2 · Gloved hands tap the wrist device · CU · Push in"
+    - "3 · POV: glowing trunks ahead · MS · Handheld"
+    - "4 · Trees reflected in the visor · ECU · Static"
+    - "5 · Palm on the bark, light spreads · MS · Pan right"
+    - "6 · Device screen: pulse rising · Insert · Static"
+    - "7 · Looks up, spores falling · MCU · Tilt up"
+    - "8 · Whole forest pulses at once · EWS · Crane up"
+    - "9 · Silhouette in a beam of light · WS · Static"
+  deliverable: "One image, landscape, nine panels in a 3×3 grid with a caption bar under each."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels in a three-by-three grid?"]
+    - [text_accuracy, "Does every caption match its given text exactly, with no misspelling, missing or extra word?"]
+    - [text_accuracy, "Are the captions in the right order, 1 to 9, left to right and top to bottom?"]
+    - [prompt_adherence, "Does panel 1 show the whole astronaut small in the forest, as a wide shot?"]
+    - [prompt_adherence, "Does panel 2 fill the frame with gloved hands on the wrist device?"]
+    - [prompt_adherence, "Is panel 3 a point of view with no astronaut visible, looking at glowing trunks?"]
+    - [prompt_adherence, "Does panel 4 show only the visor, with trees reflected in it?"]
+    - [prompt_adherence, "Does panel 6 fill the frame with the device screen showing a rising pulse line?"]
+    - [prompt_adherence, "Does panel 8 make the figure tiny in a very wide view of the forest?"]
+    - [prompt_adherence, "Do panels 2, 5, 7 and 8 carry arrows matching push in, pan right, tilt up and crane up?"]
+    - [set_consistency, "Is the orange band (drawn as a band) on the upper left arm wherever that arm is visible?"]
+    - [set_consistency, "Is the device on the left forearm in every panel where the forearms are visible?"]
+    - [set_consistency, "Does the astronaut move left to right across panels 1 to 5?"]
+    - [reference_fidelity, "Does the suit match the key frame: bulky, boxy back pack, visor?"]
+    - [prompt_adherence, "Does the forest match the key frame: straight trunks with veins, moss, spores, light from upper right?"]
+    - [style, "Are all nine panels in the same black-and-white pencil style and line weight?"]
+    - [style, "Is there no colour anywhere in the image?"]
+    - [composition, "Do the panels use 2.39:1 frame lines inside each box?"]
+    - [prompt_adherence, "Is there exactly one astronaut and no other character in any panel?"]
+    - [visual_quality, "Are the gloved hands drawn with the right number of fingers?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V2: panels 1, 4 and 8 as storyboard panel to shot, keeping shot size and camera move."
+
+- id: STB-FLM-02
+  title: "Six-panel board: the girl leaves, the boy follows with the bag"
+  persona: "Storyboard artist on a Kannada coming-of-age feature boarding the tree scene from the location still."
+  evidence: "Sahil's storyboard example (234–235) built a board from one base image; props carried between characters are a classic continuity break."
+  levers: [count, exact-text, continuity, identity, locale, camera]
+  inputs: [{source: SRC-KIDS-TREE, role: source}]
+  prompt: |
+    Using this still of two children under a banyan tree, draw a six-panel storyboard in a
+    two-by-three grid, read left to right, top row first, in soft pencil with light grey wash,
+    16:9 frame lines, a caption under each panel with exactly this text:
+
+    1 · Both on the root, silent · WS · Static
+    2 · She stands, brushes her skirt · MS · Static
+    3 · She walks off frame right · WS · Pan right
+    4 · He looks at the bag · CU · Push in
+    5 · He picks up her bag · MS · Static
+    6 · He follows her past the fence · WS · Static
+
+    The girl has two plaits with ribbons and a pinafore; the boy has short side-parted hair and
+    shorts. The brown school bag sits beside the girl until panel 5, when the boy picks it up;
+    from then on he carries it. The girl always exits towards frame right and the boy follows the
+    same way. The banyan, its roots and the fence match the still. No other text.
+  exact_text:
+    - "1 · Both on the root, silent · WS · Static"
+    - "2 · She stands, brushes her skirt · MS · Static"
+    - "3 · She walks off frame right · WS · Pan right"
+    - "4 · He looks at the bag · CU · Push in"
+    - "5 · He picks up her bag · MS · Static"
+    - "6 · He follows her past the fence · WS · Static"
+  deliverable: "One landscape image, six panels in a 2×3 grid with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels in a two-by-three grid?"]
+    - [text_accuracy, "Is every caption exact?"]
+    - [set_consistency, "Is the bag beside the girl in panels 1 to 4?"]
+    - [set_consistency, "Is the bag in the boy's hands in panels 5 and 6?"]
+    - [set_consistency, "Does the girl exit towards frame right and the boy follow the same way?"]
+    - [reference_fidelity, "Is the girl drawn with two plaits and a pinafore in every panel?"]
+    - [prompt_adherence, "Is panel 4 a close-up on the bag with a push-in arrow?"]
+    - [prompt_adherence, "Does panel 3 carry a pan-right arrow?"]
+    - [prompt_adherence, "Do the banyan and the fence match the still?"]
+    - [style, "Is the pencil and grey wash style consistent?"]
+    - [prompt_adherence, "Are there only the two children?"]
+    - [visual_quality, "Are the children's hands and feet drawn cleanly?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V2: panels 3 and 5 as panel-to-shot clips."
+
+- id: STB-FLM-03
+  title: "Eight-panel rain chase from the chai stall; screen direction held"
+  persona: "Action storyboard artist on a Mumbai thriller boarding a foot chase that starts at the chai stall."
+  evidence: "The 180-degree rule is the first thing editors check in a chase; boards that flip direction cost a reshoot."
+  levers: [count, exact-text, continuity, camera, locale, long-brief]
+  inputs: [{source: SRC-CHAI-STALL, role: source}]
+  prompt: |
+    Using this still of a rainy chai stall at night, draw an eight-panel chase storyboard in a
+    two-by-four grid, read left to right, top row first, in black ink with grey marker, 2.39:1 frame
+    lines, caption under each panel exactly:
+
+    1 · The rider drops his glass · MS · Static
+    2 · The hoodie man bolts left to right · WS · Pan right
+    3 · The rider gives chase · WS · Pan right
+    4 · Feet splash through puddles · Insert · Tracking
+    5 · Hoodie man vaults a handcart · MS · Static
+    6 · Rider slips, catches a pole · MS · Handheld
+    7 · Hoodie man turns into an alley · WS · Static
+    8 · Rider stops, rain on his face · CU · Push in
+
+    The hoodie man (grey hoodie) always runs from frame left to frame right; the rider (red rain
+    jacket) always follows the same way. Rain in every panel. The stall in panel 1 matches the
+    still: tube light, board, kettle. No other text.
+  exact_text:
+    - "1 · The rider drops his glass · MS · Static"
+    - "2 · The hoodie man bolts left to right · WS · Pan right"
+    - "3 · The rider gives chase · WS · Pan right"
+    - "4 · Feet splash through puddles · Insert · Tracking"
+    - "5 · Hoodie man vaults a handcart · MS · Static"
+    - "6 · Rider slips, catches a pole · MS · Handheld"
+    - "7 · Hoodie man turns into an alley · WS · Static"
+    - "8 · Rider stops, rain on his face · CU · Push in"
+  deliverable: "One landscape image, eight panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly eight panels in a two-by-four grid?"]
+    - [text_accuracy, "Is every caption exact?"]
+    - [set_consistency, "Does the hoodie man always move left to right?"]
+    - [set_consistency, "Does the rider always follow in the same direction?"]
+    - [reference_fidelity, "Is the hoodie man in a hoodie and the rider in a rain jacket throughout?"]
+    - [physics_plausibility, "Is rain drawn in every panel?"]
+    - [prompt_adherence, "Is panel 4 an insert of feet in puddles?"]
+    - [prompt_adherence, "Is panel 8 a close-up with a push-in arrow?"]
+    - [prompt_adherence, "Does panel 1 match the stall in the still?"]
+    - [style, "Is the ink and marker style consistent?"]
+    - [composition, "Are the frame lines 2.39:1?"]
+    - [visual_quality, "Are figures in motion drawn with readable poses?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-FLM-04
+  title: "Six-panel colour board of the interrogation with Hindi dialogue captions"
+  persona: "Storyboard artist on a Hindi crime micro-drama; the director reads the board in Hindi."
+  evidence: "Earlier bank IMG-TXT-05 (bilingual signage) had one Devanagari line; six dialogue captions with correct matras is harder."
+  levers: [count, exact-text, script, camera, locale, continuity]
+  inputs: [{source: SRC-INTERROGATION, role: source}]
+  prompt: |
+    Using this still of an interrogation room, draw a six-panel colour storyboard in a two-by-three
+    grid in muted marker colours (maroon, khaki, steel grey, green walls), 16:9 frame lines. Under
+    each panel, a caption with the shot size first and then the line of dialogue in Devanagari,
+    exactly:
+
+    1 · WS · "बैठो।"
+    2 · OTS · "रात दस बजे तुम कहाँ थे?"
+    3 · CU · "मैं घर पर था।"
+    4 · Insert · "ये फ़ोटो देखो।"
+    5 · MCU · "ये मैं नहीं हूँ।"
+    6 · WS · "सच बोलो।"
+
+    Lines 1, 2, 4 and 6 are the detective's; lines 3 and 5 are the suspect's. The detective sits
+    on frame left, the suspect on frame right, the constable at the door. Panel 4 is an insert of
+    a photograph on the table. The bruise is on the suspect's left cheekbone. No other text.
+  exact_text:
+    - "बैठो।"
+    - "रात दस बजे तुम कहाँ थे?"
+    - "मैं घर पर था।"
+    - "ये फ़ोटो देखो।"
+    - "ये मैं नहीं हूँ।"
+    - "सच बोलो।"
+  deliverable: "One landscape image, six colour panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [text_accuracy, "Is every Devanagari line exact, with correct matras and the danda?"]
+    - [text_accuracy, "Is the shot size before each line exact?"]
+    - [prompt_adherence, "Is the speaker of each line the one in focus in that panel?"]
+    - [set_consistency, "Is the detective on frame left and the suspect on frame right throughout?"]
+    - [reference_fidelity, "Is the bruise on the suspect's left cheekbone?"]
+    - [prompt_adherence, "Is panel 4 an insert of a photograph on the table?"]
+    - [prompt_adherence, "Is panel 2 over a shoulder?"]
+    - [style, "Is the colour palette muted and consistent?"]
+    - [prompt_adherence, "Does the room match the still: lamp, table, door?"]
+    - [prompt_adherence, "Are there only three people?"]
+    - [visual_quality, "Are faces and hands clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-FLM-05
+  title: "Nine-panel highway chase from the stopped bike; saddlebags, dent and sunglasses tracked"
+  persona: "Second-unit director boarding the road film's chase."
+  evidence: "Vehicle details on one side (dent, thread) are what boards forget across panels."
+  levers: [count, exact-text, continuity, identity, camera, locale]
+  inputs: [{source: SRC-HERO-BIKE, role: source}]
+  prompt: |
+    Using this still of a rider on a black motorcycle on a desert highway at noon, draw a
+    nine-panel chase storyboard in a three-by-three grid in pencil, 2.39:1 frame lines, caption
+    under each panel exactly:
+
+    1 · A jeep appears in the mirror · Insert · Static
+    2 · He kicks the bike alive · MS · Static
+    3 · Bike tears away left · WS · Pan left
+    4 · Jeep follows through heat haze · LS · Static
+    5 · Side by side at speed · MS · Tracking
+    6 · Saddlebag strap snaps · Insert · Static
+    7 · Bag tumbles on the asphalt · WS · Static
+    8 · He looks back · CU · Static
+    9 · He leaves the road into the dunes · EWS · Crane up
+
+    The bike always travels towards frame left once it moves. The dent stays on the tank's right
+    side and the red thread on the left grip whenever visible. It is the left saddlebag that
+    snaps in panel 6 and is missing from panel 7 on. Sunglasses on throughout. No other text.
+  exact_text:
+    - "1 · A jeep appears in the mirror · Insert · Static"
+    - "3 · Bike tears away left · WS · Pan left"
+    - "6 · Saddlebag strap snaps · Insert · Static"
+    - "9 · He leaves the road into the dunes · EWS · Crane up"
+  deliverable: "One landscape image, nine panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels?"]
+    - [text_accuracy, "Are the captions exact, including panels 1, 3, 6 and 9?"]
+    - [set_consistency, "Does the bike travel towards frame left in every moving panel?"]
+    - [set_consistency, "Is the left saddlebag missing from panel 7 onward?"]
+    - [set_consistency, "Is the dent on the right of the tank wherever visible?"]
+    - [set_consistency, "Are sunglasses on in every panel showing his face?"]
+    - [prompt_adherence, "Is panel 1 an insert of a mirror with a jeep?"]
+    - [prompt_adherence, "Is panel 9 an extreme wide with a crane-up arrow?"]
+    - [reference_fidelity, "Is the bike the same classic machine with a round headlamp?"]
+    - [style, "Is the pencil style consistent?"]
+    - [physics_plausibility, "Is heat haze drawn in panel 4?"]
+    - [visual_quality, "Are vehicles drawn with correct perspective?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V2: panel 5 as a tracking shot."
+
+- id: STB-FLM-06
+  title: "Six-panel anime board of the heroine leaping between rooftops"
+  persona: "Episode director on an anime series turning the model sheet into a key action board."
+  evidence: "Style drift between panels is a known failure when boards are generated one panel at a time; here all six are in one image."
+  levers: [count, exact-text, identity, continuity, camera]
+  inputs: [{source: SRC-ANIME-HEROINE, role: source}]
+  prompt: |
+    Using this anime character reference, draw a six-panel action storyboard of her leaping between
+    neon-lit rooftops at night, two rows of three, in the same clean line art and flat cel colour,
+    one consistent line weight in every panel, 16:9 frame lines, with these captions exactly:
+
+    1 · She sprints to the edge · WS · Track right
+    2 · Foot on the parapet · Insert · Static
+    3 · Leap, scarf trailing · LS · Static
+    4 · Mid-air over the street · EWS · Tilt down
+    5 · Lands in a roll · MS · Static
+    6 · She looks back, grinning · MCU · Push in
+
+    Her design is exactly the reference: bob longer on her right with the teal streak, 07 patch on
+    the left sleeve, red scarf, bandage on the left knee, red laces. She moves left to right
+    through panels 1 to 5. No other text.
+  exact_text:
+    - "1 · She sprints to the edge · WS · Track right"
+    - "3 · Leap, scarf trailing · LS · Static"
+    - "6 · She looks back, grinning · MCU · Push in"
+  deliverable: "One landscape image, six panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [style, "Is the line weight the same in all six panels?"]
+    - [style, "Is the colouring flat cel in all six?"]
+    - [reference_fidelity, "Is the streak on her right side in every panel that shows it?"]
+    - [reference_fidelity, "Is the 07 patch on her left sleeve wherever visible?"]
+    - [set_consistency, "Does she move left to right in panels 1 to 5?"]
+    - [prompt_adherence, "Is panel 2 an insert of a foot on a parapet?"]
+    - [prompt_adherence, "Is panel 4 an extreme wide over the street?"]
+    - [physics_plausibility, "Does the scarf trail behind her direction of travel?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [visual_quality, "Are hands and feet drawn cleanly?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-FLM-07
+  title: "Clean up six rough thumbnails into finished boards with the actor as the runner"
+  persona: "Storyboard artist given the director's blue-pencil thumbnails and the cast photo, finishing the market chase board."
+  evidence: "Turning thumbnails into finished boards is a daily storyboard task; the test is keeping each thumbnail's composition while adding the real actor."
+  levers: [count, multi-ref, identity, layout, exact-text, keep-rest]
+  inputs:
+    - {source: SRC-THUMBS-CHASE, role: source, note: "the director's six thumbnails"}
+    - {source: SRC-ACTOR-M, role: reference, note: "the actor who plays the runner"}
+  prompt: |
+    The first image is a page of six rough blue-pencil thumbnails of a market chase; the second is
+    the actor who plays the runner. Redraw the page as six finished storyboard panels in the same
+    two-by-three order, in clean graphite with grey tone, keeping each thumbnail's composition:
+    the same camera position, the same placement of figures and the same direction of movement as
+    the rough. The runner is the actor: his face, moustache, the scar through his right eyebrow,
+    and his steel kada on his right wrist where visible. The pursuer is a heavy man in a dark
+    jacket. Under each panel, a caption exactly: "1 · Market · WS", "2 · Cart vault · MS",
+    "3 · Feet on wet stone · Insert", "4 · Junction · Top shot", "5 · Behind the saris · MS",
+    "6 · He passes · WS". Keep the director's arrows as clean drawn arrows. No other text.
+  exact_text:
+    - "1 · Market · WS"
+    - "2 · Cart vault · MS"
+    - "3 · Feet on wet stone · Insert"
+    - "4 · Junction · Top shot"
+    - "5 · Behind the saris · MS"
+    - "6 · He passes · WS"
+  deliverable: "One landscape image, six finished panels with captions."
+  checks:
+    - [prompt_adherence, "Are there six panels in the same order as the thumbnails?"]
+    - [prompt_adherence, "Does each panel keep its thumbnail's camera position and figure placement?"]
+    - [prompt_adherence, "Does the runner enter from the left edge in panel 1, as in the rough?"]
+    - [prompt_adherence, "Is panel 4 a top-down view of a junction with a right-turn arrow?"]
+    - [reference_fidelity, "Is the runner recognisably the actor in the panels that show his face?"]
+    - [reference_fidelity, "Is the scar through his right eyebrow visible in a close panel?"]
+    - [reference_fidelity, "Is the kada on his right wrist where his wrist shows?"]
+    - [text_accuracy, "Is every caption exact?"]
+    - [preservation, "Are the director's arrows kept as clean arrows?"]
+    - [style, "Is the finish clean graphite with grey tone throughout?"]
+    - [prompt_adherence, "Is the pursuer a heavy man in a dark jacket?"]
+    - [visual_quality, "Are figures anatomically sound?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: STB-FLM-08
+  title: "Grey-shaded previs board in the drawing-room set: eight shots with lens and size"
+  persona: "Previs artist planning a dialogue scene in the period set."
+  evidence: "Previs boards with lens numbers are standard prep; the test is matching each panel's framing to its lens and size."
+  levers: [count, exact-text, camera, layout, locale]
+  inputs: [{source: SRC-SET-LIVING, role: source}]
+  prompt: |
+    Using this photo of a dressed 1970s drawing-room set, draw an eight-panel previs board in a
+    two-by-four grid as untextured grey-shaded 3D frames, 16:9 each, with two simple grey
+    mannequin figures: a man seated on the teal sofa and a woman standing by the radio cabinet.
+    Captions exactly:
+
+    1 · Master · 18 mm · WS
+    2 · Woman at radio · 50 mm · MS
+    3 · Man on sofa · 50 mm · MS
+    4 · Over her shoulder · 85 mm · OTS
+    5 · Over his shoulder · 85 mm · OTS
+    6 · Hands on the dial · 100 mm · Insert
+    7 · From the window · 24 mm · WS
+    8 · Top shot · 14 mm · Top
+
+    Each panel's framing matches its lens and shot size. The set's furniture stays where the photo
+    shows it. No other text.
+  exact_text:
+    - "1 · Master · 18 mm · WS"
+    - "4 · Over her shoulder · 85 mm · OTS"
+    - "6 · Hands on the dial · 100 mm · Insert"
+    - "8 · Top shot · 14 mm · Top"
+  deliverable: "One landscape image, eight panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly eight panels?"]
+    - [text_accuracy, "Are all captions exact?"]
+    - [prompt_adherence, "Is panel 1 a wide master of the whole room?"]
+    - [prompt_adherence, "Are panels 4 and 5 true reverse over-the-shoulders?"]
+    - [prompt_adherence, "Is panel 6 a tight insert of hands on the radio dial?"]
+    - [prompt_adherence, "Is panel 8 straight down?"]
+    - [prompt_adherence, "Is the furniture where the set photo shows it in every panel?"]
+    - [prompt_adherence, "Is the man always on the sofa and the woman at the radio?"]
+    - [style, "Is every panel untextured grey 3D?"]
+    - [prompt_adherence, "Do the 85 mm panels look tighter and flatter than the 50 mm ones?"]
+    - [prompt_adherence, "Are there only two figures?"]
+    - [visual_quality, "Are perspective lines correct?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-FLM-09
+  title: "Six-panel gallop across the dunes; the horse keeps moving frame right"
+  persona: "Storyboard artist on a Rajasthani period film boarding the rider's escape."
+  evidence: "Screen direction across a chase is the 180-degree rule's commonest test."
+  levers: [count, exact-text, continuity, identity, camera, locale]
+  inputs: [{source: SRC-HORSE-RIDER, role: source}]
+  prompt: |
+    Using this still of a rider on a dark-bay Marwari horse on dunes at sunrise, draw a six-panel
+    storyboard in soft charcoal, two rows of three, 2.39:1 frame lines, captions exactly:
+
+    1 · He spurs the horse · MS · Static
+    2 · Gallop over the crest · WS · Pan right
+    3 · Hooves throw sand · Insert · Static
+    4 · Turban tail streams · MCU · Tracking
+    5 · Down the dune face · LS · Static
+    6 · Lone rider, long shadow · EWS · Crane up
+
+    The horse and rider travel towards frame right in every moving panel. The horse's white blaze
+    and the single white sock on the front left leg appear wherever those parts are visible. The
+    sun stays behind them at frame left, so shadows fall to the right. No other text.
+  exact_text:
+    - "1 · He spurs the horse · MS · Static"
+    - "2 · Gallop over the crest · WS · Pan right"
+    - "6 · Lone rider, long shadow · EWS · Crane up"
+  deliverable: "One landscape image, six panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [set_consistency, "Does the horse travel towards frame right in every moving panel?"]
+    - [reference_fidelity, "Is the white sock on the front left leg wherever visible?"]
+    - [reference_fidelity, "Is the blaze visible on the face where shown?"]
+    - [physics_plausibility, "Do shadows fall to the right in every panel?"]
+    - [prompt_adherence, "Is panel 3 an insert of hooves and sand?"]
+    - [prompt_adherence, "Is panel 6 an extreme wide with a crane-up mark?"]
+    - [reference_fidelity, "Is the rider's turban drawn with a trailing tail?"]
+    - [style, "Is the charcoal style consistent?"]
+    - [visual_quality, "Is the horse's gallop anatomy plausible?"]
+    - [prompt_adherence, "Is there only one rider and horse?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-FLM-10
+  title: "Nine-panel colour board of the grandmother lighting the lamp at dusk"
+  persona: "Director of a Malayalam family film boarding the opening sequence from the location photo."
+  evidence: "Boards drift from the base image's world when details are not repeated; here the house's details are listed."
+  levers: [count, exact-text, layout, light-lock, locale, identity]
+  inputs: [{source: SRC-ELDER-PORCH, role: source}]
+  prompt: |
+    Using this photo of an elderly woman on a Kerala verandah in the rain, draw a nine-panel colour
+    storyboard in watercolour and ink, three by three, 16:9 frame lines, captions exactly:
+
+    1 · Rain on the tiled roof · EWS · Static
+    2 · She sips from the tumbler · MS · Static
+    3 · Dusk falls · WS · Static
+    4 · She rises from the chair · MS · Static
+    5 · Matchbox in her hand · Insert · Static
+    6 · She lights the brass lamp · CU · Push in
+    7 · Flame steadies · ECU · Static
+    8 · She folds her hands · MCU · Static
+    9 · Lit lamp, rain beyond · WS · Pull out
+
+    The house is the one in the photo: two square wooden pillars, red oxide floor, the long-armed
+    easy chair, the tall brass lamp to the left of the chair, rain off the roof edge, the coconut
+    palm beyond. The light goes from grey daylight in panels 1 to 2 to blue dusk in panel 3, with
+    the lamp's warm glow from panel 6 on. No other text.
+  exact_text:
+    - "1 · Rain on the tiled roof · EWS · Static"
+    - "6 · She lights the brass lamp · CU · Push in"
+    - "9 · Lit lamp, rain beyond · WS · Pull out"
+  deliverable: "One landscape image, nine panels with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [prompt_adherence, "Do the pillars, floor, chair and lamp match the photo?"]
+    - [prompt_adherence, "Is the lamp to the left of the chair in every panel that shows both?"]
+    - [prompt_adherence, "Does the light move from grey day to blue dusk to warm lamplight in order?"]
+    - [prompt_adherence, "Is the lamp unlit before panel 6 and lit from panel 6 on?"]
+    - [reference_fidelity, "Is she the same woman: spectacles, bun, off-white sari with green border?"]
+    - [prompt_adherence, "Is panel 7 an extreme close-up of the flame?"]
+    - [physics_plausibility, "Is rain visible beyond the verandah in panels 1, 3 and 9?"]
+    - [style, "Is the watercolour and ink style consistent?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [visual_quality, "Are her hands drawn cleanly?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V2: panel 6 as a shot."
+
+- id: STB-FLM-11
+  title: "Script only: a one-page heist scene into a twelve-panel board"
+  persona: "Storyboard artist given only the script page for a heist series."
+  evidence: "Sahil: storyboards with a lot of text are what customers test; twelve panels with exact numbering stresses panel count."
+  levers: [count, exact-text, camera, continuity, long-brief]
+  prompt: |
+    Draw a twelve-panel storyboard in a four-by-three grid (four across, three down), black pencil
+    with grey tone, 2.39:1 frame lines, for this scene. A woman thief in a black jumpsuit with a
+    silver hair clip lowers herself on a cable into a dark museum gallery at night. She lands
+    beside a glass case holding a jade elephant, cuts the glass with a circular cutter, lifts the
+    elephant, sets off a red laser, and escapes up the cable as a guard with a torch runs in.
+    Panels and captions exactly, in order: "1 Skylight opens", "2 Cable drops", "3 She descends",
+    "4 Feet touch floor", "5 Torch-lit case", "6 Cutter on glass", "7 Glass disc lifts",
+    "8 Hand on elephant", "9 Red laser trips", "10 Guard's torch beam", "11 She climbs", "12 Empty
+    case". The silver clip stays in her hair in every panel that shows her head. No other text.
+  exact_text:
+    - "1 Skylight opens"
+    - "6 Cutter on glass"
+    - "9 Red laser trips"
+    - "12 Empty case"
+  deliverable: "One landscape image, twelve panels in a 4×3 grid."
+  checks:
+    - [prompt_adherence, "Are there exactly twelve panels in four columns and three rows?"]
+    - [text_accuracy, "Are the twelve captions exact and in order?"]
+    - [prompt_adherence, "Does each panel show its caption's action?"]
+    - [set_consistency, "Is the silver clip in her hair wherever her head shows?"]
+    - [set_consistency, "Is her jumpsuit black throughout?"]
+    - [set_consistency, "Is the jade elephant the same object in panels 5 to 8?"]
+    - [prompt_adherence, "Is there a mix of shot sizes (wide, insert, close)?"]
+    - [prompt_adherence, "Is the laser the only red in otherwise grey panels, or marked clearly?"]
+    - [prompt_adherence, "Is the case empty in panel 12?"]
+    - [style, "Is the pencil style consistent?"]
+    - [prompt_adherence, "Are there only two characters, the thief and one guard?"]
+    - [visual_quality, "Are hands drawn cleanly in the insert panels?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: STB-FLM-12
+  title: "Vertical micro-drama board: six 9:16 panels of a confrontation at a wedding"
+  persona: "Head writer at a vertical-video drama app boarding an episode's cliffhanger."
+  evidence: "Micro-drama is shot vertical; boards drawn in landscape and cropped lose the shot sizes."
+  levers: [count, exact-text, camera, locale, layout]
+  prompt: |
+    Draw a six-panel storyboard for a phone-screen drama, each panel a tall 9:16 frame, in one row
+    of six, in pencil with grey tone. Scene: at a North Indian wedding, the groom's mother (in a
+    gold sari) stops the pheras and accuses the bride's brother (in a white sherwani) of stealing
+    the jewellery; the bride (in red) turns. Captions exactly:
+
+    1 · Pheras around the fire · WS
+    2 · Mother raises her hand · MS
+    3 · "Stop!" · CU
+    4 · Brother freezes · MCU
+    5 · Necklace in his pocket · Insert
+    6 · Bride turns · ECU
+
+    Each panel's framing fits a vertical phone screen: faces in the top third, no important action
+    cut by the sides. Shot sizes match the captions. No other text.
+  exact_text:
+    - "1 · Pheras around the fire · WS"
+    - "3 · \"Stop!\" · CU"
+    - "6 · Bride turns · ECU"
+  deliverable: "One wide image of six 9:16 panels in a row."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [composition, "Is every panel a tall 9:16 frame?"]
+    - [text_accuracy, "Are the captions exact, including the quotation marks in panel 3?"]
+    - [prompt_adherence, "Does each panel match its shot size?"]
+    - [composition, "Are faces placed in the top third of the vertical frames?"]
+    - [composition, "Is no important action cut by the sides of a panel?"]
+    - [prompt_adherence, "Are the mother in a gold sari, the brother in a white sherwani and the bride in red?"]
+    - [prompt_adherence, "Is panel 5 an insert of a necklace in a pocket?"]
+    - [prompt_adherence, "Is panel 1 the pheras around a fire?"]
+    - [style, "Is the pencil style consistent?"]
+    - [visual_quality, "Are faces and hands clean?"]
+    - [prompt_adherence, "Does the sequence read as one beat in order?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: STB-FLM-13
+  title: "Watercolour board for an animated feature: the monsoon over paddy fields in six panels"
+  persona: "Visual development artist on an Indian animated feature boarding the monsoon sequence."
+  evidence: "Style drift between panels in painted styles is common; one watercolour look across six panels is the test."
+  levers: [count, exact-text, light-lock, locale, camera]
+  prompt: |
+    Paint a six-panel storyboard in loose watercolour on textured paper, two rows of three, 16:9
+    frame lines, one consistent palette and brushwork. Scene: in a Kerala paddy landscape, a heron
+    stands in still water; dark clouds roll in from the hills on the left; wind sweeps the green
+    paddy; the first fat drops hit the water; a curtain of rain crosses the fields; the heron
+    lifts off towards frame right. Captions exactly: "1 · Still water, heron · WS", "2 · Clouds
+    over the hills · EWS", "3 · Wind in the paddy · MS", "4 · First drops · Insert", "5 · Rain
+    curtain · WS", "6 · Heron lifts off · LS". The clouds always come from the left. No other
+    text.
+  exact_text:
+    - "1 · Still water, heron · WS"
+    - "4 · First drops · Insert"
+    - "6 · Heron lifts off · LS"
+  deliverable: "One landscape image, six watercolour panels."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [style, "Is the watercolour brushwork and palette consistent across all six?"]
+    - [prompt_adherence, "Does the light darken from calm to storm in order?"]
+    - [set_consistency, "Do the clouds come from the left in every panel that shows them?"]
+    - [set_consistency, "Is it the same heron in panels 1 and 6?"]
+    - [prompt_adherence, "Is panel 4 an insert of drops on water?"]
+    - [set_consistency, "Does the heron fly towards frame right in panel 6?"]
+    - [prompt_adherence, "Does the landscape read as Kerala paddy fields?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [visual_quality, "Is each panel clean at full size?"]
+    - [physics_plausibility, "Is the rain curtain drawn moving across the fields?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: STB-FLM-14
+  title: "Previs board of a crane move across a palace facade at night; lit windows stay the same"
+  persona: "Previs supervisor planning a crane shot on a period palace set."
+  evidence: "A facade's window pattern is the simplest continuity check and the easiest to break."
+  levers: [count, exact-text, continuity, layout, long-brief]
+  prompt: |
+    Draw a six-panel previs board in grey-shaded 3D, two rows of three, 2.39:1 frame lines, of a
+    single crane move across a palace facade at night. The facade: three storeys, seven arched
+    windows per storey (21 in all); on the top storey the 2nd and 6th windows are lit warm yellow;
+    on the middle storey only the centre (4th) window is lit; the ground storey has a central gate
+    with two torches. A lone figure in white stands at the lit centre window. Panels: the crane
+    starts low at the gate and rises and pushes in to the figure. Captions exactly: "1 · Gate ·
+    Crane start", "2 · Rising", "3 · Middle storey", "4 · Top storey", "5 · Push in", "6 · Figure
+    at window". The lit windows are the same in every panel that shows them.
+  exact_text:
+    - "1 · Gate · Crane start"
+    - "6 · Figure at window"
+  deliverable: "One landscape image, six panels."
+  checks:
+    - [prompt_adherence, "Are there exactly six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [prompt_adherence, "Are there seven arched windows per storey wherever a full storey is shown?"]
+    - [set_consistency, "Are the 2nd and 6th top-storey windows lit in every panel that shows them?"]
+    - [set_consistency, "Is only the centre middle-storey window lit?"]
+    - [prompt_adherence, "Is the figure at the lit centre middle window?"]
+    - [prompt_adherence, "Does the camera rise and push in across the panels?"]
+    - [set_consistency, "Are two torches at the gate in panel 1?"]
+    - [style, "Is every panel grey-shaded 3D?"]
+    - [prompt_adherence, "Is it night with warm window light?"]
+    - [visual_quality, "Are arches and perspective clean?"]
+    - [prompt_adherence, "Is there only one figure?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V2: the crane move as a single shot."

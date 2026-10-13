@@ -1,0 +1,43 @@
+# telco-hi-17 - Port-out retention offer (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-17: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-17
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Porting (MNP / UPC) & retention.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. Two raw plan prices and a month count inside a persuasive Devanagari sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-17
+modality: voice
+task: text_to_speech
+title: "Port-out retention offer - Hindi"
+
+input:
+  script: |
+    हमें पता चला है कि आप Jio से port-out करना चाहते हैं। अगर आप हमारे साथ रहें, तो अगले 3 महीने ₹299 वाला plan सिर्फ़ ₹199 में मिलेगा।
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Both prices recoverable
+  2) Warm, persuasive — not pushy (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, telecom, porting-mnp-upc-retention, medium, gemini-lean, v2-bank]

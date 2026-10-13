@@ -1,0 +1,69 @@
+# Product and brand — Real estate, interiors & architecture scenarios. Slots: prd.yaml.
+code: PRD
+scenarios:
+
+- id: PRD-RES-01
+  title: "Replace the grey sofa with the 2.2 m rust sofa at true scale in the listing room"
+  persona: "Furniture brand's partnership team showing its sofa in a real listing photo."
+  evidence: "Furniture placed into rooms is routinely the wrong scale."
+  levers: [identity, multi-ref, physics, keep-rest, light-lock]
+  inputs:
+    - {source: SRC-RES-LIVING-FLAT, role: source, note: "the listing room"}
+    - {source: SRC-RES-SOFA, role: reference, note: "the sofa"}
+  prompt: |
+    In this listing photo of a living room, replace the grey three-seat sofa on the left wall with
+    this rust-orange sofa: three seat cushions, mustard bolsters at both arms, a low back and splayed
+    teak legs. It stands in the same place facing right, at its true size: 2.2 metres wide and 85 cm
+    high, so it fills the same stretch of wall and its back sits below the framed print. The daylight
+    from the balcony door lights it from the back of the room; it casts soft shadows on the floor. The
+    newspapers sit on its left cushion as before. Everything else is unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [reference_fidelity, "Is the sofa rust orange with mustard bolsters and splayed teak legs?"]
+    - [physics_plausibility, "Is it about 2.2 m wide, filling the same stretch of wall?"]
+    - [physics_plausibility, "Is its back below the framed print?"]
+    - [prompt_adherence, "Does it face right from the left wall?"]
+    - [prompt_adherence, "Is it lit by daylight from the balcony side?"]
+    - [physics_plausibility, "Does it cast soft shadows on the floor?"]
+    - [preservation, "Are the newspapers on its left cushion?"]
+    - [preservation, "Is the rest of the room unchanged?"]
+    - [physics_plausibility, "Does its perspective match the 16 mm room?"]
+    - [visual_quality, "Are its edges clean?"]
+    - [prompt_adherence, "Is there one sofa?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-RES-02
+  title: "Clad the tower's plain east face in the terracotta louvres; noon shadows through the gaps"
+  persona: "Facade supplier's sales team showing a developer the cladding on the real building."
+  evidence: "Applying a material sample to a building in perspective with correct light is a hard integration."
+  levers: [identity, multi-ref, physics, light-lock, keep-rest]
+  inputs:
+    - {source: SRC-RES-TOWER-SITE, role: source, note: "the tower"}
+    - {source: SRC-RES-CLADDING, role: reference, note: "the cladding sample"}
+  prompt: |
+    In this drone photo of a residential tower, clad the whole plain east face (frame right) in the
+    terracotta louvre system from the sample: horizontal hollow burnt-orange louvres with even gaps
+    and slight colour variation, mounted on a black sub-frame. The louvres run the full height and
+    width of the east face, following its perspective, leaving the single vertical window strip open
+    and uncovered. Harsh noon sun from above casts thin shadow lines from each louvre onto the wall
+    behind, visible through the gaps. The south face, roof, crane and site are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [reference_fidelity, "Are the louvres horizontal, burnt orange, with even gaps?"]
+    - [reference_fidelity, "Is there slight colour variation between louvres?"]
+    - [physics_plausibility, "Do the louvres follow the east face's perspective?"]
+    - [prompt_adherence, "Do they cover the full height and width of the east face?"]
+    - [prompt_adherence, "Is the window strip left open?"]
+    - [physics_plausibility, "Are thin noon shadow lines visible through the gaps?"]
+    - [physics_plausibility, "Is the louvre scale right for a 22-storey building?"]
+    - [preservation, "Is the south face unchanged?"]
+    - [preservation, "Are the crane, roof and site unchanged?"]
+    - [visual_quality, "Are the louvre lines straight and regular?"]
+    - [text_accuracy, "Is there no text?"]
+    - [preservation, "Is the light still harsh noon?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""

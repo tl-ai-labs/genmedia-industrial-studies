@@ -1,0 +1,41 @@
+# ret-en-07 - Pay Later limit raised, bill due (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-09 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-09): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Checkout & payments - COD, no-cost EMI, Pay Later, failed payments.
+# TARGET CUSTOMER. E-commerce Marketplaces, Consumer Electronics Brands.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: ret-en-07
+modality: voice
+task: text_to_speech
+title: "Pay Later limit raised, bill due - English"
+
+input:
+  script: |
+    Your Flipkart Pay Later limit has been raised from Rs 50,000 to Rs 1,00,000, and your previous bill of Rs 3,480 is due by the 10th.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it ("one lakh")
+  2) All three amounts recoverable and not confused
+  3) "the 10th" recoverable
+
+checks:
+  duration_s: {min: 5.2, max: 26.9}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one hundred thousand"
+
+tags: [oct-2026, english, ecommerce-retail, checkout-payments, medium, gemini-lean, new-english]

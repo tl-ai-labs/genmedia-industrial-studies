@@ -1,0 +1,475 @@
+# Multi-angle coverage — Real estate, interiors & architecture scenarios. Slots: cov.yaml.
+code: COV
+scenarios:
+
+- id: COV-RES-01
+  seed: true
+  title: "One listing living room from five positions, every object where it is"
+  persona: "Listing photographer for a Mumbai property portal who has one wide photo of a flat and needs the full room set before the flat is let."
+  evidence: "Call at 17:26: 'say you're all sitting in a room and they want five shots of the same setup from different camera angles: is there consistency?' Earlier bank IMG-VIEW-29 (kitchen from the opposite corner) was one view; this is five, including the reverse from the window, which must show the entrance wall the photo never shows."
+  levers: [set, layout, unseen, camera, light-lock, keep-rest, locale]
+  inputs:
+    - {source: SRC-RES-LIVING-FLAT, role: source, note: "the one wide listing photo, from the entrance corner"}
+  prompt: |
+    This is a real-estate listing photo of a living room, taken from the entrance corner. Produce
+    one more photo of the same room at the same moment, from the camera position described below,
+    as a professional listing photographer would shoot it: chest height unless stated, verticals
+    kept straight, the same natural daylight coming only from the balcony door, all ceiling
+    lights off. Everything stays exactly where it is: the grey sofa on the left wall with the
+    newspapers on its left cushion and the framed print above it; the kitchen doorway and the
+    snake plant at the back left; the sliding balcony door with the laundry rack outside; the TV,
+    switched off, over the white console with its hanging wires on the right wall; the round
+    coffee table on the beige rug in the centre; the fan and recessed lights; the white floor
+    tiles. Do not tidy, add or restyle anything, and add no people. 3:2.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Sofa on the left wall (as seen from the entrance), newspapers on its left cushion, print above"
+      - "Kitchen doorway and snake plant beside the balcony wall, on the sofa side"
+      - "Balcony door with the laundry rack outside"
+      - "TV over the white console on the wall opposite the sofa, wires hanging"
+      - "Round coffee table on the beige rug in the centre"
+      - "Daylight only from the balcony; ceiling lights off; no people"
+    members:
+      - name: "From the balcony door, looking back"
+        prompt: "Camera standing just inside the balcony door, 16 mm, looking back at the entrance. The sofa is now on the right, the TV wall on the left, and the entrance door, which the original never shows, is on the far wall: a plain wooden door with a shoe rack beside it."
+        checks:
+          - [prompt_adherence, "Is the sofa now on the right and the TV wall on the left?"]
+          - [prompt_adherence, "Is the entrance wall shown with a wooden door and a shoe rack?"]
+          - [prompt_adherence, "Is the light now coming from behind the camera, falling forward into the room?"]
+      - name: "From the sofa"
+        prompt: "Camera at seated eye height at the sofa's left end, 24 mm, looking across the coffee table to the TV."
+        checks:
+          - [prompt_adherence, "Is the camera at seated height looking across the table at the TV?"]
+          - [preservation, "Are the wires still hanging below the console?"]
+      - name: "From the TV"
+        prompt: "Camera in front of the TV console, 20 mm, looking straight at the sofa and the print above it, the balcony door at the right edge of the frame."
+        checks:
+          - [prompt_adherence, "Is the balcony door at the right edge as seen from the TV?"]
+          - [preservation, "Are the newspapers still on the sofa's left cushion (frame right from this side)?"]
+      - name: "From the kitchen doorway"
+        prompt: "Camera in the kitchen doorway, 18 mm, looking diagonally across the room towards the TV wall and the entrance corner."
+        checks:
+          - [prompt_adherence, "Is the view diagonal from the back-left doorway across to the TV and entrance?"]
+          - [prompt_adherence, "Is the snake plant right beside the camera position?"]
+      - name: "High corner"
+        prompt: "Camera raised to 2.6 metres in the corner between the TV wall and the balcony, 14 mm, angled down so the whole floor is visible."
+        checks:
+          - [prompt_adherence, "Is the camera high in the TV-balcony corner, looking down over the floor?"]
+          - [prompt_adherence, "Are the sofa, table, rug and TV in a layout that matches the original?"]
+          - [visual_quality, "Are the verticals still straight near the frame centre?"]
+  deliverable: "Five images, 3:2, one per member."
+  checks:
+    - [set_consistency, "Is the sofa on the same wall, facing the TV, in every view?"]
+    - [set_consistency, "Are the newspapers on the same cushion in every view where the sofa is seen?"]
+    - [set_consistency, "Is the snake plant beside the kitchen doorway in every view that shows that corner?"]
+    - [set_consistency, "Is the laundry rack visible on the balcony in every view facing the balcony?"]
+    - [set_consistency, "Is the TV off, over the white console with wires hanging, in every view?"]
+    - [set_consistency, "Is the round table on the beige rug at the room's centre in every view?"]
+    - [set_consistency, "Is the flooring the same white tile everywhere?"]
+    - [prompt_adherence, "Does daylight come only from the balcony door in all five, with the ceiling lights off?"]
+    - [prompt_adherence, "Does each view's camera position match its description?"]
+    - [prompt_adherence, "Are verticals straight in every view, as listing photography requires?"]
+    - [physics_plausibility, "Do the room's proportions stay plausible, with no wall stretching or shrinking between views?"]
+    - [prompt_adherence, "Is nothing tidied, added or restyled in any view?"]
+    - [prompt_adherence, "Are there no people in any view?"]
+    - [text_accuracy, "Is there no text or watermark in any view?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each member runs as its own image edit from the same base. Whole-set agreement needs the set review."}
+  video_followon: "V1: a walkthrough camera move from the entrance to the balcony through the same room."
+
+- id: COV-RES-02
+  title: "Empty bedroom from all four corners and the window; window and wardrobe keep their sizes"
+  persona: "Builder's sales team making a full set of views of a show flat's bedroom from one photo."
+  evidence: "Earlier bank IMG-VIEW-06 (room to high corner) was high tier; an empty room has few cues, so scale drifts easily."
+  levers: [set, unseen, physics, camera, light-lock]
+  inputs: [{source: SRC-RES-BEDROOM, role: source}]
+  prompt: |
+    This is an empty bedroom of about 3.5 by 4 metres: off-white walls, grey-beige tiles, a wide
+    three-pane black-framed window on the far wall with a hill view, three panels of golden
+    sunlight on the floor, a three-shutter white wardrobe on the right wall, a switchboard and an
+    air-conditioner outlet on the left wall. Produce one more view of the same room at the same
+    moment from the position below. The door wall, which the photo never shows, has a plain white
+    door and a light switch beside it. The room keeps its true size. Photoreal, 3:2, verticals
+    straight, no furniture.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Room about 3.5 by 4 metres; three-pane window; three-shutter wardrobe"
+      - "Switchboard and AC outlet on the left wall; plain door on the door wall"
+      - "Three sun panels on the floor; no furniture"
+    members:
+      - {name: "Window corner left", prompt: "From the corner left of the window looking back across the room, 18 mm.", checks: [[prompt_adherence, "Is the wardrobe on the far side and the door ahead?"], [physics_plausibility, "Does the room size look the same?"]]}
+      - {name: "Window corner right", prompt: "From the corner right of the window, 18 mm.", checks: [[prompt_adherence, "Is the wardrobe beside the camera?"], [prompt_adherence, "Do the sun panels fall toward the door?"]]}
+      - {name: "Door corner right", prompt: "From the door-side corner by the wardrobe, 18 mm, towards the window.", checks: [[physics_plausibility, "Is the window the same width relative to the wall?"], [prompt_adherence, "Does the wardrobe have three shutters?"]]}
+      - {name: "Door corner left", prompt: "From the door-side corner by the switchboard, 18 mm.", checks: [[prompt_adherence, "Is the switchboard beside the camera?"], [physics_plausibility, "Does the wardrobe look the right size across the room?"]]}
+      - {name: "From the window", prompt: "From the window looking straight back at the door, 20 mm.", checks: [[prompt_adherence, "Is the door wall a plain white door with a switch?"], [prompt_adherence, "Is the sun behind the camera?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [physics_plausibility, "Is the room the same size in all five?"]
+    - [prompt_adherence, "Does the window have three panes in every view that shows it?"]
+    - [prompt_adherence, "Does the wardrobe have three shutters in every view that shows it?"]
+    - [set_consistency, "Are the switchboard and AC outlet on the same wall in every view?"]
+    - [prompt_adherence, "Do the sun panels on the floor agree with the window's position?"]
+    - [set_consistency, "Is the door wall the same in every view that shows it?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [visual_quality, "Are verticals straight?"]
+    - [prompt_adherence, "Is the room empty?"]
+    - [text_accuracy, "Is there no text?"]
+    - [style, "Is the grade the same?"]
+    - [set_consistency, "Is the hill view the same through the window?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-RES-03
+  title: "The villa from its front photo: both sides, rear garden and a drone view"
+  persona: "Developer's marketing lead who has only the front elevation of a sold-out show villa and needs the other sides for the brochure."
+  evidence: "Earlier bank IMG-VIEW-31 (building front to side elevation) and IMG-VIEW-08 (street-level to drone) were high tier."
+  levers: [set, unseen, layout, camera, light-lock, locale]
+  inputs: [{source: SRC-RES-VILLA-EXT, role: source}]
+  prompt: |
+    This is the front elevation of a contemporary two-storey villa: a white ground floor with a teak
+    wall on the left and a wide glass door on the right; an exposed-concrete upper floor
+    cantilevered two metres over the right side with a long horizontal window; an empty swing on
+    the porch under the overhang; a black gate, a granite boundary wall and a frangipani on the
+    left of the lawn. Produce one more view of the same villa from the position below. The sides
+    and rear, which the photo never shows, follow the same materials: the rear has a full-width
+    glass wall onto a lawn with a small plunge pool. Mid-morning sun from the left of the front
+    view. Photoreal, 3:2, verticals straight.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "White ground floor, teak wall, glass door, concrete upper floor overhanging the right"
+      - "Swing under the overhang; frangipani on the left of the front lawn"
+      - "Rear: full-width glass wall, lawn and plunge pool"
+      - "Mid-morning sun from the front-left"
+    members:
+      - {name: "Left side", prompt: "From the left side lawn, 24 mm.", checks: [[prompt_adherence, "Is the frangipani near the camera?"], [reference_fidelity, "Is the teak wall's return visible?"]]}
+      - {name: "Right side", prompt: "From the right side under the overhang, 20 mm, looking along the porch.", checks: [[physics_plausibility, "Is the overhang visibly cantilevered above?"], [reference_fidelity, "Is the swing under it?"]]}
+      - {name: "Rear", prompt: "From the rear garden looking back at the house.", checks: [[prompt_adherence, "Is the rear a full-width glass wall with a lawn and plunge pool?"], [prompt_adherence, "Is the overhang now on frame left?"]]}
+      - {name: "Drone", prompt: "Drone from 40 metres, front-left, looking down.", checks: [[prompt_adherence, "Is the upper floor's overhang on the right of the front?"], [prompt_adherence, "Is the pool at the rear?"]]}
+      - {name: "Gate view", prompt: "Through the open gate at standing height, 35 mm.", checks: [[prompt_adherence, "Is the gate framing the view?"], [prompt_adherence, "Is the sun from the left?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [set_consistency, "Is the massing the same in all five: overhang on one side?"]
+    - [set_consistency, "Are the materials the same on every side?"]
+    - [set_consistency, "Is the swing under the overhang wherever visible?"]
+    - [set_consistency, "Is the frangipani on the same side of the front lawn?"]
+    - [set_consistency, "Are the rear glass wall and pool the same in the views that show them?"]
+    - [prompt_adherence, "Is the sun in one world direction with shadows agreeing?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [visual_quality, "Are verticals straight?"]
+    - [prompt_adherence, "Are there no people or cars?"]
+    - [text_accuracy, "Is there no house number or text?"]
+    - [physics_plausibility, "Are the house's proportions consistent?"]
+    - [style, "Is the grade consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a drone orbit around the villa."
+
+- id: COV-RES-04
+  title: "Drone orbit of a tower at four compass bearings plus a top view"
+  persona: "Developer's site-progress team producing the monthly drone set from one available frame."
+  evidence: "Earlier bank IMG-VIEW-08 (street to drone) was high tier; compass-bearing views test whether each face shows what it should."
+  levers: [set, camera, layout, unseen, light-lock]
+  inputs: [{source: SRC-RES-TOWER-SITE, role: source}]
+  prompt: |
+    This drone photo shows a nearly finished 22-storey residential tower from the south-east: zig-zag
+    balconies on the south face (frame left), a plain east face with one vertical window strip
+    (frame right), a blue lift room on the roof, a yellow crane at the north-east corner, site
+    cabins and a green fence at the base, a main road along the south. Produce one more drone
+    view of the same moment from the bearing described below, at the same height and distance.
+    The north and west faces, which the photo never shows, are plain with regular window rows.
+    Harsh noon sun. Photoreal, 16:9, no readable signs.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "South face zig-zag balconies; east face single window strip; north and west faces with regular windows"
+      - "Blue lift room on the roof; yellow crane at the north-east corner"
+      - "Site cabins and green fence; main road to the south"
+    members:
+      - {name: "From the north-east", prompt: "Drone from the north-east at the same height.", checks: [[prompt_adherence, "Is the crane in the near foreground?"], [reference_fidelity, "Is the east face's window strip visible?"]]}
+      - {name: "From the north-west", prompt: "Drone from the north-west.", checks: [[reference_fidelity, "Are the north and west faces plain with regular windows?"], [prompt_adherence, "Is the crane on the far side?"]]}
+      - {name: "From the south-west", prompt: "Drone from the south-west.", checks: [[reference_fidelity, "Are the zig-zag balconies visible on the near south face?"], [prompt_adherence, "Is the road in front?"]]}
+      - {name: "From the south", prompt: "Drone due south, face-on to the balconies.", checks: [[prompt_adherence, "Is the south face square to the camera?"], [prompt_adherence, "Is the crane peeking at the right edge?"]]}
+      - {name: "Top", prompt: "Straight down over the roof.", checks: [[reference_fidelity, "Is the lift room blue?"], [prompt_adherence, "Is the crane at the north-east corner?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Does each face show the right treatment from each bearing?"]
+    - [set_consistency, "Is the crane at the north-east corner in every view?"]
+    - [set_consistency, "Is the lift room blue in every view that shows the roof?"]
+    - [prompt_adherence, "Is the tower 22 storeys in every view that shows its height?"]
+    - [prompt_adherence, "Is the road to the south in every view that shows it?"]
+    - [prompt_adherence, "Is the noon sun high with short shadows in all five?"]
+    - [prompt_adherence, "Does each view match its bearing?"]
+    - [text_accuracy, "Are there no readable signs?"]
+    - [visual_quality, "Are lines straight and the building undistorted?"]
+    - [style, "Is the look consistent?"]
+    - [set_consistency, "Are the site cabins and fence at the base in every view?"]
+    - [prompt_adherence, "Is it the same height and distance in each view?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a full drone orbit."
+
+- id: COV-RES-05
+  title: "Five eye-level rendered views from a floor plan's numbered camera marks"
+  persona: "Architectural visualiser producing a client's first look at a flat from the plan alone."
+  evidence: "Earlier bank IMG-VIEW-07 (room to top-down layout) was high tier; the reverse, plan to eye-level views, is the archviz task."
+  levers: [set, layout, camera, count, unseen, long-brief]
+  inputs: [{source: SRC-RES-PLAN, role: source}]
+  prompt: |
+    This is the floor plan of a three-bedroom flat with seven labelled rooms and five numbered camera
+    marks, each with an arrow showing the view direction. Produce the eye-level interior render for
+    the camera mark named below, at 1.5 metres height, 18 mm, as a finished evening architectural
+    visualisation: warm interior lights on, white walls, light oak floors, the furniture drawn on
+    the plan in the places it is drawn (a three-seat sofa and TV wall in the living room, a six-seat
+    table in the dining area, a double bed in each bedroom). What the view shows must agree with
+    the plan: which rooms are visible, which walls and openings. Photoreal, 3:2, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Room layout and openings as drawn on the plan"
+      - "Furniture where the plan draws it"
+      - "White walls, oak floors, warm evening interior light"
+    members:
+      - {name: "Mark 1", prompt: "Camera mark 1: living-room corner by the entrance looking towards the balcony.", checks: [[prompt_adherence, "Is the balcony ahead with the sofa and TV wall where the plan shows?"], [prompt_adherence, "Is dining visible to the side as the plan shows?"]]}
+      - {name: "Mark 2", prompt: "Camera mark 2: in dining looking into the kitchen.", checks: [[prompt_adherence, "Is the dining table six-seat?"], [prompt_adherence, "Is the kitchen ahead through its opening?"]]}
+      - {name: "Mark 3", prompt: "Camera mark 3: in the BED 1 doorway looking at the bed.", checks: [[reference_fidelity, "Is there a double bed?"], [prompt_adherence, "Does the room's window sit where the plan's outer wall is?"]]}
+      - {name: "Mark 4", prompt: "Camera mark 4: on the balcony looking back into the living room.", checks: [[prompt_adherence, "Is the sofa on the side the plan shows from this direction?"], [prompt_adherence, "Is the interior lit warm against the evening outside?"]]}
+      - {name: "Mark 5", prompt: "Camera mark 5: in the kitchen looking out to dining.", checks: [[prompt_adherence, "Is the dining table ahead?"], [prompt_adherence, "Is the view from inside the kitchen?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [prompt_adherence, "Does every view agree with the plan's rooms and openings?"]
+    - [prompt_adherence, "Is furniture where the plan draws it in every view?"]
+    - [prompt_adherence, "Does each view come from its numbered mark and face its arrow's direction?"]
+    - [set_consistency, "Are materials the same across the five: white walls, oak floor?"]
+    - [prompt_adherence, "Is it warm evening interior light in all five?"]
+    - [set_consistency, "Do shared spaces (living, dining) look the same from different marks?"]
+    - [prompt_adherence, "Are the counts right: one sofa, six chairs, one double bed per bedroom?"]
+    - [visual_quality, "Are verticals straight?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [style, "Is the render quality the same across the five?"]
+    - [physics_plausibility, "Are room proportions plausible for the plan?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one plan; set agreement needs the set review."}
+  video_followon: "V1: a walkthrough from mark 1 to mark 2."
+
+- id: COV-RES-06
+  title: "Goa plot from its four corners and a drone; marker, trees and stream bed stay put"
+  persona: "Land broker making a full photo set of a plot from the one photo taken on the site visit."
+  evidence: "Landscapes with few landmarks are where layout drifts; four fixed landmarks make it checkable."
+  levers: [set, layout, camera, light-lock, locale]
+  inputs: [{source: SRC-RES-PLOT-LAND, role: source}]
+  prompt: |
+    This photo shows an empty hillside plot in North Goa at golden hour from the access track at the
+    bottom: a laterite survey marker in the lower left, two cashew trees mid-plot (the left one
+    larger), a dry stream bed from the lower right up to the middle, an electricity pole at the top
+    right by the ridge, coconut palms along the ridge, the sea as a thin line left of the ridge,
+    tall dry grass, low sun from the right. Produce one more view of the same plot at the same
+    moment from the position below. Every landmark keeps its place. Photoreal, 16:9, no buildings.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Survey marker at the bottom-left corner of the plot"
+      - "Two cashew trees mid-plot, the larger one west of the smaller"
+      - "Dry stream bed from the bottom-right corner to the middle"
+      - "Pole at the top-right by the ridge; sea beyond the ridge's west end; low sun"
+    members:
+      - {name: "Top-left corner", prompt: "From the top-left corner by the ridge looking down the plot.", checks: [[prompt_adherence, "Is the marker now at the far right bottom?"], [prompt_adherence, "Is the pole across at the other top corner?"]]}
+      - {name: "Top-right corner", prompt: "From beside the pole looking down the plot.", checks: [[reference_fidelity, "Is the pole beside the camera?"], [prompt_adherence, "Does the stream bed run from the far left?"]]}
+      - {name: "Bottom-right corner", prompt: "From the bottom-right corner where the stream bed starts.", checks: [[prompt_adherence, "Does the stream bed lead away from the camera?"], [prompt_adherence, "Is the sun beside the camera's right?"]]}
+      - {name: "From the trees", prompt: "From between the two cashew trees looking down to the track.", checks: [[prompt_adherence, "Is the larger tree on the camera's right?"], [prompt_adherence, "Is the track below?"]]}
+      - {name: "Drone", prompt: "Drone straight down from 50 metres, ridge at the top.", checks: [[prompt_adherence, "Are all four landmarks in their places?"], [prompt_adherence, "Are there two cashew trees?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is every landmark in a consistent place across the five?"]
+    - [prompt_adherence, "Are there two cashew trees in every view that shows them?"]
+    - [set_consistency, "Is the left cashew larger in every view?"]
+    - [set_consistency, "Is the stream bed the same course in all five?"]
+    - [prompt_adherence, "Is the low sun in one world direction with shadows agreeing?"]
+    - [prompt_adherence, "Does each view match its position?"]
+    - [prompt_adherence, "Are there no buildings, people or vehicles?"]
+    - [prompt_adherence, "Is the sea visible beyond the ridge's west end where it should be?"]
+    - [style, "Is the grade golden in all five?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the grass natural, not repeating?"]
+    - [reference_fidelity, "Is the marker laterite red?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a drone rise from the track to the ridge."
+
+- id: COV-RES-07
+  title: "Hotel lobby at four focal lengths and from the mezzanine"
+  persona: "Hospitality photographer showing a hotel the lens options for its website hero."
+  evidence: "Earlier bank IMG-VIEW-46 (ultra-wide to natural focal length) was high tier."
+  levers: [set, camera, physics, layout, light-lock]
+  inputs: [{source: SRC-RES-HOTEL-LOBBY, role: source}]
+  prompt: |
+    This photo is an empty hotel lobby in the evening: a ring chandelier of brass hoops centred in
+    the double-height space, a white marble reception with a backlit onyx panel at the back, two
+    green velvet sofas facing each other on the left, floor-to-ceiling bookshelves with a ladder on
+    the right, a polished terrazzo floor reflecting the chandelier. Produce the same lobby with the
+    lens and position below. The lens must show in the image: wide lenses stretch the floor and
+    exaggerate the chandelier; long lenses flatten the space and stack the sofas and desk together.
+    Warm practical light only. Photoreal, 3:2, verticals straight.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Ring chandelier centred; reception with onyx at the back"
+      - "Sofas left, bookshelves with ladder right"
+      - "Terrazzo floor reflecting the chandelier; warm light"
+    members:
+      - {name: "14 mm", prompt: "14 mm from the entrance at chest height.", checks: [[prompt_adherence, "Is the floor stretched and the room very wide?"], [visual_quality, "Are verticals still straight?"]]}
+      - {name: "35 mm", prompt: "35 mm from the entrance.", checks: [[prompt_adherence, "Is the perspective natural?"], [prompt_adherence, "Are sofas left and shelves right?"]]}
+      - {name: "85 mm on the chandelier", prompt: "85 mm on the chandelier from the floor, looking up.", checks: [[reference_fidelity, "Is it brass hoops in a ring?"], [prompt_adherence, "Is it a tight upward view?"]]}
+      - {name: "135 mm from the far end", prompt: "135 mm from far back outside the entrance.", checks: [[prompt_adherence, "Are sofas and desk compressed together?"], [prompt_adherence, "Is the chandelier still centred?"]]}
+      - {name: "Mezzanine 50 mm", prompt: "50 mm from a mezzanine above the bookshelves, looking down.", checks: [[prompt_adherence, "Is it high from the right side?"], [physics_plausibility, "Is the chandelier reflected in the floor below?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [prompt_adherence, "Do the focal lengths clearly differ in perspective?"]
+    - [set_consistency, "Is the layout the same in all five?"]
+    - [set_consistency, "Is the chandelier the same in all five?"]
+    - [physics_plausibility, "Is the chandelier reflected in the terrazzo wherever the floor is seen?"]
+    - [prompt_adherence, "Is it warm practical light in all five?"]
+    - [visual_quality, "Are verticals straight in every view?"]
+    - [prompt_adherence, "Are there two sofas?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no readable sign?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [style, "Is the grade consistent?"]
+    - [set_consistency, "Is the onyx panel backlit in every view that shows it?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-RES-08
+  title: "Architect's pencil perspectives of a described garden pavilion from four points"
+  persona: "Architect sketching a pavilion for a client meeting and testing whether a model can hold one design across viewpoints."
+  evidence: "Plan's text-only coverage test in a sketch style; hand-drawn sets often drift in proportion."
+  levers: [set, physics, layout, long-brief, camera]
+  prompt: |
+    One sheet of five pencil perspective sketches on white paper, 16:9 each, numbered 1 to 5, of the
+    same small garden pavilion, drawn with confident architect's line and light hatching. The
+    pavilion: a square 6 by 6 metre platform raised three steps; four slim steel columns at the
+    corners; a thin flat roof overhanging 1 metre on all sides; one solid stone wall on the north
+    side only; a built-in bench along that wall; a single neem tree to the south-east. Views: 1,
+    from the south at eye level; 2, from the east at eye level; 3, from the north-west, behind the
+    stone wall; 4, from a low point at the steps; 5, a bird's-eye view from the south-west. Numbers
+    only, no other text.
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Square platform with three steps, four corner columns, thin overhanging roof"
+      - "One stone wall on the north side with a bench"
+      - "Neem tree to the south-east"
+    members:
+      - {name: "1 South", prompt: "From the south at eye level.", checks: [[prompt_adherence, "Is the stone wall at the back?"], [prompt_adherence, "Is the tree on the right?"]]}
+      - {name: "2 East", prompt: "From the east at eye level.", checks: [[prompt_adherence, "Is the stone wall on the right?"], [physics_plausibility, "Is the tree near the left?"]]}
+      - {name: "3 North-west", prompt: "From the north-west behind the wall.", checks: [[prompt_adherence, "Is the wall in front, hiding the bench?"], [physics_plausibility, "Does the roof overhang show over the wall?"]]}
+      - {name: "4 Steps", prompt: "Low at the steps.", checks: [[prompt_adherence, "Are there three steps?"], [prompt_adherence, "Is it low?"]]}
+      - {name: "5 Bird's-eye", prompt: "From above the south-west.", checks: [[prompt_adherence, "Are there four columns?"], [prompt_adherence, "Is the wall on the north side?"]]}
+  deliverable: "One image: five numbered sketches."
+  checks:
+    - [prompt_adherence, "Are there five numbered sketches?"]
+    - [physics_plausibility, "Is the pavilion the same size and proportion in all five?"]
+    - [prompt_adherence, "Are there four columns and three steps wherever visible?"]
+    - [set_consistency, "Is the stone wall on the north side in all five?"]
+    - [set_consistency, "Is the tree to the south-east in all five?"]
+    - [physics_plausibility, "Is the perspective correct in each sketch?"]
+    - [prompt_adherence, "Does each sketch match its viewpoint?"]
+    - [style, "Is the pencil style the same across the five?"]
+    - [text_accuracy, "Are the numbers the only text?"]
+    - [prompt_adherence, "Are there no figures?"]
+    - [visual_quality, "Are lines confident and clean?"]
+    - [prompt_adherence, "Is the roof overhang about a metre on all sides?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: COV-RES-09
+  title: "A described architect on a described terrace garden, four angles plus a detail"
+  persona: "Studio's PR lead making profile images of a fictional founder for a magazine mock-up."
+  evidence: "Plan's text-only coverage test with a person and a space held together."
+  levers: [set, identity, layout, locale, long-brief]
+  prompt: |
+    A terrace garden on the roof of a Bengaluru studio at golden hour, photoreal, 4:5. The architect:
+    a woman of about forty-five with short grey-streaked hair, round tortoiseshell glasses, dark
+    brown skin and a silver cuff on her right wrist, in an indigo linen shirt and charcoal trousers,
+    holding a roll of drawings under her left arm. The terrace: a long concrete planter of tall
+    grasses along the west edge; a single young frangipani in a round pot at the north-east corner;
+    a wooden deck with a low teak bench in the middle; a steel railing with a view of the city to
+    the east. Produce the view below of her standing beside the bench.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, glasses, hair, skin tone; silver cuff on the right wrist; drawings under her left arm"
+      - "Indigo shirt, charcoal trousers"
+      - "Planter west, frangipani pot north-east, bench middle, city to the east"
+    members:
+      - {name: "Front", prompt: "From the front at eye level, 50 mm.", checks: [[set_consistency, "Is the cuff on her right wrist?"], [set_consistency, "Are the drawings under her left arm?"]]}
+      - {name: "From the planter", prompt: "From among the grasses on the west, 35 mm, city behind her.", checks: [[prompt_adherence, "Is the city behind her?"], [physics_plausibility, "Are grasses soft in the foreground?"]]}
+      - {name: "From behind", prompt: "From behind her looking at the city.", checks: [[prompt_adherence, "Is the bench beside her?"], [set_consistency, "Is her hair the same?"]]}
+      - {name: "High", prompt: "From a water-tank platform above, looking down.", checks: [[prompt_adherence, "Is the frangipani pot at the north-east corner?"], [prompt_adherence, "Is it a high view?"]]}
+      - {name: "Detail", prompt: "Close on her hand with the cuff and the drawing roll.", checks: [[set_consistency, "Is it a silver cuff?"], [visual_quality, "Is her hand natural?"]]}
+  deliverable: "Five images, 4:5."
+  checks:
+    - [set_consistency, "Is she the same woman in all five?"]
+    - [set_consistency, "Is the cuff on her right wrist in every view that shows it?"]
+    - [set_consistency, "Are the drawings under her left arm in every view?"]
+    - [set_consistency, "Is her skin tone the same in all five?"]
+    - [set_consistency, "Is the terrace layout the same in all five?"]
+    - [prompt_adherence, "Is it golden hour from one direction in all five?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands and glasses clean?"]
+    - [style, "Is the grade consistent?"]
+    - [set_consistency, "Are her glasses round tortoiseshell?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five text-to-image calls with one brief; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-RES-10
+  title: "A described penthouse terrace party of eight people from five angles"
+  persona: "Luxury developer's agency making lifestyle images for a penthouse before it is finished."
+  evidence: "Earlier bank IMG-VIEW-38 and IMG-VIEW-59 (headcount in groups) were high tier; here the group is described in text only."
+  levers: [set, count, identity, layout, long-brief, light-lock]
+  prompt: |
+    A penthouse terrace party in Mumbai at night, stylised 3D architectural render with realistic
+    people, 16:9. The terrace: an infinity pool along the sea-facing west edge, lit cyan from
+    within; a long dining table on the east side under a pergola strung with warm bulbs; a bar
+    counter at the north end. Exactly eight guests: a man in a white linen suit and a woman in a red
+    gown by the pool; three friends (a woman in yellow, a man in black, a man in a blue kurta)
+    standing at the bar; a couple in green and grey seated at the table; and a bartender in a
+    black apron behind the bar. Produce the view described below of this exact moment.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Exactly eight people in the stated places and colours"
+      - "Pool west, table under the pergola east, bar north"
+      - "Cyan pool light, warm bulbs over the table"
+    members:
+      - {name: "From the table", prompt: "From the dining table looking west to the pool and the sea.", checks: [[prompt_adherence, "Are the two by the pool visible?"], [prompt_adherence, "Is the pool glowing cyan ahead?"]]}
+      - {name: "From the pool", prompt: "From the pool's edge looking east to the table.", checks: [[prompt_adherence, "Is the seated couple at the table?"], [prompt_adherence, "Are warm bulbs over the table?"]]}
+      - {name: "From the bar", prompt: "Over the bartender's shoulder looking south across the terrace.", checks: [[prompt_adherence, "Are the three friends at the bar in front?"], [prompt_adherence, "Is the pool on the right?"]]}
+      - {name: "Overhead", prompt: "Straight down from above the terrace.", checks: [[prompt_adherence, "Are there exactly eight people?"], [prompt_adherence, "Is the layout pool west, table east, bar north?"]]}
+      - {name: "Pool couple close", prompt: "Medium shot of the man in white and the woman in red by the pool.", checks: [[set_consistency, "Are their outfits white linen and red gown?"], [prompt_adherence, "Is cyan pool light on their faces from below?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Are there exactly eight people wherever the whole terrace is seen?"]
+    - [set_consistency, "Is each guest in the same place and colour in all five?"]
+    - [set_consistency, "Is the bartender behind the bar in every view that shows it?"]
+    - [set_consistency, "Is the terrace layout the same in all five?"]
+    - [prompt_adherence, "Is the pool cyan and the bulbs warm in every view?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Are there no extra people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [style, "Is the render style the same?"]
+    - [visual_quality, "Are faces and hands clean?"]
+    - [physics_plausibility, "Are reflections in the pool consistent?"]
+    - [prompt_adherence, "Is the sea to the west in every view that shows it?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five text-to-image calls with one brief; set agreement needs the set review."}
+  video_followon: ""

@@ -1,0 +1,366 @@
+# Character continuity in motion — Gaming scenarios. Slots: vchr.yaml.
+code: VCHR
+scenarios:
+
+- id: VCHR-GAM-01
+  seed: true
+  title: "Ira in three combat clips: spin slash, wall run, landing; nothing morphs or swaps sides"
+  persona: "Animation lead checking whether generated combat clips can stand in for mocap previews."
+  evidence: "Earlier bank IMG-GAME-10 (combat pose sheet from one reference) was high tier for stills; in fast motion faces and one-sided details morph and flip."
+  levers: [set, identity, continuity, physics, camera-move]
+  inputs:
+    - {source: SRC-VREF-IRA-SHEET, role: character, note: "Ira's model sheet"}
+  prompt: |
+    This is the model sheet of the game heroine Ira: dark brown skin, high black ponytail with three
+    gold rings, gold nose ring on her left nostril, charcoal armour with copper plates, a red sash-cape
+    on her right shoulder only, a teal rune on the back of her left glove, a curved sword with a
+    veena-head guard always in her right hand. Make one 4-second combat clip of her as described below,
+    in the sheet's stylised 3D look, on a moonlit stone courtyard. Through the fastest moves, her face,
+    build and every one-sided detail stay exactly as on the sheet: nothing morphs, melts, doubles or
+    swaps sides. No other characters, no text.
+  clip: {duration: 4, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Face, skin tone, ponytail with three rings, nose ring on the left"
+      - "Cape on the right shoulder; rune on the left glove; sword in the right hand"
+      - "Armour and proportions"
+    members:
+      - {name: "Spin slash", prompt: "She spins a full turn and slashes horizontally; the camera orbits a quarter turn with her.", checks: [[reference_fidelity, "Is the sword in her right hand through the spin?"], [motion_coherence, "Does the cape swing with the spin without passing through her body?"]]}
+      - {name: "Wall run", prompt: "She runs three steps along a stone wall from left to right and pushes off; side tracking camera.", checks: [[physics_plausibility, "Do her feet plant on the wall believably?"], [reference_fidelity, "Is the cape still on her right shoulder?"]]}
+      - {name: "Landing", prompt: "She drops from a height into a three-point landing, sword hand out to her right; low static camera.", checks: [[physics_plausibility, "Does the landing carry weight and dust?"], [reference_fidelity, "Is her face the sheet's face as she looks up?"]]}
+  deliverable: "Three 4-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is she the model sheet's heroine in all three clips?"]
+    - [set_consistency, "Is the cape on her right shoulder in every clip?"]
+    - [set_consistency, "Is the rune on her left glove wherever visible?"]
+    - [set_consistency, "Is the sword in her right hand in every clip?"]
+    - [set_consistency, "Is the ponytail with three rings in every clip?"]
+    - [temporal_consistency, "Does her face stay stable through fast motion, with no morphing?"]
+    - [motion_coherence, "Does the sword stay one solid object, never bending or doubling?"]
+    - [physics_plausibility, "Do the moves obey weight and momentum?"]
+    - [prompt_adherence, "Does each clip use its described camera?"]
+    - [prompt_adherence, "Is it moonlit stone in all three?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Each clip is one image-to-video call with the model sheet as a character reference; whole-set identity needs the set review."}
+
+- id: VCHR-GAM-02
+  title: "The villain in three pencil-animated clips: contempt, rage, laughter; the mask stays on the left"
+  persona: "Game studio's animation lead testing the villain's expressions in the concept's pencil style."
+  evidence: "Earlier image bank CHR-GAM-03: the half-mask switches sides with expression changes."
+  levers: [set, identity, layout, timing, camera]
+  inputs: [{source: SRC-GAM-VILLAIN, role: character}]
+  prompt: |
+    The image is the pencil and grey-marker concept of the villain Kaal: gaunt, long white hair, a cracked
+    bronze half-mask covering the LEFT side of his face, a glowing vertical third eye, a coat whose hem
+    breaks into smoke. Make three 4-second clips, animated as pencil sketches on white paper with light
+    construction lines, each a close-up of one expression building over the clip. The mask stays on the
+    left side of his face and keeps its crack; his bare right side does all the acting. No text.
+  clip: {duration: 4, aspect: "16:9", camera: "close-up, locked off"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Mask on the left side, with its crack"
+      - "Long white hair and the third eye"
+      - "Pencil-sketch style"
+    members:
+      - {name: "Contempt", prompt: "A slow sneer: the right lip curls and his eye narrows.", checks: [[prompt_adherence, "Is the mask on the left?"], [motion_coherence, "Is the sneer subtle?"]]}
+      - {name: "Rage", prompt: "He bares his teeth and the third eye flares at 2 seconds.", checks: [[prompt_adherence, "Does the third eye flare at about 2 seconds?"], [prompt_adherence, "Does the mask stay on the left through the rage?"]]}
+      - {name: "Laughter", prompt: "He throws his head back and laughs, hair swinging.", checks: [[physics_plausibility, "Does the hair swing with the head?"], [reference_fidelity, "Does the mask keep its crack?"]]}
+  deliverable: "Three 4-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is the mask on the left side in every clip?"]
+    - [set_consistency, "Does the mask keep its crack in every clip?"]
+    - [reference_fidelity, "Does he match the concept?"]
+    - [style, "Is it pencil sketch animation in all three?"]
+    - [motion_coherence, "Is each expression readable and building?"]
+    - [temporal_consistency, "Do the lines stay stable, without boiling?"]
+    - [prompt_adherence, "Does the third eye flare at the stated time?"]
+    - [prompt_adherence, "Is each a locked-off close-up?"]
+    - [set_consistency, "Is the third eye present in all three?"]
+    - [prompt_adherence, "Is he alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-GAM-03
+  title: "The war-tiger in three clips: charge, river swim, rest; torn ear, scar and V held"
+  persona: "Game studio's creature animator testing the mount in three traversal states."
+  evidence: "Earlier image bank CHR-GAM-05: the scar and torn ear swap sides; water and motion add more drift."
+  levers: [set, identity, layout, physics, locale]
+  inputs: [{source: SRC-GAM-MOUNT, role: character}]
+  prompt: |
+    The image is the war-tiger: a huge Bengal tiger with a torn LEFT ear, a white scar across its RIGHT eye,
+    forehead stripes making a V, a turquoise and brass saddle with a red tasselled cloth and a bag on its LEFT
+    flank. Make three 5-second clips in the same painterly style with visible brush strokes, in a monsoon
+    forest. The torn ear, the scar and the V stay on their sides in every clip, wet or dry. No rider, no
+    text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Torn left ear; scar across the right eye; forehead V"
+      - "Saddle, red cloth, bag on the left flank"
+      - "Painterly style"
+    members:
+      - {name: "Charge", prompt: "It charges straight at the camera through ferns, low angle.", checks: [[prompt_adherence, "Is the scar over its right eye?"], [motion_coherence, "Is the charge a believable gallop?"]]}
+      - {name: "River swim", prompt: "It swims across a brown river, head and saddle above water, left to right.", checks: [[physics_plausibility, "Does the water part and ripple around it?"], [physics_plausibility, "Is the fur wet and darker?"]]}
+      - {name: "Rest", prompt: "It lies under a tree, shakes water off its head and licks a paw.", checks: [[prompt_adherence, "Is the torn ear on the left?"], [physics_plausibility, "Do droplets fly as it shakes?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is the torn ear on the left in every clip?"]
+    - [set_consistency, "Is the scar across the right eye in every clip?"]
+    - [set_consistency, "Is the V on the forehead in every clip?"]
+    - [set_consistency, "Is the bag on the left flank wherever visible?"]
+    - [style, "Is the painterly style the same in all three?"]
+    - [motion_coherence, "Is the tiger's motion natural?"]
+    - [physics_plausibility, "Does wet fur behave believably?"]
+    - [prompt_adherence, "Is the light consistent with a monsoon forest?"]
+    - [prompt_adherence, "Is there no rider?"]
+    - [set_consistency, "Is it the same tiger?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are stripes stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-GAM-04
+  title: "The sage in three clips: meditating, walking with a staff, blocking a blow; the cloudy left eye holds"
+  persona: "Game studio's character artist testing the sage in motion before rigging."
+  evidence: "Earlier image bank CHR-GAM-06: the cloudy eye moves to the other side or clears."
+  levers: [set, identity, layout, physics, camera-move]
+  inputs: [{source: SRC-GAM-SAGE, role: character}]
+  prompt: |
+    The image is the sage: about eighty, deep brown wrinkled skin, a long white beard tied with one wooden
+    bead, a shaved head with three ash lines, a cloudy LEFT eye, a rudraksha mala, a saffron shawl. Make
+    three 5-second clips in the same painterly style in a mountain ashram at day. The cloudy eye stays on
+    the left and stays cloudy in every clip; the three ash lines stay three. His full body, never shown,
+    wears a plain saffron dhoti and wooden sandals. No text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Cloudy left eye; three ash lines"
+      - "Beard with the wooden bead; mala; saffron shawl"
+      - "Painterly style"
+    members:
+      - {name: "Meditating", prompt: "Close-up, slow push in: he sits cross-legged, eyes closed, then opens them.", checks: [[prompt_adherence, "Is the left eye cloudy when opened?"], [prompt_adherence, "Are there three ash lines?"]]}
+      - {name: "Walking", prompt: "Wide, tracking: he walks along a stone path with a tall staff.", checks: [[motion_coherence, "Is his walk slow and natural for his age?"], [reference_fidelity, "Is the dhoti plain saffron?"]]}
+      - {name: "Blocking", prompt: "Medium: he blocks a sword blow from off-screen with the staff, without moving his feet.", checks: [[physics_plausibility, "Does the staff take the blow believably?"], [reference_fidelity, "Is the beard bead still there?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is the cloudy eye on the left in every clip?"]
+    - [set_consistency, "Are there three ash lines in every clip?"]
+    - [set_consistency, "Is it the same sage in all three?"]
+    - [set_consistency, "Is the beard bead and mala in every clip?"]
+    - [style, "Is the painterly style the same in all three?"]
+    - [motion_coherence, "Is his motion natural for his age?"]
+    - [prompt_adherence, "Does each clip match its camera?"]
+    - [prompt_adherence, "Is it daylight in all three?"]
+    - [physics_plausibility, "Is the block believable?"]
+    - [prompt_adherence, "Is he the only character seen?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-GAM-05
+  title: "The five-member squad in three clips together; no character borrows another's face or prop"
+  persona: "Game studio's cinematics lead testing the squad together for the launch trailer."
+  evidence: "Earlier image bank CHR-GAM-02: props jump between members; in group motion they swap more."
+  levers: [set, identity, count, layout, physics, locale]
+  inputs: [{source: SRC-VREF-SQUAD-SHEET, role: character}]
+  prompt: |
+    The image is the squad line-up: a tall bearded man with a round shield and a blue turban; a short young
+    woman with goggles and a small drone on her right shoulder; a heavy older man with a grey moustache and a
+    rocket launcher; a lean woman archer with a long white braid and a green scarf; a teenage boy with a
+    skateboard and red headphones. Make three 5-second clips of all five together on a fort rampart, cel-
+    shaded in the sheet's style. Every member keeps their own face, height and prop. No text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Five distinct faces and heights to scale"
+      - "Each member's own prop"
+      - "Cel-shaded style"
+    members:
+      - {name: "March", prompt: "Wide: all five march along the rampart towards camera in a V.", checks: [[prompt_adherence, "Are there five?"], [prompt_adherence, "Are their heights to scale?"]]}
+      - {name: "Huddle", prompt: "Overhead: they huddle around a map on the ground and the drone lifts off the woman's shoulder.", checks: [[reference_fidelity, "Does the drone lift from the goggled woman's shoulder?"], [reference_fidelity, "Is each face distinct?"]]}
+      - {name: "Charge", prompt: "Side tracking: they charge left to right, the boy skating ahead, the archer firing.", checks: [[reference_fidelity, "Does the boy have the skateboard and the archer the bow?"], [motion_coherence, "Is everyone's motion natural?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [prompt_adherence, "Are all five in every clip?"]
+    - [set_consistency, "Does each member keep their own face in every clip?"]
+    - [set_consistency, "Does each member keep their own prop in every clip?"]
+    - [set_consistency, "Are the heights to scale in every clip?"]
+    - [reference_fidelity, "Is the turban blue and the archer's braid white?"]
+    - [style, "Is it cel-shaded in all three?"]
+    - [temporal_consistency, "Is there no morphing in group motion?"]
+    - [physics_plausibility, "Do the drone and skateboard move believably?"]
+    - [prompt_adherence, "Does each clip match its camera?"]
+    - [prompt_adherence, "Does the fort read as Indian?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-GAM-06
+  title: "The pixel hero in three animations: walk, jump, staff attack; crisp pixels, parrot on the right shoulder"
+  persona: "Indie developer generating sprite animations for a pixel-art game."
+  evidence: "Earlier image bank CHR-GAM-10: pixel art softens and the palette grows; in motion pixels smear."
+  levers: [set, identity, layout, count, timing]
+  inputs: [{source: SRC-VREF-PIXEL-HERO, role: character}]
+  prompt: |
+    The image is the hero's sprite sheet at 64 by 64 scale, 16 colours, crisp pixels with no anti-aliasing:
+    a young woman with a red headscarf, a brown face with one white pixel highlight in each eye, a yellow
+    tunic, a brown belt, a wooden staff in her LEFT hand, a small green parrot always on her RIGHT shoulder.
+    Make three 3-second looping animations on a dark background, facing right, at a game-like 12 frames a
+    second, enlarged with crisp pixels. No new colours, no blur, no text.
+  clip: {duration: 3, aspect: "16:9", camera: "locked off"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Crisp pixels in the 16-colour palette"
+      - "Parrot on the right shoulder; staff in the left hand"
+      - "Red headscarf, yellow tunic"
+    members:
+      - {name: "Walk", prompt: "An eight-frame walk cycle in place, facing right, looping.", checks: [[motion_coherence, "Does the walk loop cleanly?"], [prompt_adherence, "Is the parrot on her right shoulder?"]]}
+      - {name: "Jump", prompt: "A jump: crouch, rise, apex at 1.5 seconds, land, the parrot flapping once.", checks: [[prompt_adherence, "Is the apex at about 1.5 seconds?"], [physics_plausibility, "Does the parrot flap once?"]]}
+      - {name: "Staff attack", prompt: "A three-hit staff combo with the left hand, ending back at rest.", checks: [[prompt_adherence, "Is the staff in her left hand?"], [prompt_adherence, "Are there three hits?"]]}
+  deliverable: "Three 3-second clips, 16:9."
+  checks:
+    - [style, "Are the pixels crisp with no anti-aliasing in all three?"]
+    - [style, "Is the palette the same 16 colours?"]
+    - [set_consistency, "Is the parrot on her right shoulder in every frame?"]
+    - [set_consistency, "Is the staff in her left hand in every frame?"]
+    - [reference_fidelity, "Does she match the sprite sheet?"]
+    - [temporal_consistency, "Is there no smearing between frames?"]
+    - [prompt_adherence, "Does she face right?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [prompt_adherence, "Is the frame rate game-like?"]
+    - [prompt_adherence, "Is she alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the eye highlights single white pixels?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-GAM-07
+  title: "The described dark-skinned heroine in three clips under sun, cyan neon and firelight; skin tone holds"
+  persona: "Game studio's art director checking skin rendering of the lead across the game's light setups."
+  evidence: "Earlier image bank CHR-GAM-07: deep skin is lightened under coloured light."
+  levers: [set, identity, light-lock, long-brief, camera]
+  prompt: |
+    An original game heroine in a stylised 3D finish: about twenty-five, very dark brown skin, a shaved
+    undercut on the right with long black braids on the left, gold cuffs on both ears, a thin white scar
+    from the left brow to the cheek, a fitted sand-coloured desert suit with a teal scarf, a short spear on
+    her back. Make three 5-second clips of her in three lights. Her skin stays the same very dark brown under
+    every light: the light colours it but never lightens or greys it. No text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Very dark brown skin tone"
+      - "Undercut right, braids left; scar from the left brow"
+      - "Sand suit, teal scarf, spear"
+    members:
+      - {name: "Sun", prompt: "Harsh desert sun: she walks over a dune crest towards camera.", checks: [[prompt_adherence, "Is it harsh sun?"], [set_consistency, "Is her skin very dark in bright sun?"]]}
+      - {name: "Cyan neon", prompt: "A cyan-lit tech vault at night: she crouches and looks at a glowing panel, slow orbit.", checks: [[prompt_adherence, "Is she lit cyan?"], [set_consistency, "Is her skin not greyed?"]]}
+      - {name: "Firelight", prompt: "A campfire at night: she sits and sharpens the spear, lit warm from below.", checks: [[prompt_adherence, "Is she lit warm by the fire?"], [physics_plausibility, "Does the firelight flicker on her?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is her skin the same very dark brown in all three?"]
+    - [set_consistency, "Is it the same heroine in all three?"]
+    - [set_consistency, "Are the undercut on the right and braids on the left in all three?"]
+    - [set_consistency, "Is the scar from the left brow in all three?"]
+    - [prompt_adherence, "Does each clip have its light?"]
+    - [motion_coherence, "Is her motion natural?"]
+    - [prompt_adherence, "Does each clip match its camera?"]
+    - [style, "Is it stylised 3D in all three?"]
+    - [set_consistency, "Are the gold cuffs on both ears?"]
+    - [prompt_adherence, "Is she alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-GAM-08
+  title: "The legendary sword in three clips: pulled from stone, breaking, reforged; the seven glyphs hold"
+  persona: "Game studio's narrative lead previewing the sword's story beats."
+  evidence: "Earlier image bank CHR-GAM-09: counted glyphs change; breaking and reforging must keep them."
+  levers: [set, count, identity, physics, long-brief]
+  prompt: |
+    A legendary sword in a stylised 3D game cinematic: a straight double-edged blade of dark blue-grey steel,
+    a brass guard shaped like two outstretched wings, a hilt wrapped in red leather, a round moonstone
+    pommel. Down the centre of the blade runs a row of exactly SEVEN small glowing teal glyphs, evenly
+    spaced. Make three 5-second clips telling its story. The seven glyphs stay seven, in the same places,
+    even after the break; they glow brighter when reforged. No readable text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Seven glyphs down the blade"
+      - "Winged brass guard, red hilt, moonstone pommel"
+      - "Blue-grey steel"
+    members:
+      - {name: "From the stone", prompt: "A gauntleted hand pulls the sword up out of a mossy stone; glyphs light one by one.", checks: [[prompt_adherence, "Do seven glyphs light up?"], [physics_plausibility, "Does it slide from the stone believably?"]]}
+      - {name: "Breaking", prompt: "In slow motion the blade strikes an iron axe and snaps between the 4th and 5th glyph.", checks: [[prompt_adherence, "Are there four glyphs on the hilt piece and three on the tip?"], [physics_plausibility, "Does the blade snap believably?"]]}
+      - {name: "Reforged", prompt: "On an anvil the two halves are hammered together; the glyphs glow brighter.", checks: [[prompt_adherence, "Are there seven glyphs after reforging?"], [prompt_adherence, "Do the glyphs glow brighter?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [prompt_adherence, "Are there seven glyphs in every clip, counting both pieces when broken?"]
+    - [set_consistency, "Are the glyphs in the same places in every clip?"]
+    - [set_consistency, "Is the guard winged brass in every clip?"]
+    - [set_consistency, "Is the hilt red leather with a moonstone pommel in every clip?"]
+    - [physics_plausibility, "Are the break and the reforging believable?"]
+    - [motion_coherence, "Does the blade keep its shape in motion?"]
+    - [prompt_adherence, "Do the glyphs glow teal?"]
+    - [style, "Is it a stylised 3D cinematic?"]
+    - [set_consistency, "Is it the same sword in all three?"]
+    - [visual_quality, "Are hands natural?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [prompt_adherence, "Does each clip frame the sword clearly?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-GAM-09
+  title: "Three re-skins of the gameplay run: monsoon, damaged, gold; her silhouette and moves untouched"
+  persona: "Game studio's monetisation lead previewing three skins on one gameplay capture."
+  evidence: "Re-skins regenerate the character and the interface; both must survive."
+  levers: [set, keep-rest, timing, small-text, identity]
+  inputs: [{source: SRC-VCLIP-GAME-CITY, role: source}]
+  prompt: |
+    This 8-second gameplay capture shows the heroine running down a wet neon street, vaulting a barrier at 3
+    seconds and sliding under a shutter at 6 seconds, the camera behind her right shoulder, the interface on
+    screen: health and stamina bars top left, minimap top right, ammo counter bottom left, three ability
+    icons bottom right. Make three edited versions, each re-skinning ONLY her armour as described. Her
+    silhouette, ponytail, sash-cape on the right shoulder, sword, moves, timings, the street and every
+    interface element stay exactly as in the capture.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged third-person follow"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her silhouette, ponytail, sash-cape on the right shoulder, sword"
+      - "Vault at 3 s; slide at 6 s"
+      - "The interface, untouched"
+    members:
+      - {name: "Monsoon", prompt: "A dark-green waxed rain cloak over the armour with a hood down.", checks: [[prompt_adherence, "Is there a green rain cloak?"], [preservation, "Is the interface unchanged?"]]}
+      - {name: "Damaged", prompt: "The same armour scratched, dented and scorched, a copper plate missing on the left shin.", checks: [[prompt_adherence, "Is the armour battle-damaged?"], [prompt_adherence, "Does she vault at 3 s?"]]}
+      - {name: "Gold", prompt: "Polished gold armour with white enamel edges.", checks: [[prompt_adherence, "Does the gold reflect the neon?"], [preservation, "Is the ammo counter unchanged?"]]}
+  deliverable: "Three 8-second clips, 16:9."
+  checks:
+    - [preservation, "Is the interface unchanged in all three?"]
+    - [preservation, "Is her silhouette unchanged?"]
+    - [prompt_adherence, "Do the vault and slide keep their timing in all three?"]
+    - [preservation, "Is the sash-cape still on her right shoulder?"]
+    - [preservation, "Is the street unchanged?"]
+    - [set_consistency, "Is each skin stable through the clip?"]
+    - [prompt_adherence, "Does each skin take the neon light?"]
+    - [temporal_consistency, "Is there no flicker at the armour edges?"]
+    - [reference_fidelity, "Is the ponytail with three rings unchanged?"]
+    - [preservation, "Is the camera unchanged?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three video edits of one source clip; set agreement needs the set review."}

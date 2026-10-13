@@ -1,0 +1,37 @@
+# hlt-en-01 - Refill reminder: two chronic medicines (Healthcare & pharma)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 hlt-hi-06 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-06): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Pharmacy - medicine names, strengths, dosing, refills.
+# TARGET CUSTOMER. Online Pharmacies.
+# SPEECH SKILLS. Numbers: dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Even contest.
+
+id: hlt-en-01
+modality: voice
+task: text_to_speech
+title: "Refill reminder: two chronic medicines - English"
+
+input:
+  script: |
+    Your Metformin 500 mg and Telma 40 tablets will run out in three days. To reorder on Apollo 24/7, press 1.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "Metformin 500 mg" and "Telma 40" recoverable
+  2) "24/7" read as "twenty-four seven"
+  3) "mg" read as "milligram"
+
+checks:
+  duration_s: {min: 4.2, max: 22.5}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, healthcare-pharma, pharmacy, hard, even-contest, new-english]

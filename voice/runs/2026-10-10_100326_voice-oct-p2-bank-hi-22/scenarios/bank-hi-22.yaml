@@ -1,0 +1,49 @@
+# bank-hi-22 - Home-loan part-prepayment and revised tenure (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-22: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-22
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Loans & EMI - EMI reminders, approvals, prepayment, gold loans, collections.
+# TARGET CUSTOMER. Retail Banks, NBFCs & Lenders.
+# WHAT THIS TESTS. A lender brand, a letter/digit loan account, a raw lakh amount and two three-digit month counts stacked in one passage
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times; Pronunciation: brands.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-22
+modality: voice
+task: text_to_speech
+title: "Home-loan part-prepayment and revised tenure - Hindi"
+
+input:
+  script: |
+    Bajaj Housing Finance से: आपके home loan account H, L, zero, zero, four, five, seven, two, nine पर ₹5,00,000 का part-prepayment मिल गया है। आपकी बची हुई tenure अब 212 महीने से घटकर 178 महीने हो गई है।
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "HL0045729" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) Amount spoken in the Indian system (lakh/crore), not the international convention — the numeral was sent as-written, the model decides how to say it
+  3) Month counts "212" and "178" read as Hindi cardinals (दो सौ बारह / एक सौ अठहत्तर), not digit-by-digit
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+  # Expected item: the lakh reading of the amount written in Indian digit
+  # grouping. Added 2026-10-10 so it is checked, as in English and Hinglish;
+  # listed in both writing systems.
+  must_say_any:
+    - ["lakh", "लाख"]
+
+tags: [oct-2026, hindi, banking-financial-services, loans-emi, hard, gemini-lean, v2-bank]

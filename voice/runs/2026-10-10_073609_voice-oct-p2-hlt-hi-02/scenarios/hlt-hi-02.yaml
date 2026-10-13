@@ -1,0 +1,44 @@
+# hlt-hi-02 - Teleconsult reminder — Bengali doctor name (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-02: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-02
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Appointments & teleconsults.
+# TARGET CUSTOMER. Hospital Chains, Telehealth Platforms.
+# WHAT THIS TESTS. A platform brand, a Bengali doctor name and an evening time
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-02
+modality: voice
+task: text_to_speech
+title: "Teleconsult reminder — Bengali doctor name - Hinglish"
+
+input:
+  script: |
+    Aapka Practo video consultation Dr. Nandita Bhattacharya ke saath aaj shaam saat baje hai. Link aapko SMS par bhej diya gaya hai.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Name natural (judge)
+  2) "saat baje" recoverable
+  3) "SMS" as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, healthcare-pharma, appointments-teleconsults, medium, even-contest, v2-bank]

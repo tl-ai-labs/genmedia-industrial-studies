@@ -1,0 +1,164 @@
+# Physics and depth in motion — Film, OTT & micro-drama scenarios. Slots: vphy.yaml.
+code: VPHY
+scenarios:
+
+- id: VPHY-FLM-01
+  seed: true
+  title: "Wet Mumbai street at night: a lateral move, and two signs' reflections that slide and ripple as they should"
+  persona: "VFX supervisor on a Mumbai noir series testing whether generated plates survive a reflection check in motion."
+  evidence: "The image seed PHY-FLM-01 checks mirrored signage in one frame; in motion the reflections must also move with parallax and ripple where rain hits."
+  levers: [physics, parallax, exact-text, script, camera-move, light-lock, locale]
+  prompt: |
+    Night on a narrow Mumbai street just after heavy rain, an eight-second shot, the camera tracking
+    slowly to the right at standing eye level, 35 mm. Across the street on the left, a vertical red neon
+    sign reads "HOTEL SAGAR" top to bottom; lower down, a horizontal green neon sign reads "सागर" in
+    Devanagari. On the right, a woman in a yellow raincoat stands at a dripping bus shelter, and a
+    black-and-yellow taxi is parked in front of her. The wet road in the foreground carries both signs'
+    reflections, flipped upside down directly below each sign. As the camera moves right, the
+    reflections slide across the wet road at the speed of the signs themselves (they are as far away as
+    the signs), while puddle edges in the foreground slide faster; light drops still hitting the puddles
+    break the reflections into spreading rings. The taxi's rear window reflection of her coat shifts as
+    the camera passes. Red and green light spill only on the signs' side of the road. No other people,
+    no other text.
+  exact_text: ["HOTEL SAGAR", "सागर"]
+  clip: {duration: 8, aspect: "16:9", camera: "slow track right at standing eye level, 35 mm"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Do the signs read HOTEL SAGAR and सागर correctly on every frame?"]
+    - [temporal_consistency, "Do the sign texts stay stable with no flicker between frames?"]
+    - [physics_plausibility, "Are both reflections directly below their signs and flipped throughout?"]
+    - [physics_plausibility, "Do the reflections slide with the signs' parallax as the camera moves?"]
+    - [physics_plausibility, "Do foreground puddle edges slide faster than the reflections?"]
+    - [physics_plausibility, "Do raindrops break the reflections into spreading rings?"]
+    - [physics_plausibility, "Does the taxi window reflection of her coat shift as the camera passes?"]
+    - [prompt_adherence, "Does red and green spill stay on the signs' side?"]
+    - [prompt_adherence, "Is the move a slow, steady track to the right?"]
+    - [motion_coherence, "Is the motion smooth with no warping of buildings or taxi?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [prompt_adherence, "Are the signs on the left and the shelter and taxi on the right throughout?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-FLM-02
+  title: "Five people round one candle; a door opens, the flame bends and every shadow swings with it"
+  persona: "Cinematographer on a period drama testing single-source candle light in motion."
+  evidence: "With one moving light source, every shadow must move together; generated shadows stay painted."
+  levers: [physics, light-lock, count, timing, locale]
+  prompt: |
+    A 6-second locked-off shot in a dark stone room in an old Rajasthani haveli at night. Five people sit
+    on the floor in a circle round a single tall candle on a brass stand in the centre: an old man, two
+    women in shawls, a young man and a boy. The candle is the only light, and each person casts a long
+    shadow outward onto the walls behind them. At 2 seconds a wooden door at the right swings open; a
+    draught bends the flame to the left and it flickers hard for two seconds, and every shadow on every wall
+    swings and stretches in the opposite direction, all together, then settles as the flame steadies. No
+    text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, wide"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Are there five people round one candle?"]
+    - [prompt_adherence, "Is the candle the only light?"]
+    - [prompt_adherence, "Does the door open at about 2 seconds?"]
+    - [physics_plausibility, "Does the flame bend to the left in the draught?"]
+    - [physics_plausibility, "Do all shadows swing opposite to the flame, together?"]
+    - [physics_plausibility, "Does each person's shadow fall outward from the candle?"]
+    - [motion_coherence, "Do the shadows settle as the flame steadies?"]
+    - [prompt_adherence, "Do faces flicker with the flame?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Does it read as a haveli at night?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces natural in low light?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-FLM-03
+  title: "A steel tumbler knocked off a table edge: fall, bounce, roll and water spill in slow motion"
+  persona: "VFX supervisor checking whether generated slow motion can replace a practical insert."
+  evidence: "Falling objects in generated clips float, bounce wrongly or change shape on impact."
+  levers: [physics, timing, camera, count, long-brief]
+  prompt: |
+    A 6-second slow-motion insert at four times slow on a wooden table by a window in daylight. A full steel
+    tumbler of water stands at the table's right edge; at 0.5 seconds a hand's knuckles knock it off. It
+    tips, falls about 80 cm, and the water leaves it in a ribbon that breaks into drops; it hits the red
+    oxide floor rim first, dents slightly, bounces once to about 10 cm, lands on its side and rolls in a
+    curve to the left, slowing, and stops against a table leg. The water spreads into a puddle with a
+    splash crown and droplets that fall back. Low camera at floor level, locked off. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off at floor level"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is the tumbler knocked at about 0.5 seconds?"]
+    - [physics_plausibility, "Does it fall with believable acceleration for slow motion?"]
+    - [physics_plausibility, "Does the water ribbon break into drops?"]
+    - [physics_plausibility, "Does it hit rim first and dent slightly?"]
+    - [prompt_adherence, "Does it bounce once?"]
+    - [physics_plausibility, "Does it roll in a curve and stop against the leg?"]
+    - [physics_plausibility, "Does the water spread into a puddle with a splash crown?"]
+    - [prompt_adherence, "Is the camera locked off at floor level?"]
+    - [motion_coherence, "Is the slow motion smooth?"]
+    - [visual_quality, "Is the knuckle natural?"]
+    - [prompt_adherence, "Is it daylight from the window?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-FLM-04
+  title: "A ladle of sambar poured onto the rice on a banana leaf; it pools, runs and soaks the rice"
+  persona: "Food-film director on a Tamil family drama checking a hero food insert from the set still."
+  evidence: "Liquids on food rarely soak or run believably; leaves are waxy and must shed liquid."
+  levers: [physics, timing, locale, keep-rest, off-centre]
+  inputs: [{source: SRC-THALI-DINNER, role: first_frame, note: "the girl's leaf, third from left"}]
+  prompt: |
+    Start on this family dinner and push in to the girl's banana leaf, third from left, so the leaf sits
+    off-centre in the lower right of the frame. At 2 seconds a steel ladle of thick orange sambar with
+    drumstick pieces and shallots is poured onto the mound of rice. The sambar pools on top, runs down the
+    sides of the mound, soaks into the rice and darkens it, and spreads on the waxy leaf in a shallow pool
+    that stops at the beans and the pickle without mixing into them. A drumstick piece rolls off the mound.
+    Warm tungsten light. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "push in to an off-centre close-up"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is the sambar poured at about 2 seconds?"]
+    - [physics_plausibility, "Does the sambar pool on top and run down the mound?"]
+    - [physics_plausibility, "Does it soak into the rice and darken it?"]
+    - [physics_plausibility, "Does it pool on the waxy leaf without soaking in?"]
+    - [physics_plausibility, "Does it stop at the beans and pickle without mixing?"]
+    - [physics_plausibility, "Does a drumstick piece roll off?"]
+    - [composition, "Does the leaf end off-centre in the lower right?"]
+    - [preservation, "Are the beans, pickle and papad where the still shows?"]
+    - [prompt_adherence, "Is it warm tungsten light?"]
+    - [motion_coherence, "Is the pour natural?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the food texture natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VPHY-FLM-05
+  title: "Add a dust plume from the rear wheel that drifts with the wind and catches the noon sun"
+  persona: "VFX artist adding atmosphere to a desert tracking shot."
+  evidence: "Added particles must be emitted from the right point and drift consistently with wind and speed."
+  levers: [physics, keep-rest, light-lock, timing, camera]
+  inputs: [{source: SRC-VCLIP-BIKE-RIDE, role: source}]
+  prompt: |
+    In this 6-second tracking shot of a rider on a desert highway, the bike rides on the tarmac's sandy
+    edge. Add a plume of fine pale dust thrown up from the rear wheel on every frame, streaming back behind
+    the bike and drifting to the left with a crosswind, thinning and settling over about two seconds. The
+    dust is backlit by the harsh noon sun overhead, bright at its top edges, and casts a faint shadow on the
+    road. When the bike's speed is steady the plume is steady. The rider, the bike, the truck at 2 seconds,
+    his glance at 5 seconds and the tracking are unchanged.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged tracking"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [physics_plausibility, "Is the dust emitted from the rear wheel?"]
+    - [physics_plausibility, "Does it stream back and drift left with the crosswind?"]
+    - [physics_plausibility, "Does it thin and settle over about two seconds?"]
+    - [prompt_adherence, "Is it lit by the noon sun with bright top edges?"]
+    - [physics_plausibility, "Does it cast a faint shadow on the road?"]
+    - [motion_coherence, "Is the plume steady with the bike's steady speed?"]
+    - [preservation, "Are the rider and bike unchanged?"]
+    - [preservation, "Are the truck at 2 s and the glance at 5 s unchanged?"]
+    - [preservation, "Is the tracking unchanged?"]
+    - [prompt_adherence, "Does the dust sit correctly in the moving frame?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the dust natural, not a texture?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

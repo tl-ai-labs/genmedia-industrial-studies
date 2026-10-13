@@ -1,0 +1,48 @@
+# md-en-15 - Quarterly loss: furious CEO, calm CFO (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-34 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-34): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: names; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone).
+#
+# TWO VOICES. Each line starts with its speaker's label. Gemini gets the
+# labelled script with one prebuilt voice per label; ElevenLabs gets one
+# Text to Dialogue input per line, label removed.
+
+id: md-en-15
+modality: voice
+task: styled_tts
+title: "Quarterly loss: furious CEO, calm CFO - English"
+
+input:
+  script: |
+    A: A loss of Rs 25 crore? In one quarter? How did this happen, Mehra?
+    B: Sir, please sit down. Rs 18 crore of that is a one-time write-off on the Pune plant.
+    A: One-time? You said the same thing last year!
+    B: That's why I made this report. Look at page 7, it's all there.
+  language: en-IN
+  style: "A: furious, cutting; B: calm, measured"
+
+params:
+  speakers:
+    - {label: A, voice: male_older, style: "furious, cutting"}
+    - {label: B, voice: female_older, style: "calm, measured"}
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every turn in order
+  2) Two clearly different voices, no emotional bleed (judge)
+  3) Both crore amounts recoverable
+  4) "Mehra" and "Pune" natural
+
+checks:
+  duration_s: {min: 10.4, max: 49.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  wer_reference: "A loss of Rs 25 crore? In one quarter? How did this happen, Mehra?\nSir, please sit down. Rs 18 crore of that is a one-time write-off on the Pune plant.\nOne-time? You said the same thing last year!\nThat's why I made this report. Look at page 7, it's all there."
+
+tags: [oct-2026, english, micro-drama-entertainment, corporate-business, hard, gemini-lean, new-english]

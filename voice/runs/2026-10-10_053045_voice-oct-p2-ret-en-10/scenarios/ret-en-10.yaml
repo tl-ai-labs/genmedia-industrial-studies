@@ -1,0 +1,37 @@
+# ret-en-10 - Extended-warranty claim: appliance serial number (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-32 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-32): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Returns, refunds, exchange & warranty.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest.
+
+id: ret-en-10
+modality: voice
+task: text_to_speech
+title: "Extended-warranty claim: appliance serial number - English"
+
+input:
+  script: |
+    Your Reliance Digital extended warranty claim is registered. The serial number of your LG washing machine is 408KWPX221.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "408KWPX221" recoverable character for character
+  2) Confusables (0/O, 1/I) handled without ambiguity
+  3) "LG" as letters
+
+checks:
+  duration_s: {min: 3.6, max: 19.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, ecommerce-retail, returns-refunds-exchange-warranty, hard, even-contest, new-english]

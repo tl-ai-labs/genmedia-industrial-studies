@@ -1,0 +1,46 @@
+# fqc-hi-12 - Hyderabadi order — biryani, dessert, chai (Food & quick commerce)
+#
+# SOURCE. v2 text-to-speech bank, scenario fqc-hi-12: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-12
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Restaurant & dish names.
+# TARGET CUSTOMER. Food Delivery Apps, Restaurants.
+# WHAT THIS TESTS. A restaurant brand and three regional dish names
+# SPEECH SKILLS. Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: fqc-hi-12
+modality: voice
+task: text_to_speech
+title: "Hyderabadi order — biryani, dessert, chai - Hinglish"
+
+input:
+  script: |
+    Aapke order mein hai ek Paradise ki Hyderabadi dum biryani, ek double ka meetha, aur ek Irani chai.
+  language: hi-IN
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Dish names natural (judge)
+  2) "Paradise" natural
+
+checks:
+  # Minimum lowered from 6.0 s on 2026-10-10 (round 1): a complete read of
+  # this short line came in under 6 s. Now 0.2 s a word, as in the drama
+  # scenarios (a read faster than 5 words a second is too short).
+  duration_s: {min: 3.6, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, food-quick-commerce, restaurant-dish-names, medium, even-contest, v2-bank]

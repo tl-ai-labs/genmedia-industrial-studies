@@ -1,0 +1,93 @@
+# Camera work — E-commerce, D2C & retail scenarios. Slots: vcam.yaml.
+code: VCAM
+scenarios:
+
+- id: VCAM-ECM-01
+  title: "A slow push on the watch on river stone; it stays in the lower right and the top 60 percent stays clean"
+  persona: "Watch D2C brand's designer needing a hero video with room for the headline."
+  evidence: "Pushes recentre the product; the copy space must stay clean throughout."
+  levers: [off-centre, camera-move, exclude, light-lock, small-text]
+  prompt: |
+    An 8-second slow push in at golden hour on a minimalist steel watch with a black dial and a tan leather
+    strap, lying on a smooth grey river stone at the edge of a calm stream. The watch sits in the lower right
+    of the 16:9 frame and stays there as the camera pushes in, growing slowly. The top 60 percent of the
+    frame is soft out-of-focus water and warm light, clean for text: no leaves, birds or highlights crossing
+    it. The dial shows ten past ten; its tiny marks stay sharp. Low sun from the left. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "slow push in"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [composition, "Does the watch stay in the lower right throughout?"]
+    - [composition, "Is the top 60 percent clean throughout?"]
+    - [prompt_adherence, "Is it a slow push in?"]
+    - [prompt_adherence, "Does the dial show ten past ten?"]
+    - [visual_quality, "Do the dial's tiny marks stay sharp?"]
+    - [prompt_adherence, "Is the low sun from the left?"]
+    - [prompt_adherence, "Is it on a grey river stone by a stream?"]
+    - [motion_coherence, "Is the push smooth?"]
+    - [physics_plausibility, "Does the water behind move gently?"]
+    - [prompt_adherence, "Is the strap tan leather?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the steel free of warping?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-ECM-02
+  title: "A straight-up crane from the child in the yellow raincoat to a top-down of the umbrellas"
+  persona: "Kids' rainwear brand's director planning a monsoon spot."
+  evidence: "Crane moves to a top-down are executed as tilts or zooms."
+  levers: [camera-move, locale, count, light-lock, layout]
+  prompt: |
+    A 10-second shot on a crowded Mumbai street in heavy monsoon rain. It starts at a child's eye level on a
+    girl of about six in a bright yellow raincoat and red gumboots, standing still in the middle of the
+    pavement, looking up into the rain. The camera cranes straight up, rising above her while turning to look
+    down, until at 10 seconds it is directly overhead: a top-down of about twenty black umbrellas flowing past
+    her, and her yellow hood the one spot of colour in the centre. Rain falls towards the camera. Grey
+    daylight. No text.
+  clip: {duration: 10, aspect: "9:16", camera: "crane straight up to top-down"}
+  deliverable: "One 10-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Does the camera crane straight up, not tilt or zoom?"]
+    - [prompt_adherence, "Does it end directly overhead?"]
+    - [composition, "Is her yellow hood centred in the top-down?"]
+    - [prompt_adherence, "Are there about twenty black umbrellas?"]
+    - [motion_coherence, "Do the umbrellas flow past her?"]
+    - [physics_plausibility, "Does rain fall towards the camera at the end?"]
+    - [prompt_adherence, "Is she in a yellow raincoat and red gumboots?"]
+    - [prompt_adherence, "Is it grey daylight?"]
+    - [prompt_adherence, "Does it read as Mumbai in the monsoon?"]
+    - [motion_coherence, "Is the crane smooth?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-ECM-03
+  title: "Reframe the catalogue walk to 4:5 for the product page, the garment fully in frame through the turn"
+  persona: "Ethnic-wear brand's product-page editor delivering 4:5 videos."
+  evidence: "Reframing to 4:5 crops the garment's hem or the dupatta in the turn."
+  levers: [layout, keep-rest, timing, camera, exclude]
+  inputs: [{source: SRC-VCLIP-RUNWAY-WALK, role: source}]
+  prompt: |
+    This 6-second 16:9 catalogue clip shows a model walking towards camera on a beige cyclorama in a mustard
+    block-print kurta, white palazzos and a white dupatta, stopping at 4 seconds and turning a full circle by
+    5.5 seconds. Make a 4:5 version for a product page. While she is small at the start, crop in so the
+    garment is large; as she comes closer, widen the crop so the kurta, palazzos and dupatta stay fully in
+    frame, including the dupatta's end as she turns, head to toe. Keep the timing; do not stretch, squash or
+    invent picture.
+  clip: {duration: 6, aspect: "4:5", camera: "crop inside the source that widens as she nears"}
+  deliverable: "One 6-second clip, 4:5."
+  checks:
+    - [prompt_adherence, "Is the garment fully in frame throughout?"]
+    - [prompt_adherence, "Is the dupatta's end in frame through the turn?"]
+    - [composition, "Is the garment large at the start?"]
+    - [prompt_adherence, "Does the crop widen smoothly as she nears?"]
+    - [preservation, "Is the turn still 4 to 5.5 seconds?"]
+    - [preservation, "Is nothing stretched or squashed?"]
+    - [preservation, "Is no picture invented?"]
+    - [preservation, "Is the model unchanged?"]
+    - [motion_coherence, "Is there no jitter?"]
+    - [visual_quality, "Is resolution adequate when cropped in?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is it 4:5?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit of one source clip."}

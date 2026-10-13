@@ -1,0 +1,52 @@
+# Family 3 — Production sheets: bibles, beat sheets, pitch boards (header). Scenarios: sht-*.yaml.
+
+family: Production sheets
+code: SHT
+number: 3
+about: "One dense sheet a production team works from: a bible built from one photo, a time-coded beat sheet, a pitch or breakdown board. Text-led."
+outputs: "1 sheet"
+text_family: true
+
+rubric:
+  weights: {text_accuracy: 4, prompt_adherence: 3, reference_fidelity: 2, set_consistency: 2, style: 1, visual_quality: 1, physics_plausibility: 1, composition: 1}
+  gate: [text_accuracy]
+  gate_rule: "A production sheet is read, so every word on it must be exact."
+
+targets:
+  section-missing: "A section the brief asks for is missing or empty"
+  timecode: "Time codes are wrong, overlap or do not add up to the stated length"
+  text-garble: "Dense text is garbled, misspelled or unreadable"
+  product-drift: "The product or costume in the sheet does not match the input"
+  frame-pair: "Start and end frames do not show the beat they are labelled with"
+  palette: "Colour swatches do not match the imagery or the given values"
+
+slots:
+  # Film, OTT & micro-drama — 8 (3 t2i, 5 edit · 5 hard, 3 extreme)
+  - {id: SHT-FLM-01, task: edit, subject: person, style: cinematic, light: fog-rain, locale: global, diff: extreme, target: timecode, sources: [SRC-RIDGE-WANDERER], script: latin, idea: "Sahil's beat-sheet test: 'The Last Transmission', nine time-coded beats over 45 seconds with start and end frames"}
+  - {id: SHT-FLM-02, task: edit, subject: group, style: cinematic, light: daylight, locale: IN, diff: hard, target: text-garble, sources: [SRC-HALDI], script: devanagari, idea: "60-second vertical micro-drama beat sheet from the haldi photo, beat titles in Hindi"}
+  - {id: SHT-FLM-03, task: edit, subject: interior, style: cinematic, light: practical, locale: IN, diff: hard, target: palette, sources: [SRC-SET-LIVING], script: latin, idea: "Production-design bible for the drawing-room set: prop callouts, palette swatches, lighting plan"}
+  - {id: SHT-FLM-04, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: section-missing, sources: [SRC-ACTOR-F, SRC-COSTUME-REF], script: telugu, idea: "Costume continuity bible: the actor in three looks front and back, swatches, labels in Telugu and English"}
+  - {id: SHT-FLM-05, task: edit, subject: stylised, style: illustration, light: neon, locale: global, diff: hard, target: palette, sources: [SRC-ANIME-HEROINE], script: latin, idea: "Character model sheet: turnaround, six expressions, colour callouts with hex values"}
+  - {id: SHT-FLM-06, task: t2i, subject: landscape, style: cinematic, light: golden, locale: IN, diff: hard, target: section-missing, sources: [], script: tamil, idea: "Location recce board for a Tamil period film: six captioned locations, map inset, sun-path diagram"}
+  - {id: SHT-FLM-07, task: t2i, subject: group, style: graphic, light: night, locale: global, diff: extreme, target: section-missing, sources: [], script: latin, idea: "OTT thriller pitch board: key art, logline, three character cards, tone frames, episode grid"}
+  - {id: SHT-FLM-08, task: t2i, subject: vehicle, style: 3d, light: night, locale: global, diff: hard, target: timecode, sources: [], script: latin, idea: "VFX breakdown sheet for a car-crash sequence: six shots with ids, durations and element lists"}
+  # Advertising & agencies — 7 (3 t2i, 4 edit · 4 hard, 3 extreme)
+  - {id: SHT-ADS-01, task: edit, subject: product, style: graphic, light: practical, locale: global, diff: extreme, target: product-drift, sources: [SRC-ADS-PERFUME], script: latin, idea: "Perfume campaign bible from one packshot: hero views, set, lighting diagrams, palette, type"}
+  - {id: SHT-ADS-02, task: edit, subject: food, style: graphic, light: practical, locale: IN, diff: extreme, target: text-garble, sources: [SRC-ADS-KEYVISUAL], script: devanagari, idea: "Adaptation master: the ghee Diwali key visual laid out in six formats on one sheet, with format rules"}
+  - {id: SHT-ADS-03, task: edit, subject: fashion, style: photoreal, light: noon, locale: IN, diff: hard, target: palette, sources: [SRC-ADS-SHOE], script: latin, idea: "Sportswear launch mood board built around the shoe, palette swatches with hex values taken from it"}
+  - {id: SHT-ADS-04, task: edit, subject: stylised, style: 3d, light: daylight, locale: IN, diff: hard, target: frame-pair, sources: [SRC-ADS-MASCOT], script: latin, idea: "Animation key-pose sheet: the mascot's jump in six keys with start and end poses and timings"}
+  - {id: SHT-ADS-05, task: t2i, subject: group, style: graphic, light: night, locale: IN, diff: extreme, target: section-missing, sources: [], script: tamil, idea: "Pitch board for a cricket-season drink campaign in Tamil Nadu: idea, manifesto, three key visuals, media grid"}
+  - {id: SHT-ADS-06, task: t2i, subject: vehicle, style: cinematic, light: daylight, locale: IN, diff: hard, target: timecode, sources: [], script: telugu, idea: "30-second scooter commercial shooting script: eight beats with time codes, Telugu voice-over"}
+  - {id: SHT-ADS-07, task: t2i, subject: food, style: photoreal, light: practical, locale: global, diff: hard, target: palette, sources: [], script: latin, idea: "Food-styling sheet for a burger ad: exploded layers with labels, plating notes, palette"}
+  # E-commerce, D2C & retail — 5 (2 t2i, 3 edit · 3 hard, 2 extreme)
+  - {id: SHT-ECM-01, task: edit, subject: product, style: graphic, light: practical, locale: global, diff: extreme, target: product-drift, sources: [SRC-ECM-SODA-CAN], script: latin, idea: "Sahil's product-bible test: one can photo into a four-section production bible: product views, set, storyboard, lighting and mood"}
+  - {id: SHT-ECM-02, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: hard, target: section-missing, sources: [SRC-ECM-SAREE-FLAT], script: devanagari, idea: "Product-page image sheet for the saree: drape views, border and pallu details, care icons, Hindi and English labels"}
+  - {id: SHT-ECM-03, task: edit, subject: food, style: graphic, light: daylight, locale: IN, diff: hard, target: text-garble, sources: [SRC-ECM-SPICE-JARS], script: tamil, idea: "Marketplace listing set for the spice jars on one sheet: main image, benefits, ingredients, size, lifestyle, banner"}
+  - {id: SHT-ECM-04, task: t2i, subject: interior, style: 3d, light: daylight, locale: global, diff: extreme, target: section-missing, sources: [], script: latin, idea: "Assembly guide for a flat-pack bookshelf: parts list with counts, eight numbered steps, tools, warnings"}
+  - {id: SHT-ECM-05, task: t2i, subject: person, style: photoreal, light: daylight, locale: IN, diff: hard, target: palette, sources: [], script: telugu, idea: "Foundation shade guide: eight named shades with hex swatches, each matched on four real skin tones, Telugu and English labels"}
+  # Gaming — 5 (2 t2i, 3 edit · 3 hard, 2 extreme)
+  - {id: SHT-GAM-01, task: edit, subject: stylised, style: 3d, light: practical, locale: global, diff: extreme, target: section-missing, sources: [SRC-GAM-VILLAIN], script: latin, idea: "From a concept sketch to the 3D hand-off sheet: four-view turnaround, materials, palette, prop breakdown, budgets"}
+  - {id: SHT-GAM-02, task: edit, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: palette, sources: [SRC-GAM-TEMPLE-LEVEL], script: latin, idea: "Environment art bible for the temple level: modular kit pieces, materials, palette, three lighting keys"}
+  - {id: SHT-GAM-03, task: edit, subject: vehicle, style: graphic, light: night, locale: global, diff: hard, target: product-drift, sources: [SRC-GAM-MECH], script: latin, idea: "Hover-bike asset sheet: orthographic front, side, top and rear with dimension callouts"}
+  - {id: SHT-GAM-04, task: t2i, subject: group, style: graphic, light: daylight, locale: IN, diff: extreme, target: timecode, sources: [], script: devanagari, idea: "Run-of-show for a Hindi esports final broadcast: segments with time codes, casters, teams"}
+  - {id: SHT-GAM-05, task: t2i, subject: stylised, style: graphic, light: neon, locale: global, diff: hard, target: text-garble, sources: [], script: latin, idea: "HUD spec sheet: every on-screen element labelled with size, position and state"}

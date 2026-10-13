@@ -1,0 +1,44 @@
+# hlt-hi-04 - Elderly patient — slow, respectful surgery reminder (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-04: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-04
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Appointments & teleconsults.
+# TARGET CUSTOMER. Hospital Chains, Telehealth Platforms.
+# WHAT THIS TESTS. A slow, respectful elder register with a date, a clock time, a doctor name and a fasting instruction
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: names; Emotion.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-04
+modality: voice
+task: text_to_speech
+title: "Elderly patient — slow, respectful surgery reminder - Hinglish"
+
+input:
+  script: |
+    Namaste Dadi ji. Aapki cataract surgery chaudah November ko subah saat baje hai, Dr. Venkatraman ke saath. Surgery se pehle raat barah baje ke baad kuch mat khaaiyega.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Slow, clear, respectful pace for an elderly listener (judge)
+  2) Date "chaudah November" and times recoverable
+  3) "cataract" and doctor name natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, healthcare-pharma, appointments-teleconsults, medium, even-contest, v2-bank]

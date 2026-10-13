@@ -1,0 +1,44 @@
+# bank-hi-36 - SIP processed — fund name, folio and NAV (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-36: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-36
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Deposits, wealth & insurance - FD, SIP, policies, health claims, RM callbacks.
+# TARGET CUSTOMER. Insurers, Investment & Wealth Platforms.
+# WHAT THIS TESTS. A platform brand, a long fund name, a folio number with a slash, and a decimal NAV stacked in one passage
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times, units/%; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-36
+modality: voice
+task: text_to_speech
+title: "SIP processed — fund name, folio and NAV - Hindi"
+
+input:
+  script: |
+    Groww के ज़रिए HDFC Flexi Cap Fund में आपकी ₹5,000 की monthly SIP, 7 तारीख को process हो गई है। Folio number है seven, three, one, zero, four, five, two, slash, six, eight, और allotted NAV है ₹1,892.37।
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Folio "7310452/68" recoverable, slash spoken
+  2) NAV "1,892.37" read with a decimal point, not as a whole number (judge)
+  3) "Flexi Cap Fund" and "Groww" natural; "SIP" and "NAV" as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, deposits-wealth-insurance, hard, gemini-lean, v2-bank]

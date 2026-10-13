@@ -1,0 +1,63 @@
+# V6 — Precision video edits on real footage (header). Built on image family EDT. Scenarios: vedt-*.yaml.
+
+family: Precision video edits
+code: VEDT
+number: 6
+about: "Remove, recolour, replace or add on a real source clip, with the edit tracking the motion and everything else left as it was."
+outputs: "1 clip"
+
+rubric:
+  weights: {preservation: 4, prompt_adherence: 4, reference_fidelity: 3, motion_coherence: 2, physics_plausibility: 2, text_accuracy: 2, visual_quality: 1, style: 1, temporal_consistency: 3}
+  gate: [preservation]
+  gate_rule: "Nothing outside the asked-for change may be altered, in any frame."
+
+targets:
+  spill: "Something outside the asked-for change is altered"
+  step-missed: "One of the asked-for changes is not made, or not for the whole clip"
+  identity-drift: "A face or product in the clip changes"
+  text-damage: "Existing text is damaged, or new text is wrong"
+  motion-break: "The edit slips, flickers or fails to track the motion"
+  over-edit: "The clip is regenerated or restyled instead of edited"
+
+slots:
+  # Film, OTT & micro-drama — 7 (7 edit · 4 hard, 3 extreme)
+  - {id: VEDT-FLM-01, task: edit, subject: group, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: spill, sources: [SRC-VCLIP-CHAI-POUR], script: devanagari, from_image: EDT-FLM-01, idea: "The five chai-stall fixes on moving footage: phone to tea glass, sign into Hindi, clock, steam, stool colour"}
+  - {id: VEDT-FLM-02, task: edit, subject: person, style: cinematic, light: practical, locale: IN, diff: extreme, target: motion-break, sources: [SRC-VCLIP-CORRIDOR], idea: "Remove the constable crossing the corridor behind her, under a handheld camera"}
+  - {id: VEDT-FLM-03, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: identity-drift, sources: [SRC-VCLIP-WEDDING-DANCE], idea: "Recolour the green-lehenga dancer to maroon through the dance; faces and the other dancers untouched"}
+  - {id: VEDT-FLM-04, task: edit, subject: vehicle, style: cinematic, light: noon, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-BIKE-RIDE], idea: "Three fixes on the tracking shot: remove the truck, tank to deep green, add a rolled blanket on the carrier"}
+  - {id: VEDT-FLM-05, task: edit, subject: child-elderly, style: cinematic, light: daylight, locale: IN, diff: hard, target: over-edit, sources: [SRC-VCLIP-MARKET-WALK], idea: "Period fix: replace the pink plastic bags with jute bags across the market; the old man and crowd untouched"}
+  - {id: VEDT-FLM-06, task: edit, subject: interior, style: cinematic, light: daylight, locale: IN, diff: extreme, target: spill, sources: [SRC-VCLIP-TRAIN-INT], idea: "Day to monsoon dusk in the moving compartment: rain on the window, grey light, pole shadows kept"}
+  - {id: VEDT-FLM-07, task: edit, subject: landscape, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-GHAT-DRONE], idea: "Remove the mobile tower and add a waterfall on the left slope, both tracked through the drone move"}
+  # Advertising & agencies — 6 (6 edit · 4 hard, 2 extreme)
+  - {id: VEDT-ADS-01, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: spill, sources: [SRC-VCLIP-FAMILY-SOFA], idea: "Remove the channel logo from the TV and recolour the mustard cushions to coral; the family untouched"}
+  - {id: VEDT-ADS-02, task: edit, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: extreme, target: motion-break, sources: [SRC-VCLIP-SUV-DRIVE], from_image: EDT-ADS-03, idea: "Recolour the SUV white to deep red through the drone follow and orbit; moving highlights stay"}
+  - {id: VEDT-ADS-03, task: edit, subject: person, style: photoreal, light: noon, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-RUN-TRACK], from_image: EDT-ADS-02, idea: "Remove the bib, turn the track blue and the vest teal, every frame of the sprint"}
+  - {id: VEDT-ADS-04, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: over-edit, sources: [SRC-VCLIP-KITCHEN-COOK], idea: "Swap the steel kadhai for a black cast-iron one; the hands, oil, seeds and leaves untouched"}
+  - {id: VEDT-ADS-05, task: edit, subject: product, style: photoreal, light: daylight, locale: IN, diff: hard, target: text-damage, sources: [SRC-VCLIP-SPOT-PACKSHOT], script: devanagari, idea: "Localise the carton in both shots: Morning Sun becomes सुबह in Devanagari, tracked through the pour"}
+  - {id: VEDT-ADS-06, task: edit, subject: architecture, style: photoreal, light: night, locale: IN, diff: hard, target: motion-break, sources: [SRC-VCLIP-STREET-BILLBOARD], idea: "Replace the cola ad on the moving billboard with a new ad; it stays locked in perspective as the camera walks"}
+  # E-commerce, D2C & retail — 9 (9 edit · 5 hard, 4 extreme)
+  - {id: VEDT-ECM-01, task: edit, subject: product, style: photoreal, light: daylight, locale: global, diff: extreme, target: spill, sources: [SRC-VCLIP-UNBOX-HANDS], idea: "Recolour the box from pale blue to sage and the seal from orange to gold, through the unboxing"}
+  - {id: VEDT-ECM-02, task: edit, subject: fashion, style: photoreal, light: practical, locale: IN, diff: extreme, target: motion-break, sources: [SRC-VCLIP-RUNWAY-WALK], from_image: EDT-ECM-02, idea: "Recolour the kurta to bottle green as she walks and turns; the print and buttons stay white"}
+  - {id: VEDT-ECM-03, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-BIRYANI-STEAM], from_image: EDT-ECM-03, idea: "Remove the plastic spoon, swap mint for coriander, napkin to green; the steam and spoon lift untouched"}
+  - {id: VEDT-ECM-04, task: edit, subject: interior, style: photoreal, light: golden, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-ROOM-PAN], from_image: EDT-ECM-04, idea: "Declutter the pan: cables, mugs, sneakers and magazines gone, throw folded; tracked through the move"}
+  - {id: VEDT-ECM-05, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-VCLIP-CREATOR-TALK], from_image: EDT-ECM-05, idea: "Tidy the creator's background and remove the ring light from the mirror; her face and gestures untouched"}
+  - {id: VEDT-ECM-06, task: edit, subject: child-elderly, style: photoreal, light: golden, locale: IN, diff: hard, target: over-edit, sources: [SRC-VCLIP-GRANDMA-YOGA], from_image: EDT-ECM-07, idea: "Strap to coral and the watch face to 06:10 through the stretch; her face neither smoothed nor made younger"}
+  - {id: VEDT-ECM-07, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: hard, target: motion-break, sources: [SRC-VCLIP-PARTY-CANS], idea: "Remove the sixth person crossing the background behind the toast"}
+  - {id: VEDT-ECM-08, task: edit, subject: stylised, style: photoreal, light: daylight, locale: global, diff: extreme, target: over-edit, sources: [SRC-VCLIP-PLUSH-TURNTABLE], from_image: EDT-ECM-08, idea: "Make the turning elephant pink with a blue patch and a green collar; the knit visible on every frame"}
+  - {id: VEDT-ECM-09, task: edit, subject: product, style: photoreal, light: practical, locale: IN, diff: hard, target: text-damage, sources: [SRC-VCLIP-SHELF-PAN], script: latin, idea: "Change two prices on the moving shelf tags; the other tags' text untouched"}
+  # Gaming — 4 (4 edit · 2 hard, 2 extreme)
+  - {id: VEDT-GAM-01, task: edit, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: spill, sources: [SRC-VCLIP-GAME-CITY], idea: "Remove the whole interface from the gameplay run for a trailer; the scene behind it rebuilt, nothing else touched"}
+  - {id: VEDT-GAM-02, task: edit, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-GAME-TEMPLE-FLY], from_image: EDT-GAM-02, idea: "Art pass on the fly-through: cube removed, vines on the gopuram, water in the tank, all tracked"}
+  - {id: VEDT-GAM-03, task: edit, subject: vehicle, style: 3d, light: night, locale: global, diff: extreme, target: text-damage, sources: [SRC-VCLIP-GAME-RACE], script: latin, idea: "Change the hover-bike's stripe to violet and its decal from 07 to 12 through the banking race"}
+  - {id: VEDT-GAM-04, task: edit, subject: group, style: illustration, light: daylight, locale: IN, diff: hard, target: over-edit, sources: [SRC-VCLIP-GAME-TRAILER], from_image: EDT-GAM-03, idea: "Turn the clear sky into a storm with lightning; the squad, their walk and the archer's draw untouched"}
+  # Real estate, interiors & architecture — 4 (4 edit · 3 hard, 1 extreme)
+  - {id: VEDT-RES-01, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-FLAT-WALKTHROUGH], from_image: EDT-RES-01, idea: "Listing clean-up on the walkthrough: newspapers, wires and laundry rack gone, TV on, tracked throughout"}
+  - {id: VEDT-RES-02, task: edit, subject: interior, style: photoreal, light: golden, locale: IN, diff: extreme, target: spill, sources: [SRC-VCLIP-BEDROOM-PAN], from_image: EDT-RES-02, idea: "Repaint the window wall terracotta and lay oak flooring on the pan; the sun panels and view untouched"}
+  - {id: VEDT-RES-03, task: edit, subject: architecture, style: photoreal, light: night, locale: IN, diff: hard, target: over-edit, sources: [SRC-VCLIP-VILLA-ORBIT], from_image: EDT-RES-03, idea: "Day to twilight on the drone orbit: dusk sky, lit windows, porch light; the building line for line"}
+  - {id: VEDT-RES-04, task: edit, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-PLOT-DRONE], from_image: EDT-RES-04, idea: "Plot preparation tracked through the drone flight: boundary wall, gate, path, the smaller cashew gone"}
+  # Media, publishing & events — 5 (5 edit · 3 hard, 2 extreme)
+  - {id: VEDT-MED-01, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: text-damage, sources: [SRC-VCLIP-NEWS-BROADCAST], script: devanagari, from_image: EDT-MED-01, idea: "Update the broadcast: new Hindi lower third, new scrolling ticker, clock to 09:40; the anchor untouched"}
+  - {id: VEDT-MED-02, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: hard, target: spill, sources: [SRC-VCLIP-CONCERT-CROWD], from_image: EDT-MED-02, idea: "Remove the three filming phones through the push-in, add confetti; the band and beams untouched"}
+  - {id: VEDT-MED-03, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: hard, target: over-edit, sources: [SRC-VCLIP-PODIUM-SPEECH], idea: "Remove the podium logo and change the backdrop to a teal wave; the speaker neither re-drawn nor smoothed"}
+  - {id: VEDT-MED-04, task: edit, subject: animal, style: photoreal, light: daylight, locale: IN, diff: extreme, target: motion-break, sources: [SRC-VCLIP-WILDLIFE], idea: "Remove the camera-trap box and the tyre tracks from the tiger shot, through the long-lens pan"}
+  - {id: VEDT-MED-05, task: edit, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: hard, target: step-missed, sources: [SRC-VCLIP-TRAVEL-TEMPLE], idea: "Clean the travel clip: remove the drone and the selfie-stick tourist, turn the umbrella yellow"}

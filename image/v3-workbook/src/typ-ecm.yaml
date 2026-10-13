@@ -1,0 +1,315 @@
+# Typography and layout — E-commerce, D2C & retail scenarios. Slots: typ.yaml.
+code: TYP
+scenarios:
+
+- id: TYP-ECM-01
+  seed: true
+  title: "Back of a spice pack: bilingual ingredients, nutrition table and legal lines at small size"
+  persona: "Packaging designer at a D2C spice brand producing the back-of-pack mock-up the regulatory team checks line by line."
+  evidence: "Call at 26:48: text rendering is compared against a type-led tool. Earlier bank IMG-TXT-02 (small-type packaging) was one string; Indian packs carry two scripts, percentages that add up, a nutrition table, MRP and batch lines, and every one is checked."
+  levers: [exact-text, script, small-text, layout, count, locale, long-brief]
+  prompt: |
+    Design the back panel of a 100 g spice pack as flat print artwork, portrait 2:3, on a kraft
+    paper texture with terracotta (#B5532E) headings and near-black body text, for a fictional
+    brand, Aadi. Everything below must appear exactly as written, in this order from top to bottom.
+
+    Top: the product name "Aadi GARAM MASALA" in bold, and beside it in Devanagari "गरम मसाला".
+
+    An English ingredients paragraph: "Ingredients: Coriander (32%), Cumin (18%), Black pepper (12%), Cardamom (10%), Cinnamon (8%), Cloves (8%), Bay leaf (6%), Nutmeg (6%)."
+
+    The same in Hindi: "सामग्री: धनिया (32%), जीरा (18%), काली मिर्च (12%), इलायची (10%), दालचीनी (8%), लौंग (8%), तेजपत्ता (6%), जायफल (6%)।"
+
+    A boxed nutrition table headed "Nutrition information per 100 g" with five rows, label left
+    and value right: "Energy" "379 kcal", "Protein" "14.2 g", "Carbohydrate" "45.1 g", "Fat"
+    "15.6 g", "Sodium" "52 mg".
+
+    Then, each on its own line: "MRP ₹89.00 (incl. of all taxes)", "Net wt. 100 g", "Best before
+    12 months from packing", "Packed on: 09/2026  Batch: AD2609".
+
+    At the bottom: "Marketed by: Aadi Spices, 14 West Masi Street, Madurai 625001", and a small
+    green square with a green dot inside it at the bottom right (the vegetarian mark).
+
+    Clear hierarchy: product name largest, headings next, body text small but crisp. No other
+    words, no barcode, no logos of other companies.
+  exact_text:
+    - "Aadi GARAM MASALA"
+    - "गरम मसाला"
+    - "Ingredients: Coriander (32%), Cumin (18%), Black pepper (12%), Cardamom (10%), Cinnamon (8%), Cloves (8%), Bay leaf (6%), Nutmeg (6%)."
+    - "सामग्री: धनिया (32%), जीरा (18%), काली मिर्च (12%), इलायची (10%), दालचीनी (8%), लौंग (8%), तेजपत्ता (6%), जायफल (6%)।"
+    - "Nutrition information per 100 g"
+    - "379 kcal"
+    - "14.2 g"
+    - "45.1 g"
+    - "15.6 g"
+    - "52 mg"
+    - "MRP ₹89.00 (incl. of all taxes)"
+    - "Packed on: 09/2026  Batch: AD2609"
+    - "Marketed by: Aadi Spices, 14 West Masi Street, Madurai 625001"
+  deliverable: "One portrait 2:3 image, flat print artwork."
+  checks:
+    - [text_accuracy, "Is the product name exactly Aadi GARAM MASALA, with गरम मसाला beside it correctly formed?"]
+    - [text_accuracy, "Is the English ingredients line exact, all eight ingredients with their percentages?"]
+    - [text_accuracy, "Is the Hindi ingredients line exact and correctly formed, ending with the danda?"]
+    - [prompt_adherence, "Do both ingredient lists name eight ingredients in the same order with the same percentages?"]
+    - [text_accuracy, "Is the table heading exactly Nutrition information per 100 g?"]
+    - [prompt_adherence, "Does the table have exactly five rows: Energy, Protein, Carbohydrate, Fat, Sodium?"]
+    - [text_accuracy, "Are the five values exact: 379 kcal, 14.2 g, 45.1 g, 15.6 g, 52 mg, each on its own row?"]
+    - [text_accuracy, "Is the MRP line exact, with the rupee sign and two decimals?"]
+    - [text_accuracy, "Are Net wt. 100 g and the best-before line exact?"]
+    - [text_accuracy, "Is the packed-on and batch line exact?"]
+    - [text_accuracy, "Is the marketed-by address exact, including the PIN code?"]
+    - [prompt_adherence, "Is there a green square with a green dot at the bottom right?"]
+    - [prompt_adherence, "Do the blocks appear top to bottom in the order given?"]
+    - [prompt_adherence, "Is the product name the largest text and the body text the smallest?"]
+    - [style, "Are the headings terracotta on a kraft texture with near-black body text?"]
+    - [prompt_adherence, "Is there no other text, barcode or third-party logo?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call at the highest resolution available. A Recraft arm is not wired today."}
+  video_followon: ""
+
+- id: TYP-ECM-02
+  title: "A sweet shop's Diwali box lid with a Telugu brand name and an English line"
+  persona: "Packaging designer for a Vijayawada sweet shop's festive boxes."
+  evidence: "Telugu brand names on packaging are a regional must and a frequent rendering failure."
+  levers: [exact-text, script, layout, locale, exclude]
+  prompt: |
+    A top-down photo of a square gift-box lid for a fictional sweet shop, 1:1, on a dark wooden
+    table with marigold petals around it. The lid is deep magenta with a gold foil border of mango
+    motifs. In the centre, the Telugu brand name "తీపి కబురు" in large gold foil; under it the
+    English line "Handmade in Vijayawada since 1978" in small gold capitals; at the bottom, "Kaju Katli
+    · 500 g" in gold. Foil catches the light with a soft sheen. No other text, no logos.
+  exact_text:
+    - "తీపి కబురు"
+    - "Handmade in Vijayawada since 1978"
+    - "Kaju Katli · 500 g"
+  deliverable: "One image, 1:1."
+  checks:
+    - [text_accuracy, "Is the Telugu brand name exact and correctly formed?"]
+    - [text_accuracy, "Is the English line exact?"]
+    - [text_accuracy, "Is the product line exact?"]
+    - [prompt_adherence, "Is the brand name centred and largest?"]
+    - [style, "Is the lid deep magenta with a gold mango-motif border?"]
+    - [physics_plausibility, "Does the gold foil catch the light with a sheen?"]
+    - [prompt_adherence, "Is it top-down?"]
+    - [prompt_adherence, "Are marigold petals around the box?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [visual_quality, "Is the lid's geometry clean?"]
+    - [text_accuracy, "Is the small English line readable?"]
+    - [style, "Is the wooden table dark?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ECM-03
+  title: "Desktop hero banner 1440×480 for a sale: discount, dates, a button and a code"
+  persona: "Marketplace web designer making the homepage sale banner."
+  evidence: "Earlier bank IMG-UI-02 (named widgets) was low tier; a strict size hierarchy with a code and a button is harder."
+  levers: [exact-text, layout, small-text, off-centre, exclude]
+  prompt: |
+    A desktop website hero banner, exactly 3:1 (1440 by 480), flat design. On the right half, a
+    photo of a woman in a flowing coral dress mid-twirl against a soft peach background. On the left
+    half, in this order and size from largest to smallest: "THE BIG SUMMER SALE" in a heavy sans;
+    "Flat 40–70% off" in coral; "3–7 May" in dark grey; a rounded black button reading "Shop now";
+    and below it, small, "Use code SUMMER10 for an extra 10% off". No other text, no logos.
+  exact_text:
+    - "THE BIG SUMMER SALE"
+    - "Flat 40–70% off"
+    - "3–7 May"
+    - "Shop now"
+    - "Use code SUMMER10 for an extra 10% off"
+  deliverable: "One image, 3:1."
+  checks:
+    - [text_accuracy, "Is every line exact?"]
+    - [prompt_adherence, "Is the text on the left half and the photo on the right?"]
+    - [prompt_adherence, "Do the sizes follow the order given?"]
+    - [prompt_adherence, "Is Shop now in a rounded black button?"]
+    - [text_accuracy, "Is the code SUMMER10 exact?"]
+    - [composition, "Is the banner 3:1?"]
+    - [style, "Is the palette coral, peach and black?"]
+    - [prompt_adherence, "Is the woman mid-twirl in a coral dress?"]
+    - [text_accuracy, "Is the small code line readable?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [visual_quality, "Is the model natural?"]
+    - [style, "Is it clean flat design?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ECM-04
+  title: "A model in a printed T-shirt whose Tamil slogan follows the fabric folds"
+  persona: "D2C apparel brand's merchandiser previewing a slogan tee on a model."
+  evidence: "Text on fabric must bend with folds; Tamil adds a script test."
+  levers: [exact-text, script, physics, locale, identity]
+  prompt: |
+    A photo of a young man in Chennai on a beachside promenade at noon, 4:5, wearing a loose white
+    cotton T-shirt with a large black screen print across the chest: the Tamil slogan "நம்ம ஊரு,
+    நம்ம பெருமை" on two lines, and under it, smaller, "CHENNAI · EST. 1639" in English capitals.
+    He is mid-laugh, one hand pushing back his hair, so the shirt pulls and folds across the chest;
+    the print bends and distorts with the folds and the cotton's texture shows through the ink. No
+    other text, no logos.
+  exact_text:
+    - "நம்ம ஊரு, நம்ம பெருமை"
+    - "CHENNAI · EST. 1639"
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Is the Tamil slogan exact and correctly formed?"]
+    - [text_accuracy, "Is the English line exact?"]
+    - [physics_plausibility, "Does the print bend with the shirt's folds?"]
+    - [physics_plausibility, "Does the cotton texture show through the ink?"]
+    - [prompt_adherence, "Is the slogan on two lines across the chest?"]
+    - [prompt_adherence, "Is he mid-laugh with one hand in his hair?"]
+    - [prompt_adherence, "Is it noon light on a beach promenade?"]
+    - [text_accuracy, "Is the print still readable despite folds?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [visual_quality, "Is his hand natural?"]
+    - [prompt_adherence, "Does it read as Chennai?"]
+    - [style, "Is it photoreal?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ECM-05
+  title: "Picture-book cover for a D2C kids' brand: title, subtitle, author and age band"
+  persona: "Children's book designer at a D2C kids' brand."
+  evidence: "Cover type with an age badge tests string exactness on an illustration."
+  levers: [exact-text, layout, small-text, exclude]
+  prompt: |
+    A picture-book cover, portrait 4:5, warm watercolour illustration: a small girl in a yellow
+    raincoat and a large friendly grey elephant share one red umbrella on a rainy village path. Text,
+    exactly: the title "Tara and the Rain Elephant" in a playful hand-lettered style across the top;
+    the subtitle "A monsoon story" under it; at the bottom, "Written by Nandini Rao" and
+    "Illustrated by Kabir Sen"; in a small round badge at the top right, "Ages 3–6". No other text.
+  exact_text:
+    - "Tara and the Rain Elephant"
+    - "A monsoon story"
+    - "Written by Nandini Rao"
+    - "Illustrated by Kabir Sen"
+    - "Ages 3–6"
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [text_accuracy, "Is the subtitle exact?"]
+    - [text_accuracy, "Are both credits exact?"]
+    - [text_accuracy, "Is the badge exactly Ages 3–6 with an en dash?"]
+    - [prompt_adherence, "Is the title at the top and credits at the bottom?"]
+    - [prompt_adherence, "Is the badge round at the top right?"]
+    - [style, "Is the illustration warm watercolour?"]
+    - [prompt_adherence, "Do the girl and elephant share one red umbrella?"]
+    - [text_accuracy, "Are the credits readable at small size?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the illustration clean?"]
+    - [prompt_adherence, "Is the girl in a yellow raincoat?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ECM-06
+  title: "A supermarket shelf with six price tags, each with exact product, price and unit price"
+  persona: "Retail chain's category manager mocking up shelf-edge labels."
+  evidence: "Small text in a real scene, repeated with different values, is a strong exactness test."
+  levers: [exact-text, small-text, count, layout, locale]
+  prompt: |
+    A photo of a supermarket shelf in an Indian store, straight on, 3:2, cool fluorescent light.
+    One shelf of packaged rice and dal in plain unbranded bags, with six white shelf-edge price tags
+    clipped below them, left to right, each with three lines exactly:
+    "Basmati Rice 1 kg | ₹149 | ₹14.90/100 g"; "Sona Masoori 5 kg | ₹389 | ₹7.78/100 g";
+    "Toor Dal 1 kg | ₹172 | ₹17.20/100 g"; "Moong Dal 500 g | ₹98 | ₹19.60/100 g";
+    "Chana Dal 1 kg | ₹110 | ₹11.00/100 g"; "Masoor Dal 500 g | ₹76 | ₹15.20/100 g".
+    The price is the largest line on each tag. The bags carry no readable text.
+  exact_text:
+    - "Basmati Rice 1 kg"
+    - "₹149"
+    - "Toor Dal 1 kg"
+    - "₹17.20/100 g"
+    - "Masoor Dal 500 g"
+    - "₹15.20/100 g"
+  deliverable: "One image, 3:2."
+  checks:
+    - [prompt_adherence, "Are there exactly six price tags?"]
+    - [text_accuracy, "Is every product name exact and in order?"]
+    - [text_accuracy, "Is every price exact?"]
+    - [text_accuracy, "Is every unit price exact?"]
+    - [prompt_adherence, "Is the price the largest line on each tag?"]
+    - [prompt_adherence, "Is each tag below a matching product?"]
+    - [text_accuracy, "Are the tags readable?"]
+    - [prompt_adherence, "Is the light cool fluorescent?"]
+    - [prompt_adherence, "Do the bags carry no readable text?"]
+    - [prompt_adherence, "Is the shelf straight on?"]
+    - [visual_quality, "Are the tags clean rectangles?"]
+    - [prompt_adherence, "Does it read as an Indian supermarket?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ECM-07
+  title: "Localise the bottle listing infographic into Hindi; callouts and badge keep their places"
+  persona: "Marketplace seller localising listing images for Hindi-speaking shoppers."
+  evidence: "Localisation with leader lines and badges held is a standard e-commerce edit."
+  levers: [exact-text, script, keep-rest, layout, locale]
+  inputs: [{source: SRC-ECM-INFOGRAPHIC, role: source}]
+  prompt: |
+    Localise this water-bottle listing infographic into Hindi. Replace every line of English with the
+    Hindi below, in the same position, size and navy colour, in a clean rounded Devanagari sans:
+    "One bottle. All day." becomes "एक बोतल। पूरा दिन।"; "Cold for 24 hours" becomes "24 घंटे ठंडा";
+    "Hot for 12 hours" becomes "12 घंटे गरम"; "100% leak-proof" becomes "100% लीक-प्रूफ़";
+    "BPA-free steel" becomes "BPA-मुक्त स्टील"; "1 litre" becomes "1 लीटर". The bottle, the mint
+    background, the icons and the leader lines stay exactly where they are.
+  exact_text:
+    - "एक बोतल। पूरा दिन।"
+    - "24 घंटे ठंडा"
+    - "12 घंटे गरम"
+    - "100% लीक-प्रूफ़"
+    - "BPA-मुक्त स्टील"
+    - "1 लीटर"
+  deliverable: "One image, 1:1."
+  checks:
+    - [text_accuracy, "Is the Hindi headline exact with both dandas?"]
+    - [text_accuracy, "Are the four callouts exact?"]
+    - [text_accuracy, "Is the badge exactly 1 लीटर?"]
+    - [prompt_adherence, "Is each Hindi line where its English line was?"]
+    - [preservation, "Do the leader lines still touch the bottle at the same points?"]
+    - [preservation, "Are the icons unchanged?"]
+    - [preservation, "Is the bottle and background unchanged?"]
+    - [style, "Is the Hindi in a clean rounded sans, navy?"]
+    - [text_accuracy, "Is no English left except BPA?"]
+    - [visual_quality, "Are there no smudges where English was?"]
+    - [prompt_adherence, "Are sizes similar to the original?"]
+    - [text_accuracy, "Is every word readable?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: TYP-ECM-08
+  title: "Change the can's flavour to Mango in the same hand-lettered script, following the curve"
+  persona: "D2C beverage brand's designer making a new flavour's visual from the existing photo."
+  evidence: "Font matching on a curved surface with condensation is a hard in-place text edit."
+  levers: [exact-text, keep-rest, physics, identity, multi-step]
+  inputs: [{source: SRC-ECM-SODA-CAN, role: source}]
+  prompt: |
+    This photo shows a cobalt-blue soda can with "Ananas" in big hand-lettered yellow script running
+    diagonally upward, "PINEAPPLE FIZZ" in small white capitals and a white line-drawn pineapple.
+    Make it the mango flavour: replace "Ananas" with "Mango" in the same hand-lettered script, same
+    yellow, same diagonal angle and size; replace "PINEAPPLE FIZZ" with "MANGO FIZZ" in the same small
+    white capitals; replace the pineapple drawing with a white line drawing of a mango in the same
+    style and place. The new lettering wraps round the can's curve and sits under the condensation
+    droplets. Everything else is unchanged.
+  exact_text:
+    - "Mango"
+    - "MANGO FIZZ"
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Does the script read Mango?"]
+    - [text_accuracy, "Does the small line read MANGO FIZZ?"]
+    - [style, "Is Mango in the same hand-lettered script and yellow?"]
+    - [prompt_adherence, "Does Mango run diagonally upward at the same angle?"]
+    - [physics_plausibility, "Does the lettering wrap the can's curve?"]
+    - [physics_plausibility, "Do condensation droplets sit over the new lettering?"]
+    - [prompt_adherence, "Is the pineapple replaced by a mango line drawing?"]
+    - [preservation, "Is 330 ml unchanged?"]
+    - [preservation, "Is the can, background and light unchanged?"]
+    - [visual_quality, "Are there no ghost letters from Ananas?"]
+    - [text_accuracy, "Is there no other new text?"]
+    - [reference_fidelity, "Is the can still cobalt blue?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

@@ -357,7 +357,10 @@ def test_the_manifest_records_region_for_every_arm_the_judge_and_the_asr():
     assert reg.judges["voice"].served_from == "Vertex AI · global"
     assert reg.asr.region == "local" and "no region" in reg.asr.served_from
     live = [m for m in reg.models if m.enabled and m.modality == "voice"]
-    assert {m.served_from for m in live} == {"Gemini API · no region choice"}
+    # The October run's two arms: Gemini 3.8 over the Gemini API, Eleven v4
+    # on ElevenLabs' direct API.
+    assert {m.served_from for m in live} == {"Gemini API · no region choice",
+                                             "ElevenLabs direct API · us"}
     # And the manifest writer carries all three.
     src = (Path(__file__).resolve().parent.parent / "runner" / "cli.py").read_text()
     assert src.count('"served_from"') >= 3

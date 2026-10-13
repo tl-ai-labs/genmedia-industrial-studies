@@ -1,0 +1,273 @@
+# Multi-angle coverage — Advertising & agencies scenarios. Slots: cov.yaml.
+code: COV
+scenarios:
+
+- id: COV-ADS-01
+  title: "SUV commercial coverage from one hero frame: six set-ups on the ghat road"
+  persona: "Agency producer on an SUV launch film building the shot list for a two-day shoot from the approved hero frame."
+  evidence: "Earlier bank IMG-VIEW-24 (shoe to mirrored pair) and IMG-VIEW-27 (reveal an unseen edge) were high tier; a car's unseen sides and the light on its paint are the test."
+  levers: [set, unseen, camera, light-lock, physics, exclude]
+  inputs: [{source: SRC-ADS-SUV, role: source}]
+  prompt: |
+    This is the approved hero frame of a car commercial: a white badge-less SUV parked on the
+    outside of a hairpin bend in the Western Ghats at golden hour, front wheels turned slightly
+    left, a grey hatchback far down the lower bend, low sun from the right, mist in the valley.
+    Produce one new set-up of the same moment from the position below. The SUV keeps its exact
+    design, its turned front wheels and its lights off. The low sun stays fixed in the world, so
+    its warm light and the reflections of the orange sky on the paint move correctly with the
+    camera. No badges, lettering or plates anywhere. Photoreal, 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "The SUV's exact body shape, white paint, wheels and grille, no badges"
+      - "Front wheels turned slightly left; lights off"
+      - "Grey hatchback on the lower bend; mist in the valley"
+      - "Low sun fixed on one side; sky reflected on the paint"
+    members:
+      - {name: "Low front three-quarter right", prompt: "From the front-right three-quarter at bumper height, 24 mm, sun behind the camera.", checks: [[prompt_adherence, "Is the SUV's front-right fully lit warm?"], [reference_fidelity, "Are the front wheels still turned to the SUV's left?"]]}
+      - {name: "Rear three-quarter", prompt: "From the rear-left three-quarter, 35 mm, the road dropping away behind.", checks: [[prompt_adherence, "Is the rear design plausible and consistent with the front?"], [prompt_adherence, "Is the near side in shade with the sun beyond?"]]}
+      - {name: "Side tracking", prompt: "Clean left side profile from the road, 85 mm, valley behind.", checks: [[prompt_adherence, "Is it a clean side profile?"], [physics_plausibility, "Does the paint reflect the sky on its upper surfaces?"]]}
+      - {name: "Drone", prompt: "Drone thirty metres up, looking down at the hairpin with the SUV on its outside edge.", checks: [[prompt_adherence, "Is the SUV on the outside of the bend?"], [prompt_adherence, "Is the hatchback on the lower bend?"]]}
+      - {name: "Wheel close-up", prompt: "Close on the front-left wheel and tyre, 100 mm, turned outward.", checks: [[set_consistency, "Is the wheel design the same?"], [physics_plausibility, "Is the tyre turned as in the hero frame?"]]}
+      - {name: "Driver's view", prompt: "From the driver's seat through the windscreen, 24 mm, the hairpin ahead, dashboard dark and plain.", checks: [[prompt_adherence, "Is it from the driver's seat?"], [text_accuracy, "Is the dashboard free of readable text?"]]}
+  deliverable: "Six images, 16:9."
+  checks:
+    - [set_consistency, "Is the SUV identical in shape and detail across all six?"]
+    - [set_consistency, "Are the front wheels turned the same way in every view that shows them?"]
+    - [set_consistency, "Are the lights off in every view?"]
+    - [prompt_adherence, "Does the sun stay in one world direction with the lit sides following?"]
+    - [physics_plausibility, "Are paint reflections consistent with the sky and sun from each angle?"]
+    - [set_consistency, "Is the grey hatchback on the lower bend in the views that show it?"]
+    - [prompt_adherence, "Does each set-up match its description?"]
+    - [prompt_adherence, "Are there no badges, lettering or plates?"]
+    - [prompt_adherence, "Are there no people visible outside the car?"]
+    - [style, "Is the colour grade the same golden-hour look in all six?"]
+    - [visual_quality, "Are reflections free of melted or warped artefacts?"]
+    - [text_accuracy, "Is there no text anywhere?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Six image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: the drone view as a descending move onto the SUV."
+
+- id: COV-ADS-02
+  title: "Diwali balcony from five angles: four people and seven diyas wherever seen"
+  persona: "Agency art director on a festive spot checking coverage before the client meeting."
+  evidence: "Earlier bank IMG-VIEW-59 (group of seven to overhead with exact headcount) was high tier."
+  levers: [set, count, identity, locale, light-lock]
+  inputs: [{source: SRC-ADS-DIWALI-FAMILY, role: source}]
+  prompt: |
+    This frame is a Diwali evening on a Delhi balcony: a grandfather on a cane chair at the left, a
+    mother in a red silk sari lighting a row of seven diyas on the ledge, a father in a mustard
+    kurta holding a plate of sweets on the right, and a girl in a green lehenga finishing a round
+    rangoli. Fairy lights on the railing, one firework burst in the sky. Produce one new angle of
+    the same moment from the position below. Exactly four people and seven diyas wherever the
+    camera can see them. The diyas are the main light, warm and low on every face. Photoreal, 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Four people, same faces, clothes and actions"
+      - "Seven diyas on the ledge; a round rangoli"
+      - "Fairy lights on the railing; one firework burst"
+      - "Warm low light from the diyas"
+    members:
+      - {name: "From the city side", prompt: "From outside the railing looking in, as if from a drone at ledge height, 35 mm: all four with the doorway behind them.", checks: [[prompt_adherence, "Are there seven diyas along the ledge in the foreground?"], [prompt_adherence, "Are faces lit from below by the diyas?"]]}
+      - {name: "Girl's eye level", prompt: "Low at the girl's eye level beside the rangoli, 24 mm.", checks: [[prompt_adherence, "Is it low beside the rangoli?"], [reference_fidelity, "Is the rangoli round, pink, yellow and white?"]]}
+      - {name: "Over the grandfather's shoulder", prompt: "From behind the grandfather's chair, 50 mm, looking at the mother lighting the diyas.", checks: [[prompt_adherence, "Is the grandfather's shoulder in the foreground?"], [prompt_adherence, "Is she lighting a diya with a long match?"]]}
+      - {name: "Overhead", prompt: "Straight down from above the balcony.", checks: [[prompt_adherence, "Are there four people and seven diyas from above?"], [prompt_adherence, "Is the rangoli in front of the mother?"]]}
+      - {name: "Sweets close", prompt: "Close on the father's plate of sweets, 85 mm, the diyas soft behind.", checks: [[reference_fidelity, "Is it a steel plate of sweets?"], [visual_quality, "Is his hand natural?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Are there exactly four people wherever the whole family is in view?"]
+    - [prompt_adherence, "Are there exactly seven diyas wherever the ledge is in view?"]
+    - [set_consistency, "Are the four people recognisably the same in all five?"]
+    - [set_consistency, "Are clothes the same: cream kurta and shawl, red sari, mustard kurta, green lehenga?"]
+    - [set_consistency, "Is the rangoli the same pattern in every view?"]
+    - [prompt_adherence, "Is the main light warm and low from the diyas in every view?"]
+    - [set_consistency, "Are the fairy lights on the railing in every view that shows it?"]
+    - [prompt_adherence, "Does each angle match its description?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [prompt_adherence, "Is there no fifth person?"]
+    - [visual_quality, "Are hands free of artefacts?"]
+    - [prompt_adherence, "Does each angle read as the same moment?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ADS-03
+  title: "Cooking-commercial kitchen from five set-ups; the counter layout holds"
+  persona: "Agency producer planning a cooking-oil commercial in a hired set."
+  evidence: "Earlier bank IMG-VIEW-29 (kitchen from the opposite corner) was high tier."
+  levers: [set, layout, unseen, camera, keep-rest, locale]
+  inputs: [{source: SRC-ADS-KITCHEN, role: source}]
+  prompt: |
+    This is a kitchen set for a cooking commercial: from left to right a white fridge, a window
+    over a steel sink with a tulsi plant on the sill, a long white quartz counter with a kadhai and
+    a pressure cooker on a two-burner stove, a chopping board with tomatoes and chillies, open
+    shelves of steel dabbas above, and an open masala dabba at the right end; sage-green cabinets
+    and white tiles. Produce one new set-up of the same empty kitchen from the position below.
+    Every object stays exactly where it is. The wall opposite the counter, which the photo never
+    shows, is a plain white wall with a doorway and a wall clock. Soft daylight from the window.
+    Photoreal, 16:9, no people, no labels.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Left to right: fridge, window and sink, stove with kadhai and cooker, chopping board, masala dabba"
+      - "Open shelves of dabbas; sage-green cabinets; white tiles"
+      - "Daylight from the window"
+    members:
+      - {name: "Counter top-down", prompt: "Straight down over the counter from the stove to the dabba.", checks: [[prompt_adherence, "Is the order stove, chopping board, masala dabba?"], [prompt_adherence, "Is it straight down?"]]}
+      - {name: "Stove close", prompt: "Close three-quarter on the stove, 50 mm, kadhai in front, cooker behind.", checks: [[prompt_adherence, "Is the kadhai in front of the cooker?"], [reference_fidelity, "Is it a two-burner stove?"]]}
+      - {name: "Window side", prompt: "From beside the fridge looking along the counter to the right, 24 mm.", checks: [[prompt_adherence, "Does the counter run away to the right with the dabba at the far end?"], [prompt_adherence, "Is the window light falling across the counter from this side?"]]}
+      - {name: "Reverse", prompt: "From the counter looking back across the room, 24 mm, at the wall the photo never shows.", checks: [[prompt_adherence, "Is the opposite wall plain white with a doorway and a clock?"], [prompt_adherence, "Is the camera at the counter looking out?"]]}
+      - {name: "Masala dabba insert", prompt: "Overhead insert of the open masala dabba, 85 mm.", checks: [[reference_fidelity, "Is it a round brass dabba with its lid off?"], [prompt_adherence, "Are there several small spice bowls inside?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is the counter order the same in every view?"]
+    - [set_consistency, "Are the kadhai and cooker on the stove in every view?"]
+    - [set_consistency, "Is the tulsi plant on the sill wherever the window is seen?"]
+    - [set_consistency, "Are the cabinets sage green and the tiles white everywhere?"]
+    - [prompt_adherence, "Is the daylight from the window in every view?"]
+    - [prompt_adherence, "Does each set-up match its description?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Are there no labels or readable text?"]
+    - [preservation, "Is nothing added or tidied?"]
+    - [physics_plausibility, "Are the kitchen's proportions plausible across the views?"]
+    - [visual_quality, "Are straight lines straight?"]
+    - [style, "Is the look consistent across the five?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ADS-04
+  title: "Perfume campaign coverage: hero, top-down, cap macro, low angle, back through the glass"
+  persona: "Still-life photographer on a fragrance campaign building the full image set from the client's packshot."
+  evidence: "Earlier bank IMG-BRAND-06 (label through reflections) was medium tier; the back-through-glass view, where the label reads reversed, is the hard part."
+  levers: [set, identity, unseen, physics, exact-text, camera]
+  inputs: [{source: SRC-ADS-PERFUME, role: source}]
+  prompt: |
+    This is a packshot of a perfume, Varsha No. 3: a heavy rectangular clear-glass bottle with
+    bevelled edges, pale amber liquid, a black matte cylindrical cap, and a cream label reading
+    "VARSHA", "No. 3" and "EAU DE PARFUM · 50 ml". Produce one campaign image of the same bottle
+    on a black marble plinth against deep charcoal, from the angle described below. The bottle's
+    proportions, bevels, cap and label are exactly as in the packshot. Where the label is seen
+    through the glass from behind, its text is mirrored and softened by the liquid. One soft key
+    from upper left, a thin rim from behind. Photoreal, 4:5.
+  exact_text: ["VARSHA", "No. 3"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Bottle proportions (about twice as tall as wide), bevels and amber liquid"
+      - "Black matte cylindrical cap"
+      - "Label text VARSHA / No. 3 / EAU DE PARFUM · 50 ml"
+      - "Black marble plinth, charcoal background, key from upper left"
+    members:
+      - {name: "Hero", prompt: "Straight-on hero at label height, 100 mm.", checks: [[text_accuracy, "Does the label read VARSHA, No. 3, EAU DE PARFUM · 50 ml exactly?"], [prompt_adherence, "Is the key from upper left?"]]}
+      - {name: "Top-down", prompt: "Straight down onto the cap and the bottle's shoulders.", checks: [[reference_fidelity, "Is the cap a perfect circle from above?"], [physics_plausibility, "Are the bevels visible as bright edges?"]]}
+      - {name: "Cap macro", prompt: "Macro on the cap and the bottle's neck, 100 mm macro.", checks: [[reference_fidelity, "Is the cap matte black?"], [physics_plausibility, "Is the amber liquid visible through the neck?"]]}
+      - {name: "Low angle", prompt: "Low three-quarter from the plinth's surface, 50 mm, bottle towering.", checks: [[prompt_adherence, "Is it low, looking up?"], [physics_plausibility, "Does the plinth reflect the bottle softly?"]]}
+      - {name: "Back through the glass", prompt: "From directly behind the bottle at label height, 100 mm: the label seen through the glass and liquid.", checks: [[text_accuracy, "Is the label text seen mirrored through the glass?"], [physics_plausibility, "Is it softened and tinted by the liquid?"]]}
+  deliverable: "Five images, 4:5."
+  checks:
+    - [set_consistency, "Is the bottle the same shape in all five?"]
+    - [set_consistency, "Are the bevels in the same places in all five?"]
+    - [set_consistency, "Is the cap the same in all five?"]
+    - [text_accuracy, "Is the label text exact wherever read the right way round?"]
+    - [physics_plausibility, "Is the label mirrored in the back view?"]
+    - [set_consistency, "Is the liquid the same pale amber level in all five?"]
+    - [prompt_adherence, "Is the key light from upper left in all five?"]
+    - [set_consistency, "Is the plinth and background the same in all five?"]
+    - [prompt_adherence, "Does each angle match its description?"]
+    - [prompt_adherence, "Are there no props?"]
+    - [visual_quality, "Is the glass free of melted or warped artefacts?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one reference; set agreement needs the set review."}
+  video_followon: "V5: a slow turntable of the bottle on the plinth."
+
+- id: COV-ADS-05
+  title: "The sprinter's same stride at four focal lengths and from the stands"
+  persona: "Sports-campaign photographer showing the client what each lens does to the hero stride."
+  evidence: "Earlier bank IMG-VIEW-50 (telephoto versus wide) was medium tier; the same frozen moment at several lenses tests whether the model changes the camera rather than the subject."
+  levers: [set, camera, identity, physics, locale]
+  inputs: [{source: SRC-ADS-RUNNER, role: source}]
+  prompt: |
+    This is a sportswear campaign frame: a sprinter in a teal vest, bib 214, mid-stride in lane 4 of
+    a red track at harsh noon, running left to right. Produce the same frozen moment of the same
+    stride from the camera and lens described below. Her pose, both feet's positions, the bib and
+    the lane stay identical; only the camera moves. The lens must show: wide lenses exaggerate
+    nearby things and show lots of track; long lenses flatten the stands into a compressed wall.
+    Hard overhead sun, short shadow under her. Photoreal, 3:2, no logos.
+  exact_text: ["214"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Same stride: same leg forward, same arm swing"
+      - "Teal vest, bib 214, white shoes, short-cropped hair"
+      - "Lane 4, red track, noon sun overhead"
+    members:
+      - {name: "24 mm low", prompt: "24 mm from track level a metre in front of her lane, looking up as she comes.", checks: [[prompt_adherence, "Are her leading foot and the lane line exaggerated?"], [reference_fidelity, "Is the bib readable as 214?"]]}
+      - {name: "50 mm side", prompt: "50 mm side-on from the infield, as in the original framing.", checks: [[reference_fidelity, "Is the stride identical to the original?"], [prompt_adherence, "Is she in lane 4?"]]}
+      - {name: "200 mm head-on", prompt: "200 mm head-on from far down the track, the finish line behind the camera.", checks: [[prompt_adherence, "Is the background compressed and close behind her?"], [physics_plausibility, "Are the lane lines converging tightly?"]]}
+      - {name: "400 mm from the stands", prompt: "400 mm from high in the stands, looking down at her.", checks: [[prompt_adherence, "Is it high and compressed?"], [physics_plausibility, "Is her shadow directly under her?"]]}
+      - {name: "Shoe close-up", prompt: "100 mm close on her leading shoe striking the track.", checks: [[reference_fidelity, "Is it a white shoe with no logo?"], [physics_plausibility, "Is the foot in contact with the track?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [set_consistency, "Is it the same stride in all five?"]
+    - [set_consistency, "Is she the same athlete in all five?"]
+    - [text_accuracy, "Is the bib 214 wherever readable?"]
+    - [prompt_adherence, "Do the lenses clearly differ in perspective as described?"]
+    - [set_consistency, "Is she in lane 4 in every wide enough view?"]
+    - [prompt_adherence, "Is the noon sun overhead with a short shadow in all five?"]
+    - [prompt_adherence, "Are there no logos on clothes or shoes?"]
+    - [prompt_adherence, "Is she the only athlete?"]
+    - [set_consistency, "Is her skin tone the same in all five?"]
+    - [visual_quality, "Are her hands and feet anatomically correct?"]
+    - [prompt_adherence, "Does each view match its position?"]
+    - [style, "Is the grade the same across the set?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ADS-06
+  title: "No base: a described bridal lehenga from five angles including the embroidered back"
+  persona: "Fashion-campaign producer previewing the look-book set for a bridal label before the shoot."
+  evidence: "Earlier bank IMG-VIEW-12 (front-on garment to the back view) was medium tier; here the back is described and must match."
+  levers: [set, identity, layout, locale, long-brief, light-lock]
+  prompt: |
+    A bridal look-book shoot in a sandstone courtyard in Jaipur at golden hour, photoreal, 4:5. The
+    model: a woman in her mid-twenties with a medium-brown complexion and a low bun with white
+    jasmine. The outfit: a deep maroon velvet lehenga with a wide gold zardozi border at the hem;
+    a matching blouse with elbow sleeves; a sheer rose-pink dupatta with a scalloped gold edge
+    pinned over her head and falling down her back. On the back of the blouse, a single embroidered
+    gold lotus; on the back of the lehenga, a vertical panel of small gold peacocks running from
+    waist to hem. She wears a gold maang tikka and a nose ring on her left nostril. Produce the view
+    described below.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Maroon velvet lehenga with gold zardozi hem border"
+      - "Rose-pink dupatta with scalloped gold edge"
+      - "Back: gold lotus on the blouse, vertical peacock panel on the skirt"
+      - "Her face, bun with jasmine, maang tikka, nose ring on the left"
+    members:
+      - {name: "Front", prompt: "Full length from the front, standing still.", checks: [[set_consistency, "Is the gold hem border visible?"], [set_consistency, "Is the nose ring on her left nostril?"]]}
+      - {name: "Back", prompt: "Full length from directly behind, dupatta lifted aside by her hand.", checks: [[set_consistency, "Is there a single gold lotus on the blouse back?"], [set_consistency, "Is there a vertical peacock panel on the skirt back?"]]}
+      - {name: "Left profile", prompt: "Left side profile, walking.", checks: [[set_consistency, "Is the nose ring on this near side?"], [physics_plausibility, "Does the velvet fall with weight as she walks?"]]}
+      - {name: "Twirl", prompt: "From the front-right, mid-twirl, the lehenga flaring.", checks: [[set_consistency, "Is the peacock panel glimpsed at the back as it flares?"], [physics_plausibility, "Does the skirt flare outward plausibly?"]]}
+      - {name: "Detail", prompt: "Close on the hem border and her hand holding the dupatta edge, 100 mm.", checks: [[set_consistency, "Is the dupatta edge scalloped gold?"], [visual_quality, "Is her hand natural?"]]}
+  deliverable: "Five images, 4:5."
+  checks:
+    - [set_consistency, "Is she the same model in all five?"]
+    - [set_consistency, "Is the lehenga the same maroon velvet with the same border in all five?"]
+    - [set_consistency, "Is the dupatta the same colour and edge in all five?"]
+    - [set_consistency, "Is the back design exactly a lotus on the blouse and a peacock panel on the skirt?"]
+    - [set_consistency, "Is the nose ring on her left in every view that shows it?"]
+    - [set_consistency, "Is the jasmine in her bun in every view?"]
+    - [prompt_adherence, "Is it golden hour in the same courtyard in all five?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [set_consistency, "Is her skin tone the same in all five?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands and jewellery free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five text-to-image calls with the same brief; set agreement needs the set review."}
+  video_followon: "V4: the twirl as a slow-motion clip with the back panel holding."

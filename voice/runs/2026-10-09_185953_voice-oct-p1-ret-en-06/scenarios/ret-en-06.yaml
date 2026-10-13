@@ -1,0 +1,37 @@
+# ret-en-06 - Flash-sale discount percentage (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-01 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-01): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Sale events & offers - festive sales, coupons, bank offers, restock.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# SPEECH SKILLS. Numbers: dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Even contest.
+
+id: ret-en-06
+modality: voice
+task: text_to_speech
+title: "Flash-sale discount percentage - English"
+
+input:
+  script: |
+    In our Big Billion Days sale, this item is up to 75% off, for the next two hours only!
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "seventy-five percent" recoverable
+  2) "two hours" recoverable
+  3) Energetic tone does not cost clarity
+
+checks:
+  duration_s: {min: 3.8, max: 20.7}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, ecommerce-retail, sale-events-offers, easy, even-contest, new-english]

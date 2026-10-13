@@ -13,6 +13,8 @@ judge, scoring and report stay ignorant that providers exist at all.
 
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
@@ -94,6 +96,11 @@ class GenRequest:
     voice_logical: str | None = None
     language: str | None = None
     style: str | None = None
+    # TWO-VOICE SCENES. Each entry is (label, provider_voice_id, logical_name,
+    # style) in the order the scene introduces them; the script's lines start
+    # "<label>: ". Empty for an ordinary one-voice clip. Resolved by the
+    # runner from the scenario's `params.speakers`, like voice_id.
+    speakers: tuple[tuple[str, str, str, str | None], ...] = ()
     timeout_s: float = 180.0
     # Ask the adapter to STREAM and time the first chunk carrying audio.
     # Opt-in, because streaming changes how a response is assembled and only
@@ -169,3 +176,31 @@ def params_unsupported(requested: dict[str, Any], applied: dict[str, Any]) -> li
     inferred from the output.
     """
     return sorted(k for k in requested if k not in applied)
+
+
+def split_dialogue(script: str, labels: list[str]) -> list[tuple[str, str]]:
+    """
+    "A: line\\nB: line" -> [("A", "line"), ("B", "line")], in order.
+
+    A line that starts with no known label continues the previous speaker's
+    turn. Text before the first label is refused rather than guessed at,
+    because giving it to either voice would be an undeclared choice.
+    """
+    pat = re.compile(r"^\s*(" + "|".join(re.escape(lb) for lb in labels) + r")\s*:\s*(.*)$")
+    turns: list[tuple[str, str]] = []
+    for raw in script.splitlines():
+        if not raw.strip():
+            continue
+        m = pat.match(raw)
+        if m:
+            turns.append((m.group(1), m.group(2).strip()))
+        elif turns:
+            turns[-1] = (turns[-1][0], f"{turns[-1][1]} {raw.strip()}")
+        else:
+            raise ProviderError(
+                f"two-voice script starts with a line that names no speaker ({raw[:40]!r}); "
+                f"every turn must begin with one of {labels}"
+            )
+    if not turns:
+        raise ProviderError("two-voice script has no '<label>: ' lines")
+    return turns

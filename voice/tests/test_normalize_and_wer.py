@@ -18,7 +18,7 @@ from runner.normalize import normalize, normalized_wer
 
 
 def test_lowercases_and_strips_punctuation():
-    assert normalize("Hello, Priya! It's here.") == "hello priya it s here"
+    assert normalize("Hello, Priya! It's here.") == "hello priya its here"  # "'s" stays on its word (2026-10-09)
 
 
 def test_hyphenated_digit_string_and_bare_digit_string_converge():
@@ -443,3 +443,100 @@ def test_indian_grouping_beats_a_wrong_currency_symbol():
     # International grouping still reads internationally, symbol or not.
     assert "lakh" not in normalize("$250,000")
     assert normalize("$137.50") == "one hundred and thirty seven dollars and fifty cents"
+
+
+# --- 2026-10-09, bank-en-01: three ways a correct read failed its gates ----
+
+def test_a_dot_clock_time_beside_am_pm_reads_as_a_time():
+    assert normalize("5.30 pm") == normalize("5:30 pm") == "five thirty pm"
+    assert normalize("5.30 p.m.") == "five thirty pm"
+    # A bare decimal is still a decimal.
+    assert normalize("5.30") == "five point three zero"
+
+
+def test_one_word_spaced_two_ways_is_not_a_word_error():
+    r = normalized_wer("Today's RTGS cut-off is late.", "Today's RTGS cutoff is late.")
+    assert r.wer == 0.0
+    r = normalized_wer("The cutoff is late.", "The cut off is late.")
+    assert r.wer == 0.0
+
+
+def test_a_real_word_difference_is_not_joined_away():
+    # Both halves are words in the other text, so nothing is joined.
+    r = normalized_wer("a part of it apart", "apart of it a part")
+    assert r.wer > 0
+
+
+def test_international_grouping_of_a_rupee_lakh_amount_reads_internationally():
+    """The transcriber's grouping is evidence of what was said."""
+    assert "lakh" not in normalize("340,000 rupees")
+    assert "lakh" not in normalize("Rs 340,000")
+    assert "lakh" in normalize("Rs 3,40,000")
+    assert "lakh" in normalize("340000 rupees")  # no grouping: rupees decide
+    # Below a lakh the two systems agree, so nothing changes.
+    assert normalize("75,000 rupees") == "seventy five thousand rupees"
+
+
+def test_a_bare_number_beside_a_currency_code_is_an_amount():
+    """bank-en-04, 2026-10-09: "AED 1250" read as "one two five zero" failed a correct read."""
+    amount = "one thousand two hundred and fifty"
+    assert normalize("AED 1250") == f"aed {amount}"
+    assert normalize("1250 AED") == f"{amount} aed"
+    assert normalize("AED 1,250") == normalize("AED 1250")
+    assert normalize("1250 dirhams") == f"{amount} dirhams"
+    # Reference numbers are not amounts and still read digit by digit.
+    assert normalize("AWB 660231458").startswith("awb six six zero")
+    assert normalize("order 1250") == "order one two five zero"
+    r = normalized_wer("A transaction of AED 1,250 at Dubai Duty Free.",
+                       "A transaction of AED 1250 at Dubai Duty Free.")
+    assert r.wer == 0.0
+
+
+def test_roman_letters_leading_into_digits_are_a_code_not_a_numeral():
+    """bank-en-06, 2026-10-09: "XX-4219" became "twenty four two one nine"."""
+    assert normalize("XX-4219") == "xx four two one nine"
+    assert normalize("XX 4219") == "xx four two one nine"
+    assert normalize("Chapter XII begins") == "chapter twelve begins"
+    assert normalize("Louis XIV.") == "louis fourteen"
+    r = normalized_wer("please confirm the last six characters: X, X, four, two, one, nine.",
+                       "please confirm the last 6 characters. XX-4219")
+    assert r.wer == 0.0
+
+
+def test_dr_with_or_without_a_full_stop_and_a_possessive_s():
+    """hlt-en-03, 2026-10-09: four words lost on a correct read."""
+    assert normalize("Dr Lal") == normalize("Dr. Lal") == "doctor lal"
+    assert normalize("Path Lab's") == "path labs"
+    assert normalize("Today’s code") == "todays code"
+    r = normalized_wer("Your Dr Lal PathLabs report is ready.", "Your Dr. Lal Path Lab's report is ready.")
+    assert r.wer == 0.0
+
+
+def test_a_scale_word_after_a_rupee_amount_comes_before_the_currency():
+    """md-en-01, 2026-10-09: "Rs 3 crore" read as "three rupees crore"."""
+    assert normalize("Rs 3 crore") == normalize("3 crore rupees") == "three crore rupees"
+    assert normalize("₹2.5 lakh") == "two point five lakh rupees"
+    assert normalize("Rs 5 lakhs") == normalize("5 lakh rupees")
+    # Without a scale word the money reading is unchanged.
+    assert normalize("Rs 150") == "one hundred and fifty rupees"
+    assert "lakh" in normalize("Rs 3,40,000")
+
+
+def test_a_dotted_time_after_at_or_by_is_a_clock_time():
+    """md-en-13, 2026-10-09: "at 6.40 tomorrow" read as "six point four zero"."""
+    assert normalize("at 6.40 tomorrow") == normalize("at 6:40 tomorrow")
+    assert normalize("by 8.05 tomorrow") == normalize("by 8:05 tomorrow")
+    # A dotted number anywhere else is still a decimal.
+    assert normalize("a score of 6.40") == "a score of six point four zero"
+    assert normalize("HbA1c is 7.8%") == "hba one c is seven point eight percent"
+
+
+def test_a_brand_spelled_as_an_ordinary_word_is_one_spelling():
+    """ret-en-01, 2026-10-09: "Croma" transcribed "chroma" for both models."""
+    assert normalize("your Croma replacement") == normalize("your chroma replacement")
+
+
+def test_devanagari_and_telugu_words_survive_normalization():
+    """Vowel signs are combining marks; the strip used to shred every word."""
+    assert normalize("तीन लाख चालीस हज़ार रुपये।") == "तीन लाख चालीस हज़ार रुपये"
+    assert normalize("మూడు లక్షలు") == "మూడు లక్షలు"

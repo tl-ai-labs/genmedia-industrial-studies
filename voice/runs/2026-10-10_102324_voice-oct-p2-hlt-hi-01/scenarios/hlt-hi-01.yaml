@@ -1,0 +1,44 @@
+# hlt-hi-01 - Hospital appointment — doctor name, date, time, token (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-01: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-01
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Appointments & teleconsults.
+# TARGET CUSTOMER. Hospital Chains, Telehealth Platforms.
+# WHAT THIS TESTS. A long Telugu doctor name, a hospital + locality, a numeral date, a clock time and a token code
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-01
+modality: voice
+task: text_to_speech
+title: "Hospital appointment — doctor name, date, time, token - Hindi"
+
+input:
+  script: |
+    आपका Apollo Hospitals, Jubilee Hills में Dr. श्रीनिवास राघवेंद्र राव के साथ appointment 24 अक्टूबर को सुबह 10:15 पर confirm है। आपका token number है A, four, seven।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Token "A47" recoverable
+  2) Name "श्रीनिवास राघवेंद्र राव" natural (judge)
+  3) Date "चौबीस अक्टूबर" and time "सवा दस" / "दस पंद्रह" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, healthcare-pharma, appointments-teleconsults, hard, even-contest, v2-bank]

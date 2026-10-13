@@ -1,0 +1,108 @@
+# Coverage and camera move — Media, publishing & events scenarios. Slots: vcov.yaml.
+code: VCOV
+scenarios:
+
+- id: VCOV-MED-01
+  title: "Four festival clips from the wing, drum riser, stage front and truss; the band where it stands"
+  persona: "Music publication's video editor building a multi-angle edit from one photo."
+  evidence: "Coloured stage beams from fixed trusses make every angle checkable."
+  levers: [set, camera, layout, light-lock, count]
+  inputs: [{source: SRC-MED-CONCERT, role: first_frame}]
+  prompt: |
+    This photo is a festival stage at night from front of house: a singer in a silver jacket at the
+    centre mic, a guitarist on stage left, a bassist on stage right, a drummer on a riser at the back, an
+    orange-purple LED screen, magenta beams from the stage-left truss and cyan from the stage-right truss,
+    three phones raised in the crowd. Make four 4-second clips of the same moment from four positions. In
+    every clip the singer raises her right arm to the crowd at 2 seconds and the drummer hits a crash at
+    3 seconds. The beams come from their own trusses in every view. No logos, no text.
+  clip: {duration: 4, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Four musicians in their places and outfits"
+      - "Magenta from stage left, cyan from stage right; the LED gradient"
+      - "Singer's arm up at 2 s; crash at 3 s"
+    members:
+      - {name: "Stage-left wing", prompt: "From the stage-left wing at stage level, across the band.", checks: [[prompt_adherence, "Is the guitarist nearest?"], [prompt_adherence, "Does the arm go up at about 2 s?"]]}
+      - {name: "Drum riser", prompt: "From behind the drummer, over the kit to the crowd.", checks: [[prompt_adherence, "Does the crash hit at about 3 s?"], [prompt_adherence, "Is it over the drum kit?"]]}
+      - {name: "Stage front", prompt: "From the stage front looking out at the crowd, the singer's back in frame.", checks: [[prompt_adherence, "Are raised phones visible in the crowd?"], [prompt_adherence, "Is the crowd lit by the beams from behind the camera?"]]}
+      - {name: "Truss", prompt: "From the overhead truss looking down at the stage.", checks: [[prompt_adherence, "Are there four musicians?"], [prompt_adherence, "Is the band layout the same from above?"]]}
+  deliverable: "Four 4-second clips, 16:9."
+  checks:
+    - [prompt_adherence, "Are there four musicians wherever the whole band is seen?"]
+    - [set_consistency, "Are the musicians in the same places and outfits in all four?"]
+    - [set_consistency, "Do the arm raise and crash happen at the same moments in all four?"]
+    - [prompt_adherence, "Do magenta beams always come from stage left and cyan from stage right?"]
+    - [set_consistency, "Is the LED gradient the same in all four?"]
+    - [prompt_adherence, "Does each clip come from its described position?"]
+    - [motion_coherence, "Is the performers' motion natural?"]
+    - [physics_plausibility, "Are beams visible in haze from their sources?"]
+    - [text_accuracy, "Are there no logos or text?"]
+    - [visual_quality, "Are faces and hands clean?"]
+    - [set_consistency, "Is the singer recognisably the same?"]
+    - [prompt_adherence, "Does each clip read as the same moment?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Four image-to-video calls from the same photo; set agreement needs the set review."}
+
+- id: VCOV-MED-02
+  title: "A jib move from the anchor's MCU up and back to the studio wide, revealing the studio floor"
+  persona: "Broadcast director previewing a new jib move for the close of a bulletin."
+  evidence: "A move that ends wider than the photo must invent the studio consistently."
+  levers: [camera-move, unseen, identity, parallax, locale]
+  inputs: [{source: SRC-MED-NEWSROOM, role: first_frame}]
+  prompt: |
+    Start on this medium close-up of a Hindi news anchor at a curved white desk and make an 8-second jib
+    move that pulls back and rises high over the studio floor, revealing what the frame never shows: a
+    dark floor, two other cameras on pedestals, a lighting grid above, and the whole curved desk with the
+    skyline screen behind. The anchor keeps reading to camera throughout; his glasses, grey-flecked hair,
+    navy suit and maroon tie stay the same in every frame as he shrinks in the frame. The pedestal cameras
+    near the jib slide past faster than the desk. The on-screen graphics are not part of the camera feed.
+    No logos.
+  clip: {duration: 8, aspect: "16:9", camera: "jib pull back and rise from MCU to high wide"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the jib pull back and rise from the MCU to a high wide?"]
+    - [prompt_adherence, "Is the studio floor dark with two pedestal cameras and a lighting grid?"]
+    - [prompt_adherence, "Is the whole curved desk and skyline screen visible at the end?"]
+    - [reference_fidelity, "Is the anchor the same in every frame?"]
+    - [motion_coherence, "Does he read to camera naturally?"]
+    - [prompt_adherence, "Is the key from front left?"]
+    - [motion_coherence, "Is the move smooth with no warping?"]
+    - [physics_plausibility, "Do the pedestal cameras slide past faster than the desk?"]
+    - [prompt_adherence, "Are there no on-screen graphics in the feed?"]
+    - [text_accuracy, "Is there no logo or text?"]
+    - [visual_quality, "Is his face free of artefacts as he shrinks?"]
+    - [preservation, "Does the opening frame match the photo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-MED-03
+  title: "A slow overhead orbit of a Bengali feast spread; eleven dishes hold their places"
+  persona: "Food magazine's video editor making a moving opener."
+  evidence: "Many dishes on a table drift and multiply as a generated camera rotates over them."
+  levers: [camera-move, layout, count, locale, long-brief]
+  prompt: |
+    A 10-second top-down shot of a Bengali feast on a dark wooden table under warm overhead light, the
+    camera rotating slowly 90 degrees clockwise while looking straight down. Eleven dishes in brass and
+    steel bowls: in the middle a bowl of rice, a bowl of dal, begun bhaja, cholar dal, a fish fry,
+    chutney and a glass of water; around the edges, shorshe ilish, a plate of luchi, a bowl of mishti doi
+    and a dish of aloo posto, which are cut by the frame edges at the start. As the frame rotates,
+    different dishes are cut by the edges, but every dish stays in its place on the table. Steam rises
+    from the rice and dal. No hands, no text.
+  clip: {duration: 10, aspect: "3:2", camera: "top-down, rotating 90 degrees clockwise"}
+  deliverable: "One 10-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Are there eleven dishes throughout?"]
+    - [prompt_adherence, "Does every dish stay in its place as the frame rotates?"]
+    - [prompt_adherence, "Is it straight top-down with a steady 90-degree rotation?"]
+    - [composition, "Are dishes cut by the frame edges as it rotates?"]
+    - [motion_coherence, "Does steam rise from the rice and dal?"]
+    - [prompt_adherence, "Is it warm overhead light?"]
+    - [prompt_adherence, "Are the bowls brass and steel?"]
+    - [temporal_consistency, "Is the food stable with no swimming textures?"]
+    - [prompt_adherence, "Does it read as a Bengali feast?"]
+    - [prompt_adherence, "Are there no hands?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

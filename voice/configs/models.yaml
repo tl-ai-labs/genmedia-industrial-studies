@@ -10,14 +10,29 @@
 # reason recorded, rather than deleted - the block IS the documentation of
 # how to turn them on.
 #
-# WHICH ARMS ARE LIVE HERE, AND WHY (updated 2026-09-28 for the 3.8 run).
-# This run is ONE arm - Gemini 3.8 Flash TTS over the 23-scenario bank:
+# WHICH ARMS ARE LIVE HERE, AND WHY (updated 2026-10-09 for the October
+# text-to-speech run: 200 scenarios in scenarios-oct-2026/, two arms):
 #
 #     gemini-3-8-flash-tts        LIVE  - Gemini API (3.8 is not on Vertex yet)
+#     elevenlabs-v4               LIVE  - eleven_v4, released 2026-09-28
+#     elevenlabs-v4-turbo         off   - the low-latency v4, half the price
 #     gemini-3-8-flash-lite-tts   off   - the cheaper 3.8 tier, same adapter
 #     gemini-3-1-flash-tts        off   - previous Google arm (Vertex)
-#     elevenlabs-v3               off   - its v3 run stands; not re-run here
+#     elevenlabs-v3               off   - SUPERSEDED by v4; its 2026-09-09 run stands
 #     elevenlabs-multilingual-v2  off   - SUPERSEDED by v3; v2 numbers withdrawn
+#
+# THE OCTOBER CAST. The 200 scenarios name a speaker by gender and age band
+# (female_young = 18-25, female_mid = 26-45, female_older = 46-60,
+# female_elder = 60+, male_teen = 13-17, male_young, male_mid, male_older).
+# They map onto the SAME voices the September runs used (decided 2026-10-09):
+# every female speaker -> ElevenLabs Matilda / Gemini Aoede (the Sept
+# female_mid_warm), every male speaker -> Eric / Charon (the Sept
+# male_mid_neutral). Only male_older differs - Bill / Fenrir, two more
+# voices from the Sept game-character cast - because two-voice scenes pair
+# an older man with a younger one and need two distinct voices. All are
+# ElevenLabs stock voices, so no voice slots are needed. Age bands are
+# therefore not voiced; a checklist line about a speaker's age (a 60+
+# grandmother) is a limit of this cast, not of either model.
 #
 # Everything else is reachable-and-configured but out of this matrix on
 # purpose, each with its reason recorded rather than deleted. The 2.5 Flash
@@ -201,6 +216,18 @@ voice:
       npc_medic: "Aoede"             # breezy, warm
       npc_engineer: "Puck"           # upbeat, dry
       npc_trader: "Fenrir"           # excitable
+      # --- the October cast (scenarios-oct-2026/) ---------------------
+      # The September voices: Aoede for every woman, Charon for every man,
+      # Fenrir (a Sept game-character voice) for the older man so two-voice
+      # scenes have two distinct voices.
+      female_young: "Aoede"
+      female_mid: "Aoede"
+      female_older: "Aoede"
+      female_elder: "Aoede"
+      male_teen: "Charon"
+      male_young: "Charon"
+      male_mid: "Charon"
+      male_older: "Fenrir"
     params: {format: wav, sample_rate: 24000}
     price:
       unit: tokens
@@ -326,7 +353,7 @@ voice:
   # ---------------------------------------------------------------------
   - id: elevenlabs-v3
     enabled: false
-    disabled_reason: "not in the 2026-09-28 run - that run is Gemini 3.8 Flash TTS only; the v3 results from 2026-09-09 stand. Flip to true to re-run this arm"
+    disabled_reason: "superseded by elevenlabs-v4 for the October run; the v3 results from 2026-09-09 stand. Flip to true to re-run this arm"
     adapter: elevenlabs_tts
     provider: elevenlabs
     provider_model: "eleven_v3"
@@ -360,6 +387,108 @@ voice:
       usd: 0.10
       source: https://elevenlabs.io/pricing/api
       as_of: 2026-09-09
+
+  # ---------------------------------------------------------------------
+  # ElevenLabs Eleven v4 - released 2026-09-28, the opponent for the October
+  # text-to-speech run. Same direct-API adapter as v3: create speech and
+  # stream speech both take `eleven_v4`, so the model is one config line.
+  #
+  # DIRECTION. v4 has no style field and no SSML; it reads bracketed audio
+  # tags as direction. `style_as_audio_tags` sends each scenario's style as
+  # one leading tag, so ElevenLabs gets the same direction Gemini gets in
+  # speech_metadata - not nothing, as in the v3 run.
+  #
+  # TWO-VOICE SCENES go to Text to Dialogue (/v1/text-to-dialogue), one
+  # input per line with that speaker's voice.
+  #
+  # VOICES. The September voices - Matilda, Eric and Bill - all ElevenLabs
+  # stock voices, so no voice slot is needed. An Indian-accented library
+  # cast is listed, unused, under the October cast below.
+  #
+  # PRICE. List $0.08 per 1,000 characters, 1 credit per character. A 72%
+  # launch discount ($0.0224) runs to 2026-10-12; the block keeps the list
+  # price so a cost estimate is never optimistic.
+  # ---------------------------------------------------------------------
+  - id: elevenlabs-v4
+    enabled: true
+    adapter: elevenlabs_tts
+    provider: elevenlabs
+    provider_model: "eleven_v4"
+    auth_env: ELEVENLABS_API_KEY
+    region: us
+    region_note: "Served by ElevenLabs' direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore) are Enterprise-only."
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 20}
+    voice_map:
+      # The September bank's voices, identical to elevenlabs-v3, so v4 can
+      # re-run that bank with only the model changed.
+      female_mid_warm: "XrExE9yKIg1WjnnlVkGX"   # Matilda
+      male_mid_neutral: "cjVigY5qzO86Huf0OWal"  # Eric
+      npc_quartermaster: "pqHfZKP75CvOlQylNhV4"  # Bill
+      npc_scout: "FGY2WhTYpPnrIDTdsKH5"          # Laura
+      npc_handler: "pNInz6obpgDQGcFmaJgB"        # Adam
+      npc_medic: "EXAVITQu4vr4xnSDxMaL"          # Sarah
+      npc_engineer: "SAz9YHcvj6GT2YYXdXww"       # River
+      npc_trader: "cgSgspJ2msm6clMCkdW9"         # Jessica
+      # The October cast: the September voices (stock, no voice slot).
+      female_young: "XrExE9yKIg1WjnnlVkGX"   # Matilda
+      female_mid: "XrExE9yKIg1WjnnlVkGX"     # Matilda
+      female_older: "XrExE9yKIg1WjnnlVkGX"   # Matilda
+      female_elder: "XrExE9yKIg1WjnnlVkGX"   # Matilda
+      male_teen: "cjVigY5qzO86Huf0OWal"      # Eric
+      male_young: "cjVigY5qzO86Huf0OWal"     # Eric
+      male_mid: "cjVigY5qzO86Huf0OWal"       # Eric
+      male_older: "pqHfZKP75CvOlQylNhV4"     # Bill - the Sept npc_quartermaster
+      # An Indian-accented alternative, NOT in use: library voices that need
+      # one voice slot each (tools/add_elevenlabs_voices.py adds them):
+      # female_young Anika ecp3DWciuUyW7BYM7II1, female_mid Riya Rao
+      # vYENaCJHl4vFKNDYPr8y, female_older Tia Mirza OUBnvvuqEKdDWtapoJFn,
+      # female_elder Dulari Didi wSMP2ehaozb5I36yi8vg, male_teen Benne
+      # nwXBqbMKJWkQdYCbhxqZ, male_young Viraj 1U02n4nD6AdIZ9CjF053,
+      # male_mid Rudra EitqXD7jgIy0K5Z1zGGp, male_older Aakash Aryan H53NeKIHK4upDFLnIv9Z.
+    params: {format: wav, sample_rate: 24000, style_as_audio_tags: true}
+    price:
+      unit: per_1k_chars
+      usd: 0.08
+      source: https://elevenlabs.io/pricing/api
+      as_of: 2026-10-09
+
+  # Eleven v4 Turbo - the low-latency v4 for live agents, half a credit per
+  # character. Same cast and adapter; flip to true to add the latency tier.
+  - id: elevenlabs-v4-turbo
+    enabled: false
+    disabled_reason: "not in the October matrix - v4 is the quality arm. Reachable on the same adapter and voices; flip to true to add it"
+    adapter: elevenlabs_tts
+    provider: elevenlabs
+    provider_model: "eleven_v4_turbo"
+    auth_env: ELEVENLABS_API_KEY
+    region: us
+    region_note: "Served by ElevenLabs' direct API (api.elevenlabs.io), US by default on this plan."
+    supports: [text_to_speech, styled_tts]
+    limits: {max_concurrency: 2, rpm: 20}
+    voice_map:
+      female_mid_warm: "XrExE9yKIg1WjnnlVkGX"
+      male_mid_neutral: "cjVigY5qzO86Huf0OWal"
+      npc_quartermaster: "pqHfZKP75CvOlQylNhV4"
+      npc_scout: "FGY2WhTYpPnrIDTdsKH5"
+      npc_handler: "pNInz6obpgDQGcFmaJgB"
+      npc_medic: "EXAVITQu4vr4xnSDxMaL"
+      npc_engineer: "SAz9YHcvj6GT2YYXdXww"
+      npc_trader: "cgSgspJ2msm6clMCkdW9"
+      female_young: "XrExE9yKIg1WjnnlVkGX"
+      female_mid: "XrExE9yKIg1WjnnlVkGX"
+      female_older: "XrExE9yKIg1WjnnlVkGX"
+      female_elder: "XrExE9yKIg1WjnnlVkGX"
+      male_teen: "cjVigY5qzO86Huf0OWal"
+      male_young: "cjVigY5qzO86Huf0OWal"
+      male_mid: "cjVigY5qzO86Huf0OWal"
+      male_older: "pqHfZKP75CvOlQylNhV4"
+    params: {format: wav, sample_rate: 24000, style_as_audio_tags: true}
+    price:
+      unit: per_1k_chars
+      usd: 0.04
+      source: https://elevenlabs.io/pricing/api
+      as_of: 2026-10-09
 
   # ---------------------------------------------------------------------
   # OpenAI gpt-4o-mini-tts - TOKEN billed. /v1/audio/speech returns no usage
@@ -501,13 +630,19 @@ asr:
   provider: local
   region: local
   region_note: "Runs on the machine that ran the study (faster-whisper on CPU). No network, no region."
-  # MEDIUM, and multilingual - not small.en. Most of this bank is en-IN, and
+  # LARGE-V3 since 2026-10-09 (was medium): the October bank is 70% Hindi,
+  # Hinglish, Telugu and Tenglish, where the larger model is the better
+  # recogniser, and on English it wrote the same transcripts as medium
+  # (bank-en-01) in about the same time. Not comparable with the September
+  # runs' word error rates, which used medium - the study owner accepted that.
+  #
+  # Multilingual, never small.en. Most of the September bank was en-IN, and
   # the English-only model wrote "ARIES" for "rupees" and "Ragavan" for
   # "Raghavan", inventing failures on exactly the India-specific scenarios
   # that target the capability under test. Vendor-neutrality was the reason
   # to leave Google; language coverage is a second instrument fault and
   # trading one for the other would have been no gain.
-  provider_model: "medium"
+  provider_model: "large-v3"
   price:
     unit: per_minute
     usd: 0.0

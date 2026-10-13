@@ -1,0 +1,204 @@
+# Character continuity in motion — E-commerce, D2C & retail scenarios. Slots: vchr.yaml.
+code: VCHR
+scenarios:
+
+- id: VCHR-ECM-02
+  seed: true
+  title: "The creator in three clips under three lights; her dark skin never lightened"
+  persona: "Beauty brand's influencer team making motion content of a creator without a second shoot."
+  evidence: "Skin tone drifting lighter under bright or coloured light is a known failure on dark skin, and worse in motion as the light changes."
+  levers: [set, identity, light-lock, locale, exclude]
+  inputs:
+    - {source: SRC-ECM-CREATOR, role: character, note: "the creator"}
+  prompt: |
+    This frame shows a beauty creator of about twenty-three: dark brown skin, a natural bare face, black
+    hair in a claw clip, small gold hoops, a sage-green ribbed tank top. Make one 5-second clip of her as
+    described below, natural phone-camera look. Her face, hair, earrings and top stay exactly hers. Her
+    skin stays the same dark brown in every light and every frame: brighter or tinted by the light, but
+    never lightened, greyed or smoothed, with its texture visible. Vertical 9:16, no text, no logos.
+  clip: {duration: 5, aspect: "9:16", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, claw clip, gold hoops, sage tank top"
+      - "Dark brown skin tone and visible texture"
+      - "No makeup unless the clip says so"
+    members:
+      - {name: "Ring-light tutorial", prompt: "At her bedroom desk under the ring light, she dabs moisturiser on her cheek and smiles; locked off.", checks: [[prompt_adherence, "Are there ring catchlights in her eyes?"], [reference_fidelity, "Is her skin as dark as in the frame?"]]}
+      - {name: "Daylight unboxing", prompt: "By a sunny window at noon, she opens a small parcel and holds up a jar; slow push in.", checks: [[prompt_adherence, "Is it bright window daylight?"], [reference_fidelity, "Is her skin not washed out or lightened by the sun?"]]}
+      - {name: "Neon street", prompt: "At night on a street lit by pink and blue shop signs, she walks towards camera laughing; handheld.", checks: [[prompt_adherence, "Is she tinted pink and blue by the signs?"], [reference_fidelity, "Is her underlying tone still dark brown, not grey?"]]}
+  deliverable: "Three 5-second clips, 9:16."
+  checks:
+    - [set_consistency, "Is she the same woman in all three clips?"]
+    - [set_consistency, "Is her skin tone the same dark brown under all three lights?"]
+    - [set_consistency, "Is her skin never smoothed, with texture visible?"]
+    - [set_consistency, "Are the clip, hoops and tank top the same in all three?"]
+    - [temporal_consistency, "Does her face stay stable while she moves, with no morphing?"]
+    - [prompt_adherence, "Does each clip have its described light?"]
+    - [prompt_adherence, "Does each clip have its described camera?"]
+    - [prompt_adherence, "Does each clip show its action?"]
+    - [prompt_adherence, "Is she the only person in focus?"]
+    - [text_accuracy, "Is there no text or logo?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [composition, "Is each clip a true vertical 9:16?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Each clip is one image-to-video call with the frame as a character reference; whole-set skin tone needs the set review."}
+
+- id: VCHR-ECM-01
+  title: "The jacket worn by one described model in three clips: street, metro, rooftop; marigold and fray stay put"
+  persona: "Denim D2C brand's content lead making three reels of the same jacket on one model."
+  evidence: "A product worn in motion loses its one-side details; the model must also stay the same."
+  levers: [set, identity, layout, unseen, locale]
+  inputs: [{source: SRC-ECM-JACKET-FLAT, role: product}]
+  prompt: |
+    The image is the real jacket: mid-blue stone-washed denim trucker, two pointed-flap chest pockets,
+    copper buttons, a yellow marigold embroidered on the LEFT chest pocket flap, a small fray on the RIGHT
+    cuff. The model: a man in his late twenties, lean, dark brown skin, a short beard, a black beanie, a
+    white tee and black jeans. Make three 5-second clips of him wearing it in Mumbai. The marigold stays on
+    the left pocket and the fray on the right cuff in every clip; he is the same man. No text.
+  clip: {duration: 5, aspect: "9:16", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Marigold on the left pocket; fray on the right cuff"
+      - "His face, beard and beanie"
+      - "Stone-wash and copper buttons"
+    members:
+      - {name: "Street", prompt: "Day, a Bandra street with graffiti walls: he walks towards camera, hands in pockets.", checks: [[prompt_adherence, "Is the marigold on his left chest?"], [motion_coherence, "Is his walk natural?"]]}
+      - {name: "Metro", prompt: "In a metro carriage: he holds the overhead bar with his right hand, the cuff fray in view.", checks: [[prompt_adherence, "Is the fray on the right cuff?"], [physics_plausibility, "Does he sway with the train?"]]}
+      - {name: "Rooftop", prompt: "Dusk on a rooftop: he turns his back to camera to look at the skyline, then glances back over his left shoulder.", checks: [[reference_fidelity, "Is the back plain denim with a yoke?"], [prompt_adherence, "Is it dusk light?"]]}
+  deliverable: "Three 5-second clips, 9:16."
+  checks:
+    - [set_consistency, "Is the marigold on the left pocket in every clip?"]
+    - [set_consistency, "Is the fray on the right cuff wherever visible?"]
+    - [set_consistency, "Is it the same man in all three?"]
+    - [set_consistency, "Is the jacket the same wash and cut?"]
+    - [temporal_consistency, "Does the embroidery stay stable without swimming?"]
+    - [prompt_adherence, "Does each clip have its own light?"]
+    - [physics_plausibility, "Does the denim move like stiff cotton?"]
+    - [prompt_adherence, "Do the settings read as Mumbai?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Is he the subject in each?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one product reference; set agreement needs the set review."}
+
+- id: VCHR-ECM-03
+  title: "The knitted elephant animated stop-motion style in three clips; knit, trunk side and patch never morph"
+  persona: "Handmade-toy brand making a stop-motion style reel of its hero toy."
+  evidence: "Earlier image bank CHR-ECM-03: knit textures and side details change; stop-motion stepping makes drift obvious."
+  levers: [set, identity, layout, physics, timing]
+  inputs: [{source: SRC-ECM-PLUSH, role: character}]
+  prompt: |
+    The image is the real knitted elephant: grey wool with visible knit, black button eyes, a trunk curled
+    to ITS RIGHT, a small mustard patch on ITS LEFT ear, a red ribbon collar with a tiny brass bell. Make
+    three 4-second clips animated in a stop-motion style at 12 frames a second on a wooden table top with
+    paper props, as if moved by hand frame by frame. The knit texture, the trunk's side, the patch and the
+    bell never change between frames. Soft daylight. No text.
+  clip: {duration: 4, aspect: "1:1", camera: "locked off"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Trunk curled to its right; patch on its left ear"
+      - "Knit texture and button eyes"
+      - "Red collar with brass bell"
+    members:
+      - {name: "Walk", prompt: "It walks across the table left to right in stepped stop-motion moves.", checks: [[motion_coherence, "Does it move in stepped stop-motion frames?"], [prompt_adherence, "Is the trunk curled to its right?"]]}
+      - {name: "Trunk wave", prompt: "It raises its trunk and waves it twice at the camera.", checks: [[prompt_adherence, "Are there two waves?"], [set_consistency, "Does the knit texture stay the same?"]]}
+      - {name: "Sit", prompt: "It sits down on a paper cushion, which crumples slightly under it.", checks: [[physics_plausibility, "Does the paper cushion crumple?"], [prompt_adherence, "Is the patch on its left ear?"]]}
+  deliverable: "Three 4-second clips, 1:1."
+  checks:
+    - [set_consistency, "Is it the real toy in all three?"]
+    - [set_consistency, "Is the trunk curled to its right in every clip?"]
+    - [set_consistency, "Is the patch on its left ear in every clip?"]
+    - [set_consistency, "Is the knit texture stable frame to frame?"]
+    - [style, "Does it read as stop-motion?"]
+    - [temporal_consistency, "Is there no morphing between frames?"]
+    - [set_consistency, "Is the bell on the collar throughout?"]
+    - [prompt_adherence, "Is it soft daylight?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [prompt_adherence, "Is there one elephant?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the button eyes clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-ECM-04
+  title: "The described mattress-ad family of four in three clips: bedtime story, pillow fight, morning"
+  persona: "Mattress brand's agency producer previewing a family before casting."
+  evidence: "Earlier image bank CHR-ECM-05: described families blend features across members."
+  levers: [set, identity, count, light-lock, long-brief, locale]
+  prompt: |
+    A family of four in a Pune apartment bedroom with a white upholstered bed and a teal quilt: the father,
+    about forty, tall, a shaved head and thick black glasses; the mother, about thirty-eight, short curly
+    hair and a nose ring on the left; a son of about ten with a buzz cut and a gap in his teeth; a daughter
+    of about five with two puffs of hair. Make three 5-second clips of them on the bed, each in its own
+    light. Each keeps their own face and features; nothing passes from one to another. Photoreal, no text.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Four distinct faces and features"
+      - "The father's glasses; the mother's nose ring on the left"
+      - "White bed and teal quilt"
+    members:
+      - {name: "Bedtime story", prompt: "Night, bedside lamp: the mother reads a book; the children lie between the parents.", checks: [[prompt_adherence, "Is it warm bedside lamp light?"], [prompt_adherence, "Are there four people?"]]}
+      - {name: "Pillow fight", prompt: "Night, main light on: the son and the father pillow-fight while the daughter bounces.", checks: [[physics_plausibility, "Do pillows and the mattress respond believably?"], [set_consistency, "Are the glasses on the father only?"]]}
+      - {name: "Morning", prompt: "Morning sun through curtains: all four wake and stretch.", checks: [[prompt_adherence, "Is it morning sun through curtains?"], [motion_coherence, "Are the stretches natural?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Are the four the same people in all three?"]
+    - [set_consistency, "Do the faces stay distinct, never blending?"]
+    - [prompt_adherence, "Are there four people in every clip?"]
+    - [set_consistency, "Are the glasses on the father only?"]
+    - [set_consistency, "Is the nose ring on the mother's left only?"]
+    - [prompt_adherence, "Does each clip have its own light?"]
+    - [prompt_adherence, "Is it the same bed and quilt?"]
+    - [motion_coherence, "Is motion natural?"]
+    - [prompt_adherence, "Does it read as a Pune apartment?"]
+    - [style, "Is it photoreal?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-ECM-05
+  title: "Three edits of the yoga clip in three sari colourways; her face, braid and movement unchanged"
+  persona: "Saree brand making colourway variants of one lifestyle clip."
+  evidence: "Colourway edits regenerate the person and drift the timing."
+  levers: [set, keep-rest, identity, timing, small-text]
+  inputs: [{source: SRC-VCLIP-GRANDMA-YOGA, role: source}]
+  prompt: |
+    This 8-second clip shows a woman of about sixty-eight on a Chennai terrace at sunrise, in a lilac sari
+    with a thin gold border, doing a slow stretch: arms up at 3 seconds, down at 6 seconds, then a glance at
+    the watch on her left wrist, whose screen shows the time. Make three edited versions, each changing only
+    the sari's colour as described, keeping the gold border, the drape and the folds. Her face, braid,
+    bindi, shoes, watch and screen, the timings, the terrace and the push in stay exactly as in the clip.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged slow push in"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, braid, bindi and movement"
+      - "Arms up at 3 s, down at 6 s"
+      - "The watch and its screen"
+    members:
+      - {name: "Mango", prompt: "Mango yellow sari.", checks: [[prompt_adherence, "Is the sari mango yellow?"], [preservation, "Is the gold border kept?"]]}
+      - {name: "Bottle green", prompt: "Bottle green sari.", checks: [[prompt_adherence, "Is the sari bottle green?"], [prompt_adherence, "Are the arms up at 3 s?"]]}
+      - {name: "Rani pink", prompt: "Rani pink sari.", checks: [[prompt_adherence, "Is the sari rani pink?"], [preservation, "Is the watch screen unchanged?"]]}
+  deliverable: "Three 8-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is her face unchanged in all three?"]
+    - [preservation, "Is her movement frame for frame the source's?"]
+    - [prompt_adherence, "Are the arm moves at 3 s and 6 s in all three?"]
+    - [preservation, "Are the drape and folds the same?"]
+    - [preservation, "Is the gold border kept?"]
+    - [prompt_adherence, "Does each new colour take the sunrise light correctly?"]
+    - [set_consistency, "Is each colour stable through the clip?"]
+    - [preservation, "Is the terrace unchanged?"]
+    - [temporal_consistency, "Is there no flicker at the sari edges?"]
+    - [preservation, "Is the watch unchanged?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three video edits of one source clip; set agreement needs the set review."}

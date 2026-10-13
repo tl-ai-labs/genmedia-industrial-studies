@@ -1,0 +1,37 @@
+# ret-en-05 - Open-box delivery: 15-digit IMEI (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-25 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-25): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Delivery - OTP, address and pincode, agent, failed delivery, open-box.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest.
+
+id: ret-en-05
+modality: voice
+task: text_to_speech
+title: "Open-box delivery: 15-digit IMEI - English"
+
+input:
+  script: |
+    Your Samsung Galaxy S24 from Croma is coming with open-box delivery. The agent will verify the IMEI number in front of you: 356789102468135.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) IMEI recoverable digit for digit, read in groups
+  2) "Galaxy S24" read as "S twenty-four"
+  3) "IMEI" as letters
+
+checks:
+  duration_s: {min: 4.6, max: 24.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, ecommerce-retail, delivery, hard, even-contest, new-english]

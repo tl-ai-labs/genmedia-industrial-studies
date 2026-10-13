@@ -1,0 +1,37 @@
+# md-en-04 - Couple banter: late again (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-51 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-51): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Multi-voice scenes (2–3 characters, one narrator).
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); several distinct voices.
+
+id: md-en-04
+modality: voice
+task: styled_tts
+title: "Couple banter: late again - English"
+
+input:
+  script: |
+    "You're late again." "There was traffic, I swear!" "Traffic every single time?" "Okay fine, I fell asleep. Happy?"
+  language: en-IN
+  style: "playful couple banter, two distinct voices"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) Two voices distinguishable (judge)
+  3) Punchline lands (judge)
+
+checks:
+  duration_s: {min: 3.6, max: 19.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, multi-voice-scenes-2-3-characters-one-narrator, medium, gemini-lean, new-english]

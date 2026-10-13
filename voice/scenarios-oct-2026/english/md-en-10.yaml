@@ -1,0 +1,37 @@
+# md-en-10 - Wedding-day nerves, warm comedy (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-35 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-35): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Comedy & light entertainment.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Indian names and words inside English.
+
+id: md-en-10
+modality: voice
+task: styled_tts
+title: "Wedding-day nerves, warm comedy - English"
+
+input:
+  script: |
+    Mummy, relax! Everything will be fine. The caterer is two hours late, the band still hasn't come, but come on, it's an Indian wedding, nothing is ever normal!
+  language: en-IN
+  style: "warm, breathless comic energy"
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) Breathless comic energy (judge)
+  3) "Mummy" said as an Indian speaker would
+
+checks:
+  duration_s: {min: 5.6, max: 28.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, comedy-light-entertainment, medium, gemini-lean, new-english]

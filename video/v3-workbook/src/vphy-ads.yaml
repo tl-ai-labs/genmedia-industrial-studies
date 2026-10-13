@@ -1,0 +1,155 @@
+# Physics and depth in motion — Advertising & agencies scenarios. Slots: vphy.yaml.
+code: VPHY
+scenarios:
+
+- id: VPHY-ADS-01
+  title: "Mango lassi poured over ice in slow motion: the stream splits on the cube, splashes and settles"
+  persona: "Beverage brand's agency director checking a hero pour before booking a high-speed rig."
+  evidence: "Thick liquids hitting ice are where generated pours look like water or gel."
+  levers: [physics, timing, locale, off-centre, light-lock]
+  prompt: |
+    A 6-second slow-motion pour at about five times slow, off-centre: the glass sits in the right third of a
+    vertical frame against a warm terracotta wall, daylight from the left, leaving the left two-thirds clean.
+    A thick, creamy mango lassi, saffron-yellow, pours from a steel jug above into a tall glass holding three
+    large ice cubes. The stream is thick and smooth; it hits the top cube and splits into two sheets that
+    wrap round it; a few thick droplets splash up and fall back; the lassi climbs the glass, the cubes lift
+    and turn slowly, and by 5 seconds the surface settles with a thin froth. A pinch of saffron threads
+    floats on top. No text.
+  clip: {duration: 6, aspect: "9:16", camera: "locked off"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [physics_plausibility, "Is the lassi thick and creamy, not watery?"]
+    - [physics_plausibility, "Does the stream split on the top cube?"]
+    - [physics_plausibility, "Do thick droplets splash up and fall back?"]
+    - [physics_plausibility, "Do the cubes lift and turn as it fills?"]
+    - [prompt_adherence, "Does it settle by about 5 seconds?"]
+    - [prompt_adherence, "Are there three ice cubes?"]
+    - [composition, "Is the glass in the right third with the left clean?"]
+    - [prompt_adherence, "Is daylight from the left?"]
+    - [motion_coherence, "Is the slow motion smooth?"]
+    - [prompt_adherence, "Does saffron float on top?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the glass free of warping?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-ADS-02
+  title: "A rainy showroom at night: a red bus passes outside and its reflection slides across the glass and the car"
+  persona: "Car brand's agency director testing reflections for a showroom spot."
+  evidence: "Moving reflections across two surfaces (window and car) must agree in direction and timing."
+  levers: [physics, timing, light-lock, camera, layout]
+  prompt: |
+    A 6-second locked-off shot inside a dim car showroom at night, rain running down the tall front glass. A
+    glossy black sedan with no badges stands side-on, front to the left, between the camera and the window.
+    Outside, from 1 to 4 seconds, a lit red double-decker bus passes right to left in the street. Its
+    reflection appears in the inside of the window and also slides across the car's glossy flank, right to
+    left, in step with the bus, distorted by the car's curves and broken by the rain streaks on the glass.
+    The showroom's ceiling spots stay fixed as highlights on the roof. No text, no logos.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the bus pass from about 1 to 4 seconds?"]
+    - [physics_plausibility, "Does its reflection slide across the car right to left, in step?"]
+    - [physics_plausibility, "Is the reflection distorted by the car's curves?"]
+    - [physics_plausibility, "Does the rain on the glass break the view?"]
+    - [prompt_adherence, "Is the car side-on, front to the left?"]
+    - [prompt_adherence, "Do the ceiling spot highlights stay fixed?"]
+    - [motion_coherence, "Does the bus move smoothly?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [physics_plausibility, "Does rain run down the glass?"]
+    - [text_accuracy, "Is there no text or logo?"]
+    - [visual_quality, "Is the paint clean?"]
+    - [prompt_adherence, "Is it night with the showroom dim?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-ADS-03
+  title: "A model walks behind a carved jaali; the star-pattern shadow slides across her and the floor"
+  persona: "Fashion brand's agency director testing a light pattern for an ethnic-wear spot."
+  evidence: "Projected patterns must wrap a moving body and stay fixed on the floor."
+  levers: [physics, light-lock, locale, timing, camera-move]
+  prompt: |
+    A 6-second shot in a sandstone palace corridor at golden hour. Low sun shines through a carved stone
+    jaali screen on the left, projecting a sharp pattern of eight-pointed stars onto the floor and the
+    right wall. A model in an ivory chikankari anarkali walks slowly left to right through the patch of
+    light, the camera tracking with her. The star pattern stays fixed on the floor and wall while she moves,
+    and wraps across her body and dress as she passes, bending over the folds. At 3 seconds she turns her
+    face to the light. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "tracking left to right"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the star pattern stay fixed on the floor and wall?"]
+    - [physics_plausibility, "Does it wrap across her body and dress as she passes?"]
+    - [physics_plausibility, "Does it bend over the folds?"]
+    - [prompt_adherence, "Is the sun low through the jaali on the left?"]
+    - [prompt_adherence, "Are the stars eight-pointed?"]
+    - [prompt_adherence, "Does she turn to the light at about 3 seconds?"]
+    - [prompt_adherence, "Does the camera track with her?"]
+    - [motion_coherence, "Is her walk natural?"]
+    - [prompt_adherence, "Is the dress ivory chikankari?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the pattern sharp?"]
+    - [prompt_adherence, "Does it read as a sandstone palace?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-ADS-04
+  title: "The shoe dropped onto a wet track: it bounces twice, tips and settles, water spraying"
+  persona: "Sportswear brand's product marketer testing an impact shot."
+  evidence: "Dropped products in generated clips float or squash; water spray must match the impact."
+  levers: [physics, identity, count, timing, light-lock]
+  inputs: [{source: SRC-ADS-SHOE, role: product}]
+  prompt: |
+    A 5-second slow-motion shot of this exact running shoe, right foot, dropped from about a metre onto a wet
+    red running track at harsh noon. It lands heel first at 1 second, the foam midsole compressing; it
+    bounces twice, the second bounce lower; it tips onto its side and settles. Each impact throws a fan of
+    water droplets that sparkle in the sun and fall back. The shoe's coral knit, white midsole with one navy
+    stripe and the navy heel tab stay exact. Low camera at track level, locked off. No other text.
+  clip: {duration: 5, aspect: "16:9", camera: "locked off at track level"}
+  deliverable: "One 5-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does it land heel first at about 1 second?"]
+    - [prompt_adherence, "Does it bounce twice, the second lower?"]
+    - [physics_plausibility, "Does the midsole compress on impact?"]
+    - [physics_plausibility, "Does each impact throw water droplets that fall back?"]
+    - [physics_plausibility, "Does it tip onto its side and settle?"]
+    - [reference_fidelity, "Is it the real shoe with one navy stripe?"]
+    - [prompt_adherence, "Do droplets sparkle in noon sun?"]
+    - [prompt_adherence, "Is it locked off at track level?"]
+    - [motion_coherence, "Does the shoe keep its shape?"]
+    - [text_accuracy, "Is there no text other than the heel tab?"]
+    - [visual_quality, "Is the knit stable?"]
+    - [prompt_adherence, "Is the track wet and red?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VPHY-ADS-05
+  title: "Add the halved lemon rolling off the counter edge at 6 s, nudged by her elbow; it falls out of frame"
+  persona: "Agency VFX artist adding a playful beat to a cooking shot."
+  evidence: "Added objects must react to existing motion with the right contact and timing."
+  levers: [physics, timing, time-code, keep-rest, layout]
+  inputs: [{source: SRC-VCLIP-KITCHEN-COOK, role: source}]
+  prompt: |
+    In this 8-second cooking shot, a halved lemon sits near the counter's left edge. Add this event: at
+    00:00:06:00 the woman's left forearm, reaching for the wooden spoon, nudges the lemon; it rocks, rolls
+    cut side up in a short curve along the counter, tips over the edge and falls out of the bottom of the
+    frame by 00:00:07:12. It rolls on its rounded side, not sliding, its shadow following it on the quartz.
+    The oil at 1 second, the seeds at 3, the leaves at 5, the stirring at 7, the kadhai, her hands and
+    bangle, the onions and the light are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged locked off at 45 degrees"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Does the nudge happen at about 6 seconds?"]
+    - [physics_plausibility, "Does her forearm visibly touch the lemon?"]
+    - [physics_plausibility, "Does it roll on its rounded side, not slide?"]
+    - [physics_plausibility, "Does it tip over the edge and fall out of frame by about 7.5 seconds?"]
+    - [physics_plausibility, "Does its shadow follow it?"]
+    - [preservation, "Are the other actions at their times?"]
+    - [preservation, "Are the kadhai and onions unchanged?"]
+    - [prompt_adherence, "Does it start near the counter's left edge?"]
+    - [temporal_consistency, "Is there no flicker around the lemon?"]
+    - [preservation, "Is the framing unchanged?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the lemon natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

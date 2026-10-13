@@ -1,0 +1,37 @@
+# fqc-en-01 - Handover OTP and cash to collect (Food & quick commerce)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 fqc-hi-04 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-04): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Delivery - OTP, partner, address.
+# TARGET CUSTOMER. Food Delivery Apps, Quick-commerce Apps.
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: names, brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Indian names and words inside English.
+
+id: fqc-en-01
+modality: voice
+task: text_to_speech
+title: "Handover OTP and cash to collect - English"
+
+input:
+  script: |
+    Your Zepto delivery partner Imran Shaikh is outside. The handover OTP is three, eight, three, eight, and Rs 1,247 is to be paid in cash.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) OTP "3838" recoverable
+  2) Amount recoverable
+  3) "Imran Shaikh" natural
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, food-quick-commerce, delivery, hard, gemini-lean, new-english]

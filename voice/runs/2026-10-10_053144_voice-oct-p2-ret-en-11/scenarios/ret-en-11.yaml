@@ -1,0 +1,37 @@
+# ret-en-11 - Festival-sale date reminder (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-02 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-02): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Sale events & offers - festive sales, coupons, bank offers, restock.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: brands.
+# PICKED AS. Even contest.
+
+id: ret-en-11
+modality: voice
+task: text_to_speech
+title: "Festival-sale date reminder - English"
+
+input:
+  script: |
+    The Flipkart Diwali sale starts next week, on the 3rd. Don't forget to check your wishlist!
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "Flipkart" natural, not spelled out
+  2) "the 3rd" recoverable
+  3) Friendly promotional tone
+
+checks:
+  duration_s: {min: 3.2, max: 18.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.1
+
+tags: [oct-2026, english, ecommerce-retail, sale-events-offers, easy, even-contest, new-english]

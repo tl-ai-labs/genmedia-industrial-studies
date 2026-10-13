@@ -1,0 +1,58 @@
+# Family 9 — Spatial depth, light and physics (header). Scenarios: phy-*.yaml.
+
+family: Depth, light and physics
+code: PHY
+number: 9
+about: "Reflections, shadows, refraction, occlusion, contact and depth that a physics-literate viewer would catch."
+outputs: "1"
+
+rubric:
+  weights: {physics_plausibility: 4, prompt_adherence: 3, preservation: 2, text_accuracy: 1, visual_quality: 1, style: 1, reference_fidelity: 1, composition: 1, set_consistency: 1}
+  gate: [physics_plausibility]
+  gate_rule: "No reflection, shadow, refraction or contact may contradict the scene."
+
+targets:
+  reflection: "A reflection is in the wrong place, not mirrored, or shows things that are not there"
+  shadow-direction: "Shadows disagree with the light sources"
+  occlusion: "Nearer things fail to hide farther things correctly"
+  refraction: "Glass or water bends the view wrongly or not at all"
+  contact: "Objects float, sink or intersect where they should touch"
+  depth-scale: "Sizes do not shrink correctly with distance"
+  light-mix: "Mixed light colours do not fall where their sources are"
+
+slots:
+  # Film, OTT & micro-drama — 5 (3 t2i, 2 edit · 3 hard, 2 extreme)
+  - {id: PHY-FLM-01, task: t2i, subject: person, style: cinematic, light: neon, locale: IN, diff: extreme, target: reflection, sources: [], script: mixed, idea: "Wet Mumbai street at night: two neon signs, a woman and a taxi, each reflected correctly in puddles and glass"}
+  - {id: PHY-FLM-02, task: t2i, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: shadow-direction, sources: [], idea: "Five people around one candle; every shadow points away from the flame"}
+  - {id: PHY-FLM-03, task: t2i, subject: interior, style: cinematic, light: daylight, locale: global, diff: hard, target: occlusion, sources: [], idea: "An office seen through two glass partitions with a person between them; layer order exact"}
+  - {id: PHY-FLM-04, task: edit, subject: interior, style: cinematic, light: daylight, locale: IN, diff: extreme, target: reflection, sources: [SRC-TRAIN], idea: "Add a mirror to the compartment's partition wall that reflects the bay correctly"}
+  - {id: PHY-FLM-05, task: edit, subject: person, style: cinematic, light: night, locale: IN, diff: hard, target: light-mix, sources: [SRC-ROOFTOP], idea: "Relight the rooftop with a warm lantern in her hand; city glow stays as the cool fill"}
+  # Advertising & agencies — 6 (4 t2i, 2 edit · 4 hard, 2 extreme)
+  - {id: PHY-ADS-01, task: t2i, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: refraction, sources: [], script: latin, idea: "A perfume bottle on a glass shelf with a printed card behind it, its text bent correctly through the liquid"}
+  - {id: PHY-ADS-02, task: t2i, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: contact, sources: [], idea: "Mango lassi poured over ice: the stream, splash and ice touch and displace correctly"}
+  - {id: PHY-ADS-03, task: t2i, subject: vehicle, style: cinematic, light: night, locale: global, diff: hard, target: reflection, sources: [], idea: "A car in a glass showroom on a rainy night: street, rain and interior lights reflected in the right places"}
+  - {id: PHY-ADS-04, task: t2i, subject: fashion, style: photoreal, light: golden, locale: IN, diff: hard, target: shadow-direction, sources: [], idea: "A model in a sari behind a carved jaali screen; the pattern's shadow wraps her and the floor from one sun"}
+  - {id: PHY-ADS-05, task: edit, subject: product, style: photoreal, light: practical, locale: IN, diff: extreme, target: occlusion, sources: [SRC-ADS-CHIPS], script: latin, idea: "The pack half buried in a heap of loose chips; chips in front hide the print, chips behind are hidden"}
+  - {id: PHY-ADS-06, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: hard, target: light-mix, sources: [SRC-ADS-KITCHEN], idea: "Add a warm under-cabinet strip to the kitchen; warm and cool light fall where each source is"}
+  # Gaming — 4 (3 t2i, 1 edit · 2 hard, 2 extreme)
+  - {id: PHY-GAM-01, task: t2i, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: reflection, sources: [], idea: "A heroine in a hall of angled mirrors over a chrome floor; every reflection in the right place"}
+  - {id: PHY-GAM-02, task: t2i, subject: landscape, style: 3d, light: golden, locale: global, diff: hard, target: depth-scale, sources: [], idea: "A causeway lined with twenty identical lamp posts receding to the horizon, shrinking correctly"}
+  - {id: PHY-GAM-03, task: t2i, subject: vehicle, style: 3d, light: night, locale: global, diff: hard, target: light-mix, sources: [], idea: "A hover-bike's cyan under-glow and an orange streetlight mixing on a wet road"}
+  - {id: PHY-GAM-04, task: edit, subject: architecture, style: 3d, light: golden, locale: IN, diff: extreme, target: occlusion, sources: [SRC-GAM-CYBER-STREET], idea: "Add six shoppers at different depths to the market street; pillars and stalls hide them correctly"}
+  # Real estate, interiors & architecture — 11 (7 t2i, 4 edit · 7 hard, 4 extreme)
+  - {id: PHY-RES-01, task: t2i, subject: interior, style: photoreal, light: golden, locale: global, diff: extreme, target: shadow-direction, sources: [], idea: "Low sun through a twelve-pane window throws the grid across the floor and up an armchair and wall"}
+  - {id: PHY-RES-02, task: t2i, subject: interior, style: 3d, light: night, locale: IN, diff: hard, target: light-mix, sources: [], idea: "A living room at night: warm lamps, a cool TV glow and the city through the window, each where it should fall"}
+  - {id: PHY-RES-03, task: t2i, subject: interior, style: photoreal, light: daylight, locale: global, diff: hard, target: reflection, sources: [], idea: "Bathroom with facing mirrors and a glass shower: repeating reflections that recede correctly"}
+  - {id: PHY-RES-04, task: t2i, subject: architecture, style: photoreal, light: noon, locale: IN, diff: extreme, target: depth-scale, sources: [], idea: "A palace corridor of fifteen identical arches receding, each smaller by the right amount"}
+  - {id: PHY-RES-05, task: t2i, subject: architecture, style: illustration, light: golden, locale: IN, diff: hard, target: shadow-direction, sources: [], idea: "Watercolour rendering of a courtyard house with the roof overhangs' shadows right for a west sun"}
+  - {id: PHY-RES-06, task: t2i, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: reflection, sources: [], idea: "Lakeside villas in Udaipur mirrored in still water, with one boat breaking the reflection"}
+  - {id: PHY-RES-07, task: t2i, subject: food, style: photoreal, light: practical, locale: global, diff: hard, target: refraction, sources: [], idea: "A styled dining table: a water carafe bends the cutlery and candles behind it correctly"}
+  - {id: PHY-RES-08, task: edit, subject: interior, style: photoreal, light: practical, locale: global, diff: extreme, target: refraction, sources: [SRC-RES-HOTEL-LOBBY], idea: "Add a floor-to-ceiling aquarium wall to the lobby that refracts the sofas behind it"}
+  - {id: PHY-RES-09, task: edit, subject: architecture, style: photoreal, light: daylight, locale: global, diff: extreme, target: reflection, sources: [SRC-RES-ARCH-SKETCH], idea: "Render the sketch as a photo; the glass facade reflects the rain tree across the street, panel by panel"}
+  - {id: PHY-RES-10, task: edit, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: depth-scale, sources: [SRC-RES-PLOT-LAND], idea: "Five identical villas stepping up the plot towards the ridge, each at the right size for its distance"}
+  - {id: PHY-RES-11, task: edit, subject: child-elderly, style: photoreal, light: daylight, locale: IN, diff: hard, target: contact, sources: [SRC-RES-VILLA-EXT], idea: "A grandmother sitting on the porch swing; the chains take her weight and the seat dips"}
+  # Media, publishing & events — 4 (3 t2i, 1 edit · 2 hard, 2 extreme)
+  - {id: PHY-MED-01, task: t2i, subject: group, style: photoreal, light: neon, locale: IN, diff: extreme, target: light-mix, sources: [], idea: "A concert crowd under magenta, cyan and white stage light plus phone screens; each colour where its source is"}
+  - {id: PHY-MED-02, task: t2i, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: refraction, sources: [], script: latin, idea: "A crystal award trophy on a podium bending the stage lights and the backdrop lettering behind it"}
+  - {id: PHY-MED-03, task: t2i, subject: architecture, style: photoreal, light: night, locale: IN, diff: hard, target: reflection, sources: [], idea: "A projection-mapped riverside building at a Varanasi festival, mirrored in the Ganga with boats"}
+  - {id: PHY-MED-04, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: shadow-direction, sources: [SRC-MED-NEWSROOM], script: devanagari, idea: "Add a second key light from front right to the anchor; a second shadow appears on the right, both consistent"}

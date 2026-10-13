@@ -1,0 +1,37 @@
+# bank-en-06 - PAN masked-digit verification (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-02 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-02): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Onboarding & KYC - eKYC, Video KYC, masked PAN/Aadhaar, new account.
+# TARGET CUSTOMER. Retail Banks.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: acronyms.
+# PICKED AS. Even contest.
+
+id: bank-en-06
+modality: voice
+task: text_to_speech
+title: "PAN masked-digit verification - English"
+
+input:
+  script: |
+    To verify your PAN, please confirm the last six characters: X, X, four, two, one, nine.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "XX4219" recoverable character for character
+  2) Read in confirmable chunks, not run together
+  3) "PAN" said as the word "pan"
+
+checks:
+  duration_s: {min: 3.2, max: 18.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, banking-financial-services, onboarding-kyc, medium, even-contest, new-english]

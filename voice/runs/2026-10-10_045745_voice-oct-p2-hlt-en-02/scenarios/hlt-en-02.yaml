@@ -1,0 +1,37 @@
+# hlt-en-02 - Hospital appointment: doctor, date, time, token (Healthcare & pharma)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 hlt-hi-01 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-01): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Appointments & teleconsults.
+# TARGET CUSTOMER. Hospital Chains, Telehealth Platforms.
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands.
+# PICKED AS. Even contest - Indian names and words inside English.
+
+id: hlt-en-02
+modality: voice
+task: text_to_speech
+title: "Hospital appointment: doctor, date, time, token - English"
+
+input:
+  script: |
+    Your appointment with Dr. Srinivas Raghavendra Rao at Apollo Hospitals, Jubilee Hills, is confirmed for 24 October at 10:15 am. Your token number is A47.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Token "A47" recoverable
+  2) "Srinivas Raghavendra Rao" natural (judge)
+  3) Date and time recoverable
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, healthcare-pharma, appointments-teleconsults, hard, even-contest, new-english]

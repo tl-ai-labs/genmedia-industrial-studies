@@ -1,0 +1,37 @@
+# trv-en-01 - Bike-taxi captain ETA and fare (Travel & mobility)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 trv-hi-11 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-11): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Cabs & mobility - ride OTP, number plates, safety.
+# TARGET CUSTOMER. Ride-hailing Apps.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest - rupee amounts.
+
+id: trv-en-01
+modality: voice
+task: text_to_speech
+title: "Bike-taxi captain ETA and fare - English"
+
+input:
+  script: |
+    Your Rapido captain Sandeep will reach you in 3 minutes. The fare is Rs 87, and you can pay by cash or UPI.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Fare "eighty-seven rupees" recoverable
+  2) "Sandeep" and "Rapido" natural
+  3) "UPI" as letters
+
+checks:
+  duration_s: {min: 4.6, max: 24.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, travel-mobility, cabs-mobility, medium, even-contest, new-english]

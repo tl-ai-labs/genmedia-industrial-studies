@@ -1,0 +1,95 @@
+# Physics and depth in motion — E-commerce, D2C & retail scenarios. Slots: vphy.yaml.
+code: VPHY
+scenarios:
+
+- id: VPHY-ECM-01
+  title: "A millet cookie dropped into a glass of milk: splash, crown, crumbs sinking and swirling"
+  persona: "Healthy-snacks D2C brand making a slow-motion product reel."
+  evidence: "Splashes and sinking particles behave wrongly in generated slow motion."
+  levers: [physics, timing, locale, camera, count]
+  prompt: |
+    A 5-second slow-motion close-up at about eight times slow, side-on at glass height, of a round brown
+    millet cookie with visible grains dropped into a clear glass of cold milk on a white kitchen counter,
+    soft daylight from the left. At 1 second the cookie hits the surface flat; a milk crown rises with about
+    a dozen points and droplets that fall back; the cookie sinks slowly at a tilt; two small crumbs break off
+    and swirl down behind it, and a short trail of bubbles rises. The milk level rises a little and a few
+    drops run down the outside of the glass. Locked off. No text.
+  clip: {duration: 5, aspect: "9:16", camera: "locked off, side-on at glass height"}
+  deliverable: "One 5-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Does the cookie hit the surface at about 1 second?"]
+    - [physics_plausibility, "Does a milk crown rise with points and droplets falling back?"]
+    - [physics_plausibility, "Does the cookie sink slowly at a tilt?"]
+    - [prompt_adherence, "Do two crumbs break off and swirl down?"]
+    - [physics_plausibility, "Do bubbles rise?"]
+    - [physics_plausibility, "Do drops run down the outside?"]
+    - [prompt_adherence, "Is it locked off side-on?"]
+    - [motion_coherence, "Is the slow motion smooth?"]
+    - [prompt_adherence, "Is daylight from the left?"]
+    - [prompt_adherence, "Does the cookie show millet grains?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the glass clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-ECM-02
+  title: "A silk saree tossed into the air falls and drapes over a bed; the border follows the folds"
+  persona: "Saree D2C brand making a product reel of fabric in motion."
+  evidence: "Cloth simulation in generated clips stiffens or melts; patterned borders slide across folds."
+  levers: [physics, identity, long-brief, locale, timing]
+  prompt: |
+    A 6-second slow-motion shot at about three times slow in a bright Chennai bedroom with a white bed and
+    white sheets, daylight from a window on the right. A full-length silk saree is tossed up from the left:
+    peacock green with small gold buttis, a broad magenta border with a gold temple pattern along one edge,
+    and a magenta pallu with gold stripes. It billows open in the air, the silk catching the light, then
+    falls and drapes across the bed in soft heavy folds, the border landing along the bed's front edge and
+    hanging over it. The temple pattern follows each fold rather than sliding across it. Locked off. No
+    text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the silk billow open and fall believably?"]
+    - [physics_plausibility, "Does it drape in soft heavy folds?"]
+    - [physics_plausibility, "Does the border pattern follow the folds?"]
+    - [prompt_adherence, "Does the border land along the front edge and hang over?"]
+    - [prompt_adherence, "Is it peacock green with a magenta border and pallu?"]
+    - [prompt_adherence, "Does the silk catch the window light?"]
+    - [motion_coherence, "Is the slow motion smooth?"]
+    - [temporal_consistency, "Does the pattern stay stable without swimming?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Is the bed white?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the fabric texture natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-ECM-03
+  title: "Add a glass bottle on the desk that the box knocks over as it is set down; it rolls and stops at the notebook"
+  persona: "D2C brand's editor adding a moment of chaos to an unboxing for a reel."
+  evidence: "An added object must be hit by real motion in the clip at the right moment and react."
+  levers: [physics, timing, time-code, keep-rest, layout]
+  inputs: [{source: SRC-VCLIP-UNBOX-HANDS, role: source}]
+  prompt: |
+    In this 8-second top-down unboxing, the hands set the open box down at the right edge of the desk at 7
+    seconds. Add a small clear glass bottle with a cork, standing on the desk near the right edge from the
+    first frame. At 00:00:07:00 the box's corner knocks it; it tips over, rolls across the desk to the left
+    in a slight curve, and stops against the closed notebook on the left by 00:00:08:00. Its shadow and
+    highlight move with it in the daylight from the left. The hands, the box, the seal, the case, the tissue
+    and all other timings are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged top-down"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is there a small glass bottle with a cork near the right edge from the start?"]
+    - [prompt_adherence, "Does the box knock it at about 7 seconds?"]
+    - [physics_plausibility, "Does the box's corner visibly touch it?"]
+    - [physics_plausibility, "Does it tip and roll in a slight curve?"]
+    - [prompt_adherence, "Does it stop against the notebook on the left?"]
+    - [prompt_adherence, "Does it stop by about 8 seconds?"]
+    - [prompt_adherence, "Do its shadow and highlight move with it?"]
+    - [preservation, "Are the hands and box unchanged?"]
+    - [preservation, "Are the other timings unchanged?"]
+    - [temporal_consistency, "Is there no flicker around the bottle?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the glass natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

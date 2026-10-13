@@ -1,0 +1,53 @@
+# V3 — Story beats: first and last frame, consecutive beats (header). Built on image family SHT.
+# Scenarios: vbts-*.yaml.
+
+family: Story beats
+code: VBTS
+number: 3
+about: "Consecutive beats as clips that start and end on given frames and cut together: action timed to the second, identity and light carried across the cuts."
+outputs: "3 clips (set)"
+set: {min: 3, max: 4, required: true}
+
+rubric:
+  weights: {set_consistency: 4, prompt_adherence: 3, motion_coherence: 2, physics_plausibility: 2, reference_fidelity: 2, text_accuracy: 1, visual_quality: 1, style: 1, composition: 1, temporal_consistency: 2}
+  gate: [set_consistency]
+  gate_rule: "No character, prop or place may change between beats."
+
+targets:
+  end-frame: "A clip does not land on the given last frame"
+  jump: "Consecutive clips do not join at the cut"
+  identity-drift: "The character changes across the beats"
+  timing: "An action happens at the wrong second or takes the wrong time"
+  light-drift: "Light changes between beats when it should not, or fails to change when it should"
+  prop-drift: "A prop appears, vanishes or moves across the cut"
+
+slots:
+  # Film, OTT & micro-drama — 8 (8 i2v · 5 hard, 3 extreme)
+  - {id: VBTS-FLM-01, task: i2v, subject: person, style: cinematic, light: fog-rain, locale: global, diff: extreme, target: timing, sources: [SRC-RIDGE-WANDERER], from_image: SHT-FLM-01, idea: "Sahil's beat-sheet test in motion: beats B4–B6 of 'The Last Transmission' as three chained clips timed to the sheet"}
+  - {id: VBTS-FLM-02, task: i2v, subject: group, style: cinematic, light: daylight, locale: IN, diff: hard, target: jump, sources: [SRC-HALDI], from_image: SHT-FLM-02, idea: "Three haldi beats: the water pour, a phone rings, the grandfather stands; each cut joins"}
+  - {id: VBTS-FLM-03, task: i2v, subject: interior, style: cinematic, light: daylight, locale: IN, diff: hard, target: light-drift, sources: [SRC-TRAIN], idea: "Three beats in the sleeper bay: newspaper lowered, tiffin offered, the train enters a tunnel and the light goes"}
+  - {id: VBTS-FLM-04, task: i2v, subject: person, style: cinematic, light: night, locale: IN, diff: extreme, target: end-frame, sources: [SRC-ROOFTOP, SRC-VFRAME-ROOFTOP-DOOR], idea: "Three rooftop beats that must end exactly on the given door frame"}
+  - {id: VBTS-FLM-05, task: i2v, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: prop-drift, sources: [SRC-INTERROGATION], idea: "Three interrogation beats: the photo slides across, he looks, he breaks; the photo stays where it lands"}
+  - {id: VBTS-FLM-06, task: i2v, subject: food, style: cinematic, light: practical, locale: IN, diff: hard, target: prop-drift, sources: [SRC-THALI-DINNER], idea: "Three dinner beats: sambar served, a tumbler knocked over, everyone laughs; the spill stays"}
+  - {id: VBTS-FLM-07, task: i2v, subject: person, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: identity-drift, sources: [SRC-ACTOR-F, SRC-COSTUME-REF], idea: "Three beats of the actor in the 1940s costume running through paddy in the rain"}
+  - {id: VBTS-FLM-08, task: i2v, subject: person, style: cinematic, light: daylight, locale: IN, diff: extreme, target: jump, sources: [SRC-THUMBS-CHASE, SRC-ACTOR-M], idea: "Thumbnails 3 to 5 of the market chase as three cut-together beats with the actor as the runner"}
+  # Advertising & agencies — 7 (7 i2v · 4 hard, 3 extreme)
+  - {id: VBTS-ADS-01, task: i2v, subject: food, style: cinematic, light: daylight, locale: IN, diff: extreme, target: timing, sources: [SRC-ADS-GHEE-JAR], idea: "Three timed beats of a ghee spot: jar on the counter, lid twisted off, ghee spooned onto a hot roti"}
+  - {id: VBTS-ADS-02, task: i2v, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: hard, target: jump, sources: [SRC-ADS-SCOOTER], idea: "Three beats: the scooter parked, its rider arrives and sits, she rides off down the street"}
+  - {id: VBTS-ADS-03, task: i2v, subject: fashion, style: photoreal, light: noon, locale: IN, diff: hard, target: identity-drift, sources: [SRC-ADS-SHOE], idea: "Three beats of a shoe film: laces pulled tight, foot strikes the track, sole flexes in slow motion"}
+  - {id: VBTS-ADS-04, task: i2v, subject: product, style: graphic, light: practical, locale: IN, diff: extreme, target: light-drift, sources: [SRC-ADS-KEYVISUAL], script: devanagari, idea: "The ghee key visual comes alive in three beats: the diyas light one by one, the jar glows, the headline settles"}
+  - {id: VBTS-ADS-05, task: i2v, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: hard, target: prop-drift, sources: [SRC-ADS-STORE-POSTER], idea: "Three beats at the shop door: the poster is taped up, a shopper reads it, she walks in"}
+  - {id: VBTS-ADS-06, task: i2v, subject: group, style: photoreal, light: daylight, locale: IN, diff: extreme, target: end-frame, sources: [SRC-ADS-BILLBOARD-SITE, SRC-ADS-LOGO], idea: "Three beats of a billboard reveal: blank hoarding, the flex unrolls, the finished Myna Pay ad with commuters looking up"}
+  - {id: VBTS-ADS-07, task: i2v, subject: interior, style: cinematic, light: daylight, locale: IN, diff: hard, target: jump, sources: [SRC-ADS-KITCHEN], idea: "Three cooking beats in the commercial kitchen: oil heats, seeds crackle, the dal is tempered"}
+  # E-commerce, D2C & retail — 5 (5 i2v · 3 hard, 2 extreme)
+  - {id: VBTS-ECM-01, task: i2v, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: hard, target: identity-drift, sources: [SRC-ECM-JACKET-FLAT], idea: "Three beats: the jacket on a hanger, a model puts it on, she walks out of a café; marigold and fray hold"}
+  - {id: VBTS-ECM-02, task: i2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: timing, sources: [SRC-ECM-SPICE-JARS], script: tamil, idea: "Three timed beats: the turmeric jar opened, a spoonful into hot milk, the milk turning gold"}
+  - {id: VBTS-ECM-03, task: i2v, subject: stylised, style: photoreal, light: daylight, locale: global, diff: hard, target: prop-drift, sources: [SRC-ECM-PLUSH], idea: "Three beats: the elephant on a shelf, a toddler grabs it, it is tucked into bed; bell and patch stay"}
+  - {id: VBTS-ECM-04, task: i2v, subject: child-elderly, style: photoreal, light: golden, locale: IN, diff: hard, target: jump, sources: [SRC-ECM-WATCH-ELDER], idea: "Three beats: the watch buzzes on the bench, she stands, she sets off on a walk; each cut joins"}
+  - {id: VBTS-ECM-05, task: i2v, subject: product, style: photoreal, light: golden, locale: IN, diff: extreme, target: light-drift, sources: [SRC-ECM-TEA-TIN], idea: "Three dawn beats: the tea tin opened, leaves into the kettle, tea poured as sunlight reaches the table"}
+  # Gaming — 5 (5 i2v · 3 hard, 2 extreme)
+  - {id: VBTS-GAM-01, task: i2v, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: timing, sources: [SRC-GAM-VILLAIN], idea: "Three timed villain-reveal beats: he steps out of smoke, raises the staff, the hourglass flips at 7 s"}
+  - {id: VBTS-GAM-02, task: i2v, subject: animal, style: illustration, light: golden, locale: IN, diff: hard, target: jump, sources: [SRC-GAM-MOUNT], idea: "Three beats of the war-tiger: crouch, leap across a ravine, land; each cut joins"}
+  - {id: VBTS-GAM-03, task: i2v, subject: child-elderly, style: illustration, light: practical, locale: IN, diff: hard, target: light-drift, sources: [SRC-GAM-SAGE], idea: "Three beats of the sage at night: opens his eyes, rises, lights a fire that becomes the main light"}
+  - {id: VBTS-GAM-04, task: i2v, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: timing, sources: [SRC-GAM-CYBER-STREET], idea: "Three beats on the market street: dusk, the stall lights come on at 3 s, rain starts at 6 s"}
+  - {id: VBTS-GAM-05, task: i2v, subject: product, style: graphic, light: night, locale: global, diff: extreme, target: end-frame, sources: [SRC-GAM-LOGO], script: latin, idea: "A three-beat logo sting: crescent forms, sword slides through, wordmark lands; it must end exactly on the logo"}

@@ -1,0 +1,37 @@
+# bank-en-12 - KYC update pending reminder (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-01 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-01): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Onboarding & KYC - eKYC, Video KYC, masked PAN/Aadhaar, new account.
+# TARGET CUSTOMER. Retail Banks.
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: acronyms.
+# PICKED AS. Even contest.
+
+id: bank-en-12
+modality: voice
+task: text_to_speech
+title: "KYC update pending reminder - English"
+
+input:
+  script: |
+    Hello, this is a reminder that your KYC is pending. If it is not completed within three days, your account may be temporarily frozen. Please visit your nearest branch or use our app to complete your KYC.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "KYC" said as letters (judge)
+  2) "three days" recoverable
+  3) Consequence clause intelligible
+
+checks:
+  duration_s: {min: 7.4, max: 36.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, banking-financial-services, onboarding-kyc, easy, even-contest, new-english]

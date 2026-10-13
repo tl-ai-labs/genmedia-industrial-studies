@@ -1,0 +1,44 @@
+# telco-hi-01 - Registered mobile-number confirmation (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-01: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-01
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. SIM, eKYC & activation.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A full ten-digit phone number read as isolated English digit-words inside a Hindi frame
+# SPEECH SKILLS. Numbers: codes.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-01
+modality: voice
+task: text_to_speech
+title: "Registered mobile-number confirmation - Hinglish"
+
+input:
+  script: |
+    Kya main confirm kar sakti hoon ki aapka registered mobile number hai, nine, eight, seven, zero, four, three, two, one, one, five?
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) All ten digits recoverable in order
+  2) Digits read as isolated English digit-words, not grouped/misheard as a different number
+  3) Confirmation framing reads as a question
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, sim-ekyc-activation, medium, even-contest, v2-bank]

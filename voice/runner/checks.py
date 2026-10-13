@@ -42,6 +42,43 @@ _DIGIT_WORDS = {
 }
 
 
+# WORDING CHECKS. A clip that fails only these has usable audio whose words
+# may be off - and every one of them reads the transcriber's spelling, which
+# misfired on a correct read twice in one scenario (2026-10-09, bank-en-01).
+# Such a clip is still sent to the judge, so a disputed check has a second
+# ear. Scoring is unchanged: a failed check of any kind still scores 0.
+# Every other check (decodes, silence, length, clipping, loudness, pace,
+# latency) means the clip itself is unusable, and blocks the judge.
+_WORDING_CHECKS = ("wer_within_max", "digits_exact", "alnum_exact", "no_overlong_digit_run")
+_WORDING_CHECK_PREFIXES = ("must_say[", "must_say_any[", "must_not_say[")
+
+
+def is_wording_check(gate: str) -> bool:
+    return gate in _WORDING_CHECKS or gate.startswith(_WORDING_CHECK_PREFIXES)
+
+
+def judge_may_hear(failed_gates: list[str]) -> bool:
+    """True when every failed check is a wording check (or none failed)."""
+    return all(is_wording_check(g) for g in failed_gates)
+
+
+_NUMBER_WORDS = {
+    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+    "seventeen", "eighteen", "nineteen", "twenty", "thirty", "forty", "fifty",
+    "sixty", "seventy", "eighty", "ninety", "hundred", "thousand", "lakh",
+    "crore", "million", "billion",
+}
+
+
+def _drop_number_and(tokens: list[str]) -> list[str]:
+    return [
+        t for i, t in enumerate(tokens)
+        if not (t == "and" and 0 < i < len(tokens) - 1
+                and tokens[i - 1] in _NUMBER_WORDS and tokens[i + 1] in _NUMBER_WORDS)
+    ]
+
+
 def says(haystack_norm: str, phrase: str) -> bool:
     """
     Is `phrase` present as WHOLE WORDS in an already-normalized transcript?
@@ -50,10 +87,14 @@ def says(haystack_norm: str, phrase: str) -> bool:
     convention gate on a temple name. Phrases are matched as a contiguous run
     of tokens, which is what "the model said this" actually means.
     """
-    need = normalize(str(phrase)).split()
+    # The "and" inside a spoken number is optional - "three hundred forty
+    # thousand" and "three hundred and forty thousand" are the same reading,
+    # and the number expander always writes the "and". Dropped on both sides
+    # so a must_not_say for the international reading can still fire.
+    need = _drop_number_and(normalize(str(phrase)).split())
     if not need:
         return False
-    hay = haystack_norm.split()
+    hay = _drop_number_and(haystack_norm.split())
     return any(hay[i:i + len(need)] == need for i in range(len(hay) - len(need) + 1))
 
 
@@ -260,6 +301,8 @@ class CheckReport:
     wer: WerResult | None = None
     quality: QualityResult | None = None
     transcript: str | None = None
+    spelled_transcript: str | None = None
+    spelled_problem: str | None = None
     asr_error: str | None = None
     decode_error: str | None = None
 
@@ -292,6 +335,10 @@ class CheckReport:
             rec["audio_quality"] = self.quality.as_record
         if self.transcript is not None:
             rec["transcript_raw"] = self.transcript
+        if self.spelled_transcript is not None:
+            rec["transcript_spelled_raw"] = self.spelled_transcript
+        if self.spelled_problem:
+            rec["spelled_pass_unusable"] = self.spelled_problem
         if self.asr_error:
             rec["asr_error"] = self.asr_error
         if self.decode_error:
@@ -397,6 +444,82 @@ def decode(path: Path) -> AudioFacts:
     )
 
 
+def _phrase_checks(report: "CheckReport", checks: dict, transcript: str,
+                   spelled_transcript: str | None, spelled_problem: str | None) -> None:
+    """Gates 10, 10b and 11: what the speaker must and must not have said."""
+    # Gate 10 - required phrases, normalized on both sides. Covers the
+    # amount-and-unit case ("4250.75 with the correct currency") without
+    # needing a parser per value type.
+    # WHICH TRANSCRIPT. A transcriber writes "340,000" for a number it heard
+    # as words, so whether the speaker said "lakh" had to be inferred from
+    # the comma grouping (2026-10-09, bank-en-01). The spelled-out second
+    # transcription shows the words themselves, so the phrase checks read
+    # it when it exists. The normal transcript's answer is kept in the
+    # detail whenever the two disagree, for a listener to settle.
+    normal_norm = normalize(transcript)
+    if spelled_transcript:
+        report.spelled_transcript = spelled_transcript
+    if spelled_transcript and spelled_problem:
+        report.spelled_problem = spelled_problem
+        heard_norm = normal_norm
+        source = f"transcript (spelled-out pass unusable: {spelled_problem})"
+        spelled_transcript = None  # nothing below may read it
+    elif spelled_transcript:
+        heard_norm = normalize(spelled_transcript)
+        source = "spelled-out transcript"
+    else:
+        heard_norm = normal_norm
+        source = "transcript"
+
+    def _also(found_spelled: bool, found_normal: bool, want_present: bool) -> str:
+        if not spelled_transcript or found_spelled == found_normal:
+            return f" in the {source}"
+        verdict = "pass" if found_normal == want_present else "fail"
+        return f" in the {source}; the normal transcript disagrees ({verdict}) - listen"
+
+    for phrase in checks.get("must_say") or []:
+        need = normalize(str(phrase))
+        found = says(heard_norm, phrase)
+        report.add(
+            f"must_say[{str(phrase)[:28]}]",
+            found,
+            f"looked for {need!r} as whole words" + _also(found, says(normal_norm, phrase), True),
+        )
+
+    # Gate 10b - alternation. An invented proper noun has no spelling a
+    # transcriber can be expected to reproduce: "Ironhaus", read correctly,
+    # came back as "Ironhouse" from one model and "Iron House" from the
+    # other, and a must_say for the literal spelling failed BOTH for
+    # pronouncing it right. Any one of the listed forms satisfies the gate,
+    # so the check tests the READING rather than the transcriber's spelling.
+    for group in checks.get("must_say_any") or []:
+        options = [str(g) for g in (group if isinstance(group, (list, tuple)) else [group])]
+        label = "|".join(options)[:26]
+        found = any(says(heard_norm, o) for o in options)
+        report.add(
+            f"must_say_any[{label}]",
+            found,
+            f"any of {[normalize(o) for o in options]}"
+            + _also(found, any(says(normal_norm, o) for o in options), True),
+        )
+
+    # Gate 11 - phrases that must NOT appear. The positive check cannot
+    # express "read this the local way": a model that says "two hundred
+    # fifty thousand rupees" where the numeral was 2,50,000 has said
+    # something true, in the wrong convention, and only a negative
+    # assertion catches it. Also the right shape for a disclosure rule -
+    # "never speak the full account number" - where the failure is a
+    # phrase being PRESENT.
+    for phrase in checks.get("must_not_say") or []:
+        avoid = normalize(str(phrase))
+        found = says(heard_norm, phrase)
+        report.add(
+            f"must_not_say[{str(phrase)[:24]}]",
+            not found,
+            f"must not contain {avoid!r}" + _also(found, says(normal_norm, phrase), False),
+        )
+
+
 def run_checks(
     scenario,
     model_id: str,
@@ -405,12 +528,22 @@ def run_checks(
     asr_error: str | None,
     predictor: QualityPredictor,
     extra: dict[str, Any] | None = None,
+    spelled_transcript: str | None = None,
+    spelled_problem: str | None = None,
 ) -> CheckReport:
     """
     Every voice gate and measurement for one cell.
 
     `transcript` is the RAW ASR output (or None when ASR failed). This
     function never calls a network service, so it is fully exercised offline.
+
+    `spelled_transcript` is a second transcription of the same audio with
+    digits banned, so every number is written as the words spoken. When
+    present, the must_say / must_say_any / must_not_say checks read it
+    instead of `transcript`; everything else (WER included) reads
+    `transcript`. A gate whose answer differs between the two says so.
+    `spelled_problem` (from asr.spelled_pass_problem) marks the spelled-out
+    pass unusable: it is kept in the record, and the checks read `transcript`.
     """
     report = CheckReport(scenario_id=scenario.id, model_id=model_id, asr_error=asr_error)
 
@@ -518,6 +651,16 @@ def run_checks(
             report.measurements["ttfa_ms"] = int(got)
             report.add("ttfa_within_max", int(got) <= int(max_ttfa),
                        f"first audio at {int(got)} ms vs a {int(max_ttfa)} ms ceiling")
+    elif checks.get("measure_ttfa"):
+        # Measured, not gated. A ceiling neither arm can meet from this
+        # network path fails every clip on both sides and says nothing about
+        # either (findings 2026-09-10, section 4); the time itself is still
+        # the honest latency number, so it is recorded for the report.
+        got = (extra or {}).get("ttfa_ms")
+        if got is None:
+            report.measurements["ttfa_unmeasured"] = True
+        else:
+            report.measurements["ttfa_ms"] = int(got)
 
     # Gate 3 - not silent overall.
     not_silent = facts.peak > 1e-4 and facts.rms_dbfs > -70.0
@@ -623,6 +766,28 @@ def run_checks(
             f"not evaluated - ASR unavailable ({asr_error or 'no transcript'}); "
             f"text_accuracy is unmeasured, not zero",
         )
+    elif checks.get("asr_scored") is False:
+        # The script and the transcript are in different writing systems.
+        # Whisper writes Hindi audio in Devanagari, so a Hinglish script in
+        # Roman letters - or a mixed-script one - scores a large WER against
+        # a perfect read. Measured anyway, that is the recogniser's spelling
+        # presented as the model's accuracy. The transcript is still kept as
+        # evidence; accuracy for these scenarios comes from the judge and
+        # the listeners, and text_accuracy is UNMEASURED, not zero.
+        report.transcript = transcript
+        report.measurements["text_accuracy_unmeasured"] = True
+        report.measurements["asr_scored"] = False
+        report.add(
+            "wer_within_max",
+            True,
+            "not evaluated - the scenario opts out of transcript scoring "
+            "(script and transcript are in different writing systems); "
+            "text_accuracy is unmeasured, not zero",
+        )
+        # The phrase checks still run: they test one reading ("lakh" for
+        # Rs 3,40,000), not a word-for-word match, so a script in another
+        # writing system does not stop them (2026-10-09, Hinglish lakh scenes).
+        _phrase_checks(report, checks, transcript, spelled_transcript, spelled_problem)
     else:
         report.transcript = transcript
         wer = normalized_wer(reference, transcript)
@@ -690,46 +855,6 @@ def run_checks(
                 f"longest spoken digit run {longest} vs permitted {max_run}",
             )
 
-        # Gate 10 - required phrases, normalized on both sides. Covers the
-        # amount-and-unit case ("4250.75 with the correct currency") without
-        # needing a parser per value type.
-        heard_norm = normalize(transcript)
-        for phrase in checks.get("must_say") or []:
-            need = normalize(str(phrase))
-            report.add(
-                f"must_say[{str(phrase)[:28]}]",
-                says(heard_norm, phrase),
-                f"looked for {need!r} as whole words",
-            )
-
-        # Gate 10b - alternation. An invented proper noun has no spelling a
-        # transcriber can be expected to reproduce: "Ironhaus", read correctly,
-        # came back as "Ironhouse" from one model and "Iron House" from the
-        # other, and a must_say for the literal spelling failed BOTH for
-        # pronouncing it right. Any one of the listed forms satisfies the gate,
-        # so the check tests the READING rather than the transcriber's spelling.
-        for group in checks.get("must_say_any") or []:
-            options = [str(g) for g in (group if isinstance(group, (list, tuple)) else [group])]
-            label = "|".join(options)[:26]
-            report.add(
-                f"must_say_any[{label}]",
-                any(says(heard_norm, o) for o in options),
-                f"any of {[normalize(o) for o in options]}",
-            )
-
-        # Gate 11 - phrases that must NOT appear. The positive check cannot
-        # express "read this the local way": a model that says "two hundred
-        # fifty thousand rupees" where the numeral was 2,50,000 has said
-        # something true, in the wrong convention, and only a negative
-        # assertion catches it. Also the right shape for a disclosure rule -
-        # "never speak the full account number" - where the failure is a
-        # phrase being PRESENT.
-        for phrase in checks.get("must_not_say") or []:
-            avoid = normalize(str(phrase))
-            report.add(
-                f"must_not_say[{str(phrase)[:24]}]",
-                not says(heard_norm, phrase),
-                f"must not contain {avoid!r}",
-            )
+        _phrase_checks(report, checks, transcript, spelled_transcript, spelled_problem)
 
     return report

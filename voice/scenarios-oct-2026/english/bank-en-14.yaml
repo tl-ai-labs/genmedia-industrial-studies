@@ -1,0 +1,41 @@
+# bank-en-14 - Gold-loan maturity and renewal (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-24 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-24): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Loans & EMI - EMI reminders, approvals, prepayment, gold loans, collections.
+# TARGET CUSTOMER. Retail Banks, NBFCs & Lenders.
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: brands.
+# PICKED AS. Even contest - Indian names and words inside English.
+
+id: bank-en-14
+modality: voice
+task: text_to_speech
+title: "Gold-loan maturity and renewal - English"
+
+input:
+  script: |
+    Your Muthoot Finance gold loan, loan number G, L, two, four, six, eight, one, matures next week. To renew it, please visit your nearest branch.
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "GL24681" recoverable character for character
+  2) "Muthoot" pronounced as an Indian speaker says it (judge)
+  3) "next week" intelligible
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+  # The transcriber spelled a correct "Muthoot" as "Muthut" for both models
+  # (2026-10-09, round 1). A hint removes its ignorance of the brand; it does
+  # not make a wrong reading right.
+  asr_hotwords: ["Muthoot"]
+
+tags: [oct-2026, english, banking-financial-services, loans-emi, medium, even-contest, new-english]

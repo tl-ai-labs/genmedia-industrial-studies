@@ -1,0 +1,44 @@
+# fqc-hi-11 - Specials from three famous eateries (Food & quick commerce)
+#
+# SOURCE. v2 text-to-speech bank, scenario fqc-hi-11: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-11
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Restaurant & dish names.
+# TARGET CUSTOMER. Food Delivery Apps, Restaurants.
+# WHAT THIS TESTS. Three restaurant brands (one possessive) and three dish names plus a percentage
+# SPEECH SKILLS. Numbers: units/%; Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: fqc-hi-11
+modality: voice
+task: text_to_speech
+title: "Specials from three famous eateries - Hindi"
+
+input:
+  script: |
+    आज के specials हैं — Bademiya का seekh kebab, Karim's का mutton korma, और Haldiram's की raj kachori, सब पर 20% off।
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every named brand pronounced the way a native speaker would say it (judge)
+  2) Dish names natural
+  3) "20%" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, food-quick-commerce, restaurant-dish-names, hard, even-contest, v2-bank]

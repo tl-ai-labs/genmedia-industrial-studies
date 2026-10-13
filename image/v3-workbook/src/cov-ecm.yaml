@@ -1,0 +1,268 @@
+# Multi-angle coverage — E-commerce, D2C & retail scenarios. Slots: cov.yaml.
+code: COV
+scenarios:
+
+- id: COV-ECM-01
+  title: "Six listing angles of a leather tote from one front packshot"
+  persona: "Catalogue lead at a D2C leather brand who has one front photo per new bag and needs the full marketplace set."
+  evidence: "Earlier bank IMG-VIEW-05 (four-step turntable) was medium tier and IMG-VIEW-23 (unseen base of a product) medium; inventing the back, base and interior consistently is the harder version."
+  levers: [set, unseen, identity, camera, keep-rest]
+  inputs: [{source: SRC-ECM-HANDBAG, role: source}]
+  prompt: |
+    This is the front packshot of a structured tan pebbled-leather tote: rolled darker-brown
+    handles, a front flap with a brass turn-lock, cream contrast stitching on every edge, and
+    "KOSU" blind-embossed below the lock; one handle has a slight twist. Produce one more
+    marketplace image of the same bag on the same seamless off-white, with the same soft light
+    from upper left, from the angle described below. Parts the front photo does not show must be
+    plain and consistent with it: the back is a plain panel with a slip pocket; the base has four
+    small brass feet; the inside is lined in mustard cotton with one zip pocket. Photoreal, 4:5.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Tan pebbled leather, darker handles with the slight twist, cream stitching"
+      - "Back slip pocket, four brass feet on the base, mustard lining with one zip pocket"
+      - "Seamless off-white, soft light from upper left"
+    members:
+      - {name: "Back", prompt: "Straight back view.", checks: [[prompt_adherence, "Is the back a plain panel with a slip pocket?"], [reference_fidelity, "Is the stitching cream on every edge?"]]}
+      - {name: "Side", prompt: "Exact side profile showing the gusset depth.", checks: [[reference_fidelity, "Does the bag's depth look right for a structured tote?"], [set_consistency, "Is the handle attachment the same?"]]}
+      - {name: "Three-quarter", prompt: "Front three-quarter from the left, slightly above.", checks: [[reference_fidelity, "Is the lock brass and the emboss KOSU below it?"], [set_consistency, "Is the twisted handle the same one?"]]}
+      - {name: "Base", prompt: "Looking up at the base, tilted.", checks: [[prompt_adherence, "Are there four brass feet?"], [set_consistency, "Is the base leather the same tan?"]]}
+      - {name: "Open interior", prompt: "From above with the flap open, looking inside.", checks: [[prompt_adherence, "Is the lining mustard with one zip pocket?"], [reference_fidelity, "Is the underside of the flap consistent with the front?"]]}
+      - {name: "Top", prompt: "Straight down onto the closed bag and handles.", checks: [[prompt_adherence, "Is it straight down?"], [reference_fidelity, "Are the handles rolled and darker?"]]}
+  deliverable: "Six images, 4:5."
+  checks:
+    - [set_consistency, "Is it the same bag in all six: shape, size, leather?"]
+    - [set_consistency, "Is the leather the same tan in every view?"]
+    - [set_consistency, "Is the stitching cream on every edge in every view?"]
+    - [set_consistency, "Is the same handle twisted in every view that shows it?"]
+    - [set_consistency, "Are the invented parts (back pocket, feet, lining) as described and consistent?"]
+    - [set_consistency, "Is the lock brass and the emboss KOSU in every view that shows the front?"]
+    - [prompt_adherence, "Is the light from upper left in all six?"]
+    - [prompt_adherence, "Does each image match its angle?"]
+    - [prompt_adherence, "Is the background seamless off-white in all six?"]
+    - [text_accuracy, "Is KOSU the only text?"]
+    - [visual_quality, "Is the leather texture free of smears or repeats?"]
+    - [prompt_adherence, "Are there no props?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Six image edits from one base; set agreement needs the set review."}
+  video_followon: "V5: a turntable of the bag."
+
+- id: COV-ECM-02
+  title: "On-model catalogue set from one photo: front, back, side, walking, print close-up"
+  persona: "Studio manager at an ethnic-wear marketplace producing the standard five listing shots from one capture."
+  evidence: "Earlier bank IMG-VIEW-12 (garment back view) and IMG-VIEW-36 (model to three-quarter) were medium tier; five views with a block print and a model's face is the full listing job."
+  levers: [set, identity, unseen, camera, locale]
+  inputs: [{source: SRC-ECM-KURTA-MODEL, role: source}]
+  prompt: |
+    This catalogue photo shows a model in a mustard straight kurta with a white floral block print,
+    three-quarter sleeves, a round neck with a five-button placket, white palazzos, a white mulmul
+    dupatta over her left shoulder, and silver jhumkas, against a warm beige backdrop with window
+    light from the left. Produce one more listing image of the same model in the same outfit and
+    set, as described below. The kurta's back is plain with the same print and no buttons. Her face,
+    skin tone, hair and earrings are unchanged. Photoreal, 4:5, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, medium-brown complexion, wavy hair, silver jhumkas"
+      - "Mustard kurta with the same white floral print; five buttons at the front only"
+      - "White palazzos; white dupatta on the left shoulder"
+      - "Beige backdrop, window light from the left"
+    members:
+      - {name: "Back", prompt: "Full length from directly behind.", checks: [[prompt_adherence, "Is the back plain with the same print and no buttons?"], [prompt_adherence, "Is the dupatta now on frame left, her left shoulder?"]]}
+      - {name: "Right side", prompt: "Full-length right side profile.", checks: [[prompt_adherence, "Is it a clean side view?"], [reference_fidelity, "Is the sleeve three-quarter length?"]]}
+      - {name: "Walking", prompt: "Walking towards the camera, mid-stride.", checks: [[physics_plausibility, "Does the kurta move naturally with the stride?"], [set_consistency, "Is the print the same scale?"]]}
+      - {name: "Print close-up", prompt: "Close on the placket and print at the chest, 100 mm.", checks: [[prompt_adherence, "Are there five white buttons?"], [set_consistency, "Is the print the same small floral motif?"]]}
+      - {name: "Seated", prompt: "Seated on a low wooden stool, three-quarter view.", checks: [[reference_fidelity, "Is the kurta length to the knee consistent when seated?"], [visual_quality, "Are her hands natural?"]]}
+  deliverable: "Five images, 4:5."
+  checks:
+    - [set_consistency, "Is she the same model in all five?"]
+    - [set_consistency, "Is her skin tone the same in all five?"]
+    - [set_consistency, "Is the kurta print the same in all five?"]
+    - [set_consistency, "Are the buttons only on the front?"]
+    - [set_consistency, "Is the dupatta on her left shoulder in all five?"]
+    - [set_consistency, "Are the jhumkas in every view that shows her ears?"]
+    - [prompt_adherence, "Is the light from the window side in all five?"]
+    - [prompt_adherence, "Does each image match its description?"]
+    - [prompt_adherence, "Is the backdrop the same beige in all five?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands and feet natural in all five?"]
+    - [prompt_adherence, "Is she the only person?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ECM-03
+  title: "Biryani listing set: top-down, eye level, macro, opposite side, hero"
+  persona: "Food-delivery platform photographer making a full set for a restaurant from one photo."
+  evidence: "Earlier bank IMG-VIEW-11 (45-degree food to flat lay) was medium tier; side dishes and props must stay put as the camera moves."
+  levers: [set, layout, camera, locale, keep-rest]
+  inputs: [{source: SRC-ECM-BIRYANI, role: source}]
+  prompt: |
+    This listing photo shows a copper handi of Hyderabadi chicken dum biryani with its lid leaning
+    on its left, saffron rice, two chicken pieces, fried onions and mint, a steel bowl of raita with
+    cucumber and half a boiled egg on the right, and a red-checked napkin with a white plastic
+    spoon on the left, on a dark wooden table in daylight from the left. Produce one more image of
+    the same table at the same moment from the angle below. Everything stays where it is; the food
+    is not re-styled. Photoreal, 4:5.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Handi with lid leaning on its left; two chicken pieces on top"
+      - "Raita with cucumber and half an egg on the right"
+      - "Napkin with plastic spoon on the left"
+      - "Dark wood table; daylight from the left"
+    members:
+      - {name: "Top-down", prompt: "Straight down over the table.", checks: [[prompt_adherence, "Is the raita on the right and the napkin on the left?"], [prompt_adherence, "Are two chicken pieces visible on top?"]]}
+      - {name: "Eye level", prompt: "At table height, 50 mm, the handi in profile.", checks: [[prompt_adherence, "Is it at table height?"], [prompt_adherence, "Is the lid leaning on the handi's left?"]]}
+      - {name: "Macro", prompt: "Macro on the rice and saffron strands, 100 mm macro.", checks: [[reference_fidelity, "Are saffron streaks and fried onions visible?"], [visual_quality, "Is the rice texture natural, not smeared?"]]}
+      - {name: "Opposite side", prompt: "From the far side of the table at 45 degrees.", checks: [[prompt_adherence, "Is the raita now on frame left and the napkin on frame right?"], [prompt_adherence, "Is the light now from frame right?"]]}
+      - {name: "Hero", prompt: "Low three-quarter hero, 35 mm, handi large in frame.", checks: [[prompt_adherence, "Is it a low hero angle?"], [set_consistency, "Is it the same copper handi?"]]}
+  deliverable: "Five images, 4:5."
+  checks:
+    - [set_consistency, "Is the layout of handi, raita and napkin the same in all five?"]
+    - [set_consistency, "Is the lid leaning on the same side in all five?"]
+    - [set_consistency, "Is the half egg in the raita in every view that shows it?"]
+    - [set_consistency, "Is the plastic spoon on the napkin in every view that shows it?"]
+    - [prompt_adherence, "Does the daylight come from the same side of the table in all five?"]
+    - [prompt_adherence, "Does each image match its angle?"]
+    - [prompt_adherence, "Is the food not re-styled between views?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Are there no hands or people?"]
+    - [style, "Is the colour the same in all five?"]
+    - [visual_quality, "Is the food free of melted artefacts?"]
+    - [prompt_adherence, "Is the handi copper in all five?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ECM-04
+  title: "Armchair in its room from five positions; chair, table and lamp keep their real sizes"
+  persona: "Furniture brand's content lead needing five room views for the product page."
+  evidence: "Earlier bank IMG-VIEW-25 (furniture to three-quarter) was medium tier; holding scale against the room is the harder version."
+  levers: [set, layout, camera, physics, light-lock]
+  inputs: [{source: SRC-ECM-ARMCHAIR-ROOM, role: source}]
+  prompt: |
+    This lifestyle photo shows a mid-century armchair in ochre bouclé with a walnut frame, angled
+    towards frame left, a round walnut side table with two books and a mug on its left, a brass
+    floor lamp on its right, a tall window at the left throwing a rectangle of sunlight on the oak
+    floor, a charger cable and slippers on the floor. Produce one more view of the same room at
+    the same moment from the position below. Everything keeps its real size: the chair seat about
+    45 cm high, the side table a little lower than the chair's arm, the lamp about 1.6 metres.
+    Late-afternoon sun from the window. Photoreal, 3:2.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Chair, side table and lamp in their places and sizes"
+      - "Books and mug on the table; cable and slippers on the floor"
+      - "Sun rectangle from the window on the floor"
+    members:
+      - {name: "From the window", prompt: "From beside the window looking into the room, 24 mm.", checks: [[prompt_adherence, "Is the side table now on frame right of the chair?"], [prompt_adherence, "Is the light now behind the camera?"]]}
+      - {name: "Seated eye level", prompt: "At seated eye level a metre in front of the chair, 35 mm.", checks: [[physics_plausibility, "Is the side table a little lower than the chair arm?"], [prompt_adherence, "Is the camera at seated height?"]]}
+      - {name: "Behind the chair", prompt: "From behind the chair, 28 mm, looking towards the window.", checks: [[prompt_adherence, "Is the chair back walnut and bouclé, consistent with the front?"], [prompt_adherence, "Is the sun rectangle visible ahead?"]]}
+      - {name: "High corner", prompt: "High from the far corner, 20 mm.", checks: [[prompt_adherence, "Is the whole arrangement the same from above?"], [physics_plausibility, "Is the lamp's height plausible relative to the chair?"]]}
+      - {name: "Detail", prompt: "Close on the arm and the bouclé texture, 85 mm.", checks: [[set_consistency, "Is the fabric the same ochre bouclé?"], [reference_fidelity, "Is the arm walnut?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [physics_plausibility, "Do the chair, table and lamp keep the same relative sizes in all five?"]
+    - [set_consistency, "Are the items in the same places in all five?"]
+    - [set_consistency, "Are the books, mug, cable and slippers in every view that shows them?"]
+    - [prompt_adherence, "Is the sun from the window in all five, with shadows agreeing?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [set_consistency, "Is it the same armchair in all five?"]
+    - [prompt_adherence, "Are there no people or pets?"]
+    - [text_accuracy, "Are book titles unreadable?"]
+    - [visual_quality, "Are straight lines straight?"]
+    - [style, "Is the grade the same across the five?"]
+    - [prompt_adherence, "Is nothing tidied or added?"]
+    - [physics_plausibility, "Is the floor's oak grain consistent in direction?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ECM-05
+  title: "Smartwatch lifestyle set at four focal lengths plus a face macro"
+  persona: "D2C wearables brand's content lead making the lifestyle set for a launch page."
+  evidence: "Lens character and small screen content are both easy to lose; the watch face must read the same time in every shot."
+  levers: [set, camera, identity, exact-text, locale]
+  inputs: [{source: SRC-ECM-WATCH-ELDER, role: source}]
+  prompt: |
+    This lifestyle photo shows a woman of about sixty-eight in a lilac sari with a red bindi and a
+    grey braid, seated on a stone bench in a Chennai park in early golden light, glancing at a
+    smartwatch with a square black face reading "06:45" and a sage-green strap on her left wrist;
+    one jogger far in the background. Produce the same moment with the lens and position below.
+    The watch face reads 06:45 in every shot where it is visible. Low sun from the right.
+    Photoreal, 3:2, no logos.
+  exact_text: ["06:45"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, skin tone, bindi, braid, lilac sari"
+      - "Watch on the left wrist, square black face reading 06:45, sage strap"
+      - "Low sun from the right; one jogger far behind"
+    members:
+      - {name: "24 mm", prompt: "24 mm from a metre away, the bench and path wide.", checks: [[prompt_adherence, "Is the perspective wide with the path stretching away?"], [reference_fidelity, "Is the watch on her left wrist?"]]}
+      - {name: "50 mm", prompt: "50 mm, as in the original framing.", checks: [[reference_fidelity, "Does it match the original moment?"], [prompt_adherence, "Is the jogger far behind on the right?"]]}
+      - {name: "85 mm", prompt: "85 mm head and shoulders with the wrist raised in frame.", checks: [[text_accuracy, "Does the watch read 06:45?"], [prompt_adherence, "Is the background soft?"]]}
+      - {name: "135 mm", prompt: "135 mm from across the path, trees compressed behind.", checks: [[prompt_adherence, "Are the trees compressed behind her?"], [reference_fidelity, "Is it clearly her?"]]}
+      - {name: "Macro", prompt: "Macro on the watch on her wrist, 100 mm.", checks: [[text_accuracy, "Does the face read 06:45 in white digits?"], [reference_fidelity, "Is the strap sage green?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [prompt_adherence, "Do the four focal lengths clearly differ in perspective?"]
+    - [set_consistency, "Is she the same woman in all five?"]
+    - [set_consistency, "Is her skin tone the same in all five?"]
+    - [text_accuracy, "Does the watch read 06:45 wherever visible?"]
+    - [set_consistency, "Is the watch on her left wrist in all five?"]
+    - [set_consistency, "Is the strap sage green in all five?"]
+    - [prompt_adherence, "Is the sun low from the right in all five?"]
+    - [prompt_adherence, "Are there no logos?"]
+    - [prompt_adherence, "Is there one jogger at most, far behind?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [prompt_adherence, "Does each shot match its lens?"]
+    - [style, "Is the grade consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-ECM-06
+  title: "No base: a described seven-piece skincare kit on a tray from five angles"
+  persona: "Beauty brand's e-commerce lead previewing the kit's listing images before samples arrive."
+  evidence: "Plan's text-only coverage test; small products with labels arranged on a tray drift easily across views."
+  levers: [set, layout, count, exact-text, long-brief]
+  prompt: |
+    A skincare kit on a round travertine tray on a white marble counter, photoreal, soft daylight
+    from the left, 1:1. The tray holds exactly seven items, arranged clockwise from twelve o'clock:
+    a tall frosted-glass cleanser bottle with a white pump; a short amber dropper bottle; a white
+    jar with a wooden lid; a slim lilac tube lying flat; a round mint compact; a small cork-stopped
+    glass vial; and a folded white cotton cloth. In the middle, a single sprig of eucalyptus. Each
+    container has a small cream label with the word "NIRA" in thin black capitals and nothing else.
+    Produce the view described below of this exact arrangement.
+  exact_text: ["NIRA"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Seven items in the stated clockwise order; eucalyptus in the middle"
+      - "Each label reading NIRA only"
+      - "Travertine tray on white marble; daylight from the left"
+    members:
+      - {name: "Top-down", prompt: "Straight down over the tray.", checks: [[prompt_adherence, "Are there exactly seven items?"], [prompt_adherence, "Are they in the stated clockwise order from twelve o'clock?"]]}
+      - {name: "45 degrees", prompt: "From the front at 45 degrees.", checks: [[prompt_adherence, "Is the cleanser at the back?"], [physics_plausibility, "Do the heights read right, cleanser tallest?"]]}
+      - {name: "Eye level", prompt: "At tray level from the front, 85 mm.", checks: [[prompt_adherence, "Is it at tray level?"], [physics_plausibility, "Do nearer items hide parts of farther ones correctly?"]]}
+      - {name: "Macro", prompt: "Macro on the amber dropper and the jar, 100 mm.", checks: [[text_accuracy, "Do the labels read NIRA?"], [set_consistency, "Is the jar lid wooden?"]]}
+      - {name: "From behind", prompt: "From behind the tray at 45 degrees.", checks: [[prompt_adherence, "Is the order reversed correctly from this side?"], [prompt_adherence, "Is the light now from frame right?"]]}
+  deliverable: "Five images, 1:1."
+  checks:
+    - [prompt_adherence, "Are there seven items in every view that shows the whole tray?"]
+    - [set_consistency, "Is the clockwise order the same in all five?"]
+    - [set_consistency, "Are the colours and shapes of the seven items the same in all five?"]
+    - [text_accuracy, "Does every readable label say NIRA and nothing else?"]
+    - [set_consistency, "Is the eucalyptus in the middle in all five?"]
+    - [prompt_adherence, "Is the daylight from the same side of the room in all five?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [physics_plausibility, "Are reflections and shadows on the marble consistent?"]
+    - [prompt_adherence, "Are there no hands or extra props?"]
+    - [visual_quality, "Is the glass and frosted finish free of artefacts?"]
+    - [style, "Is the grade consistent?"]
+    - [prompt_adherence, "Is the cloth folded in its place?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five text-to-image calls with one brief; set agreement needs the set review."}
+  video_followon: ""

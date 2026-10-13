@@ -1,0 +1,454 @@
+# Product and ad spots — E-commerce, D2C & retail scenarios. Slots: vspt.yaml.
+code: VSPT
+scenarios:
+
+- id: VSPT-ECM-01
+  seed: true
+  sahil: product-bible
+  title: "The production bible's storyboard, frames 2 to 5, as one 8-second soda spot"
+  persona: "Producer at a D2C beverage brand who sent the studio one bible sheet and expects the film to match it."
+  evidence: "Sahil's product-bible example (screenshots 232–233): one product photo became a bible with a storyboard strip. The film made from it must keep the can exact through ice, opening, fizz and pour."
+  levers: [identity, multi-ref, exact-text, timing, physics, light-lock, long-brief]
+  inputs:
+    - {source: SRC-ECM-SODA-CAN, role: product, note: "the real can"}
+    - {source: SRC-VBIBLE-ANANAS, role: still1, note: "the production bible: set, lighting and storyboard"}
+  prompt: |
+    The first image is the product; the second is its production bible. Make the 8-second spot from
+    the bible's storyboard frames 2 to 5, on the bible's set (dark slate plinth, navy cyclorama, a block
+    of clear ice) with its lighting (key upper left, rim behind right, fill front right), in four
+    timed shots cut together. 0–2 s, "2 Can rises from the ice": the can rises slowly out of crushed
+    ice, shards sliding off. 2–4 s, "3 Ring-pull opens": a macro of the silver ring-pull lifting, a
+    puff of cold vapour. 4–6 s, "4 Fizz in macro": bubbles racing up at the can's mouth. 6–8 s, "5
+    Pour into glass": the drink pours into a tall glass of ice beside the can. In every shot it is
+    exactly this can: matte cobalt blue, "Ananas" in yellow script running diagonally upward,
+    "PINEAPPLE FIZZ" and "330 ml" in white, the white line-drawn pineapple on the right, condensation
+    on the lower two-thirds. Cold, crisp, high contrast, as the bible's notes say. No other text.
+  exact_text: ["Ananas", "PINEAPPLE FIZZ", "330 ml"]
+  clip: {duration: 8, aspect: "16:9", camera: "slow rise, macro, macro, locked-off medium; four cuts"}
+  deliverable: "One 8-second clip with four shots, 16:9."
+  checks:
+    - [prompt_adherence, "Are the four shots at about 0–2, 2–4, 4–6 and 6–8 s?"]
+    - [prompt_adherence, "Do the shots follow the bible's frames 2 to 5 in order?"]
+    - [reference_fidelity, "Is the can exactly the product in every shot it appears in?"]
+    - [text_accuracy, "Do Ananas, PINEAPPLE FIZZ and 330 ml stay exact and readable whenever visible?"]
+    - [temporal_consistency, "Does the script never melt, swim or re-spell as the can moves?"]
+    - [reference_fidelity, "Does the script run diagonally upward in every shot?"]
+    - [physics_plausibility, "Do ice shards slide off as the can rises?"]
+    - [physics_plausibility, "Does vapour puff as the ring-pull lifts?"]
+    - [physics_plausibility, "Does the pour fill the glass naturally around the ice?"]
+    - [prompt_adherence, "Is the set the bible's: slate plinth, navy cyclorama, ice block?"]
+    - [prompt_adherence, "Is the lighting key upper left with a rim behind right, as the diagram shows?"]
+    - [style, "Is the look cold, crisp and high contrast?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two references; four cuts in one clip depend on the model's support for cuts."}
+
+- id: VSPT-ECM-02
+  title: "A serum spot: the dropper rises, one drop falls, the bottle turns its label to camera"
+  persona: "Skincare D2C brand's content lead making a 6-second product reel."
+  evidence: "Small glass products lose shape and label when liquids and turns are involved."
+  levers: [exact-text, physics, timing, identity, small-text]
+  inputs: [{source: SRC-ECM-SERUM, role: product}]
+  prompt: |
+    A 6-second spot for this exact serum on seamless blush pink, soft light from the upper left. 0–2 s: the
+    white-bulbed dropper lifts out of the amber bottle and hangs above it. 2–3.5 s: one clear drop forms at
+    the tip, falls in slow motion and lands back in the bottle's neck. 3.5–6 s: the dropper is replaced, and
+    the bottle turns slowly on its base so the white label comes round to camera: "TARA" in thin spaced
+    capitals, "Niacinamide 10%" below it. The bottle is 9 cm tall and keeps its shape; the gold collar
+    gleams. No other text.
+  exact_text: ["TARA", "Niacinamide 10%"]
+  clip: {duration: 6, aspect: "4:5", camera: "locked off, close"}
+  deliverable: "One 6-second clip, 4:5."
+  checks:
+    - [text_accuracy, "Does the label read TARA and Niacinamide 10% correctly?"]
+    - [prompt_adherence, "Does exactly one drop fall?"]
+    - [physics_plausibility, "Does the drop form and fall believably?"]
+    - [prompt_adherence, "Does the drop fall at about 2 to 3.5 seconds?"]
+    - [reference_fidelity, "Is it the real amber bottle with white bulb and gold collar?"]
+    - [motion_coherence, "Does the bottle keep its shape as it turns?"]
+    - [prompt_adherence, "Is the light soft from the upper left?"]
+    - [physics_plausibility, "Does the glass refract the light correctly?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Is the label edge clean?"]
+    - [prompt_adherence, "Is the set blush pink?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-03
+  title: "A time-lapse spot: the tent is pitched on a Spiti river flat as the shadows sweep and the sun sets"
+  persona: "Outdoor-gear brand's marketer making a time-lapse product film."
+  evidence: "Time-lapse needs consistent shadow sweep and a product that assembles into its real form."
+  levers: [physics, light-lock, timing, identity, locale]
+  inputs: [{source: SRC-ECM-TENT, role: product}]
+  prompt: |
+    A 10-second time-lapse for this exact tent on a river flat in Spiti valley, locked off, barren brown
+    mountains behind, the Spiti river braided across grey stones. 0–4 s: from a flat pack on the ground the
+    tent is pitched, a person in a red jacket moving in fast time-lapse; it ends as in the photo: burnt-
+    orange fly, charcoal base panels, two crossing poles, the door half open, four white guy ropes taut at
+    the same angle. 4–10 s: the person sits; the sun sets behind the mountains on the left, shadows sweep
+    across the flat to the right, and the sky goes from gold to deep blue. A lantern glows inside the tent
+    at the end. No text.
+  clip: {duration: 10, aspect: "16:9", camera: "locked off, time-lapse"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [reference_fidelity, "Does the pitched tent match the photo?"]
+    - [prompt_adherence, "Are there four guy ropes taut at the same angle?"]
+    - [physics_plausibility, "Do the shadows sweep consistently to the right as the sun sets on the left?"]
+    - [prompt_adherence, "Does the sky go from gold to deep blue?"]
+    - [prompt_adherence, "Is the tent pitched by about 4 seconds?"]
+    - [prompt_adherence, "Does a lantern glow inside at the end?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [motion_coherence, "Does the time-lapse read clearly?"]
+    - [prompt_adherence, "Does it read as Spiti?"]
+    - [physics_plausibility, "Does the tent stand believably on stones?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is there no flicker in the landscape?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-04
+  title: "The rug unrolls across a living-room floor; its rust and indigo hold through the motion"
+  persona: "Home-decor D2C founder making a product video of a hero rug."
+  evidence: "Patterns on moving fabric swim and colours shift."
+  levers: [physics, identity, layout, light-lock, count]
+  inputs: [{source: SRC-ECM-RUG, role: product}]
+  prompt: |
+    A 6-second spot for this exact rug: a rolled rug is kicked gently and unrolls across a pale wooden floor
+    in a bright living room, from the left wall to the middle of the room, in front of a cream sofa. It
+    flattens out completely by 4 seconds, showing the cream field, the rust and indigo lines making large
+    overlapping diamonds, the 10 cm indigo border, and cream fringes on the two short ends only. The colours
+    stay the same rust and indigo as it moves. A slow crane up to top-down for the last 2 seconds. Daylight
+    from the windows on the right. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "low side, crane up to top-down"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the rug unroll believably with weight?"]
+    - [prompt_adherence, "Is it flat by about 4 seconds?"]
+    - [reference_fidelity, "Is the pattern the real rug's diamonds?"]
+    - [reference_fidelity, "Do the rust and indigo stay the same as it moves?"]
+    - [prompt_adherence, "Are the fringes on the two short ends only?"]
+    - [prompt_adherence, "Is the indigo border all round?"]
+    - [prompt_adherence, "Does the camera crane up to top-down at the end?"]
+    - [temporal_consistency, "Does the pattern stay stable without swimming?"]
+    - [prompt_adherence, "Is daylight from the right?"]
+    - [prompt_adherence, "Is it in front of a cream sofa?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the wool texture natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-05
+  title: "A dog steps into the bed, circles twice and lies down; the cushion takes its weight"
+  persona: "Pet-products D2C brand's social lead making a product reel."
+  evidence: "Soft products must deform under weight; generated cushions stay rigid."
+  levers: [physics, identity, count, layout, timing]
+  inputs: [{source: SRC-ECM-DOG-BED, role: product}]
+  prompt: |
+    An 8-second spot for this exact pet bed in a sunny living room, three-quarter view from above. A golden
+    retriever walks in from the right, steps over the lower front of the charcoal corduroy rim, past the
+    small terracotta tab, circles exactly twice on the oatmeal sherpa cushion, and lies down with a sigh,
+    head on the rim. The cushion compresses under its paws and body and the rim bulges slightly where its
+    head rests. The bed is 70 cm across; the dog fits curled up. Locked off. No text.
+  clip: {duration: 8, aspect: "1:1", camera: "locked off, three-quarter from above"}
+  deliverable: "One 8-second clip, 1:1."
+  checks:
+    - [prompt_adherence, "Does the dog circle exactly twice?"]
+    - [physics_plausibility, "Does the cushion compress under its weight?"]
+    - [physics_plausibility, "Does the rim bulge where its head rests?"]
+    - [reference_fidelity, "Is it the real bed: charcoal rim, sherpa cushion, terracotta tab?"]
+    - [prompt_adherence, "Does it step in at the lower front?"]
+    - [motion_coherence, "Is the dog's motion natural?"]
+    - [physics_plausibility, "Is the dog's size right for a 70 cm bed?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Is it sunny daylight?"]
+    - [prompt_adherence, "Is there one dog?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the fur natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-06
+  title: "A girl swings the backpack on and runs for the school bus; the bag's shape and pocket hold"
+  persona: "Kids' brand's content lead making a back-to-school reel."
+  evidence: "Bags carried in motion lose their pockets and shape."
+  levers: [identity, physics, layout, locale, camera-move]
+  inputs: [{source: SRC-ECM-SCHOOLBAG, role: product}]
+  prompt: |
+    A 6-second spot for this exact backpack on a residential lane in Pune on a bright morning. A girl of
+    about eight in a white school shirt and navy pinafore swings the sky-blue backpack onto both shoulders at
+    her gate, then runs towards a yellow school bus waiting at the end of the lane, the camera tracking
+    behind her. The yellow cloud-shaped front pocket, the reflective silver strips on the straps, the two
+    side mesh pockets and the orange rocket zip puller stay as they are; the bag bounces on her back and
+    keeps its size and shape. No text on the bus.
+  clip: {duration: 6, aspect: "9:16", camera: "medium, then tracking behind"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [reference_fidelity, "Is it the real backpack: sky blue with a yellow cloud pocket?"]
+    - [reference_fidelity, "Is the rocket zip puller visible and orange?"]
+    - [physics_plausibility, "Does the bag bounce believably as she runs?"]
+    - [reference_fidelity, "Does the bag keep its size and shape?"]
+    - [prompt_adherence, "Do the reflective strips catch the light?"]
+    - [prompt_adherence, "Does the camera track behind her?"]
+    - [motion_coherence, "Is her run natural?"]
+    - [prompt_adherence, "Does it read as a Pune lane?"]
+    - [prompt_adherence, "Is the bus at the end of the lane?"]
+    - [prompt_adherence, "Are there two side mesh pockets?"]
+    - [text_accuracy, "Is there no text on the bus?"]
+    - [visual_quality, "Are her hands natural on the straps?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-07
+  title: "The three jars spin to face camera and turmeric pours; every Tamil label stays exact in motion"
+  persona: "Madurai spice brand's founder making a reel for marketplaces."
+  evidence: "Tamil script garbles in generated text; turning jars add perspective."
+  levers: [exact-text, script, count, timing, physics, locale]
+  inputs: [{source: SRC-ECM-SPICE-JARS, role: product}]
+  prompt: |
+    A 6-second spot for these three exact jars on a white surface, soft light from the upper left. 0–3 s:
+    the three jars, turned away, spin one after another to face the camera, left to right, showing their
+    kraft labels: "மஞ்சள்" over TURMERIC, "மிளகாய்" over CHILLI, "சீரகம்" over CUMIN, the small terracotta
+    wordmark at the top of each. 3–6 s: the turmeric jar's lid is off and a spoonful of bright yellow powder
+    pours onto a brass plate in front, a small cloud of dust rising. The labels stay exact as the jars turn.
+    No other text.
+  exact_text: ["மஞ்சள்", "மிளகாய்", "சீரகம்"]
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, close"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Does the first label read மஞ்சள் in correct Tamil?"]
+    - [text_accuracy, "Does the second read மிளகாய் in correct Tamil?"]
+    - [text_accuracy, "Does the third read சீரகம் in correct Tamil?"]
+    - [prompt_adherence, "Are there three jars?"]
+    - [prompt_adherence, "Do the jars face camera by about 3 seconds, left to right?"]
+    - [motion_coherence, "Do the labels stay intact as the jars turn?"]
+    - [physics_plausibility, "Does the turmeric pour with a small dust cloud?"]
+    - [reference_fidelity, "Are the contents yellow, red and brown seeds left to right?"]
+    - [prompt_adherence, "Is the light soft from the upper left?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Is the glass free of warping?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-08
+  title: "The tea tin turns 360 degrees; the embossed logo and curved lettering keep their geometry"
+  persona: "Tea D2C founder making a turntable video for the product page."
+  evidence: "Curved text on a turning cylinder distorts; embossing must catch the light frame by frame."
+  levers: [exact-text, physics, camera-move, light-lock, small-text]
+  inputs: [{source: SRC-ECM-TEA-TIN, role: product}]
+  prompt: |
+    A 6-second turntable video of this exact tea tin on a dark wooden surface at golden hour, warm low sun
+    from the right. The glossy emerald tin with its gold lid turns a full 360 degrees at an even speed,
+    starting and ending with the front to camera. On the front, the embossed gold teacup in a circle with
+    three wavy steam lines, ringed by "CHAI JAAN · ASSAM" in small capitals following the curve. As it
+    turns, the emboss catches the sun and the curved lettering foreshortens correctly round the cylinder and
+    comes back unchanged. The back, never shown, is plain emerald. No other text.
+  exact_text: ["CHAI JAAN · ASSAM"]
+  clip: {duration: 6, aspect: "1:1", camera: "locked off, turntable"}
+  deliverable: "One 6-second clip, 1:1."
+  checks:
+    - [text_accuracy, "Does the ring read CHAI JAAN · ASSAM correctly at start and end?"]
+    - [physics_plausibility, "Does the curved lettering foreshorten correctly as it turns?"]
+    - [physics_plausibility, "Does the emboss catch the light as it turns?"]
+    - [prompt_adherence, "Is it a full 360-degree turn at even speed?"]
+    - [reference_fidelity, "Is it the real tin, emerald with a gold lid?"]
+    - [prompt_adherence, "Are there three steam lines?"]
+    - [prompt_adherence, "Is the back plain emerald?"]
+    - [prompt_adherence, "Is the sun low from the right?"]
+    - [motion_coherence, "Does the tin keep its shape?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the gloss highlights clean?"]
+    - [prompt_adherence, "Does it start and end front to camera?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-09
+  title: "The jacket as a ghost-mannequin turntable; cut, pockets and marigold hold"
+  persona: "Denim D2C brand's catalogue lead making a 360 product video."
+  evidence: "Ghost-mannequin turns invent the back and sides; they must agree with the front."
+  levers: [unseen, identity, layout, camera-move, light-lock]
+  inputs: [{source: SRC-ECM-JACKET-FLAT, role: product}]
+  prompt: |
+    A 6-second ghost-mannequin turntable of this exact jacket on white, as if worn by an invisible body,
+    buttoned. It turns a full 360 degrees at an even speed: front with two pointed-flap chest pockets,
+    copper buttons and the yellow marigold on the LEFT chest pocket flap; the left side; the back, never
+    shown, plain stone-washed denim with a horizontal yoke and two adjustment tabs at the waist; the right
+    side with the small fray on the RIGHT cuff; and front again. The cut, wash and buttons stay the same.
+    Soft even studio light. No text, no labels.
+  clip: {duration: 6, aspect: "4:5", camera: "locked off, turntable"}
+  deliverable: "One 6-second clip, 4:5."
+  checks:
+    - [prompt_adherence, "Is it a full 360-degree turn at even speed?"]
+    - [prompt_adherence, "Is the marigold on the left chest pocket flap?"]
+    - [prompt_adherence, "Is the fray on the right cuff?"]
+    - [prompt_adherence, "Is the back plain with a yoke and two waist tabs?"]
+    - [reference_fidelity, "Is it the real jacket's wash and copper buttons?"]
+    - [prompt_adherence, "Are there two chest pockets?"]
+    - [prompt_adherence, "Is it an invisible-body ghost mannequin?"]
+    - [motion_coherence, "Does the jacket keep its shape as it turns?"]
+    - [prompt_adherence, "Is it soft even studio light?"]
+    - [text_accuracy, "Is there no text or label?"]
+    - [visual_quality, "Is the denim texture stable?"]
+    - [prompt_adherence, "Is it buttoned?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ECM-10
+  title: "The millet snack pouch from its written spec: pouch drops, puffs spill, hex colours hold"
+  persona: "D2C snack founder visualising a launch reel before the pouch is printed."
+  evidence: "Earlier image bank PRD-ECM-08: pack copy and hex colours from a text spec; motion adds spills."
+  levers: [exact-text, long-brief, physics, small-text, layout]
+  prompt: |
+    A 6-second spot on a terracotta tile surface in soft daylight. A stand-up snack pouch, from this spec:
+    matte mustard yellow (#E3A82B) with a deep plum (#5B2245) panel in the middle; the brand "RAAGI RAJA" in
+    cream capitals on the plum panel; under it "Masala Millet Puffs"; a white flash at the top right "High
+    protein"; at the bottom "70 g · Baked, not fried". 0–2 s: the pouch drops into frame and lands upright
+    with a small bounce. 2–6 s: a second, open pouch tips over beside it and golden puffs spill across the
+    tiles with two curry leaves. The colours and copy stay exact. No other text.
+  exact_text: ["RAAGI RAJA", "Masala Millet Puffs", "High protein", "70 g · Baked, not fried"]
+  clip: {duration: 6, aspect: "4:5", camera: "locked off"}
+  deliverable: "One 6-second clip, 4:5."
+  checks:
+    - [text_accuracy, "Does the brand read RAAGI RAJA?"]
+    - [text_accuracy, "Does it read Masala Millet Puffs under the brand?"]
+    - [text_accuracy, "Does the flash read High protein at the top right?"]
+    - [text_accuracy, "Does the bottom read 70 g · Baked, not fried?"]
+    - [prompt_adherence, "Is the pouch mustard with a plum panel?"]
+    - [physics_plausibility, "Does the pouch land with a small bounce?"]
+    - [physics_plausibility, "Do the puffs spill and roll believably?"]
+    - [prompt_adherence, "Does the spill start at about 2 seconds?"]
+    - [prompt_adherence, "Is the plum panel in the middle?"]
+    - [motion_coherence, "Does the pouch keep its print as it moves?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Is the frame clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VSPT-ECM-11
+  title: "The BOLTBOT toy box spot: the box opens and the robot mascot waves; the gear-O logo holds"
+  persona: "Toy start-up founder visualising an animated unboxing for marketplace listings."
+  evidence: "Earlier image bank PRD-ECM-20: logo geometry from a spec; in motion the gears and circle drift."
+  levers: [exact-text, long-brief, identity, layout, timing]
+  prompt: |
+    A 6-second spot in a bright stylised 3D look on white. A toy box in three-quarter view: the logo top
+    left on the front, a yellow (#FFD23F) circle with a smiling blue (#2E86AB) robot head (a rounded square
+    with two round eyes and one antenna), and beside it the wordmark "BOLTBOT" in chunky blue capitals with
+    both O's drawn as gears; "40 pieces" on the side face. At 2 seconds the lid pops open and a small blue
+    robot matching the logo's head climbs out, stands on the box and waves twice. The logo's geometry and
+    the gear O's stay identical as the box moves. No other text.
+  exact_text: ["BOLTBOT", "40 pieces"]
+  clip: {duration: 6, aspect: "1:1", camera: "locked off, three-quarter"}
+  deliverable: "One 6-second clip, 1:1."
+  checks:
+    - [text_accuracy, "Does the wordmark read BOLTBOT with gear O's?"]
+    - [text_accuracy, "Does the side read 40 pieces?"]
+    - [prompt_adherence, "Is the logo a yellow circle with a blue robot head?"]
+    - [prompt_adherence, "Does the lid pop at about 2 seconds?"]
+    - [prompt_adherence, "Does the robot wave twice?"]
+    - [prompt_adherence, "Does the robot match the logo's head?"]
+    - [motion_coherence, "Does the logo geometry stay identical as the box moves?"]
+    - [physics_plausibility, "Does the lid open believably?"]
+    - [style, "Is it bright stylised 3D?"]
+    - [prompt_adherence, "Is the logo top left on the front?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VSPT-ECM-12
+  title: "Swap the unboxed white case for the tea tin, lifted by the same hands with matching light"
+  persona: "D2C brand's editor reusing an unboxing plate for a different product."
+  evidence: "Object swaps in hands must match grip, scale and light across every frame."
+  levers: [keep-rest, exact-text, multi-ref, physics, light-lock]
+  inputs:
+    - {source: SRC-VCLIP-UNBOX-HANDS, role: source}
+    - {source: SRC-ECM-TEA-TIN, role: product, note: "the tin to put in"}
+  prompt: |
+    In this 8-second top-down unboxing, the hands lift a small white case out of the tissue from 4 to 7
+    seconds. Replace the case with this tea tin, lying in the tissue and lifted by the same hands in the same
+    way, held up to camera with its front showing: the embossed gold teacup logo ringed by "CHAI JAAN ·
+    ASSAM". The box becomes deep enough for the tin. The tin takes the soft daylight from the left and the
+    fingers wrap round it naturally. The box, its pale blue colour, the seal, the desk, the notebook and pen,
+    the hands and all timings stay exactly as in the clip.
+  exact_text: ["CHAI JAAN · ASSAM"]
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged top-down"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is the case replaced by the tea tin?"]
+    - [text_accuracy, "Does the ring read CHAI JAAN · ASSAM?"]
+    - [physics_plausibility, "Do the fingers wrap the tin naturally?"]
+    - [physics_plausibility, "Is the tin's scale right in the hands?"]
+    - [prompt_adherence, "Does the tin take the light from the left?"]
+    - [preservation, "Are the box, desk, notebook and pen unchanged?"]
+    - [preservation, "Are the timings unchanged?"]
+    - [preservation, "Are the hands unchanged?"]
+    - [temporal_consistency, "Is the tin stable in the hands?"]
+    - [visual_quality, "Is there no edge flicker around the tin?"]
+    - [text_accuracy, "Is there no other new text?"]
+    - [preservation, "Is the camera unchanged?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with a product reference."}
+
+- id: VSPT-ECM-13
+  title: "Make a 9:16 vertical of the catalogue walk; the full outfit and the turn stay in frame"
+  persona: "Ethnic-wear brand's editor delivering vertical cuts of catalogue videos."
+  evidence: "Reframes crop the feet or the turn; the full outfit must stay in."
+  levers: [layout, keep-rest, timing, camera, identity]
+  inputs: [{source: SRC-VCLIP-RUNWAY-WALK, role: source}]
+  prompt: |
+    This 6-second 16:9 catalogue video shows a model walking towards camera on a beige cyclorama in a mustard
+    kurta with white block prints, white palazzos and a white dupatta over her left shoulder; at 4 seconds she
+    stops and turns a full circle by 5.5 seconds. Make a 9:16 vertical version that keeps her whole body,
+    head to feet, in frame at all times, including the dupatta's end as she turns, with a little space above
+    her head. Extend the cyclorama above and below if needed, matching its colour and light. Keep the timing
+    exactly. Do not stretch or squash.
+  clip: {duration: 6, aspect: "9:16", camera: "reframed from the source"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Is her whole body in frame throughout?"]
+    - [prompt_adherence, "Is the dupatta's end in frame during the turn?"]
+    - [prompt_adherence, "Is there space above her head?"]
+    - [preservation, "Does any extended cyclorama match in colour and light?"]
+    - [preservation, "Does the turn still run from 4 to 5.5 seconds?"]
+    - [preservation, "Is nothing stretched or squashed?"]
+    - [reference_fidelity, "Is the model unchanged?"]
+    - [preservation, "Is the outfit unchanged?"]
+    - [prompt_adherence, "Is the reframe stable?"]
+    - [motion_coherence, "Is there no jitter?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is resolution adequate?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit of one source clip."}
+
+- id: VSPT-ECM-14
+  title: "Print the Ananas label on all five plain cans, tracked through the toast"
+  persona: "Beverage brand's editor adding product labels to a lifestyle clip shot with blank cans."
+  evidence: "Labels tracked onto moving, clinking objects slip and garble."
+  levers: [exact-text, count, keep-rest, timing, physics]
+  inputs: [{source: SRC-VCLIP-PARTY-CANS, role: source}]
+  prompt: |
+    In this 6-second rooftop clip, five friends hold plain cobalt-blue cans, raise them at 2 seconds and
+    clink them at 3 seconds. Print the soda's label on all five cans, tracked to each can as it moves: the
+    word "Ananas" in big hand-lettered yellow script running diagonally up from lower left to upper right,
+    small white capitals "PINEAPPLE FIZZ" under it, and a thin white pineapple line drawing to the right,
+    wrapping round the can's curve. The labels follow the cans through the clink, take the fairy-light and
+    dusk light, and are partly hidden by fingers where hands cover them. Everything else stays as it is.
+  exact_text: ["Ananas", "PINEAPPLE FIZZ"]
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Are all five cans labelled?"]
+    - [text_accuracy, "Does the script read Ananas correctly on every visible can?"]
+    - [text_accuracy, "Does PINEAPPLE FIZZ read correctly?"]
+    - [prompt_adherence, "Does the script run diagonally up from lower left?"]
+    - [physics_plausibility, "Does each label wrap the can's curve?"]
+    - [motion_coherence, "Do the labels track the cans through the clink without slipping?"]
+    - [physics_plausibility, "Do fingers cover the labels where hands hold the cans?"]
+    - [prompt_adherence, "Do the labels take the dusk and fairy light?"]
+    - [preservation, "Are the people and rooftop unchanged?"]
+    - [preservation, "Is the clink still at 3 seconds?"]
+    - [preservation, "Does the sixth person still cross at 4 seconds?"]
+    - [visual_quality, "Is there no label flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit of one source clip."}
