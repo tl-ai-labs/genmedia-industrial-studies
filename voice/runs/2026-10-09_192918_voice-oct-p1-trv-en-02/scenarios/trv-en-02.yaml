@@ -1,0 +1,37 @@
+# trv-en-02 - Waitlist status and Vande Bharat departure (Travel & mobility)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 trv-hi-02 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-02): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Train - PNR, train numbers, waitlist, platform changes.
+# TARGET CUSTOMER. Rail Booking Platforms.
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest.
+
+id: trv-en-02
+modality: voice
+task: text_to_speech
+title: "Waitlist status and Vande Bharat departure - English"
+
+input:
+  script: |
+    Your ticket is currently at WL 17 and may move to RAC by the time the chart is prepared. Train 22436, Vande Bharat Express, New Delhi to Varanasi, departs at 6 am.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "WL 17" read as "W-L seventeen"; "RAC" as letters (judge)
+  2) Train number "22436" recoverable
+  3) "Vande Bharat" natural
+
+checks:
+  duration_s: {min: 6.4, max: 32.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, travel-mobility, train, hard, even-contest, new-english]

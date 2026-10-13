@@ -1,0 +1,45 @@
+# telco-hi-06 - Two-plan comparison — price, validity, data (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-06: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-06
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Recharge & plans.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. Two raw plan prices, two validities, a per-day and an extra data quota, plus "5G", stacked across two clauses
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-06
+modality: voice
+task: text_to_speech
+title: "Two-plan comparison — price, validity, data - Hindi"
+
+input:
+  script: |
+    Jio के ₹349 वाले plan में 28 दिन, रोज़ 2GB data और unlimited 5G मिलता है; जबकि ₹899 वाले plan में 90 दिन, रोज़ 2GB data, और साथ में 20GB extra data मिलता है।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Prices "तीन सौ उनचास" and "आठ सौ निन्यानवे" recoverable
+  2) Validities "अट्ठाईस दिन" and "नब्बे दिन" recoverable
+  3) "2GB", "20GB", "5G" read with letters, numbers intact
+  4) The two plans remain clearly contrasted
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, telecom, recharge-plans, hard, gemini-lean, v2-bank]

@@ -1,0 +1,44 @@
+# ret-hi-10 - COD-to-prepaid nudge with three payment apps (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-10: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-10
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Checkout & payments - COD, no-cost EMI, Pay Later, failed payments.
+# TARGET CUSTOMER. E-commerce Marketplaces, Consumer Electronics Brands.
+# WHAT THIS TESTS. A raw amount, a discount and three payment-app brand names in one Devanagari-matrix passage
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-10
+modality: voice
+task: text_to_speech
+title: "COD-to-prepaid nudge with three payment apps - Hindi"
+
+input:
+  script: |
+    आपका Meesho order, ₹649 का, Cash on Delivery पर है। अभी UPI से pay करें तो ₹25 का discount मिलेगा — PhonePe, Google Pay या Paytm, कोई भी app चलेगा।
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amounts "छह सौ उनचास" and "पच्चीस" recoverable
+  2) Every named brand pronounced the way a native speaker would say it, not spelled out letter-by-letter (judge)
+  3) "UPI" as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, ecommerce-retail, checkout-payments, medium, gemini-lean, v2-bank]

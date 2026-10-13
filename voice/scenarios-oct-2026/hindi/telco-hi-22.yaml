@@ -1,0 +1,44 @@
+# telco-hi-22 - Fibre installation — technician and router serial (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-22: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-22
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Broadband, DTH & roaming.
+# TARGET CUSTOMER. Broadband Providers, DTH Providers.
+# WHAT THIS TESTS. A product brand, a clock time, a technician name and a letter/digit router serial in one passage
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-22
+modality: voice
+task: text_to_speech
+title: "Fibre installation — technician and router serial - Hindi"
+
+input:
+  script: |
+    आपका JioFiber connection कल सुबह 10 बजे install होगा। Technician सुरेश पांडे आएँगे, और आपके router का serial number है J, F, R, six, zero, three, eight, eight, one, two।
+  language: hi-IN
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "JFR6038812" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) "सुबह दस बजे" recoverable
+  3) Name natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, telecom, broadband-dth-roaming, hard, even-contest, v2-bank]

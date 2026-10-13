@@ -1,0 +1,44 @@
+# trv-hi-03 - Platform-change announcement (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-03: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-03
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Train - PNR, train numbers, waitlist, platform changes.
+# TARGET CUSTOMER. Rail Booking Platforms.
+# WHAT THIS TESTS. Railway announcement cadence with a train number, a route name and two platform numbers, in Devanagari
+# SPEECH SKILLS. Numbers: codes; Pronunciation: names, brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-03
+modality: voice
+task: text_to_speech
+title: "Platform-change announcement - Hindi"
+
+input:
+  script: |
+    कृपया ध्यान दें: गाड़ी संख्या 12002, New Delhi–Bhopal Shatabdi Express, अब platform number 5 की जगह platform number 8 पर आएगी।
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Train number "12002" recoverable
+  2) Platforms "5" and "8" clearly contrasted
+  3) Announcement cadence (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, travel-mobility, train, medium, even-contest, v2-bank]

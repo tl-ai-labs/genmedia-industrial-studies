@@ -1,0 +1,44 @@
+# bank-hi-26 - OTP verification for fund transfer (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-26: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-26
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Fraud & security - OTP, fraud alerts, new-device login, scam warnings.
+# TARGET CUSTOMER. Retail Banks, Credit Card Issuers.
+# WHAT THIS TESTS. Six-digit OTP switched to English digit-words mid-Hindi-sentence, with a repeated-digit trap
+# SPEECH SKILLS. Numbers: codes; Pronunciation: acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-26
+modality: voice
+task: text_to_speech
+title: "OTP verification for fund transfer - Hinglish"
+
+input:
+  script: |
+    Aapka transaction verify karne ke liye OTP hai — four, four, seven, one, nine, zero. Yeh OTP kisi ke saath share mat kijiye, bank kabhi bhi OTP nahi poochhta.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) All six digits recoverable in order, including the repeated digit
+  2) Digits switch cleanly to English mid-sentence with no register break
+  3) Warning clause ("share mat kijiye" / equivalent) present and intelligible
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, banking-financial-services, fraud-security, medium, even-contest, v2-bank]

@@ -1,0 +1,37 @@
+# md-en-11 - Sibling bickering: two voices, one narrator (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-48 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-48): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Multi-voice scenes (2–3 characters, one narrator).
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Emotion.
+# PICKED AS. Even contest - delivery directions to follow (Gemini held pace and tone); several distinct voices.
+
+id: md-en-11
+modality: voice
+task: styled_tts
+title: "Sibling bickering: two voices, one narrator - English"
+
+input:
+  script: |
+    'Why did you use my phone?' 'Because mine was dead, chill!' 'Chill? You deleted my photos, idiot!' 'Relax, there's a backup on the cloud.'
+  language: en-IN
+  style: "fast playful bickering, two distinct voices, one narrator"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) Two voices distinguishable and each consistent (judge)
+  3) Fast pace without swallowing words
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, multi-voice-scenes-2-3-characters-one-narrator, hard, even-contest, new-english]

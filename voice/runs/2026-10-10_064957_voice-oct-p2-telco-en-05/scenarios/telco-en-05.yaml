@@ -1,0 +1,37 @@
+# telco-en-05 - Registered mobile-number confirmation (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-01 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-01): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. SIM, eKYC & activation.
+# TARGET CUSTOMER. Mobile Network Operators.
+# SPEECH SKILLS. Numbers: codes.
+# PICKED AS. Even contest.
+
+id: telco-en-05
+modality: voice
+task: text_to_speech
+title: "Registered mobile-number confirmation - English"
+
+input:
+  script: |
+    May I confirm that your registered mobile number is 98704 32115?
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) All ten digits recoverable in order, including "double one" or "one one"
+  2) Read in the 5-5 grouping as written
+  3) Reads as a question
+
+checks:
+  duration_s: {min: 2.2, max: 13.7}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, telecom, sim-ekyc-activation, medium, even-contest, new-english]

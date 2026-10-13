@@ -1,0 +1,42 @@
+# bank-en-05 - Card transaction alert: merchant, amount, press 1 (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-32 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-32): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Fraud & security - OTP, fraud alerts, new-device login, scam warnings.
+# TARGET CUSTOMER. Retail Banks, Credit Card Issuers.
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: names, brands, acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: bank-en-05
+modality: voice
+task: text_to_speech
+title: "Card transaction alert: merchant, amount, press 1 - English"
+
+input:
+  script: |
+    Alert! A transaction of Rs 1,14,999 was just made on your HDFC credit card at Croma, Andheri. If this was not you, press 1 right now. Never share your OTP with anyone.
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it ("one lakh fourteen thousand...")
+  2) "Croma, Andheri" natural
+  3) Urgent but controlled (judge)
+  4) "OTP" as letters
+
+checks:
+  duration_s: {min: 6.4, max: 32.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.1
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one hundred fourteen thousand nine hundred ninety nine"
+
+tags: [oct-2026, english, banking-financial-services, fraud-security, hard, gemini-lean, new-english]

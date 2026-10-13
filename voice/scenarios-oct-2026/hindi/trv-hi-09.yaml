@@ -1,0 +1,45 @@
+# trv-hi-09 - Flight cancelled — apology, rebooking, refund (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-09: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-09
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Flights - PNR, flight numbers, gates, delays, baggage.
+# TARGET CUSTOMER. Airlines, Online Travel Agencies.
+# WHAT THIS TESTS. An apologetic register carried through two flight codes, two cities, a clock time and a raw refund amount
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: names, brands; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-09
+modality: voice
+task: text_to_speech
+title: "Flight cancelled — apology, rebooking, refund - Hindi"
+
+input:
+  script: |
+    हमें बहुत खेद है — ख़राब मौसम की वजह से आपकी IndiGo flight 6E 5217, Srinagar से Delhi, cancel हो गई है। आपको कल सुबह 8:05 की flight 6E 2046 पर rebook कर दिया गया है, या आप पूरा refund ₹8,436 ले सकते हैं।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Sincere apology, not formulaic (judge)
+  2) Both flight codes read as "six-E" + digits
+  3) Time "8:05" and refund "आठ हज़ार चार सौ छत्तीस" recoverable
+  4) The two options (rebook / refund) clearly separated
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, travel-mobility, flights, hard, gemini-lean, v2-bank]

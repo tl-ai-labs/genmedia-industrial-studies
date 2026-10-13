@@ -1,0 +1,44 @@
+# trv-hi-10 - Cab arriving — car, plate, driver, OTP (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-10: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-10
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Cabs & mobility - ride OTP, number plates, safety.
+# TARGET CUSTOMER. Ride-hailing Apps.
+# WHAT THIS TESTS. A car model, a Delhi number plate, a Punjabi name and a four-digit ride OTP stacked in one passage
+# SPEECH SKILLS. Numbers: codes; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-10
+modality: voice
+task: text_to_speech
+title: "Cab arriving — car, plate, driver, OTP - Hindi"
+
+input:
+  script: |
+    आपकी Uber ride आ रही है — white Maruti Dzire, number DL 3C AB 7781, driver हरप्रीत सिंह। Ride OTP है four, nine, zero, two।
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Plate "DL 3C AB 7781" recoverable (judge)
+  2) OTP "4902" recoverable
+  3) Name and car model natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, travel-mobility, cabs-mobility, hard, even-contest, v2-bank]

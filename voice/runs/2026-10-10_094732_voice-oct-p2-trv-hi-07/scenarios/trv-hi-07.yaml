@@ -1,0 +1,45 @@
+# trv-hi-07 - Flight delay and new departure time — mixed script (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-07: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-07
+# LANGUAGE. Hinglish (Mixed script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Flights - PNR, flight numbers, gates, delays, baggage.
+# TARGET CUSTOMER. Airlines, Online Travel Agencies.
+# WHAT THIS TESTS. An airline flight code, a delay duration and a new clock time in Devanagari — the local language written in both native script and Latin letters in one prompt
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-07
+modality: voice
+task: text_to_speech
+title: "Flight delay and new departure time — mixed script - Hinglish"
+
+input:
+  script: |
+    Air India flight AI 865 लगभग 2 ghante 15 minute late है। Naya departure time रात 10:40 hai।
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "AI 865" read as "A-I eight-six-five" (judge)
+  2) Delay and new time recoverable
+  3) Words written in Latin letters but belonging to the local language are pronounced as that language, not read as English spellings (judge)
+  4) No seam, accent change or pause where the script switches mid-sentence (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, travel-mobility, flights, medium, even-contest, v2-bank]

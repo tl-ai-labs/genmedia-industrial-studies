@@ -1,0 +1,37 @@
+# md-en-07 - Royal court: news from the Deccan (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-45 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-45): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Mythological, devotional & period.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: names; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; delivery directions to follow (Gemini held pace and tone); Indian names and words inside English.
+
+id: md-en-07
+modality: voice
+task: styled_tts
+title: "Royal court: news from the Deccan - English"
+
+input:
+  script: |
+    Jahanpanah, news has come from the Deccan. The Maratha forces have crossed the Narmada, and twenty thousand horsemen ride with them.
+  language: en-IN
+  style: "formal courtly urgency"
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) "Jahanpanah", "Deccan", "Narmada" pronounced as an Indian speaker would (judge)
+  3) Courtly urgency held (judge)
+
+checks:
+  duration_s: {min: 4.2, max: 22.5}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, mythological-devotional-period, medium, gemini-lean, new-english]

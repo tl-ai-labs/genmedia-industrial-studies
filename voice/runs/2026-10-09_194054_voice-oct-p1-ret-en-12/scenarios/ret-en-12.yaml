@@ -1,0 +1,36 @@
+# ret-en-12 - Delivery OTP handover (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-22 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-22): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Delivery - OTP, address and pincode, agent, failed delivery, open-box.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# SPEECH SKILLS. Numbers: codes; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest.
+
+id: ret-en-12
+modality: voice
+task: text_to_speech
+title: "Delivery OTP handover - English"
+
+input:
+  script: |
+    Your Amazon package will be delivered today. Share this OTP with the delivery agent only at handover: seven, zero, zero, three.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) OTP "7003" recoverable including the double zero
+  2) Instruction clause intelligible
+
+checks:
+  duration_s: {min: 4.2, max: 22.5}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, ecommerce-retail, delivery, medium, even-contest, new-english]

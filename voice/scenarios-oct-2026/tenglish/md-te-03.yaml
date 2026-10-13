@@ -1,0 +1,46 @@
+# md-te-03 - Library first meeting — Telugu (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-te-03: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-te-03
+# LANGUAGE. Tenglish (Romanised). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Romance & coming-of-age.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. A hesitant self-correcting delivery across a Telugu-English switch
+# SPEECH SKILLS. Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-te-03
+modality: voice
+task: styled_tts
+title: "Library first meeting — Telugu - Tenglish"
+
+input:
+  script: |
+    Nuvvu eppudu library lo ade corner lo koorchuntaavu kada? Nenu... I mean, coffee ki vasthaava?
+  language: te-IN
+  style: "shy, nervous, endearing"
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Telugu segments pronounced correctly (judge)
+  4) One continuous prosody; the emotion does not reset at the language switch
+
+checks:
+  duration_s: {min: 3.0, max: 17.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, tenglish, micro-drama-entertainment, romance-coming-of-age, medium, gemini-lean, v2-bank]

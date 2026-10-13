@@ -1,0 +1,52 @@
+# bank-hi-21 - Personal loan approval, rate and tenure (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-21: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-21
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Loans & EMI - EMI reminders, approvals, prepayment, gold loans, collections.
+# TARGET CUSTOMER. Retail Banks, NBFCs & Lenders.
+# WHAT THIS TESTS. A raw numeral (Rs 5,00,000) converted to spoken Indian numbering, plus a percentage rate held intact in the same sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-21
+modality: voice
+task: text_to_speech
+title: "Personal loan approval, rate and tenure - Hinglish"
+
+input:
+  script: |
+    Aapka personal loan approve ho gaya hai — Rs 5,00,000, gyarah point panch percent interest rate par, chaubees mahine ki tenure ke saath.
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount spoken in the Indian system (lakh/crore) — the full-word reading and the idiomatic "point" reading both pass, since both are what an Indian customer actually hears
+  2) The international-convention reading (must_not_say list) does not appear — this is the decisive, model-blind gate
+  3) Numeral was sent as-written, not pre-spelled — the model decides how to say it, nothing in the script tells it
+  4) Currency named as rupees
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+  # Expected item: the lakh reading. Added 2026-10-09 so it is checked, as
+  # in English; listed in both writing systems because the transcript of a
+  # Hinglish read comes back in Roman letters or in Devanagari.
+  must_say_any:
+    - ["lakh", "लाख"]
+  must_not_say:
+    - "five hundred thousand"
+
+tags: [oct-2026, hinglish, banking-financial-services, loans-emi, hard, gemini-lean, v2-bank]

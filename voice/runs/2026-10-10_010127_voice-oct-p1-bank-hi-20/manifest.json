@@ -1,0 +1,141 @@
+{
+  "run_id": "2026-10-10_010127_voice-oct-p1-bank-hi-20",
+  "modality": "voice",
+  "started_at": "2026-10-10T01:01:27-0700",
+  "git_sha": "289d937",
+  "plan_version": "1.2",
+  "scenario_count": 1,
+  "scenario_set_hash": "aac8e30e932357a3b99debaf8ad00ef81b2df82f2311ee00d2da4c5c1dc2c16b",
+  "scenarios": [
+    {
+      "id": "bank-hi-20",
+      "task": "text_to_speech",
+      "hash": "0601fe0ce5a7c125e9010e80c38bc65c3ba575ce932eee74349499703501d376",
+      "source": "scenarios-oct-2026/hindi/bank-hi-20.yaml",
+      "source_format": "yaml"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-3-8-flash-tts",
+      "adapter": "gemini_api_tts",
+      "provider": "google",
+      "provider_model": "gemini-3.8-flash-tts",
+      "supports": [
+        "text_to_speech",
+        "styled_tts"
+      ],
+      "region": "global",
+      "region_note": "Served by the Gemini API (generativelanguage.googleapis.com), which takes no region parameter - Google routes the call. Not Vertex AI: 3.8 TTS was not offered on Vertex when this ran.",
+      "served_from": "Gemini API · no region choice",
+      "voice_map": {
+        "female_mid_warm": "Aoede",
+        "male_mid_neutral": "Charon",
+        "npc_quartermaster": "Charon",
+        "npc_scout": "Leda",
+        "npc_handler": "Kore",
+        "npc_medic": "Aoede",
+        "npc_engineer": "Puck",
+        "npc_trader": "Fenrir",
+        "female_young": "Aoede",
+        "female_mid": "Aoede",
+        "female_older": "Aoede",
+        "female_elder": "Aoede",
+        "male_teen": "Charon",
+        "male_young": "Charon",
+        "male_mid": "Charon",
+        "male_older": "Fenrir"
+      },
+      "limits": {
+        "max_concurrency": 2,
+        "rpm": 10
+      },
+      "price": {
+        "unit": "tokens",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "as_of": "2026-09-27",
+        "usd_in_per_1m": 0.5,
+        "usd_audio_out_per_1m": 9.0,
+        "est_chars_per_input_token": 4.0,
+        "est_audio_tokens_per_second": 25.0
+      }
+    },
+    {
+      "id": "elevenlabs-v4",
+      "adapter": "elevenlabs_tts",
+      "provider": "elevenlabs",
+      "provider_model": "eleven_v4",
+      "supports": [
+        "text_to_speech",
+        "styled_tts"
+      ],
+      "region": "us",
+      "region_note": "Served by ElevenLabs' direct API (api.elevenlabs.io). The API takes no region parameter on this plan: ElevenLabs hosts customer data in the United States by default, and the regional residency endpoints (EU, India, Singapore) are Enterprise-only.",
+      "served_from": "ElevenLabs direct API · us",
+      "voice_map": {
+        "female_mid_warm": "XrExE9yKIg1WjnnlVkGX",
+        "male_mid_neutral": "cjVigY5qzO86Huf0OWal",
+        "npc_quartermaster": "pqHfZKP75CvOlQylNhV4",
+        "npc_scout": "FGY2WhTYpPnrIDTdsKH5",
+        "npc_handler": "pNInz6obpgDQGcFmaJgB",
+        "npc_medic": "EXAVITQu4vr4xnSDxMaL",
+        "npc_engineer": "SAz9YHcvj6GT2YYXdXww",
+        "npc_trader": "cgSgspJ2msm6clMCkdW9",
+        "female_young": "XrExE9yKIg1WjnnlVkGX",
+        "female_mid": "XrExE9yKIg1WjnnlVkGX",
+        "female_older": "XrExE9yKIg1WjnnlVkGX",
+        "female_elder": "XrExE9yKIg1WjnnlVkGX",
+        "male_teen": "cjVigY5qzO86Huf0OWal",
+        "male_young": "cjVigY5qzO86Huf0OWal",
+        "male_mid": "cjVigY5qzO86Huf0OWal",
+        "male_older": "pqHfZKP75CvOlQylNhV4"
+      },
+      "limits": {
+        "max_concurrency": 2,
+        "rpm": 20
+      },
+      "price": {
+        "unit": "per_1k_chars",
+        "source": "https://elevenlabs.io/pricing/api",
+        "as_of": "2026-10-09",
+        "usd": 0.08
+      }
+    }
+  ],
+  "rubrics": {
+    "text_to_speech": {
+      "hash": "b740e35278609356915aa2193bdbb39356fb5fb27560c70ab1765aa4da219e5f",
+      "sources": [
+        "/home/sainadh/projects/genmedia/genmedia-industrial-studies/voice/configs/rubrics/voice.yaml"
+      ]
+    }
+  },
+  "asr": {
+    "provider_model": "large-v3",
+    "price": {
+      "unit": "per_minute",
+      "source": "local model, no API - faster-whisper on CPU",
+      "as_of": "2026-09-03",
+      "usd": 0.0
+    },
+    "region": "local",
+    "region_note": "Runs on the machine that ran the study (faster-whisper on CPU). No network, no region.",
+    "served_from": "local machine · no region"
+  },
+  "judge": {
+    "provider_model": "gemini-2.5-flash",
+    "temperature": 0.0,
+    "region": "global",
+    "region_note": "The judge listens through Vertex AI at the global endpoint (the runbook's location for temp-genmedia-study). It shares a VENDOR with the Gemini arm, not a doorway: the 3.8 arm is served by the Gemini API.",
+    "served_from": "Vertex AI · global"
+  },
+  "mos": {
+    "predictor": "signal",
+    "configured": "models/dnsmos_p808.onnx"
+  },
+  "mos_fallback_reason": null,
+  "budget_usd": 1.0,
+  "budget_by_provider": null,
+  "preflight_estimate_micro_usd": 13454,
+  "skipped": []
+}

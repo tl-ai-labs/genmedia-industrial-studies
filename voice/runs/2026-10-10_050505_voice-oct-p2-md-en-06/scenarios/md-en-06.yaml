@@ -1,0 +1,47 @@
+# md-en-06 - Courtroom cross-examination: two voices (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-22 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-22): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Thriller / crime.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# SPEECH SKILLS. Numbers: dates/times; Emotion.
+# PICKED AS. Even contest - delivery directions to follow (Gemini held pace and tone).
+#
+# TWO VOICES. Each line starts with its speaker's label. Gemini gets the
+# labelled script with one prebuilt voice per label; ElevenLabs gets one
+# Text to Dialogue input per line, label removed.
+
+id: md-en-06
+modality: voice
+task: styled_tts
+title: "Courtroom cross-examination: two voices - English"
+
+input:
+  script: |
+    A: Objection, Your Honour. The witness is speculating. I have proof my client was at home that night.
+    B: I... I'm only saying what I saw, sir. It was half past eleven.
+    A: Half past eleven? Last time you said ten o'clock. Which one is it?
+  language: en-IN
+  style: "A: formal, sharp, controlled; B: nervous, faltering"
+
+params:
+  speakers:
+    - {label: A, voice: male_older, style: "formal, sharp, controlled"}
+    - {label: B, voice: female_mid, style: "nervous, faltering"}
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every turn in order
+  2) Two clearly different voices (judge)
+  3) A sharp, B faltering, no bleed (judge)
+  4) Both times recoverable
+
+checks:
+  duration_s: {min: 8.6, max: 41.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  wer_reference: "Objection, Your Honour. The witness is speculating. I have proof my client was at home that night.\nI... I'm only saying what I saw, sir. It was half past eleven.\nHalf past eleven? Last time you said ten o'clock. Which one is it?"
+
+tags: [oct-2026, english, micro-drama-entertainment, thriller-crime, hard, even-contest, new-english]

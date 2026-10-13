@@ -1,0 +1,56 @@
+# md-hi-25 - Ransom call — lakh figure, deadline — two voices (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-25: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-25
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Thriller / crime.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. A calm, menacing kidnapper against a panicking father; a lakh figure and a deadline inside the exchange
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: names; Emotion; Conversation: 2 voices.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+#
+# TWO VOICES. Each line starts with its speaker's label. Gemini gets the
+# labelled script with one prebuilt voice per label; ElevenLabs gets one
+# Text to Dialogue input per line, label removed.
+
+id: md-hi-25
+modality: voice
+task: styled_tts
+title: "Ransom call — lakh figure, deadline — two voices - Hindi"
+
+input:
+  script: |
+    A: पचास लाख, cash में, कल रात 9 बजे तक। Police को बताया तो... you know what happens.
+    B: Please... मेरी बेटी को कुछ मत करना! मैं पैसों का इंतज़ाम कर दूँगा, बस मुझे थोड़ा time दो!
+    A: और हाँ, शर्मा जी — phone मत काटना।
+  language: hi-IN
+  style: "A: whispered, chilling, unhurried menace; B: panicked, pleading"
+
+params:
+  speakers:
+    - {label: A, voice: male_mid, style: "whispered, chilling, unhurried menace"}
+    - {label: B, voice: male_older, style: "panicked, pleading"}
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every turn read in order, nothing dropped
+  2) The two speakers are clearly different voices, each consistent in voice and age across turns (judge)
+  3) Contrasting emotions held: A stays quiet and menacing, B stays panicked — no bleed from one speaker to the other (judge)
+  4) Hindi segments pronounced correctly; code-switch reads native (judge)
+  5) "पचास लाख" recoverable exactly
+  6) A never raises their voice (judge)
+
+checks:
+  duration_s: {min: 8.6, max: 41.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, micro-drama-entertainment, thriller-crime, hard, gemini-lean, v2-bank]

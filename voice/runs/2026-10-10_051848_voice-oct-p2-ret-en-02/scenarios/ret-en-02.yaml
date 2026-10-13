@@ -1,0 +1,41 @@
+# ret-en-02 - Exchange offer with no-cost EMI (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-07 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-07): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Checkout & payments - COD, no-cost EMI, Pay Later, failed payments.
+# TARGET CUSTOMER. E-commerce Marketplaces, Consumer Electronics Brands.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: ret-en-02
+modality: voice
+task: text_to_speech
+title: "Exchange offer with no-cost EMI - English"
+
+input:
+  script: |
+    This phone is Rs 1,29,900. With the exchange offer you get Rs 4,000 off, or you can take it on a three-month no-cost EMI instead.
+  language: en-IN
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it; "four thousand rupees" recoverable
+  2) "no-cost EMI" with EMI as letters (judge)
+  3) The two options clearly separated
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one hundred twenty nine thousand nine hundred"
+
+tags: [oct-2026, english, ecommerce-retail, checkout-payments, medium, gemini-lean, new-english]

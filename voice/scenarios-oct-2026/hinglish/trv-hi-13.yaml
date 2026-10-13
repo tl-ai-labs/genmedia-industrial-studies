@@ -1,0 +1,46 @@
+# trv-hi-13 - Cab arriving — Bengaluru plate, driver, OTP — mixed script (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-13: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-13
+# LANGUAGE. Hinglish (Mixed script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Cabs & mobility - ride OTP, number plates, safety.
+# TARGET CUSTOMER. Ride-hailing Apps.
+# WHAT THIS TESTS. A car model, a Karnataka plate, a Kannada name and a four-digit OTP, Hindi in both scripts — the local language written in both native script and Latin letters in one prompt
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-13
+modality: voice
+task: text_to_speech
+title: "Cab arriving — Bengaluru plate, driver, OTP — mixed script - Hinglish"
+
+input:
+  script: |
+    आपकी Ola cab 4 minute mein पहुँच रही है — grey Hyundai Aura, number KA 01 MK 7723, driver Manjunath। Ride OTP hai five, five, one, nine।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Plate "KA 01 MK 7723" recoverable
+  2) OTP "5519" recoverable
+  3) "Manjunath" natural
+  4) Words written in Latin letters but belonging to the local language are pronounced as that language, not read as English spellings (judge)
+  5) No seam, accent change or pause where the script switches mid-sentence (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, travel-mobility, cabs-mobility, medium, even-contest, v2-bank]

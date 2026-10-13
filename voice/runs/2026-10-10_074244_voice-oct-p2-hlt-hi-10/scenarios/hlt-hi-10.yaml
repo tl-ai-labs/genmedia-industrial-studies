@@ -1,0 +1,43 @@
+# hlt-hi-10 - Home sample collection — fasting instruction (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-10: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-10
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Lab reports & home collection.
+# TARGET CUSTOMER. Diagnostic Labs.
+# WHAT THIS TESTS. A lab brand, a role name (phlebotomist) and a fasting-hours range
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-10
+modality: voice
+task: text_to_speech
+title: "Home sample collection — fasting instruction - Hinglish"
+
+input:
+  script: |
+    Thyrocare ka phlebotomist kal subah saat baje aapke ghar aayega. Test se pehle das se barah ghante khaali pet rahein.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "phlebotomist" pronounced correctly (judge)
+  2) "das se barah ghante" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, healthcare-pharma, lab-reports-home-collection, medium, even-contest, v2-bank]

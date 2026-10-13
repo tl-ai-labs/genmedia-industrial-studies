@@ -1,0 +1,42 @@
+# bank-en-01 - RTGS cut-off, two bank brands, lakh amount (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-12 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-12): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Payments & transfers - UPI ID, IFSC, NEFT/IMPS/RTGS, cheques.
+# TARGET CUSTOMER. Retail Banks, Payment Apps.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: bank-en-01
+modality: voice
+task: text_to_speech
+title: "RTGS cut-off, two bank brands, lakh amount - English"
+
+input:
+  script: |
+    Today's RTGS cut-off is 5:30 pm. To send Rs 3,40,000 from Axis Bank to IDFC FIRST Bank today, please submit the request before then.
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it
+  2) "IDFC FIRST": IDFC as letters, FIRST as a word (judge)
+  3) "5:30 pm" read as a time
+  4) "RTGS" as letters
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "three hundred forty thousand"
+
+tags: [oct-2026, english, banking-financial-services, payments-transfers, hard, gemini-lean, new-english]

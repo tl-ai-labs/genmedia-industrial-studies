@@ -1,0 +1,45 @@
+# ret-hi-04 - Festival-sale coupon code, capped discount (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-04: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-04
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Sale events & offers - festive sales, coupons, bank offers, restock.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# WHAT THIS TESTS. A sale-event brand, an 11-character letter/digit coupon code, a raw capped amount and an hour window at high energy
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times; Pronunciation: brands; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-04
+modality: voice
+task: text_to_speech
+title: "Festival-sale coupon code, capped discount - Hindi"
+
+input:
+  script: |
+    Amazon Great Indian Festival में आपके लिए special coupon है — code है S, A, V, E, one, five, zero, F, L, A, T। इससे ₹1,500 तक का extra discount मिलेगा, सिर्फ़ 48 घंटे के लिए!
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "SAVE150FLAT" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) Cap "₹1,500" read as "पंद्रह सौ" or "एक हज़ार पाँच सौ"
+  3) "48 घंटे" recoverable
+  4) Promotional energy does not cost code accuracy (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, ecommerce-retail, sale-events-offers, hard, gemini-lean, v2-bank]

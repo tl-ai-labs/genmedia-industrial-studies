@@ -1,0 +1,37 @@
+# ret-en-03 - Loyalty points and tier threshold (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-34 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-34): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Loyalty & subscriptions - SuperCoins, Prime, tiers, NeuCoins.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: ret-en-03
+modality: voice
+task: text_to_speech
+title: "Loyalty points and tier threshold - English"
+
+input:
+  script: |
+    You currently have 3,800 SuperCoins. Just 200 more and you unlock the Gold tier, which comes with free delivery on every order.
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "three thousand eight hundred" recoverable
+  2) "SuperCoins" natural
+  3) Benefit clause intelligible
+
+checks:
+  duration_s: {min: 4.4, max: 23.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, ecommerce-retail, loyalty-subscriptions, medium, even-contest, new-english]

@@ -1,0 +1,37 @@
+# fqc-en-03 - 10-minute delivery: order ID (Food & quick commerce)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 fqc-hi-03 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-03): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Order & ETA.
+# TARGET CUSTOMER. Food Delivery Apps, Quick-commerce Apps.
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: brands.
+# PICKED AS. Even contest.
+
+id: fqc-en-03
+modality: voice
+task: text_to_speech
+title: "10-minute delivery: order ID - English"
+
+input:
+  script: |
+    Your Blinkit order, ORD182259, is being packed and will reach you in 9 minutes.
+  language: en-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "ORD182259" recoverable character for character
+  2) "9 minutes" recoverable
+  3) "Blinkit" natural
+
+checks:
+  duration_s: {min: 2.8, max: 16.3}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, food-quick-commerce, order-eta, hard, even-contest, new-english]

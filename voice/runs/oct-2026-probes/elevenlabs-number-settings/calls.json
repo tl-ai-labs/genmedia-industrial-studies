@@ -1,0 +1,41 @@
+[
+ {
+  "variant": "1-language-en-IN",
+  "body_sent": {
+   "text": "Your fixed deposit of Rs 10,00,000 matures next month.",
+   "model_id": "eleven_v4",
+   "language_code": "en-IN"
+  },
+  "ts": "2026-10-09T18:11:40Z",
+  "status": 400,
+  "error": "{\"detail\":{\"type\":\"validation_error\",\"code\":\"invalid_parameters\",\"message\":\"Model 'eleven_v4' does not support language_code 'en-IN'.\",\"status\":\"unsupported_language\",\"request_id\":\"544d504ca2ee937ba0bf021e1eb0bbf5\",\"param\":\"language_code\"}}"
+ },
+ {
+  "variant": "2-normalization-off",
+  "body_sent": {
+   "text": "Your fixed deposit of Rs 10,00,000 matures next month.",
+   "model_id": "eleven_v4",
+   "language_code": "en",
+   "apply_text_normalization": "off"
+  },
+  "ts": "2026-10-09T18:11:40Z",
+  "status": 200,
+  "request_id": "AaOLjYFWeYapR8xEe4wu",
+  "character_cost": "3",
+  "seconds": 4.4
+ },
+ {
+  "variant": "3-normalization-on",
+  "body_sent": {
+   "text": "Your fixed deposit of Rs 10,00,000 matures next month.",
+   "model_id": "eleven_v4",
+   "language_code": "en",
+   "apply_text_normalization": "on"
+  },
+  "ts": "2026-10-09T18:11:42Z",
+  "status": 200,
+  "request_id": "VaMBH0PJU2rN8L82ixzf",
+  "character_cost": "3",
+  "seconds": 4.08
+ }
+]

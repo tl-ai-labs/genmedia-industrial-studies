@@ -1,0 +1,45 @@
+# ret-hi-26 - Refund amount and processing window (Ecommerce & Retail)
+#
+# SOURCE. v2 text-to-speech bank, scenario ret-hi-26: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-26
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Returns, refunds, exchange & warranty.
+# TARGET CUSTOMER. E-commerce Marketplaces, Specialty Retailers.
+# WHAT THIS TESTS. A currency amount plus a day-range timeline in one sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times.
+# PICKED AS. Even contest - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: ret-hi-26
+modality: voice
+task: text_to_speech
+title: "Refund amount and processing window - Hinglish"
+
+input:
+  script: |
+    Aapka refund, do hazaar paanch sau rupaye, aapke original payment method mein, panch se saat working days ke andar credit ho jaayega.
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount stated in the Indian numbering system, not the international convention
+  2) Date/validity phrase ("panch se saat working days") recoverable exactly
+  3) English domain terms (EMI/due/auto-debit etc.) stay intelligible inside the Hindi sentence
+  4) Calm, unhurried call-centre pace, every digit distinct
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, ecommerce-retail, returns-refunds-exchange-warranty, medium, even-contest, v2-bank]

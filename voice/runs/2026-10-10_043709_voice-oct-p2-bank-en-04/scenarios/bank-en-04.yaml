@@ -1,0 +1,37 @@
+# bank-en-04 - International transaction declined, foreign currency (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-17 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-17): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Cards - dispatch, limits, dues, rewards, declines, replacement.
+# TARGET CUSTOMER. Credit Card Issuers, Retail Banks.
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: names, acronyms.
+# PICKED AS. Even contest - rupee amounts.
+
+id: bank-en-04
+modality: voice
+task: text_to_speech
+title: "International transaction declined, foreign currency - English"
+
+input:
+  script: |
+    A transaction of AED 1,250 at Dubai Duty Free was declined on your card, because international usage is currently switched off. You can turn it on from the app under Card Controls.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "AED" said as letters or as "dirham", not as a word (judge)
+  2) Amount "1,250" recoverable
+  3) "Dubai Duty Free" natural
+
+checks:
+  duration_s: {min: 6.4, max: 32.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.1
+
+tags: [oct-2026, english, banking-financial-services, cards, medium, even-contest, new-english]

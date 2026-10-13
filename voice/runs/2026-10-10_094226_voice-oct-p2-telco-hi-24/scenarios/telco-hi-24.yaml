@@ -1,0 +1,44 @@
+# telco-hi-24 - International roaming pack — Dubai (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-24: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-24
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Broadband, DTH & roaming.
+# TARGET CUSTOMER. Broadband Providers, DTH Providers.
+# WHAT THIS TESTS. A destination, raw price, validity, data quota and minutes stacked in one Hinglish sentence
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: names, brands.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-24
+modality: voice
+task: text_to_speech
+title: "International roaming pack — Dubai - Hinglish"
+
+input:
+  script: |
+    Aapka Airtel international roaming pack Dubai ke liye activate ho gaya hai — Rs 2,999 mein, das din ki validity, 5GB data aur 100 minute incoming calls.
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Price recoverable
+  2) Validity, data and minutes all intact
+  3) "5GB" with GB as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, broadband-dth-roaming, hard, gemini-lean, v2-bank]

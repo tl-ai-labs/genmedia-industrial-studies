@@ -1,0 +1,37 @@
+# md-en-03 - Last-ball cricket commentary (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-37 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-37): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Comedy & light entertainment.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Numbers: amounts; Emotion.
+# PICKED AS. Gemini-lean - rupee amounts; delivery directions to follow (Gemini held pace and tone).
+
+id: md-en-03
+modality: voice
+task: styled_tts
+title: "Last-ball cricket commentary - English"
+
+input:
+  script: |
+    And look at this: last ball, six runs needed, and he has hit a massive six! The stadium goes silent... no wait, the crowd is going absolutely crazy!
+  language: en-IN
+  style: "rapid, escalating excitement, crowd energy"
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read
+  2) Excitement escalates through the line (judge)
+  3) The pause before "no wait" lands (judge)
+
+checks:
+  duration_s: {min: 5.6, max: 28.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, comedy-light-entertainment, medium, gemini-lean, new-english]

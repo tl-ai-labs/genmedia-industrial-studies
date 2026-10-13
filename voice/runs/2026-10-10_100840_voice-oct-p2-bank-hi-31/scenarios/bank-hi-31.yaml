@@ -1,0 +1,44 @@
+# bank-hi-31 - UPI collect-request scam warning (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-31: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-31
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Fraud & security - OTP, fraud alerts, new-device login, scam warnings.
+# TARGET CUSTOMER. Retail Banks, Credit Card Issuers.
+# WHAT THIS TESTS. A raw rupee amount, a quoted merchant name and "UPI PIN" (letters then a word), inside a warning register
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: names, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-31
+modality: voice
+task: text_to_speech
+title: "UPI collect-request scam warning - Hindi"
+
+input:
+  script: |
+    ध्यान दीजिए: "Amit Traders" नाम से आपको ₹9,999 का UPI collect request आया है। पैसे पाने के लिए कभी UPI PIN नहीं डालना पड़ता — यह request fraud हो सकती है।
+  language: hi-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount read as "नौ हज़ार नौ सौ निन्यानवे"
+  2) "UPI" as letters, "PIN" as a word (judge)
+  3) Warning tone clear without panic
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, fraud-security, medium, gemini-lean, v2-bank]

@@ -1,0 +1,37 @@
+# md-en-13 - Airport goodbye: flight time and two cities (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-16 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-16): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Romance & coming-of-age.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: names; Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Indian names and words inside English.
+
+id: md-en-13
+modality: voice
+task: styled_tts
+title: "Airport goodbye: flight time and two cities - English"
+
+input:
+  script: |
+    Meera, my flight is at 6:40 tomorrow morning, Mumbai to Toronto. I don't know when I'll be back, but I promise, I'll call you every night.
+  language: en-IN
+  style: "tender, aching, holding back tears"
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "6:40" read as a time
+  2) "Meera" natural
+  3) Held-back emotion without breaking into crying (judge)
+
+checks:
+  duration_s: {min: 5.2, max: 26.9}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, romance-coming-of-age, medium, gemini-lean, new-english]

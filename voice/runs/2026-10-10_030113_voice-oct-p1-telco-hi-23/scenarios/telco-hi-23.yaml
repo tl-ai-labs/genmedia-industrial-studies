@@ -1,0 +1,43 @@
+# telco-hi-23 - DTH recharge — channel names (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-23: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-23
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Broadband, DTH & roaming.
+# TARGET CUSTOMER. Broadband Providers, DTH Providers.
+# WHAT THIS TESTS. A raw amount and three TV channel brand names (one with a number) in one Devanagari passage
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: brands.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-23
+modality: voice
+task: text_to_speech
+title: "DTH recharge — channel names - Hindi"
+
+input:
+  script: |
+    आपका Tata Play account ₹450 से recharge हो गया है। आपके pack में Star Sports 1 Hindi, Sony SAB और Zee Cinema शामिल हैं।
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount "चार सौ पचास" recoverable
+  2) Channel names natural; "SAB" said as the channel is said (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, telecom, broadband-dth-roaming, medium, gemini-lean, v2-bank]

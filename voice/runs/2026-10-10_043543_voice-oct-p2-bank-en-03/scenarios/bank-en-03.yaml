@@ -1,0 +1,42 @@
+# bank-en-03 - Senior-citizen FD maturity call (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-35 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-35): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Deposits, wealth & insurance - FD, SIP, policies, health claims, RM callbacks.
+# TARGET CUSTOMER. Insurers, Investment & Wealth Platforms.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: bank-en-03
+modality: voice
+task: text_to_speech
+title: "Senior-citizen FD maturity call - English"
+
+input:
+  script: |
+    Good morning, sir. Your fixed deposit of Rs 10,00,000 matures next month. Would you like to renew it, or have the amount credited to your savings account?
+  language: en-IN
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it ("ten lakh", not "one million")
+  2) Question intonation on the closing choice
+  3) Warm, unhurried pace for an older customer
+
+checks:
+  duration_s: {min: 5.4, max: 27.8}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one million"
+    - "1 million"
+
+tags: [oct-2026, english, banking-financial-services, deposits-wealth-insurance, medium, gemini-lean, new-english]

@@ -1,0 +1,46 @@
+# md-hi-48 - Two-voice sibling banter, single narrator (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-48: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-48
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Multi-voice scenes (2–3 characters, one narrator).
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# WHAT THIS TESTS. Two distinct voices, each internally consistent, delivered by a single narrator across rapid code-switching
+# SPEECH SKILLS. Emotion; Conversation: narrated, 2 characters.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch; several distinct voices.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-hi-48
+modality: voice
+task: styled_tts
+title: "Two-voice sibling banter, single narrator - Hinglish"
+
+input:
+  script: |
+    'Tune mera phone kyun use kiya?' 'Kyunki mera charge khatam ho gaya tha, chill kar!' 'Chill? You deleted my photos, idiot!' 'Relax yaar, backup hai na cloud mein.'
+  language: hi-IN
+  style: "fast playful bickering, two distinct voices, one narrator"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages
+  2) The two voices are distinguishable and each internally consistent (judge)
+  3) Hindi segments native-plausible (judge)
+  4) Switch points land naturally, not like a script change
+
+checks:
+  duration_s: {min: 5.6, max: 28.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, micro-drama-entertainment, multi-voice-scenes-2-3-characters-one-narrator, hard, gemini-lean, v2-bank]

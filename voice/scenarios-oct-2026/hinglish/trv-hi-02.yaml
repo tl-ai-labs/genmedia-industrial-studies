@@ -1,0 +1,44 @@
+# trv-hi-02 - Waitlist status and Vande Bharat departure (Travel & mobility)
+#
+# SOURCE. v2 text-to-speech bank, scenario trv-hi-02: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/trv-hi-02
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Train - PNR, train numbers, waitlist, platform changes.
+# TARGET CUSTOMER. Rail Booking Platforms.
+# WHAT THIS TESTS. Railway status acronyms (WL, RAC), a train number, a train brand and a route, in one Hinglish passage
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: names, brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: trv-hi-02
+modality: voice
+task: text_to_speech
+title: "Waitlist status and Vande Bharat departure - Hinglish"
+
+input:
+  script: |
+    Aapka ticket abhi WL 17 par hai, aur chart banne tak RAC ho sakta hai. Train 22436, Vande Bharat Express, New Delhi se Varanasi, subah chhah baje.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "WL 17" read as "W-L seventeen"; "RAC" as letters (judge)
+  2) Train number "22436" recoverable
+  3) "Vande Bharat" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, travel-mobility, train, hard, even-contest, v2-bank]

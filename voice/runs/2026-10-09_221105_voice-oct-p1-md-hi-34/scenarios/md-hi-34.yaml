@@ -1,0 +1,56 @@
+# md-hi-34 - Quarterly loss — furious CEO, calm CFO (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-34: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-34
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# WHAT THIS TESTS. Fury against measured calm, with two crore figures and a page reference
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: names; Emotion; Conversation: 2 voices.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+#
+# TWO VOICES. Each line starts with its speaker's label. Gemini gets the
+# labelled script with one prebuilt voice per label; ElevenLabs gets one
+# Text to Dialogue input per line, label removed.
+
+id: md-hi-34
+modality: voice
+task: styled_tts
+title: "Quarterly loss — furious CEO, calm CFO - Hinglish"
+
+input:
+  script: |
+    A: Pachees crore ka loss? In one quarter? Yeh kaise hua, Mehra?
+    B: Sir, please baithiye. Ismein se aatharah crore sirf ek one-time write-off hai — Pune plant ka.
+    A: One-time? Last year bhi yahi kaha tha!
+    B: Isliye maine yeh report banayi hai. Page seven dekhiye, sab clear ho jaayega.
+  language: hi-IN
+  style: "A: furious, clipped; B: calm, measured, unhurried"
+
+params:
+  speakers:
+    - {label: A, voice: male_older, style: "furious, clipped"}
+    - {label: B, voice: female_older, style: "calm, measured, unhurried"}
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every turn read in order, nothing dropped
+  2) The two speakers are clearly different voices, each consistent in voice and age across turns (judge)
+  3) Contrasting emotions held: A stays furious, B stays calm and measured — no bleed from one speaker to the other (judge)
+  4) Hindi segments pronounced correctly; code-switch reads native (judge)
+  5) "pachees crore" and "aatharah crore" recoverable
+
+checks:
+  duration_s: {min: 9.4, max: 45.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, micro-drama-entertainment, corporate-business, hard, gemini-lean, v2-bank]

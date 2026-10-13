@@ -1,0 +1,37 @@
+# md-en-01 - Boardroom power play (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-29 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-29): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Corporate / business.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# SPEECH SKILLS. Numbers: amounts; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone).
+
+id: md-en-01
+modality: voice
+task: styled_tts
+title: "Boardroom power play - English"
+
+input:
+  script: |
+    Sir, with all due respect, this decision is wrong. Look at the numbers: a loss of Rs 3 crore, because of one bad call. I won't sign off on this.
+  language: en-IN
+  style: "controlled professional tension, restrained anger"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read, nothing dropped
+  2) Restrained anger held throughout, never shouting (judge)
+  3) "3 crore" read as "three crore"
+
+checks:
+  duration_s: {min: 6.0, max: 30.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, corporate-business, medium, gemini-lean, new-english]

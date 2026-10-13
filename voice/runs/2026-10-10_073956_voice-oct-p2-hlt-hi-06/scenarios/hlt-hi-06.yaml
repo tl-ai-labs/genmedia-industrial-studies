@@ -1,0 +1,44 @@
+# hlt-hi-06 - Refill reminder — two chronic medicines (Healthcare & pharma)
+#
+# SOURCE. v2 text-to-speech bank, scenario hlt-hi-06: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/hlt-hi-06
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Pharmacy - medicine names, strengths, dosing, refills.
+# TARGET CUSTOMER. Online Pharmacies.
+# WHAT THIS TESTS. Two medicine names with mg strengths, a day count and a DTMF instruction
+# SPEECH SKILLS. Numbers: dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: hlt-hi-06
+modality: voice
+task: text_to_speech
+title: "Refill reminder — two chronic medicines - Hinglish"
+
+input:
+  script: |
+    Aapki Metformin 500 mg aur Telma 40 ki goliyan teen din mein khatam ho jaayengi. Apollo 24/7 par refill order karne ke liye ek dabaayein.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "Metformin 500 mg" and "Telma 40" recoverable
+  2) "24/7" read as "twenty-four seven"
+  3) "teen din" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, healthcare-pharma, pharmacy, hard, even-contest, v2-bank]

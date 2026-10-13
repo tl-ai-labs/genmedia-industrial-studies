@@ -1,0 +1,37 @@
+# telco-en-01 - Wrong VAS charge reversed: complaint ID (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-21 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-21): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Complaints & service requests.
+# TARGET CUSTOMER. Mobile Network Operators.
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - rupee amounts.
+
+id: telco-en-01
+modality: voice
+task: text_to_speech
+title: "Wrong VAS charge reversed: complaint ID - English"
+
+input:
+  script: |
+    A Hello Tunes VAS pack of Rs 49 was activated on your number by mistake. We have deactivated it and credited Rs 49 back to your main balance. Your complaint ID is VAS2291.
+  language: en-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "VAS2291" recoverable character for character
+  2) "VAS" as letters
+  3) "Hello Tunes" natural
+
+checks:
+  duration_s: {min: 6.6, max: 33.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.05
+
+tags: [oct-2026, english, telecom, complaints-service-requests, medium, even-contest, new-english]

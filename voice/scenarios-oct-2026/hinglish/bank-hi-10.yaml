@@ -1,0 +1,44 @@
+# bank-hi-10 - Cheque bounce charge notification (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-10: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-10
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Easy. SETTING. Call centre.
+# USE CASE. Payments & transfers - UPI ID, IFSC, NEFT/IMPS/RTGS, cheques.
+# TARGET CUSTOMER. Retail Banks, Payment Apps.
+# WHAT THIS TESTS. A short numeric identifier (cheque number) plus a currency penalty amount
+# SPEECH SKILLS. Numbers: codes, amounts.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-10
+modality: voice
+task: text_to_speech
+title: "Cheque bounce charge notification - Hinglish"
+
+input:
+  script: |
+    Aapka cheque number paanch sau chaalis bounce ho gaya hai, insufficient funds ki wajah se. Iske liye ek sau pachaas rupaye ka bounce charge lagaya jaayega.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Cheque number "paanch sau chaalis" recoverable exactly
+  2) Charge "ek sau pachaas rupaye" recoverable exactly
+  3) English banking terms stay intelligible inside the Hindi sentence without a register break
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, banking-financial-services, payments-transfers, easy, gemini-lean, v2-bank]

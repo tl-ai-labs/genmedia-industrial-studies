@@ -1,0 +1,42 @@
+# bank-en-09 - Insurance premium due reminder (Banking & financial services)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 bank-hi-34 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-34): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Deposits, wealth & insurance - FD, SIP, policies, health claims, RM callbacks.
+# TARGET CUSTOMER. Insurers, Investment & Wealth Platforms.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept).
+
+id: bank-en-09
+modality: voice
+task: text_to_speech
+title: "Insurance premium due reminder - English"
+
+input:
+  script: |
+    Your LIC policy annual premium of Rs 1,08,250 is due by the 22nd of this month. You can pay through the LIC app, UPI or at any branch.
+  language: en-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it
+  2) "the 22nd" recoverable
+  3) "LIC" and "UPI" as letters
+  4) Calm call-centre pace
+
+checks:
+  duration_s: {min: 5.6, max: 28.6}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one hundred eight thousand two hundred fifty"
+
+tags: [oct-2026, english, banking-financial-services, deposits-wealth-insurance, medium, gemini-lean, new-english]

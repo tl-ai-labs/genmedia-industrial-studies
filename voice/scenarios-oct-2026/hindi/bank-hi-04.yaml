@@ -1,0 +1,45 @@
+# bank-hi-04 - Aadhaar–PAN link deadline, masked digits (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-04: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-04
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Onboarding & KYC - eKYC, Video KYC, masked PAN/Aadhaar, new account.
+# TARGET CUSTOMER. Retail Banks.
+# WHAT THIS TESTS. Two identity acronyms said differently — "PAN" as a word, "Aadhaar" as a name — plus a four-digit masked readback and a numeral date
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-04
+modality: voice
+task: text_to_speech
+title: "Aadhaar–PAN link deadline, masked digits - Hindi"
+
+input:
+  script: |
+    आपका Aadhaar, जिसके last four digits हैं eight, zero, zero, eight, अभी तक आपके PAN से link नहीं हुआ है। कृपया 31 दिसंबर से पहले link कर लीजिए, वरना आपका PAN inoperative हो जाएगा।
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Masked digits "8008" recoverable, and no longer digit run is spoken
+  2) "PAN" said as the word "pan", the way Indian customers say it — not spelled P-A-N (judge)
+  3) Date "31 दिसंबर" read as "इकतीस दिसंबर"
+  4) Consequence clause ("inoperative") intelligible
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, onboarding-kyc, medium, even-contest, v2-bank]

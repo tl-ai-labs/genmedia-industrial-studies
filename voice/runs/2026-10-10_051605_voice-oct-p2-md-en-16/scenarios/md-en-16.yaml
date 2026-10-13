@@ -1,0 +1,41 @@
+# md-en-16 - Cyber-crime briefing: FIR number, lakh amount, minutes (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-27 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-27): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Thriller / crime.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms, Audiobook Platforms.
+# SPEECH SKILLS. Numbers: codes, amounts, dates/times; Pronunciation: names, acronyms; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone).
+
+id: md-en-16
+modality: voice
+task: styled_tts
+title: "Cyber-crime briefing: FIR number, lakh amount, minutes - English"
+
+input:
+  script: |
+    FIR number 0417/2025, Cyber Crime Cell, Gurugram. Rs 18,75,000 was taken from the victim's account in just 14 minutes, and every rupee went through crypto.
+  language: en-IN
+  style: "urgent briefing, clipped"
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) FIR "0417/2025" read as a reference ("oh four one seven stroke twenty twenty-five")
+  2) Amount said in the Indian system (lakh / crore); the numeral is sent as written, so the model decides how to read it ("eighteen lakh seventy-five thousand")
+  3) Clipped, urgent briefing (judge)
+
+checks:
+  duration_s: {min: 5.0, max: 26.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  must_say:
+    - "lakh"
+  must_not_say:
+    - "one million eight hundred seventy five thousand"
+
+tags: [oct-2026, english, micro-drama-entertainment, thriller-crime, hard, gemini-lean, new-english]

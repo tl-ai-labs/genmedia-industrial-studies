@@ -1,0 +1,45 @@
+# bank-hi-38 - Cashless health claim approved — claim ID, hospital, co-pay (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-38: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-38
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Deposits, wealth & insurance - FD, SIP, policies, health claims, RM callbacks.
+# TARGET CUSTOMER. Insurers, Investment & Wealth Platforms.
+# WHAT THIS TESTS. An insurer brand, a claim ID with slashes, a hospital + city name and two raw amounts (one in lakh) in one passage
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: names, brands.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-38
+modality: voice
+task: text_to_speech
+title: "Cashless health claim approved — claim ID, hospital, co-pay - Hindi"
+
+input:
+  script: |
+    Star Health से: आपका cashless claim, C, L, M, slash, two, four, slash, eight, eight, one, zero, six, Medanta Hospital, Gurugram के लिए ₹2,37,640 में approve हो गया है। ₹11,882 का co-pay आपको hospital में देना होगा।
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Claim ID "CLM/24/88106" recoverable, slashes spoken
+  2) Amount spoken in the Indian system (lakh/crore), not the international convention — the numeral was sent as-written, the model decides how to say it
+  3) Co-pay "ग्यारह हज़ार आठ सौ बयासी" recoverable
+  4) "Medanta Hospital, Gurugram" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, deposits-wealth-insurance, hard, gemini-lean, v2-bank]

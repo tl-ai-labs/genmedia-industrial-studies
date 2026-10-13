@@ -1,0 +1,45 @@
+# md-te-01 - Apology to mother — Telugu script (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-te-01: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-te-01
+# LANGUAGE. Telugu (Native script). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Family drama.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# WHAT THIS TESTS. A soft apologetic register across a Telugu-script / English switch
+# SPEECH SKILLS. Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: md-te-01
+modality: voice
+task: styled_tts
+title: "Apology to mother — Telugu script - Telugu"
+
+input:
+  script: |
+    అమ్మా, నేను అన్నదంతా తప్పే. I was angry, I didn't mean it. నన్ను క్షమించు.
+  language: te-IN
+  style: "soft, apologetic, hopeful"
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Full text read across both languages, nothing dropped
+  2) The code-switch stays native under the target emotion — no register break (judge)
+  3) Telugu segments pronounced correctly (judge)
+
+checks:
+  duration_s: {min: 2.6, max: 15.4}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, telugu, micro-drama-entertainment, family-drama, medium, gemini-lean, v2-bank]

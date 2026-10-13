@@ -1,0 +1,44 @@
+# telco-hi-13 - Landline bill overdue — disconnection warning (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-13: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-13
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Postpaid & broadband billing.
+# TARGET CUSTOMER. Mobile Network Operators, Broadband Providers.
+# WHAT THIS TESTS. A raw amount and two day counts inside a firm Hinglish reminder
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-13
+modality: voice
+task: text_to_speech
+title: "Landline bill overdue — disconnection warning - Hinglish"
+
+input:
+  script: |
+    Aapka BSNL landline bill, Rs 842 ka, pichhle bees din se pending hai. Saat din mein payment nahi hua toh outgoing calls band ho jaayengi.
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount recoverable
+  2) "bees din" and "saat din" recoverable
+  3) "BSNL" as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, postpaid-broadband-billing, medium, gemini-lean, v2-bank]

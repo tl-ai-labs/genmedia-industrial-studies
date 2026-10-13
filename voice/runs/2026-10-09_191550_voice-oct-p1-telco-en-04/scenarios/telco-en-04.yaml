@@ -1,0 +1,37 @@
+# telco-en-04 - International roaming pack, Dubai (Telecom)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 telco-hi-24 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-24): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Broadband, DTH & roaming.
+# TARGET CUSTOMER. Broadband Providers, DTH Providers.
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: names, brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: telco-en-04
+modality: voice
+task: text_to_speech
+title: "International roaming pack, Dubai - English"
+
+input:
+  script: |
+    Your Airtel international roaming pack for Dubai is now active: Rs 2,999 for 10 days, with 5GB data and 100 minutes of incoming calls.
+  language: en-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Price recoverable
+  2) Validity, data and minutes all intact and not confused
+  3) "5GB" with GB as letters
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, telecom, broadband-dth-roaming, hard, even-contest, new-english]

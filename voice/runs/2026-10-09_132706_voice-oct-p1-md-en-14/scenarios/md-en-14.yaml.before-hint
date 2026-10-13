@@ -1,0 +1,37 @@
+# md-en-14 - Diwali homecoming: Ayodhya narration (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-44 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-44): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Serialised drama.
+# USE CASE. Mythological, devotional & period.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Numbers: dates/times; Pronunciation: names; Emotion.
+# PICKED AS. Gemini-lean - delivery directions to follow (Gemini held pace and tone); Indian names and words inside English.
+
+id: md-en-14
+modality: voice
+task: styled_tts
+title: "Diwali homecoming: Ayodhya narration - English"
+
+input:
+  script: |
+    On the banks of the Saryu, all of Ayodhya glowed with diyas, because after fourteen years of vanvaas, Shri Ram had come home.
+  language: en-IN
+  style: "warm, devotional, joyous"
+
+params:
+  voice: female_elder
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "Saryu", "Ayodhya", "diyas", "vanvaas", "Shri Ram" pronounced as Indian words (judge)
+  2) Devotional warmth (judge)
+  3) Full text read
+
+checks:
+  duration_s: {min: 4.6, max: 24.2}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+
+tags: [oct-2026, english, micro-drama-entertainment, mythological-devotional-period, medium, gemini-lean, new-english]

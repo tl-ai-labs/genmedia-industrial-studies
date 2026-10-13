@@ -1,0 +1,44 @@
+# telco-hi-16 - Port-in status — number, request ID, activation (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-16: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-16
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Porting (MNP / UPC) & retention.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A ten-digit mobile number, two operator brands and a letter/digit porting request ID in one passage
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-16
+modality: voice
+task: text_to_speech
+title: "Port-in status — number, request ID, activation - Hindi"
+
+input:
+  script: |
+    आपका number nine, eight, one, one, zero, two, three, four, five, six, Vi से Airtel में port हो रहा है। Porting request ID है M, N, P, zero, seven, four, one, two, और नया SIM 3 working days में activate होगा।
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Number "9811023456" recoverable
+  2) "MNP07412" Recoverable character-for-character, read in confirmable chunks, not run together
+  3) "Vi" and "Airtel" natural
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, telecom, porting-mnp-upc-retention, hard, even-contest, v2-bank]

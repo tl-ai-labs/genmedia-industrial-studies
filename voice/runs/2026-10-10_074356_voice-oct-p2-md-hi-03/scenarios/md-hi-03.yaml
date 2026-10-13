@@ -1,0 +1,56 @@
+# md-hi-03 - Parent-child conflict over career choice — two voices (Micro-drama & entertainment)
+#
+# SOURCE. v2 text-to-speech bank, scenario md-hi-03: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-03
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Family drama.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# WHAT THIS TESTS. A nervous-but-firm son against a stern, angering father; a lakh figure inside the argument
+# SPEECH SKILLS. Numbers: amounts; Emotion; Conversation: 2 voices.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+#
+# TWO VOICES. Each line starts with its speaker's label. Gemini gets the
+# labelled script with one prebuilt voice per label; ElevenLabs gets one
+# Text to Dialogue input per line, label removed.
+
+id: md-hi-03
+modality: voice
+task: styled_tts
+title: "Parent-child conflict over career choice — two voices - Hinglish"
+
+input:
+  script: |
+    A: Papa, main engineering nahi karna chahta. I want to study music.
+    B: Music? Tumhe pata hai humne tumhari coaching pe kitna kharch kiya hai? Do lakh rupaye!
+    A: Main jaanta hoon aapko yeh pasand nahi aayega, lekin yeh mera decision hai.
+    B: Decision? Jab tak tum is ghar mein ho, decision main lunga.
+  language: hi-IN
+  style: "A: nervous but firm, restrained defiance; B: stern, rising anger"
+
+params:
+  speakers:
+    - {label: A, voice: male_young, style: "nervous but firm, restrained defiance"}
+    - {label: B, voice: male_older, style: "stern, rising anger"}
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every turn read in order, nothing dropped
+  2) The two speakers are clearly different voices, each consistent in voice and age across turns (judge)
+  3) Contrasting emotions held: A stays nervous but firm, B stays stern and rising — no bleed from one speaker to the other (judge)
+  4) Hindi segments pronounced correctly; code-switch reads native (judge)
+  5) "do lakh rupaye" recoverable
+
+checks:
+  duration_s: {min: 10.0, max: 48.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, micro-drama-entertainment, family-drama, hard, gemini-lean, v2-bank]

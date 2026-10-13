@@ -1,0 +1,46 @@
+# telco-hi-09 - Long-validity plan with OTT bundle — mixed script (Telecom)
+#
+# SOURCE. v2 text-to-speech bank, scenario telco-hi-09: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/telco-hi-09
+# LANGUAGE. Hinglish (Mixed script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Recharge & plans.
+# TARGET CUSTOMER. Mobile Network Operators.
+# WHAT THIS TESTS. A raw price, a validity, a data quota and an OTT brand stacked, Hindi in both scripts — the local language written in both native script and Latin letters in one prompt
+# SPEECH SKILLS. Numbers: amounts, dates/times, units/%; Pronunciation: brands.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: telco-hi-09
+modality: voice
+task: text_to_speech
+title: "Long-validity plan with OTT bundle — mixed script - Hinglish"
+
+input:
+  script: |
+    आपका Airtel plan ₹979 ka है — 84 दिन ki validity, रोज़ 2GB data, aur Airtel Xstream Play का free subscription भी।
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Price "नौ सौ उन्यासी" recoverable
+  2) "84 दिन" and "2GB" recoverable
+  3) "Xstream Play" natural
+  4) Words written in Latin letters but belonging to the local language are pronounced as that language, not read as English spellings (judge)
+  5) No seam, accent change or pause where the script switches mid-sentence (judge)
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, telecom, recharge-plans, hard, gemini-lean, v2-bank]

@@ -1,0 +1,44 @@
+# fqc-hi-03 - 10-minute delivery — order ID (Food & quick commerce)
+#
+# SOURCE. v2 text-to-speech bank, scenario fqc-hi-03: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/fqc-hi-03
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Order & ETA.
+# TARGET CUSTOMER. Food Delivery Apps, Quick-commerce Apps.
+# WHAT THIS TESTS. A letter/digit order ID and a minute ETA in Devanagari
+# SPEECH SKILLS. Numbers: codes, dates/times; Pronunciation: brands.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: fqc-hi-03
+modality: voice
+task: text_to_speech
+title: "10-minute delivery — order ID - Hindi"
+
+input:
+  script: |
+    आपका Blinkit order, O, R, D, one, eight, two, two, five, nine, pack हो रहा है और 9 minute में पहुँच जाएगा।
+  language: hi-IN
+
+params:
+  voice: female_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "ORD182259" Recoverable character-for-character, read in confirmable chunks, not run together
+  2) Confusable characters (0/O, 1/I, 5/S, 8/B) handled without ambiguity
+  3) "नौ minute" recoverable
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, food-quick-commerce, order-eta, hard, even-contest, v2-bank]

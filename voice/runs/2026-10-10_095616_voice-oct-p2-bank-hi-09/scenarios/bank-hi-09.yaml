@@ -1,0 +1,45 @@
+# bank-hi-09 - UPI ID readback before payment (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-09: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-09
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Payments & transfers - UPI ID, IFSC, NEFT/IMPS/RTGS, cheques.
+# TARGET CUSTOMER. Retail Banks, Payment Apps.
+# WHAT THIS TESTS. A raw UPI handle (dots, digits, @, bank suffix) that the model must verbalise itself, plus a raw rupee amount
+# SPEECH SKILLS. Numbers: codes, amounts; Pronunciation: acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-09
+modality: voice
+task: text_to_speech
+title: "UPI ID readback before payment - Hindi"
+
+input:
+  script: |
+    आप जिस UPI ID पर पैसे भेज रहे हैं, वो है rahul.sharma92@okhdfcbank, और amount है ₹12,500। क्या मैं payment confirm करूँ?
+  language: hi-IN
+
+params:
+  voice: male_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) "." read as "dot" and "@" read as "at" — the model verbalises the symbols itself (judge)
+  2) "okhdfcbank" read as "ok HDFC bank", not as one invented word (judge)
+  3) Amount read as "बारह हज़ार पाँच सौ", not the international convention
+  4) Confirmation question intonation
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, payments-transfers, hard, gemini-lean, v2-bank]

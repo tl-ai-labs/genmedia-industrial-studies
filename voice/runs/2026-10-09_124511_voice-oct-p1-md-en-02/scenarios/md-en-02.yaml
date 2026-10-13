@@ -1,0 +1,48 @@
+# md-en-02 - Parent-child conflict over career: two voices (Micro-drama & entertainment)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 md-hi-03 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/md-hi-03): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Hard. SETTING. Serialised drama.
+# USE CASE. Family drama.
+# TARGET CUSTOMER. Audio Series & Micro-drama Platforms.
+# SPEECH SKILLS. Numbers: amounts; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); delivery directions to follow (Gemini held pace and tone).
+#
+# TWO VOICES. Each line starts with its speaker's label. Gemini gets the
+# labelled script with one prebuilt voice per label; ElevenLabs gets one
+# Text to Dialogue input per line, label removed.
+
+id: md-en-02
+modality: voice
+task: styled_tts
+title: "Parent-child conflict over career: two voices - English"
+
+input:
+  script: |
+    A: Papa, I don't want to do engineering. I want to study music.
+    B: Music? Do you know how much we spent on your coaching? Two lakh rupees!
+    A: I know you won't like it, but this is my decision.
+    B: Your decision? As long as you live in this house, I make the decisions.
+  language: en-IN
+  style: "A: nervous but firm; B: stern, rising"
+
+params:
+  speakers:
+    - {label: A, voice: male_young, style: "nervous but firm"}
+    - {label: B, voice: male_older, style: "stern, rising"}
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Every turn read in order
+  2) Two clearly different voices, each consistent (judge)
+  3) A stays nervous but firm, B stern and rising, no bleed (judge)
+  4) "Two lakh rupees" natural
+
+checks:
+  duration_s: {min: 10.2, max: 48.9}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  wer_reference: "Papa, I don't want to do engineering. I want to study music.\nMusic? Do you know how much we spent on your coaching? Two lakh rupees!\nI know you won't like it, but this is my decision.\nYour decision? As long as you live in this house, I make the decisions."
+
+tags: [oct-2026, english, micro-drama-entertainment, family-drama, hard, gemini-lean, new-english]

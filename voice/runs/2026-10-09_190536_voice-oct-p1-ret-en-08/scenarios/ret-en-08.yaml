@@ -1,0 +1,37 @@
+# ret-en-08 - Subscription auto-renewal notice (Ecommerce & Retail)
+#
+# SOURCE. New English scenario written for this run, modelled on v2 ret-hi-35 (https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/ret-hi-35): same industry, use case, speaker, tests and difficulty.
+# LANGUAGE. English (Indian English). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Loyalty & subscriptions - SuperCoins, Prime, tiers, NeuCoins.
+# TARGET CUSTOMER. E-commerce Marketplaces.
+# SPEECH SKILLS. Numbers: amounts, dates/times; Pronunciation: brands.
+# PICKED AS. Even contest - rupee amounts.
+
+id: ret-en-08
+modality: voice
+task: text_to_speech
+title: "Subscription auto-renewal notice - English"
+
+input:
+  script: |
+    Your Amazon Prime membership renews on the 5th of next month, for Rs 1,499. You can turn off auto-renewal any time from Your Account.
+  language: en-IN
+
+params:
+  voice: male_young
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount recoverable
+  2) "the 5th of next month" recoverable
+  3) "Amazon Prime" natural
+
+checks:
+  duration_s: {min: 4.8, max: 25.1}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  max_wer: 0.08
+
+tags: [oct-2026, english, ecommerce-retail, loyalty-subscriptions, medium, even-contest, new-english]

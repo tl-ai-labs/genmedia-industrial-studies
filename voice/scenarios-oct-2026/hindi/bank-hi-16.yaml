@@ -1,0 +1,44 @@
+# bank-hi-16 - Reward points and redemption brands (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-16: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-16
+# LANGUAGE. Hindi (Native script). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Cards - dispatch, limits, dues, rewards, declines, replacement.
+# TARGET CUSTOMER. Credit Card Issuers, Retail Banks.
+# WHAT THIS TESTS. A raw five-figure points figure plus four brand names (card, portal, two lifestyle brands) in one Devanagari-matrix sentence
+# SPEECH SKILLS. Numbers: amounts; Pronunciation: brands, acronyms.
+# PICKED AS. Gemini-lean - rupee amounts; Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-16
+modality: voice
+task: text_to_speech
+title: "Reward points and redemption brands - Hindi"
+
+input:
+  script: |
+    आपके HDFC Regalia card पर 18,450 reward points जमा हैं। आप इन्हें SmartBuy पर Taj voucher या Tanishq gift card के लिए redeem कर सकते हैं।
+  language: hi-IN
+
+params:
+  voice: female_mid
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Points figure read as "अठारह हज़ार चार सौ पचास"
+  2) Brand names "Regalia", "SmartBuy", "Taj", "Tanishq" pronounced as a native speaker would (judge)
+  3) "HDFC" as letters
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hindi, banking-financial-services, cards, hard, gemini-lean, v2-bank]

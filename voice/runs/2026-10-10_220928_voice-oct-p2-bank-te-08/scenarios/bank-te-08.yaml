@@ -1,0 +1,53 @@
+# bank-te-08 - FD maturity, raw lakh numeral — Telugu (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-te-08: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-te-08
+# LANGUAGE. Tenglish (Romanised). DIFFICULTY. Medium. SETTING. Call centre.
+# USE CASE. Deposits, wealth & insurance - FD, SIP, policies, health claims, RM callbacks.
+# TARGET CUSTOMER. Insurers, Investment & Wealth Platforms.
+# WHAT THIS TESTS. A raw lakh numeral converted to Indian numbering in a Telugu-English sentence
+# SPEECH SKILLS. Numbers: amounts; Emotion.
+# PICKED AS. Gemini-lean - lakh / crore amounts (ElevenLabs garbled these in Sept); Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-te-08
+modality: voice
+task: text_to_speech
+title: "FD maturity, raw lakh numeral — Telugu - Tenglish"
+
+input:
+  script: |
+    Namaskaram andi, mee fixed deposit Rs 7,50,000 vachhe nela mature avutundi. Renew cheyyala leka account ki transfer cheyyala?
+  language: te-IN
+
+params:
+  voice: male_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) Amount spoken in the Indian system (lakh/crore), not the international convention — the numeral was sent as-written, the model decides how to say it
+  2) Respectful register
+
+checks:
+  # Minimum lowered from 6.0 s on 2026-10-10 (round 1), before running: a
+  # complete read of a short line can come in under 6 s. Now 0.2 s a word,
+  # as in the drama scenarios (a read faster than 5 words a second is too short).
+  duration_s: {min: 3.6, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+  # Expected item: the lakh reading of the amount written in Indian digit
+  # grouping. Added 2026-10-10. Telugu bends the word, and the check matches
+  # whole words, so each form is listed (లక్ష, లక్షా, లక్షల, లక్షలు, లక్షలా -
+  # the last added after bank-te-08, where both models said "ఏడు లక్షలా"), with
+  # the Roman and Devanagari spellings in case the transcript comes back in those.
+  must_say_any:
+    - ["lakh", "लाख", "లక్ష", "లక్షా", "లక్షల", "లక్షలు", "లక్షలా"]
+
+tags: [oct-2026, tenglish, banking-financial-services, deposits-wealth-insurance, medium, gemini-lean, v2-bank]

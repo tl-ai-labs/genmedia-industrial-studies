@@ -1,0 +1,13 @@
+Second transcription, 2026-10-09, same transcriber (faster-whisper medium, CPU, en),
+with every digit-bearing token banned so numbers must be spelled out. No prompt and
+no hint toward either number system. Run to settle a disagreement: the judge said
+ElevenLabs read the amount as "three lakh forty thousand"; the first transcript
+wrote "340,000". Evidence only - the scored checks still use the first transcript.
+
+elevenlabs-v4         normal   : Today's RTGS cutoff is 5.30 p.m. To send 340,000 rupees from Axis Bank to IDFC First Bank today, please submit the request before then.
+elevenlabs-v4         no digits: Today's RTGS cutoff is five thirty p.m. To send three hundred forty thousand rupees from Axis Bank to IDFC First Bank today, please submit the request before then.
+gemini-3-8-flash-tts  normal   : Today's RTGS cut-off is 5.30 pm. To send Rs 3,40,000 from Axis Bank to IDFC First Bank today, please submit the request before then.
+gemini-3-8-flash-tts  no digits: Today's RTGS cutoff is at five thirty p.m. To send three lakh forty thousand rupees from Axis Bank to IDFC First Bank today, please submit the request before then.
+
+Finding: ElevenLabs said "three hundred forty thousand"; Gemini said "three lakh forty
+thousand". The judge's pronunciation reasoning for the ElevenLabs clip is wrong on this item.

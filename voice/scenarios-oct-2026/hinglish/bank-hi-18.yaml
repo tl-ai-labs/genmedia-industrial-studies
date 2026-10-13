@@ -1,0 +1,44 @@
+# bank-hi-18 - Replacement card dispatched — AWB and security acronyms (Banking & financial services)
+#
+# SOURCE. v2 text-to-speech bank, scenario bank-hi-18: https://studies.adlc.tilicho.in/studies/genmedia-model-comparison/meta/product-view/scenario-bank/v2/voice/bank-hi-18
+# LANGUAGE. Hinglish (Romanised). DIFFICULTY. Hard. SETTING. Call centre.
+# USE CASE. Cards - dispatch, limits, dues, rewards, declines, replacement.
+# TARGET CUSTOMER. Credit Card Issuers, Retail Banks.
+# WHAT THIS TESTS. A courier brand, a ten-digit AWB and three security acronyms (AWB, CVV, PIN — the last said as a word) in one Hinglish passage
+# SPEECH SKILLS. Numbers: codes; Pronunciation: brands, acronyms.
+# PICKED AS. Even contest - Hindi–English code-switch.
+#
+# TRANSCRIPT NOT SCORED (asr_scored: false). Whisper writes Hindi and Telugu
+# audio in their own scripts, so this script and the transcript are in
+# different writing systems; a WER here would measure the recogniser's
+# spelling. The transcript is kept as evidence. Accuracy comes from the
+# checklist below, judged by listeners and the judge.
+
+id: bank-hi-18
+modality: voice
+task: text_to_speech
+title: "Replacement card dispatched — AWB and security acronyms - Hinglish"
+
+input:
+  script: |
+    Aapka replacement credit card Blue Dart se dispatch ho gaya hai, AWB number seven, eight, one, five, five, zero, three, two, nine, four. Card milne par CVV ya PIN kisi ke saath share mat kijiye.
+  language: hi-IN
+
+params:
+  voice: female_older
+  format: wav
+  sample_rate: 24000
+
+expected: |
+  1) AWB "7815503294" recoverable digit-for-digit
+  2) "AWB" and "CVV" as letters; "PIN" said as the word "pin" (judge)
+  3) Warning clause intelligible
+
+checks:
+  duration_s: {min: 6.0, max: 30.0}
+  max_silence_s: 2.5
+  no_clipping: true
+  measure_ttfa: true
+  asr_scored: false
+
+tags: [oct-2026, hinglish, banking-financial-services, cards, hard, even-contest, v2-bank]
