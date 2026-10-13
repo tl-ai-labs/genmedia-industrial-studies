@@ -1,0 +1,305 @@
+# Multi-angle coverage — Gaming scenarios. Slots: cov.yaml.
+code: COV
+scenarios:
+
+- id: COV-GAM-01
+  seed: true
+  title: "Six camera positions in one temple-courtyard level for a fly-through"
+  persona: "Cinematics lead at a game studio planning the camera path for a level's reveal; every frame must match the level as built."
+  evidence: "Call at 17:26: 'five shots of the same setup from different camera angles ... because the video they want is a camera moving across the same room'. Earlier bank IMG-VIEW-06/07 (room to high corner and to plan view) were high tier; this is an outdoor level with a broken landmark, a fallen pillar and an asymmetric layout that a reverse must mirror."
+  levers: [set, layout, unseen, camera, light-lock, count, locale]
+  inputs:
+    - {source: SRC-GAM-TEMPLE-LEVEL, role: source, note: "the level as built, seen from the entrance"}
+  prompt: |
+    This is a screenshot of a game level as built: a ruined temple courtyard. Produce one new
+    in-game camera view of the same level, at the same moment, from the position described below,
+    in the same stylised 3D look and the same late-afternoon light. Nothing in the level moves or
+    changes: the five-tier gopuram at the far end with its top tier broken off; the six carved
+    pillars down the left side seen from the entrance, the third from the entrance fallen across
+    the paving; the dry stepped water tank with its small corner shrine on the right; the stone
+    chariot on four wheels in the centre; the grey placeholder cube by the chariot's right wheel;
+    the cracked paving slabs. The low sun stays where it is in the original, to the right of the
+    entrance view, so every new view's shadows point the matching way. No characters, no
+    interface, no text. 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Gopuram with five tiers and the top tier broken off"
+      - "Six pillars on one side, the third from the entrance fallen across the paving"
+      - "Dry stepped tank with the corner shrine on the other side"
+      - "Stone chariot in the centre with the grey cube by its right wheel"
+      - "Low sun on the same side of the courtyard; long shadows"
+      - "No characters and no interface"
+    members:
+      - name: "Gopuram from the chariot"
+        prompt: "Camera at the front of the chariot, low, looking up at the gopuram, 24 mm. The broken top tier fills the top of the frame; the ends of the colonnade and the tank frame the sides."
+        checks:
+          - [prompt_adherence, "Is it a low view up at the gopuram from near the chariot?"]
+          - [reference_fidelity, "Is the top tier visibly broken off?"]
+          - [prompt_adherence, "Is the colonnade on the left and the tank on the right?"]
+      - name: "Reverse from the gopuram"
+        prompt: "Camera standing in the gopuram's doorway looking back towards the entrance, 24 mm. The colonnade is now on the right of the frame and the tank on the left."
+        checks:
+          - [prompt_adherence, "Is the colonnade now on the right and the tank on the left?"]
+          - [prompt_adherence, "Do the shadows now point to the right, matching the sun's side?"]
+          - [prompt_adherence, "Does the entrance end of the courtyard look like a plausible continuation with no new landmark?"]
+      - name: "Top-down plan"
+        prompt: "Straight down from about thirty metres, the gopuram at the top of the frame. The whole courtyard, the colonnade, the tank, the chariot and the fallen pillar are visible."
+        checks:
+          - [prompt_adherence, "Is it a straight-down view with the gopuram at the top?"]
+          - [prompt_adherence, "Are there six pillars in the row, one lying fallen?"]
+          - [prompt_adherence, "Is the fallen pillar the third from the entrance end?"]
+      - name: "From the tank"
+        prompt: "Camera on the lowest step inside the dry tank looking up and across at the corner shrine and the chariot beyond, 28 mm."
+        checks:
+          - [prompt_adherence, "Is the camera low inside the tank looking up?"]
+          - [prompt_adherence, "Is the shrine at the tank's corner and the chariot beyond it?"]
+          - [prompt_adherence, "Is the tank dry?"]
+      - name: "Down the colonnade"
+        prompt: "Camera beside the first pillar at the entrance end, looking along the row of pillars towards the gopuram, 35 mm. The fallen third pillar lies across the path ahead."
+        checks:
+          - [prompt_adherence, "Are the pillars along the row consistent with six, the third fallen across the path?"]
+          - [prompt_adherence, "Is the view along the row from the entrance end?"]
+          - [prompt_adherence, "Do the pillars' shadows fall across the row as the sun's side requires?"]
+      - name: "Wheel and cube"
+        prompt: "Low close view of the chariot's right wheel at knee height, 50 mm, with the grey placeholder cube beside it, the courtyard soft behind."
+        checks:
+          - [prompt_adherence, "Is the grey cube beside the chariot's right wheel?"]
+          - [style, "Is the wheel carving in the same stylised 3D look?"]
+  deliverable: "Six images, 16:9, one per member."
+  checks:
+    - [set_consistency, "Is the gopuram's top tier broken in every view that shows it?"]
+    - [set_consistency, "Is the colonnade always on the same side of the courtyard, flipping on screen only when the camera faces the other way?"]
+    - [set_consistency, "Is exactly one pillar fallen in every view that shows the row, and always the third from the entrance?"]
+    - [set_consistency, "Is the tank on the opposite side from the colonnade in every view?"]
+    - [set_consistency, "Is the chariot in the centre with four wheels wherever it is seen?"]
+    - [set_consistency, "Is the grey cube by the right wheel in every view where that wheel is visible?"]
+    - [prompt_adherence, "Does the low sun stay on one side of the courtyard, with every view's shadows agreeing?"]
+    - [prompt_adherence, "Is the light late afternoon and warm in all six?"]
+    - [prompt_adherence, "Does each view's camera position match its description?"]
+    - [prompt_adherence, "Are there no characters in any view?"]
+    - [style, "Are all six in the same stylised 3D look as the screenshot?"]
+    - [text_accuracy, "Is there no interface or text in any view?"]
+    - [prompt_adherence, "Could the six views be cut into one fly-through without a landmark jumping?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each member runs as its own image edit from the same base. Whole-set agreement needs the set review."}
+  video_followon: "V1: a camera move from the entrance down the colonnade to the gopuram through the same level."
+
+- id: COV-GAM-02
+  title: "The heroine from five in-game cameras; cape and rune sides held"
+  persona: "Gameplay camera designer checking that marketing renders from each in-game camera keep the character's asymmetries."
+  evidence: "Earlier bank IMG-GAME-11 (turnaround from a single front view) was high tier; one-sided details are what flips."
+  levers: [set, identity, unseen, camera, continuity]
+  inputs: [{source: SRC-GAM-HERO, role: source}]
+  prompt: |
+    This is the key render of the game heroine Ira on a wet rooftop at night: dark brown skin, a
+    high ponytail with three gold rings, a nose ring on her left nostril, a charcoal armoured suit
+    with copper plates, a red sash-cape on her right shoulder only, a teal rune on the back of her
+    left glove, and a curved sword with a veena-head guard in her right hand. Produce one in-game
+    camera view of her in the same pose on the same rooftop, as described below, in the same
+    stylised 3D look with magenta rim light from one side and teal from the other. 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Cape on her right shoulder only; rune on the back of her left glove"
+      - "Sword in her right hand with the veena-head guard"
+      - "Ponytail with three gold rings; nose ring on the left"
+      - "Same pose; magenta and teal rim lights from fixed directions in the world"
+    members:
+      - {name: "Over the shoulder", prompt: "Third-person camera behind and above her right shoulder, the city ahead.", checks: [[reference_fidelity, "Is the cape on the near (right) shoulder?"], [prompt_adherence, "Is it a behind-the-shoulder view?"]]}
+      - {name: "Low hero", prompt: "Low in front of her, looking up.", checks: [[reference_fidelity, "Is the sword on frame left (her right hand)?"], [prompt_adherence, "Is it low looking up?"]]}
+      - {name: "Top-down", prompt: "Straight down from above.", checks: [[reference_fidelity, "Is the ponytail with rings visible from above?"], [prompt_adherence, "Is it straight down?"]]}
+      - {name: "Back", prompt: "Directly behind her.", checks: [[reference_fidelity, "Is the cape on frame right?"], [reference_fidelity, "Is the rune visible on the back of the glove at frame left?"]]}
+      - {name: "Left side", prompt: "Her left side in profile.", checks: [[reference_fidelity, "Is the rune on this near glove?"], [reference_fidelity, "Is the cape mostly hidden on the far shoulder?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is the cape on her right shoulder in all five?"]
+    - [set_consistency, "Is the rune on her left glove in every view that shows it?"]
+    - [set_consistency, "Is the sword in her right hand in all five?"]
+    - [set_consistency, "Is the nose ring on her left in every view that shows it?"]
+    - [set_consistency, "Is the pose the same in all five?"]
+    - [set_consistency, "Is her face and skin tone the same in all five?"]
+    - [prompt_adherence, "Do the magenta and teal rims come from fixed world directions?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [style, "Is the stylised 3D finish the same?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [visual_quality, "Are hands and the sword grip natural?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one reference; set agreement needs the set review."}
+  video_followon: "V4: an orbit around her holding the asymmetries."
+
+- id: COV-GAM-03
+  title: "Hover-bike from one side render to front, rear, top, other side and three-quarter"
+  persona: "Vehicle artist preparing the model sheet a 3D modeller will build from."
+  evidence: "Earlier bank IMG-GAME-11 (turnaround from one view) was high tier; a vehicle's unseen side must mirror the seen one."
+  levers: [set, unseen, identity, camera, exact-text]
+  inputs: [{source: SRC-GAM-MECH, role: source}]
+  prompt: |
+    This render shows an original hover-bike in exact right side profile: a long low matte
+    graphite body, an orange stripe from nose to tail, two round turbine pods glowing cyan under
+    the front and rear, a single curved windscreen, a quilted orange seat, a white "07" decal on
+    the rear fairing, and a dent with scraped paint on the front fairing. Produce one more view of
+    the same bike, floating at the same height over the same dark reflective floor, from the angle
+    below. The left side mirrors the right in shape, with its own "07" decal; the dent is only on
+    the right. Stylised 3D, 16:9.
+  exact_text: ["07"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Body shape, graphite finish, orange stripe nose to tail"
+      - "Cyan-glowing pods front and rear; curved windscreen; orange seat"
+      - "07 decal on each rear fairing; dent on the right front only"
+    members:
+      - {name: "Front", prompt: "Straight front view.", checks: [[reference_fidelity, "Are both pods visible symmetrically?"], [reference_fidelity, "Is the windscreen curve consistent?"]]}
+      - {name: "Rear", prompt: "Straight rear view.", checks: [[reference_fidelity, "Is the rear pod glowing cyan?"], [physics_plausibility, "Is the floor reflecting the glow?"]]}
+      - {name: "Top", prompt: "Straight down.", checks: [[reference_fidelity, "Does the stripe run the full length?"], [prompt_adherence, "Is it straight down?"]]}
+      - {name: "Left side", prompt: "Exact left side profile facing frame left.", checks: [[reference_fidelity, "Is there no dent on this side?"], [text_accuracy, "Is 07 on this rear fairing?"]]}
+      - {name: "Three-quarter", prompt: "Front-right three-quarter.", checks: [[reference_fidelity, "Is the dent visible on the right front fairing?"], [prompt_adherence, "Is it a front three-quarter?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is the body shape the same in all five?"]
+    - [set_consistency, "Is the stripe orange and continuous in all five?"]
+    - [set_consistency, "Is the dent only on the right front?"]
+    - [text_accuracy, "Is the decal 07 in every view that shows a rear fairing?"]
+    - [set_consistency, "Are the pods glowing cyan in all five?"]
+    - [set_consistency, "Is the seat quilted orange in all five?"]
+    - [physics_plausibility, "Is the bike floating at the same height with a reflection below?"]
+    - [prompt_adherence, "Does each view match its angle?"]
+    - [prompt_adherence, "Is there no rider?"]
+    - [style, "Is the stylised 3D finish the same?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are hard edges clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-GAM-04
+  title: "The squad on the rampart from five angles; five characters in order"
+  persona: "Marketing artist making key-art variants of the squad for store pages."
+  evidence: "Earlier bank IMG-VIEW-58 (view along the line of a group) and IMG-VIEW-59 (group to overhead) were high tier."
+  levers: [set, count, layout, identity, locale]
+  inputs: [{source: SRC-GAM-SQUAD, role: source}]
+  prompt: |
+    This key art shows five characters in a line on a Rajasthani fort rampart, left to right: a tall
+    bearded man with a shield and blue turban; a short young woman with goggles and a drone on her
+    shoulder; a heavy older man with a grey moustache and a rocket launcher; a lean woman archer
+    with a white braid and a green scarf; a teenage boy with a skateboard and red headphones. A
+    saffron banner flies behind the middle character. Produce one new view of the same moment in
+    the same cel-shaded style from the angle below. Their order along the rampart never changes.
+    Sun high and to the left. 16:9, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Five characters in the stated order along the rampart"
+      - "Each character's props: shield, drone, rocket launcher, bow, skateboard"
+      - "Saffron banner behind the middle character"
+    members:
+      - {name: "Along the line", prompt: "From the boy's end, looking along the line towards the bearded man.", checks: [[prompt_adherence, "Is the boy nearest and the bearded man farthest?"], [physics_plausibility, "Do the farther characters overlap correctly?"]]}
+      - {name: "From behind", prompt: "From behind the line, looking out over the desert.", checks: [[prompt_adherence, "Is the bearded man now on frame right?"], [prompt_adherence, "Are there five backs?"]]}
+      - {name: "Overhead", prompt: "Straight down from above.", checks: [[prompt_adherence, "Are there five characters?"], [prompt_adherence, "Is the banner pole beside the middle character?"]]}
+      - {name: "Low wide", prompt: "Low from the rampart floor in front, looking up.", checks: [[prompt_adherence, "Is it low looking up?"], [prompt_adherence, "Is the order left to right as in the key art?"]]}
+      - {name: "Archer close", prompt: "Close on the archer with the heavy man soft beside her.", checks: [[reference_fidelity, "Is her braid white and scarf green?"], [prompt_adherence, "Is the heavy man on her frame-left side?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Are there five characters in every view that shows the whole squad?"]
+    - [prompt_adherence, "Is the order consistent with the key art in every view?"]
+    - [set_consistency, "Are the five designs the same in every view?"]
+    - [set_consistency, "Is each prop with its owner in every view?"]
+    - [set_consistency, "Is the banner saffron and behind the middle character?"]
+    - [prompt_adherence, "Is the sun high and to the left of the original view in every angle?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [style, "Is the cel-shaded style the same?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Are there no extra characters?"]
+    - [visual_quality, "Are hands and faces clean?"]
+    - [prompt_adherence, "Is it the same rampart setting?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-GAM-05
+  title: "No base: a described tavern level from five cameras with one light layout"
+  persona: "Lighting artist on a fantasy game checking whether concept views from text hold the level's light sources."
+  evidence: "Plan's text-only coverage test; light drift between views is the target."
+  levers: [set, light-lock, layout, long-brief, camera]
+  prompt: |
+    A fantasy tavern interior in a stylised 3D game, night, 16:9. The room: a square timber hall;
+    on the north wall a big stone hearth with a roaring fire, the main light, warm orange; on the
+    east wall a long bar with a keg rack; on the west wall two tall shuttered windows letting in
+    cold blue moonlight; two iron lanterns hang from the central beam, one above the middle table,
+    one above the door in the south wall; five long tables with benches; a mounted stag head over
+    the hearth; no characters. Produce the camera view described below of this exact room.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Hearth north, bar east, windows west, door south"
+      - "Fire as main warm light; two lanterns; cold moonlight from the west windows"
+      - "Five tables; stag head over the hearth; no characters"
+    members:
+      - {name: "From the door", prompt: "From the south door looking north at the hearth.", checks: [[prompt_adherence, "Is the bar on frame right and the windows on frame left?"], [prompt_adherence, "Is the fire the brightest source ahead?"]]}
+      - {name: "From the hearth", prompt: "From beside the hearth looking south to the door.", checks: [[prompt_adherence, "Is the bar now on frame left?"], [prompt_adherence, "Is the scene lit warm from behind the camera?"]]}
+      - {name: "From the bar", prompt: "From behind the bar looking west at the windows.", checks: [[prompt_adherence, "Is moonlight coming through the windows ahead?"], [prompt_adherence, "Are five tables visible or implied?"]]}
+      - {name: "Overhead", prompt: "From the roof beam looking down.", checks: [[prompt_adherence, "Are there five tables?"], [prompt_adherence, "Is the hearth on the north side?"]]}
+      - {name: "Lantern close", prompt: "Close on the lantern above the middle table, the fire soft behind.", checks: [[set_consistency, "Is it an iron lantern hanging from the beam?"], [prompt_adherence, "Is the fire glow behind it?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Is the fire the warm main light from the north in every view?"]
+    - [prompt_adherence, "Does moonlight come from the west windows in every view that shows them?"]
+    - [prompt_adherence, "Are there two lanterns in every view that shows the beam?"]
+    - [set_consistency, "Is the layout the same in all five?"]
+    - [prompt_adherence, "Are there five tables?"]
+    - [set_consistency, "Is the stag head over the hearth wherever visible?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [style, "Is the stylised 3D look the same?"]
+    - [text_accuracy, "Is there no text?"]
+    - [physics_plausibility, "Do shadows agree with the fire and lanterns?"]
+    - [visual_quality, "Are timber lines clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five text-to-image calls with one brief; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-GAM-06
+  title: "Open-world vista from text, seen from four points: tower, river and bridge keep their sizes"
+  persona: "World designer checking that a described landmark set reads consistently from different points of the map."
+  evidence: "Scale drift across viewpoints is a known landscape failure (call at 17:26, landscapes)."
+  levers: [set, layout, physics, camera, long-brief]
+  prompt: |
+    One contact sheet of five numbered painted panels, 16:9 each, three over two, of the same open-
+    world valley in misty rain in a painterly game style. The valley: a wide river runs from the
+    mountains at the north down to the south; a ruined stone tower 40 metres tall stands on a hill
+    on the east bank; a single-arch stone bridge crosses the river just south of the tower; a
+    village of a dozen red-roofed houses sits on the west bank opposite the tower; pine forest
+    everywhere else. Panels: 1, from the bridge looking north; 2, from the tower top looking west;
+    3, from the village looking east; 4, from the mountains far north looking south; 5, from high
+    above the river, north at the top. Panel numbers only, no other text.
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "River north to south; tower on the east bank hill; bridge just south of it"
+      - "Village of red roofs on the west bank opposite the tower"
+      - "Misty rain, painterly style"
+    members:
+      - {name: "1 Bridge, north", prompt: "From the bridge looking north.", checks: [[prompt_adherence, "Is the tower on frame right and the village on frame left?"], [physics_plausibility, "Is the tower large and close?"]]}
+      - {name: "2 Tower top, west", prompt: "From the tower top looking west.", checks: [[prompt_adherence, "Is the village across the river below?"], [prompt_adherence, "Is it high?"]]}
+      - {name: "3 Village, east", prompt: "From the village looking east.", checks: [[prompt_adherence, "Is the tower across the river on its hill?"], [prompt_adherence, "Is the bridge to the right (south)?"]]}
+      - {name: "4 Mountains, south", prompt: "From the far north mountains looking south.", checks: [[physics_plausibility, "Is the tower small in the distance?"], [prompt_adherence, "Is the tower on frame left (east)?"]]}
+      - {name: "5 Map view", prompt: "From high above, north at the top.", checks: [[prompt_adherence, "Is the tower east of the river and the village west?"], [prompt_adherence, "Is the bridge south of the tower?"]]}
+  deliverable: "One image: a five-panel sheet."
+  checks:
+    - [prompt_adherence, "Are there exactly five numbered panels?"]
+    - [prompt_adherence, "Is the geography consistent in all five?"]
+    - [physics_plausibility, "Does the tower's size fit each distance?"]
+    - [set_consistency, "Is the bridge a single arch in every panel?"]
+    - [prompt_adherence, "Is the village about a dozen red-roofed houses in every panel that shows it?"]
+    - [prompt_adherence, "Is it misty rain in all five?"]
+    - [prompt_adherence, "Does each panel match its viewpoint?"]
+    - [style, "Is the painterly style the same?"]
+    - [text_accuracy, "Are panel numbers the only text?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [visual_quality, "Is each panel clean at sheet size?"]
+    - [prompt_adherence, "Is the tower a ruin in every panel?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

@@ -1,0 +1,59 @@
+# V7 — Physics, parallax and depth (header). Built on image family PHY. Scenarios: vphy-*.yaml.
+
+family: Physics and depth in motion
+code: VPHY
+number: 7
+about: "Contact, collision, fluids, gravity, reflections, shadows and parallax that a physics-literate viewer would catch over time."
+outputs: "1 clip"
+
+rubric:
+  weights: {physics_plausibility: 4, prompt_adherence: 3, motion_coherence: 3, preservation: 2, text_accuracy: 1, visual_quality: 1, composition: 1, style: 1, reference_fidelity: 1, temporal_consistency: 1}
+  gate: [physics_plausibility]
+  gate_rule: "No reflection, shadow, parallax or contact may contradict the scene at any moment."
+
+targets:
+  contact: "Objects float, slide or sink where they should touch and hold"
+  collision: "Objects pass through each other"
+  fluid: "Liquids, smoke or cloth move unnaturally"
+  gravity: "Falls, throws or bounces break gravity"
+  reflection: "Reflections do not move with what they reflect"
+  shadow-direction: "Shadows do not move with their light or object"
+  parallax: "Layers at different depths move at the wrong relative speeds"
+
+slots:
+  # Film, OTT & micro-drama — 5 (3 t2v, 1 i2v, 1 edit · 3 hard, 2 extreme)
+  - {id: VPHY-FLM-01, task: t2v, subject: person, style: cinematic, light: neon, locale: IN, diff: extreme, target: reflection, sources: [], script: mixed, from_image: PHY-FLM-01, idea: "The wet Mumbai street at night with a slow lateral move; the two signs' reflections slide and ripple as they should"}
+  - {id: VPHY-FLM-02, task: t2v, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: shadow-direction, sources: [], from_image: PHY-FLM-02, idea: "Five people round one candle; a door opens, the flame bends and every shadow swings with it"}
+  - {id: VPHY-FLM-03, task: t2v, subject: product, style: cinematic, light: practical, locale: global, diff: hard, target: gravity, sources: [], idea: "A steel tumbler knocked off a table edge: fall, bounce, roll and water spill in slow motion"}
+  - {id: VPHY-FLM-04, task: i2v, subject: food, style: cinematic, light: practical, locale: IN, diff: extreme, target: fluid, sources: [SRC-THALI-DINNER], idea: "A ladle of sambar poured onto the rice on a banana leaf; it pools, runs and soaks the rice"}
+  - {id: VPHY-FLM-05, task: edit, subject: vehicle, style: cinematic, light: noon, locale: IN, diff: hard, target: fluid, sources: [SRC-VCLIP-BIKE-RIDE], idea: "Add a dust plume from the rear wheel that drifts with the wind and catches the noon sun"}
+  # Advertising & agencies — 5 (3 t2v, 1 i2v, 1 edit · 3 hard, 2 extreme)
+  - {id: VPHY-ADS-01, task: t2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: fluid, sources: [], from_image: PHY-ADS-02, idea: "Mango lassi poured over ice in slow motion: the stream splits on the cube, splashes and settles"}
+  - {id: VPHY-ADS-02, task: t2v, subject: vehicle, style: cinematic, light: night, locale: global, diff: hard, target: reflection, sources: [], from_image: PHY-ADS-03, idea: "A rainy showroom at night: a red bus passes outside and its reflection slides across the glass and the car"}
+  - {id: VPHY-ADS-03, task: t2v, subject: fashion, style: photoreal, light: golden, locale: IN, diff: hard, target: shadow-direction, sources: [], from_image: PHY-ADS-04, idea: "A model walks behind a carved jaali; the star-pattern shadow slides across her and the floor"}
+  - {id: VPHY-ADS-04, task: i2v, subject: product, style: photoreal, light: noon, locale: global, diff: extreme, target: gravity, sources: [SRC-ADS-SHOE], idea: "The shoe dropped onto a wet track: it bounces twice, tips and settles, water spraying"}
+  - {id: VPHY-ADS-05, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: hard, target: contact, sources: [SRC-VCLIP-KITCHEN-COOK], idea: "Add the halved lemon rolling off the counter edge at 6 s, nudged by her elbow; it falls out of frame"}
+  # E-commerce, D2C & retail — 3 (2 t2v, 1 edit · 2 hard, 1 extreme)
+  - {id: VPHY-ECM-01, task: t2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: fluid, sources: [], idea: "A millet cookie dropped into a glass of milk: splash, crown, crumbs sinking and swirling"}
+  - {id: VPHY-ECM-02, task: t2v, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: fluid, sources: [], idea: "A silk saree tossed into the air falls and drapes over a bed; the border follows the folds"}
+  - {id: VPHY-ECM-03, task: edit, subject: product, style: photoreal, light: daylight, locale: global, diff: hard, target: collision, sources: [SRC-VCLIP-UNBOX-HANDS], idea: "Add a glass bottle on the desk that the box knocks over as it is set down; it rolls and stops at the notebook"}
+  # Gaming — 3 (2 t2v, 1 i2v · 2 hard, 1 extreme)
+  - {id: VPHY-GAM-01, task: t2v, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: reflection, sources: [], from_image: PHY-GAM-01, idea: "The heroine turns slowly in the mirror hall; every reflection turns with her the right way"}
+  - {id: VPHY-GAM-02, task: t2v, subject: landscape, style: 3d, light: golden, locale: global, diff: hard, target: parallax, sources: [], from_image: PHY-GAM-02, idea: "The camera glides down the causeway; the twenty lamp posts pass at speeds set by their distance"}
+  - {id: VPHY-GAM-03, task: i2v, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: collision, sources: [SRC-GAM-CYBER-STREET], idea: "Shoppers flow down the market street around the pillars and stalls, never passing through them"}
+  # Real estate, interiors & architecture — 7 (5 t2v, 1 i2v, 1 edit · 4 hard, 3 extreme)
+  - {id: VPHY-RES-01, task: t2v, subject: interior, style: photoreal, light: golden, locale: global, diff: extreme, target: shadow-direction, sources: [], from_image: PHY-RES-01, idea: "Time-lapse: the twelve-pane window grid sweeps across the floor and climbs the armchair as the sun sets"}
+  - {id: VPHY-RES-02, task: t2v, subject: interior, style: photoreal, light: daylight, locale: global, diff: hard, target: reflection, sources: [], from_image: PHY-RES-03, idea: "A hand wipes a fogged mirror in a bathroom with facing mirrors; the receding reflections clear in step"}
+  - {id: VPHY-RES-03, task: t2v, subject: architecture, style: photoreal, light: noon, locale: IN, diff: extreme, target: parallax, sources: [], from_image: PHY-RES-04, idea: "A dolly down the corridor of fifteen arches; each arch slides past at the speed its distance sets"}
+  - {id: VPHY-RES-04, task: t2v, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: reflection, sources: [], from_image: PHY-RES-06, idea: "A boat crosses the still Udaipur lake; its wake breaks the villas' reflections, which re-form behind it"}
+  - {id: VPHY-RES-05, task: t2v, subject: child-elderly, style: photoreal, light: daylight, locale: IN, diff: hard, target: contact, sources: [], from_image: PHY-RES-11, idea: "A grandmother on a porch swing pushes off with one foot; the chains take her weight through each swing"}
+  - {id: VPHY-RES-06, task: i2v, subject: interior, style: photoreal, light: practical, locale: global, diff: hard, target: gravity, sources: [SRC-RES-HOTEL-LOBBY], idea: "A door slams and the ring chandelier sways and settles; its reflection in the terrazzo sways with it"}
+  - {id: VPHY-RES-07, task: edit, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: extreme, target: reflection, sources: [SRC-VCLIP-VILLA-ORBIT], idea: "Add a lap pool to the front lawn of the drone orbit; the villa's reflection in it shifts correctly as the drone moves"}
+  # Media, publishing & events — 7 (5 t2v, 1 i2v, 1 edit · 4 hard, 3 extreme)
+  - {id: VPHY-MED-01, task: t2v, subject: group, style: photoreal, light: neon, locale: IN, diff: extreme, target: shadow-direction, sources: [], from_image: PHY-MED-01, idea: "A concert crowd as magenta and cyan washes sweep: colours and shadows on every head follow the moving beams"}
+  - {id: VPHY-MED-02, task: t2v, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: reflection, sources: [], from_image: PHY-MED-02, idea: "A crystal award turns slowly on a podium; the stage lights and backdrop lettering slide through its facets"}
+  - {id: VPHY-MED-03, task: t2v, subject: architecture, style: photoreal, light: night, locale: IN, diff: hard, target: reflection, sources: [], from_image: PHY-MED-03, idea: "Projection-mapped ghats at Varanasi; boats cross and the river's reflection of the projection ripples behind them"}
+  - {id: VPHY-MED-04, task: t2v, subject: fashion, style: photoreal, light: practical, locale: IN, diff: extreme, target: gravity, sources: [], idea: "Confetti cannons fire over a fashion-show finale; confetti flutters down and settles on the runway and models"}
+  - {id: VPHY-MED-05, task: t2v, subject: person, style: photoreal, light: daylight, locale: IN, diff: hard, target: parallax, sources: [], idea: "A reporter walks to camera along a colonnade; pillars in front and behind slide at their own speeds"}
+  - {id: VPHY-MED-06, task: i2v, subject: person, style: photoreal, light: practical, locale: IN, diff: hard, target: shadow-direction, sources: [SRC-MED-NEWSROOM], idea: "The studio key light pans from front left to front right; the anchor's head shadow on the screen moves across"}
+  - {id: VPHY-MED-07, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: extreme, target: contact, sources: [SRC-VCLIP-CONCERT-CROWD], idea: "Add a giant beach ball bounced over the crowd; raised hands push it and it lands on heads, never passing through them"}

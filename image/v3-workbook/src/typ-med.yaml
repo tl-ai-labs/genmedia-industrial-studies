@@ -1,0 +1,607 @@
+# Typography and layout — Media, publishing & events scenarios. Slots: typ.yaml.
+code: TYP
+scenarios:
+
+- id: TYP-MED-01
+  seed: true
+  sahil: typography
+  title: "Club-night poster: a huge lower-case display word, date, headliners and a Devanagari line"
+  persona: "Designer at a Bengaluru events company making the weekly poster for a lounge's Saturday night, posted to social and printed for the venue."
+  evidence: "Sahil's screen-share (screenshot 238): an event poster with a photo of a crowd on top, a huge lower-case 'wknd' overlapping it, 'DIALOGUE SATURDAYS', '01 FEB', two headliner names, a Devanagari line, a sticker, small body text and a venue footer, compared with a type-led tool. 'To someone like me both look okay' — the test is the small things."
+  levers: [exact-text, script, small-text, layout, exclude, long-brief]
+  prompt: |
+    Design a portrait 2:3 club-night poster on warm off-white paper with a light grain, black type
+    and one red accent. The top 40 percent is a photo of a packed dance floor under white stage
+    lights, hands in the air; in its top-left corner a thin white circle holding the venue logo
+    text "DIALOGUE LOUNGE". Below, overlapping the photo's bottom edge so the tops of the letters
+    sit over the photo, the word "wknd" in huge heavy lower-case sans, the full width of the
+    poster. Under it, on the left, "DIALOGUE SATURDAYS" in bold condensed capitals on two lines,
+    and on the right at the same size "01 FEB". Under that, on the left, the Hindi line
+    "हर शनिवार, देर रात तक" in Devanagari, and on the right the headliners "AARAV · KIRA" in bold
+    capitals. A round red sticker, tilted 10 degrees, sits on the photo's lower-left edge with
+    white text "City's favourite 2-word party". Above the footer, one line of small body text:
+    "Doors 9 pm. Entry on guest list only. Dress code: all black." A thin rule, then the footer:
+    "XXY" on the left and "THE MAJESTIC RETREAT, MG ROAD, BENGALURU" in small capitals on the
+    right. Sizes from largest to smallest: wknd; DIALOGUE SATURDAYS and 01 FEB; AARAV · KIRA;
+    the Hindi line; the sticker; the body line and footer. No other words, no logos, no QR code.
+  exact_text:
+    - "DIALOGUE LOUNGE"
+    - "wknd"
+    - "DIALOGUE SATURDAYS"
+    - "01 FEB"
+    - "हर शनिवार, देर रात तक"
+    - "AARAV · KIRA"
+    - "City's favourite 2-word party"
+    - "Doors 9 pm. Entry on guest list only. Dress code: all black."
+    - "XXY"
+    - "THE MAJESTIC RETREAT, MG ROAD, BENGALURU"
+  deliverable: "One portrait 2:3 image."
+  checks:
+    - [text_accuracy, "Is the display word exactly wknd, in lower case?"]
+    - [prompt_adherence, "Does wknd span the poster's width and overlap the bottom edge of the photo?"]
+    - [text_accuracy, "Are DIALOGUE SATURDAYS and 01 FEB exact, left and right at the same size?"]
+    - [text_accuracy, "Is the Hindi line exact and correctly formed, including the comma?"]
+    - [text_accuracy, "Are the headliners exactly AARAV · KIRA, with the middle dot?"]
+    - [text_accuracy, "Is the sticker text exact, with the apostrophe and the numeral 2?"]
+    - [prompt_adherence, "Is the sticker round, red, tilted, on the photo's lower-left edge?"]
+    - [text_accuracy, "Is the body line exact and complete?"]
+    - [text_accuracy, "Is the footer exact: XXY on the left, the venue address on the right?"]
+    - [text_accuracy, "Is DIALOGUE LOUNGE in a thin white circle at the photo's top-left?"]
+    - [prompt_adherence, "Do the sizes follow the order given, wknd largest, footer smallest?"]
+    - [style, "Is there exactly one accent colour, red, with everything else black on off-white?"]
+    - [text_accuracy, "Is every word readable, with no garbled characters at small sizes?"]
+    - [prompt_adherence, "Is there no other text, logo or QR code?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Recraft arm is not wired today; compare against the existing arms until it is."}
+  video_followon: "V9: the poster as a 6-second animated post, the type arriving in size order, the Hindi line exact in every frame."
+
+- id: TYP-MED-02
+  title: "A stacked collage headline around a falling figure, with small body-text columns"
+  persona: "Designer at a music magazine making a feature poster."
+  evidence: "Sahil's screen-share (screenshots 238–239): the 'Falling Off The Face Of The Earth' collage poster compared with a type-led tool."
+  levers: [exact-text, small-text, layout, off-centre, long-brief]
+  prompt: |
+    A portrait 3:4 collage poster on electric blue with black star scatter. A cut-out photo of a
+    woman in a yellow jumpsuit falls diagonally through the middle, arms flung out. The headline in
+    huge chunky white rounded serif, stacked on four lines, flowing around her: "Falling Off" / "The
+    Face" / "Of The" / "Earth." with a small tilted black tab above the first line reading "I can't
+    stop". Two small cut-out moon photos at the corners. Two narrow columns of small white body text
+    on the right reading exactly "Nine songs about leaving." and "Out now on every platform that
+    matters." A small white pill at the bottom right reads "where'd you go?". No other text.
+  exact_text:
+    - "Falling Off"
+    - "The Face"
+    - "Of The"
+    - "Earth."
+    - "I can't stop"
+    - "Nine songs about leaving."
+    - "Out now on every platform that matters."
+    - "where'd you go?"
+  deliverable: "One image, 3:4."
+  checks:
+    - [text_accuracy, "Are the four headline lines exact, including the full stop?"]
+    - [text_accuracy, "Is the tab text exactly I can't stop, with the apostrophe?"]
+    - [text_accuracy, "Are the two body-text lines exact?"]
+    - [text_accuracy, "Is the pill exactly where'd you go? with the apostrophe?"]
+    - [prompt_adherence, "Does the headline flow around the falling figure?"]
+    - [prompt_adherence, "Is the figure falling diagonally through the middle?"]
+    - [prompt_adherence, "Are the body-text columns on the right?"]
+    - [style, "Is the headline chunky white rounded serif on electric blue?"]
+    - [prompt_adherence, "Are there two moon cut-outs?"]
+    - [text_accuracy, "Is the small body text readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the figure clean?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-03
+  title: "Hindi magazine cover: masthead, six cover lines and the issue line"
+  persona: "Art director at a Hindi lifestyle magazine laying out a cover."
+  evidence: "Devanagari cover lines at several sizes, with a masthead behind the model, is a dense script test."
+  levers: [exact-text, script, layout, small-text, locale]
+  prompt: |
+    A Hindi lifestyle magazine cover, portrait 4:5. A model in a rust handloom sari stands against a
+    warm sand background, three-quarter length. The masthead "रंगरेज़" in a large black Devanagari
+    display face across the top, partly behind her head. Six cover lines, exactly, on the left in
+    black and rust: "मानसून का नया रंग", "25 लुक्स बारिश के लिए", "हथकरघा की वापसी", "इंटरव्यू: अनन्या
+    सेन", "घर पर स्पा", "सफ़र: मेघालय". Bottom left: "अक्टूबर 2026 · ₹120". No English, no other text.
+  exact_text:
+    - "रंगरेज़"
+    - "मानसून का नया रंग"
+    - "25 लुक्स बारिश के लिए"
+    - "हथकरघा की वापसी"
+    - "इंटरव्यू: अनन्या सेन"
+    - "सफ़र: मेघालय"
+    - "अक्टूबर 2026 · ₹120"
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Is the masthead exact, with the nuqta?"]
+    - [prompt_adherence, "Are there exactly six cover lines?"]
+    - [text_accuracy, "Is every cover line exact and correctly formed?"]
+    - [text_accuracy, "Is the issue line exact?"]
+    - [prompt_adherence, "Is the masthead partly behind her head?"]
+    - [prompt_adherence, "Are the cover lines on the left?"]
+    - [prompt_adherence, "Is the model in a rust handloom sari?"]
+    - [text_accuracy, "Is there no English?"]
+    - [style, "Is the palette black, rust and sand?"]
+    - [text_accuracy, "Are the smaller lines readable?"]
+    - [visual_quality, "Is the model natural?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-04
+  title: "Telugu newspaper front page: masthead, headline, three columns, photo caption"
+  persona: "Newspaper designer prototyping a Telugu daily's front page."
+  evidence: "Dense Telugu body text and a headline at newspaper scale stress script rendering."
+  levers: [exact-text, script, small-text, layout, locale]
+  prompt: |
+    A Telugu newspaper front page as flat print artwork, portrait, cream newsprint. Masthead
+    "నగర వార్తలు" in heavy black at the top with the date line "బుధవారం, 14 అక్టోబర్ 2026" below it.
+    The main headline across the page: "నగరంలో కొత్త మెట్రో లైన్ ప్రారంభం". A photo of a metro train
+    crossing a viaduct with a crowd below. Under the photo, the caption "హైటెక్ సిటీ స్టేషన్ వద్ద
+    మొదటి రైలు". Three columns of small Telugu body text below. No English.
+  exact_text:
+    - "నగర వార్తలు"
+    - "బుధవారం, 14 అక్టోబర్ 2026"
+    - "నగరంలో కొత్త మెట్రో లైన్ ప్రారంభం"
+    - "హైటెక్ సిటీ స్టేషన్ వద్ద మొదటి రైలు"
+  deliverable: "One portrait image."
+  checks:
+    - [text_accuracy, "Is the masthead exact and correctly formed?"]
+    - [text_accuracy, "Is the date line exact?"]
+    - [text_accuracy, "Is the headline exact?"]
+    - [text_accuracy, "Is the caption exact?"]
+    - [prompt_adherence, "Are there three columns of body text?"]
+    - [text_accuracy, "Is the body text real-looking Telugu, not garbled shapes?"]
+    - [prompt_adherence, "Is the caption directly under the photo?"]
+    - [prompt_adherence, "Is the headline across the page above the photo?"]
+    - [prompt_adherence, "Is the photo a metro train on a viaduct?"]
+    - [text_accuracy, "Is there no English?"]
+    - [style, "Is it cream newsprint?"]
+    - [visual_quality, "Is the layout cleanly ruled?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-05
+  title: "Conference wayfinding sheet: hall signs, arrows and session times in English and Tamil"
+  persona: "Event designer producing the signage system for a Chennai conference."
+  evidence: "Wayfinding hierarchy across two scripts with times is a layout and exactness test."
+  levers: [exact-text, script, layout, time-code, small-text]
+  prompt: |
+    A signage system sheet for a conference in Chennai, landscape, white with a deep teal accent.
+    Four sign designs side by side, each a tall rectangle with a large arrow and a bilingual label,
+    Tamil above English, exactly: "அரங்கம் A · Hall A" with a left arrow; "பதிவு · Registration"
+    with an up arrow; "உணவு · Food court" with a right arrow; "வெளியேறு · Exit" with a down arrow.
+    Below each sign, a small session strip: under Hall A "09:30–10:15 Keynote", "10:30–11:15 Panel";
+    under Registration "08:00–09:30"; under Food court "12:30–14:00"; under Exit nothing. Title at
+    the top: "WAYFINDING v2". No other text.
+  exact_text:
+    - "அரங்கம் A · Hall A"
+    - "பதிவு · Registration"
+    - "உணவு · Food court"
+    - "வெளியேறு · Exit"
+    - "09:30–10:15 Keynote"
+    - "12:30–14:00"
+    - "WAYFINDING v2"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there four signs?"]
+    - [text_accuracy, "Is every Tamil label exact and correctly formed?"]
+    - [text_accuracy, "Is every English label exact?"]
+    - [prompt_adherence, "Is Tamil above English on every sign?"]
+    - [prompt_adherence, "Does each sign have the right arrow direction?"]
+    - [text_accuracy, "Are the session times exact?"]
+    - [prompt_adherence, "Is there no session strip under Exit?"]
+    - [prompt_adherence, "Is the Tamil and English label hierarchy consistent across signs?"]
+    - [style, "Is the accent deep teal?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [text_accuracy, "Is every line readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-06
+  title: "A café chalkboard menu: ten items with prices in Telugu and English"
+  persona: "Café owner's designer mocking up a bilingual menu board."
+  evidence: "Hand-lettered bilingual menus with prices are a common real use and a string test."
+  levers: [exact-text, script, count, small-text, locale]
+  prompt: |
+    A photo of a café chalkboard menu on a brick wall, straight on, 3:4, warm café light. Hand-
+    lettered in white and yellow chalk, the title "ఈరోజు మెనూ · Today's Menu" at the top, and ten
+    lines below, each Telugu name, English name and price, exactly: "ఇడ్లీ · Idli · ₹40", "దోశ · Dosa ·
+    ₹60", "పెసరట్టు · Pesarattu · ₹70", "ఉప్మా · Upma · ₹45", "వడ · Vada · ₹35", "పూరీ · Puri · ₹55",
+    "పొంగల్ · Pongal · ₹50", "కాఫీ · Coffee · ₹25", "టీ · Tea · ₹20", "లస్సీ · Lassi · ₹45". No other
+    text.
+  exact_text:
+    - "ఈరోజు మెనూ · Today's Menu"
+    - "ఇడ్లీ · Idli · ₹40"
+    - "పెసరట్టు · Pesarattu · ₹70"
+    - "పొంగల్ · Pongal · ₹50"
+    - "లస్సీ · Lassi · ₹45"
+  deliverable: "One image, 3:4."
+  checks:
+    - [prompt_adherence, "Are there exactly ten menu lines?"]
+    - [text_accuracy, "Is every Telugu name exact and correctly formed?"]
+    - [text_accuracy, "Is every English name and price exact?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Is each line Telugu, English, price in that order?"]
+    - [style, "Does it look hand-lettered in chalk?"]
+    - [prompt_adherence, "Is the board straight on?"]
+    - [prompt_adherence, "Is the light warm?"]
+    - [text_accuracy, "Is every line readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the chalk texture natural?"]
+    - [prompt_adherence, "Are prices aligned?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-07
+  title: "A comic-book page of six panels with Tamil speech bubbles in reading order"
+  persona: "Comic publisher's letterer testing Tamil lettering."
+  evidence: "Tamil in speech bubbles must sit with the right speaker and read in order."
+  levers: [exact-text, script, layout, count, locale]
+  prompt: |
+    A comic-book page, portrait, six panels in three rows of two, bold ink and flat neon colours, a
+    night city. A girl detective in a red jacket and a boy sidekick with a torch investigate a dark
+    alley. Speech bubbles in Tamil, exactly, in reading order: panel 1 girl "யார் அங்கே?"; panel 2 a
+    voice from the dark "நான் தான்!"; panel 3 boy "ஓடு!"; panel 4 girl "நில்லுங்கள்!"; panel 5 a cat
+    in the torch beam, no bubble; panel 6 both laughing, girl "ஒரு பூனை தான்." Each bubble's tail
+    points to its speaker. No other text.
+  exact_text:
+    - "யார் அங்கே?"
+    - "நான் தான்!"
+    - "ஓடு!"
+    - "நில்லுங்கள்!"
+    - "ஒரு பூனை தான்."
+  deliverable: "One portrait image."
+  checks:
+    - [prompt_adherence, "Are there six panels in three rows of two?"]
+    - [text_accuracy, "Is every Tamil bubble exact and correctly formed?"]
+    - [prompt_adherence, "Does each bubble's tail point to its speaker?"]
+    - [prompt_adherence, "Do bubbles read in panel order?"]
+    - [prompt_adherence, "Does panel 5 have no bubble and show a cat in the beam?"]
+    - [set_consistency, "Is the girl in a red jacket throughout?"]
+    - [prompt_adherence, "Does the boy hold a torch?"]
+    - [style, "Is it bold ink with flat neon colour?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are figures clean?"]
+    - [prompt_adherence, "Is it night with a torch beam?"]
+    - [prompt_adherence, "Is panel 6 both laughing?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-08
+  title: "Travel-magazine spread: headline over a photo, standfirst, drop cap, two columns of body"
+  persona: "Travel magazine's designer laying out a feature opener."
+  evidence: "Editorial spreads combine large and very small type; body text usually garbles."
+  levers: [exact-text, small-text, layout, off-centre, long-brief]
+  prompt: |
+    A magazine double-page spread, 2:1. The left page is a full-bleed golden-hour photo of a
+    houseboat on the Kerala backwaters, palms reflected in still water, the boat in the lower right of
+    that page. Across the photo's upper left, the headline "Slow Water" in a large white serif. The
+    right page is cream with the standfirst in italic: "Three days drifting through Kuttanad, where
+    the river decides the pace."; then body text in two narrow columns starting with a large drop cap
+    "T" and the first line "The boatman did not look at his watch once." with the rest in readable
+    filler English sentences; a byline at the bottom: "Words and photographs by Asha Varghese".
+  exact_text:
+    - "Slow Water"
+    - "Three days drifting through Kuttanad, where the river decides the pace."
+    - "The boatman did not look at his watch once."
+    - "Words and photographs by Asha Varghese"
+  deliverable: "One image, 2:1."
+  checks:
+    - [text_accuracy, "Is the headline exact?"]
+    - [text_accuracy, "Is the standfirst exact?"]
+    - [text_accuracy, "Is the first body line exact?"]
+    - [text_accuracy, "Is the byline exact?"]
+    - [prompt_adherence, "Is there a large drop cap T?"]
+    - [prompt_adherence, "Are there two body columns?"]
+    - [text_accuracy, "Is the body text readable English rather than garbled shapes?"]
+    - [prompt_adherence, "Is the headline over the photo's upper left?"]
+    - [composition, "Is the houseboat in the lower right of the left page?"]
+    - [prompt_adherence, "Is the photo golden hour with reflections?"]
+    - [style, "Is the right page cream with a serif hierarchy?"]
+    - [visual_quality, "Is the spread clean?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-09
+  title: "A Hindi primer page: twelve letters, each with a word and a picture"
+  persona: "Children's publisher designing a Hindi primer."
+  evidence: "Twelve Devanagari letters and words on one page is a dense script test."
+  levers: [exact-text, script, count, layout, locale]
+  prompt: |
+    A children's Hindi primer page, portrait, cream paper, bright flat illustrations. A grid of
+    twelve boxes, three across and four down. Each box shows a large Devanagari letter, a small
+    picture, and the word under it, exactly, in this order: "अ – अनार" (pomegranate), "आ – आम"
+    (mango), "इ – इमली" (tamarind), "ई – ईख" (sugarcane), "उ – उल्लू" (owl), "ऊ – ऊन" (wool), "ए –
+    एड़ी" (heel), "ऐ – ऐनक" (spectacles), "ओ – ओखली" (mortar), "औ – औरत" (woman), "अं – अंगूर"
+    (grapes), "क – कबूतर" (pigeon). Each picture matches its word. Title at the top: "वर्णमाला". No
+    English.
+  exact_text:
+    - "वर्णमाला"
+    - "अ – अनार"
+    - "ई – ईख"
+    - "ऊ – ऊन"
+    - "ए – एड़ी"
+    - "औ – औरत"
+    - "अं – अंगूर"
+    - "क – कबूतर"
+  deliverable: "One portrait image."
+  checks:
+    - [prompt_adherence, "Are there twelve boxes in three columns and four rows?"]
+    - [text_accuracy, "Is every letter and word exact and correctly formed?"]
+    - [prompt_adherence, "Are they in the given order?"]
+    - [prompt_adherence, "Does each picture match its word?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [text_accuracy, "Is there no English?"]
+    - [style, "Are the illustrations bright and flat?"]
+    - [prompt_adherence, "Is each letter large with the word below?"]
+    - [text_accuracy, "Is ड़ in एड़ी rendered with the nuqta?"]
+    - [visual_quality, "Is the grid clean?"]
+    - [prompt_adherence, "Is it suitable for young children?"]
+    - [text_accuracy, "Is every word readable?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-10
+  title: "Wildlife census infographic: five species with counts and a bar chart"
+  persona: "Science magazine's infographic designer."
+  evidence: "Earlier bank IMG-TXT-03 (chart from four values) was low tier; five values with labels and icons is harder."
+  levers: [exact-text, count, layout, small-text]
+  prompt: |
+    An infographic, portrait 4:5, off-white background, forest green and ochre. Title "India's Big
+    Five: 2026 Census". A horizontal bar chart with five bars, each labelled with a species icon, the
+    name and the count, exactly, and bar lengths proportional to the counts: "Tiger 3,925", "Asian
+    elephant 22,446", "One-horned rhino 4,014", "Asiatic lion 891", "Snow leopard 718". A source line
+    at the bottom in small type: "Figures are illustrative." Each icon is a simple flat silhouette
+    in ochre at the left end of its bar; the counts sit just past the end of each bar in bold; thin
+    vertical gridlines mark every 5,000. No other text, no legend, no logos.
+  exact_text:
+    - "India's Big Five: 2026 Census"
+    - "Tiger 3,925"
+    - "Asian elephant 22,446"
+    - "One-horned rhino 4,014"
+    - "Asiatic lion 891"
+    - "Snow leopard 718"
+    - "Figures are illustrative."
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are there five bars?"]
+    - [text_accuracy, "Is every label and count exact?"]
+    - [prompt_adherence, "Are bar lengths proportional to the counts (elephant longest, snow leopard shortest)?"]
+    - [prompt_adherence, "Does each bar have a matching species icon?"]
+    - [text_accuracy, "Is the source line exact?"]
+    - [style, "Is the palette forest green and ochre on off-white?"]
+    - [prompt_adherence, "Is the chart horizontal?"]
+    - [text_accuracy, "Is the small line readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are icons clean?"]
+    - [prompt_adherence, "Is the title at the top?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-11
+  title: "Motor-show entry pass: name, zone, gate, day and a block of fine print"
+  persona: "Event designer producing passes for a motor show."
+  evidence: "Passes carry small fine print and structured fields."
+  levers: [exact-text, small-text, layout, count]
+  prompt: |
+    A motor-show entry pass, flat artwork, landscape 2:1, black with a silver car silhouette on the
+    left. Fields on the right, exactly: "AUTO EXPO 2027" at the top; "NAME  Rohan Mehta"; "ZONE  Hall
+    3 · Electric"; "GATE  4"; "DAY  Saturday 6 February"; a grey QR-code placeholder square with no
+    code in it; and a fine-print block at the bottom: "Non-transferable. Valid for one entry on the
+    day shown. Photography allowed in public halls only. The organiser may refuse entry." No other
+    text.
+  exact_text:
+    - "AUTO EXPO 2027"
+    - "Rohan Mehta"
+    - "Hall 3 · Electric"
+    - "Saturday 6 February"
+    - "Non-transferable. Valid for one entry on the day shown. Photography allowed in public halls only. The organiser may refuse entry."
+  deliverable: "One image, 2:1."
+  checks:
+    - [text_accuracy, "Is the event name exact?"]
+    - [text_accuracy, "Are NAME, ZONE, GATE and DAY fields exact?"]
+    - [text_accuracy, "Is the fine print exact and complete?"]
+    - [text_accuracy, "Is the fine print readable at small size?"]
+    - [prompt_adherence, "Are the fields on the right and the car silhouette on the left?"]
+    - [prompt_adherence, "Is the QR placeholder a plain grey square?"]
+    - [prompt_adherence, "Is the fine print at the bottom?"]
+    - [style, "Is it black with silver?"]
+    - [prompt_adherence, "Are there four labelled fields?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the artwork clean?"]
+    - [prompt_adherence, "Are the field labels aligned?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-12
+  title: "A bookshop window with five books whose spine titles are readable"
+  persona: "Publisher's marketing lead mocking up a window display."
+  evidence: "Text on small, angled surfaces in a photo scene is a hard rendering test."
+  levers: [exact-text, small-text, count, physics, locale]
+  prompt: |
+    A photo of a bookshop window in Pune at dusk, warm light inside, 3:2. Five hardback books stand
+    upright in a row on a wooden shelf in the window, spines facing out, each spine's title and
+    author readable, left to right, exactly: "The River Speaks · M. Iyer"; "Salt and Rain · K. Das";
+    "Night Train to Hampi · R. Rao"; "Ink · S. Banerjee"; "A House of Doors · P. Nair". Faint
+    reflections of the street on the glass. No other readable text.
+  exact_text:
+    - "The River Speaks · M. Iyer"
+    - "Salt and Rain · K. Das"
+    - "Night Train to Hampi · R. Rao"
+    - "Ink · S. Banerjee"
+    - "A House of Doors · P. Nair"
+  deliverable: "One image, 3:2."
+  checks:
+    - [prompt_adherence, "Are there exactly five books?"]
+    - [text_accuracy, "Is every spine title and author exact?"]
+    - [prompt_adherence, "Are they in the given order left to right?"]
+    - [text_accuracy, "Is every spine readable?"]
+    - [physics_plausibility, "Are faint street reflections on the glass?"]
+    - [prompt_adherence, "Is it dusk with warm light inside?"]
+    - [physics_plausibility, "Do the books stand upright on the shelf?"]
+    - [text_accuracy, "Is there no other readable text?"]
+    - [visual_quality, "Are book edges clean?"]
+    - [prompt_adherence, "Does it read as a bookshop window?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Do the spines face out?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-MED-13
+  title: "Localise the club poster into Telugu; the huge title block, frame and order stay"
+  persona: "Event promoter's designer localising a Hyderabad club poster."
+  evidence: "Localising a display-type poster without losing its weight and layout is a common task."
+  levers: [exact-text, script, keep-rest, layout, locale]
+  inputs: [{source: SRC-MED-EVENT-POSTER, role: source}]
+  prompt: |
+    Localise this club poster into Telugu. Replace each English line with the Telugu below in the
+    same place, colour and relative size, using a Telugu face with similar weight: the huge yellow
+    "NIGHT SHIFT" becomes "నైట్ షిఫ్ట్"; "with DJ KIRA" becomes "DJ కిరా తో"; "SAT 14 DEC · 10 PM TILL
+    LATE" becomes "శని 14 డిసెం · రాత్రి 10 నుండి"; "Tickets ₹999 at the door" becomes "టికెట్లు ₹999
+    గేట్ వద్ద"; the address line becomes "ది బేస్‌మెంట్, జూబ్లీ హిల్స్, హైదరాబాద్". The DJ photo, the
+    red light and the thin yellow frame stay exactly as they are.
+  exact_text:
+    - "నైట్ షిఫ్ట్"
+    - "DJ కిరా తో"
+    - "శని 14 డిసెం · రాత్రి 10 నుండి"
+    - "టికెట్లు ₹999 గేట్ వద్ద"
+  deliverable: "One image, 2:3."
+  checks:
+    - [text_accuracy, "Is the Telugu title exact and correctly formed?"]
+    - [text_accuracy, "Is every other Telugu line exact?"]
+    - [text_accuracy, "Is the address line in Telugu and correct?"]
+    - [prompt_adherence, "Is each line in its original place?"]
+    - [preservation, "Is the title still huge yellow with heavy weight?"]
+    - [prompt_adherence, "Are relative sizes kept?"]
+    - [preservation, "Is the DJ photo and red light unchanged?"]
+    - [preservation, "Is the yellow frame unchanged?"]
+    - [text_accuracy, "Is no English left except DJ?"]
+    - [visual_quality, "Are there no smudges where English was?"]
+    - [text_accuracy, "Is the small line readable?"]
+    - [text_accuracy, "Is the rupee price exact?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: TYP-MED-14
+  title: "Next month's cover: new cover lines and date in the exact fonts; masthead still behind her head"
+  persona: "Magazine production designer updating last month's cover as a template."
+  evidence: "Font matching across several lines with a masthead layered behind a subject."
+  levers: [exact-text, keep-rest, layout, multi-step, identity]
+  inputs: [{source: SRC-MED-MAG-COVER, role: source}]
+  prompt: |
+    This is a finished fashion magazine cover. Make next month's version: keep the model, the
+    coral background, the masthead "ORBIT" partly behind her head and the layout exactly. Change only
+    the text, matching each existing font, size, colour and position: "THE MONSOON EDIT" becomes
+    "THE FESTIVE EDIT"; "48 looks for the rains" becomes "52 looks for the lights"; the red box
+    "Designers to watch: 10 new names" becomes "Jewellers to watch: 8 new names"; "OCTOBER 2026 ·
+    ₹150" becomes "NOVEMBER 2026 · ₹150". No other changes.
+  exact_text:
+    - "ORBIT"
+    - "THE FESTIVE EDIT"
+    - "52 looks for the lights"
+    - "Jewellers to watch: 8 new names"
+    - "NOVEMBER 2026 · ₹150"
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Is every new line exact?"]
+    - [style, "Does each new line match the original font and weight?"]
+    - [prompt_adherence, "Is each line in its original position?"]
+    - [preservation, "Is the red box still red with the new text fitting inside?"]
+    - [text_accuracy, "Is the masthead ORBIT unchanged and still partly behind her head?"]
+    - [preservation, "Is the model unchanged?"]
+    - [preservation, "Is the coral background unchanged?"]
+    - [visual_quality, "Are there no ghost letters?"]
+    - [text_accuracy, "Is no old cover line left?"]
+    - [text_accuracy, "Is every line readable?"]
+    - [prompt_adherence, "Are there no other changes?"]
+    - [prompt_adherence, "Does NOVEMBER 2026 · ₹150 fit where the old date was?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: TYP-MED-15
+  title: "Replace the printed Hindi headline with a new one that follows the paper's curl and the cup's shadow"
+  persona: "Photo editor making a prop photo for a story about record rain."
+  evidence: "Text on a curled printed surface under a shadow combines font match, perspective and light."
+  levers: [exact-text, script, physics, keep-rest, locale]
+  inputs: [{source: SRC-MED-NEWSPAPER, role: source}]
+  prompt: |
+    This photo shows a Hindi newspaper on a café table, curled at the right edge so the headline
+    bends, with a chai cup's shadow across the lower left of the page. Replace the headline
+    "शहर में नई मेट्रो लाइन शुरू" with "शहर में बारिश का रिकॉर्ड टूटा" in the same heavy bold Devanagari,
+    the same size and black ink, bending with the paper's curl and looking printed on newsprint. The
+    masthead "नगर समाचार", the photo, the columns, the cup and its shadow are unchanged.
+  exact_text:
+    - "शहर में बारिश का रिकॉर्ड टूटा"
+    - "नगर समाचार"
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Is the new headline exact and correctly formed, nuqta included?"]
+    - [style, "Does it match the old headline's font, weight and size?"]
+    - [physics_plausibility, "Does it bend with the paper's curl at the right?"]
+    - [style, "Does it look printed on newsprint, not pasted on?"]
+    - [text_accuracy, "Is the masthead unchanged?"]
+    - [preservation, "Are the photo and columns unchanged?"]
+    - [preservation, "Are the cup and its shadow unchanged?"]
+    - [prompt_adherence, "Does the window light fall on the new headline as on the rest?"]
+    - [visual_quality, "Is no trace of the old headline left?"]
+    - [text_accuracy, "Is there no English?"]
+    - [prompt_adherence, "Is the headline in the same place?"]
+    - [text_accuracy, "Is the headline readable?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: TYP-MED-16
+  title: "Re-lay the portrait club poster as a 3:1 landscape billboard with the same hierarchy"
+  persona: "Promoter's designer adapting a poster to a wide billboard."
+  evidence: "Re-laying a design in a new ratio while keeping hierarchy is a core layout task."
+  levers: [exact-text, layout, keep-rest, off-centre]
+  inputs: [{source: SRC-MED-EVENT-POSTER, role: source}]
+  prompt: |
+    Re-lay this portrait club poster as a 3:1 landscape billboard. The DJ photo under the red light
+    goes on the left third. On the right two-thirds, the text in the same order, colours and fonts,
+    sized for the wider space but with the same hierarchy: "NIGHT SHIFT" huge and yellow, then "with
+    DJ KIRA", then "SAT 14 DEC · 10 PM TILL LATE", then "Tickets ₹999 at the door", then the address
+    "THE BASEMENT, JUBILEE HILLS, HYDERABAD". The thin yellow frame runs round the new edge. No new
+    text.
+  exact_text:
+    - "NIGHT SHIFT"
+    - "with DJ KIRA"
+    - "SAT 14 DEC · 10 PM TILL LATE"
+    - "Tickets ₹999 at the door"
+    - "THE BASEMENT, JUBILEE HILLS, HYDERABAD"
+  deliverable: "One image, 3:1."
+  checks:
+    - [composition, "Is it 3:1?"]
+    - [prompt_adherence, "Is the DJ photo on the left third?"]
+    - [prompt_adherence, "Is the text on the right two-thirds?"]
+    - [text_accuracy, "Is every line exact?"]
+    - [prompt_adherence, "Is the hierarchy the same, NIGHT SHIFT largest?"]
+    - [style, "Are fonts and colours the same?"]
+    - [preservation, "Is the DJ photo unchanged apart from crop?"]
+    - [prompt_adherence, "Does the yellow frame run round the new edge?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [visual_quality, "Is nothing stretched?"]
+    - [text_accuracy, "Is the address readable?"]
+    - [prompt_adherence, "Is the order of lines the same?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit; output 3:1 may need the closest supported size."}
+  video_followon: ""

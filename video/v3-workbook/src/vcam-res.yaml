@@ -1,0 +1,68 @@
+# Camera work — Real estate, interiors & architecture scenarios. Slots: vcam.yaml.
+code: VCAM
+scenarios:
+
+- id: VCAM-RES-01
+  seed: true
+  title: "The Kerala villa hero shot as a slow crane up; the house stays on the right third and verticals stay vertical"
+  persona: "Developer's marketing lead commissioning the brochure film's opening shot."
+  evidence: "Call at 23:45: the default is to centre the subject; in motion a crane also tends to drift the house to the centre and let verticals converge."
+  levers: [off-centre, camera-move, light-lock, layout, exclude, locale]
+  prompt: |
+    A 10-second brochure-film opening at golden hour, 16:9: a contemporary Kerala villa with two
+    overlapping sloping roofs in dark clay tiles, white walls, deep wooden verandahs and laterite at the
+    base. The camera starts at 1.2 metres behind a frangipani in flower at the left edge and cranes
+    slowly and steadily up to 6 metres over 10 seconds, rising over the frangipani's crown. All the way
+    up the house stays on the right third, taking about 40 percent of the frame width, and every vertical
+    line of the house stays perfectly vertical (shift-lens look, no converging verticals). As the
+    camera rises, a curving laterite stepping-stone path from the lower-left corner to the front door
+    reveals itself, and the upper-left sky stays clean and empty. Low warm sun from the left; windows
+    glow softly; the frangipani's shadow lies across the lawn. No people, no cars, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "steady crane up from 1.2 m to 6 m"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [composition, "Does the house stay on the right third for the whole crane?"]
+    - [composition, "Does it never drift to the centre?"]
+    - [visual_quality, "Do the house's verticals stay perfectly vertical throughout?"]
+    - [prompt_adherence, "Is the move a steady crane up, rising over the frangipani?"]
+    - [prompt_adherence, "Does the stepping-stone path reveal itself from the lower-left corner to the door?"]
+    - [composition, "Does the upper-left sky stay clean?"]
+    - [physics_plausibility, "Does the frangipani slide down past the camera faster than the house (parallax)?"]
+    - [prompt_adherence, "Is the sun low from the left, with windows glowing?"]
+    - [temporal_consistency, "Does the house keep its roofs, walls and verandahs through the move?"]
+    - [motion_coherence, "Is the move smooth with no warping?"]
+    - [prompt_adherence, "Are there no people, cars or text?"]
+    - [prompt_adherence, "Does the crane take the full 10 seconds at a steady speed?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-RES-02
+  title: "A 14 mm walk-in to the empty bedroom: wide-lens stretch at the edges, verticals straight throughout"
+  persona: "Real-estate videographer matching a generated walk-in to the agency's lens style."
+  evidence: "Lens character (wide stretch, straight verticals) is lost in generated moves."
+  levers: [camera-move, layout, light-lock, physics, unseen]
+  inputs: [{source: SRC-RES-BEDROOM, role: first_frame}]
+  prompt: |
+    Start on this photo of an empty bedroom and make an 8-second walk-in from the doorway to the middle of the
+    room with a 14 mm rectilinear lens look: objects near the frame edges stretch outward, the room looks
+    larger, but every vertical (wall corners, wardrobe edges, window frame) stays perfectly vertical with no
+    barrel bending. The camera stays at chest height and level. As it walks in, the three sun panels on the
+    floor pass under the frame; the doorway's frame, never shown, slides out at both edges at the start. The
+    wardrobe stays on the right, the window ahead. No people, no text.
+  clip: {duration: 8, aspect: "3:2", camera: "walk in at chest height, 14 mm look"}
+  deliverable: "One 8-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Does it have a 14 mm wide look with edge stretch?"]
+    - [visual_quality, "Do verticals stay perfectly vertical throughout?"]
+    - [prompt_adherence, "Is there no barrel bending?"]
+    - [prompt_adherence, "Is the camera level at chest height?"]
+    - [physics_plausibility, "Do the sun panels pass under the frame?"]
+    - [prompt_adherence, "Is the wardrobe on the right and the window ahead?"]
+    - [prompt_adherence, "Does the doorway frame slide out at the start?"]
+    - [prompt_adherence, "Is it golden hour?"]
+    - [motion_coherence, "Is the walk smooth?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [physics_plausibility, "Does the room keep its size?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}

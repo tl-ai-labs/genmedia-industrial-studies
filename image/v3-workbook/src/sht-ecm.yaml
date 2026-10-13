@@ -1,0 +1,234 @@
+# Production sheets — E-commerce, D2C & retail scenarios. Slots: sht.yaml.
+code: SHT
+scenarios:
+
+- id: SHT-ECM-01
+  seed: true
+  sahil: product-bible
+  title: "Production bible for a soda launch film, built from one can photo"
+  persona: "Producer at a D2C beverage brand briefing a product-film studio; the bible is the only document the studio gets before the shoot."
+  evidence: "Sahil's screen-share (screenshots 232–233): one photo of a pineapple soda can became a dense sheet in both tools: hero product views, environment and set design with a lighting diagram, a storyboard strip, and lighting, mood and style notes. The test is how much detail survives and whether the can stays the same can."
+  levers: [identity, unseen, exact-text, small-text, count, layout, long-brief]
+  inputs:
+    - {source: SRC-ECM-SODA-CAN, role: source, note: "the only product photo"}
+  prompt: |
+    From this one product photo, design a production bible for the can's launch film as a single
+    landscape sheet on a dark navy page, with thin gold rules between sections and small white
+    sans labels. Across the top: "ANANAS & CO. — PINEAPPLE FIZZ — PRODUCTION BIBLE", and under it
+    a palette strip of four swatches labelled "Cobalt", "Sun yellow", "Ice white" and "Navy", each
+    swatch matching the colour it names on the can and the page.
+
+    Section 1, "PRODUCT / HERO OBJECT REFERENCE": eight tiles of this exact can labelled "FRONT",
+    "BACK", "LEFT", "RIGHT", "TOP", "HERO 3/4", "OPENED" and "POUR". The back shows the rest of the
+    line-drawn pineapple wrapping round from the front; the top shows the silver ring-pull; OPENED
+    shows the ring-pull lifted with fizz at the mouth; POUR shows the drink going into a tall glass
+    of ice.
+
+    Section 2, "ENVIRONMENT / SET DESIGN": one wide frame of the set (a dark slate plinth, a navy
+    cyclorama, a block of clear ice beside the can) and a top-down lighting diagram with the can at
+    the centre and four labelled markers: "KEY" at upper left, "RIM" behind on the right, "FILL" at
+    the front right and "CAMERA" at the front.
+
+    Section 3, "STORYBOARD": six frames in a row numbered and captioned exactly "1 Ice cracks",
+    "2 Can rises from the ice", "3 Ring-pull opens", "4 Fizz in macro", "5 Pour into glass" and
+    "6 End card".
+
+    Section 4, "LIGHTING / MOOD / STYLE": four mood frames and a notes box with exactly these three
+    lines: "Cold, crisp, high contrast", "Condensation on the lower two-thirds", "Script always
+    reads uphill".
+
+    In every tile and frame it is this can: matte cobalt blue, the yellow script "Ananas" running
+    diagonally upward, "PINEAPPLE FIZZ" and "330 ml" in white, the white pineapple drawing on the
+    right, condensation on the lower two-thirds. No other brands, no other text.
+  exact_text:
+    - "ANANAS & CO. — PINEAPPLE FIZZ — PRODUCTION BIBLE"
+    - "PRODUCT / HERO OBJECT REFERENCE"
+    - "ENVIRONMENT / SET DESIGN"
+    - "STORYBOARD"
+    - "LIGHTING / MOOD / STYLE"
+    - "HERO 3/4"
+    - "1 Ice cracks"
+    - "2 Can rises from the ice"
+    - "3 Ring-pull opens"
+    - "4 Fizz in macro"
+    - "5 Pour into glass"
+    - "6 End card"
+    - "Cold, crisp, high contrast"
+    - "Condensation on the lower two-thirds"
+  deliverable: "One landscape image (at least 16:9), readable at full size."
+  checks:
+    - [text_accuracy, "Is the sheet title spelled exactly as given?"]
+    - [prompt_adherence, "Are all four sections present with their exact headings?"]
+    - [prompt_adherence, "Are there exactly eight product tiles, labelled FRONT, BACK, LEFT, RIGHT, TOP, HERO 3/4, OPENED and POUR?"]
+    - [reference_fidelity, "Is it the same can in every tile: matte cobalt, yellow script, white PINEAPPLE FIZZ and 330 ml?"]
+    - [reference_fidelity, "Does the yellow script run diagonally upward in every view that shows it?"]
+    - [reference_fidelity, "Does the BACK tile continue the line-drawn pineapple rather than repeat the front?"]
+    - [prompt_adherence, "Does the TOP tile show a silver ring-pull and OPENED show it lifted with fizz?"]
+    - [prompt_adherence, "Does the POUR tile show the drink going into a tall glass of ice?"]
+    - [prompt_adherence, "Does the lighting diagram place KEY upper left, RIM behind right, FILL front right and CAMERA at the front?"]
+    - [prompt_adherence, "Are there exactly six storyboard frames with the exact captions in order?"]
+    - [prompt_adherence, "Does each storyboard frame show its caption (ice cracking, the can rising, the ring-pull opening, macro fizz, the pour, an end card)?"]
+    - [text_accuracy, "Does the notes box carry the three lines exactly?"]
+    - [prompt_adherence, "Do the palette swatches match the can's cobalt and yellow and the page's navy?"]
+    - [reference_fidelity, "Is condensation on the lower two-thirds of the can wherever it is shown closed?"]
+    - [text_accuracy, "Is every label readable, with no garbled or invented text?"]
+    - [style, "Is the sheet consistent: navy page, gold rules, one sans for labels?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input; judge at high resolution."}
+  video_followon: "V5: storyboard frames 2 to 5 as a single 6-second product spot with the can unchanged."
+
+- id: SHT-ECM-02
+  title: "Product-page image sheet for the saree: drapes, details, care icons, Hindi and English labels"
+  persona: "Marketplace category manager defining the listing image set for silk sarees."
+  evidence: "Listing sheets miss required sections; bilingual labels add a script test."
+  levers: [identity, exact-text, script, count, layout, locale]
+  inputs: [{source: SRC-ECM-SAREE-FLAT, role: source}]
+  prompt: |
+    From this silk saree flat-lay, design a product-page image sheet on one landscape page, white,
+    with seven tiles, each labelled in Hindi then English exactly: "पूरा ड्रेप · Full drape" (on a
+    model, front); "पीछे से · Back" (the pallu down her back); "बॉर्डर · Border" (close-up of the
+    temple pattern); "पल्लू · Pallu" (flat, showing the peacocks); "ब्लाउज़ पीस · Blouse piece" (folded
+    magenta); "कपड़ा · Fabric" (macro of the buttis); "देखभाल · Care" (four care icons: dry clean,
+    no bleach, cool iron, dry in shade). The textile's colours and motifs match the flat-lay. Title:
+    "कांचीपुरम सिल्क — KANCHIPURAM SILK". No other text.
+  exact_text:
+    - "कांचीपुरम सिल्क — KANCHIPURAM SILK"
+    - "पूरा ड्रेप · Full drape"
+    - "बॉर्डर · Border"
+    - "पल्लू · Pallu"
+    - "देखभाल · Care"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there seven tiles?"]
+    - [text_accuracy, "Are all tile labels exact, Hindi correctly formed?"]
+    - [reference_fidelity, "Does the saree match the flat-lay: green body, magenta border, gold pallu?"]
+    - [reference_fidelity, "Does the border tile show the temple pattern?"]
+    - [reference_fidelity, "Does the pallu tile show the peacocks?"]
+    - [prompt_adherence, "Are there four care icons?"]
+    - [prompt_adherence, "Do the care icons read as dry clean, no bleach, cool iron, dry in shade?"]
+    - [set_consistency, "Is the model the same in the two worn tiles?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [style, "Is the sheet clean on white?"]
+    - [visual_quality, "Are photos free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-ECM-03
+  title: "Marketplace listing set for the spice jars on one sheet, Tamil and English"
+  persona: "D2C spice brand's marketplace manager laying out the seven listing images."
+  evidence: "Listing infographics with Tamil product names are a regional e-commerce must; garbled Tamil sinks a listing."
+  levers: [identity, exact-text, script, small-text, count, locale]
+  inputs: [{source: SRC-ECM-SPICE-JARS, role: source}]
+  prompt: |
+    From this photo of three Aadi spice jars, design a sheet of six square marketplace listing tiles
+    in two rows of three, each labelled above in small grey type: "1 Main", "2 Benefits", "3
+    Ingredients", "4 Size", "5 Lifestyle", "6 Banner". Tile 1: the three jars on pure white. Tile 2:
+    the turmeric jar with three callouts exactly "No colour added", "Stone-ground", "Madurai
+    farms". Tile 3: the three spices raw in bowls labelled in Tamil exactly "மஞ்சள்", "மிளகாய்",
+    "சீரகம்". Tile 4: a jar beside a hand for scale with "100 g". Tile 5: the jars on a kitchen
+    shelf. Tile 6: a wide banner with the Tamil line "அம்மாவின் சுவை" and "Aadi". The jars and
+    labels match the photo exactly in every tile. No other text.
+  exact_text:
+    - "No colour added"
+    - "Stone-ground"
+    - "Madurai farms"
+    - "மஞ்சள்"
+    - "மிளகாய்"
+    - "சீரகம்"
+    - "அம்மாவின் சுவை"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there six tiles labelled 1 to 6?"]
+    - [reference_fidelity, "Are the jars and labels identical to the photo in every tile?"]
+    - [text_accuracy, "Are the three callouts in tile 2 exact?"]
+    - [text_accuracy, "Are the Tamil labels in tile 3 exact and correctly formed?"]
+    - [text_accuracy, "Is the Tamil banner line exact?"]
+    - [physics_plausibility, "Is the jar plausibly sized next to the hand in tile 4?"]
+    - [prompt_adherence, "Is tile 1 on pure white?"]
+    - [text_accuracy, "Does tile 4 read 100 g?"]
+    - [text_accuracy, "Is every word readable?"]
+    - [style, "Is the sheet consistent?"]
+    - [visual_quality, "Are photos free of artefacts?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-ECM-04
+  title: "Assembly guide for a flat-pack bookshelf: parts, eight steps, tools, warnings"
+  persona: "D2C furniture brand's product team producing the printed assembly guide."
+  evidence: "Instruction sheets need exact counts across steps; parts drift between the list and the steps."
+  levers: [count, exact-text, layout, small-text, long-brief, multi-step]
+  prompt: |
+    Design a one-page assembly guide, landscape, white, black line drawings in clean isometric 3D,
+    for a five-shelf bookshelf. Title: "OAKLINE 5 — ASSEMBLY". Top strip "PARTS" with each part drawn
+    and labelled: "A Side panel x2", "B Shelf x5", "C Back panel x1", "D Top x1", "E Screw x20",
+    "F Dowel x10". Tool strip "TOOLS": a cross-head screwdriver and a hammer. Eight numbered step
+    panels showing the build in order, from dowels into side panel to the finished shelf standing.
+    A warning box with exactly: "Two people needed", "Fix to wall". The parts shown in each step are
+    consistent with the list. No other text.
+  exact_text:
+    - "OAKLINE 5 — ASSEMBLY"
+    - "A Side panel x2"
+    - "B Shelf x5"
+    - "E Screw x20"
+    - "Two people needed"
+    - "Fix to wall"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are there six labelled parts with exact counts?"]
+    - [prompt_adherence, "Are there eight numbered steps?"]
+    - [prompt_adherence, "Does the finished shelf have five shelves?"]
+    - [set_consistency, "Are the parts in the steps consistent with the list?"]
+    - [prompt_adherence, "Do the steps run in a logical build order?"]
+    - [prompt_adherence, "Are the two tools shown?"]
+    - [text_accuracy, "Is the warning box exact?"]
+    - [style, "Are all drawings clean isometric line drawings?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [visual_quality, "Are line drawings free of artefacts?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: SHT-ECM-05
+  title: "Foundation shade guide: eight shades with hex swatches on four skin tones, Telugu and English"
+  persona: "Beauty brand's product marketer making the shade guide for a South Indian launch."
+  evidence: "Skin-tone fidelity on darker skin is a known failure; a shade guide makes it measurable."
+  levers: [exact-text, script, count, layout, locale, small-text]
+  prompt: |
+    Design a shade guide on one landscape page, white, black type. Title: "షేడ్ గైడ్ — SHADE GUIDE".
+    Eight foundation shade swatches in a row, each a smooth swatch with its name and hex value
+    exactly: "110 Ivory #F1D3BD", "140 Sand #E2B48F", "180 Honey #C99266", "220 Caramel #B17A4E",
+    "260 Almond #946140", "300 Mocha #7A4B30", "340 Espresso #5B3522", "380 Ebony #3F2418".
+    Below, four portrait tiles of four women with clearly different skin tones (light, medium,
+    deep, very deep), each labelled in Telugu and English with her best-match shade, exactly: "ఫెయిర్ ·
+    140 Sand", "మీడియం · 220 Caramel", "డీప్ · 300 Mocha", "వెరీ డీప్ · 380 Ebony", each with that
+    shade swatched on her jaw and matching her skin. No other text.
+  exact_text:
+    - "షేడ్ గైడ్ — SHADE GUIDE"
+    - "110 Ivory #F1D3BD"
+    - "220 Caramel #B17A4E"
+    - "380 Ebony #3F2418"
+    - "మీడియం · 220 Caramel"
+    - "వెరీ డీప్ · 380 Ebony"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there eight swatches in order from light to dark?"]
+    - [text_accuracy, "Are all shade names and hex values exact?"]
+    - [prompt_adherence, "Does each swatch visibly match its hex value?"]
+    - [prompt_adherence, "Are there four portrait tiles with clearly different skin tones?"]
+    - [text_accuracy, "Are the four Telugu-English labels exact?"]
+    - [prompt_adherence, "Does each jaw swatch match that woman's skin?"]
+    - [prompt_adherence, "Are the deep and very deep women rendered without lightening?"]
+    - [text_accuracy, "Is the title exact, Telugu correctly formed?"]
+    - [style, "Is the page clean on white?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [visual_quality, "Are faces free of artefacts?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

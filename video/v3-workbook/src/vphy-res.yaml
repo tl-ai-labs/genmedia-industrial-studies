@@ -1,0 +1,218 @@
+# Physics and depth in motion — Real estate, interiors & architecture scenarios. Slots: vphy.yaml.
+code: VPHY
+scenarios:
+
+- id: VPHY-RES-01
+  seed: true
+  title: "Time-lapse: the twelve-pane window grid sweeps across the floor and climbs the armchair as the sun sets"
+  persona: "Interior visualiser making a sun-study clip for a client who will check where the light falls."
+  evidence: "The image seed PHY-RES-01 checks the projected window grid in one frame; a sun study must move it correctly over time: stretching, sliding and climbing."
+  levers: [physics, timing, count, light-lock, layout, long-brief]
+  prompt: |
+    A 10-second time-lapse, locked-off camera, of a quiet reading room with white walls and a pale oak
+    floor, from 4 p.m. to sunset. On the left wall, a tall window divided by thin black mullions into
+    twelve panes, three across and four high. The sun shines through it from the left, projecting the
+    grid onto the floor as twelve bright parallelograms. As the sun sinks over the ten seconds, the
+    projected grid stretches longer and slides further across the floor to the right, warming from pale
+    gold to deep orange; at about 6 s it reaches a white armchair in the middle of the room, breaks
+    over its seat and climbs its front; by 9 s the top of the grid climbs the right wall behind it; at
+    10 s the light fades out. The chair's leg shadows lengthen and rotate in step. Dust in the beams.
+    No people, no other furniture, no text.
+  clip: {duration: 10, aspect: "3:2", camera: "locked off from the back corner, 28 mm"}
+  deliverable: "One 10-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Does the window have twelve panes and the floor show twelve patches?"]
+    - [physics_plausibility, "Does the projected grid stretch longer as the sun sinks?"]
+    - [physics_plausibility, "Does the grid slide steadily to the right across the floor?"]
+    - [prompt_adherence, "Does the grid reach the chair at about 6 s and climb the wall by about 9 s?"]
+    - [physics_plausibility, "Does the grid break and bend over the chair's seat and front?"]
+    - [physics_plausibility, "Do the chair's leg shadows lengthen and turn in step with the grid?"]
+    - [prompt_adherence, "Does the light warm from pale gold to deep orange, then fade at 10 s?"]
+    - [motion_coherence, "Is the light's movement smooth and continuous, with no jumps?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [prompt_adherence, "Is the armchair the only furniture?"]
+    - [prompt_adherence, "Are dust beams aligned with the sun's changing direction?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-RES-02
+  title: "A hand wipes a fogged mirror in a bathroom with facing mirrors; the receding reflections clear in step"
+  persona: "Bath-fittings brand's visualiser testing a mirror demo for a showroom film."
+  evidence: "Facing mirrors must show the same change in every receding reflection at once."
+  levers: [physics, timing, count, light-lock, camera]
+  prompt: |
+    A 6-second locked-off shot in a small white-tiled bathroom with two large mirrors facing each other on
+    opposite walls, filmed from the side so both and their receding reflections show. Both mirrors are
+    fogged with steam. At 1.5 seconds a hand wipes one clear horizontal band across the left mirror. In the
+    right mirror's view of it, and in every smaller receding reflection, the same band appears clear at the
+    same moment, mirrored, getting smaller and dimmer with each step. The fog on the right mirror stays.
+    Soft daylight from a frosted window. No people visible except the hand, no text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off from the side"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the hand wipe at about 1.5 seconds?"]
+    - [physics_plausibility, "Does the clear band appear in every receding reflection at the same moment?"]
+    - [physics_plausibility, "Are the reflections mirrored and smaller each step?"]
+    - [physics_plausibility, "Do the receding reflections get dimmer?"]
+    - [physics_plausibility, "Does the fog on the right mirror stay?"]
+    - [prompt_adherence, "Is there only one wiped band?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Is it soft daylight?"]
+    - [motion_coherence, "Is the wipe natural?"]
+    - [visual_quality, "Is the hand natural?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is the bathroom white-tiled?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-RES-03
+  title: "A dolly down the corridor of fifteen arches; each arch slides past at the speed its distance sets"
+  persona: "Heritage-hotel's architect making a walkthrough of a cloister for the brochure film."
+  evidence: "Repeated arches in generated dollies multiply, merge or slide at one speed."
+  levers: [parallax, count, camera-move, light-lock, locale]
+  prompt: |
+    A 10-second dolly down a long sandstone cloister in a Jaipur heritage hotel at harsh noon. The corridor
+    has fifteen identical pointed arches along the right side, open to a sunlit courtyard, and a plain wall
+    with brass lamps on the left. The camera dollies forward at a slow walk down the middle. The nearest
+    arches pass the right edge quickly; the far ones move slowly; each arch's sharp noon shadow lies on the
+    floor directly under it and stays fixed as the camera moves. By the end the camera has passed six arches.
+    No people, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "forward dolly at slow walk"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Do near arches pass faster than far ones?"]
+    - [prompt_adherence, "Are there fifteen arches along the right?"]
+    - [prompt_adherence, "Does the camera pass about six arches?"]
+    - [physics_plausibility, "Do the arch shadows stay fixed on the floor?"]
+    - [prompt_adherence, "Are shadows short and sharp at noon?"]
+    - [prompt_adherence, "Are the arches right and the wall with lamps left?"]
+    - [prompt_adherence, "Is it a steady forward dolly?"]
+    - [motion_coherence, "Is there no warping or merging of arches?"]
+    - [prompt_adherence, "Does it read as a Jaipur heritage hotel?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines straight?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-RES-04
+  title: "A boat crosses the still Udaipur lake; its wake breaks the villas' reflections, which re-form behind it"
+  persona: "Lakeside resort's videographer making a hero clip for the website."
+  evidence: "Reflections broken by a wake must re-form gradually, not snap back."
+  levers: [physics, timing, locale, light-lock, off-centre]
+  prompt: |
+    A 10-second locked-off shot of a still lake in Udaipur at golden hour. On the far bank, a row of white
+    lakeside palaces with domed chhatris; their reflections lie perfect and upside down in the water. A small
+    wooden boat with a boatman rowing crosses from left to right through the lower right of the frame,
+    off-centre. Its V-shaped wake spreads behind it and breaks the reflections into wobbling strips where it
+    passes; behind the boat, over three or four seconds, the ripples fade and the reflections re-form,
+    still wobbling a little. The sky is pale gold. No text.
+  clip: {duration: 10, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Are the reflections upside down and aligned with the palaces?"]
+    - [physics_plausibility, "Does the V-shaped wake spread behind the boat?"]
+    - [physics_plausibility, "Does the wake break the reflections into wobbling strips?"]
+    - [physics_plausibility, "Do the reflections re-form gradually over three or four seconds?"]
+    - [motion_coherence, "Does the boat cross left to right steadily?"]
+    - [composition, "Is the boat in the lower right, off-centre?"]
+    - [motion_coherence, "Is the rowing natural?"]
+    - [prompt_adherence, "Is it golden hour?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Does it read as Udaipur?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the water natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-RES-05
+  title: "A grandmother on a porch swing pushes off with one foot; the chains take her weight through each swing"
+  persona: "Villa developer's videographer making a lifestyle clip for the brochure."
+  evidence: "Swings in generated clips float, with chains going slack or bending wrongly."
+  levers: [physics, timing, count, locale, identity]
+  prompt: |
+    A 6-second locked-off shot on a wide verandah in Kerala in daylight. A wooden swing hangs from the beam
+    on four iron chains. A grandmother of about seventy in a cream cotton sari with a gold border sits on it
+    with a book. At 1 second she pushes off the red oxide floor with her right foot; the swing moves back and
+    forth three times, getting smaller; the chains stay straight and taut, angling with the swing, and the
+    beam takes the load. Her sari's end sways with the motion. Garden green behind. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, side-on"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does she push off at about 1 second?"]
+    - [physics_plausibility, "Do the chains stay straight and taut?"]
+    - [physics_plausibility, "Do the chains angle with the swing?"]
+    - [prompt_adherence, "Are there four chains?"]
+    - [prompt_adherence, "Does it swing three times, getting smaller?"]
+    - [physics_plausibility, "Does her sari's end sway with the motion?"]
+    - [prompt_adherence, "Does she push with her right foot?"]
+    - [motion_coherence, "Is the swing's motion a smooth pendulum?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Does it read as a Kerala verandah?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are her hands natural on the book?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-RES-06
+  title: "A door slams and the ring chandelier sways and settles; its reflection in the terrazzo sways with it"
+  persona: "Hospitality designer testing the chandelier's look in motion for the lobby film."
+  evidence: "A swinging light changes every highlight and its reflection must move in step."
+  levers: [physics, timing, light-lock, keep-rest, layout]
+  inputs: [{source: SRC-RES-HOTEL-LOBBY, role: first_frame}]
+  prompt: |
+    Start on this hotel lobby photo and make an 8-second locked-off clip. At 1 second an unseen door slams
+    off to the left; the ring chandelier of brass hoops begins to sway gently front to back on its rod, about
+    a hand's width, and settles over the next six seconds. As it sways, its reflection in the polished
+    terrazzo floor sways in step, mirrored, and the warm light it casts on the green velvet sofas and the
+    bookshelves shifts slightly with it. The backlit onyx panel and the rest of the lobby do not move. No
+    people, no readable signs.
+  clip: {duration: 8, aspect: "3:2", camera: "locked off"}
+  deliverable: "One 8-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Does the sway start at about 1 second?"]
+    - [physics_plausibility, "Does the chandelier sway front to back and settle?"]
+    - [physics_plausibility, "Does its reflection sway in step, mirrored?"]
+    - [prompt_adherence, "Does the light on the sofas shift slightly with the sway?"]
+    - [preservation, "Does the rest of the lobby stay still?"]
+    - [prompt_adherence, "Is the lobby as in the photo?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [motion_coherence, "Is the settling gradual?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Are there no readable signs?"]
+    - [visual_quality, "Is the brass clean?"]
+    - [prompt_adherence, "Is the onyx panel backlit?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VPHY-RES-07
+  title: "Add a lap pool to the front lawn of the drone orbit; the villa's reflection in it shifts correctly as the drone moves"
+  persona: "Villa developer previewing a lap pool on existing drone footage for buyers."
+  evidence: "Added water must reflect the building from the drone's changing angle on every frame."
+  levers: [physics, parallax, keep-rest, light-lock, camera-move]
+  inputs: [{source: SRC-VCLIP-VILLA-ORBIT, role: source}]
+  prompt: |
+    In this 10-second drone quarter orbit round a villa, add a long rectangular lap pool in the front lawn,
+    parallel to the house, about 12 by 3 metres, with a grey stone coping and still blue-green water. On every
+    frame the water reflects the villa, the sky and the frangipani from the drone's current angle, so the
+    reflection shifts and changes as the drone orbits; a light breeze makes small ripples. The pool is locked
+    to the ground with the right perspective throughout. The house, the swing centred at 5 seconds, the gate,
+    the mid-morning light and the orbit are unchanged.
+  clip: {duration: 10, aspect: "16:9", camera: "unchanged quarter orbit"}
+  deliverable: "One 10-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is there a rectangular lap pool in the front lawn, parallel to the house?"]
+    - [physics_plausibility, "Does the water reflect the villa and sky from the current angle?"]
+    - [physics_plausibility, "Does the reflection shift as the drone orbits?"]
+    - [physics_plausibility, "Is the pool locked to the ground with correct perspective?"]
+    - [physics_plausibility, "Are there small ripples?"]
+    - [preservation, "Is the house unchanged?"]
+    - [prompt_adherence, "Is the swing centred at 5 seconds?"]
+    - [prompt_adherence, "Does the pool sit in the mid-morning light?"]
+    - [preservation, "Is the orbit unchanged?"]
+    - [motion_coherence, "Is there no sliding of the pool?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the coping clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

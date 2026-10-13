@@ -1,0 +1,162 @@
+# Character continuity in motion — Advertising & agencies scenarios. Slots: vchr.yaml.
+code: VCHR
+scenarios:
+
+- id: VCHR-ADS-01
+  title: "Chotu in three clips: running, jumping, dancing; his quiff, tooth and gloves never morph"
+  persona: "Snack brand's animation agency testing the mascot's model in fast motion."
+  evidence: "Earlier image bank CHR-ADS-01: the mascot's side details flip; in motion, squash and stretch break the model."
+  levers: [set, identity, layout, physics, timing]
+  inputs: [{source: SRC-VREF-CHOTU-SHEET, role: character}]
+  prompt: |
+    The image is the model sheet of Chotu: a glossy red chilli on short green legs, a curled green stalk
+    quiff that curls to HIS LEFT, big round eyes, thick eyebrows, a wide grin with ONE gold tooth on HIS
+    RIGHT side, white four-fingered gloves and white sneakers with red laces. Make three 4-second clips in
+    the same polished 3D style, matching the sheet's action poses, in a hostel room at night. Squash and
+    stretch is fine, but the quiff, the tooth's side, the four fingers and the laces never change. No text.
+  clip: {duration: 4, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Quiff curling to his left; gold tooth on his right"
+      - "Four-fingered white gloves; red-laced sneakers"
+      - "His size and glossy red"
+    members:
+      - {name: "Running", prompt: "He runs across a desk past books, left to right, tracked from the side.", checks: [[prompt_adherence, "Does the quiff curl to his left while running?"], [motion_coherence, "Is the run snappy and cartoon-natural?"]]}
+      - {name: "Jumping", prompt: "He jumps from the desk to the bed, landing with a squash at 2 seconds.", checks: [[prompt_adherence, "Does he land at about 2 seconds?"], [physics_plausibility, "Does he squash and recover on landing?"]]}
+      - {name: "Dancing", prompt: "He dances a quick bhangra on the bed, arms up, grinning to camera.", checks: [[prompt_adherence, "Is the gold tooth on his right side?"], [prompt_adherence, "Does each glove have four fingers?"]]}
+  deliverable: "Three 4-second clips, 16:9."
+  checks:
+    - [set_consistency, "Does he match the model sheet in all three?"]
+    - [set_consistency, "Does the quiff curl to his left in every clip?"]
+    - [set_consistency, "Is the gold tooth on his right in every clip?"]
+    - [set_consistency, "Do the gloves have four fingers in every clip?"]
+    - [set_consistency, "Are the sneakers white with red laces in every clip?"]
+    - [temporal_consistency, "Does nothing morph during the motion?"]
+    - [set_consistency, "Is his size the same against the furniture in all three?"]
+    - [style, "Is it the same polished 3D style?"]
+    - [prompt_adherence, "Is it a hostel room at night in all three?"]
+    - [prompt_adherence, "Is there one Chotu?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the gloss clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with the model sheet; set agreement needs the set review."}
+
+- id: VCHR-ADS-02
+  title: "The cricketer ambassador in three clips: nets at noon, a night match under floodlights, an indoor shoot"
+  persona: "Sports brand's account lead checking the ambassador's likeness across three campaign setups."
+  evidence: "Dark skin under floodlights and studio key lights is lightened or greyed by generators."
+  levers: [set, identity, light-lock, physics, locale]
+  inputs: [{source: SRC-VREF-AMBASSADOR, role: character}]
+  prompt: |
+    The image is the brand ambassador, a woman cricketer of about twenty-seven: deep brown skin, a short
+    undercut with a curly top, a small scar on her chin, a silver stud in her LEFT ear, a black fitness band
+    on her RIGHT wrist. Make three 5-second clips of her in plain white cricket kit with no logos, each in
+    its own light. Her skin stays the same deep brown in every light; the chin scar, ear stud and band
+    hold. Photoreal, no text, no logos.
+  clip: {duration: 5, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Face, undercut, scar on the chin"
+      - "Stud in the left ear; band on the right wrist"
+      - "Deep brown skin tone"
+    members:
+      - {name: "Nets at noon", prompt: "Harsh noon in the practice nets: she drives a ball hard, tracked from the side.", checks: [[physics_plausibility, "Is the bat swing and ball contact believable?"], [prompt_adherence, "Is it harsh noon?"]]}
+      - {name: "Floodlights", prompt: "Night match under white floodlights: she takes off her helmet and raises her bat to the crowd.", checks: [[prompt_adherence, "Is it white floodlight?"], [reference_fidelity, "Is her skin tone unchanged under floodlights?"]]}
+      - {name: "Studio", prompt: "Indoor shoot on grey seamless, one large soft key from the left: she spins the bat and looks to camera.", checks: [[prompt_adherence, "Is it a soft key from the left?"], [reference_fidelity, "Is the stud in her left ear?"]]}
+  deliverable: "Three 5-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is it the ambassador in all three?"]
+    - [set_consistency, "Is her skin the same deep brown in all three lights?"]
+    - [set_consistency, "Is the chin scar visible in all three?"]
+    - [set_consistency, "Is the stud in the left ear in all three?"]
+    - [set_consistency, "Is the band on the right wrist in all three?"]
+    - [prompt_adherence, "Does each clip have its described light?"]
+    - [motion_coherence, "Is her batting natural?"]
+    - [prompt_adherence, "Is the kit plain white with no logos?"]
+    - [style, "Is it photoreal?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are her hands natural on the bat?"]
+    - [prompt_adherence, "Is she the subject in each?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three image-to-video calls with one reference; set agreement needs the set review."}
+
+- id: VCHR-ADS-03
+  title: "The described pet-food dog with the heart patch and folded ear in three clips"
+  persona: "Pet-food brand's agency producer previewing a campaign dog before casting."
+  evidence: "Earlier image bank CHR-ADS-04: patches move and ears swap between stills."
+  levers: [set, identity, layout, physics, long-brief]
+  prompt: |
+    A young beagle mix: tricolour coat, black saddle, tan face, a white blaze; one black heart-shaped patch
+    on its RIGHT flank; the LEFT ear folded back inside-out, the right ear hanging normally; a mustard collar
+    with a round silver tag. Make three 5-second clips of the same dog, photoreal, in a sunny suburban home.
+    The heart patch stays on the right flank and the folded ear on the left in every clip, however the dog
+    moves. No text, no logos.
+  clip: {duration: 5, aspect: "1:1", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Heart patch on the right flank"
+      - "Left ear folded inside-out"
+      - "Mustard collar with a silver tag"
+    members:
+      - {name: "Bowl", prompt: "The dog runs into the kitchen and eats from a steel bowl, tail wagging, right side to camera.", checks: [[prompt_adherence, "Is the heart patch on the right flank?"], [motion_coherence, "Is the eating natural?"]]}
+      - {name: "Garden", prompt: "The dog chases a ball across a lawn, left to right, tracked.", checks: [[motion_coherence, "Is the gallop natural?"], [physics_plausibility, "Do the ears flap with the run?"]]}
+      - {name: "Sofa", prompt: "The dog jumps on a sofa and lies down, head on paws, facing camera.", checks: [[prompt_adherence, "Is the folded ear on the left?"], [physics_plausibility, "Does the cushion dip under it?"]]}
+  deliverable: "Three 5-second clips, 1:1."
+  checks:
+    - [set_consistency, "Is it the same dog in all three?"]
+    - [set_consistency, "Is the heart patch on the right flank in every clip?"]
+    - [set_consistency, "Is the left ear folded in every clip?"]
+    - [set_consistency, "Is the collar the same in all three?"]
+    - [motion_coherence, "Is the dog's motion natural?"]
+    - [prompt_adherence, "Is it sunny daylight in all three?"]
+    - [set_consistency, "Is the coat pattern the same?"]
+    - [physics_plausibility, "Is its weight believable?"]
+    - [style, "Is it photoreal?"]
+    - [prompt_adherence, "Is there one dog?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are paws natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three text-to-video calls with one description; set agreement needs the set review."}
+
+- id: VCHR-ADS-04
+  title: "Three edits of the sofa clip, dressing the family for Diwali, Eid and Christmas; four faces never merge"
+  persona: "Agency producer making three festive versions of one TV spot from a single take."
+  evidence: "Group re-dressing blends faces and resets actions; the cushion throw must survive."
+  levers: [set, keep-rest, count, timing, identity, locale]
+  inputs: [{source: SRC-VCLIP-FAMILY-SOFA, role: source}]
+  prompt: |
+    This 6-second clip shows a family of four on a grey sofa watching TV: father in a navy polo, a girl of
+    about seven in pink, a mother in a green kurta, a teenage son in a black hoodie; at 2 seconds the girl
+    falls into her father's lap; at 4 seconds the mother throws the teal cushion to the son. Make three
+    edited versions, each re-dressing all four and the room for a festival as described. Faces, the
+    actions and their timing, the sofa, the cushions and the push in stay exactly as in the clip.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged slow push in"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Four faces in their places"
+      - "Girl falls at 2 s; cushion throw at 4 s"
+      - "Sofa, cushions, TV and push in"
+    members:
+      - {name: "Diwali", prompt: "Festive kurtas and a silk sari for the mother; marigold strings and diyas on the side table.", checks: [[prompt_adherence, "Are there marigolds and diyas?"], [preservation, "Are the four faces unchanged?"]]}
+      - {name: "Eid", prompt: "Pathani suits for the men, an embroidered salwar for the mother and a sharara for the girl; a crescent lantern on the side table.", checks: [[prompt_adherence, "Is there a crescent lantern?"], [prompt_adherence, "Does the cushion throw land at 4 s?"]]}
+      - {name: "Christmas", prompt: "Red and green knitwear; a small decorated tree and fairy lights in the corner.", checks: [[prompt_adherence, "Is there a decorated tree?"], [prompt_adherence, "Does the girl fall at 2 s?"]]}
+  deliverable: "Three 6-second clips, 16:9."
+  checks:
+    - [set_consistency, "Are the four faces the same as the source in all three?"]
+    - [set_consistency, "Do the faces stay distinct, never merging?"]
+    - [prompt_adherence, "Are there four people in all three?"]
+    - [prompt_adherence, "Do the girl's fall and the cushion throw keep their timing?"]
+    - [preservation, "Are the sofa, cushions and TV unchanged?"]
+    - [preservation, "Is the push in unchanged?"]
+    - [set_consistency, "Is each new outfit stable through the clip?"]
+    - [prompt_adherence, "Does the new decor sit in the room's light?"]
+    - [temporal_consistency, "Is there no flicker at clothing edges?"]
+    - [prompt_adherence, "Does each version read as its festival?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Three video edits of one source clip; set agreement needs the set review."}

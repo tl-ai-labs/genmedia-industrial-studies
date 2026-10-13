@@ -1,0 +1,427 @@
+# Coverage and camera move — Film, OTT & micro-drama scenarios. Slots: vcov.yaml.
+code: VCOV
+scenarios:
+
+- id: VCOV-FLM-01
+  seed: true
+  sahil: angles
+  title: "One continuous arc round the banyan, from the two-shot to the reverse behind the children"
+  persona: "Director of a Kannada coming-of-age feature previewing the one big camera move of the tree scene before the crane is booked."
+  evidence: "Call at 17:26: 'the video they want is a camera moving across the same room from different angles'. Sahil's angles example (screenshots 239–243) used this base; the video version must hold every angle in one unbroken move."
+  levers: [camera-move, unseen, parallax, light-lock, identity, layout, locale]
+  inputs:
+    - {source: SRC-KIDS-TREE, role: first_frame, note: "the approved still; the move starts here"}
+  prompt: |
+    Start exactly on this still of two schoolchildren sitting on a banyan root at golden hour and make
+    one continuous ten-second camera move through the scene, as if on a crane with a slow, steady arc.
+    0–3 s: push in gently from the still's position to a two-shot, the children from mid-thigh up.
+    3–8 s: arc round to the right of the tree at the same height, keeping the children in frame, the
+    camera travelling about 180 degrees around them. 8–10 s: settle behind them, looking past the
+    backs of their heads at what the still never shows: a dry field sloping down to a dirt track and a
+    line of palms. The children stay still, breathing, the girl's plaits with red ribbons unmoved, the
+    bag beside her. The low sun stays behind the tree: as the camera arcs it moves from backlight to
+    behind the camera, warming the backs of their heads at the end, their shadows falling forward
+    into the frame. The aerial roots and fence pass in front of and behind them at the right depths.
+    Cinematic, the still's grain and colour, no cuts, no other people, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "push in 0–3 s, 180-degree arc right 3–8 s, settle behind 8–10 s"}
+  deliverable: "One 10-second clip, 16:9, starting on the still."
+  checks:
+    - [prompt_adherence, "Does the clip start on the still's framing?"]
+    - [prompt_adherence, "Does the camera push in, arc about 180 degrees to the right, and settle behind them, in that order?"]
+    - [prompt_adherence, "Do the three phases land near 0–3 s, 3–8 s and 8–10 s?"]
+    - [temporal_consistency, "Is it one continuous move with no cut, jump or morph?"]
+    - [reference_fidelity, "Are the two children the same two children from start to end?"]
+    - [temporal_consistency, "Do the ribbons, uniforms and bag stay the same throughout?"]
+    - [prompt_adherence, "Does the boy end up on frame right and the girl on frame left behind them, as a true reverse?"]
+    - [prompt_adherence, "Does the end view show a field sloping to a track and palms, with no fence in front?"]
+    - [physics_plausibility, "Do the roots and fence move past at the right depths (parallax)?"]
+    - [prompt_adherence, "Does the sun stay fixed behind the tree, ending behind the camera?"]
+    - [physics_plausibility, "Do their shadows fall forward into the frame at the end?"]
+    - [prompt_adherence, "Are there exactly two people throughout?"]
+    - [motion_coherence, "Do the children stay still apart from breathing?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-FLM-02
+  title: "Four coverage clips of the headphone man: reverse, profile, high, low"
+  persona: "Second-unit director on an OTT drama shooting coverage of the crossing scene from one approved frame."
+  evidence: "Sahil's 'Facing Headphone Man (Opposite Side)' (screenshot 244). In motion, each angle must also show the same second of action."
+  levers: [set, unseen, camera, identity, light-lock]
+  inputs: [{source: SRC-CROSSWALK, role: first_frame, note: "the approved frame"}]
+  prompt: |
+    This frame shows a man of about thirty in a mustard camp-collar shirt and black over-ear headphones
+    standing on a zebra crossing, a two-car accident with steam and three arguing men behind him, low sun
+    from the left. Make four 4-second clips of the same moment from four camera positions, as if four
+    cameras rolled at once. In every clip he slowly takes the headphones off and lets them rest round his
+    neck between 1 and 3 seconds; the three men keep arguing; the steam keeps rising. The street behind
+    the original camera, never shown, is a row of low shops with blank awnings, a bus stop and parked
+    scooters, the same in every clip that sees it. No readable text or plates.
+  clip: {duration: 4, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face, shirt, jeans and headphones"
+      - "The two damaged cars, the steam and the three men"
+      - "Sun from the left of the original frame"
+      - "The headphones come off between 1 and 3 s"
+    members:
+      - {name: "Reverse", prompt: "From behind the accident, past the sedan's roof, looking back at him; the unseen street behind him.", checks: [[prompt_adherence, "Is the camera behind the accident looking back at him?"], [prompt_adherence, "Is the street behind him shops, a bus stop and scooters?"]]}
+      - {name: "Profile", prompt: "A clean side profile from the kerb, 85 mm.", checks: [[prompt_adherence, "Is it a clean profile?"], [prompt_adherence, "Do the headphones come off between 1 and 3 s?"]]}
+      - {name: "High", prompt: "From a first-floor balcony six metres up, looking down at the crossing.", checks: [[prompt_adherence, "Are there three men by the cars?"], [physics_plausibility, "Do shadows fall the same way as in the frame?"]]}
+      - {name: "Low", prompt: "From kerb height in front of him, 20 mm, looking up, steam against the sky.", checks: [[prompt_adherence, "Is it low looking up?"], [motion_coherence, "Is the steam rising continuously?"]]}
+  deliverable: "Four 4-second clips, 16:9."
+  checks:
+    - [set_consistency, "Is he the same man in all four clips?"]
+    - [set_consistency, "Do the headphones come off at the same moment in all four?"]
+    - [set_consistency, "Are the cars, steam and three men consistent across the four angles?"]
+    - [set_consistency, "Is the invented street the same in the clips that show it?"]
+    - [prompt_adherence, "Does the sun stay on one side of the scene in all four?"]
+    - [physics_plausibility, "Do shadows agree with that sun in all four?"]
+    - [prompt_adherence, "Does each clip come from its described position?"]
+    - [motion_coherence, "Is his movement natural with no morphing?"]
+    - [motion_coherence, "Do the arguing men move naturally?"]
+    - [text_accuracy, "Are there no readable signs or plates?"]
+    - [visual_quality, "Are hands and faces clean?"]
+    - [prompt_adherence, "Are there exactly four people in focus wherever the whole scene shows?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Four image-to-video calls from the same frame; set agreement needs the set review."}
+
+- id: VCOV-FLM-03
+  title: "A slow orbit round the haldi stool; six people throughout"
+  persona: "Cinematographer on a wedding web-series planning the haldi scene's orbit."
+  evidence: "Earlier bank IMG-VIEW-59 (group of seven to overhead) was high tier for headcount; in an orbit people pass behind each other and get lost or doubled."
+  levers: [camera-move, count, identity, locale, unseen]
+  inputs: [{source: SRC-HALDI, role: first_frame}]
+  prompt: |
+    Start on this photo of a haldi ceremony in a haveli courtyard: the bride on a low stool in yellow,
+    her mother pouring water from a brass lota, two cousins in pink rubbing turmeric on her arms, the
+    grandfather clapping on a cane chair, a boy in orange holding a brass bowl behind the bride. Make a
+    10-second camera move: a slow 180-degree orbit to the right round the bride at shoulder height,
+    ending behind her looking at the sandstone arch past her yellow-stained shoulders. Everyone keeps
+    doing what they do: water pours, cousins rub, grandfather claps. As people pass in front of each
+    other they are hidden and revealed, but no one is lost, doubled or added. Soft overcast light;
+    marigolds overhead. No text.
+  clip: {duration: 10, aspect: "3:2", camera: "180-degree orbit right round the bride at shoulder height"}
+  deliverable: "One 10-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Are there exactly six people throughout, never more or fewer?"]
+    - [prompt_adherence, "Is it a steady 180-degree orbit ending behind the bride?"]
+    - [reference_fidelity, "Does each person keep their face and clothes as they pass?"]
+    - [physics_plausibility, "Do people hide and reveal each other correctly as the camera moves?"]
+    - [motion_coherence, "Do their actions continue naturally: pouring, rubbing, clapping?"]
+    - [physics_plausibility, "Does the water from the lota flow continuously?"]
+    - [prompt_adherence, "Does the end view show the arch past her shoulders?"]
+    - [prompt_adherence, "Is the light soft overcast throughout?"]
+    - [temporal_consistency, "Is there no morphing of faces or limbs?"]
+    - [temporal_consistency, "Do the marigolds and floor stay consistent?"]
+    - [prompt_adherence, "Are there no phones?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-FLM-04
+  title: "Crane up from puddle height to a first-floor window; the tube light keeps lighting the stall from where it hangs"
+  persona: "Gaffer on a Mumbai noir series checking light continuity through a crane move."
+  evidence: "Light that follows the camera rather than its source is the giveaway in generated crane shots."
+  levers: [camera-move, light-lock, physics, locale, end-frame]
+  inputs: [{source: SRC-CHAI-STALL, role: first_frame}]
+  prompt: |
+    Start on this frame of a rainy chai stall at night and crane up for 8 seconds, from puddle height
+    in the foreground to the height of a first-floor window across the lane, ending looking down on the
+    stall. The single cyan-white tube under the awning stays the only key light: from every height it
+    lights the vendor, the two customers and the counter from where it hangs, and as the camera rises
+    the light pools on the wet road and on the tin roof become visible from above. The puddles in the
+    foreground reflect the tube and the red board until they leave the frame. The vendor keeps pouring;
+    rain keeps falling. Only the board's own text is readable.
+  clip: {duration: 8, aspect: "16:9", camera: "crane up from puddle height to first-floor height"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the camera rise steadily from puddle height to first-floor height?"]
+    - [prompt_adherence, "Does the tube light stay the only key, lighting from where it hangs?"]
+    - [prompt_adherence, "Do the light pools on the road and roof appear from above as expected?"]
+    - [physics_plausibility, "Do the puddles reflect the tube and board correctly until they leave frame?"]
+    - [motion_coherence, "Does the vendor keep pouring?"]
+    - [physics_plausibility, "Does rain fall continuously?"]
+    - [temporal_consistency, "Are the three people in the same places throughout?"]
+    - [prompt_adherence, "Does it end looking down on the stall?"]
+    - [motion_coherence, "Is there no warping of the shed as the camera rises?"]
+    - [temporal_consistency, "Is the board the same red-on-white board?"]
+    - [text_accuracy, "Is no other text readable?"]
+    - [visual_quality, "Are faces and hands clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-FLM-05
+  title: "Dolly along the aisle into the sleeper bay; berths, trunk and window hold depth"
+  persona: "Production designer checking whether a generated move respects the bay's dimensions."
+  evidence: "Tight interiors collapse into flat layers when the camera moves."
+  levers: [camera-move, physics, parallax, locale, layout]
+  inputs: [{source: SRC-TRAIN, role: first_frame}]
+  prompt: |
+    Start on this photo of a sleeper-class bay and make a 6-second dolly forward from the aisle into
+    the bay at seated eye height, stopping between the two passengers at the fold-down table, the
+    barred window ahead. As the camera enters, the berth edges, the hanging water bottle and the
+    upper-berth red suitcase pass at speeds set by their distance; the green trunk under the left berth
+    slides out of frame at the bottom left. The elderly man keeps reading on the left; the young woman
+    lifts the tiffin's top tier on the right at about 4 seconds. Fields blur past outside; hard daylight
+    from the window. No readable newspaper text.
+  clip: {duration: 6, aspect: "3:2", camera: "dolly forward from the aisle into the bay"}
+  deliverable: "One 6-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Is it a steady dolly from the aisle into the bay?"]
+    - [physics_plausibility, "Do nearer objects pass faster than farther ones (parallax)?"]
+    - [physics_plausibility, "Do the berths keep their real size as the camera enters?"]
+    - [prompt_adherence, "Does the trunk slide out at the bottom left?"]
+    - [prompt_adherence, "Does she lift the tiffin tier at about 4 s?"]
+    - [reference_fidelity, "Are both passengers the same people throughout?"]
+    - [prompt_adherence, "Is hard daylight from the window throughout?"]
+    - [motion_coherence, "Do the fields blur past outside?"]
+    - [motion_coherence, "Is there no warping of the bay?"]
+    - [prompt_adherence, "Are there only two passengers?"]
+    - [text_accuracy, "Is no newspaper text readable?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-FLM-06
+  title: "Four interrogation clips: both over-the-shoulders, top-down past the lamp, hands insert"
+  persona: "Director of a crime micro-drama shooting the interrogation's coverage."
+  evidence: "Earlier bank IMG-VIEW-56 (reverse angle on a group) was high tier; in motion the reverse pair must also match action."
+  levers: [set, camera, layout, light-lock, unseen]
+  inputs: [{source: SRC-INTERROGATION, role: first_frame}]
+  prompt: |
+    This still is an interrogation room lit only by a bare bulb under a green conical shade: the
+    detective in a maroon kurta on frame left with a brown file, the suspect in a torn grey T-shirt with
+    a bruise on his left cheekbone on frame right, hands flat on the steel table, a khaki constable at the
+    door. Make four 4-second clips of the same moment. In every clip, at 2 seconds the detective slides
+    a photograph across the table to the suspect and he looks down at it. The lamp swings very slightly
+    the whole time, its hard light and the shadows swaying with it. The wall behind the detective, never
+    shown in the still, is green with a barred window. No readable text, no weapons.
+  clip: {duration: 4, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Three people, their clothes, the suspect's bruise on his left cheekbone"
+      - "One swinging lamp as the only light"
+      - "The photo slid across at 2 s"
+    members:
+      - {name: "Over the detective's shoulder", prompt: "Behind her right shoulder onto the suspect's face.", checks: [[prompt_adherence, "Is her shoulder in the foreground and his face sharp?"], [prompt_adherence, "Does the photo arrive in front of him at about 2 s?"]]}
+      - {name: "Over the suspect's shoulder", prompt: "Behind his left shoulder onto the detective's face, the unseen wall behind her.", checks: [[prompt_adherence, "Is the wall behind her green with a barred window?"], [prompt_adherence, "Is it a true reverse of the first clip?"]]}
+      - {name: "Top-down past the lamp", prompt: "Straight down from beside the lamp shade.", checks: [[prompt_adherence, "Is it straight down with the shade at the edge?"], [motion_coherence, "Does the photo slide across the table from her side?"]]}
+      - {name: "Hands insert", prompt: "Close on the table as the photo slides into his hands.", checks: [[visual_quality, "Are both his hands natural?"], [prompt_adherence, "Does the hard top light sway with the lamp?"]]}
+  deliverable: "Four 4-second clips, 16:9."
+  checks:
+    - [set_consistency, "Are the three people the same in all four clips?"]
+    - [set_consistency, "Does the photo slide at the same moment in all four?"]
+    - [prompt_adherence, "Do the two over-the-shoulders keep the screen direction consistent?"]
+    - [prompt_adherence, "Is the swaying lamp the only light in all four?"]
+    - [physics_plausibility, "Do shadows sway with the lamp?"]
+    - [set_consistency, "Is the bruise on his left cheekbone wherever visible?"]
+    - [prompt_adherence, "Does each clip come from its described set-up?"]
+    - [temporal_consistency, "Is there no morphing of faces or hands?"]
+    - [prompt_adherence, "Are there only three people?"]
+    - [text_accuracy, "Is no text readable on the file or photo?"]
+    - [prompt_adherence, "Is there no weapon?"]
+    - [visual_quality, "Is each clip clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Four image-to-video calls from the same still; set agreement needs the set review."}
+
+- id: VCOV-FLM-07
+  title: "A full 360-degree orbit round the stopped bike; dent stays right, thread stays left"
+  persona: "Second-unit cinematographer previewing an orbit for the road film's poster shot."
+  evidence: "One-sided details flip when a model generates the far side of an object."
+  levers: [camera-move, identity, unseen, light-lock, locale]
+  inputs: [{source: SRC-HERO-BIKE, role: first_frame}]
+  prompt: |
+    Start on this photo of a rider on a stopped black motorcycle on a desert highway at harsh noon, and
+    make a 12-second full 360-degree orbit round bike and rider at standing height, clockwise seen from
+    above, at a steady speed, ending back where it began. The bike's dent is only on the right side of
+    the tank and the red thread only on the left grip; olive saddlebags on both sides; round chrome
+    headlamp. The rider sits still in sunglasses, brown leather jacket over a white kurta, short beard;
+    only his head turns slightly to follow the camera. Noon sun almost overhead: short shadows under bike
+    and rider that do not swing. Heat haze on the road. No brand marks, no plate text.
+  clip: {duration: 12, aspect: "16:9", camera: "full 360-degree orbit at standing height, constant speed"}
+  deliverable: "One 12-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a full 360-degree orbit ending where it began?"]
+    - [prompt_adherence, "Is the orbit at constant speed and height?"]
+    - [reference_fidelity, "Is the dent only on the right side of the tank whenever that side shows?"]
+    - [reference_fidelity, "Is the thread only on the left grip?"]
+    - [reference_fidelity, "Are saddlebags on both sides?"]
+    - [reference_fidelity, "Does the rider stay the same man throughout?"]
+    - [physics_plausibility, "Do the short shadows stay under bike and rider without swinging?"]
+    - [temporal_consistency, "Does the bike keep its shape all the way round, with no morphing?"]
+    - [physics_plausibility, "Is there heat haze on the road?"]
+    - [prompt_adherence, "Are there no brand marks or plate text?"]
+    - [prompt_adherence, "Is the rider the only person?"]
+    - [visual_quality, "Is the frame clean throughout?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-FLM-08
+  title: "A drone rise from knee height to 30 m straight up over the horse, ending top-down"
+  persona: "Director of a Rajasthani period film previewing a signature drone move."
+  evidence: "Named camera moves are often replaced by a generic push or orbit."
+  levers: [camera-move, end-frame, light-lock, identity, locale]
+  inputs: [{source: SRC-HORSE-RIDER, role: first_frame}]
+  prompt: |
+    Start on this photo of a rider in an orange turban on a dark-bay Marwari horse in profile on Thar
+    dunes just after sunrise, and make an 8-second drone move: the camera rises straight up from knee
+    height while tilting down, so that by 8 seconds it is 30 metres up looking straight down at horse and
+    rider, small in the centre of rippled sand, their long shadow stretching to the right. The horse
+    shifts its weight and flicks its tail; the rider stays still. The white blaze and the white sock on
+    the front left leg stay visible as long as they can be seen. The sun stays just above the dunes on the
+    left. No other people or animals.
+  clip: {duration: 8, aspect: "16:9", camera: "vertical rise from knee height to 30 m, tilting down to top-down"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the camera rise straight up rather than orbit or push?"]
+    - [prompt_adherence, "Does it end straight top-down at about 30 m?"]
+    - [prompt_adherence, "Are horse and rider small in the centre at the end?"]
+    - [physics_plausibility, "Does the long shadow stretch to the right throughout?"]
+    - [prompt_adherence, "Does the sun stay just above the dunes on the left?"]
+    - [reference_fidelity, "Is the white sock on the front left leg while visible?"]
+    - [motion_coherence, "Does the horse shift its weight and flick its tail naturally?"]
+    - [temporal_consistency, "Is there no morphing of horse or rider?"]
+    - [physics_plausibility, "Do the dune ripples hold their pattern as the camera rises?"]
+    - [prompt_adherence, "Are there no other people or animals?"]
+    - [visual_quality, "Is the horse's anatomy correct?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-FLM-09
+  title: "Four dinner coverage clips: overhead master, a leaf insert, the grandfather's eyeline, the sambar bucket"
+  persona: "Food stylist and DP on a Tamil family drama planning coverage that must cut together."
+  evidence: "Dish layouts drift between inserts and the master; in motion hands also move food."
+  levers: [set, layout, count, locale, camera]
+  inputs: [{source: SRC-THALI-DINNER, role: first_frame}]
+  prompt: |
+    This still is a South Indian family dinner on the floor: five people in a U shape, each with a banana
+    leaf holding rice in the centre, beans poriyal at the top left, mango pickle at the top right and a
+    papad at the bottom right, a brass tumbler to the right of every leaf, a steel sambar bucket in the
+    middle, warm tungsten light from above. Make four 4-second clips of the same moment. In every clip,
+    at 2 seconds the girl in the yellow frock breaks her papad in two. Everyone else eats with their
+    right hands. The dish layouts stay exactly as in the still. No cutlery, no text.
+  clip: {duration: 4, aspect: "16:9", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Five people in the same order and clothes"
+      - "The same dish layout on every leaf; a tumbler right of every leaf"
+      - "The girl breaks her papad at 2 s"
+    members:
+      - {name: "Overhead master", prompt: "Straight down over the U.", checks: [[prompt_adherence, "Are there five leaves and five people?"], [prompt_adherence, "Does the girl break her papad at about 2 s?"]]}
+      - {name: "Girl's leaf insert", prompt: "Straight down on the girl's leaf only as she breaks the papad.", checks: [[prompt_adherence, "Is the papad at the bottom right of her leaf before she breaks it?"], [visual_quality, "Are her hands natural?"]]}
+      - {name: "Grandfather's eyeline", prompt: "At his seated eye height, looking along the U.", checks: [[prompt_adherence, "Is the order along the U correct?"], [motion_coherence, "Do people eat naturally with their right hands?"]]}
+      - {name: "Sambar bucket", prompt: "Close on the bucket as the mother ladles from it.", checks: [[physics_plausibility, "Does the sambar pour naturally from the ladle?"], [set_consistency, "Is it the same steel bucket?"]]}
+  deliverable: "Four 4-second clips, 16:9."
+  checks:
+    - [prompt_adherence, "Is every leaf's dish layout the same as the still in all four clips?"]
+    - [set_consistency, "Are the five people the same in all four?"]
+    - [set_consistency, "Does the papad break happen at the same moment in all four?"]
+    - [prompt_adherence, "Are there five people wherever the whole family is seen?"]
+    - [prompt_adherence, "Is the light warm from above in all four?"]
+    - [prompt_adherence, "Does each clip come from its described set-up?"]
+    - [motion_coherence, "Is eating with hands natural, with no morphing fingers?"]
+    - [prompt_adherence, "Is there no cutlery?"]
+    - [set_consistency, "Is a tumbler right of every leaf in all four?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is food free of melting artefacts?"]
+    - [prompt_adherence, "Does it read as a Tamil home?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Four image-to-video calls from the same still; set agreement needs the set review."}
+
+- id: VCOV-FLM-10
+  title: "A Steadicam walk through a described 1960s Bombay jazz bar, door to stage"
+  persona: "Previs supervisor on a noir feature testing a long take from text alone."
+  evidence: "A space revealed by a moving camera must stay one consistent room."
+  levers: [camera-move, layout, light-lock, long-brief, count]
+  prompt: |
+    A 12-second Steadicam shot through a 1960s Bombay jazz bar at night, photoreal film look. The camera
+    enters through the front door and walks the length of the room to the small raised stage. Along the
+    left wall, a long mahogany bar with six red leather stools and mirrored shelves of bottles with blank
+    labels; a bartender in a white jacket polishes a glass. Along the right wall, three round tables, each
+    with a green-shaded brass lamp, the only warm lights; a woman in a black sari sits alone at the middle
+    table and turns her head to watch the camera pass at about 6 seconds. At the back, an upright piano
+    and a microphone stand on the stage. A slow ceiling fan; cigarette haze in the lamp light. No text.
+  clip: {duration: 12, aspect: "2.39:1", camera: "Steadicam walk from the door to the stage"}
+  deliverable: "One 12-second clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Is the bar on the left, the tables on the right and the stage at the back throughout?"]
+    - [prompt_adherence, "Are there six stools and three tables?"]
+    - [prompt_adherence, "Are the three green-shaded lamps the only warm lights?"]
+    - [prompt_adherence, "Does the woman turn her head at about 6 s?"]
+    - [prompt_adherence, "Is it one continuous walk from the door to the stage?"]
+    - [physics_plausibility, "Do objects pass at speeds set by their distance?"]
+    - [physics_plausibility, "Do the mirrors behind the bar reflect the room correctly as the camera passes?"]
+    - [motion_coherence, "Does the bartender polish naturally?"]
+    - [motion_coherence, "Is there no warping of the room?"]
+    - [prompt_adherence, "Are there only two people besides any background?"]
+    - [text_accuracy, "Are the bottle labels blank?"]
+    - [style, "Is it a consistent film-noir look with haze?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCOV-FLM-11
+  title: "A drone pass over a described waterfall and temple ruin; layers hold their depths"
+  persona: "Location manager pitching a monsoon location with a moving preview."
+  evidence: "Generated aerials often flatten into a sliding picture."
+  levers: [camera-move, parallax, layout, locale, light-lock]
+  prompt: |
+    A 10-second drone shot in the Western Ghats in the monsoon, overcast with drizzle and mist. The
+    drone flies forward at 20 metres over a stone footbridge, towards a tall narrow waterfall dropping
+    into a pool on the left with a small ruined stone temple with a broken shikhara on a rock shelf to
+    the right of the pool and one red-flowering tree beside it. Dense forest all round. As the drone
+    advances, the foreground canopy slides under the frame fast, the bridge and pool slower, the falls
+    and cliff slowest; mist drifts between the layers. By 10 seconds the falls fill the left half and
+    the temple the right third. No people, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "forward drone flight at 20 m"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the foreground canopy slide faster than the bridge, and the falls slowest?"]
+    - [prompt_adherence, "Is the waterfall on the left and the temple on the right throughout?"]
+    - [prompt_adherence, "Is the shikhara broken?"]
+    - [prompt_adherence, "Is there exactly one red-flowering tree by the temple?"]
+    - [physics_plausibility, "Does the waterfall flow and churn the pool continuously?"]
+    - [physics_plausibility, "Does mist drift between the layers?"]
+    - [prompt_adherence, "Is it a steady forward flight?"]
+    - [composition, "Do the falls fill the left half and the temple the right third at the end?"]
+    - [prompt_adherence, "Is it overcast with drizzle?"]
+    - [motion_coherence, "Is there no warping of the landscape?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCOV-FLM-12
+  title: "A grey previs crane move across a described brutalist courtyard"
+  persona: "Previs artist blocking a crane move before the set is built."
+  evidence: "Previs moves must follow a specified path and keep the set geometry."
+  levers: [camera-move, layout, count, end-frame, long-brief]
+  prompt: |
+    A 10-second grey-shaded untextured 3D previs shot of a set: a square concrete courtyard 20 metres
+    across; a tall blank wall with one narrow vertical slot window on the north; a ramp rising along the
+    east wall to a balcony; a 3-metre entrance gap in the south wall; a row of five square columns on the
+    west; a shallow square pool with one cube sculpture in the centre; low sun from the west. The camera
+    starts at the entrance at 1.5 metres looking north, cranes up to 8 metres while moving forward to the
+    pool's edge, and ends looking down at the cube with the slot window behind it at the top of frame.
+    One grey mannequin stands on the balcony throughout. No textures, no text.
+  clip: {duration: 10, aspect: "2.39:1", camera: "crane up from 1.5 m to 8 m while moving forward to the pool"}
+  deliverable: "One 10-second clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Does it start at the entrance looking north and end looking down at the cube?"]
+    - [prompt_adherence, "Does it crane up while moving forward, at a steady pace?"]
+    - [prompt_adherence, "Are there five columns on the west side?"]
+    - [prompt_adherence, "Is the ramp on the east and the slot window on the north?"]
+    - [prompt_adherence, "Is the slot window behind the cube at the end?"]
+    - [prompt_adherence, "Is there one mannequin on the balcony throughout?"]
+    - [prompt_adherence, "Do shadows come from a low west sun?"]
+    - [style, "Is everything untextured grey?"]
+    - [temporal_consistency, "Is the geometry stable, with no warping?"]
+    - [physics_plausibility, "Do columns pass at the right parallax?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

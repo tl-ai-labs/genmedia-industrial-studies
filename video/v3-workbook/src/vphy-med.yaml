@@ -1,0 +1,220 @@
+# Physics and depth in motion — Media, publishing & events scenarios. Slots: vphy.yaml.
+code: VPHY
+scenarios:
+
+- id: VPHY-MED-01
+  seed: true
+  title: "A concert crowd as the coloured washes sweep: colour and shadow on every head follow the beams"
+  persona: "Festival media desk checking whether generated crowd clips survive a lighting designer's eye."
+  evidence: "The image seed PHY-MED-01 checks coloured light on a still crowd; when the washes sweep, every lit edge and shadow must move with its source."
+  levers: [physics, light-lock, timing, count, locale]
+  prompt: |
+    An 8-second shot from inside a Mumbai concert crowd at night, 35 mm at standing height, locked off.
+    The stage fills the back third, a singer in a white kurta at the centre mic in a white follow spot.
+    Two moving washes only: a magenta wash from a truss at stage left and a cyan wash from a truss at
+    stage right, both visible as beams in haze. 0–4 s: the magenta wash sweeps slowly from the stage out
+    over the left half of the crowd and back; 4–8 s: the cyan wash sweeps over the right half and back.
+    As each beam passes, the heads and shoulders it hits light up in its colour on the side facing it,
+    and their shadows swing on the people behind them in the opposite direction; when the beam leaves,
+    they fall dark again. Four phones held up light only their holders' faces from below. The singer's
+    shadow from the follow spot stays still on the stage floor behind her. No other light sources, no
+    text, no logos.
+  clip: {duration: 8, aspect: "16:9", camera: "locked off from inside the crowd"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does magenta sweep the left half in 0–4 s and cyan the right half in 4–8 s?"]
+    - [prompt_adherence, "Do heads light up in the beam's colour on the side facing it as it passes?"]
+    - [physics_plausibility, "Do shadows swing on the people behind in the opposite direction to the beam?"]
+    - [prompt_adherence, "Do heads fall dark again when the beam leaves?"]
+    - [physics_plausibility, "Are the beams visible in haze, starting at their trusses?"]
+    - [prompt_adherence, "Are there exactly four phones lighting faces from below?"]
+    - [physics_plausibility, "Does the singer's shadow stay still on the stage floor?"]
+    - [prompt_adherence, "Is there no light from a direction with no source?"]
+    - [motion_coherence, "Is the crowd's movement natural, with no melting bodies?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+    - [prompt_adherence, "Does the stage fill the back third with the singer centred?"]
+    - [text_accuracy, "Is there no text or logo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-MED-02
+  title: "A crystal award turns slowly on a podium; the stage lights and backdrop pattern slide through its facets"
+  persona: "Awards-show producer previewing a trophy insert for the broadcast."
+  evidence: "Faceted glass must refract and reflect the scene in a way that moves with the turn."
+  levers: [physics, light-lock, timing, camera, layout]
+  prompt: |
+    A 6-second close-up of a faceted crystal award, a tall tapered prism with a star cut at the top, on a
+    black podium on a stage. Behind it, out of focus, a backdrop of a gold geometric pattern and a row of
+    five white stage spots. The award turns slowly 90 degrees on a hidden turntable. As it turns, the spots
+    and the gold pattern are seen through and in its facets, bent and repeated, sliding across the facets in
+    the direction the turn sets; small rainbow flares appear on the edges. At 4 seconds one spot brightens.
+    Locked off. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, close-up"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Are the spots and pattern seen bent through the facets?"]
+    - [physics_plausibility, "Do they slide across the facets consistently with the turn?"]
+    - [physics_plausibility, "Are there small rainbow flares on edges?"]
+    - [prompt_adherence, "Does a spot brighten at about 4 seconds?"]
+    - [prompt_adherence, "Are there five stage spots?"]
+    - [motion_coherence, "Is the turn a smooth 90 degrees?"]
+    - [temporal_consistency, "Does the award keep its shape?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [prompt_adherence, "Is the backdrop gold and out of focus?"]
+    - [prompt_adherence, "Is the award on a black podium?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the crystal clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-MED-03
+  title: "Projection-mapped ghats at Varanasi; boats cross and the river's reflection of the projection ripples behind them"
+  persona: "Events agency previewing a projection show on the ghats for a festival client."
+  evidence: "Projected light on uneven steps and its reflection on moving water."
+  levers: [physics, light-lock, locale, timing, parallax]
+  prompt: |
+    A 10-second shot from a boat on the Ganga at night, drifting slowly left, looking at the ghats at
+    Varanasi: broad stone steps rising to old temple facades. A projection show maps onto the facades and
+    steps: a slow wave of saffron and blue lotus patterns that flows from left to right, bending over every
+    step and pillar. The river reflects the projection in long wobbling streaks. At 4 seconds two small
+    wooden boats with lamps cross between the camera and the ghats; their wakes break the reflected streaks,
+    which re-form behind them. Diyas float on the water. No text.
+  clip: {duration: 10, aspect: "16:9", camera: "drifting slowly left from a boat"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the projection bend over the steps and pillars?"]
+    - [motion_coherence, "Does the pattern flow left to right?"]
+    - [physics_plausibility, "Does the river reflect the projection in wobbling streaks?"]
+    - [prompt_adherence, "Do two boats cross at about 4 seconds?"]
+    - [physics_plausibility, "Do the wakes break the reflections, which re-form?"]
+    - [physics_plausibility, "Do the ghats pass with parallax as the boat drifts?"]
+    - [prompt_adherence, "Does the camera drift slowly left?"]
+    - [prompt_adherence, "Does it read as Varanasi's ghats?"]
+    - [prompt_adherence, "Is the projection the main light on the facades?"]
+    - [prompt_adherence, "Do diyas float on the water?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame free of flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-MED-04
+  title: "Confetti cannons fire over a fashion-show finale; confetti flutters down and settles on the runway and models"
+  persona: "Fashion-week producer previewing the finale moment for the broadcast."
+  evidence: "Confetti in generated clips falls like snow or passes through people."
+  levers: [physics, timing, time-code, count, locale]
+  prompt: |
+    An 8-second shot from the end of a long runway at a Mumbai fashion week finale, under bright white show
+    lights. Eight models in ivory and gold walk towards the camera in a line. At 00:00:02:00 two confetti
+    cannons at the runway's sides fire; gold and white paper confetti bursts high, spins and flutters down
+    slowly, each piece turning and catching the light. By 00:00:06:00 confetti rests on the runway floor and
+    on the models' shoulders and hair, and some slides off a sleeve as a model turns. No confetti passes
+    through anyone. The audience on both sides claps. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "locked off at the runway end"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Do the cannons fire at about 2 seconds?"]
+    - [physics_plausibility, "Does the confetti spin and flutter down slowly?"]
+    - [physics_plausibility, "Does it rest on the floor and on shoulders and hair by about 6 seconds?"]
+    - [physics_plausibility, "Does some slide off a sleeve as a model turns?"]
+    - [physics_plausibility, "Does no confetti pass through anyone?"]
+    - [prompt_adherence, "Are there eight models?"]
+    - [prompt_adherence, "Are there two cannons?"]
+    - [prompt_adherence, "Does the confetti catch the show lights?"]
+    - [motion_coherence, "Do the models walk naturally?"]
+    - [prompt_adherence, "Are the models in ivory and gold?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-MED-05
+  title: "A reporter walks to camera along a colonnade; pillars in front and behind slide at their own speeds"
+  persona: "TV news producer previewing a walk-and-talk set-up for a heritage story."
+  evidence: "Foreground and background layers moving at one speed is the giveaway of generated depth."
+  levers: [parallax, camera-move, identity, light-lock, locale]
+  prompt: |
+    An 8-second shot of a woman reporter of about thirty-five, in a mustard kurta and a black shoulder bag,
+    walking towards the camera along the colonnade of a Mughal-era sandstone building in Delhi, talking to
+    camera. The camera tracks backwards with her and slightly to the side, so a row of pillars in the
+    foreground passes between camera and reporter, and a second row behind her. The foreground pillars sweep
+    past quickly and soft; the far row moves slowly; she stays the same size in frame. Bright daylight, sharp
+    shadows of the pillars on the floor. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "tracking back with her, slightly to the side"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Do foreground pillars pass faster than the far row?"]
+    - [physics_plausibility, "Are foreground pillars soft?"]
+    - [prompt_adherence, "Does the camera track back with her?"]
+    - [composition, "Does she stay the same size in frame?"]
+    - [prompt_adherence, "Is she in a mustard kurta with a black bag?"]
+    - [prompt_adherence, "Are pillar shadows sharp on the floor?"]
+    - [motion_coherence, "Is her walk and talk natural?"]
+    - [prompt_adherence, "Does it read as a Mughal sandstone building?"]
+    - [motion_coherence, "Is there no warping of pillars?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is her face natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-MED-06
+  title: "The studio key light pans from front left to front right; the anchor's head shadow on the screen moves across"
+  persona: "Broadcast lighting director testing a lighting move on the news set."
+  evidence: "When a light moves, shadows must move opposite and highlights must follow."
+  levers: [physics, light-lock, identity, timing, keep-rest]
+  inputs: [{source: SRC-MED-NEWSROOM, role: first_frame}]
+  prompt: |
+    Start on this frame of a Hindi news anchor at a curved white desk and make an 8-second locked-off clip.
+    Over the eight seconds the soft key light moves steadily from front left to front right. His head and
+    shoulders cast a soft shadow on the skyline screen behind him, which slides from the right of him to the
+    left of him as the light moves; the highlights on his face, glasses and forehead move from his right
+    side to his left side; the shadow under his nose swings with them. He keeps reading to camera. His face,
+    glasses, suit and tie are unchanged. No graphics.
+  clip: {duration: 8, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does his shadow on the screen slide from his right to his left?"]
+    - [prompt_adherence, "Do the face highlights move across as the light moves?"]
+    - [physics_plausibility, "Does the nose shadow swing with the light?"]
+    - [prompt_adherence, "Is the light's move steady over eight seconds?"]
+    - [reference_fidelity, "Is the anchor unchanged?"]
+    - [preservation, "Are the desk and screen unchanged?"]
+    - [prompt_adherence, "Do the glasses' reflections move with the light?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [motion_coherence, "Is his reading natural?"]
+    - [prompt_adherence, "Are there no graphics?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is his face free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VPHY-MED-07
+  title: "Add a giant beach ball bounced over the crowd; raised hands push it and it lands on heads, never passing through them"
+  persona: "Festival's video editor adding a crowd moment to concert footage."
+  evidence: "Added objects in a crowd must make contact with hands and heads, not pass through."
+  levers: [physics, keep-rest, timing, time-code, count]
+  inputs: [{source: SRC-VCLIP-CONCERT-CROWD, role: source}]
+  prompt: |
+    In this 8-second concert clip, add a giant white-and-magenta striped beach ball about 1.5 metres across,
+    bounced over the crowd. It enters from the left at 00:00:01:00; raised hands push it up and to the right
+    three times, each push visibly touching it, and it lands briefly on heads between pushes, dimpling where
+    it touches, then is pushed out of frame right by 00:00:07:00. It catches the magenta and cyan beams and
+    casts a soft shadow on the crowd. It never passes through a hand or head. The band, the singer's move,
+    the LED, the three phones and the push in are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Does the ball enter at about 1 second and leave by about 7?"]
+    - [prompt_adherence, "Is it pushed three times?"]
+    - [physics_plausibility, "Do hands visibly touch it at each push?"]
+    - [physics_plausibility, "Does it dimple where it touches heads?"]
+    - [physics_plausibility, "Does it never pass through a hand or head?"]
+    - [prompt_adherence, "Does it catch the coloured beams?"]
+    - [physics_plausibility, "Does it cast a soft shadow on the crowd?"]
+    - [preservation, "Are the band and LED unchanged?"]
+    - [preservation, "Is the push in unchanged?"]
+    - [motion_coherence, "Is its flight believable for a light ball?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is there no edge flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

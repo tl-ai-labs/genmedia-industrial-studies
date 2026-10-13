@@ -1,0 +1,728 @@
+# Multi-angle coverage — Film, OTT & micro-drama scenarios. Slots: cov.yaml.
+code: COV
+scenarios:
+
+- id: COV-FLM-01
+  seed: true
+  sahil: angles
+  title: "Six-shot coverage of two children under a banyan, from one approved still"
+  persona: "Director of photography on a Hindi coming-of-age feature, building the shot list for a location day from the one still the director approved."
+  evidence: "Sahil's screen-share, 'Angles' (screenshots 239–243): a base image of two children under a tree, then wide establishment, two-shot, close-up left-angled and close-up right-angle, each its own prompt. Call at 17:26: 'five shots of the same setup from different camera angles: is there consistency?'"
+  levers: [set, unseen, identity, camera, light-lock, layout, locale]
+  inputs:
+    - {source: SRC-KIDS-TREE, role: source, note: "the approved frame; every member starts from it"}
+  prompt: |
+    This photo is the approved frame of a scene in a feature film: two Indian school children
+    sitting on the root of an old banyan tree about twenty minutes before sunset. Produce one new
+    camera angle of this exact moment, as if a second camera had been standing elsewhere on the
+    same location at the same second. It is the same two children, the same clothes, the same
+    tree, the same fence, the same bag and the same low sun behind the tree. Nobody moves and
+    nothing is added: no other people, no animals, no vehicles, no text. Keep the warm backlight
+    coming from behind the tree, so when the camera moves around the children the sun stays on
+    the far side of the tree from the original camera, and every shadow agrees with that. Match
+    the original's colour, film grain and soft haze so the new shot cuts straight into the
+    original. Photoreal cinema still, 16:9, no borders, no labels. The camera position for this
+    shot is described below.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Both children's faces, hair and ages: the girl's two plaits with red ribbons, the boy's short side-parted hair"
+      - "Uniforms: white shirts, the boy's navy shorts, the girl's navy pinafore"
+      - "Seating: the boy on the girl's right-hand side (frame left in the original), shoulders almost touching"
+      - "The brown canvas school bag against the root on the girl's other side"
+      - "The banyan's root shape, the hanging aerial roots and the wooden rail fence"
+      - "The low warm sun behind the tree; time of day and colour"
+      - "Exactly two people in every shot where people are visible"
+    members:
+      - name: "Wide establishing"
+        prompt: "Camera pulled back about twenty-five metres from the original position and raised to about three metres, 24 mm. The whole banyan canopy, the aerial roots, the fence and the field are in frame; the children are small, under a tenth of frame height, at the base of the trunk."
+        checks:
+          - [prompt_adherence, "Is the whole canopy in frame with the children under a tenth of frame height?"]
+          - [prompt_adherence, "Is the fence on the same side of the tree as in the original?"]
+          - [prompt_adherence, "Is the sun still behind the tree from this camera, lighting the canopy edges?"]
+      - name: "Two-shot"
+        prompt: "Medium two-shot from the original direction, closer: the children from mid-thigh up, both faces sharp, 50 mm at their seated eye height. The fence is soft in the background on the right."
+        checks:
+          - [prompt_adherence, "Are both children framed from about mid-thigh up?"]
+          - [set_consistency, "Do both faces match the original closely enough to be the same child actors?"]
+          - [prompt_adherence, "Is the boy on frame left and the girl on frame right?"]
+      - name: "Close-up on the boy, angled from the left"
+        prompt: "Close-up on the boy, camera moved about thirty degrees round to frame left of the original and set at his eye height, 85 mm. His face fills about half the frame height; the girl's shoulder is a soft shape at the right edge."
+        checks:
+          - [prompt_adherence, "Is the boy's face about half the frame height, seen from his front-left?"]
+          - [prompt_adherence, "Is the girl's shoulder at the right edge and out of focus?"]
+          - [prompt_adherence, "Is there warm rim light on his hair from behind?"]
+      - name: "Close-up on the girl, angled from the right"
+        prompt: "Close-up on the girl, camera moved about thirty degrees round to frame right of the original and set at her eye height, 85 mm. Her face fills about half the frame height; one red ribbon is visible; the boy's shoulder is a soft shape at the left edge."
+        checks:
+          - [prompt_adherence, "Is the girl's face about half the frame height, seen from her front-right?"]
+          - [reference_fidelity, "Is at least one red ribbon visible on a plait?"]
+          - [prompt_adherence, "Is the boy's shoulder at the left edge and out of focus?"]
+      - name: "Reverse over the shoulders"
+        prompt: "The reverse angle: camera behind the children at shoulder height, looking past the backs of their heads towards where the original camera stood. In front of them, a dry field slopes down to a dirt track and a line of palms. The sun is now behind this camera, so the backs of their heads are lit warm and their shadows fall forward into the frame."
+        checks:
+          - [prompt_adherence, "Is the camera behind the children, seeing the backs of their heads?"]
+          - [prompt_adherence, "Is the girl now on frame left and the boy on frame right, as a true reverse requires?"]
+          - [physics_plausibility, "Do their shadows fall forward into the frame, away from this camera?"]
+          - [prompt_adherence, "Does the view show a field sloping to a track and palms, with no fence in front of them?"]
+      - name: "Overhead"
+        prompt: "Straight down from about six metres, through a gap in the canopy. The two children sit on the root with the radiating roots around them; the bag is beside the girl; long shadows point towards where the original camera stood."
+        checks:
+          - [prompt_adherence, "Is the view straight down, with no horizon visible?"]
+          - [prompt_adherence, "Is the bag beside the girl, on the side away from the boy?"]
+          - [physics_plausibility, "Do the shadows point away from the sun, towards the original camera's side?"]
+  deliverable: "Six images, 16:9, one per member, each cut-ready against the original frame."
+  checks:
+    - [set_consistency, "Across all six shots, are the two children recognisably the same two children as in the original?"]
+    - [set_consistency, "Is the girl's hair in two plaits with red ribbons in every shot where her head is visible?"]
+    - [set_consistency, "Are the uniforms the same in every shot: white shirts, navy shorts on the boy, navy pinafore on the girl?"]
+    - [set_consistency, "Is the boy on the girl's right-hand side in every shot, flipping on screen only in the reverse?"]
+    - [set_consistency, "Is the school bag beside the girl, on the side away from the boy, wherever it is in frame?"]
+    - [set_consistency, "Do the root, the aerial roots and the fence keep the same shape and position relative to the tree?"]
+    - [prompt_adherence, "Does the sun stay behind the tree relative to the original camera in every shot?"]
+    - [prompt_adherence, "Are the colour temperature, grain and haze close enough that the shots cut together?"]
+    - [prompt_adherence, "Are there exactly two people in every shot that shows people, and no animals or vehicles?"]
+    - [prompt_adherence, "Are the six camera positions clearly different from each other and from the original?"]
+    - [prompt_adherence, "Does each shot's lens feel match its description (24 mm wide, 50 mm, 85 mm close-ups)?"]
+    - [set_consistency, "Do the children look about ten years old in every shot, with no ageing or change of build?"]
+    - [physics_plausibility, "Do shadows in every shot fall away from the sun's position?"]
+    - [visual_quality, "Are hands, fingers and faces free of artefacts in every shot?"]
+    - [text_accuracy, "Is there no text, logo or label anywhere in the six images?"]
+    - [prompt_adherence, "Does every shot read as the same second in time, with nobody having moved?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each member runs as its own image edit from the same base. The judge scores one image at a time, so whole-set agreement needs the set review."}
+  video_followon: "V1 coverage: a camera move from the wide to the two-shot through the same space; V2: the two-shot as a storyboard panel to shot."
+
+- id: COV-FLM-02
+  title: "Reverse angle on the headphone man: the street behind the camera, invented and consistent"
+  persona: "Second-unit director on an OTT drama who has one approved frame of the lead at a crossing and needs the opposite side for the cut."
+  evidence: "Sahil's screen-share, 'Facing Headphone Man (Opposite Side)' (screenshot 244). Earlier bank IMG-VIEW-56 (reverse angle on a group) was in the high tier."
+  levers: [set, unseen, identity, camera, light-lock, layout]
+  inputs: [{source: SRC-CROSSWALK, role: source, note: "the approved frame"}]
+  prompt: |
+    This is the approved frame of a scene: a man in a mustard-yellow shirt and black headphones
+    standing on a zebra crossing, with a two-car accident and three arguing men behind him.
+    Produce one new camera angle of this same second, from the position described below, as if a
+    second camera were rolling. He does not move. The accident, the steam and the three men stay
+    exactly where they are. The sun is low on the left of the original frame, so when the camera
+    moves, his lit side and the direction of every shadow must follow. The street behind the
+    original camera, which the photo never shows, is a row of low shops with blank awnings, a
+    bus stop and parked scooters; invent it once and keep it the same. Photoreal film still, 16:9,
+    no readable text or number plates.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "His face, mustard shirt, dark jeans and black over-ear headphones"
+      - "The silver sedan with crumpled bonnet and steam, the blue hatchback, three men beside them"
+      - "Sun from the left of the original frame; long shadows to the right of it"
+      - "The unseen street: low shops with blank awnings, a bus stop, parked scooters"
+    members:
+      - {name: "Reverse, from behind the accident", prompt: "Camera on the far side of the crossing behind the accident, chest height, 40 mm, looking back at him over the sedan's roof; he faces the camera, the unseen street behind him.", checks: [[prompt_adherence, "Is he seen from the accident side, past the sedan?"], [prompt_adherence, "Is the street behind him shops, a bus stop and scooters?"], [prompt_adherence, "Is his lit side now on frame right?"]]}
+      - {name: "Profile", prompt: "Camera on the kerb to his left, 85 mm, a clean profile of him with the accident soft on one side of frame and the unseen street on the other.", checks: [[prompt_adherence, "Is it a clean side profile?"], [set_consistency, "Are the headphones on and the same?"]]}
+      - {name: "High angle", prompt: "Camera on a first-floor balcony about six metres up, looking down at the crossing, 35 mm: the stripes, him, the two cars and the three men all visible.", checks: [[prompt_adherence, "Are there exactly three men by the cars?"], [physics_plausibility, "Do the shadows fall the same way as in the original?"]]}
+      - {name: "Low wide", prompt: "Camera at kerb height in front of him, 20 mm, looking up; the stripes lead to his feet and the steam rises against the sky.", checks: [[prompt_adherence, "Is the camera at kerb height looking up?"], [prompt_adherence, "Is the steam behind him, above the sedan?"]]}
+      - {name: "Insert", prompt: "Close insert of his hand at his side and the headphone cable, 100 mm, the stripes soft behind.", checks: [[reference_fidelity, "Does the shirt fabric and colour match?"], [visual_quality, "Is the hand natural with five fingers?"]]}
+  deliverable: "Five images, 16:9, one per member."
+  checks:
+    - [set_consistency, "Is he the same man in all five shots?"]
+    - [set_consistency, "Are the shirt, jeans and headphones the same in all five?"]
+    - [set_consistency, "Are the two cars the same models and colours, with the same damage, wherever seen?"]
+    - [set_consistency, "Are there exactly three men by the cars in every shot that shows them?"]
+    - [set_consistency, "Is the steam rising from the sedan's bonnet in every shot that shows it?"]
+    - [set_consistency, "Is the invented street the same in the shots that show it?"]
+    - [prompt_adherence, "Does the sun stay on one side of the scene, with his lit side following the camera?"]
+    - [physics_plausibility, "Do all shadows agree with that sun?"]
+    - [prompt_adherence, "Do the five camera positions match their descriptions?"]
+    - [prompt_adherence, "Does every shot read as the same second, with no one having moved?"]
+    - [text_accuracy, "Are there no readable signs or number plates?"]
+    - [visual_quality, "Are faces and hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each member is its own image edit from the same base; set agreement needs the set review."}
+  video_followon: "V1: an arc move from the original angle round to the reverse."
+
+- id: COV-FLM-03
+  title: "Haldi courtyard from five angles: six people in every angle that sees them"
+  persona: "Cinematographer on a wedding web-series building coverage of the haldi scene from one location still."
+  evidence: "Earlier bank IMG-VIEW-38 (raise the camera so every face is visible) and IMG-VIEW-59 (group of seven to overhead) were in the high tier for headcount and identity."
+  levers: [set, count, identity, layout, locale, camera]
+  inputs: [{source: SRC-HALDI, role: source}]
+  prompt: |
+    This photo is a haldi ceremony in a haveli courtyard with exactly six people: the bride on the
+    low stool, her mother pouring water from a brass lota, two cousins in pink kurtas rubbing
+    turmeric on her arms, the grandfather clapping on a cane chair at the right edge, and a boy in
+    an orange kurta holding a brass bowl behind the bride. Produce one new angle of this same
+    moment from the camera position described below. Nobody moves; nobody is added or lost; each
+    person keeps their face, clothes and action. Keep the marigold strings, the sandstone arch and
+    the yellow-splashed floor. Soft overcast daylight. Photoreal, 3:2, no text, no phones.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Exactly six people, each with the same face, clothes and action"
+      - "The lota pouring, the brass bowl held by the boy"
+      - "Marigold strings, sandstone arch, yellow-splashed floor"
+    members:
+      - {name: "Over the mother's shoulder", prompt: "Camera behind the mother at her shoulder height, 35 mm, looking down at the bride's face as the water falls.", checks: [[prompt_adherence, "Is the view over the mother's shoulder onto the bride?"], [prompt_adherence, "Is the water falling from the lota?"]]}
+      - {name: "From the grandfather's chair", prompt: "Camera at the grandfather's seated eye height beside his chair, 28 mm, looking across at the group; his clapping hands soft in the foreground.", checks: [[prompt_adherence, "Are his hands in the foreground?"], [prompt_adherence, "Are the other five people all visible?"]]}
+      - {name: "Behind the bride", prompt: "Camera behind the bride, low, looking past her turmeric-covered shoulders towards the arch; the boy with the bowl is right beside camera.", checks: [[prompt_adherence, "Is the camera behind the bride?"], [prompt_adherence, "Is the boy with the bowl beside the camera?"]]}
+      - {name: "Overhead", prompt: "Straight down from the first-floor balcony, about five metres, all six people seen from above with the yellow floor around them.", checks: [[prompt_adherence, "Are there exactly six people from above?"], [prompt_adherence, "Is it straight down?"]]}
+      - {name: "Cousins close", prompt: "Close two-shot of the two cousins rubbing turmeric on the bride's arms, 85 mm, the bride's laughing face soft between them.", checks: [[reference_fidelity, "Are the cousins in pink kurtas?"], [visual_quality, "Are the hands natural?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [prompt_adherence, "Are there exactly six people in every angle that shows the whole group?"]
+    - [set_consistency, "Is each person recognisably the same in every angle?"]
+    - [set_consistency, "Are the clothes the same: yellow suit, green sari, pink kurtas, white kurta and grey jacket, orange kurta?"]
+    - [set_consistency, "Is everyone doing the same action as in the photo?"]
+    - [set_consistency, "Is the boy always behind the bride with the bowl?"]
+    - [set_consistency, "Is the grandfather always on the cane chair at the group's edge?"]
+    - [prompt_adherence, "Do the marigolds, arch and floor stay consistent with each view?"]
+    - [prompt_adherence, "Is it soft overcast daylight in all five?"]
+    - [prompt_adherence, "Does each camera position match its description?"]
+    - [prompt_adherence, "Are there no phones or cameras in anyone's hands?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces and hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a slow orbit round the stool through the same moment."
+
+- id: COV-FLM-04
+  title: "Rainy chai stall from five positions: the tube light and red board light each angle correctly"
+  persona: "Gaffer on a Mumbai noir series planning the lighting continuity of the chai-stall scene."
+  evidence: "Call at 17:26: customers find 'spatial depth is off' and consistency across angles breaks. Mixed practical light from one tube and a painted board is where angles drift."
+  levers: [set, light-lock, physics, layout, locale, camera]
+  inputs: [{source: SRC-CHAI-STALL, role: source}]
+  prompt: |
+    This is a frame of a roadside chai stall on a monsoon night: the vendor pouring tea, the young
+    man on the blue stool with a phone, the delivery rider in a red jacket, the "RAJU TEA STALL"
+    board, one cyan-white tube light under the awning as the only key light, rain and puddles.
+    Produce one new angle of the same moment from the position below. The tube light stays the
+    only key: from each new angle, faces and surfaces are lit from where the tube actually is,
+    and the puddles reflect the tube and the board from where they actually are. The phone screen
+    still lights the young man's face. Rain keeps falling. Photoreal, 16:9, no other readable text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Three people in the same places and actions"
+      - "One cyan-white tube under the awning as the key light; the phone glow on the young man"
+      - "The red-and-white board, the clock, the kettle, the blue stool"
+      - "Rain and puddles"
+    members:
+      - {name: "Behind the counter", prompt: "Camera behind the vendor at his shoulder, 28 mm, looking out over the counter at the two customers and the rainy lane.", checks: [[prompt_adherence, "Are the customers lit from above by the tube, which is now near the camera?"], [prompt_adherence, "Is the young man on frame right from this side?"]]}
+      - {name: "Low across the puddle", prompt: "Camera at puddle height across the lane, 35 mm; the stall and the board reflected upside down in the puddle in the foreground.", checks: [[physics_plausibility, "Are the board and tube reflected in the puddle, flipped?"], [prompt_adherence, "Is the camera at puddle height?"]]}
+      - {name: "Side of the stall", prompt: "Camera at the side of the shed, 50 mm, a profile line of all three people, the tube light in frame at the top.", checks: [[prompt_adherence, "Are all three people in the profile line?"], [prompt_adherence, "Is the tube visible at the top lighting them from above?"]]}
+      - {name: "Phone close-up", prompt: "Close-up of the young man's face lit by the phone, 85 mm, the tube's cyan rim on his hood.", checks: [[prompt_adherence, "Is his face lit from below by the phone, with a cyan rim from above?"], [set_consistency, "Is it the same young man in the grey hoodie?"]]}
+      - {name: "High wide", prompt: "Camera from a first-floor window opposite, looking down at the stall, 24 mm; rain streaks visible against the dark lane.", checks: [[prompt_adherence, "Is it a high view from across the lane?"], [prompt_adherence, "Is the board readable as the same board from above?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "In every angle, is the key light coming from the tube's real position?"]
+    - [prompt_adherence, "Is the light colour cyan-white from the tube, with no new warm key?"]
+    - [physics_plausibility, "Do puddle reflections show the tube and board where they really are from each angle?"]
+    - [set_consistency, "Are the three people in the same places and actions in every angle?"]
+    - [set_consistency, "Is the phone in the young man's right hand in every angle that shows it?"]
+    - [set_consistency, "Is the board the same red-on-white board wherever seen?"]
+    - [set_consistency, "Is the kettle without steam and the stool blue in every angle?"]
+    - [set_consistency, "Is the rain the same intensity in all five?"]
+    - [prompt_adherence, "Does each angle match its description?"]
+    - [text_accuracy, "Is no text other than the board readable?"]
+    - [prompt_adherence, "Are there exactly three people wherever the whole stall is seen?"]
+    - [visual_quality, "Are faces and hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a dolly from across the lane to behind the counter."
+
+- id: COV-FLM-05
+  title: "Sleeper bay from four positions: berths, trunk and suitcase keep their real sizes"
+  persona: "Production designer on a railway-set Hindi feature checking whether generated coverage respects the real bay's dimensions."
+  evidence: "Earlier bank IMG-VIEW-46 (ultra-wide to natural focal length) and IMG-VIEW-06 (room to high corner) were high tier; tight interiors are where scale drifts."
+  levers: [set, layout, camera, locale, physics]
+  inputs: [{source: SRC-TRAIN, role: source}]
+  prompt: |
+    This photo is one bay of a sleeper-class train compartment: two blue lower berths facing each
+    other, the elderly man reading on the left, the young woman with a steel tiffin on the right,
+    the green trunk under the left berth, the red suitcase on the right upper berth, the water
+    bottle by the window, the empty grey partition wall on the right. Produce one new view of the
+    same moment from the position described below. Everything keeps its real size: a berth is
+    about 1.8 metres long and 60 centimetres wide, the trunk fits under the berth, the suitcase
+    fits on the upper berth with room to spare. Hard daylight through the barred window, fields
+    blurred outside. Photoreal, 3:2.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Berth sizes and the gap between them"
+      - "Green trunk under the left berth, red suitcase on the right upper berth"
+      - "Both passengers in place, the man reading, the woman with the tiffin"
+      - "Daylight from the barred window"
+    members:
+      - {name: "From the window", prompt: "Camera at the window end, seated height, 24 mm, looking back to the aisle between the two passengers.", checks: [[prompt_adherence, "Is the man now on frame right and the woman on frame left?"], [physics_plausibility, "Is the window light now behind the camera, lighting their faces?"]]}
+      - {name: "From the upper berth", prompt: "Camera lying on the left upper berth looking down into the bay, 20 mm.", checks: [[prompt_adherence, "Is the view down from the upper berth?"], [physics_plausibility, "Does the red suitcase sit on the opposite upper berth at a plausible size?"]]}
+      - {name: "Floor level", prompt: "Camera at floor level in the aisle, 24 mm, the trunk under the berth large in the foreground.", checks: [[physics_plausibility, "Does the trunk fit under the berth?"], [prompt_adherence, "Is the camera at floor level?"]]}
+      - {name: "Two-shot", prompt: "A tighter two-shot from the aisle, 50 mm, both passengers in frame across the table.", checks: [[set_consistency, "Are both passengers the same people?"], [prompt_adherence, "Is the fold-down table between them?"]]}
+      - {name: "Aisle wide", prompt: "Camera standing in the aisle two bays down, 35 mm, looking back into this bay over the partition edge; both berths, the trunk and the suitcase small in frame.", checks: [[physics_plausibility, "Do the bay's proportions read correctly from a distance?"], [prompt_adherence, "Are the trunk and suitcase visible in their places?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [physics_plausibility, "Do the berths keep the same length and width relative to the people in every view?"]
+    - [physics_plausibility, "Does the trunk keep its size, fitting under the berth?"]
+    - [physics_plausibility, "Does the suitcase keep its size on the upper berth?"]
+    - [set_consistency, "Are the trunk and suitcase in the same places in every view?"]
+    - [set_consistency, "Is the water bottle hanging by the window wherever visible?"]
+    - [set_consistency, "Is the partition wall empty in every view that shows it?"]
+    - [set_consistency, "Are both passengers the same people in the same actions?"]
+    - [prompt_adherence, "Is the daylight coming from the window in every view?"]
+    - [prompt_adherence, "Does each view match its described position?"]
+    - [prompt_adherence, "Are there only two passengers in every view?"]
+    - [text_accuracy, "Is no newspaper text readable?"]
+    - [visual_quality, "Are the passengers' hands and the tiffin natural?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a slow push from the aisle to the window."
+
+- id: COV-FLM-06
+  title: "The grandmother on the verandah at five focal lengths through the rain"
+  persona: "Director of photography on a Malayalam feature testing lens choices for the grandmother's introduction."
+  evidence: "Earlier bank IMG-VIEW-50 (telephoto compression versus wide angle) and IMG-VIEW-46 (ultra-wide to 35 mm) were medium and high tier; lens character is often ignored."
+  levers: [set, camera, identity, light-lock, locale]
+  inputs: [{source: SRC-ELDER-PORCH, role: source}]
+  prompt: |
+    This is a still of an elderly woman in a wooden easy chair on a Kerala verandah in monsoon
+    rain, holding a steel tumbler, with an unlit brass lamp to her left and two wooden pillars.
+    Produce one new shot of the same moment with the lens and camera position described below.
+    The lens must show in the image: a wide lens exaggerates the near pillar and shows a lot of
+    the verandah; a long lens compresses the rain and the garden into a flat soft wall behind her
+    and makes the pillars look close together. Her face, spectacles, sari and pose stay the same.
+    Soft grey daylight from the garden side. Photoreal, 3:2, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, spectacles, grey bun and off-white sari with dark-green border"
+      - "The easy chair, the tumbler in both hands, the unlit lamp to her left"
+      - "Rain off the roof edge; grey daylight from the garden side"
+    members:
+      - {name: "24 mm", prompt: "24 mm from one metre in front of her at seated height; the near pillar large at the frame edge, the whole verandah visible.", checks: [[prompt_adherence, "Does the near pillar look exaggerated and the verandah wide?"], [visual_quality, "Is her face not distorted unpleasantly?"]]}
+      - {name: "50 mm", prompt: "50 mm from three metres, her and the chair filling half the frame, the rain sheet behind.", checks: [[prompt_adherence, "Is the perspective natural, like the original?"], [reference_fidelity, "Is it clearly her?"]]}
+      - {name: "85 mm", prompt: "85 mm head and shoulders from four metres, the garden soft behind.", checks: [[prompt_adherence, "Is it a head-and-shoulders shot with a soft background?"], [set_consistency, "Are the spectacles the same round wire frames?"]]}
+      - {name: "135 mm from the garden", prompt: "135 mm from twelve metres out in the garden, through the falling rain; her small and framed by the pillars, which look close together.", checks: [[prompt_adherence, "Do the pillars look compressed together?"], [physics_plausibility, "Is rain falling between the camera and her?"]]}
+      - {name: "Macro on the tumbler", prompt: "100 mm macro on her hands around the steel tumbler, droplets on its rim.", checks: [[reference_fidelity, "Is it a steel tumbler held in both hands?"], [visual_quality, "Are her fingers natural with wrinkles?"]]}
+  deliverable: "Five images, 3:2."
+  checks:
+    - [prompt_adherence, "Is the 24 mm shot clearly wider in perspective than the 50 mm?"]
+    - [prompt_adherence, "Is the 135 mm shot clearly compressed compared with the 50 mm?"]
+    - [prompt_adherence, "Do the five shots form a progression of focal lengths, not just crops of one image?"]
+    - [set_consistency, "Is she the same woman in all five?"]
+    - [set_consistency, "Are the spectacles, bun and sari the same in all five?"]
+    - [set_consistency, "Is the lamp unlit and to her left wherever seen?"]
+    - [prompt_adherence, "Is the daylight soft grey from the garden side in all five?"]
+    - [physics_plausibility, "Is it raining in all five?"]
+    - [prompt_adherence, "Is she the only person in all five?"]
+    - [set_consistency, "Is her skin tone the same deep brown in all five?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are her hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V8: a slow zoom-like dolly from the garden to the verandah."
+
+- id: COV-FLM-07
+  title: "Interrogation coverage: two over-the-shoulders, top-down, hands insert, constable's view"
+  persona: "Director of a crime micro-drama shooting the interrogation in one day and planning every set-up from one still."
+  evidence: "Earlier bank IMG-VIEW-56 (reverse angle on a group) was high tier. Over-the-shoulder pairs are the commonest coverage in drama and the easiest to get backwards."
+  levers: [set, camera, layout, light-lock, unseen, locale]
+  inputs: [{source: SRC-INTERROGATION, role: source}]
+  prompt: |
+    This still is an interrogation room: the detective in a maroon kurta on frame left with a brown
+    file, the suspect in a torn grey T-shirt with a bruise on his left cheekbone on frame right,
+    hands flat on the steel table, and a khaki constable standing by the door at the back. One
+    bare bulb under a green conical shade is the only light. Produce one new camera set-up of the
+    same moment as described below. Over-the-shoulder shots must show the near person's shoulder
+    and the back of their head in the foreground and the far person's face. The single hard top
+    light stays: deep shadows under brows and noses in every set-up. Photoreal, 16:9, no readable
+    text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Detective, suspect and constable: faces, clothes, the bruise on the suspect's left cheekbone"
+      - "Steel table, brown file, steel jug"
+      - "One hanging bulb under a green shade as the only light"
+    members:
+      - {name: "Over the detective's shoulder", prompt: "Camera behind the detective's right shoulder, 50 mm, looking at the suspect's face; her shoulder and head soft in the foreground.", checks: [[prompt_adherence, "Is the detective's shoulder in the foreground and the suspect's face sharp?"], [reference_fidelity, "Is the bruise visible on the suspect's left cheekbone?"]]}
+      - {name: "Over the suspect's shoulder", prompt: "The reverse: camera behind the suspect's left shoulder, 50 mm, looking at the detective's face.", checks: [[prompt_adherence, "Is the suspect's shoulder in the foreground and the detective's face sharp?"], [prompt_adherence, "Is the wall behind her, which the still never shows, plain and matching the room?"]]}
+      - {name: "Top-down through the lamp", prompt: "Straight down from the ceiling beside the lamp, 24 mm: the table, the file, both pairs of hands and the tops of their heads.", checks: [[prompt_adherence, "Is it straight down past the lamp shade?"], [prompt_adherence, "Is the file on the detective's side?"]]}
+      - {name: "Hands insert", prompt: "Insert of the suspect's hands flat on the steel table, 100 mm, the edge of the file in the corner.", checks: [[visual_quality, "Are both hands natural with five fingers?"], [prompt_adherence, "Is the light hard from directly above?"]]}
+      - {name: "Constable's view", prompt: "Camera at the constable's eye height by the door, 35 mm, looking down the room at the two at the table.", checks: [[prompt_adherence, "Is the view from the door, past where the constable stands?"], [prompt_adherence, "Are the detective and suspect both at the table?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Are the two over-the-shoulder shots true reverses of each other?"]
+    - [prompt_adherence, "Does the screen direction hold: detective looking one way, suspect the other, across the two over-the-shoulders?"]
+    - [set_consistency, "Are all three people the same in every set-up?"]
+    - [set_consistency, "Is the bruise on the suspect's left cheekbone in every shot that shows that side?"]
+    - [set_consistency, "Are the table, the file and the jug the same and in place?"]
+    - [prompt_adherence, "Is the single hard top light the only light in every set-up?"]
+    - [prompt_adherence, "Are faces deeply shadowed under brows and noses in every set-up?"]
+    - [prompt_adherence, "Does each set-up match its description?"]
+    - [prompt_adherence, "Are there only three people in every set-up?"]
+    - [text_accuracy, "Is there no readable text on the file or calendar?"]
+    - [prompt_adherence, "Is there no weapon anywhere?"]
+    - [visual_quality, "Are faces and hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V2: the two over-the-shoulders as panel-to-shot clips cut together."
+
+- id: COV-FLM-08
+  title: "Hero and motorcycle from five sides; the dent and the red thread never move"
+  persona: "Second-unit cinematographer on a road film building the bike's coverage list from one location still."
+  evidence: "Earlier bank IMG-VIEW-24 (single shoe to a mirrored pair) showed that side-specific details flip; a dent on one side and a thread on one grip are the test."
+  levers: [set, identity, unseen, camera, light-lock, locale]
+  inputs: [{source: SRC-HERO-BIKE, role: source}]
+  prompt: |
+    This still is a rider on a stopped classic black motorcycle on a Rajasthan desert highway at
+    harsh noon: a dent on the right side of the fuel tank, olive saddlebags on both sides, a red
+    thread on the left grip, the rider in aviator sunglasses, a brown leather jacket over a white
+    kurta. Produce one new view of the same moment from the position below. Side-specific details
+    stay on their sides: the dent is only on the right of the tank, the thread only on the left
+    grip. Noon sun almost overhead with short shadows under bike and rider. Photoreal, 16:9, no
+    number plates or brand marks.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Dent on the right side of the tank only; red thread on the left grip only"
+      - "Saddlebags on both sides; round chrome headlamp"
+      - "Rider: sunglasses, brown jacket, white kurta, short beard"
+      - "Noon sun overhead, short shadows"
+    members:
+      - {name: "Low front", prompt: "Camera low in front of the headlamp, 24 mm, looking up at the rider over the handlebars.", checks: [[reference_fidelity, "Is the thread on the grip at frame right (the bike's left)?"], [prompt_adherence, "Is it low and frontal?"]]}
+      - {name: "Left side", prompt: "Clean left side profile, 85 mm; the tank's left side shows no dent.", checks: [[reference_fidelity, "Is the tank's left side free of any dent?"], [reference_fidelity, "Is the red thread visible on the near grip?"]]}
+      - {name: "Rear", prompt: "From behind on the road, 50 mm, the highway running away ahead of him.", checks: [[prompt_adherence, "Are both saddlebags visible from behind?"], [prompt_adherence, "Does the road run away ahead?"]]}
+      - {name: "Drone", prompt: "Drone view from twenty metres straight down onto the bike on the road shoulder.", checks: [[prompt_adherence, "Is it straight down?"], [physics_plausibility, "Are the shadows short and directly under bike and rider?"]]}
+      - {name: "Tank close-up", prompt: "Close on the right side of the tank, 100 mm, the dent and his knee.", checks: [[reference_fidelity, "Is the dent visible on the right side of the tank?"], [visual_quality, "Is the paint reflection of the sky plausible?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is the dent only ever on the right side of the tank?"]
+    - [set_consistency, "Is the red thread only ever on the left grip?"]
+    - [set_consistency, "Are both saddlebags present in every view that shows the sides?"]
+    - [set_consistency, "Is the rider the same: sunglasses, jacket, kurta, beard?"]
+    - [set_consistency, "Is the bike the same classic single-cylinder machine with a round headlamp?"]
+    - [prompt_adherence, "Is the sun overhead with short shadows in every view?"]
+    - [physics_plausibility, "Is there heat haze on the road in the wide views?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Is the rider the only person?"]
+    - [text_accuracy, "Are there no brand marks or number plate text?"]
+    - [visual_quality, "Are the rider's hands on the grips natural?"]
+    - [prompt_adherence, "Does each view read as the same moment?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a tracking shot alongside the bike as it pulls away."
+
+- id: COV-FLM-09
+  title: "Horse and rider on the dunes from five sides; the low sun and shadows move with the camera"
+  persona: "Director of a Rajasthani period film checking whether generated coverage keeps the sunrise consistent."
+  evidence: "Light direction swapping sides between angles is the most visible continuity error in exterior coverage."
+  levers: [set, light-lock, physics, identity, camera, locale]
+  inputs: [{source: SRC-HORSE-RIDER, role: source}]
+  prompt: |
+    This still is a rider in a white kurta and orange turban on a dark-bay Marwari horse with a
+    white blaze and one white sock on the front left leg, standing in profile facing right on the
+    Thar dunes just after sunrise, the sun just above the dunes at frame left and long shadows
+    stretching right. Produce one new view of the same moment from the position below. The sun
+    stays fixed in the world: from each new camera position it appears, or lights the scene, from
+    where it really is, and the long shadows point away from it. The horse's markings stay on the
+    correct legs. Photoreal, 16:9.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "White blaze and one white sock on the front left leg only; inward-curving ear tips"
+      - "Rider's orange turban, white kurta and dhoti, thick moustache"
+      - "Red and gold saddle cloth"
+      - "Sun just above the dunes in one fixed direction; long shadows away from it"
+    members:
+      - {name: "Into the sun", prompt: "Camera on the far side of the horse, looking back towards the sun, 50 mm: horse and rider in silhouette with a rim of light, shadows coming towards the camera.", checks: [[prompt_adherence, "Are horse and rider backlit with the sun in or near frame?"], [physics_plausibility, "Do the shadows come towards the camera?"]]}
+      - {name: "Sun behind camera", prompt: "Camera with the sun behind it, 85 mm: the horse front-lit, the camera's own long shadow reaching into the frame's bottom edge.", checks: [[prompt_adherence, "Is the horse fully front-lit?"], [physics_plausibility, "Do the horse's shadows fall away from the camera?"]]}
+      - {name: "Head-on", prompt: "Head-on to the horse at its knee height, 35 mm.", checks: [[reference_fidelity, "Is the white sock on the leg at frame right (the horse's left)?"], [reference_fidelity, "Is the blaze visible down its face?"]]}
+      - {name: "Overhead", prompt: "Drone straight down from fifteen metres, the dune ripples and the long shadow.", checks: [[physics_plausibility, "Does the shadow stretch long, away from the sun's side?"], [prompt_adherence, "Is it straight down?"]]}
+      - {name: "Other side", prompt: "The horse's right side in profile, 85 mm, facing frame left.", checks: [[reference_fidelity, "Is the right front leg dark, with no white sock?"], [prompt_adherence, "Is this side lit consistently with the sun's position?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Is the sun in one consistent world direction across all five?"]
+    - [physics_plausibility, "Do the shadows always point away from the sun?"]
+    - [prompt_adherence, "Is it the warm low light of just after sunrise in all five?"]
+    - [set_consistency, "Is the white sock always on the front left leg only?"]
+    - [set_consistency, "Is the blaze present in every view of the face?"]
+    - [set_consistency, "Is the rider the same in every view?"]
+    - [set_consistency, "Is the saddle cloth red and gold in every view?"]
+    - [reference_fidelity, "Does the horse keep inward-curving ear tips?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Is there no other person or animal?"]
+    - [visual_quality, "Is the horse's anatomy correct in every view?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: an orbit round the horse with the sun's position fixed."
+
+- id: COV-FLM-10
+  title: "The 1970s drawing-room set from five positions; every prop stays where it is"
+  persona: "Production designer on a period OTT series checking whether generated reference angles respect the dressed set."
+  evidence: "Call at 17:26: 'five shots of the same setup from different camera angles: is there consistency?' Earlier bank IMG-VIEW-29 (kitchen from the opposite corner) was high tier."
+  levers: [set, layout, unseen, camera, locale, keep-rest]
+  inputs: [{source: SRC-SET-LIVING, role: source}]
+  prompt: |
+    This is a dressed film set of a 1970s Indian drawing room: radio cabinet centred on the pale
+    green back wall with a wedding photo above, teal vinyl sofa under the lace-curtained window on
+    the left, rattan armchair and brass floor lamp on the right, coffee table with ashtray,
+    newspaper and plastic bottle in the centre, a modern switchboard on the right wall, red and
+    black checkered floor, a three-blade ceiling fan. Produce one new view of the same set from
+    the position below. Every prop stays exactly where it is; nothing is tidied or added. The
+    doorway wall, which the photo never shows, has a wooden door frame and a calendar with blank
+    pages. Photoreal, 16:9, no people.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Radio cabinet and wedding photo on the back wall"
+      - "Teal sofa under the window; rattan chair and lamp opposite"
+      - "Coffee table with ashtray, newspaper, plastic bottle"
+      - "Switchboard, checkered floor, ceiling fan"
+    members:
+      - {name: "From the sofa", prompt: "Camera seated on the sofa, 28 mm, looking across to the rattan chair and the lamp.", checks: [[prompt_adherence, "Is the rattan chair and lamp opposite the sofa?"], [preservation, "Is the switchboard on that wall?"]]}
+      - {name: "From the radio", prompt: "Camera in front of the radio cabinet looking back to the doorway, 24 mm.", checks: [[prompt_adherence, "Is the sofa now on frame right and the armchair on frame left?"], [prompt_adherence, "Is the doorway wall a wooden frame with a blank calendar?"]]}
+      - {name: "High corner", prompt: "Camera high in the corner above the armchair, 18 mm, looking down over the whole room.", checks: [[prompt_adherence, "Is it a high corner view?"], [prompt_adherence, "Is the coffee table centred with its three items?"]]}
+      - {name: "Table insert", prompt: "Insert of the coffee table top, 50 mm, from above at 45 degrees: ashtray, newspaper, bottle.", checks: [[prompt_adherence, "Are there exactly three items on the table?"], [text_accuracy, "Is the newspaper unreadable?"]]}
+      - {name: "Window side", prompt: "Camera by the window looking along the sofa towards the back wall, 35 mm, lace curtains in the foreground.", checks: [[prompt_adherence, "Is the window daylight falling across the sofa?"], [prompt_adherence, "Is the radio on the back wall at the end of the view?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is every major prop in the same place in all five views?"]
+    - [set_consistency, "Is the sofa teal vinyl and the chair rattan in every view?"]
+    - [set_consistency, "Are the three items on the coffee table in every view that shows the table?"]
+    - [set_consistency, "Is the floor red-and-black checkered everywhere?"]
+    - [set_consistency, "Is the fan three-bladed wherever seen?"]
+    - [prompt_adherence, "Do left and right swap correctly in the view looking back?"]
+    - [prompt_adherence, "Is the window daylight and the lamp's cool LED light consistent with their positions?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [prompt_adherence, "Is nothing tidied or added?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Are straight lines straight and the room's proportions plausible?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: "V1: a dolly from the doorway to the radio."
+
+- id: COV-FLM-11
+  title: "Family dinner coverage with single-leaf inserts that match the wide"
+  persona: "Food stylist and DP on a Tamil family drama checking that inserts will cut with the master."
+  evidence: "Earlier bank IMG-VIEW-11 (45-degree food shot to an overhead flat lay) was medium tier; five leaves with the same layout make every insert checkable against the wide."
+  levers: [set, layout, count, locale, camera, keep-rest]
+  inputs: [{source: SRC-THALI-DINNER, role: source}]
+  prompt: |
+    This still is a South Indian family dinner on the floor: five people in a U shape, left to right
+    a grandfather, a mother, a girl, a father and a teenage boy, each with a banana leaf holding
+    rice in the centre, beans poriyal at the top left, mango pickle at the top right and a papad at
+    the bottom right, a brass tumbler to the right of every leaf, a steel sambar bucket in the
+    middle. Produce one new shot of the same moment from the position below. The dish layout on
+    each leaf must match the still exactly, so the insert cuts with the wide. Warm tungsten light
+    from above. Photoreal, 16:9, no cutlery, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Five people in the same order and clothes"
+      - "Same dish layout on every leaf: rice centre, poriyal top left, pickle top right, papad bottom right"
+      - "Brass tumbler to the right of every leaf; sambar bucket in the middle"
+      - "Warm tungsten top light"
+    members:
+      - {name: "Overhead master", prompt: "Straight down from above the U, 24 mm: all five leaves, the bucket and the tops of five heads.", checks: [[prompt_adherence, "Are there five leaves and five people?"], [prompt_adherence, "Does every leaf show the same dish layout?"]]}
+      - {name: "Girl's leaf insert", prompt: "Insert straight down on the girl's leaf only, 50 mm, her hand reaching for the papad.", checks: [[prompt_adherence, "Is the papad at the bottom right of her leaf?"], [visual_quality, "Is her hand natural?"]]}
+      - {name: "Grandfather's eyeline", prompt: "Camera at the grandfather's seated eye height, 35 mm, looking along the U to the teenage boy at the far end.", checks: [[prompt_adherence, "Is the order along the U correct from his position?"], [prompt_adherence, "Is it at seated eye height?"]]}
+      - {name: "Reverse from the open side", prompt: "Camera behind the U's closed end, behind the girl, looking out at the room's open side, 28 mm.", checks: [[prompt_adherence, "Is the grandfather now on frame right?"], [prompt_adherence, "Does the room on that side look plausible and plain?"]]}
+      - {name: "Sambar bucket close", prompt: "Close on the sambar bucket and ladle, 85 mm, two leaves soft behind it.", checks: [[set_consistency, "Is it the same steel bucket with a ladle?"], [prompt_adherence, "Are the leaves behind it in the right order?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [prompt_adherence, "Does every visible leaf have the same four-dish layout in every shot?"]
+    - [prompt_adherence, "Is a tumbler to the right of every leaf in every shot?"]
+    - [prompt_adherence, "Are there exactly five people in every shot that shows the whole family?"]
+    - [set_consistency, "Are the five people in the same order in every shot?"]
+    - [set_consistency, "Are their clothes the same: white veshti, maroon sari, yellow frock, blue shirt, black T-shirt?"]
+    - [set_consistency, "Is the bucket in the middle of the U wherever seen?"]
+    - [prompt_adherence, "Is the light warm and from above in every shot?"]
+    - [prompt_adherence, "Does each shot match its description?"]
+    - [prompt_adherence, "Is there no cutlery anywhere?"]
+    - [preservation, "Are people eating with their hands from banana leaves, as in the still?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: COV-FLM-12
+  title: "Anime heroine from four angles including the back; streak side and sleeve patch correct"
+  persona: "Layout artist on an animated series producing key frames of the heroine from the model sheet."
+  evidence: "Earlier bank IMG-GAME-11 (turnaround from a single front view) was high tier; asymmetric hair and a patch on one sleeve are what turnarounds flip."
+  levers: [set, unseen, identity, continuity, camera]
+  inputs: [{source: SRC-ANIME-HEROINE, role: source}]
+  prompt: |
+    This is the front view of an original anime heroine: a short asymmetric black bob longer on
+    her right side with one teal streak on that side, an oversized grey hoodie with a yellow "07"
+    patch on the left sleeve, a long red scarf, black cargo shorts, white high-tops with red laces,
+    a bandage on her left knee. Draw one key frame of her on the same neon-lit rooftop at night,
+    from the angle and in the pose described below, in the same clean line art and cel shading.
+    Her asymmetries stay on the correct sides of her body whatever the angle. 16:9, no other text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Bob longer on her right with the teal streak on that side"
+      - "Yellow 07 patch on the left sleeve"
+      - "Bandage on the left knee; red laces"
+      - "Line weight, cel shading, pink rim from her right and cyan from her left as in the reference"
+    members:
+      - {name: "Back view", prompt: "From directly behind, standing at the parapet looking at the city, scarf blowing to her left.", checks: [[reference_fidelity, "Is the longer side of the bob with the streak on frame right, her right?"], [reference_fidelity, "Is the 07 patch on the sleeve at frame left?"]]}
+      - {name: "Left profile", prompt: "Her left side in profile, running towards frame left.", checks: [[reference_fidelity, "Is the 07 patch visible on this near sleeve?"], [reference_fidelity, "Is the bandage visible on the near knee?"]]}
+      - {name: "Right profile", prompt: "Her right side in profile, sitting on the parapet with legs dangling.", checks: [[reference_fidelity, "Is the longer hair with the teal streak on this near side?"], [reference_fidelity, "Is there no patch on this near sleeve?"]]}
+      - {name: "Low three-quarter", prompt: "Low three-quarter from her front-right, looking up, wind in the scarf.", checks: [[prompt_adherence, "Is the camera low looking up?"], [reference_fidelity, "Are the red laces visible?"]]}
+      - {name: "High top-down", prompt: "From high above, looking down as she looks up at the camera.", checks: [[prompt_adherence, "Is the camera high, looking down?"], [reference_fidelity, "Is the streak still on her right side?"]]}
+  deliverable: "Five images, 16:9."
+  checks:
+    - [set_consistency, "Is the longer hair and streak on her right side in all five?"]
+    - [set_consistency, "Is the 07 patch on her left sleeve in every view that shows it?"]
+    - [set_consistency, "Is the bandage on her left knee wherever visible?"]
+    - [set_consistency, "Is the scarf red and long in all five?"]
+    - [set_consistency, "Are the face, eyes and proportions the same character?"]
+    - [style, "Is the line weight and cel shading the same in all five?"]
+    - [prompt_adherence, "Do the pink and cyan rim lights come from consistent sides of the scene?"]
+    - [prompt_adherence, "Does each frame match its angle?"]
+    - [text_accuracy, "Is 07 the only text?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [visual_quality, "Are hands drawn cleanly?"]
+    - [prompt_adherence, "Is the rooftop the same neon-lit rooftop?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one reference; set agreement needs the set review."}
+  video_followon: "V4: the back view turning to camera, streak and patch on the right sides throughout."
+
+- id: COV-FLM-13
+  title: "No base image: a described noir bar from six positions with one lamp layout"
+  persona: "Previs supervisor on a noir feature testing whether a model can hold a location from text alone."
+  evidence: "Plan's text-only coverage test: six angles of a described room, consistent with no base image."
+  levers: [set, layout, light-lock, camera, long-brief, unseen]
+  prompt: |
+    A 1960s Bombay jazz bar at night, photoreal film still, 16:9. The room: a long mahogany bar
+    counter runs along the left wall with six red leather stools; behind it, mirrored shelves of
+    bottles with blank labels; at the back wall, a small raised stage with an upright piano and a
+    single microphone stand; along the right wall, three round tables, each with a green-shaded
+    brass table lamp, the only warm lights; a slow ceiling fan in the middle; one bartender in a
+    white jacket behind the bar polishing a glass; one woman in a black sari seated alone at the
+    middle table. Cigarette haze hangs in the lamp light. Produce the view described below of this
+    exact room, at the same moment.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Bar on the left wall with six red stools; stage with piano at the back; three tables on the right"
+      - "Three green-shaded lamps as the only warm lights"
+      - "Bartender in a white jacket; woman in a black sari at the middle table"
+      - "Haze and the slow ceiling fan"
+    members:
+      - {name: "Entrance wide", prompt: "From the entrance at the front, standing height, 24 mm, the whole room.", checks: [[prompt_adherence, "Is the bar on the left, the tables on the right and the stage at the back?"], [prompt_adherence, "Are there six stools?"]]}
+      - {name: "From the stage", prompt: "From the stage beside the piano looking back to the entrance, 28 mm.", checks: [[prompt_adherence, "Is the bar now on frame right?"], [prompt_adherence, "Do the three lamps still glow on the tables, now on frame left?"]]}
+      - {name: "Behind the bar", prompt: "From behind the bar at the bartender's shoulder, 35 mm, looking across to the woman's table.", checks: [[prompt_adherence, "Is the bartender's shoulder in the foreground?"], [set_consistency, "Is the woman in the black sari at the middle table?"]]}
+      - {name: "Her table", prompt: "Medium shot of the woman at her table, 50 mm, the lamp lighting her face from the side.", checks: [[prompt_adherence, "Is her face lit by the green-shaded lamp?"], [prompt_adherence, "Is she alone?"]]}
+      - {name: "Mirror", prompt: "Into the mirror behind the bar, 50 mm: the room reflected, the tables and lamps in reverse.", checks: [[physics_plausibility, "Is the reflected room mirrored correctly?"], [prompt_adherence, "Are three lit lamps visible in the reflection?"]]}
+      - {name: "Ceiling", prompt: "From the ceiling beside the fan looking straight down.", checks: [[prompt_adherence, "Is it straight down?"], [prompt_adherence, "Does the plan match: bar left, tables right, stage at the back?"]]}
+  deliverable: "Six images, 16:9."
+  checks:
+    - [set_consistency, "Is the room layout identical across the six views?"]
+    - [prompt_adherence, "Are there six stools and three tables wherever the whole room is seen?"]
+    - [prompt_adherence, "Are the three lamps the only warm lights in every view?"]
+    - [set_consistency, "Is the bartender in a white jacket behind the bar in every view that shows him?"]
+    - [set_consistency, "Is the woman in the black sari at the middle table in every view that shows her?"]
+    - [set_consistency, "Is the piano and microphone on the stage in every view that shows it?"]
+    - [physics_plausibility, "Do the reflections and haze behave consistently with the lamps?"]
+    - [prompt_adherence, "Does each view match its description?"]
+    - [style, "Is the look consistent: film grain, warm lamps, deep shadows?"]
+    - [text_accuracy, "Are the bottle labels blank and is there no text?"]
+    - [prompt_adherence, "Are there only two people?"]
+    - [visual_quality, "Are faces and hands free of artefacts?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Six text-to-image calls with the same brief; set agreement needs the set review."}
+  video_followon: "V1: a camera move from the entrance to the woman's table through the described room."
+
+- id: COV-FLM-14
+  title: "Location recce from text: a Western Ghats waterfall and temple ruin from five positions"
+  persona: "Location manager pitching a monsoon location to the director before the recce trip."
+  evidence: "Plan's text-only coverage test; landscapes are where a third model is preferred (call at 17:26)."
+  levers: [set, layout, camera, locale, light-lock]
+  prompt: |
+    Produce one contact sheet: five numbered panels, 1 to 5, in a row of three over a row of two,
+    each a photoreal 16:9 view of the same Western Ghats location in monsoon, overcast with light
+    drizzle and mist. The location: a tall narrow waterfall drops into a pool on the left; a small
+    ruined stone temple with a broken shikhara stands on a rock shelf to the right of the pool; a
+    stone footbridge crosses the stream that leaves the pool towards the camera; dense green forest
+    surrounds everything; a single red-flowering tree grows beside the temple. The panels are:
+    1, wide from the footbridge; 2, from the temple's steps looking at the waterfall; 3, from
+    above on the cliff top beside the falls looking down; 4, low at the pool's edge looking up at
+    the temple; 5, from the forest across the stream, the bridge in the foreground. Small panel
+    numbers only, no other text.
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Waterfall into a pool; temple with broken shikhara to its right on a rock shelf"
+      - "Stone footbridge over the outflow stream"
+      - "One red-flowering tree beside the temple"
+      - "Overcast drizzle and mist"
+    members:
+      - {name: "1 From the bridge", prompt: "Wide from the footbridge.", checks: [[prompt_adherence, "Is the waterfall on the left and the temple on the right?"], [prompt_adherence, "Is the view from the bridge?"]]}
+      - {name: "2 From the temple steps", prompt: "From the temple's steps looking at the waterfall.", checks: [[prompt_adherence, "Is the waterfall in front and the pool below?"], [set_consistency, "Is the red tree near the camera?"]]}
+      - {name: "3 Cliff top", prompt: "From the cliff top beside the falls, looking down.", checks: [[prompt_adherence, "Is it a high view down?"], [prompt_adherence, "Are the temple and bridge both visible below?"]]}
+      - {name: "4 Pool's edge", prompt: "Low at the pool's edge looking up at the temple.", checks: [[prompt_adherence, "Is it low looking up?"], [set_consistency, "Is the shikhara broken?"]]}
+      - {name: "5 Across the stream", prompt: "From the forest across the stream, the bridge in the foreground.", checks: [[prompt_adherence, "Is the bridge in the foreground?"], [prompt_adherence, "Are the waterfall and temple behind?"]]}
+  deliverable: "One image: a five-panel contact sheet."
+  checks:
+    - [prompt_adherence, "Are there exactly five numbered panels?"]
+    - [set_consistency, "Is the waterfall on the same side of the temple, given each camera position?"]
+    - [set_consistency, "Is the shikhara broken in every panel that shows it?"]
+    - [set_consistency, "Is there exactly one red-flowering tree, beside the temple?"]
+    - [set_consistency, "Is the footbridge the same stone bridge in every panel?"]
+    - [prompt_adherence, "Is it overcast with mist and drizzle in all panels?"]
+    - [prompt_adherence, "Does each panel match its numbered position?"]
+    - [physics_plausibility, "Do the sizes of the falls, temple and bridge stay plausible across panels?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Are panel numbers the only text?"]
+    - [style, "Are all five panels the same photoreal monsoon look?"]
+    - [prompt_adherence, "Does the temple read as a South Indian stone ruin?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call producing the whole sheet."}
+  video_followon: "V1: a drone move from panel 5's position over the bridge to the falls."
+
+- id: COV-FLM-15
+  title: "Grey-shaded previs of a brutalist courtyard set from five numbered camera marks"
+  persona: "Previs artist on a sci-fi feature blocking the courtyard scene before the set is built."
+  evidence: "Previs is a growing use for image models; the test is whether numbered camera marks are honoured."
+  levers: [set, camera, layout, count, long-brief]
+  prompt: |
+    Produce one previs sheet: five panels in a row of three over a row of two, each a grey-shaded
+    untextured 3D view, 16:9, of the same set, with only a small camera number in each panel's
+    corner. The set: a square concrete courtyard 20 metres across; on the north side, a tall
+    blank wall with one narrow vertical slot window; on the east side, a ramp rising along the wall
+    to a balcony; on the south side, the entrance gap 3 metres wide; on the west side, a row of
+    five square columns; in the centre, a shallow square pool with one cube sculpture standing in
+    it. Low sun from the west. Camera marks: 1 at the entrance looking north; 2 on the balcony
+    looking down south-west; 3 between the columns looking east at the ramp; 4 at the pool's edge,
+    low, looking up at the slot window; 5 straight down from 30 metres, north at the top.
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Square courtyard; slot window north, ramp and balcony east, entrance south, five columns west"
+      - "Shallow pool with one cube in the centre"
+      - "Low sun from the west"
+    members:
+      - {name: "1 Entrance, north", prompt: "From the entrance looking north.", checks: [[prompt_adherence, "Is the slot window wall ahead with the columns on the left and the ramp on the right?"], [prompt_adherence, "Is it from the entrance gap?"]]}
+      - {name: "2 Balcony, south-west", prompt: "From the balcony looking down south-west.", checks: [[prompt_adherence, "Is it high, from the east side?"], [prompt_adherence, "Are the columns and entrance in view below?"]]}
+      - {name: "3 Columns, east", prompt: "From between the columns looking east at the ramp.", checks: [[prompt_adherence, "Is the ramp ahead rising along the wall?"], [prompt_adherence, "Are column edges in the foreground?"]]}
+      - {name: "4 Pool, up", prompt: "Low at the pool's edge looking up at the slot window.", checks: [[prompt_adherence, "Is it low looking up at the north wall?"], [prompt_adherence, "Is the cube in the foreground pool?"]]}
+      - {name: "5 Plan", prompt: "Straight down from 30 metres, north at the top.", checks: [[prompt_adherence, "Is the ramp on the right (east) and the columns on the left (west)?"], [prompt_adherence, "Are there five columns?"]]}
+  deliverable: "One image: a five-panel previs sheet."
+  checks:
+    - [prompt_adherence, "Are there exactly five panels, numbered 1 to 5?"]
+    - [set_consistency, "Is the courtyard layout the same in every panel?"]
+    - [prompt_adherence, "Are there five columns wherever the west side is seen?"]
+    - [set_consistency, "Is there one cube in the pool in every panel that shows it?"]
+    - [prompt_adherence, "Do the shadows come from a low sun in the west in every panel?"]
+    - [prompt_adherence, "Does each panel match its camera mark?"]
+    - [style, "Is every panel untextured grey-shaded 3D?"]
+    - [prompt_adherence, "Is the entrance gap in the south wall wherever visible?"]
+    - [prompt_adherence, "Does the plan view put north at the top?"]
+    - [text_accuracy, "Are camera numbers the only text?"]
+    - [prompt_adherence, "Are there no figures?"]
+    - [visual_quality, "Are straight edges straight and perspective correct?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call producing the whole sheet."}
+  video_followon: "V1: a previs camera move from mark 1 to mark 4."

@@ -1,0 +1,256 @@
+# Typography and layout — Advertising & agencies scenarios (part 2). Slots: typ.yaml.
+code: TYP
+scenarios:
+
+- id: TYP-ADS-02
+  title: "Pongal sweets hoarding in Tamil with an English brand line"
+  persona: "Regional agency designer producing a festival hoarding for a Madurai sweet shop."
+  evidence: "Tamil display type at hoarding scale is where conjuncts and vowel signs break."
+  levers: [exact-text, script, layout, locale, exclude]
+  prompt: |
+    A 3:1 outdoor hoarding design for a fictional sweet shop in Madurai, flat print artwork. A warm
+    yellow and maroon palette with a border of kolam patterns and sugarcane stalks. On the left, a
+    brass pot of pongal overflowing with foam. In the centre, the Tamil headline "பொங்கலோ பொங்கல்!"
+    in a bold traditional display face, maroon; under it the Tamil line "இனிப்பான வாழ்த்துகள்";
+    on the right, the brand "Thenmozhi Sweets" in English with "Since 1958" below it, and the address
+    line "West Masi Street, Madurai". No other text.
+  exact_text:
+    - "பொங்கலோ பொங்கல்!"
+    - "இனிப்பான வாழ்த்துகள்"
+    - "Thenmozhi Sweets"
+    - "Since 1958"
+    - "West Masi Street, Madurai"
+  deliverable: "One image, 3:1."
+  checks:
+    - [text_accuracy, "Is the Tamil headline exact and correctly formed?"]
+    - [text_accuracy, "Is the second Tamil line exact?"]
+    - [text_accuracy, "Are the English brand, year and address exact?"]
+    - [prompt_adherence, "Is the pot on the left, Tamil in the centre and the brand on the right?"]
+    - [prompt_adherence, "Is the headline the largest text?"]
+    - [style, "Is the palette yellow and maroon with a kolam border?"]
+    - [prompt_adherence, "Is the pot overflowing with foam?"]
+    - [prompt_adherence, "Are sugarcane stalks present?"]
+    - [composition, "Is it a 3:1 hoarding?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the artwork clean?"]
+    - [style, "Is it flat print artwork?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ADS-03
+  title: "End-of-season sale poster: stacked display type, dates and store list"
+  persona: "Retail agency designer making a sale poster for a fashion chain."
+  evidence: "Stacked display type with dates and lists is a classic string-exactness test."
+  levers: [exact-text, small-text, layout, off-centre, exclude]
+  prompt: |
+    A portrait 2:3 sale poster for a fictional fashion chain, flat artwork, golden-hour photo of a
+    model in a linen dress walking out of frame on the right, the type stacked on the left half.
+    Text, exactly: "END OF" and "SEASON" stacked in huge condensed white capitals; "UP TO 60% OFF" in
+    a bold coral block; "12–15 JUNE" in white; a small list at the bottom: "Bandra · Indiranagar ·
+    Banjara Hills · Anna Nagar · Koregaon Park"; and the brand "LOOM & LANE" in small capitals at the
+    top right. No other text.
+  exact_text:
+    - "END OF"
+    - "SEASON"
+    - "UP TO 60% OFF"
+    - "12–15 JUNE"
+    - "Bandra · Indiranagar · Banjara Hills · Anna Nagar · Koregaon Park"
+    - "LOOM & LANE"
+  deliverable: "One image, 2:3."
+  checks:
+    - [text_accuracy, "Are END OF and SEASON exact and stacked?"]
+    - [text_accuracy, "Is UP TO 60% OFF exact in a coral block?"]
+    - [text_accuracy, "Is the date exact with an en dash?"]
+    - [text_accuracy, "Is the store list exact and in order?"]
+    - [text_accuracy, "Is LOOM & LANE exact at the top right?"]
+    - [prompt_adherence, "Is the type on the left half?"]
+    - [composition, "Is the model walking out of frame on the right?"]
+    - [prompt_adherence, "Is SEASON the largest word?"]
+    - [text_accuracy, "Is the store list readable at small size?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [style, "Is it flat print artwork?"]
+    - [visual_quality, "Is the model natural?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ADS-04
+  title: "A lit hoarding on a Hyderabad building with a Telugu ad, in true perspective"
+  persona: "Outdoor agency making a night mock-up of a Telugu campaign on a real-looking site."
+  evidence: "Text in perspective on a lit hoarding combines script, geometry and light."
+  levers: [exact-text, script, physics, locale, camera]
+  prompt: |
+    A night photograph of a busy Hyderabad junction, 3:2, with a large lit hoarding on the side of a
+    building on the right, seen at an angle so it recedes to the right. The hoarding's artwork, in
+    true perspective with the building: a red background, the Telugu headline "సంక్రాంతి సంబరాలు"
+    in white, the Telugu line "50% వరకు తగ్గింపు" in yellow, and "Sankranti Sale · 10–16 Jan" in
+    small white English at the bottom. The hoarding glows evenly from front lights. Traffic with light
+    trails below. No other readable signs.
+  exact_text:
+    - "సంక్రాంతి సంబరాలు"
+    - "50% వరకు తగ్గింపు"
+    - "Sankranti Sale · 10–16 Jan"
+  deliverable: "One image, 3:2."
+  checks:
+    - [text_accuracy, "Is the Telugu headline exact and correctly formed?"]
+    - [text_accuracy, "Is the Telugu discount line exact?"]
+    - [text_accuracy, "Is the English line exact?"]
+    - [physics_plausibility, "Does the artwork follow the building's perspective, receding to the right?"]
+    - [prompt_adherence, "Does the hoarding glow evenly?"]
+    - [prompt_adherence, "Is the headline white and the discount line yellow on red?"]
+    - [physics_plausibility, "Are there light trails from traffic below?"]
+    - [text_accuracy, "Are there no other readable signs?"]
+    - [prompt_adherence, "Does it read as a Hyderabad junction at night?"]
+    - [visual_quality, "Are building lines straight?"]
+    - [text_accuracy, "Is the small English line readable?"]
+    - [style, "Is it photoreal?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ADS-05
+  title: "Car press ad with a spec table and a long disclaimer at small size"
+  persona: "Automotive agency's art director preparing a press ad that legal checks line by line."
+  evidence: "Spec tables and small disclaimers are where generated type garbles."
+  levers: [exact-text, small-text, layout, count, long-brief]
+  prompt: |
+    A full-page press ad, portrait 1:1.414, flat artwork, for a fictional SUV, the Vela X. Night
+    photo of the SUV on a wet city street in the upper half. Headline "Own the night." in white on
+    black below the photo. A spec table with two columns and five rows exactly: "Engine | 2.0 L
+    turbo", "Power | 190 PS", "Torque | 380 Nm", "Mileage | 15.2 km/l", "Price from | ₹18.49 lakh*".
+    A disclaimer at the bottom in small type exactly: "*Ex-showroom Delhi. Mileage as certified by
+    the testing agency under standard conditions. Accessories shown are not part of standard
+    fitment. Colours may vary from print." No other text, no logos.
+  exact_text:
+    - "Own the night."
+    - "Engine"
+    - "2.0 L turbo"
+    - "380 Nm"
+    - "15.2 km/l"
+    - "₹18.49 lakh*"
+    - "*Ex-showroom Delhi. Mileage as certified by the testing agency under standard conditions. Accessories shown are not part of standard fitment. Colours may vary from print."
+  deliverable: "One portrait image."
+  checks:
+    - [text_accuracy, "Is the headline exact?"]
+    - [prompt_adherence, "Does the table have two columns and five rows?"]
+    - [text_accuracy, "Is every row exact, label and value?"]
+    - [text_accuracy, "Is the price exact with the rupee sign and asterisk?"]
+    - [text_accuracy, "Is the disclaimer exact and complete?"]
+    - [text_accuracy, "Is the disclaimer readable at small size?"]
+    - [prompt_adherence, "Is the photo in the upper half and the table below the headline?"]
+    - [prompt_adherence, "Is the disclaimer at the bottom?"]
+    - [prompt_adherence, "Is the SUV on a wet city street at night?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+    - [style, "Is it flat artwork?"]
+    - [visual_quality, "Is the car free of artefacts?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ADS-06
+  title: "Comic-strip snack ad with Hinglish speech bubbles in a set reading order"
+  persona: "Agency writer making a comic-strip ad for a youth snack brand."
+  evidence: "Speech bubbles must sit with the right speaker and read in order."
+  levers: [exact-text, layout, count, locale, exclude]
+  prompt: |
+    A four-panel comic-strip ad in a bold flat illustration style, one row of four, for Mirchi Mood
+    chips. Panel 1: two college friends, Riya (purple hoodie) and Sam (green T-shirt), bored in a
+    hostel room; Riya says "Yaar, kuch spicy chahiye." Panel 2: Sam opens a red chips pack; Sam says
+    "Mirchi Mood try kar!" Panel 3: Riya takes a bite, fire behind her; Riya says "Uff, kya mood
+    hai!" Panel 4: both cheering with the pack; a caption box reads "Mirchi Mood. Mood on." Each
+    bubble's tail points to its speaker. No other text.
+  exact_text:
+    - "Yaar, kuch spicy chahiye."
+    - "Mirchi Mood try kar!"
+    - "Uff, kya mood hai!"
+    - "Mirchi Mood. Mood on."
+  deliverable: "One wide image, four panels."
+  checks:
+    - [prompt_adherence, "Are there four panels in one row?"]
+    - [text_accuracy, "Is every bubble's text exact?"]
+    - [prompt_adherence, "Does each bubble's tail point to the right speaker?"]
+    - [prompt_adherence, "Is the caption box in panel 4?"]
+    - [set_consistency, "Is Riya in a purple hoodie and Sam in a green T-shirt throughout?"]
+    - [prompt_adherence, "Does panel 2 show Sam opening a red pack?"]
+    - [prompt_adherence, "Is there fire behind Riya in panel 3?"]
+    - [style, "Is the flat illustration style consistent?"]
+    - [prompt_adherence, "Do the bubbles read left to right in order?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are hands clean?"]
+    - [prompt_adherence, "Are there only two characters?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: TYP-ADS-07
+  title: "Localise the ghee key visual into Tamil; every block keeps its place, size and colour"
+  persona: "Regional studio artist localising a national campaign for Tamil Nadu."
+  evidence: "Localising a finished layout without moving or restyling blocks is a common agency task models fail."
+  levers: [exact-text, script, keep-rest, layout, locale]
+  inputs: [{source: SRC-ADS-KEYVISUAL, role: source}]
+  prompt: |
+    Localise this Diwali key visual into Tamil. Replace only the headline and the English line, in
+    the same positions, sizes and cream colour: the headline "इस दिवाली, घर की ख़ुशबू" becomes "இந்த
+    தீபாவளி, வீட்டின் மணம்"; "Pure cow ghee since 1962" becomes "1962 முதல் தூய பசு நெய்"; and
+    "Offer till 31 October" becomes "அக்டோபர் 31 வரை சலுகை". The jar's own label stays exactly as it
+    is (its Devanagari brand name is part of the product). The price "₹349", the diyas, the jar and
+    the background are unchanged.
+  exact_text:
+    - "இந்த தீபாவளி, வீட்டின் மணம்"
+    - "1962 முதல் தூய பசு நெய்"
+    - "அக்டோபர் 31 வரை சலுகை"
+    - "₹349"
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Is the Tamil headline exact and correctly formed?"]
+    - [text_accuracy, "Is the Tamil second line exact?"]
+    - [text_accuracy, "Is the Tamil offer line exact?"]
+    - [prompt_adherence, "Is each Tamil block in the same position as the original?"]
+    - [prompt_adherence, "Is each block at a similar size?"]
+    - [style, "Is the text the same cream colour?"]
+    - [preservation, "Is the jar's label unchanged, Devanagari brand name included?"]
+    - [text_accuracy, "Is the price still ₹349?"]
+    - [preservation, "Are there still seven diyas?"]
+    - [preservation, "Is the background unchanged?"]
+    - [visual_quality, "Are there no smudges where old text was?"]
+    - [text_accuracy, "Is no Hindi left in the headline area?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: TYP-ADS-08
+  title: "Change the shop-door sale poster to 50% and 15 August in the same font, perspective and glare"
+  persona: "Retail chain's store-marketing designer updating a photographed in-store poster for social."
+  evidence: "Earlier bank IMG-TXT-10 (in-place typo fix matching font) was medium tier; here the text is in perspective under glare."
+  levers: [exact-text, keep-rest, physics, multi-step, layout]
+  inputs: [{source: SRC-ADS-STORE-POSTER, role: source}]
+  prompt: |
+    This photo shows a yellow sale poster taped inside a shop's glass door, seen at a slight angle,
+    reading "MONSOON SALE", "FLAT 40% OFF" and "TILL 31 JULY", with a diagonal streak of glare over
+    its lower right. Change "40%" to "50%" and "31 JULY" to "15 AUGUST", so the lines read
+    "FLAT 50% OFF" and "TILL 15 AUGUST". The new characters match the
+    existing heavy condensed font, size and black ink exactly, follow the poster's perspective, and
+    the glare streak still crosses the lower right over the new text. "MONSOON SALE", the tape, the
+    door and the shop behind are unchanged.
+  exact_text:
+    - "MONSOON SALE"
+    - "FLAT 50% OFF"
+    - "TILL 15 AUGUST"
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Does it read FLAT 50% OFF?"]
+    - [text_accuracy, "Does it read TILL 15 AUGUST?"]
+    - [style, "Do the new characters match the existing font and weight?"]
+    - [physics_plausibility, "Does the new text follow the poster's perspective?"]
+    - [physics_plausibility, "Does the glare streak still cross the lower right over the text?"]
+    - [prompt_adherence, "Does TILL 15 AUGUST fit the line width, condensed rather than overflowing?"]
+    - [preservation, "Is MONSOON SALE unchanged?"]
+    - [preservation, "Are the tape and door unchanged?"]
+    - [preservation, "Is the shop behind unchanged?"]
+    - [visual_quality, "Are there no ghost characters left?"]
+    - [text_accuracy, "Is there no other new text?"]
+    - [style, "Is the ink the same black?"]
+  competitor: "Recraft"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

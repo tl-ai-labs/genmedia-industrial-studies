@@ -1,0 +1,162 @@
+# Coverage and camera move — E-commerce, D2C & retail scenarios. Slots: vcov.yaml.
+code: VCOV
+scenarios:
+
+- id: VCOV-ECM-01
+  title: "A full turntable orbit of the tote from its one front packshot"
+  persona: "Catalogue lead making a 360-degree product video from a single photo."
+  evidence: "Earlier bank IMG-VIEW-05 (turntable) was medium tier as a still sheet; a continuous orbit must invent the back and keep it consistent."
+  levers: [camera-move, unseen, identity, exact-text, keep-rest]
+  inputs: [{source: SRC-ECM-HANDBAG, role: product}]
+  prompt: |
+    A 10-second turntable video of this exact tan pebbled-leather tote on seamless off-white: the bag
+    turns one full circle on an unseen turntable while the camera stays locked off at a slightly raised
+    three-quarter angle. Front: brass turn-lock, "KOSU" blind-embossed below it, cream stitching, rolled
+    darker handles with the slight twist in one handle. The parts the photo never shows are plain and
+    consistent: a back panel with a slip pocket, structured side gussets, four small brass feet on the
+    base. The pebbled grain stays the same everywhere; the soft key from upper left stays fixed, so
+    highlights move across the leather as it turns; a soft contact shadow turns with the bag.
+  exact_text: ["KOSU"]
+  clip: {duration: 10, aspect: "4:5", camera: "locked off; the bag turns 360 degrees"}
+  deliverable: "One 10-second clip, 4:5."
+  checks:
+    - [motion_coherence, "Does the bag turn exactly one full circle at an even speed?"]
+    - [reference_fidelity, "Is it the same bag all the way round?"]
+    - [prompt_adherence, "Is the back a plain panel with a slip pocket?"]
+    - [reference_fidelity, "Is the same handle twisted throughout?"]
+    - [text_accuracy, "Is KOSU embossed below the lock when the front faces camera?"]
+    - [reference_fidelity, "Is the stitching cream on every edge?"]
+    - [prompt_adherence, "Does the key light stay fixed so highlights move across the leather?"]
+    - [physics_plausibility, "Does the contact shadow turn with the bag?"]
+    - [temporal_consistency, "Does the leather grain stay stable with no swimming?"]
+    - [preservation, "Is the background seamless off-white throughout?"]
+    - [prompt_adherence, "Are there no props?"]
+    - [visual_quality, "Is the bag's shape stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VCOV-ECM-03
+  title: "An arc from top-down to eye level round the biryani table; raita, napkin and spoon stay put"
+  persona: "Food-delivery platform's content lead making a listing video from a photo."
+  evidence: "Earlier bank IMG-VIEW-11 (food to flat lay) was medium tier; a continuous arc must hold the layout every frame."
+  levers: [camera-move, layout, locale, keep-rest, light-lock]
+  inputs: [{source: SRC-ECM-BIRYANI, role: first_frame}]
+  prompt: |
+    Start on this listing photo of a copper handi of Hyderabadi biryani at 45 degrees and make an
+    8-second camera arc: first rising to straight top-down over the handi by 3 seconds, then swinging
+    down and round to table height on the handi's right side by 8 seconds. The lid leans on the handi's
+    left; the raita bowl with cucumber and half an egg stays on the right; the red-checked napkin with the
+    white plastic spoon stays on the left. A thin wisp of steam rises from the rice throughout. Daylight
+    from the left stays fixed as the camera moves. Nothing is re-styled. No hands, no text.
+  clip: {duration: 8, aspect: "4:5", camera: "arc up to top-down by 3 s, then down to table height on the right by 8 s"}
+  deliverable: "One 8-second clip, 4:5."
+  checks:
+    - [prompt_adherence, "Does the camera reach top-down by about 3 s and table height by 8 s?"]
+    - [prompt_adherence, "Do the raita, napkin and spoon keep their positions throughout?"]
+    - [prompt_adherence, "Does the lid stay leaning on the handi's left?"]
+    - [motion_coherence, "Does steam rise continuously?"]
+    - [prompt_adherence, "Does the daylight stay fixed from the left?"]
+    - [reference_fidelity, "Is it the same handi and food throughout?"]
+    - [temporal_consistency, "Is the food stable with no swimming textures?"]
+    - [prompt_adherence, "Are there two chicken pieces on top?"]
+    - [prompt_adherence, "Are there no hands?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame clean?"]
+    - [style, "Is the colour consistent?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-ECM-04
+  title: "A dolly from the window round the armchair; table, lamp and floor hold depth"
+  persona: "Furniture brand's content lead making a room video from a lifestyle photo."
+  evidence: "Room moves must keep furniture at real sizes as the camera travels."
+  levers: [camera-move, parallax, physics, layout, light-lock]
+  inputs: [{source: SRC-ECM-ARMCHAIR-ROOM, role: first_frame}]
+  prompt: |
+    Start on this living-room photo and make a 10-second dolly that curves from beside the tall window
+    round the front of the ochre bouclé armchair to its right side, at seated eye height. The round
+    walnut side table with two books and a mug stays on the chair's left; the brass floor lamp on its
+    right; the charger cable and slippers stay on the floor. The near chair arm slides past faster than
+    the lamp and the wall behind; the sunlight rectangle stays fixed on the floor as the camera passes
+    through the beam, dust glinting. The chair, table and lamp keep their real sizes. No people, no pets.
+  clip: {duration: 10, aspect: "3:2", camera: "curved dolly round the chair at seated eye height"}
+  deliverable: "One 10-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Is it a smooth curved dolly round the chair?"]
+    - [physics_plausibility, "Do near objects pass faster than far ones?"]
+    - [physics_plausibility, "Do the chair, table and lamp keep their real sizes?"]
+    - [prompt_adherence, "Is the table on the chair's left and the lamp on its right throughout?"]
+    - [prompt_adherence, "Does the sunlight rectangle stay fixed on the floor?"]
+    - [preservation, "Do the cable and slippers stay?"]
+    - [reference_fidelity, "Is it the same ochre bouclé armchair?"]
+    - [motion_coherence, "Is there no warping of furniture?"]
+    - [prompt_adherence, "Are there no people or pets?"]
+    - [text_accuracy, "Are book titles unreadable?"]
+    - [visual_quality, "Are lines straight?"]
+    - [physics_plausibility, "Do dust glints appear in the beam?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-ECM-05
+  title: "No base: the described seven-piece skincare tray in a slow 180-degree orbit"
+  persona: "Beauty brand's e-commerce lead previewing a kit video before samples arrive."
+  evidence: "Small labelled items arranged on a tray drift and swap as a generated camera moves round them."
+  levers: [camera-move, layout, count, exact-text, long-brief]
+  prompt: |
+    A 10-second product video, photoreal, 1:1: a round travertine tray on a white marble counter in soft
+    daylight from the left, holding exactly seven items arranged clockwise from twelve o'clock: a tall
+    frosted-glass cleanser bottle with a white pump; a short amber dropper bottle; a white jar with a
+    wooden lid; a slim lilac tube lying flat; a round mint compact; a small cork-stopped glass vial; a
+    folded white cotton cloth; a sprig of eucalyptus in the middle. Each container has a small cream label
+    reading "NIRA" in thin black capitals. The camera orbits 180 degrees at a 30-degree height from the
+    front to the back of the tray; the clockwise order and every item's look hold the whole way.
+  exact_text: ["NIRA"]
+  clip: {duration: 10, aspect: "1:1", camera: "180-degree orbit at 30 degrees above the tray"}
+  deliverable: "One 10-second clip, 1:1."
+  checks:
+    - [prompt_adherence, "Are there exactly seven items throughout?"]
+    - [prompt_adherence, "Does the clockwise order hold through the orbit?"]
+    - [text_accuracy, "Do the labels read NIRA wherever readable?"]
+    - [prompt_adherence, "Is it a steady 180-degree orbit at a constant height?"]
+    - [physics_plausibility, "Do nearer items hide farther ones correctly as the camera moves?"]
+    - [prompt_adherence, "Does the daylight stay fixed from one side?"]
+    - [temporal_consistency, "Do the items stay solid with no morphing?"]
+    - [temporal_consistency, "Is the eucalyptus in the middle throughout?"]
+    - [prompt_adherence, "Are there no hands?"]
+    - [visual_quality, "Is glass and frosting clean?"]
+    - [style, "Is the marble and travertine texture stable?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCOV-ECM-02
+  title: "An orbit round the standing model from front to back; face, print and dupatta side hold"
+  persona: "Ethnic-wear marketplace's studio lead making a 360 product video from one catalogue photo."
+  evidence: "Earlier bank IMG-VIEW-12 (garment back view) was medium tier; in an orbit, the dupatta side and print must hold every frame."
+  levers: [camera-move, identity, unseen, locale, keep-rest]
+  inputs: [{source: SRC-ECM-KURTA-MODEL, role: first_frame}]
+  prompt: |
+    Start on this catalogue photo of a model in a mustard kurta with a white floral block print and a
+    five-button placket, white palazzos, a white mulmul dupatta over her left shoulder and silver jhumkas,
+    against a warm beige backdrop. Make an 8-second camera orbit of 180 degrees round her at chest height
+    from the front to the back while she stands still, breathing, her hands relaxed. The kurta's back,
+    never shown, is plain with the same print and no buttons; the dupatta stays on her left shoulder and
+    hangs down her back on that side. Her face, skin tone and earrings stay hers; the window light stays
+    fixed on the left of the set. No text.
+  clip: {duration: 8, aspect: "4:5", camera: "180-degree orbit at chest height"}
+  deliverable: "One 8-second clip, 4:5."
+  checks:
+    - [prompt_adherence, "Is it a steady 180-degree orbit ending behind her?"]
+    - [prompt_adherence, "Is the back plain with the same print and no buttons?"]
+    - [reference_fidelity, "Does the dupatta stay on her left shoulder throughout?"]
+    - [reference_fidelity, "Is her face the same as she turns out of view?"]
+    - [temporal_consistency, "Does the print stay stable with no swimming?"]
+    - [prompt_adherence, "Does the light stay fixed on the set's left?"]
+    - [reference_fidelity, "Are the jhumkas present wherever her ears show?"]
+    - [motion_coherence, "Is she still apart from breathing?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}

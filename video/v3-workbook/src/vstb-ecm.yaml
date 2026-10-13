@@ -1,0 +1,68 @@
+# Storyboard to shot — E-commerce, D2C & retail scenarios. Slots: vstb.yaml.
+code: VSTB
+scenarios:
+
+- id: VSTB-ECM-01
+  title: "Panel 4: the model mid-drape in the saree from the flat-lay; border and pallu land where the panel shows"
+  persona: "D2C saree brand's content lead turning the product-video board into the drape shot."
+  evidence: "Earlier image bank ECM saree drapes changed the pattern; in motion the border and pallu also wander."
+  levers: [multi-ref, identity, layout, physics, locale, continuity]
+  inputs:
+    - {source: SRC-VBOARD-SAREE, role: still1, note: "the board; this shot is panel 4"}
+    - {source: SRC-ECM-SAREE-FLAT, role: product, note: "the real saree"}
+  prompt: |
+    The first image is the product-video storyboard; this shot is its panel 4, "Model drapes it". The
+    second image is the real saree from above. Make a 5-second full-length vertical shot in a bright
+    studio: a woman in her thirties with a low bun, mid-drape; the pleats gathered in her right hand
+    are tucked at the waist at 2 seconds; the magenta border with the gold temple pattern runs along
+    the hem; the pallu, magenta with gold stripes and peacocks, hangs loose over her left forearm and
+    she lifts it towards her left shoulder at the end. The body is peacock green with small gold buttis
+    in a diamond grid. The silk moves and catches the light as silk does. No text.
+  clip: {duration: 5, aspect: "9:16", camera: "locked off, full length"}
+  deliverable: "One 5-second clip, 9:16."
+  checks:
+    - [reference_fidelity, "Is the body peacock green with gold buttis in a diamond grid?"]
+    - [reference_fidelity, "Is the border magenta with a gold temple pattern?"]
+    - [reference_fidelity, "Is the pallu magenta with gold stripes and peacocks?"]
+    - [prompt_adherence, "Does the border run along the hem?"]
+    - [prompt_adherence, "Is the pallu over her left forearm and lifted to the left shoulder?"]
+    - [prompt_adherence, "Are the pleats tucked at about 2 seconds?"]
+    - [physics_plausibility, "Does the silk move and catch light naturally?"]
+    - [composition, "Is it full-length and vertical, as in panel 4?"]
+    - [temporal_consistency, "Does the pattern stay stable without swimming?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSTB-ECM-02
+  title: "Panel 2: the extreme close-up of a thumb breaking the seal, as a vertical live shot"
+  persona: "Phone-accessory brand's social lead making the unboxing reel from the board."
+  evidence: "Extreme close-ups of hands on small objects are where scale and fingers break."
+  levers: [camera, physics, layout, small-text, timing]
+  inputs: [{source: SRC-VBOARD-UNBOXING, role: still1, note: "the board; this shot is panel 2"}]
+  prompt: |
+    This is the unboxing reel's storyboard; make the live-action shot for its panel 2, "0:01 · Thumb
+    breaks the seal", a 3-second vertical extreme close-up from above. A white box with a coral edge
+    stripe fills the lower two-thirds of the frame; a round coral sticker seal sits on its front edge;
+    a thumb with a short natural nail presses down at 0.5 seconds and the seal tears cleanly in a curved
+    line, the paper fibres visible at the tear. The fine print round the seal's rim is too small to
+    read. Soft daylight from a window at the left. Shallow focus. No logos, no readable text.
+  clip: {duration: 3, aspect: "9:16", camera: "extreme close-up from above, locked off"}
+  deliverable: "One 3-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Is it an extreme close-up from above?"]
+    - [prompt_adherence, "Does the box fill the lower two-thirds as in panel 2?"]
+    - [prompt_adherence, "Does the thumb press at about 0.5 seconds?"]
+    - [physics_plausibility, "Does the seal tear cleanly with visible paper fibres?"]
+    - [visual_quality, "Is the thumb natural with a short nail?"]
+    - [physics_plausibility, "Is the thumb's scale right for the box?"]
+    - [prompt_adherence, "Is soft window light from the left?"]
+    - [prompt_adherence, "Is the focus shallow?"]
+    - [motion_coherence, "Is the press natural?"]
+    - [reference_fidelity, "Is the seal round and coral?"]
+    - [text_accuracy, "Is there no readable text or logo?"]
+    - [composition, "Is it a vertical frame?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the board as a reference."}

@@ -1,0 +1,446 @@
+# Character continuity — Gaming scenarios. Slots: chr.yaml.
+code: CHR
+scenarios:
+
+- id: CHR-GAM-01
+  seed: true
+  title: "The heroine in four skins: silhouette identical, materials changed"
+  persona: "Live-ops art lead at a mobile game producing the skin-shop previews for a season; any change of silhouette breaks the in-game models."
+  evidence: "Earlier bank IMG-GAME-50 (palette-swap enemy family, geometry identical across panels) was in the high tier. Skins are the main revenue art in mobile games; the test is that only materials change while face, proportions and side-specific details stay."
+  levers: [set, identity, continuity, keep-rest, layout, long-brief]
+  inputs:
+    - {source: SRC-GAM-HERO, role: source, note: "the default look"}
+  prompt: |
+    This is the game heroine Ira in her default look. Make one skin-shop preview of her in the skin
+    described below. Use exactly the same pose, the same camera angle and the same framing as the
+    render, on a plain dark grey lobby background with a soft teal floor glow, so the skins can be
+    compared side by side. Only the materials and colours of the outfit change. Her face, dark
+    brown skin, build and proportions, the high ponytail with three rings, the nose ring on her
+    left nostril, the outline of every armour piece, the sash-cape on her right shoulder only, the
+    rune on the back of her left glove and the curved sword with the veena-head guard in her right
+    hand all stay exactly as in the render. Stylised 3D, 2:3, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Pose, camera angle and framing"
+      - "Face, skin tone, build and proportions"
+      - "Ponytail with three rings; nose ring on the left"
+      - "Outline of every armour piece (the silhouette)"
+      - "Cape on the right shoulder only; rune on the left glove; sword in the right hand with the veena-head guard"
+    members:
+      - name: "Default"
+        prompt: "The default skin exactly as in the render: charcoal bodysuit, copper plates, red cape, teal rune."
+        checks:
+          - [set_consistency, "Are the materials the same as the render: charcoal, copper, red, teal?"]
+          - [prompt_adherence, "Is she on the dark grey lobby background with a teal floor glow?"]
+      - name: "Monsoon festival"
+        prompt: "Bodysuit deep indigo with small silver raindrop motifs; shoulder and shin plates silver instead of copper; the cape marigold yellow; the rune stays teal."
+        checks:
+          - [prompt_adherence, "Is the bodysuit indigo with silver raindrop motifs?"]
+          - [prompt_adherence, "Are the plates silver and the cape marigold yellow?"]
+          - [reference_fidelity, "Is the rune still teal?"]
+      - name: "Battle-damaged"
+        prompt: "The default materials, worn: scratches across the plates, a torn lower edge on the cape, a crack across the left shin plate, dust on the suit, the rune glowing dimmer."
+        checks:
+          - [prompt_adherence, "Is there a crack on the left shin plate specifically?"]
+          - [prompt_adherence, "Is the cape's lower edge torn while it stays on the right shoulder?"]
+          - [prompt_adherence, "Is the rune visibly dimmer than in the default?"]
+      - name: "Gold legendary"
+        prompt: "Plates in polished gold engraved with paisley; the bodysuit black with thin gold piping; the cape crimson with a gold border; the rune glowing gold; a thin gold inlay along the sword's blade."
+        checks:
+          - [prompt_adherence, "Are the plates gold with paisley engraving?"]
+          - [prompt_adherence, "Is the rune gold and the blade inlaid with gold?"]
+          - [reference_fidelity, "Is the sword guard still the veena head?"]
+  deliverable: "Four images, 2:3, one per member."
+  checks:
+    - [set_consistency, "Is the pose identical in all four previews?"]
+    - [set_consistency, "Are the camera angle and framing identical in all four?"]
+    - [set_consistency, "Does the silhouette (outline of every armour piece) match across all four?"]
+    - [set_consistency, "Is her face the same as the render in all four?"]
+    - [set_consistency, "Is her dark brown skin tone the same in all four, never lightened?"]
+    - [set_consistency, "Is the ponytail with three rings present in all four?"]
+    - [set_consistency, "Is the nose ring on the left nostril in all four?"]
+    - [set_consistency, "Is the cape on the right shoulder only in all four?"]
+    - [set_consistency, "Is the rune on the back of the left glove in all four?"]
+    - [set_consistency, "Is the sword in her right hand in all four, with the same blade shape?"]
+    - [prompt_adherence, "Is every preview on the same dark grey lobby background?"]
+    - [style, "Are all four in the same stylised 3D finish as the render?"]
+    - [text_accuracy, "Is there no text in any preview?"]
+    - [visual_quality, "Are her hands and the sword grip natural in all four?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each skin runs as its own image edit from the same render. Whole-set comparison needs the set review."}
+  video_followon: "V4: the gold legendary skin as a 4-second idle-animation clip, silhouette held."
+
+- id: CHR-GAM-02
+  title: "The five-member squad across three story frames; no character borrows another's features"
+  persona: "Narrative artist illustrating the squad's story beats for the game's comic tie-in."
+  evidence: "Earlier bank IMG-GAME-12 (squad line-up from three references, zero blending) was high tier."
+  levers: [set, identity, count, layout, locale]
+  inputs: [{source: SRC-GAM-SQUAD, role: source}]
+  prompt: |
+    This key art shows a five-character squad on a fort rampart: a tall bearded man with a shield
+    and a blue turban; a short young woman with goggles and a drone on her shoulder; a heavy older
+    man with a grey moustache and a rocket launcher; a lean woman archer with a white braid and a
+    green scarf; a teenage boy with a skateboard and red headphones. Make one story frame of the
+    squad as described below, in the same cel-shaded style. Each character keeps their own face,
+    build, outfit and prop; no features or props move between them. 16:9, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Five distinct designs as in the key art"
+      - "Each prop with its owner: shield, drone, rocket launcher, bow, skateboard"
+      - "Cel-shaded style"
+    members:
+      - {name: "Campfire", prompt: "Night, the five around a campfire in the desert, the boy telling a story.", checks: [[prompt_adherence, "Are there five characters?"], [prompt_adherence, "Are they lit by the fire?"]]}
+      - {name: "Market chase", prompt: "Day, running through a crowded bazaar, the archer leading.", checks: [[prompt_adherence, "Is the archer in front?"], [reference_fidelity, "Is the drone with the goggled woman?"]]}
+      - {name: "Wounded", prompt: "Dusk, the heavy man wounded and propped on the shield-bearer's shoulder, the others guarding.", checks: [[reference_fidelity, "Is the heavy man the one wounded?"], [reference_fidelity, "Is the shield with the bearded man?"]]}
+  deliverable: "Three images, 16:9."
+  checks:
+    - [prompt_adherence, "Are there five characters in each frame?"]
+    - [set_consistency, "Are the five designs the same in all three?"]
+    - [set_consistency, "Is each prop with its owner in all three?"]
+    - [set_consistency, "Are the five faces distinct with no blending?"]
+    - [set_consistency, "Is the archer's braid white and scarf green in all three?"]
+    - [set_consistency, "Are the boy's headphones red in all three?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its beat?"]
+    - [style, "Is the cel-shaded style consistent?"]
+    - [prompt_adherence, "Are there no extra squad members?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-03
+  title: "Six named expressions of the villain in the sketch style; mask stays on the left"
+  persona: "Concept artist exploring the villain's acting range before the 3D model."
+  evidence: "Earlier bank IMG-GAME-09 (expression sheet) was medium tier; a half-mask on one side adds an asymmetry test."
+  levers: [set, identity, count, exact-text, continuity]
+  inputs: [{source: SRC-GAM-VILLAIN, role: source}]
+  prompt: |
+    This pencil and grey-marker sketch shows the villain Kaal: a gaunt face, long white hair, a
+    cracked bronze half-mask over the left side of his face, a vertical glowing third-eye slit on his
+    forehead and a high coat collar. Draw a sheet of six head-and-shoulders studies of him in the
+    same pencil and marker style, two rows of three, each labelled below exactly: "Contempt",
+    "Rage", "Amusement", "Grief", "Cunning", "Fear". The mask covers the left side of his face in
+    every study; only the visible right side and the eye slit carry the expression. No other text.
+  exact_text: ["Contempt", "Rage", "Amusement", "Grief", "Cunning", "Fear"]
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Half-mask on the left side of the face"
+      - "Third-eye slit on the forehead; long white hair; high collar"
+      - "Pencil and grey-marker style"
+    members:
+      - {name: "Contempt", prompt: "Lip curled on the visible side, eyes narrowed.", checks: [[prompt_adherence, "Does it read as contempt?"], [reference_fidelity, "Is the mask on the left?"]]}
+      - {name: "Rage", prompt: "Mouth open, teeth bared, eye slit flaring.", checks: [[prompt_adherence, "Does it read as rage?"], [reference_fidelity, "Is the slit glowing brighter?"]]}
+      - {name: "Amusement", prompt: "A thin smile, head tilted.", checks: [[prompt_adherence, "Does it read as amused?"], [set_consistency, "Is the hair the same?"]]}
+      - {name: "Grief", prompt: "Brow pulled up, eye wet.", checks: [[prompt_adherence, "Does it read as grief?"], [reference_fidelity, "Is the mask on the left?"]]}
+      - {name: "Cunning", prompt: "Sidelong glance, half smile.", checks: [[prompt_adherence, "Does it read as cunning?"], [reference_fidelity, "Is the collar high?"]]}
+      - {name: "Fear", prompt: "Eyes wide, head pulled back.", checks: [[prompt_adherence, "Does it read as fear?"], [reference_fidelity, "Is the mask on the left?"]]}
+  deliverable: "One image: six studies on one sheet."
+  checks:
+    - [prompt_adherence, "Are there six studies?"]
+    - [text_accuracy, "Are the six labels exact?"]
+    - [set_consistency, "Is the mask on the left side of the face in all six?"]
+    - [set_consistency, "Is the third-eye slit on the forehead in all six?"]
+    - [set_consistency, "Is the face the same character in all six?"]
+    - [prompt_adherence, "Is each expression clearly the one labelled?"]
+    - [style, "Is the pencil and marker style consistent and matching the sketch?"]
+    - [prompt_adherence, "Are they in two rows of three?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are lines clean?"]
+    - [set_consistency, "Is the hair long and white in all six?"]
+    - [prompt_adherence, "Is there one character only?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit producing the sheet."}
+  video_followon: ""
+
+- id: CHR-GAM-04
+  title: "The hover-bike in four race levels; decal, dent and stripe carried, damage accumulating"
+  persona: "Vehicle artist showing the bike's wear across a race campaign."
+  evidence: "Progressive damage must accumulate and side-specific details must hold."
+  levers: [set, identity, continuity, multi-step, exact-text]
+  inputs: [{source: SRC-GAM-MECH, role: source}]
+  prompt: |
+    This render shows a graphite hover-bike with an orange stripe from nose to tail, cyan-glowing
+    pods, a curved windscreen, an orange seat, a white "07" decal on the rear fairing and a dent on
+    the right front fairing. Make one in-race frame of the same bike as described below, stylised 3D,
+    16:9, no rider's face visible. Damage builds up in order and never resets: level 1 as built;
+    level 2 adds scorch marks along the left flank; level 3 adds a cracked windscreen; level 4 adds a
+    missing left rear panel showing the frame. The 07 decal and the original dent stay throughout.
+  exact_text: ["07"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Body shape, stripe, pods, seat"
+      - "07 decal on the rear fairing; dent on the right front"
+      - "Damage accumulates in order"
+    members:
+      - {name: "Level 1 — desert", prompt: "Racing over a desert canyon at noon, seen from the right.", checks: [[reference_fidelity, "Is the dent on the near right front?"], [prompt_adherence, "Is there no other damage?"]]}
+      - {name: "Level 2 — city", prompt: "Through a neon city at night, seen from the left.", checks: [[prompt_adherence, "Are scorch marks on the left flank?"], [text_accuracy, "Is 07 on the rear fairing?"]]}
+      - {name: "Level 3 — ice", prompt: "On a frozen lake at dawn, front three-quarter.", checks: [[prompt_adherence, "Is the windscreen cracked?"], [prompt_adherence, "Are the scorch marks still there?"]]}
+      - {name: "Level 4 — volcano", prompt: "Beside lava flows at dusk, seen from the left rear.", checks: [[prompt_adherence, "Is the left rear panel missing?"], [prompt_adherence, "Are the crack and scorch still there?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is it the same bike in all four?"]
+    - [set_consistency, "Is the 07 decal on the rear in every frame that shows it?"]
+    - [set_consistency, "Is the dent on the right front throughout?"]
+    - [set_consistency, "Does damage build up in order without resetting?"]
+    - [set_consistency, "Is the stripe orange in all four?"]
+    - [prompt_adherence, "Does each level have its described light?"]
+    - [prompt_adherence, "Does each frame show its level?"]
+    - [style, "Is the stylised 3D consistent?"]
+    - [text_accuracy, "Is 07 the only text?"]
+    - [visual_quality, "Are hard edges clean?"]
+    - [physics_plausibility, "Does it hover above the surface in all four?"]
+    - [prompt_adherence, "Is there one bike?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-05
+  title: "The war-tiger in four frames: charging, resting, wounded, winter armour"
+  persona: "Art director on a mythology game illustrating the mount's arc."
+  evidence: "An animal's scars and markings drift between painted frames."
+  levers: [set, identity, continuity, locale, light-lock]
+  inputs: [{source: SRC-GAM-MOUNT, role: source}]
+  prompt: |
+    This painted illustration shows a war-tiger mount: a huge Bengal tiger with a torn left ear, a
+    white scar across its right eye, a stripe pattern forming a clear "V" on its forehead, a
+    turquoise and brass saddle with a red tasselled cloth and a small saddle bag on its left flank.
+    Paint one frame of the same tiger as described below, in the same painterly style. The torn
+    ear, the scar and the V stay on their sides in every frame. 16:9, no text, no rider's face.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Torn left ear; scar across the right eye; V stripe on the forehead"
+      - "Turquoise and brass saddle with red tassels (except in winter armour)"
+      - "Painterly style"
+    members:
+      - {name: "Charging", prompt: "Charging head-on through a battlefield at golden hour.", checks: [[reference_fidelity, "Is the torn ear on frame right (its left)?"], [reference_fidelity, "Is the V visible on the forehead?"]]}
+      - {name: "Resting", prompt: "Lying by a river at noon, seen from its left, the saddle bag visible.", checks: [[reference_fidelity, "Is the saddle bag on this left flank?"], [reference_fidelity, "Is the torn ear on this near side?"]]}
+      - {name: "Wounded", prompt: "Lying wounded in the rain at night, a bandage on its right foreleg.", checks: [[set_consistency, "Is the scar across the right eye?"], [prompt_adherence, "Is the bandage on the right foreleg?"]]}
+      - {name: "Winter armour", prompt: "In snow, wearing silver plate armour over the saddle, dawn.", checks: [[reference_fidelity, "Are the scar and V still visible on the face?"], [prompt_adherence, "Is it cold dawn light on snow?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is it the same tiger in all four?"]
+    - [set_consistency, "Is the torn ear on its left in all four?"]
+    - [set_consistency, "Is the scar across its right eye in all four?"]
+    - [set_consistency, "Is the V on the forehead in all four?"]
+    - [set_consistency, "Is the saddle the same where worn?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its action?"]
+    - [style, "Is the painterly style consistent?"]
+    - [visual_quality, "Is the anatomy correct?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is there one tiger?"]
+    - [prompt_adherence, "Is the setting as described in each?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-06
+  title: "The sage at 25, 50 and 80 for a flashback quest"
+  persona: "Narrative artist painting the sage's past for a quest's flashbacks."
+  evidence: "Age progression with fixed marks; earlier bank IMG-GAME-13 (fifteen years on) was medium tier."
+  levers: [set, identity, continuity, locale, exclude]
+  inputs: [{source: SRC-GAM-SAGE, role: source}]
+  prompt: |
+    This painted portrait shows an elderly sage of about eighty: deep brown skin, a long white beard
+    tied with one wooden bead, a shaved head with three ash lines on the forehead, one cloudy left
+    eye, a rudraksha mala and a saffron shawl. Paint him at the age described below, chest up,
+    three-quarter view facing right, same warm ochre background, same painterly style. His bone
+    structure and the cloudy left eye stay at every age (the eye was clouded in youth). Age shows in
+    skin, hair and beard only. No text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Bone structure; cloudy left eye"
+      - "Deep brown skin; three ash lines"
+      - "Three-quarter view facing right; ochre background; painterly style"
+    members:
+      - {name: "Age 25", prompt: "At twenty-five: a warrior with a short black beard, long black hair tied up, a bronze armlet, no mala.", checks: [[prompt_adherence, "Does he look about twenty-five?"], [reference_fidelity, "Is the left eye cloudy?"]]}
+      - {name: "Age 50", prompt: "At fifty: a grey-streaked beard, head newly shaved, the mala, a plain cotton shawl.", checks: [[prompt_adherence, "Does he look about fifty?"], [reference_fidelity, "Are the three ash lines present?"]]}
+      - {name: "Age 80", prompt: "At eighty: as in the portrait.", checks: [[reference_fidelity, "Does it match the portrait?"], [reference_fidelity, "Is the bead on the beard?"]]}
+  deliverable: "Three images, 4:5."
+  checks:
+    - [set_consistency, "Is he recognisably the same man at all three ages?"]
+    - [set_consistency, "Is the left eye cloudy at all three ages?"]
+    - [set_consistency, "Is his skin deep brown at all three ages?"]
+    - [prompt_adherence, "Do the ages read as about 25, 50 and 80?"]
+    - [set_consistency, "Are the ash lines present at 50 and 80?"]
+    - [set_consistency, "Is the pose and background the same?"]
+    - [style, "Is the painterly style consistent?"]
+    - [set_consistency, "Is the bone structure the same?"]
+    - [prompt_adherence, "Is he alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the face free of artefacts?"]
+    - [prompt_adherence, "Are the costume changes as described?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-07
+  title: "A described dark-skinned heroine across four lighting set-ups; skin tone holds"
+  persona: "Lighting artist testing whether the heroine's skin reads true in every game lighting."
+  evidence: "Skin tone shifts lighter under bright keys and greyer under coloured light; dark skin shows it most."
+  levers: [set, identity, light-lock, long-brief, physics]
+  prompt: |
+    An original game heroine rendered in a stylised 3D look, head and shoulders, three-quarter view.
+    She is about twenty-five with very dark brown skin with warm undertones, short natural coiled hair
+    with a single silver clip on the right, a small scar on her chin, and gold hoop earrings; she
+    wears a high-collared olive flight jacket. Render her under the lighting described below. Her skin
+    tone stays the same very dark brown with warm undertones in every set-up: brighter or tinted by
+    the light, but never lightened, greyed or ashy. 1:1, plain dark background.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Very dark brown skin with warm undertones"
+      - "Coiled hair with a silver clip on the right; chin scar; gold hoops"
+      - "Olive flight jacket; three-quarter view"
+    members:
+      - {name: "Noon sun", prompt: "Hard white sunlight from above.", checks: [[set_consistency, "Is her skin still very dark brown, not washed out?"], [prompt_adherence, "Are there hard top-light shadows?"]]}
+      - {name: "Cyan neon", prompt: "A cyan neon key from the left, dark elsewhere.", checks: [[prompt_adherence, "Is she tinted cyan on the lit side?"], [set_consistency, "Is the unlit side still warm dark brown, not grey?"]]}
+      - {name: "Firelight", prompt: "Warm firelight from below right.", checks: [[prompt_adherence, "Is the light warm from below?"], [set_consistency, "Is her tone deep and warm?"]]}
+      - {name: "Overcast", prompt: "Soft overcast daylight.", checks: [[set_consistency, "Is her tone the same as the reference description?"], [set_consistency, "Is the silver clip on the right?"]]}
+  deliverable: "Four images, 1:1."
+  checks:
+    - [set_consistency, "Is she the same character in all four?"]
+    - [set_consistency, "Is her underlying skin tone the same in all four?"]
+    - [set_consistency, "Is her skin never lightened or ashy?"]
+    - [prompt_adherence, "Does each image show its lighting clearly?"]
+    - [set_consistency, "Is the silver clip on the right in all four?"]
+    - [set_consistency, "Is the chin scar in all four?"]
+    - [set_consistency, "Are the gold hoops in all four?"]
+    - [style, "Is the stylised 3D look consistent?"]
+    - [prompt_adherence, "Is the view three-quarter in all four?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the face free of artefacts?"]
+    - [set_consistency, "Is the jacket olive in all four?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four text-to-image calls; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-08
+  title: "A mobile-game character in a described ghagra and armour outfit across four poses"
+  persona: "Character artist on an Indian mobile RPG drafting a new hero's poses."
+  evidence: "Costume details drift between poses when generated separately."
+  levers: [set, identity, continuity, locale, long-brief]
+  prompt: |
+    An original mobile-game heroine in a clean illustrated style with cel shading, full body. She is
+    a Rajput warrior queen of about thirty with wheat-brown skin, a long black braid with a gold
+    tassel, and a nose ring on her left nostril. Her outfit: a deep green ghagra with a wide gold
+    border, a short mirror-work jacket, a steel breastplate with a sun emblem, steel arm guards on
+    both forearms, and a red odhni tied at her waist with its end hanging on her right hip. She holds
+    a curved talwar in her right hand and a round shield on her left arm. Draw her in the pose below.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Braid with a gold tassel; nose ring on the left"
+      - "Green ghagra with gold border; mirror-work jacket; steel breastplate with sun emblem"
+      - "Odhni end on the right hip; talwar in the right hand; shield on the left arm"
+    members:
+      - {name: "Idle", prompt: "Standing at rest, sword point down.", checks: [[set_consistency, "Is the talwar in her right hand?"], [set_consistency, "Is the odhni end on her right hip?"]]}
+      - {name: "Attack", prompt: "Mid-slash, skirt flaring.", checks: [[set_consistency, "Is the shield on her left arm?"], [physics_plausibility, "Does the ghagra flare with the movement?"]]}
+      - {name: "Block", prompt: "Crouched behind the shield.", checks: [[set_consistency, "Is the sun emblem visible on the breastplate or hidden by the shield as expected?"], [set_consistency, "Is it the same face?"]]}
+      - {name: "Victory", prompt: "Talwar raised high, looking up.", checks: [[set_consistency, "Is the nose ring on the left?"], [set_consistency, "Is the braid's tassel gold?"]]}
+  deliverable: "Four images, 2:3."
+  checks:
+    - [set_consistency, "Is she the same character in all four?"]
+    - [set_consistency, "Is the talwar always in her right hand?"]
+    - [set_consistency, "Is the shield always on her left arm?"]
+    - [set_consistency, "Is the odhni end on her right hip in all four?"]
+    - [set_consistency, "Is the nose ring on the left in all four?"]
+    - [set_consistency, "Is the ghagra green with a gold border in all four?"]
+    - [prompt_adherence, "Does each image show its pose?"]
+    - [style, "Is the illustrated style consistent?"]
+    - [prompt_adherence, "Is she the only character?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean on the weapon?"]
+    - [set_consistency, "Is her skin tone the same in all four?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four text-to-image calls; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-09
+  title: "A legendary sword in four states: in stone, in hand, broken, reforged"
+  persona: "Item artist designing a quest weapon's progression."
+  evidence: "Object identity (a glyph pattern) across states is the prop version of identity drift."
+  levers: [set, identity, continuity, long-brief, physics]
+  prompt: |
+    A legendary sword for a fantasy game, stylised 3D, product-style render on a dark background,
+    16:9. The sword: a straight double-edged blade 90 cm long with a row of seven circular glyphs
+    etched down the centre of the blade, a crossguard shaped like two outstretched wings, a grip
+    wrapped in blue leather, and a pommel holding a round amber stone. Render it in the state
+    described below. The seven glyphs, the winged guard and the amber pommel stone are the same in
+    every state where they are visible.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Seven circular glyphs down the blade"
+      - "Winged crossguard; blue leather grip; amber pommel stone"
+      - "Straight double-edged blade"
+    members:
+      - {name: "In stone", prompt: "Plunged into a mossy rock up to the third glyph, lit by a shaft of light.", checks: [[prompt_adherence, "Are four glyphs visible above the rock?"], [physics_plausibility, "Does the blade enter the rock cleanly?"]]}
+      - {name: "In hand", prompt: "Held up in a gauntleted hand, glyphs glowing gold.", checks: [[prompt_adherence, "Are seven glyphs glowing?"], [visual_quality, "Is the grip natural?"]]}
+      - {name: "Broken", prompt: "Lying on stone, the blade snapped between the fourth and fifth glyphs.", checks: [[prompt_adherence, "Is the break between the fourth and fifth glyphs?"], [prompt_adherence, "Are seven glyphs across both pieces?"]]}
+      - {name: "Reforged", prompt: "On an anvil, the blade rejoined with a bright seam where it broke.", checks: [[prompt_adherence, "Is the seam between the fourth and fifth glyphs?"], [set_consistency, "Is the amber pommel the same?"]]}
+  deliverable: "Four images, 16:9."
+  checks:
+    - [set_consistency, "Is it the same sword design in all four?"]
+    - [prompt_adherence, "Are there seven glyphs wherever the whole blade is visible?"]
+    - [set_consistency, "Is the guard winged in all four?"]
+    - [set_consistency, "Is the pommel stone amber in all four?"]
+    - [set_consistency, "Is the grip blue leather in all four?"]
+    - [set_consistency, "Is the break, and later the seam, in the same place?"]
+    - [prompt_adherence, "Does each image show its state?"]
+    - [style, "Is the render style consistent?"]
+    - [physics_plausibility, "Do the states read physically right (rock, break, seam)?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are edges clean?"]
+    - [prompt_adherence, "Is there one sword?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four text-to-image calls; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-GAM-10
+  title: "A pixel-art hero at levels 1, 10 and 50; gear grows, identity stays"
+  persona: "Pixel artist designing a hero's progression sprites."
+  evidence: "Pixel art at small sizes loses identity marks when gear is added."
+  levers: [set, identity, continuity, count, exclude]
+  prompt: |
+    A pixel-art game hero at 64 by 64 pixel scale, shown enlarged with crisp pixels and no
+    anti-aliasing, a limited palette of 16 colours, on a plain dark background. The hero is a young
+    woman with a red headscarf, a brown face with a single white pixel highlight on each eye, a
+    yellow tunic and a brown belt, and a small green parrot that always sits on her right shoulder.
+    Draw her at the level described below, standing facing right. Her face, headscarf and parrot stay
+    identical; only gear grows. Three sprites side by side on one sheet.
+  set_members:
+    mode: one-sheet
+    must_stay_same:
+      - "Red headscarf; brown face with white eye highlights"
+      - "Green parrot on her right shoulder"
+      - "Crisp pixels, no anti-aliasing, 16-colour palette"
+    members:
+      - {name: "Level 1", prompt: "Level 1: tunic and belt only, a wooden stick.", checks: [[set_consistency, "Is the parrot on her right shoulder?"], [prompt_adherence, "Does she hold a wooden stick?"]]}
+      - {name: "Level 10", prompt: "Level 10: a leather chest piece over the tunic, a short sword.", checks: [[prompt_adherence, "Is there a leather chest piece and a sword?"], [set_consistency, "Is the headscarf red?"]]}
+      - {name: "Level 50", prompt: "Level 50: gold armour, a blue cape, a glowing spear; headscarf still visible.", checks: [[prompt_adherence, "Is there gold armour, a blue cape and a spear?"], [set_consistency, "Are the headscarf and parrot unchanged?"]]}
+  deliverable: "One image: three sprites."
+  checks:
+    - [prompt_adherence, "Are there three sprites?"]
+    - [set_consistency, "Is the parrot on her right shoulder in all three?"]
+    - [set_consistency, "Is the red headscarf in all three?"]
+    - [set_consistency, "Is the face identical in all three?"]
+    - [style, "Are pixels crisp with no anti-aliasing?"]
+    - [style, "Is the palette limited and consistent?"]
+    - [prompt_adherence, "Does gear grow as described?"]
+    - [prompt_adherence, "Do all three face right?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is each sprite readable at small size?"]
+    - [set_consistency, "Are the sprites the same base size?"]
+    - [prompt_adherence, "Is there one hero per sprite?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

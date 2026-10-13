@@ -1,0 +1,294 @@
+# Precision video edits — E-commerce, D2C & retail scenarios. Slots: vedt.yaml.
+code: VEDT
+scenarios:
+
+- id: VEDT-ECM-02
+  seed: true
+  title: "Recolour the kurta to bottle green as she walks and turns; the print and buttons stay white"
+  persona: "Retoucher at an ethnic-wear marketplace making the green colourway's video from the mustard shoot."
+  evidence: "The image seed EDT-ECM-02 recolours a still; on a walk and a full turn the print and folds move every frame and tools re-draw the model."
+  levers: [keep-rest, identity, camera, locale, multi-step]
+  inputs:
+    - {source: SRC-VCLIP-RUNWAY-WALK, role: source, note: "the 6-second catalogue walk"}
+  prompt: |
+    In this 6-second catalogue video, recolour the model's kurta from mustard to bottle green, #2E6B4F,
+    on every frame, and change nothing else. The small white floral block print stays white and stays
+    in exactly the same pattern, moving with the fabric; the five white buttons stay white; the folds,
+    shading and swing of the kurta as she walks, stops at 4 s and turns a full circle by 5.5 s are
+    unchanged. Her face, skin tone, hair, the white palazzos, the white dupatta over her left shoulder,
+    the beige cyclorama and the light are unchanged. The recolour must not flicker, must not spill onto
+    her skin, dupatta or the backdrop, and must not slip at the garment's edges during the turn. No
+    smoothing or re-drawing of the model.
+  clip: {duration: 6, aspect: "16:9", camera: "as the source: locked off, wide"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the kurta bottle green close to #2E6B4F on every frame?"]
+    - [preservation, "Does the white print keep the same pattern and stay white as the fabric moves?"]
+    - [preservation, "Are the five buttons still white?"]
+    - [temporal_consistency, "Is the recolour stable with no flicker?"]
+    - [motion_coherence, "Do the garment edges stay clean during the turn, with no slip or halo?"]
+    - [preservation, "Is there no green on her skin, dupatta or the backdrop?"]
+    - [reference_fidelity, "Is her face unchanged on every frame?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [preservation, "Does she still stop at 4 s and finish the turn by 5.5 s?"]
+    - [preservation, "Are the palazzos and dupatta unchanged?"]
+    - [preservation, "Is the light unchanged?"]
+    - [visual_quality, "Are hands and feet natural on every frame?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-01
+  title: "Recolour the box from pale blue to sage and the seal from orange to gold, through the unboxing"
+  persona: "D2C brand's editor updating an unboxing video after a packaging refresh."
+  evidence: "Recolouring an object that is opened and handled spills onto hands and tissue."
+  levers: [multi-step, keep-rest, physics, timing, light-lock]
+  inputs: [{source: SRC-VCLIP-UNBOX-HANDS, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second top-down unboxing, on every frame, and nothing else.
+    1. Recolour the matte pale-blue box and its lid to a matte sage green, inside and out.
+    2. Recolour the round orange sticker seal to a metallic gold, including the torn halves after the
+       thumbnail slits it from 2 seconds.
+    The hands and their skin, the white tissue paper, the white case lifted out from 4 to 7 seconds, the
+    oak desk, the notebook and pen, the soft daylight from the left and all timings are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged top-down"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the box matte sage inside and out on every frame?"]
+    - [prompt_adherence, "Is the seal metallic gold, including the torn halves?"]
+    - [prompt_adherence, "Does the gold catch the window light?"]
+    - [preservation, "Are the hands' skin tones unchanged?"]
+    - [preservation, "Is the tissue still white?"]
+    - [preservation, "Is the case still white?"]
+    - [preservation, "Are all timings unchanged?"]
+    - [motion_coherence, "Does the colour stay on the box as the lid moves?"]
+    - [preservation, "Are the desk, notebook and pen unchanged?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [preservation, "Is the framing unchanged?"]
+    - [visual_quality, "Is there no colour flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-03
+  title: "Remove the plastic spoon, swap mint for coriander, napkin to green; the steam and spoon lift untouched"
+  persona: "Cloud-kitchen brand's editor fixing a menu video for the delivery app."
+  evidence: "Earlier image bank EDT-ECM-03: three food fixes on a still; on video the steam and the lift must survive."
+  levers: [multi-step, keep-rest, physics, timing, locale]
+  inputs: [{source: SRC-VCLIP-BIRYANI-STEAM, role: source}]
+  prompt: |
+    Make exactly these three changes to this 6-second vertical biryani clip, on every frame, and nothing
+    else.
+    1. Remove the white plastic spoon from the red-checked napkin on the left; the napkin's checks run on
+       underneath.
+    2. Replace the mint leaves on top of the biryani with chopped fresh coriander.
+    3. Recolour the napkin from red-and-white checks to green-and-white checks.
+    The rising steam, the steel spoon lifting rice at 2 seconds and lowering it at 5 seconds, the chicken,
+    the fried onions, the raita bowl with the half egg, the copper handi and the daylight are unchanged.
+  clip: {duration: 6, aspect: "4:5", camera: "unchanged locked off at 45 degrees"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the plastic spoon gone with the checks rebuilt?"]
+    - [prompt_adherence, "Is the mint replaced by chopped coriander?"]
+    - [prompt_adherence, "Is the napkin green-and-white checked?"]
+    - [physics_plausibility, "Does the steam still rise continuously?"]
+    - [prompt_adherence, "Does the spoon lift at 2 s and lower at 5 s?"]
+    - [preservation, "Are the chicken, onions and raita unchanged?"]
+    - [preservation, "Is the copper handi unchanged?"]
+    - [motion_coherence, "Does the coriander stay put as the rice is lifted?"]
+    - [preservation, "Is the daylight unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [preservation, "Is the framing unchanged?"]
+    - [visual_quality, "Is there no flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-04
+  title: "Declutter the pan: cables, mugs, sneakers and magazines gone, throw folded; tracked through the move"
+  persona: "Home-decor marketplace's editor making a seller's room video listing-ready."
+  evidence: "Earlier image bank EDT-ECM-04: declutter on a still; a pan reveals each area at a different time."
+  levers: [multi-step, keep-rest, count, camera-move, light-lock]
+  inputs: [{source: SRC-VCLIP-ROOM-PAN, role: source}]
+  prompt: |
+    Make exactly these changes to this 8-second pan across a Bengaluru living room, on every frame, and
+    nothing else.
+    1. Remove the tangle of charger cables and the two mugs from the coffee table; the laptop stays, closed.
+    2. Remove the pair of sneakers from the floor by the table.
+    3. Remove the leaning stack of magazines from the bookshelf.
+    4. Fold the crumpled throw neatly over the sofa's right arm.
+    The window, sheer curtains, the sofa and its two cushions, the bookshelf's books, the sunlight rectangle
+    on the floor and the pan, with the sofa centred at 4 seconds, are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged pan right"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Are the cables and both mugs gone?"]
+    - [preservation, "Is the laptop still on the table, closed?"]
+    - [prompt_adherence, "Are the sneakers gone?"]
+    - [prompt_adherence, "Is the magazine stack gone?"]
+    - [prompt_adherence, "Is the throw folded over the right arm?"]
+    - [preservation, "Are there still two cushions?"]
+    - [motion_coherence, "Do the cleaned areas stay clean as the pan reveals them?"]
+    - [preservation, "Is the sunlight rectangle unchanged?"]
+    - [preservation, "Are the window, sofa and books unchanged?"]
+    - [prompt_adherence, "Is the sofa centred at 4 seconds?"]
+    - [prompt_adherence, "Are all four changes made?"]
+    - [visual_quality, "Is there no smear where objects were?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-05
+  title: "Tidy the creator's background and remove the ring light from the mirror; her face and gestures untouched"
+  persona: "Beauty brand's social editor cleaning up a creator's sponsored clip."
+  evidence: "Earlier image bank EDT-ECM-05: edits near a face smooth or lighten dark skin."
+  levers: [multi-step, keep-rest, identity, physics, timing]
+  inputs: [{source: SRC-VCLIP-CREATOR-TALK, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second vertical clip of a beauty creator, on every frame, and
+    nothing else.
+    1. Tidy the crowded white shelf behind her to five bottles standing evenly spaced; the fairy-light
+       string stays.
+    2. Remove the reflection of the round ring light from the mirror on the right, leaving the mirror
+       reflecting the dim room.
+    Her face, dark brown skin, bare complexion, the ring catchlights in her eyes, her claw clip, gold hoops,
+    sage tank top, the jar she holds up at 3 seconds and her laugh and hair tuck at 6 seconds are unchanged:
+    not smoothed, not lightened, not redrawn.
+  clip: {duration: 8, aspect: "9:16", camera: "unchanged selfie framing"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Are there five evenly spaced bottles on the shelf?"]
+    - [prompt_adherence, "Are there exactly five bottles?"]
+    - [prompt_adherence, "Is the ring light gone from the mirror?"]
+    - [physics_plausibility, "Does the mirror reflect the dim room?"]
+    - [reference_fidelity, "Is her face unchanged, not smoothed?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [preservation, "Are the catchlights in her eyes kept?"]
+    - [preservation, "Are the jar at 3 s and the hair tuck at 6 s unchanged?"]
+    - [preservation, "Is the fairy-light string kept?"]
+    - [temporal_consistency, "Does the background stay stable behind her moving head?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Is there no halo around her?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-06
+  title: "Strap to coral and the watch face to 06:10 through the stretch; her face neither smoothed nor made younger"
+  persona: "Smartwatch brand's editor making a colourway variant of a lifestyle clip."
+  evidence: "Earlier image bank EDT-ECM-07: edits on older faces smooth wrinkles; the watch moves with the arms."
+  levers: [multi-step, keep-rest, identity, small-text, timing]
+  inputs: [{source: SRC-VCLIP-GRANDMA-YOGA, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second terrace clip, on every frame, and nothing else.
+    1. Recolour the sage-green watch strap on her left wrist to coral, tracked as her arms rise at 3 seconds
+       and fall at 6 seconds.
+    2. Change the time on the watch's square black face from 06:45 to 06:10, white digits in the same font,
+       readable when she glances at it.
+    Her face, wrinkles and dark brown skin are not smoothed or made younger; her grey braid, bindi, lilac
+    sari, shoes, movement, the terrace and the push in are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the strap coral on every frame?"]
+    - [text_accuracy, "Does the watch read 06:10 in the same font?"]
+    - [motion_coherence, "Does the strap colour track the wrist as the arms move?"]
+    - [reference_fidelity, "Is her face unchanged, wrinkles kept?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [prompt_adherence, "Are the arms up at 3 s and down at 6 s?"]
+    - [preservation, "Is the sari unchanged?"]
+    - [preservation, "Is the terrace unchanged?"]
+    - [preservation, "Is the push in unchanged?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [text_accuracy, "Is there no other new text?"]
+    - [visual_quality, "Is there no flicker on the watch?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-07
+  title: "Remove the sixth person crossing the background behind the toast"
+  persona: "Beverage brand's editor cleaning a crew member out of a lifestyle shot."
+  evidence: "Removing a person passing behind a moving group under a push in."
+  levers: [keep-rest, count, timing, physics, camera-move]
+  inputs: [{source: SRC-VCLIP-PARTY-CANS, role: source}]
+  prompt: |
+    In this 6-second rooftop clip of five friends toasting with blue cans, a sixth person carrying a plate
+    walks across the background from left to right at about 4 seconds. Remove that person completely on
+    every frame, with their shadow, and rebuild the city lights, fairy lights and rooftop behind them,
+    matching the slow push in and the dusk light. The five friends, their cans, the raise at 2 seconds and
+    the clink at 3 seconds, and their faces where they overlap the walker, are unchanged.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the sixth person gone on every frame?"]
+    - [prompt_adherence, "Are there exactly five people?"]
+    - [physics_plausibility, "Is their shadow gone?"]
+    - [preservation, "Are the city and fairy lights rebuilt consistently?"]
+    - [motion_coherence, "Does the rebuilt background follow the push in?"]
+    - [preservation, "Are the raise at 2 s and clink at 3 s unchanged?"]
+    - [preservation, "Are the five friends unchanged?"]
+    - [preservation, "Are faces near the walker's path intact?"]
+    - [temporal_consistency, "Is there no smear where they were?"]
+    - [preservation, "Is the dusk light unchanged?"]
+    - [preservation, "Are the cans unchanged?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-08
+  title: "Make the turning elephant pink with a blue patch and a green collar; the knit visible on every frame"
+  persona: "Handmade-toy brand making a colourway video without re-shooting."
+  evidence: "Earlier image bank EDT-ECM-08: recolours flatten knit; on a turntable the texture must stay."
+  levers: [multi-step, keep-rest, identity, layout, physics]
+  inputs: [{source: SRC-VCLIP-PLUSH-TURNTABLE, role: source}]
+  prompt: |
+    Make exactly these three changes to this 6-second turntable clip of the knitted elephant, on every frame,
+    and nothing else.
+    1. Recolour the grey wool body to a soft dusty pink.
+    2. Recolour the mustard patch on its left ear to sky blue.
+    3. Recolour the red ribbon collar to leaf green; the brass bell stays brass.
+    The knit texture stays clearly visible in every colour; the button eyes stay black; the trunk stays
+    curled to its right; the turn, the white turntable and the contact shadow are unchanged.
+  clip: {duration: 6, aspect: "1:1", camera: "unchanged locked off"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the body dusty pink on every frame?"]
+    - [prompt_adherence, "Is the ear patch sky blue?"]
+    - [preservation, "Is the patch still on the left ear?"]
+    - [prompt_adherence, "Is the collar leaf green with a brass bell?"]
+    - [preservation, "Is the knit texture visible in every colour?"]
+    - [preservation, "Are the eyes black?"]
+    - [prompt_adherence, "Is the trunk curled to its right?"]
+    - [motion_coherence, "Do the colours stay put as it turns?"]
+    - [physics_plausibility, "Does the contact shadow turn with it?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [preservation, "Is the turntable unchanged?"]
+    - [visual_quality, "Is there no colour flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ECM-09
+  title: "Change two prices on the moving shelf tags; the other tags' text untouched"
+  persona: "Retail chain's marketing editor updating a promo video after a price change."
+  evidence: "Small text on passing tags: edits re-spell neighbouring tags."
+  levers: [exact-text, small-text, keep-rest, timing, count]
+  inputs: [{source: SRC-VCLIP-SHELF-PAN, role: source}]
+  prompt: |
+    This 6-second dolly passes six white price tags, one a second. Change only two of them, on every frame
+    where they appear. The Toor Dal tag now reads "Toor Dal 1 kg | ₹159 | ₹15.90/100 g". The Moong Dal tag
+    now reads "Moong Dal 500 g | ₹89 | ₹17.80/100 g". Same black font, same sizes, the price still the
+    largest line, perspective matching the moving tag. The Basmati Rice, Sona Masoori, Chana Dal and Masoor
+    Dal tags keep their text exactly as in the source; the bags, the light and the dolly are unchanged.
+  exact_text: ["Toor Dal 1 kg | ₹159 | ₹15.90/100 g", "Moong Dal 500 g | ₹89 | ₹17.80/100 g"]
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged dolly right"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does the Toor Dal tag read ₹159 and ₹15.90/100 g?"]
+    - [text_accuracy, "Does the Moong Dal tag read ₹89 and ₹17.80/100 g?"]
+    - [preservation, "Are the other four tags' text unchanged?"]
+    - [text_accuracy, "Is the price the largest line on the edited tags?"]
+    - [motion_coherence, "Does the new text track the moving tags without sliding?"]
+    - [temporal_consistency, "Is there no flicker or re-spelling between frames?"]
+    - [prompt_adherence, "Are there six tags?"]
+    - [preservation, "Does a tag still enter about once a second?"]
+    - [preservation, "Are the bags unchanged?"]
+    - [prompt_adherence, "Does the text take the fluorescent light?"]
+    - [preservation, "Is the dolly unchanged?"]
+    - [visual_quality, "Is the text crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

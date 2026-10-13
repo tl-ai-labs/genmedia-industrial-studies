@@ -1,0 +1,69 @@
+# Product and ad spots — Real estate, interiors & architecture scenarios. Slots: vspt.yaml.
+code: VSPT
+scenarios:
+
+- id: VSPT-RES-01
+  title: "A staging spot: push in on the listing room with the rust sofa in place; its scale and light hold as the camera moves"
+  persona: "Virtual-staging studio making a moving listing preview with the client's sofa."
+  evidence: "Earlier image bank PRD-RES-01: the product's scale and light in a room; a moving camera re-tests both."
+  levers: [multi-ref, physics, light-lock, layout, keep-rest, camera-move]
+  inputs:
+    - {source: SRC-RES-LIVING-FLAT, role: first_frame, note: "the listing room"}
+    - {source: SRC-RES-SOFA, role: product, note: "the sofa to place"}
+  prompt: |
+    Start on this listing photo of a Mumbai flat's living room and make an 8-second slow push in from the
+    entrance corner towards the balcony door, verticals straight. The grey sofa on the left wall is replaced
+    by this rust-orange three-seat sofa, 2.2 metres wide, with mustard bolsters and splayed teak legs,
+    facing right; the newspapers are gone. It sits on the floor with soft contact shadows, lit by the
+    balcony daylight from the back, and as the camera moves it keeps its size against the coffee table and
+    the doorway. The rest of the room stays as in the photo. No people, no text.
+  clip: {duration: 8, aspect: "3:2", camera: "slow push in towards the balcony"}
+  deliverable: "One 8-second clip, 3:2."
+  checks:
+    - [reference_fidelity, "Is the sofa the real rust one with mustard bolsters and teak legs?"]
+    - [physics_plausibility, "Does it keep a plausible 2.2 m size as the camera moves?"]
+    - [physics_plausibility, "Does it sit on the floor with contact shadows?"]
+    - [prompt_adherence, "Is it lit from the balcony at the back?"]
+    - [prompt_adherence, "Is it on the left wall facing right?"]
+    - [preservation, "Is the rest of the room unchanged?"]
+    - [prompt_adherence, "Is it a slow push in with verticals straight?"]
+    - [physics_plausibility, "Does it have correct parallax against the room?"]
+    - [motion_coherence, "Is there no warping of the room?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the fabric texture stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame and a product reference."}
+
+- id: VSPT-RES-02
+  title: "A drone push on the tower's east face clad in the terracotta louvres; gap shadows stay true as it moves"
+  persona: "Cladding manufacturer's marketer making a project film for a tender."
+  evidence: "Earlier image bank PRD-RES-02: louvre depth and shadow; as the camera moves the gaps must shade correctly."
+  levers: [multi-ref, physics, light-lock, count, camera-move]
+  inputs:
+    - {source: SRC-RES-TOWER-SITE, role: first_frame, note: "the tower"}
+    - {source: SRC-RES-CLADDING, role: product, note: "the louvre panel"}
+  prompt: |
+    Start on this drone photo of a 22-storey tower at harsh noon and make an 8-second drone push in towards
+    the plain east face (frame right), which is now clad full height in these horizontal terracotta louvres:
+    burnt-orange hollow tubes 5 cm deep with even 3 cm gaps and slight colour variation, the single vertical
+    window strip left open. As the camera nears, the louvres' depth shows: noon sun from almost overhead casts
+    short shadows under each louvre into the gaps, and the shadows stay consistent as the angle changes. The
+    south face, crane, lift room and site stay as in the photo. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "drone push in to the east face"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [reference_fidelity, "Is the east face clad in burnt-orange horizontal louvres?"]
+    - [physics_plausibility, "Does each louvre cast a short shadow into its gap?"]
+    - [physics_plausibility, "Do the shadows stay consistent as the angle changes?"]
+    - [prompt_adherence, "Is the window strip left open?"]
+    - [physics_plausibility, "Are the gaps even in scale?"]
+    - [preservation, "Are the south face, crane and lift room unchanged?"]
+    - [prompt_adherence, "Is it a drone push in towards the east face?"]
+    - [prompt_adherence, "Is it harsh noon light?"]
+    - [temporal_consistency, "Is there no shimmer or moiré in the louvres?"]
+    - [reference_fidelity, "Is there slight colour variation between louvres?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines straight?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame and a product reference."}

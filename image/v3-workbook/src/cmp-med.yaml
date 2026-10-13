@@ -1,0 +1,191 @@
+# Composition and aesthetic — Media, publishing & events scenarios. Slots: cmp.yaml.
+code: CMP
+scenarios:
+
+- id: CMP-MED-01
+  seed: true
+  title: "Double-page editorial portrait: the subject on the right page, nothing in the gutter"
+  persona: "Photo editor at an Indian culture magazine commissioning the opening spread of a long profile; the image prints across two pages with a fold in the middle."
+  evidence: "Call at 23:45: the default centred framing is what customers reject. For a spread, centring is not a matter of taste: whatever sits in the middle disappears into the fold."
+  levers: [off-centre, layout, camera, light-lock, exclude, locale]
+  prompt: |
+    A photograph for a magazine double-page spread, 2:1 landscape; the middle tenth of the width
+    is the fold. A Carnatic violinist, a woman in her sixties with grey hair in a low bun, a
+    small red bindi and a dark green silk sari, sits cross-legged on a polished wooden floor,
+    playing a violin held against her chest and ankle in the Carnatic way. Place her on the right
+    page, in its outer third: her body between 70 and 90 percent of the way across from the left
+    edge, her face well clear of the fold. The left page is mostly a dark wall with a tall window
+    at its far left edge; late golden light falls from the window across the floor in a long warm
+    band that reaches her, lighting her face and the violin from her right. The left page stays
+    dark and calm enough for white headline text. A brass oil lamp, unlit, stands near her on the
+    floor. 50 mm at seated eye height, shallow depth. No other people, no text, nothing of
+    interest inside the fold.
+  deliverable: "One image, 2:1."
+  checks:
+    - [composition, "Is her body between 70 and 90 percent of the way across from the left edge?"]
+    - [composition, "Is her face clear of the middle tenth (the fold)?"]
+    - [composition, "Is there nothing important inside the fold?"]
+    - [composition, "Is the left page mostly dark and calm, with room for a headline?"]
+    - [prompt_adherence, "Is the window at the far left edge?"]
+    - [prompt_adherence, "Does the golden light fall from the window across the floor and reach her face and violin from her right?"]
+    - [prompt_adherence, "Is she in her sixties with grey hair in a low bun, a bindi and a dark green silk sari?"]
+    - [prompt_adherence, "Is she holding the violin against her chest and ankle, seated cross-legged, as in Carnatic playing?"]
+    - [prompt_adherence, "Is the unlit brass lamp on the floor near her?"]
+    - [prompt_adherence, "Is the camera at seated eye height with shallow depth of field?"]
+    - [prompt_adherence, "Is the frame a true 2:1?"]
+    - [visual_quality, "Are her hands and the bow hold natural?"]
+    - [prompt_adherence, "Are there no other people and no text?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Midjourney arm is not wired today."}
+  video_followon: "V8: a slow push-in along the light band from the window to her, composition held."
+
+- id: CMP-MED-02
+  title: "Photojournalism: a vast concert crowd with the performer tiny on a huge stage"
+  persona: "Photo editor choosing an opening image for a festival report."
+  evidence: "Scale composition: models enlarge the performer."
+  levers: [off-centre, camera, light-lock, locale]
+  prompt: |
+    A photojournalism image from the back of a vast outdoor concert in Bengaluru at night, 3:2. A
+    sea of thousands of people fills the lower two-thirds, their raised hands and phone lights
+    making a field of tiny points. Far away, on the upper left third, a huge stage glows with a wall
+    of white and amber lights; the performer is a tiny figure at the stage's centre, under two percent
+    of the frame's height. Light beams sweep through haze above the crowd. Grain, natural colour. No
+    readable text or logos.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is the performer under two percent of the frame's height?"]
+    - [composition, "Is the stage on the upper left third?"]
+    - [composition, "Does the crowd fill the lower two-thirds?"]
+    - [physics_plausibility, "Does the crowd's scale read as thousands?"]
+    - [prompt_adherence, "Are phone lights visible as tiny points?"]
+    - [prompt_adherence, "Do beams sweep through haze?"]
+    - [style, "Is there grain and natural colour?"]
+    - [text_accuracy, "Is there no readable text or logo?"]
+    - [visual_quality, "Is the crowd free of repeated or melted shapes?"]
+    - [prompt_adherence, "Does it read as a real concert photo?"]
+    - [prompt_adherence, "Is the stage lit white and amber?"]
+    - [prompt_adherence, "Is there one performer on stage?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-MED-03
+  title: "Wildlife-magazine opener: a tiger at the bottom edge of a wall of tall grass"
+  persona: "Wildlife magazine's art director commissioning an opener with headline space."
+  evidence: "Negative space in a natural scene; models enlarge and centre animals."
+  levers: [off-centre, camera, locale, exclude]
+  prompt: |
+    A wildlife photograph for a magazine opener in Kaziranga, 3:2. A wall of tall golden elephant
+    grass fills the frame top to bottom, swaying softly. At the bottom edge, slightly right of
+    centre, a Bengal tiger's head and shoulders emerge from the grass, looking straight at the camera;
+    the tiger takes up only the bottom fifth of the frame, its chest cut by the bottom edge. The
+    upper eighty percent is grass, slightly out of focus, ready for a headline. Morning light from
+    the left. No text, no people.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Does the tiger take up only the bottom fifth?"]
+    - [composition, "Is its chest cut by the bottom edge?"]
+    - [composition, "Is the upper eighty percent grass, softly out of focus?"]
+    - [prompt_adherence, "Is it a Bengal tiger looking at the camera?"]
+    - [prompt_adherence, "Is morning light from the left?"]
+    - [style, "Is the grass golden and textured?"]
+    - [physics_plausibility, "Do grass blades overlap the tiger naturally?"]
+    - [prompt_adherence, "Is there no text or person?"]
+    - [visual_quality, "Is the tiger's face natural?"]
+    - [prompt_adherence, "Is there one tiger?"]
+    - [prompt_adherence, "Does it read as Kaziranga grassland?"]
+    - [composition, "Is the tiger slightly right of centre?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-MED-04
+  title: "Architecture feature at 17 mm tilt-shift: straight verticals, deep foreground paving"
+  persona: "Architecture magazine's photo editor commissioning a feature opener."
+  evidence: "Tilt-shift straight verticals are standard in architecture photography and often missed."
+  levers: [camera, off-centre, light-lock, exclude]
+  prompt: |
+    An architecture photograph of a contemporary concrete museum with a cantilevered roof, shot on a
+    17 mm tilt-shift lens at noon, 3:2. All vertical lines are perfectly vertical; the building sits
+    in the upper half, its roof edge a long horizontal line. The lower half is deep foreground of
+    large grey paving slabs in a regular grid, their lines converging strongly to a vanishing point
+    at the building's entrance on the right third. Hard noon sun, short crisp shadows under the
+    cantilever. A single small figure walks towards the entrance for scale. No text, no signs.
+  deliverable: "One image, 3:2."
+  checks:
+    - [prompt_adherence, "Are all verticals perfectly vertical?"]
+    - [prompt_adherence, "Does the foreground paving converge strongly, as a 17 mm lens would?"]
+    - [composition, "Is the building in the upper half?"]
+    - [composition, "Is the vanishing point at the entrance on the right third?"]
+    - [prompt_adherence, "Is it hard noon with crisp shadows under the cantilever?"]
+    - [physics_plausibility, "Is the single figure small and plausible in scale?"]
+    - [prompt_adherence, "Is the paving a regular grid?"]
+    - [prompt_adherence, "Is there no text or sign?"]
+    - [visual_quality, "Are lines clean and straight?"]
+    - [prompt_adherence, "Is there one figure?"]
+    - [prompt_adherence, "Is the roof cantilevered?"]
+    - [style, "Is the concrete texture natural?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-MED-05
+  title: "Food-magazine overhead spread with dishes cut by all four frame edges"
+  persona: "Food magazine's art director commissioning a full-bleed opener."
+  evidence: "Models keep every dish whole and centred; full-bleed cropping on all edges is the test."
+  levers: [off-centre, camera, count, locale, exclude]
+  prompt: |
+    A top-down food-magazine spread of a Bengali feast on a dark wooden table, 3:2. Eleven dishes in
+    brass and steel bowls fill the frame edge to edge; dishes are deliberately cut by all four frame
+    edges: a bowl of shorshe ilish cut by the top edge, a plate of luchi cut by the left edge, a bowl
+    of mishti doi cut by the bottom edge, a dish of aloo posto cut by the right edge. In the middle,
+    whole: a bowl of rice, a bowl of dal, begun bhaja, cholar dal, a fish fry, chutney and a glass of
+    water. Warm overhead practical light. No hands, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is a dish cut by each of the four frame edges?"]
+    - [prompt_adherence, "Is the ilish bowl cut by the top, luchi by the left, doi by the bottom, posto by the right?"]
+    - [prompt_adherence, "Are there eleven dishes in all?"]
+    - [prompt_adherence, "Is it straight top-down?"]
+    - [prompt_adherence, "Are the middle dishes whole?"]
+    - [prompt_adherence, "Is the light warm overhead?"]
+    - [style, "Is the food textured and real-looking?"]
+    - [prompt_adherence, "Does it read as a Bengali feast?"]
+    - [prompt_adherence, "Are there no hands or text?"]
+    - [visual_quality, "Is the food free of artefacts?"]
+    - [prompt_adherence, "Are the bowls brass and steel?"]
+    - [prompt_adherence, "Is there a glass of water?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-MED-06
+  title: "Fix a reader's travel photo: level the tilt, horizon to the lower fifth, temple off-centre"
+  persona: "Travel magazine's photo editor improving a reader submission for print."
+  evidence: "Recomposition with outpainting must keep the original content and invent consistent sky."
+  levers: [off-centre, keep-rest, multi-step, layout, locale]
+  inputs: [{source: SRC-MED-TRAVEL-PHOTO, role: source}]
+  prompt: |
+    This reader's photo of a stone hill temple at dawn in mist has two faults: the horizon runs
+    through the middle and the whole picture is tilted about three degrees clockwise. Make three
+    changes: level the picture so the horizon is perfectly horizontal; extend the sky upward so the
+    horizon sits on the lower fifth of the new frame; and shift the framing so the temple sits on the
+    left third. The new sky continues the photo's pale dawn gradient and pink clouds. The temple, the
+    tree to its right, the mist and the colour are unchanged. 3:2.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is the horizon perfectly level?"]
+    - [composition, "Is the horizon on the lower fifth?"]
+    - [composition, "Is the temple on the left third?"]
+    - [preservation, "Is the temple unchanged?"]
+    - [preservation, "Is the tree still to the temple's right?"]
+    - [preservation, "Are the mist layers unchanged?"]
+    - [prompt_adherence, "Does the new sky continue the dawn gradient and pink clouds?"]
+    - [visual_quality, "Is there no seam between old and new sky?"]
+    - [preservation, "Is the colour unchanged?"]
+    - [prompt_adherence, "Are there no people added?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

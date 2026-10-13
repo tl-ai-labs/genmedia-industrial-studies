@@ -1,0 +1,208 @@
+# Story beats — Gaming scenarios. Slots: vbts.yaml.
+code: VBTS
+scenarios:
+
+- id: VBTS-GAM-01
+  title: "Three timed villain-reveal beats: he steps out of smoke, raises the staff, the hourglass flips at 7 s"
+  persona: "Game studio's cinematics lead timing a villain reveal to the trailer's music cue."
+  evidence: "A beat that must land at an exact second across chained clips is the timing test."
+  levers: [set, timing, time-code, identity, light-lock, camera]
+  inputs: [{source: SRC-GAM-VILLAIN, role: character}]
+  prompt: |
+    The image is the concept sketch of the villain Kaal: tall and gaunt, a long black coat whose hem
+    breaks into smoke-like ribbons, a cracked bronze half-mask on the LEFT side of his face, long white
+    hair, a glowing vertical third eye, a staff topped with a small hourglass in his LEFT hand. Make three
+    chained clips as a lit 3D game cinematic in a ruined hall lit by cyan torches, each starting on the
+    last frame of the one before: 0:00–0:03, 0:03–0:06 and 0:06–0:09. The hourglass flips at exactly 7
+    seconds into the passage. No text.
+  clip: {duration: 9, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Mask on the left side of his face; staff in his left hand"
+      - "Coat hem breaking into smoke"
+      - "Cyan torchlight"
+    members:
+      - {name: "0:00–0:03 · Smoke", prompt: "Wide: he steps forward out of a wall of black smoke, the coat's hem trailing it.", checks: [[physics_plausibility, "Does the hem break into smoke as he walks?"], [prompt_adherence, "Does it last about 3 seconds?"]]}
+      - {name: "0:03–0:06 · Staff", prompt: "Medium, low angle: he raises the staff in his left hand; his third eye opens and glows.", checks: [[reference_fidelity, "Is the staff in his left hand?"], [prompt_adherence, "Does the third eye glow?"]]}
+      - {name: "0:06–0:09 · Hourglass", prompt: "Close-up on the staff's head: at 1 second into this clip the hourglass flips by itself and the sand starts to fall upward.", checks: [[prompt_adherence, "Does the hourglass flip at about 7 seconds into the passage?"], [physics_plausibility, "Does the sand fall upward after the flip?"]]}
+  deliverable: "Three chained clips of 3 seconds, 16:9."
+  checks:
+    - [prompt_adherence, "Does the hourglass flip at about 7 seconds into the passage?"]
+    - [prompt_adherence, "Do the clips last about 3 seconds each?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is the mask on the left side of his face throughout?"]
+    - [set_consistency, "Is the staff in his left hand throughout?"]
+    - [reference_fidelity, "Does he match the concept sketch?"]
+    - [prompt_adherence, "Is it cyan torchlight throughout?"]
+    - [prompt_adherence, "Are the shots wide, low medium, close-up in that order?"]
+    - [motion_coherence, "Is his walk heavy and deliberate?"]
+    - [style, "Is it a lit 3D game cinematic?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the mask free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One character reference; chaining is not in the runner."}
+
+- id: VBTS-GAM-02
+  title: "Three beats of the war-tiger: crouch, leap across a ravine, land; each cut joins"
+  persona: "Game studio's animator previewing a mount's traversal beats in the painted style."
+  evidence: "Big-cat motion and face markings (V on the forehead, scar on one eye) drift across cuts."
+  levers: [set, identity, physics, continuity, camera-move]
+  inputs: [{source: SRC-GAM-MOUNT, role: character}]
+  prompt: |
+    The image is the war-tiger mount: a huge Bengal tiger with a torn LEFT ear, a white scar across its
+    RIGHT eye, stripes forming a V on its forehead, a turquoise and brass saddle with a red tasselled cloth
+    and a leather bag on its LEFT flank. Make three chained clips on the edge of a rocky ravine at golden
+    hour, in the same painterly style with visible brush strokes, each starting on the last frame of the
+    one before, 3 + 3 + 3 seconds. Sun from frame left throughout. No rider, no text.
+  clip: {duration: 9, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Torn left ear, scar across the right eye, V on the forehead"
+      - "Saddle, red cloth, bag on the left flank"
+      - "Painterly brush-stroke style; sun from frame left"
+    members:
+      - {name: "Beat 1 · Crouch (3 s)", prompt: "Side view facing right at the ravine's edge: it crouches, tail lashing, muscles bunching.", checks: [[physics_plausibility, "Do the muscles bunch believably?"], [reference_fidelity, "Is the bag on the left flank?"]]}
+      - {name: "Beat 2 · Leap (3 s)", prompt: "Wide: it leaps across the ravine left to right, forelegs reaching, tassels flying.", checks: [[physics_plausibility, "Is the leap arc believable?"], [motion_coherence, "Does it leap left to right?"]]}
+      - {name: "Beat 3 · Land (3 s)", prompt: "Close from the front as it lands on the far side, front paws first, dust bursting; it looks at camera.", checks: [[set_consistency, "Is the scar across its right eye?"], [physics_plausibility, "Does it land front paws first with dust?"]]}
+  deliverable: "Three chained clips of 3 seconds, 16:9."
+  checks:
+    - [set_consistency, "Is it the same tiger in all three?"]
+    - [reference_fidelity, "Is the torn ear on the left and the scar on the right eye?"]
+    - [set_consistency, "Is the V on its forehead in every clip?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [style, "Is the painterly style the same in all three?"]
+    - [prompt_adherence, "Is the sun from frame left throughout?"]
+    - [physics_plausibility, "Is the tiger's weight believable?"]
+    - [motion_coherence, "Is its gait natural with four legs throughout?"]
+    - [prompt_adherence, "Do the clips last about 3 seconds each?"]
+    - [prompt_adherence, "Is there no rider?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are stripes stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One character reference; chaining is not in the runner."}
+
+- id: VBTS-GAM-03
+  title: "Three beats of the sage at night: opens his eyes, rises, lights a fire that becomes the main light"
+  persona: "Narrative designer previewing a character introduction in the painted style."
+  evidence: "A new light source must take over the lighting; earlier clips keep the old key."
+  levers: [set, light-lock, identity, physics, locale, multi-step]
+  inputs: [{source: SRC-GAM-SAGE, role: character}]
+  prompt: |
+    The image is the sage: about eighty, deep brown wrinkled skin, a long white beard tied with one wooden
+    bead, a shaved head with three ash lines, a cloudy LEFT eye, a rudraksha mala, a saffron shawl. Make
+    three chained clips in the same painterly style at night in a forest clearing, each starting on the
+    last frame of the one before, 4 + 4 + 5 seconds. Beats 1 and 2 are lit only by cool moonlight from
+    upper left; in beat 3 the fire he lights becomes the main light, warm and low from below and flickering
+    on his face. No text.
+  clip: {duration: 13, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "His face, the cloudy left eye, ash lines, beard bead"
+      - "Mala and saffron shawl"
+      - "Painterly style"
+    members:
+      - {name: "Beat 1 · Eyes (4 s)", prompt: "Close-up: seated cross-legged, he opens his eyes slowly in the moonlight.", checks: [[reference_fidelity, "Is the left eye cloudy?"], [prompt_adherence, "Is it cool moonlight from upper left?"]]}
+      - {name: "Beat 2 · Rises (4 s)", prompt: "Wide: he rises with a stick and walks to a ring of stones with dry wood.", checks: [[motion_coherence, "Does he rise slowly, as an old man would?"], [prompt_adherence, "Is it still only moonlight?"]]}
+      - {name: "Beat 3 · Fire (5 s)", prompt: "Medium: he strikes two flints; the wood catches; the fire grows and lights him warm from below.", checks: [[prompt_adherence, "Does the fire become the main light, warm from below?"], [physics_plausibility, "Does the fire catch and grow believably?"]]}
+  deliverable: "Three chained clips, 4, 4 and 5 seconds, 16:9."
+  checks:
+    - [prompt_adherence, "Does the fire take over as the main light in beat 3?"]
+    - [prompt_adherence, "Are beats 1 and 2 lit only by cool moonlight?"]
+    - [set_consistency, "Is it the same sage in all three?"]
+    - [set_consistency, "Is the left eye cloudy in every close view?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [style, "Is the painterly style the same in all three?"]
+    - [physics_plausibility, "Do the flames flicker on his face?"]
+    - [motion_coherence, "Is his movement slow and natural?"]
+    - [prompt_adherence, "Do the clips last about 4, 4 and 5 seconds?"]
+    - [prompt_adherence, "Are the shots close, wide, medium in that order?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are his hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One character reference; chaining is not in the runner."}
+
+- id: VBTS-GAM-04
+  title: "Three beats on the market street: dusk, the stall lights come on at 3 s, rain starts at 6 s"
+  persona: "Environment artist previewing the level's time-of-day and weather change."
+  evidence: "Timed environment events across cuts must hit their seconds and persist."
+  levers: [set, timing, time-code, layout, light-lock, physics]
+  inputs: [{source: SRC-GAM-CYBER-STREET, role: first_frame}]
+  prompt: |
+    This is the empty cyberpunk market street at dusk: four tarpaulin food stalls on the left, three
+    concrete pillars holding up the elevated metro on the right, a giant holographic lotus at the far end.
+    Make three chained clips as a stylised 3D game cinematic, each starting on the last frame of the one
+    before: 0:00–0:03, 0:03–0:06 and 0:06–0:09, the camera creeping forward down the street throughout.
+    The stall lights come on at exactly 3 seconds into the passage and stay on; rain starts at exactly
+    6 seconds and keeps falling. Nobody on the street. No readable text.
+  clip: {duration: 9, aspect: "16:9", camera: "slow creep forward throughout"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Four stalls on the left, three pillars on the right"
+      - "The metro track and the lotus at the far end"
+      - "The street empty of people"
+    members:
+      - {name: "0:00–0:03 · Dusk", prompt: "Golden light fading, long pillar shadows towards camera.", checks: [[prompt_adherence, "Is the golden light fading?"], [prompt_adherence, "Are the stalls left and pillars right?"]]}
+      - {name: "0:03–0:06 · Lights", prompt: "At the start of this clip the stalls' string lights and signs flick on, magenta and amber, and stay on.", checks: [[prompt_adherence, "Do the lights come on at about 3 seconds?"], [prompt_adherence, "Do they light the street warmly?"]]}
+      - {name: "0:06–0:09 · Rain", prompt: "At the start of this clip rain begins, puddles start to form and reflect the stall lights.", checks: [[prompt_adherence, "Does rain start at about 6 seconds?"], [physics_plausibility, "Do puddles reflect the lights?"]]}
+  deliverable: "Three chained clips of 3 seconds, 16:9."
+  checks:
+    - [prompt_adherence, "Do the lights come on at about 3 s and rain start at about 6 s?"]
+    - [set_consistency, "Do the lights stay on and the rain keep falling after they start?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Are there four stalls and three pillars?"]
+    - [prompt_adherence, "Is the lotus at the far end throughout?"]
+    - [prompt_adherence, "Does the camera creep forward throughout?"]
+    - [physics_plausibility, "Is the rain believable?"]
+    - [prompt_adherence, "Is the street empty of people?"]
+    - [style, "Is it a stylised 3D cinematic?"]
+    - [motion_coherence, "Is there no warping of the street?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Is the frame clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the screenshot; chaining is not in the runner."}
+
+- id: VBTS-GAM-05
+  title: "A three-beat logo sting: crescent forms, sword slides through, wordmark lands; it must end exactly on the logo"
+  persona: "Game studio's motion designer making the launch logo sting."
+  evidence: "Logo stings must end on the exact approved lock-up; generated ones end on a near miss."
+  levers: [set, end-frame, exact-text, layout, timing]
+  inputs: [{source: SRC-GAM-LOGO, role: logo}]
+  prompt: |
+    The image is the approved logo: a teal crescent lying on its back, a vertical silver sword through its
+    middle with a guard shaped like a veena head, and the wordmark SHADOW RAAGA in tall angular silver
+    capitals below, twice the crescent's width. Make three chained clips on pure black, each starting on
+    the last frame of the one before, 2 + 2 + 3 seconds, ending exactly on the approved logo, flat, with no
+    glow. Two words on one line, every letter correct. No other text.
+  exact_text:
+    - "SHADOW RAAGA"
+  clip: {duration: 7, aspect: "16:9", camera: "locked off"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Teal crescent on its back"
+      - "Silver sword with the veena-head guard"
+      - "Pure black background"
+    members:
+      - {name: "Beat 1 · Crescent (2 s)", prompt: "Teal particles swirl in and form the crescent lying on its back.", checks: [[prompt_adherence, "Does the crescent lie on its back?"], [motion_coherence, "Do the particles form it smoothly?"]]}
+      - {name: "Beat 2 · Sword (2 s)", prompt: "The silver sword slides down vertically through the crescent's middle and stops.", checks: [[prompt_adherence, "Is the sword vertical through the middle?"], [reference_fidelity, "Is the guard shaped like a veena head?"]]}
+      - {name: "Beat 3 · Wordmark (3 s)", prompt: "The wordmark slides up into place below and the frame holds on the approved logo.", checks: [[text_accuracy, "Does the wordmark read SHADOW RAAGA exactly?"], [prompt_adherence, "Is it twice the crescent's width?"]]}
+  deliverable: "Three chained clips, 2, 2 and 3 seconds, 16:9."
+  checks:
+    - [prompt_adherence, "Does the sting end exactly on the approved logo?"]
+    - [text_accuracy, "Is the wordmark exactly SHADOW RAAGA, on one line?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [reference_fidelity, "Is the crescent teal and the sword silver?"]
+    - [style, "Is the end frame flat with no glow?"]
+    - [prompt_adherence, "Do the clips last about 2, 2 and 3 seconds?"]
+    - [motion_coherence, "Is the motion smooth?"]
+    - [prompt_adherence, "Is the background pure black?"]
+    - [prompt_adherence, "Is the wordmark below the symbol?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the letter edges clean?"]
+    - [prompt_adherence, "Is the camera locked off?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One logo reference; chaining is not in the runner."}

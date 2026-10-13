@@ -1,0 +1,169 @@
+# Character continuity — Advertising & agencies scenarios. Slots: chr.yaml.
+code: CHR
+scenarios:
+
+- id: CHR-ADS-01
+  title: "The mascot in five campaign uses: kitchen, cricket stand, bus shelter, sticker, festival stage"
+  persona: "Brand manager at a snack company rolling out the mascot across a season's touchpoints."
+  evidence: "Mascots drift across executions made by different teams; one model holding the design is the ask."
+  levers: [set, identity, continuity, locale, exact-text]
+  inputs: [{source: SRC-ADS-MASCOT, role: source}]
+  prompt: |
+    This is the reference for the mascot Chotu Mirchi: a glossy red chilli standing on short green
+    legs, a curled green stalk quiff curling to his left, big round eyes, thick eyebrows, a wide
+    grin with one gold tooth on his right side, thin green arms with four-fingered white gloves,
+    white sneakers with red laces. Make one campaign image of him in the use described below, in
+    his own polished 3D style. His design never changes; only the setting and pose do. Any people
+    are background. No text except where stated.
+  exact_text: ["Mirchi Mood"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Quiff curling to his left; gold tooth on his right side"
+      - "Four-fingered white gloves; white sneakers with red laces"
+      - "Size: about a child's forearm tall"
+    members:
+      - {name: "Kitchen", prompt: "On a kitchen counter, sprinkling masala on a bowl of chips, morning light. 1:1.", checks: [[reference_fidelity, "Is the quiff curling to his left?"], [physics_plausibility, "Is he a plausible small size next to the bowl?"]]}
+      - {name: "Cricket stand", prompt: "Cheering in a cricket stadium stand among blurred fans, holding a flag. 16:9.", checks: [[reference_fidelity, "Is the gold tooth on his right side?"], [prompt_adherence, "Is it stadium daylight?"]]}
+      - {name: "Bus shelter poster", prompt: "As a printed poster in a city bus shelter at night, the poster lit from behind, with the words Mirchi Mood on it. 4:5.", checks: [[text_accuracy, "Does the poster read Mirchi Mood?"], [physics_plausibility, "Does he read as a printed poster in a lit panel?"]]}
+      - {name: "Sticker", prompt: "As a die-cut messaging sticker with a white outline, winking, on a plain background. 1:1.", checks: [[style, "Is it a clean sticker with a white outline?"], [reference_fidelity, "Are the gloves four-fingered?"]]}
+      - {name: "Festival stage", prompt: "Dancing on a Ganesh festival stage among marigolds and lights. 16:9.", checks: [[reference_fidelity, "Are the sneakers white with red laces?"], [prompt_adherence, "Is it festival lighting?"]]}
+  deliverable: "Five images in the stated ratios."
+  checks:
+    - [set_consistency, "Is it the same mascot in all five?"]
+    - [set_consistency, "Does the quiff curl to his left in all five?"]
+    - [set_consistency, "Is the gold tooth on his right side wherever the grin shows?"]
+    - [set_consistency, "Are the gloves four-fingered in all five?"]
+    - [set_consistency, "Are the sneakers white with red laces in all five?"]
+    - [set_consistency, "Is his body the same glossy red in all five?"]
+    - [physics_plausibility, "Is his size consistent relative to objects around him?"]
+    - [text_accuracy, "Is Mirchi Mood the only text, on the poster?"]
+    - [prompt_adherence, "Does each image show its use?"]
+    - [style, "Is the 3D style consistent?"]
+    - [visual_quality, "Are gloves and limbs clean?"]
+    - [prompt_adherence, "Is he the only mascot?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Five image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-ADS-02
+  title: "The sprinter as brand ambassador in three campaign frames; kit changes only as briefed"
+  persona: "Sportswear brand's campaign producer building the ambassador's season visuals."
+  evidence: "Ambassador campaigns change kit by brief; models change kit or face when not asked."
+  levers: [set, identity, multi-step, locale, exact-text]
+  inputs: [{source: SRC-ADS-RUNNER, role: source}]
+  prompt: |
+    This frame shows a sprinter of about twenty-four with short-cropped black hair, a teal running
+    vest with bib "214", black shorts and white shoes, mid-stride on a red track. Make one campaign
+    frame of the same woman as described below. Her face, build and hair stay exactly hers; her skin
+    is not lightened. Her kit changes only as the frame says, and nothing has a logo. Photoreal,
+    natural light, 4:5, no text other than as stated.
+  exact_text: ["214"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, build, short-cropped hair and skin tone"
+      - "The teal vest and the white shoes, which appear in every frame"
+      - "No logos anywhere"
+    members:
+      - {name: "Race day", prompt: "Exactly as the original kit, bib 214, standing at the start line with her hands on her hips.", checks: [[text_accuracy, "Is the bib 214?"], [reference_fidelity, "Is the vest teal?"]]}
+      - {name: "Training", prompt: "Training at dawn on a beach: the same teal vest, no bib, black tights instead of shorts.", checks: [[reference_fidelity, "Is the bib gone?"], [reference_fidelity, "Are the shorts replaced by black tights?"]]}
+      - {name: "Street", prompt: "Off-duty on a Mumbai street at golden hour: a coral hoodie over the teal vest, jeans, the same white shoes.", checks: [[reference_fidelity, "Is a coral hoodie over a teal vest?"], [set_consistency, "Are the shoes the same white shoes?"]]}
+  deliverable: "Three images, 4:5."
+  checks:
+    - [set_consistency, "Is she the same woman in all three?"]
+    - [set_consistency, "Is her skin tone the same in all three?"]
+    - [set_consistency, "Is her hair short-cropped in all three?"]
+    - [prompt_adherence, "Does the kit change only as each frame says?"]
+    - [set_consistency, "Is the vest teal in all three?"]
+    - [text_accuracy, "Is the bib 214 only in the race-day frame?"]
+    - [prompt_adherence, "Are there no logos anywhere?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Is she the only person in focus?"]
+    - [visual_quality, "Are hands and feet natural?"]
+    - [style, "Is the campaign look consistent?"]
+    - [prompt_adherence, "Does each frame show its setting?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-ADS-03
+  title: "The Diwali family across three frames of the festive campaign; four faces never merge"
+  persona: "Agency producer extending the festive campaign into a three-part story."
+  evidence: "Earlier bank IMG-GAME-12 (squad from three references with zero blending) was high tier."
+  levers: [set, identity, count, locale, light-lock]
+  inputs: [{source: SRC-ADS-DIWALI-FAMILY, role: source}]
+  prompt: |
+    This frame shows a family of four on a Diwali evening: a grandfather in a cream kurta and brown
+    shawl, a mother in a red silk sari, a father in a mustard kurta, and a girl of about seven in a
+    green lehenga. Make one further frame of the same four people for the campaign, as described
+    below, as a warm cinematic still. Each face stays exactly that person's; no two faces share
+    features they do not share in the photo. They wear new clothes only where the frame says.
+    16:9, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Four faces exactly as in the photo"
+      - "Grandfather's shawl; the girl's age and two-pigtail hair"
+      - "Warm festive light"
+    members:
+      - {name: "Morning rangoli", prompt: "Diwali morning, the girl and her mother making a rangoli at the door, the grandfather watching from a chair.", checks: [[prompt_adherence, "Are three of the four in frame, the father absent?"], [set_consistency, "Is the girl the same child?"]]}
+      - {name: "Puja", prompt: "Evening puja, all four in a row before a small home shrine, the father holding the aarti plate.", checks: [[prompt_adherence, "Are all four in frame?"], [reference_fidelity, "Is the father holding the aarti plate?"]]}
+      - {name: "Next morning", prompt: "Next morning, all four in pyjamas sharing sweets from a box on a sofa.", checks: [[set_consistency, "Are the four faces the same in new clothes?"], [prompt_adherence, "Is it soft morning light?"]]}
+  deliverable: "Three images, 16:9."
+  checks:
+    - [set_consistency, "Is each person the same across the frames they appear in?"]
+    - [set_consistency, "Are the four faces clearly distinct with no blended features?"]
+    - [prompt_adherence, "Is the right number of people in each frame?"]
+    - [set_consistency, "Is the girl the same age in all three?"]
+    - [set_consistency, "Are skin tones the same in all three?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [prompt_adherence, "Are there no extra people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean?"]
+    - [style, "Is the warm cinematic look consistent?"]
+    - [prompt_adherence, "Are clothes as each frame says?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-ADS-04
+  title: "A described pet-food dog with a heart-shaped patch, held across four campaign frames"
+  persona: "Pet-food brand's agency casting a hero dog in visuals before the shoot."
+  evidence: "Animal identity from text alone drifts; a single unique marking makes it checkable."
+  levers: [set, identity, continuity, long-brief, light-lock]
+  prompt: |
+    The hero dog of a pet-food campaign, photoreal, 4:5: a medium-sized Indian pariah dog, tan
+    coat, a curled tail, upright ears with the left ear's tip folded over, and one white heart-shaped
+    patch on the right side of its chest. It wears a red collar with a round brass tag. Make the
+    frame described below. The folded left ear tip and the heart patch on the right of the chest are
+    visible wherever those parts can be seen. Natural light. No text, no logos, no other dogs.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Tan coat, curled tail"
+      - "Left ear tip folded over"
+      - "White heart-shaped patch on the right of the chest; red collar with brass tag"
+    members:
+      - {name: "Park", prompt: "Running across a park with a ball, morning.", checks: [[set_consistency, "Is the left ear tip folded?"], [physics_plausibility, "Is it mid-run with plausible legs?"]]}
+      - {name: "Bowl", prompt: "Sitting by a steel bowl in a kitchen, looking up, front view.", checks: [[set_consistency, "Is the heart patch on the right of the chest?"], [set_consistency, "Is the collar red with a brass tag?"]]}
+      - {name: "Sofa", prompt: "Asleep curled on a sofa, afternoon light.", checks: [[set_consistency, "Is the tail curled?"], [prompt_adherence, "Is it afternoon light?"]]}
+      - {name: "Rain", prompt: "Shaking off water on a doorstep in the rain.", checks: [[physics_plausibility, "Is water spraying off the coat?"], [set_consistency, "Is it the same dog?"]]}
+  deliverable: "Four images, 4:5."
+  checks:
+    - [set_consistency, "Is it the same dog in all four?"]
+    - [set_consistency, "Is the left ear tip folded in every frame that shows it?"]
+    - [set_consistency, "Is the heart patch on the right of the chest in every frame that shows it?"]
+    - [set_consistency, "Is the collar red with a brass tag in all four?"]
+    - [set_consistency, "Is the coat tan in all four?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its action?"]
+    - [prompt_adherence, "Is there one dog only?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the anatomy right in all four?"]
+    - [style, "Is the look consistent?"]
+    - [prompt_adherence, "Are there no logos?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four text-to-image calls; set agreement needs the set review."}
+  video_followon: ""

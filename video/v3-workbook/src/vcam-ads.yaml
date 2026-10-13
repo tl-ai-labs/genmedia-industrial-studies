@@ -1,0 +1,63 @@
+# Camera work — Advertising & agencies scenarios. Slots: vcam.yaml.
+code: VCAM
+scenarios:
+
+- id: VCAM-ADS-01
+  title: "Top-down filter coffee that slowly rotates; it stays in the right 30 percent with the copy space kept clean"
+  persona: "Coffee brand's agency art director needing a moving background with copy space for supers."
+  evidence: "Generated moves drift the subject back to the centre and fill the copy space."
+  levers: [off-centre, camera-move, exclude, locale, layout]
+  prompt: |
+    An 8-second top-down shot on a dark teak table in morning light from the left. A steel filter-coffee
+    tumbler and dabarah set, the coffee frothy, sits in the right 30 percent of the 16:9 frame, with a few
+    coffee beans and a folded banana leaf beside it, all within that right third. The camera rotates slowly
+    clockwise about 20 degrees over the eight seconds, the set staying in the right 30 percent the whole time.
+    The left 70 percent is bare dark teak, clean for text: no beans, no crumbs, no steam drifting into it. A
+    thin wisp of steam rises from the tumbler. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "top-down, slow 20-degree rotation"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [composition, "Does the set stay in the right 30 percent throughout?"]
+    - [composition, "Is the left 70 percent bare teak throughout?"]
+    - [prompt_adherence, "Does the frame rotate about 20 degrees clockwise?"]
+    - [prompt_adherence, "Is it straight top-down?"]
+    - [prompt_adherence, "Is it a steel tumbler and dabarah with frothy coffee?"]
+    - [temporal_consistency, "Does a thin wisp of steam rise without drifting left?"]
+    - [prompt_adherence, "Is it morning light from the left?"]
+    - [prompt_adherence, "Is there a folded banana leaf and beans by the set?"]
+    - [motion_coherence, "Is the rotation smooth?"]
+    - [prompt_adherence, "Does it read as South Indian filter coffee?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the wood grain stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-ADS-02
+  title: "A whip pan from the traffic that lands square on the hoarding at exactly 2 s and holds"
+  persona: "Out-of-home agency's editor making a reveal for a site pitch."
+  evidence: "Whip pans in generated clips land late, overshoot or land off-frame."
+  levers: [camera-move, timing, end-frame, layout, physics]
+  inputs: [{source: SRC-ADS-BILLBOARD-SITE, role: first_frame}]
+  prompt: |
+    Start on this frame and make a 6-second clip. 0 to 1.5 seconds: the camera is tilted down onto the
+    flyover traffic, an orange bus and autorickshaws passing. At 1.5 seconds it whip-pans up and to the right
+    with heavy motion blur and lands at exactly 2 seconds square on the blank hoarding, centred, filling the
+    middle of the frame with its four lamp brackets along the top, then holds still to 6 seconds with no
+    overshoot or drift. The traffic keeps moving below the hoarding. Morning sun. No text on the hoarding.
+  clip: {duration: 6, aspect: "16:9", camera: "tilted down, whip pan up-right, hold"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the whip pan start at about 1.5 seconds?"]
+    - [prompt_adherence, "Does it land at exactly 2 seconds?"]
+    - [composition, "Does it land square on the hoarding, centred?"]
+    - [prompt_adherence, "Does it hold still with no overshoot or drift?"]
+    - [prompt_adherence, "Is the pan motion-blurred?"]
+    - [prompt_adherence, "Are there four lamp brackets?"]
+    - [motion_coherence, "Does traffic keep moving below?"]
+    - [prompt_adherence, "Is it morning sun?"]
+    - [physics_plausibility, "Is the hoarding's perspective correct after the pan?"]
+    - [prompt_adherence, "Is the hoarding blank?"]
+    - [text_accuracy, "Is there no text on the hoarding?"]
+    - [visual_quality, "Is the held frame sharp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}

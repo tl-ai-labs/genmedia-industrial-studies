@@ -1,0 +1,189 @@
+# Depth, light and physics — Advertising & agencies scenarios. Slots: phy.yaml.
+code: PHY
+scenarios:
+
+- id: PHY-ADS-01
+  title: "A perfume bottle on a glass shelf with a printed card behind it, its text bent through the liquid"
+  persona: "Still-life photographer testing refraction for a fragrance campaign."
+  evidence: "Refraction through a liquid-filled bottle, with text behind, is hard to fake."
+  levers: [physics, exact-text, layout, light-lock, small-text]
+  prompt: |
+    A still-life photo, 4:5: a heavy rectangular clear-glass perfume bottle with bevelled edges,
+    filled two-thirds with pale amber liquid and topped with a black cap, stands on a glass shelf. Ten
+    centimetres behind it stands a white card printed in black serif with "RAIN NOTES" on the top line
+    and "bergamot · vetiver · wet stone" on the second. Seen through the bottle, the card's text is
+    magnified, shifted sideways and tinted amber where it passes through the liquid, and only shifted
+    (not tinted) through the empty glass above the liquid line; around the bottle the card reads
+    normally. The bevels split a few letters. Soft key from the left. No other text.
+  exact_text: ["RAIN NOTES", "bergamot · vetiver · wet stone"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Does the card read RAIN NOTES and the second line exactly where seen directly?"]
+    - [physics_plausibility, "Is the text magnified and shifted where seen through the liquid?"]
+    - [physics_plausibility, "Is it tinted amber through the liquid and not tinted through the empty glass?"]
+    - [physics_plausibility, "Is the liquid line a visible boundary in the refracted text?"]
+    - [physics_plausibility, "Do the bevels split some letters?"]
+    - [prompt_adherence, "Is the card behind the bottle?"]
+    - [physics_plausibility, "Does the glass shelf show a faint reflection of the bottle?"]
+    - [prompt_adherence, "Is the key from the left?"]
+    - [prompt_adherence, "Is the bottle rectangular with bevels and a black cap?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the glass free of artefacts?"]
+    - [physics_plausibility, "Is the liquid two-thirds full?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-ADS-02
+  title: "Mango lassi poured over ice: the stream, splash and ice touch and displace correctly"
+  persona: "Food photographer testing liquid physics for a dairy brand."
+  evidence: "Liquid-object contact is a classic failure."
+  levers: [physics, light-lock, locale, exclude]
+  prompt: |
+    A high-speed food photo, 4:5: a thick stream of mango lassi pours from a brass lota into a tall
+    glass half full of ice cubes, against a warm peach background. The stream hits the top ice cube,
+    splits around it and splashes a crown of droplets upward; one ice cube is pushed down and tilted
+    by the stream; lassi fills the gaps between cubes below; the glass shows condensation on the
+    outside. Droplets are frozen mid-air with correct curved shapes. Soft daylight from the right with
+    a bright highlight on the lota. No hands visible, no text.
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Does the stream hit the top ice cube and split around it?"]
+    - [physics_plausibility, "Is there a crown of droplets splashing upward?"]
+    - [physics_plausibility, "Is one cube pushed down and tilted?"]
+    - [physics_plausibility, "Does lassi fill gaps between the cubes below?"]
+    - [physics_plausibility, "Are mid-air droplets shaped correctly?"]
+    - [physics_plausibility, "Is there condensation outside the glass?"]
+    - [prompt_adherence, "Is there daylight from the right with a highlight on the lota?"]
+    - [prompt_adherence, "Is the liquid thick and mango-yellow?"]
+    - [prompt_adherence, "Is the pouring vessel a brass lota?"]
+    - [prompt_adherence, "Are there no hands or text?"]
+    - [visual_quality, "Is the glass clean?"]
+    - [style, "Does it look like a real high-speed photo?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: the pour as a slow-motion clip."
+
+- id: PHY-ADS-03
+  title: "A car in a glass showroom on a rainy night: street, rain and interior lights reflected correctly"
+  persona: "Car dealer network's agency testing a showroom night shot."
+  evidence: "Layered reflections (inside and outside glass, car paint) are hard to keep consistent."
+  levers: [physics, light-lock, layout, exclude]
+  prompt: |
+    A photo from the street of a car showroom on a rainy night, 16:9. A silver sedan stands inside on a
+    white floor under rows of white ceiling lights. The showroom's floor-to-ceiling glass front, with
+    rain running down it, reflects the street behind the camera: a red bus passing, orange
+    streetlights and wet road. The sedan's paint reflects the ceiling lights as rows of bright lines
+    along its roof and bonnet. The wet pavement in front reflects the showroom's glow. The glass
+    reflections are faint where the interior is bright and stronger where it is dark. No text, no logos.
+  deliverable: "One image, 16:9."
+  checks:
+    - [physics_plausibility, "Does the glass reflect a red bus and streetlights from behind the camera?"]
+    - [physics_plausibility, "Is rain running down the glass?"]
+    - [physics_plausibility, "Does the car's paint reflect the ceiling lights as rows of lines?"]
+    - [physics_plausibility, "Does the wet pavement reflect the showroom's glow?"]
+    - [physics_plausibility, "Are glass reflections fainter over bright interior areas?"]
+    - [prompt_adherence, "Is the sedan inside on a white floor?"]
+    - [prompt_adherence, "Are interior lights white and street lights orange?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [visual_quality, "Is the car's shape clean?"]
+    - [prompt_adherence, "Is the sedan silver?"]
+    - [prompt_adherence, "Is it night with rain?"]
+    - [physics_plausibility, "Is everything reflected something that would be there?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-ADS-04
+  title: "A model in a sari behind a carved jaali; the pattern's shadow wraps her and the floor from one sun"
+  persona: "Fashion photographer testing hard-light pattern shadows for a campaign."
+  evidence: "Projected pattern shadows must bend over the body and stay consistent on the floor."
+  levers: [physics, light-lock, locale, off-centre]
+  prompt: |
+    A fashion photo inside a Rajasthani haveli at golden hour, 4:5. Low sun from the left shines
+    through a large carved stone jaali screen with a pattern of eight-pointed stars, throwing a crisp
+    star-patterned shadow across the room. A model in a plain ivory silk sari stands in the right third
+    within the patterned light: the star shapes wrap over her body, bending round her arm, waist and
+    the sari's folds, and continue on the floor and the wall behind her, stretched long to the right.
+    The patterns on her, the floor and the wall are the same pattern, consistent with one sun. No
+    text.
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Is the jaali's star pattern projected across the room?"]
+    - [physics_plausibility, "Do the star shapes bend over her body and the sari's folds?"]
+    - [physics_plausibility, "Does the pattern continue on the floor and wall?"]
+    - [physics_plausibility, "Is the pattern stretched long to the right, consistent with a low sun from the left?"]
+    - [set_consistency, "Is it the same star pattern on her, the floor and the wall?"]
+    - [composition, "Is she in the right third?"]
+    - [prompt_adherence, "Is the sari plain ivory silk?"]
+    - [prompt_adherence, "Is the light golden and hard?"]
+    - [prompt_adherence, "Does it read as a haveli?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is she natural?"]
+    - [prompt_adherence, "Is she the only person?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-ADS-05
+  title: "The chips pack half buried in a heap of loose chips; occlusion front and back correct"
+  persona: "Snack brand's agency making a hero 'pack in product' image."
+  evidence: "Objects partly buried in loose material: occlusion is often wrong (chips pasted over or behind)."
+  levers: [physics, identity, exact-text, layout]
+  inputs: [{source: SRC-ADS-CHIPS, role: source}]
+  prompt: |
+    Place this exact Mirchi Mood chips pack half buried, leaning back, in a large heap of loose
+    ruffled chips on a red background, 4:5. Chips in front of the pack hide its lower third, including
+    the "52 g" and "₹20" corners partly; the pack in turn hides the chips behind it; a few chips rest on
+    its top edge and cast small shadows on it. "Mirchi Mood", the mascot face and "Masala Blast" stay
+    fully visible and exact. Soft top light, the pack's top crinkle catching a highlight. No other
+    text.
+  exact_text: ["Mirchi Mood", "Masala Blast"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [physics_plausibility, "Do chips in front hide the pack's lower third?"]
+    - [physics_plausibility, "Does the pack hide the chips behind it?"]
+    - [physics_plausibility, "Do a few chips rest on its top edge with small shadows?"]
+    - [text_accuracy, "Are Mirchi Mood and Masala Blast fully visible and exact?"]
+    - [reference_fidelity, "Is the mascot face fully visible?"]
+    - [reference_fidelity, "Is the pack the same design?"]
+    - [physics_plausibility, "Is the pack leaning back, half buried?"]
+    - [prompt_adherence, "Is there soft top light with a highlight on the crinkle?"]
+    - [prompt_adherence, "Is the background red?"]
+    - [visual_quality, "Are the chips natural, not repeating?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [physics_plausibility, "Do partly hidden corners show the rest correctly?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PHY-ADS-06
+  title: "Add a warm under-cabinet strip to the kitchen; warm and cool light fall where each source is"
+  persona: "Kitchen brand's agency showing a lighting upgrade in the set photo."
+  evidence: "Mixed light colours must fall only where each source reaches."
+  levers: [physics, light-lock, keep-rest, layout]
+  inputs: [{source: SRC-ADS-KITCHEN, role: source}]
+  prompt: |
+    Add a warm (2700 K) LED strip light under the open wall shelves of this kitchen, running the
+    length of the shelves. It lights the counter and the backsplash tiles directly below in a warm band
+    that fades within about 40 cm; the steel dabbas on the shelves above stay unlit underneath. The
+    cool daylight from the window on the left still lights the sink area and the left of the counter.
+    Where the two meet near the stove, the light mixes; the chopping board's tomatoes sit in warm light.
+    Nothing else changes.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is there a strip light under the shelves along their length?"]
+    - [prompt_adherence, "Is there a warm band on the counter and tiles below the shelves?"]
+    - [prompt_adherence, "Does the warm light fade within about 40 cm?"]
+    - [preservation, "Is the window side still lit cool?"]
+    - [prompt_adherence, "Do the two lights mix near the stove?"]
+    - [physics_plausibility, "Are the shelves' undersides lit while the dabbas' tops are not lit by the strip?"]
+    - [prompt_adherence, "Are the tomatoes in warm light?"]
+    - [preservation, "Is everything else unchanged?"]
+    - [physics_plausibility, "Do the tiles show warm reflections?"]
+    - [visual_quality, "Is the strip clean and straight?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

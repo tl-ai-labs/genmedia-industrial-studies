@@ -1,0 +1,1538 @@
+# Video v3 — video-only sources: source clips for edits, and any new images the image bank
+# does not already have. Shape and rules: ../README.md. Written one industry at a time.
+#
+# Reuse image sources (image/v3-workbook/src/sources.yaml) by id; do not redefine them here.
+# A base scene's uses across the image and video banks are capped at 5.
+#
+# kind: image | clip      role: scene | reference
+# A clip also states duration (seconds), camera_move and action_timing.
+# used_by must list exactly the video slots that name this source (the build checks both ways).
+
+sources:
+
+# ------------------------------------------------------------ Film, OTT & micro-drama
+# Source clips (for video edits)
+
+- id: SRC-VCLIP-CHAI-POUR
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-01]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Locked off at standing eye level from across the lane, 35 mm."
+  action_timing: "0–4 s the vendor pours tea from a height between two steel pots; 4–6 s he hands a glass across the counter to the rider. The young man on the stool scrolls his phone throughout."
+  source_prompt: |
+    A six-second shot of a Mumbai roadside tea stall on a monsoon night in heavy rain, framed exactly
+    like a still of the same stall: a narrow tin shed facing the camera; a painted white board above
+    it reading "RAJU TEA STALL" in red block capitals; a round wall clock behind the vendor at ten
+    past nine; a large dented aluminium kettle on a kerosene stove at counter left with no steam; one
+    bare cyan-white tube light under the awning as the key light. The vendor, a wiry man of about
+    fifty in a vest and checked lungi, pours tea from a height between two steel pots, then hands a
+    glass across the counter. On frame left a young man in a wet grey hoodie sits on a blue plastic
+    stool scrolling a smartphone in his right hand, its screen lighting his face; on frame right a
+    delivery rider in a red rain jacket stands and takes the glass. Rain streaks continuously;
+    puddles in the foreground reflect the tube light and the red board.
+  avoid: ["any other people", "readable text other than the sign", "brand logos", "watermark", "camera movement"]
+  must_contain:
+    - "Sign reads exactly RAJU TEA STALL in every frame"
+    - "Phone in the young man's right hand throughout"
+    - "Pour from 0 to 4 s, hand-over from 4 to 6 s"
+    - "Rain and puddle reflections throughout"
+  alt_real: "Real footage shot to this layout with the sign painted for the shoot is preferred."
+
+- id: SRC-VCLIP-CORRIDOR
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-02, VCHR-FLM-11]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Handheld follow from behind and slightly left, keeping a steady distance of about 2 m, 35 mm."
+  action_timing: "0–8 s the detective walks the length of the corridor; at 3 s a constable crosses the background right to left; at 6 s she glances left at a notice board."
+  source_prompt: |
+    An eight-second handheld shot following a woman of about forty with short hair, in a maroon cotton
+    kurta and black trousers, carrying a brown case file under her left arm, as she walks away from
+    the camera down the long corridor of an old police station at night. Green-painted walls with
+    peeling patches, tube lights on the ceiling every few metres, wooden doors on both sides, a cork
+    notice board on the left wall with pinned papers that cannot be read. At about three seconds, a
+    constable in khaki crosses the far end of the corridor from right to left. At about six seconds she
+    turns her head to glance at the notice board, showing her face in profile. The camera follows at
+    a steady distance, slight natural sway.
+  avoid: ["readable text", "weapons", "watermark", "other people besides the constable"]
+  must_contain:
+    - "Maroon kurta and brown file under her left arm throughout"
+    - "Constable crosses right to left at about 3 s"
+    - "Her face visible in profile at about 6 s"
+  alt_real: "Real footage with an actor and a release is preferred."
+
+- id: SRC-VCLIP-WEDDING-DANCE
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-03, VCHR-FLM-12]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Slow dolly right along the front of the dance floor, eye level, 35 mm."
+  action_timing: "0–8 s five women dance a choreographed sangeet routine; at 4 s the lead in the centre spins once."
+  source_prompt: |
+    An eight-second shot of a sangeet night in a decorated courtyard: five women dance a choreographed
+    routine in a line on a wooden stage under strings of warm fairy lights and marigolds. Left to
+    right: a woman in a pink lehenga, a woman in a green lehenga, the lead in the centre in a sky-blue
+    lehenga with silver embroidery and a silver dupatta, a woman in a yellow lehenga, and a woman in
+    an orange lehenga. Their arm movements are in sync. At four seconds the lead spins once, her skirt
+    flaring. The camera dollies slowly right along the front of the stage. Seated guests clap, soft
+    and out of focus, in the foreground.
+  avoid: ["readable text", "logos", "watermark", "more than five dancers"]
+  must_contain:
+    - "Exactly five dancers in the stated colour order"
+    - "Lead in sky blue with silver embroidery in the centre"
+    - "Lead spins once at about 4 s"
+  alt_real: "Real footage with releases is preferred."
+
+- id: SRC-VCLIP-BIKE-RIDE
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-04, VPHY-FLM-05]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Tracking alongside from a car on the bike's right, matching speed, 50 mm."
+  action_timing: "0–6 s the rider cruises at steady speed; at 2 s a white truck passes in the opposite lane far behind; at 5 s the rider glances at the camera."
+  source_prompt: |
+    A six-second tracking shot alongside a man riding a classic black single-cylinder motorcycle at
+    steady speed on a straight desert highway in Rajasthan at harsh midday, filmed from a car on the
+    bike's right. The bike has a round chrome headlamp, a black fuel tank with a visible dent on its
+    right side facing the camera, olive canvas saddlebags on both sides and a red thread on the left
+    grip. The rider wears aviator sunglasses, a brown leather jacket open over a white kurta, and has a
+    short beard. Scrub and low dunes stream past behind; heat haze shimmers; at about two seconds a
+    white truck passes in the opposite lane far behind; at about five seconds he glances at the camera.
+  avoid: ["brand names or logos", "number plate text", "watermark", "other vehicles close by"]
+  must_contain:
+    - "Dent visible on the tank's right side throughout"
+    - "White truck far behind at about 2 s"
+    - "Steady speed and framing"
+  alt_real: "Real footage with a badge-less bike is preferred."
+
+- id: SRC-VCLIP-MARKET-WALK
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-05, VCAM-FLM-04]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Steadicam walking backwards in front of the subject, chest height, 28 mm."
+  action_timing: "0–8 s an elderly man walks towards the camera through the market; at 3 s he stops and lifts a tomato; at 5 s he walks on; a boy on a bicycle crosses behind him at 6 s."
+  source_prompt: |
+    An eight-second Steadicam shot walking backwards in front of an elderly man of about seventy as he
+    walks through a crowded morning vegetable market in old Hyderabad. He has a white beard, a white
+    skull cap, a pale green kurta and a cloth bag on his left shoulder, and leans on a wooden cane in
+    his right hand. Stalls on both sides are heaped with tomatoes, okra and greens; several stalls have
+    bright pink plastic carry bags hanging from hooks; vendors and shoppers move around him, soft. At
+    three seconds he stops at a stall on frame right, lifts a tomato and inspects it; at five seconds he
+    walks on; at six seconds a boy on a bicycle crosses behind him left to right. He stays roughly
+    centred in the 16:9 frame throughout. Soft morning sun from frame left.
+  avoid: ["readable signs", "logos", "watermark", "anyone looking into the lens"]
+  must_contain:
+    - "Cane in his right hand and bag on his left shoulder throughout"
+    - "Pink plastic bags visible on stalls"
+    - "Tomato inspection at 3–5 s; bicycle at 6 s"
+  alt_real: "Real footage with releases is preferred."
+
+- id: SRC-VCLIP-TRAIN-INT
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-06]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Locked off on a mount inside the moving train, seated eye height from the aisle, 24 mm."
+  action_timing: "0–6 s the train moves; the man turns a newspaper page at 2 s; the woman takes the lid off her tiffin at 4 s; shadows of passing poles sweep across the bay every second."
+  source_prompt: |
+    A six-second shot inside a moving Indian Railways sleeper-class compartment in daytime, from the
+    aisle into one bay, the camera fixed to the train. Two blue lower berths face each other; an
+    elderly man in a white shirt reads a folded newspaper on the left by the window and turns a page at
+    two seconds; a young woman in a teal salwar kameez on the right opens a three-tier steel tiffin and
+    lifts its lid at four seconds. A green trunk sits under the left berth, a red suitcase on the right
+    upper berth. Through the barred window green fields blur past, and the shadows of trackside poles
+    sweep across the bay about once a second. The carriage sways gently.
+  avoid: ["readable newspaper text", "brand labels", "watermark", "other passengers"]
+  must_contain:
+    - "Pole shadows sweep across about once a second"
+    - "Page turn at 2 s, tiffin lid at 4 s"
+    - "Green trunk and red suitcase in place"
+  alt_real: "Real footage on a train with releases is preferred."
+
+- id: SRC-VCLIP-GHAT-DRONE
+  kind: clip
+  role: scene
+  used_by: [VEDT-FLM-07]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Drone flying forward and slowly rising along a valley, about 60 m up, tilting down 20 degrees."
+  action_timing: "0–8 s steady forward flight; a single car climbs a hairpin road below from 2 to 7 s; a mobile tower on the right ridge passes under the frame edge at 6 s."
+  source_prompt: |
+    An eight-second drone shot flying forward and slowly rising along a green valley in the Western
+    Ghats in the monsoon, overcast with low cloud drifting below the ridges. A road with three hairpin
+    bends climbs the left slope; a single white car climbs it from two to seven seconds. On the right
+    ridge stands a grey steel mobile-phone tower with red-and-white bands, which passes under the right
+    frame edge at about six seconds. A thin stream runs along the valley floor. Deep greens, soft grey
+    light, moving cloud shadows.
+  avoid: ["text", "logos", "watermark", "other vehicles"]
+  must_contain:
+    - "Mobile tower on the right ridge until about 6 s"
+    - "One car climbing the hairpins"
+    - "Steady forward-and-rising move"
+  alt_real: "Real drone footage is preferred."
+
+- id: SRC-VCLIP-STATION-SIGN
+  kind: clip
+  role: scene
+  used_by: [VTXT-FLM-01]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Slow dolly left along the platform at chest height, 35 mm, about 1 m per second."
+  action_timing: "0–6 s the camera dollies past the station name board; the board passes from frame right to frame left between 1 and 5 s; a train's lights pass behind at 3 s."
+  source_prompt: |
+    A six-second shot on a small hill-railway station platform at dusk, the camera dollying slowly left
+    at chest height. A classic yellow station name board on two black posts stands near the platform
+    edge and passes through the frame from right to left between one and five seconds, seen at a slight
+    angle so its face is in gentle perspective. The board's three lines, in black, are a fictional
+    station name: "पहाड़पुर" in Devanagari on top, "PAHADPUR" in English in the middle and "పహాడ్‌పూర్" in
+    Telugu at the bottom. Behind it, a train's lit windows slide past at about three seconds. Warm
+    platform lamps, blue dusk sky, light mist.
+  avoid: ["any other readable text", "logos", "watermark", "people close to camera"]
+  must_contain:
+    - "Board text exactly पहाड़पुर / PAHADPUR / పహాడ్‌పూర్"
+    - "Board crosses right to left between 1 and 5 s"
+    - "Train lights pass behind at about 3 s"
+  alt_real: "Real footage with a board painted for the shoot is preferred."
+
+# Storyboard pages (inputs for storyboard-to-shot; drawn by a person or a tool outside the comparison)
+
+- id: SRC-VBOARD-ASTRO
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-01, VSTB-FLM-02]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished storyboard page in black-and-white pencil, nine panels in a three-by-three grid, each
+    with 2.39:1 frame lines and a caption bar, of an astronaut in a white suit with an orange band on
+    the upper left arm and a device on the left forearm entering a forest of tall straight trunks with
+    glowing veins. Captions, in order: "1 · Astronaut enters the forest · WS · Static", "2 · Gloved hands
+    tap the wrist device · CU · Push in", "3 · POV: glowing trunks ahead · MS · Handheld", "4 · Trees
+    reflected in the visor · ECU · Static", "5 · Palm on the bark, light spreads · MS · Pan right",
+    "6 · Device screen: pulse rising · Insert · Static", "7 · Looks up, spores falling · MCU · Tilt up",
+    "8 · Whole forest pulses at once · EWS · Crane up", "9 · Silhouette in a beam of light · WS ·
+    Static". Panel 4 fills its frame with the visor reflecting trunks; panel 8 shows the figure tiny
+    with a crane-up arrow.
+  avoid: ["colour", "any other text", "watermark"]
+  must_contain:
+    - "Nine panels with exact captions"
+    - "Panel 4 an extreme close-up of the visor"
+    - "Panel 8 an extreme wide with a crane-up arrow"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-CHASE
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-03, VSTB-FLM-04]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished storyboard page in black ink with grey marker, eight panels in two rows of four with
+    2.39:1 frame lines, of a foot chase in the rain that starts at a Mumbai tea stall: a man in a grey
+    hoodie runs and a delivery rider in a rain jacket chases him, both always moving left to right.
+    Captions: "1 · The rider drops his glass · MS · Static", "2 · The hoodie man bolts left to right ·
+    WS · Pan right", "3 · The rider gives chase · WS · Pan right", "4 · Feet splash through puddles ·
+    Insert · Tracking", "5 · Hoodie man vaults a handcart · MS · Static", "6 · Rider slips, catches a
+    pole · MS · Handheld", "7 · Hoodie man turns into an alley · WS · Static", "8 · Rider stops, rain on
+    his face · CU · Push in". Panel 2 shows the hoodie man small, mid-stride at frame left, the stall
+    behind him; panel 5 shows him mid-vault over a wooden handcart of bananas.
+  avoid: ["colour beyond grey", "any other text", "watermark"]
+  must_contain:
+    - "Eight panels with exact captions"
+    - "Both men move left to right in every running panel"
+    - "Panel 5 shows a vault over a handcart"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-KIDS
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-05]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished storyboard page in soft pencil with light grey wash, six panels in two rows of three
+    with 16:9 frame lines, of two ten-year-old schoolchildren under a banyan tree: a boy with short
+    side-parted hair and a girl with two plaits tied with ribbons, a brown school bag beside her, a
+    wooden fence behind. Captions: "1 · Both on the root, silent · WS · Static", "2 · She stands, brushes
+    her skirt · MS · Static", "3 · She walks off frame right · WS · Pan right", "4 · He looks at the bag ·
+    CU · Push in", "5 · He picks up her bag · MS · Static", "6 · He follows her past the fence · WS ·
+    Static". Panel 5 shows the boy, seated, reaching across with his left hand to lift the bag by its
+    strap, looking towards frame right.
+  avoid: ["colour", "any other text", "watermark"]
+  must_contain:
+    - "Six panels with exact captions"
+    - "Panel 5: boy lifting the bag with his left hand, looking frame right"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-INTERROGATION
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-06]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished colour storyboard page in muted marker (maroon, khaki, steel grey, green walls), six
+    panels in two rows of three with 16:9 frame lines, of an interrogation: a detective in a maroon
+    kurta on frame left, a suspect in a torn grey T-shirt with a bruise on his left cheekbone on frame
+    right, a constable at the door, one hanging lamp. Captions give only the shot size and a number:
+    "1 · WS", "2 · OTS", "3 · CU", "4 · Insert", "5 · MCU", "6 · WS". Panel 2 is over the detective's
+    right shoulder onto the suspect's face, her shoulder and the back of her head large and soft in the
+    left third, his face in the right third under the lamp's hard top light.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Six panels with shot-size captions"
+    - "Panel 2: over the detective's right shoulder, suspect's face in the right third"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-HORSE
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-07]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished storyboard page in soft charcoal, six panels in two rows of three with 2.39:1 frame
+    lines, of a rider in an orange turban on a dark Marwari horse galloping across Thar dunes at
+    sunrise, always moving towards frame right, the sun behind at frame left. Captions: "1 · He spurs
+    the horse · MS · Static", "2 · Gallop over the crest · WS · Pan right", "3 · Hooves throw sand ·
+    Insert · Static", "4 · Turban tail streams · MCU · Tracking", "5 · Down the dune face · LS ·
+    Static", "6 · Lone rider, long shadow · EWS · Crane up". Panel 2 shows the horse cresting a dune
+    from frame left towards centre-right, front legs reaching, a pan arrow pointing right.
+  avoid: ["colour", "any other text", "watermark"]
+  must_contain:
+    - "Six panels with exact captions"
+    - "Panel 2: horse cresting the dune moving right with a pan-right arrow"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-BIKE
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-08]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished storyboard page in pencil, nine panels in a three-by-three grid with 2.39:1 frame
+    lines, of a highway chase: a rider in sunglasses on a black classic motorcycle with saddlebags,
+    chased by a jeep across a Rajasthan desert at noon, the bike always travelling towards frame left.
+    Captions include "1 · A jeep appears in the mirror · Insert · Static", "3 · Bike tears away left · WS
+    · Pan left", "6 · Saddlebag strap snaps · Insert · Static" and "9 · He leaves the road into the dunes
+    · EWS · Crane up". Panel 9 shows a tiny bike leaving the road on the left into dunes, a dust trail
+    behind it, the jeep stopped on the road on the right, with a crane-up arrow.
+  avoid: ["colour", "any other text", "watermark"]
+  must_contain:
+    - "Nine panels; captions 1, 3, 6 and 9 exact"
+    - "Panel 9: bike leaving the road leftward, jeep stopped, crane-up arrow"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-PALACE
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-09]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A previs storyboard page of six grey-shaded untextured 3D frames, two rows of three, 2.39:1, of a
+    single crane move across a palace facade at night: three storeys of seven arched windows each;
+    the 2nd and 6th top-storey windows lit warm, only the centre middle-storey window lit, with a lone
+    figure in white standing in it; a central gate with two torches. Captions: "1 · Gate · Crane start",
+    "2 · Rising", "3 · Middle storey", "4 · Top storey", "5 · Push in", "6 · Figure at window". The
+    panels show the camera starting low at the gate and rising and pushing in to the figure.
+  avoid: ["textures", "colour other than the warm window light", "any other text", "watermark"]
+  must_contain:
+    - "Six panels; seven arches per storey"
+    - "Lit windows exactly as described"
+    - "Captions 1 and 6 exact"
+  alt_real: ""
+
+- id: SRC-VBOARD-ANIME
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-10]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An anime storyboard page in clean line art with flat cel colour, six panels in two rows of three,
+    16:9 frames, of a teenage heroine leaping between neon-lit rooftops at night: short asymmetric black
+    bob longer on her right with a teal streak, grey hoodie with a yellow 07 patch on the left sleeve,
+    red scarf, bandage on the left knee. Captions: "1 · She sprints to the edge · WS · Track right",
+    "2 · Foot on the parapet · Insert · Static", "3 · Leap, scarf trailing · LS · Static", "4 · Mid-air
+    over the street · EWS · Tilt down", "5 · Lands in a roll · MS · Static", "6 · She looks back,
+    grinning · MCU · Push in". Panel 3 shows her airborne from frame left towards the right, scarf
+    streaming behind her, the gap and the street far below.
+  avoid: ["any other text", "watermark", "resemblance to existing characters"]
+  must_contain:
+    - "Six panels with exact captions"
+    - "Panel 3: airborne leap left to right, scarf trailing"
+  alt_real: ""
+
+- id: SRC-VBOARD-ELDER
+  kind: image
+  role: reference
+  used_by: [VSTB-FLM-11]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A colour storyboard page in watercolour and ink, nine panels in a three-by-three grid, 16:9 frames,
+    of an elderly Kerala woman (round spectacles, grey bun, off-white sari with a green border) on her
+    verandah in the monsoon at dusk: she sips tea, rises, takes a matchbox, lights a tall brass lamp,
+    and folds her hands. Captions include "1 · Rain on the tiled roof · EWS · Static", "6 · She lights
+    the brass lamp · CU · Push in" and "9 · Lit lamp, rain beyond · WS · Pull out". Panel 6 shows her
+    hand with a lit match reaching to the lamp's wick from the right, her face soft behind, the
+    lamp's brass bowl filling the lower half of the frame, a push-in arrow.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Nine panels; captions 1, 6 and 9 exact"
+    - "Panel 6: match reaching the wick from the right, push-in arrow"
+  alt_real: "A hand-painted board is preferred."
+
+# Character references and frames
+
+- id: SRC-VREF-BITTU
+  kind: image
+  role: reference
+  used_by: [VCHR-FLM-06]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A turnaround sheet of an original character for a 3D animated feature, polished stylised 3D on a
+    plain light grey background, three views side by side (front, left side, back) on one baseline.
+    Bittu is a nine-year-old boy with oversized ears, a gap in his front teeth, a shock of black hair
+    with one cowlick standing up at the back, and brown skin. He wears a striped red-and-white T-shirt,
+    blue shorts with a patch on the right knee, one green sock on his left foot and one yellow sock on
+    his right, and worn canvas shoes, and holds a home-made cardboard telescope in his right hand.
+  avoid: ["text", "watermark", "resemblance to an existing character"]
+  must_contain:
+    - "Three views on one baseline"
+    - "Green sock on the left foot, yellow on the right"
+    - "Patch on the right knee; cowlick at the back"
+  alt_real: ""
+
+- id: SRC-VREF-SIBLINGS
+  kind: image
+  role: reference
+  used_by: [VCHR-FLM-07]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A casting reference photo of three fictional adult siblings standing in a row against a plain warm
+    grey backdrop, waist up, soft even light. Left: the eldest, a heavy-set man of forty-five with a
+    full grey beard in a white kurta and black Nehru jacket. Middle: the sister, forty, tall and thin
+    with a short bob and round gold glasses, in a mustard cotton saree. Right: the youngest, thirty,
+    clean-shaven with curly hair, a denim shirt and a thin silver chain. All three face the camera with
+    neutral expressions; their faces are clearly different from each other.
+  avoid: ["resemblance to real actors", "text", "watermark"]
+  must_contain:
+    - "Three people in the stated order"
+    - "Grey beard; round gold glasses; curly hair and silver chain"
+  alt_real: "A licensed casting photo with releases is preferred."
+
+- id: SRC-VFRAME-ROOFTOP-DOOR
+  kind: image
+  role: reference
+  used_by: [VBTS-FLM-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    The end frame of a scene, matching an earlier still of the same Mumbai rooftop at night: three blue
+    plastic water tanks on the left, a grey satellite dish at the back, cables along the low parapet,
+    the city glowing orange-pink. Now the woman of about thirty in a loose white shirt and dark
+    trousers stands at the small concrete stairwell structure on the far right, her right hand on its
+    green metal door, half turned back towards the city, her face in three-quarter profile lit faintly
+    orange from the city. The parapet where she stood before is empty. Camera at standing eye level,
+    35 mm, from the same position as the earlier still.
+  avoid: ["any other person", "readable signs", "watermark"]
+  must_contain:
+    - "Same rooftop layout as the earlier still"
+    - "Her right hand on the green stairwell door"
+    - "Parapet empty"
+  alt_real: ""
+
+# ------------------------------------------------------------ Advertising & agencies
+# Brands are the image bank's fictional ones, plus Nimbus 7 (phone), Brew Bros (cold coffee),
+# Morning Sun (juice).
+
+- id: SRC-VCLIP-FAMILY-SOFA
+  kind: clip
+  role: scene
+  used_by: [VCHR-ADS-04, VEDT-ADS-01]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Slow push in from a wide to a medium wide, chest height, 35 mm."
+  action_timing: "0–6 s a family of four laughs at the TV; at 2 s the girl falls back into the father's lap; at 4 s the mother throws a cushion at the son."
+  source_prompt: |
+    A six-second commercial shot in a bright Bengaluru living room in the evening: a family of four on
+    a long grey sofa facing a wall-mounted TV that shows a blurred cricket match with a small white
+    channel logo in its top-right corner. Left to right: a father of about forty in a navy polo, a
+    girl of about seven in a pink T-shirt, a mother in a green kurta, and a teenage son in a black
+    hoodie. Two mustard cushions and one teal cushion on the sofa. They laugh; at two seconds the girl
+    falls back into her father's lap; at four seconds the mother throws the teal cushion at the son,
+    who catches it. Warm lamp light from the right, TV glow on their faces. Slow push in.
+  avoid: ["readable text other than the small TV logo", "brand names", "watermark", "other people"]
+  must_contain:
+    - "Four people in the stated order"
+    - "Small white logo in the TV's top-right corner throughout"
+    - "Cushion thrown at about 4 s"
+  alt_real: "Real footage with releases is preferred."
+
+- id: SRC-VCLIP-SPOT-PACKSHOT
+  kind: clip
+  role: scene
+  used_by: [VSPT-ADS-11, VSPT-ADS-12, VEDT-ADS-05]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Two shots cut at 5 s: a slow dolly left across a breakfast table, then a locked-off packshot."
+  action_timing: "0–5 s a family of three at breakfast, the mother pours juice from the carton into the boy's glass at 2 s; cut at 5 s to a packshot of the carton on the table, 5–8 s."
+  source_prompt: |
+    An eight-second fictional juice commercial in two shots. Shot one, 0–5 s: a sunlit breakfast table
+    by a window, a mother, a father and a boy of about ten; the camera dollies slowly left along the
+    table; at two seconds the mother lifts an orange juice carton and pours into the boy's glass. Shot
+    two, 5–8 s: a locked-off packshot of the same carton standing on the table beside a full glass and
+    two orange halves. The carton is a one-litre gable-top in bright orange with a white sun graphic and
+    the brand "Morning Sun" in white rounded letters, "100% Orange" below it. Morning light from the
+    window on the left.
+  avoid: ["any other text", "real brands", "watermark"]
+  must_contain:
+    - "Carton reads Morning Sun / 100% Orange"
+    - "Pour at about 2 s; cut to the packshot at 5 s"
+    - "Three people in shot one"
+  alt_real: "A real shoot with a mock carton is preferred."
+
+- id: SRC-VCLIP-SUV-DRIVE
+  kind: clip
+  role: scene
+  used_by: [VEDT-ADS-02]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Drone following behind and above the SUV, then rising and orbiting a quarter turn to its right side."
+  action_timing: "0–8 s a white SUV climbs three hairpins; 0–4 s follow from behind; 4–8 s rise and orbit to the right side."
+  source_prompt: |
+    An eight-second drone shot of a white mid-size SUV with no badges climbing a road of three hairpin
+    bends in the Western Ghats at golden hour, mist in the valley below. For four seconds the drone
+    follows behind and above; then it rises and orbits a quarter turn to the SUV's right side as the car
+    rounds the third bend. The low sun from the right reflects off the roof and bonnet as warm moving
+    highlights; the car's shadow stretches to the left across the road. Green slopes, a stone parapet
+    along the outer edge of each bend.
+  avoid: ["badges or lettering", "number plate text", "other vehicles", "watermark"]
+  must_contain:
+    - "One white badge-less SUV"
+    - "Moving sun highlights on roof and bonnet"
+    - "Orbit to its right side from 4 s"
+  alt_real: "Real drone footage with badges removed is preferred."
+
+- id: SRC-VCLIP-RUN-TRACK
+  kind: clip
+  role: scene
+  used_by: [VEDT-ADS-03]
+  aspect: "16:9"
+  resolution: "1920x1080, 50 fps"
+  duration: 6
+  camera_move: "Tracking alongside on the infield at hip height, 85 mm, panning to keep her centre-left."
+  action_timing: "0–6 s she sprints left to right down the straight; at 3 s she passes the 100 m line."
+  source_prompt: |
+    A six-second sports shot at a city stadium at harsh noon: a fictional woman sprinter of about
+    twenty-five with braided hair in a high bun, in a white running vest with a race bib "37" pinned to
+    it, black shorts and orange shoes with no logos, sprints left to right down lane 3 of a red track,
+    filmed from a camera car on the infield. The lane number "3" and white lines stream past; at three
+    seconds she crosses a painted white line. Empty grey stands behind, motion-blurred. Short shadow
+    directly under her.
+  avoid: ["logos", "other athletes", "watermark", "resemblance to a real athlete"]
+  must_contain:
+    - "Bib 37 on a white vest"
+    - "Red track, lane 3"
+    - "Running left to right throughout"
+  alt_real: "Real footage with a release is preferred."
+
+- id: SRC-VCLIP-KITCHEN-COOK
+  kind: clip
+  role: scene
+  used_by: [VEDT-ADS-04, VPHY-ADS-05]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Locked off, 45 degrees above the stove, 50 mm."
+  action_timing: "0–8 s a woman's hands temper spices: at 1 s oil goes into the steel kadhai, at 3 s mustard seeds crackle, at 5 s curry leaves go in and sputter, at 7 s she stirs."
+  source_prompt: |
+    An eight-second cooking-commercial close shot from 45 degrees above a gas stove in a home kitchen:
+    a shiny steel kadhai on the flame, a woman's hands with a thin gold bangle on the left wrist. At one
+    second she pours oil from a small steel ladle; at three seconds she adds mustard seeds, which
+    crackle and jump; at five seconds she drops in a sprig of curry leaves, which sputter; at seven
+    seconds she stirs with a wooden spoon. A white quartz counter around the stove with a small bowl of
+    chopped onions on the right and a halved lemon on the left near the edge. Warm window light from
+    the left.
+  avoid: ["faces", "readable text", "brand labels", "watermark"]
+  must_contain:
+    - "Steel kadhai; gold bangle on the left wrist"
+    - "Seeds at 3 s, curry leaves at 5 s"
+    - "Halved lemon on the counter at the left edge"
+  alt_real: "Real footage is preferred."
+
+- id: SRC-VCLIP-STREET-BILLBOARD
+  kind: clip
+  role: scene
+  used_by: [VEDT-ADS-06]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Handheld walk along a pavement at chest height, panning slowly up and right to the billboard, 28 mm."
+  action_timing: "0–6 s the camera walks; the billboard enters at top right at 1 s and is centred at 5 s; a bus passes below at 3 s."
+  source_prompt: |
+    A six-second handheld shot walking along a busy Pune pavement at dusk, slowly panning up and to the
+    right towards a large lit billboard on a building corner. The billboard shows a fictional cola ad:
+    a red background, a sweating glass bottle and the words "COOL COLA" in white. It enters at the top
+    right at about one second and is centred at five seconds, seen in changing perspective as the
+    camera moves. An orange city bus passes below it at three seconds. Shop lights, traffic, warm dusk
+    sky.
+  avoid: ["any other readable text", "real brands", "watermark"]
+  must_contain:
+    - "Billboard text COOL COLA"
+    - "Billboard in changing perspective"
+    - "Bus passes at about 3 s"
+  alt_real: "Real footage with the billboard replaced in post is acceptable."
+
+- id: SRC-VBOARD-MASCOT-TVC
+  kind: image
+  role: reference
+  used_by: [VSTB-ADS-01, VSTB-ADS-02]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A client storyboard page for a 20-second snack commercial: eight 16:9 panels in a four-by-two grid,
+    finished 3D animatic frames in a polished animated style, with caption bars. The mascot is a glossy
+    red chilli with a green stalk quiff curling to his left, a gold tooth on his right side, white
+    four-fingered gloves and red-laced sneakers; a college student, Riya, has a messy bun, round glasses
+    and a purple sweatshirt. Captions: "1 · 0:00–0:03 · WS · Hostel room at night, books everywhere",
+    "2 · 0:03–0:05 · CU · Riya sighs at the clock: 2 a.m.", "3 · 0:05–0:08 · MS · Chotu bursts out of
+    the pack", "4 · 0:08–0:11 · MCU · Chotu: Mood off? Mirchi on!", "5 · 0:11–0:14 · WS · The room
+    turns into a dance floor", "6 · 0:14–0:16 · Insert · One chip cracks in slow motion", "7 · 0:16–0:18
+    · MS · Friends pile in and grab the pack", "8 · 0:18–0:20 · Packshot · Mirchi Mood Masala Blast,
+    ₹20". Panel 3 shows the red pack torn open on a desk with Chotu leaping out of it towards frame
+    right; panel 8 shows the pack upright and centred on red with Chotu leaning on its right side.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Eight panels with exact captions"
+    - "Panel 3: Chotu leaping out of the pack towards frame right"
+    - "Panel 8: centred packshot, Chotu leaning on its right side"
+  alt_real: ""
+
+- id: SRC-VBOARD-SUV
+  kind: image
+  role: reference
+  used_by: [VSTB-ADS-03]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An agency storyboard page in marker sketch, nine 2.39:1 panels in a three-by-three grid, of a white
+    badge-less SUV climbing a Western Ghats hairpin road at golden hour, low sun on the right. Captions
+    include "1 · Mist in the valley · EWS · Crane down", "5 · SUV climbs past camera · MS · Whip pan"
+    and "9 · End frame, sun behind · WS · Static". Panel 5 shows the SUV's front-left three-quarter
+    filling the left half as it passes close to a low camera on the road edge, travelling right to
+    left, with a whip-pan arrow pointing left.
+  avoid: ["badges", "any other text", "watermark"]
+  must_contain:
+    - "Nine panels; captions 1, 5 and 9 exact"
+    - "Panel 5: SUV passing close, right to left, whip-pan arrow"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-DIWALI
+  kind: image
+  role: reference
+  used_by: [VSTB-ADS-04]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A colour storyboard page in warm gouache, six 16:9 panels in two rows of three, for a Diwali
+    commercial on a Delhi balcony: a grandfather in a cream kurta and brown shawl on a cane chair, a
+    mother in a red silk sari, a father in a mustard kurta with a plate of sweets, a girl of seven in a
+    green lehenga with a rangoli. Each panel has a Devanagari voice-over line under it: "1 · हर साल की
+    तरह...", "2 · दादाजी की कहानियाँ,", "3 · माँ के हाथों के दीये,", "4 · पापा की मिठाइयाँ,", "5 · और
+    गुड़िया की रंगोली।", "6 · दिवाली, घर जैसी।". Panel 3 is a medium shot of the mother kneeling at the
+    ledge lighting the fourth of seven diyas with a long match, her face lit from below.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Six panels with exact Devanagari lines"
+    - "Panel 3: mother lighting the fourth of seven diyas"
+  alt_real: "A hand-painted board is preferred."
+
+- id: SRC-VBOARD-RACE
+  kind: image
+  role: reference
+  used_by: [VSTB-ADS-05]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A storyboard page in pencil, eight 2.39:1 panels in two rows of four, for a sportswear commercial:
+    a woman sprinter in a teal vest with bib 214 races in lane 4 of a stadium at noon, always running
+    left to right, two rivals in lanes 3 and 5. Captions: "1 · Blocks, lane 4 · MS · Static", "2 · Gun
+    smoke · Insert · Static", "3 · Drive phase · WS · Track right", "4 · Eyes forward · ECU · Static",
+    "5 · Overtakes lane 5 · LS · Track right", "6 · Shoe strike, slow motion · Insert · Static", "7 · Dip
+    at the line · MS · Static", "8 · Arms up, empty stands · WS · Crane up". Panel 3 is a wide of her
+    rising out of the blocks, body angled forward, moving right, a track-right arrow.
+  avoid: ["logos", "any other text", "watermark"]
+  must_contain:
+    - "Eight panels with exact captions"
+    - "Panel 3: drive phase moving right with a track-right arrow"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-BIRYANI
+  kind: image
+  role: reference
+  used_by: [VSTB-ADS-06]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A storyboard page in pencil with one saffron accent colour, six tall 9:16 panels in one row, for a
+    15-second food-delivery spot. Captions: "1 · 0:00–0:02 · Midnight hunger", "2 · 0:02–0:04 · Tap to
+    order", "3 · 0:04–0:08 · Rider in the rain", "4 · 0:08–0:10 · Knock at the door", "5 · 0:10–0:13 ·
+    Steam rises", "6 · 0:13–0:15 · Roommates crowd in". Panel 5 is a close vertical shot from above of a
+    student's hands lifting the lid of a round biryani box, saffron steam rising into the top of the
+    frame. Saffron is used only for the steam and the delivery bag.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Six 9:16 panels with exact captions"
+    - "Panel 5: lid lifting from above with saffron steam"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VREF-CHOTU-SHEET
+  kind: image
+  role: reference
+  used_by: [VCHR-ADS-01, VSPT-ADS-08]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An animation model sheet of the snack mascot Chotu Mirchi in a polished 3D animated style on white:
+    four views on one baseline (front, left side, back, right side) and three action poses (running,
+    jumping, dancing). He is a glossy red chilli on short green legs, about as tall as a child's
+    forearm, with a curled green stalk quiff that curls to his left, big round eyes, thick eyebrows, a
+    wide grin with one gold tooth on his right side, thin green arms with white four-fingered gloves,
+    and white sneakers with red laces. Size, colours and details are identical in all seven drawings.
+  avoid: ["text", "watermark", "resemblance to an existing mascot"]
+  must_contain:
+    - "Four views and three action poses"
+    - "Quiff curling to his left in every drawing"
+    - "Gold tooth on his right side"
+  alt_real: ""
+
+- id: SRC-VREF-AMBASSADOR
+  kind: image
+  role: reference
+  used_by: [VCHR-ADS-02, VSPT-ADS-07]
+  aspect: "4:5"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A casting reference portrait of a fictional Indian brand ambassador, a woman cricketer of about
+    twenty-seven, waist up, front-facing against a plain mid-grey backdrop, soft even light. Deep brown
+    skin, a short undercut with a curly top, a small scar on her chin, a silver stud in her left ear and
+    a black fitness band on her right wrist. She wears a plain white athletic polo with no logo.
+    Confident half-smile, eyes to the lens, 85 mm.
+  avoid: ["resemblance to a real athlete", "logos", "text", "watermark"]
+  must_contain:
+    - "Undercut with curly top; chin scar"
+    - "Silver stud in the left ear; black band on the right wrist"
+  alt_real: "A licensed photo with a release is preferred."
+
+- id: SRC-VREF-PHONE
+  kind: image
+  role: reference
+  used_by: [VSPT-ADS-05, VSPT-ADS-07]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A product packshot of a fictional smartphone, the Nimbus 7, on seamless pale grey, two views side
+    by side: front and back. Front: an edge-to-edge screen with a small centred punch-hole camera, the
+    screen showing a calm violet gradient. Back: frosted glass in sage green with a raised rectangular
+    camera island in the top-left corner holding three lenses in a vertical line and a small flash to
+    their right, and "NIMBUS" in small silver capitals near the bottom. Flat aluminium edges. Soft even
+    light.
+  avoid: ["any other text", "real brands", "watermark"]
+  must_contain:
+    - "Three lenses in a vertical line top-left; flash to their right"
+    - "Sage frosted back with NIMBUS near the bottom"
+  alt_real: "A real dummy unit photographed is preferred."
+
+- id: SRC-VREF-COLD-COFFEE
+  kind: image
+  role: reference
+  used_by: [VSPT-ADS-06]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of a fictional bottled cold coffee, Brew Bros, on seamless off-white: a 200 ml clear glass
+    bottle with a short neck and a black metal cap, filled with light caramel-brown coffee, a matte
+    kraft paper label with "BREW BROS" in black condensed capitals, "Cold Coffee · Hazelnut" under it,
+    and a small drawing of a coffee bean. Fine condensation on the glass. Soft light from upper left.
+  avoid: ["any other text", "real brands", "watermark"]
+  must_contain:
+    - "Label text BREW BROS / Cold Coffee · Hazelnut"
+    - "Light caramel-brown liquid"
+  alt_real: "A real bottle with a mock label is preferred."
+
+# ------------------------------------------------------------ E-commerce, D2C & retail
+
+- id: SRC-VCLIP-UNBOX-HANDS
+  kind: clip
+  role: scene
+  used_by: [VSPT-ECM-12, VEDT-ECM-01, VPHY-ECM-03]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Locked off, top-down, 35 mm."
+  action_timing: "0–2 s a sealed box sits on the desk; 2–4 s two hands slit the round sticker seal and lift the lid; 4–7 s they lift out a small white case from tissue; 7–8 s they set the box down at the right."
+  source_prompt: |
+    An eight-second top-down unboxing shot on a light oak desk in soft daylight from the left. A matte
+    pale-blue square box about 12 cm wide, closed with one round orange sticker seal on its front edge,
+    sits in the centre. From two to four seconds, a pair of hands with medium-brown skin and short
+    unpainted nails slit the sticker with a thumbnail and lift the lid; from four to seven seconds they
+    lift a small plain white case out of white tissue paper and hold it up to the camera; at seven
+    seconds they set the open box down at the right edge of the desk. A closed notebook and a pen lie
+    on the left of the desk.
+  avoid: ["readable text", "brand logos", "faces", "watermark"]
+  must_contain:
+    - "Pale-blue box with one orange sticker seal"
+    - "Seal slit at 2–4 s; white case lifted at 4–7 s"
+    - "Notebook and pen on the left"
+  alt_real: "Real footage is preferred."
+
+- id: SRC-VCLIP-RUNWAY-WALK
+  kind: clip
+  role: scene
+  used_by: [VSPT-ECM-13, VEDT-ECM-02, VCAM-ECM-03]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Locked off, wide, at hip height, 50 mm."
+  action_timing: "0–4 s a model walks towards camera from the back of the cyclorama; at 4 s she stops, turns a full circle by 5.5 s and holds."
+  source_prompt: |
+    A six-second catalogue video on a warm beige cyclorama. A fictional Indian model of about twenty-six
+    with a medium-brown complexion and shoulder-length wavy hair walks towards the camera from the back
+    of the set in a mustard straight kurta with a small white block-printed floral pattern and a
+    five-button placket, white palazzos and a white dupatta over her left shoulder. She enters small,
+    centred in the 16:9 frame, and ends full length in the centre third. At four seconds she stops,
+    turns a full circle by five and a half seconds, and holds. Soft even studio light from the left.
+  avoid: ["logos", "other people", "watermark", "resemblance to a real model"]
+  must_contain:
+    - "Mustard kurta with white floral print and five buttons"
+    - "Stops at 4 s, full turn by 5.5 s"
+    - "Centred in the 16:9 frame"
+  alt_real: "Real footage with a release is preferred."
+
+- id: SRC-VCLIP-PARTY-CANS
+  kind: clip
+  role: scene
+  used_by: [VSPT-ECM-14, VEDT-ECM-07]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Slow push in from a medium wide to a medium shot, 35 mm."
+  action_timing: "0–6 s five friends on a rooftop; at 2 s they raise five plain blue cans and clink them at 3 s; at 4 s a sixth person walks across the background left to right."
+  source_prompt: |
+    A six-second shot of five friends in their twenties on a Mumbai rooftop at dusk with fairy lights.
+    Each holds a slim plain cobalt-blue drinks can with no label or print. At two seconds they raise the
+    cans; at three seconds they clink them together in the centre of the frame, laughing. At four
+    seconds a sixth person carrying a plate walks across the background from left to right and out of
+    frame. City lights behind; slow push in.
+  avoid: ["any printed text or logos on the cans", "brand names", "watermark"]
+  must_contain:
+    - "Five plain blue cans with no print"
+    - "Clink at about 3 s"
+    - "A sixth person crosses the background at 4 s"
+  alt_real: "Real footage with plain cans is preferred."
+
+- id: SRC-VCLIP-BIRYANI-STEAM
+  kind: clip
+  role: scene
+  used_by: [VEDT-ECM-03]
+  aspect: "4:5"
+  resolution: "1080x1350, 24 fps"
+  duration: 6
+  camera_move: "Locked off at 45 degrees, 50 mm."
+  action_timing: "0–6 s steam rises from the handi; at 2 s a hand lifts a spoonful of rice and holds it up; at 5 s it lowers it back."
+  source_prompt: |
+    A six-second vertical food clip of Hyderabadi chicken dum biryani in a copper handi on a dark wooden
+    table, shot at 45 degrees in daylight from the left: the lid leans on the handi's left; saffron rice,
+    two chicken pieces, fried onions and mint leaves on top; a steel bowl of raita with cucumber and half
+    an egg on the right; a red-checked napkin with a white plastic spoon on the left. Steam rises gently
+    the whole time; at two seconds a hand lifts a spoonful of rice with a steel spoon and holds it up; at
+    five seconds it lowers it back.
+  avoid: ["text", "logos", "faces", "watermark"]
+  must_contain:
+    - "Mint leaves on top; plastic spoon on the napkin"
+    - "Spoonful lifted at 2 s and lowered at 5 s"
+  alt_real: "Real footage is preferred."
+
+- id: SRC-VCLIP-ROOM-PAN
+  kind: clip
+  role: scene
+  used_by: [VEDT-ECM-04]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Slow pan right across a living room, standing height, 28 mm."
+  action_timing: "0–8 s steady pan from the window on the left to the bookshelf on the right; the sofa is centred at 4 s."
+  source_prompt: |
+    An eight-second slow pan right across a lived-in Bengaluru living room in afternoon light: a tall
+    window with sheer curtains on the left; a three-seat oatmeal sofa with a crumpled throw and two
+    cushions, centred at four seconds; a low teak coffee table with a laptop, two mugs and a tangle of
+    charger cables; a pair of sneakers on the floor by the table; a bookshelf on the right with a
+    leaning stack of magazines. Warm sunlight from the window throws a long rectangle across the floor.
+  avoid: ["people", "readable text", "brand logos", "watermark"]
+  must_contain:
+    - "Crumpled throw on the sofa"
+    - "Laptop, two mugs and cables on the table; sneakers on the floor"
+    - "Steady pan right, sofa centred at 4 s"
+  alt_real: "Real footage is preferred."
+
+- id: SRC-VCLIP-CREATOR-TALK
+  kind: clip
+  role: scene
+  used_by: [VEDT-ECM-05]
+  aspect: "9:16"
+  resolution: "1080x1920, 30 fps"
+  duration: 8
+  camera_move: "Locked off phone camera at face height, 26 mm equivalent."
+  action_timing: "0–8 s a beauty creator talks to camera, gesturing; at 3 s she holds up a small jar; at 6 s she laughs and tucks her hair."
+  source_prompt: |
+    An eight-second vertical selfie-style clip of a fictional beauty creator of about twenty-three in her
+    bedroom in Pune at night: dark brown skin, a natural bare face, black hair in a claw clip, small gold
+    hoops, a sage-green ribbed tank top. She talks animatedly to the camera; at three seconds she holds
+    up a small unlabelled white jar; at six seconds she laughs and tucks a strand of hair behind her ear.
+    Behind her, a crowded white shelf of bottles and a fairy-light string; in a mirror on the right, the
+    round ring light is reflected. The ring light in front gives ring catchlights in her eyes.
+  avoid: ["readable brand names", "makeup already applied", "watermark", "resemblance to a real creator"]
+  must_contain:
+    - "Ring light reflected in the mirror on the right"
+    - "Jar held up at 3 s; laugh at 6 s"
+    - "Ring catchlights in her eyes"
+  alt_real: "Real footage with a release is preferred."
+
+- id: SRC-VCLIP-GRANDMA-YOGA
+  kind: clip
+  role: scene
+  used_by: [VCHR-ECM-05, VEDT-ECM-06]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 8
+  camera_move: "Slow push in from a wide to a medium shot, 50 mm."
+  action_timing: "0–8 s an elderly woman does a slow standing stretch on a terrace; at 3 s she raises both arms; at 6 s she lowers them and checks the watch on her left wrist."
+  source_prompt: |
+    An eight-second clip on a Chennai terrace at sunrise: a fictional woman of about sixty-eight with dark
+    brown skin, a grey braid and a red bindi, in a lilac cotton sari with a thin gold border and white
+    sports shoes, does a slow standing stretch on a yoga mat. At three seconds she raises both arms
+    overhead; at six seconds she lowers them and glances at the smartwatch on her left wrist, which has
+    a square black face showing "06:45" in white digits and a sage-green strap. Potted plants along the
+    parapet, the sun low on the right. Slow push in.
+  avoid: ["logos", "other text", "other people", "watermark", "resemblance to a real person"]
+  must_contain:
+    - "Watch on the left wrist, face 06:45, sage strap"
+    - "Arms raised at 3 s; watch checked at 6 s"
+    - "Lilac sari with gold border"
+  alt_real: "Real footage with a release is preferred."
+
+- id: SRC-VCLIP-PLUSH-TURNTABLE
+  kind: clip
+  role: scene
+  used_by: [VEDT-ECM-08]
+  aspect: "1:1"
+  resolution: "1080x1080, 24 fps"
+  duration: 6
+  camera_move: "Locked off at the toy's eye level, 85 mm; the toy turns on a turntable."
+  action_timing: "0–6 s the toy turns one full circle clockwise on a white turntable."
+  source_prompt: |
+    A six-second product clip on seamless white: a hand-knitted grey elephant toy about 25 cm tall sits
+    on a small white turntable that turns one full circle clockwise in six seconds. The toy has stitched
+    black button eyes, a trunk curled up to its right, a small mustard knitted patch on its left ear and
+    a red ribbon collar with a tiny brass bell. Knit texture clearly visible; soft even light; a soft
+    contact shadow that turns with it.
+  avoid: ["text", "tags", "watermark"]
+  must_contain:
+    - "One full clockwise turn in 6 s"
+    - "Mustard patch on the left ear; red collar with bell"
+  alt_real: "Real footage is preferred."
+
+- id: SRC-VCLIP-SHELF-PAN
+  kind: clip
+  role: scene
+  used_by: [VEDT-ECM-09, VTXT-ECM-02]
+  aspect: "16:9"
+  resolution: "1920x1080, 24 fps"
+  duration: 6
+  camera_move: "Slow dolly right along the shelf at shelf height, 50 mm."
+  action_timing: "0–6 s the camera dollies past six price tags, one entering every second."
+  source_prompt: |
+    A six-second slow dolly right along a supermarket shelf of unbranded rice and dal bags under cool
+    fluorescent light, at shelf height. Six white shelf-edge price tags pass through the frame, about
+    one per second, each with three lines in black: "Basmati Rice 1 kg | ₹149 | ₹14.90/100 g", "Sona
+    Masoori 5 kg | ₹389 | ₹7.78/100 g", "Toor Dal 1 kg | ₹172 | ₹17.20/100 g", "Moong Dal 500 g | ₹98
+    | ₹19.60/100 g", "Chana Dal 1 kg | ₹110 | ₹11.00/100 g", "Masoor Dal 500 g | ₹76 | ₹15.20/100 g".
+    The price is the largest line on each tag. The bags carry no readable text.
+  avoid: ["readable text on bags", "logos", "people", "watermark"]
+  must_contain:
+    - "Six tags in order with exact text"
+    - "Steady dolly right, one tag per second"
+  alt_real: "Real footage with printed tags is preferred."
+
+- id: SRC-VBOARD-SAREE
+  kind: image
+  role: reference
+  used_by: [VSTB-ECM-01]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A storyboard page in clean illustration with flat colour, six tall 9:16 panels in two rows of three,
+    for a 20-second saree product video: a peacock-green silk saree with small gold buttis, a magenta
+    border with a gold temple pattern and a magenta pallu with gold stripes and peacocks; the model is a
+    woman in her thirties with a low bun. Captions: "1 · Folded saree on the table", "2 · Hands unfold
+    the pallu", "3 · Border close-up", "4 · Model drapes it", "5 · Pallu over the shoulder", "6 · Slow
+    twirl". Panel 4 is a full-length vertical shot of the model mid-drape, the pleats gathered in her
+    right hand, the border running along the hem, the pallu still loose over her left forearm.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Six 9:16 panels with exact captions"
+    - "Panel 4: mid-drape, pleats in her right hand, pallu over her left forearm"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-UNBOXING
+  kind: image
+  role: reference
+  used_by: [VSTB-ECM-02]
+  aspect: "1:1"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A storyboard page in pencil with one coral accent, nine 9:16 panels in a three-by-three grid, for a
+    15-second unboxing reel of a coral silicone phone case. Captions: "1 · 0:00 · Box on the desk",
+    "2 · 0:01 · Thumb breaks the seal", "3 · 0:03 · Lid lifts", "4 · 0:04 · Case in tissue", "5 · 0:06
+    · Case held up", "6 · 0:08 · Phone slides in", "7 · 0:10 · Corner drop test", "8 · 0:12 · Case
+    survives", "9 · 0:14 · End card". Panel 2 is an extreme close-up from above of a thumb pressing
+    through a round sticker seal on the box's front edge, the box filling the lower two-thirds.
+  avoid: ["any other text", "logos", "watermark"]
+  must_contain:
+    - "Nine 9:16 panels with exact captions"
+    - "Panel 2: extreme close-up of a thumb breaking the seal"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBIBLE-ANANAS
+  kind: image
+  role: reference
+  used_by: [VSPT-ECM-01]
+  aspect: "16:9"
+  resolution: "at least 3000 px on the long side"
+  source_prompt: |
+    A production bible sheet for a soda can's launch film, on a dark navy page with thin gold rules,
+    titled "ANANAS & CO. — PINEAPPLE FIZZ — PRODUCTION BIBLE". Four sections: "PRODUCT / HERO OBJECT
+    REFERENCE" with eight labelled views of a matte cobalt-blue can with "Ananas" in yellow script
+    running diagonally upward, "PINEAPPLE FIZZ" and "330 ml" in white and a white line-drawn pineapple;
+    "ENVIRONMENT / SET DESIGN" with a dark slate plinth, navy cyclorama, a block of clear ice and a
+    lighting diagram (KEY upper left, RIM behind right, FILL front right, CAMERA front); "STORYBOARD"
+    with six frames captioned "1 Ice cracks", "2 Can rises from the ice", "3 Ring-pull opens", "4 Fizz
+    in macro", "5 Pour into glass", "6 End card"; and "LIGHTING / MOOD / STYLE" with notes "Cold, crisp,
+    high contrast", "Condensation on the lower two-thirds", "Script always reads uphill".
+  avoid: ["any other text", "real brands", "watermark"]
+  must_contain:
+    - "Four sections with exact headings"
+    - "Six storyboard frames with exact captions"
+    - "The can identical in every view"
+  alt_real: "A designer-made sheet is preferred; do not make it with a model in the comparison."
+
+# ------------------------------------------------------------ Gaming
+# The fictional game Shadow Raaga, as in the image bank.
+
+- id: SRC-VCLIP-GAME-CITY
+  kind: clip
+  role: scene
+  used_by: [VCHR-GAM-09, VEDT-GAM-01]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 8
+  camera_move: "Third-person game camera behind and above her right shoulder, following."
+  action_timing: "0–8 s she runs down a neon street; at 3 s she vaults a barrier; at 6 s she slides under a half-open shutter."
+  source_prompt: |
+    An eight-second gameplay capture of an original stylised 3D action game: the heroine (dark brown
+    skin, high black ponytail with three gold rings, charcoal armoured suit with copper plates, a short
+    red sash-cape on her right shoulder only, a glowing teal rune on the back of her left glove, a curved
+    sword in her right hand) runs away from the camera down a wet neon street at night, the camera
+    following behind and above her right shoulder. At three seconds she vaults a metal barrier; at six
+    seconds she slides under a half-open rolling shutter. The game's interface is on screen throughout:
+    a red health bar and a teal stamina bar at the top left, a round minimap at the top right, an ammo
+    counter "30 / 90" at the bottom left, and three ability icons at the bottom right.
+  avoid: ["real game interfaces or logos", "other characters near her", "watermark"]
+  must_contain:
+    - "Interface elements in the four corners throughout"
+    - "Vault at 3 s; slide at 6 s"
+    - "Cape on her right shoulder; rune on her left glove"
+  alt_real: ""
+
+- id: SRC-VCLIP-GAME-TEMPLE-FLY
+  kind: clip
+  role: scene
+  used_by: [VEDT-GAM-02]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 8
+  camera_move: "Fly-through camera from the courtyard entrance, gliding forward at 2 m height towards the gopuram."
+  action_timing: "0–8 s steady glide; the fallen third pillar passes on the left at 3 s; the chariot passes on the right at 5 s; the gopuram fills the frame at 8 s."
+  source_prompt: |
+    An eight-second in-engine fly-through without interface of a stylised 3D game level: a ruined granite
+    temple courtyard inspired by Hampi at late afternoon, the camera gliding forward from the entrance
+    at two metres' height towards a five-tier gopuram whose top tier is broken off. Six carved pillars
+    line the left side; the third from the entrance lies fallen across the paving and passes on the left
+    at about three seconds. A stone chariot on four wheels in the centre passes on the right at about
+    five seconds, with a grey placeholder cube by its right wheel. A dry stepped tank with a small shrine
+    is on the right. Low sun from the right; long shadows to the left.
+  avoid: ["interface elements", "characters", "text", "watermark"]
+  must_contain:
+    - "Fallen third pillar on the left at about 3 s"
+    - "Chariot with a grey cube by its right wheel at about 5 s"
+    - "Broken top tier on the gopuram"
+  alt_real: ""
+
+- id: SRC-VCLIP-GAME-RACE
+  kind: clip
+  role: scene
+  used_by: [VEDT-GAM-03]
+  aspect: "16:9"
+  resolution: "1920x1080, 60 fps"
+  duration: 6
+  camera_move: "Chase camera behind and slightly to the right of the bike, low."
+  action_timing: "0–6 s the hover-bike races through a neon tunnel; it banks left at 2 s and right at 4 s."
+  source_prompt: |
+    A six-second race-mode capture without interface of an original hover-bike racing through a neon
+    tunnel at night, seen from a low chase camera behind and slightly to its right. The bike is matte
+    graphite with an orange stripe from nose to tail, two cyan-glowing pods underneath, a curved
+    windscreen, an orange seat, a white "07" decal on each rear fairing and a dent on the right front
+    fairing; the rider wears a black suit and mirrored visor. The bike banks left at two seconds and
+    right at four; tunnel lights streak past; the cyan glow reflects on the tunnel floor.
+  avoid: ["interface elements", "other vehicles", "text other than 07", "watermark"]
+  must_contain:
+    - "07 decal visible on the right rear fairing"
+    - "Banks left at 2 s and right at 4 s"
+  alt_real: ""
+
+- id: SRC-VCLIP-GAME-TRAILER
+  kind: clip
+  role: scene
+  used_by: [VEDT-GAM-04]
+  aspect: "2.39:1"
+  resolution: "2048x858, 24 fps"
+  duration: 8
+  camera_move: "Slow dolly back in front of the squad as they walk towards camera, low angle."
+  action_timing: "0–8 s five characters walk towards the camera along a fort rampart in daylight; at 5 s the archer draws an arrow."
+  source_prompt: |
+    An eight-second cinematic trailer shot of an original squad in a clean cel-shaded style, walking
+    towards a low camera that dollies back along a dusty Rajasthani fort rampart in clear daylight.
+    Left to right: a tall bearded man with a shield and blue turban; a short young woman with goggles
+    and a drone on her shoulder; a heavy older man with a grey moustache and a rocket launcher; a lean
+    woman archer with a white braid and a green scarf, who draws an arrow at five seconds; a teenage
+    boy with a skateboard under his arm and red headphones. A saffron banner flaps on a pole behind
+    them. Blue sky, sun high and to the left.
+  avoid: ["text", "logos", "watermark", "more than five characters"]
+  must_contain:
+    - "Five characters in the stated order"
+    - "Clear blue sky"
+    - "Archer draws at 5 s"
+  alt_real: ""
+
+- id: SRC-VBOARD-TRAILER
+  kind: image
+  role: reference
+  used_by: [VSTB-GAM-01, VSTB-GAM-02]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A launch-trailer storyboard page in black-and-white pencil with grey marker, nine 16:9 panels in a
+    three-by-three grid with captions, for a game heroine with a high ponytail with three rings, a
+    red sash-cape on her right shoulder only, a rune on the back of her left glove and a curved sword
+    with a veena-head guard in her right hand. Captions: "1 · Rain on the rooftop · EWS · Crane down",
+    "2 · Ira opens her eyes · ECU · Static", "3 · She draws the sword · MS · Push in", "4 · Rune flares on
+    her glove · Insert · Static", "5 · She leaps the gap · WS · Track right", "6 · Mid-air, cape trailing ·
+    MS · Handheld", "7 · Lands, sword down · WS · Static", "8 · Enemies close in · OTS · Pan left", "9 ·
+    Title card · SHADOW RAAGA · Static". Panel 4 fills the frame with the back of her left glove and the
+    rune; panel 5 shows her leaping from frame left across a gap between rooftops towards the right.
+  avoid: ["colour", "any other text", "watermark"]
+  must_contain:
+    - "Nine panels with exact captions"
+    - "Panel 4: rune insert; panel 5: leap left to right"
+  alt_real: "A hand-drawn board is preferred."
+
+- id: SRC-VBOARD-TEMPLE-INTRO
+  kind: image
+  role: reference
+  used_by: [VSTB-GAM-03]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A cutscene storyboard page of six grey-shaded 3D frames, 16:9, two rows of three, of a ruined Hampi
+    temple-courtyard level: a gopuram with its top tier broken, six pillars on the left with the third
+    from the entrance fallen, a stone chariot in the centre, a dry tank and shrine on the right, low sun
+    from the right. Captions: "1 · Gopuram silhouette · EWS", "2 · Through the gate · WS", "3 · Fallen
+    pillar · MS", "4 · Stone chariot · LS", "5 · Dry tank, shrine · WS", "6 · Hero's shadow falls · CU".
+    Panel 2 looks through the entrance gateway's frame into the courtyard, the gateway's dark edges
+    framing the chariot and the gopuram, with a push-in arrow.
+  avoid: ["characters", "any other text", "watermark"]
+  must_contain:
+    - "Six panels with exact captions"
+    - "Panel 2: through the gate with a push-in arrow"
+  alt_real: ""
+
+- id: SRC-VBOARD-SQUAD-BATTLE
+  kind: image
+  role: reference
+  used_by: [VSTB-GAM-04]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A battle storyboard page in clean cel-shaded style, eight 16:9 panels in two rows of four, of a
+    five-member squad on a fort rampart, always facing frame right, masked grey enemies always on frame
+    right. Captions: "1 · Squad lines up · WS", "2 · Enemies on the far wall · LS", "3 · Shield up · MS",
+    "4 · Drone launches · CU", "5 · Rocket fired · MS", "6 · Archer's shot · ECU", "7 · Boy skates the
+    parapet · WS", "8 · Banner still flying · LS". Panel 5 shows the heavy man with the grey moustache
+    kneeling and firing the rocket launcher towards frame right, smoke trailing behind him to the left.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Eight panels with exact captions"
+    - "Panel 5: heavy man firing right, smoke trailing left"
+  alt_real: ""
+
+- id: SRC-VBOARD-HOVER-RACE
+  kind: image
+  role: reference
+  used_by: [VSTB-GAM-05]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A race-intro storyboard page in ink and marker, six 2.39:1 panels in one row, of a graphite hover-
+    bike with an orange stripe, cyan pods and a 07 decal. Captions: "1 · Start grid at night · EWS ·
+    Crane down", "2 · Pods ignite · Insert · Static", "3 · Rider's visor · ECU · Static", "4 · Launch · WS
+    · Whip pan", "5 · Through the tunnel · MS · Tracking", "6 · Over the finish · LS · Static". Panel 4 is
+    a wide of the bike launching off the grid from frame left to right with a blur trail and a whip-pan
+    arrow pointing right.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Six panels with exact captions"
+    - "Panel 4: launch left to right with a whip-pan arrow"
+  alt_real: ""
+
+- id: SRC-VBOARD-GARUDA
+  kind: image
+  role: reference
+  used_by: [VSTB-GAM-06]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A storyboard page painted in the style of Kalamkari textile art (natural indigo, madder red, ochre,
+    black outlines, flat decorative patterns, no shading), six 16:9 panels in two rows of three: a young
+    prince in a red dhoti and gold crown and a giant eagle with a white head, red-brown body and gold-
+    tipped wings on a mountain top. Captions: "1 · The mountain top", "2 · The great eagle", "3 · The
+    lotus", "4 · It bows", "5 · The leap", "6 · Over the river city". Panel 5 shows the eagle with the
+    prince on its back leaping off the cliff edge towards frame right, wings rising.
+  avoid: ["shading", "any other text", "watermark"]
+  must_contain:
+    - "Six panels in Kalamkari style with exact captions"
+    - "Panel 5: the leap off the cliff towards frame right"
+  alt_real: "A hand-painted board is preferred."
+
+- id: SRC-VREF-IRA-SHEET
+  kind: image
+  role: reference
+  used_by: [VSTB-GAM-01, VCHR-GAM-01]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A character model sheet of the game heroine Ira in a stylised 3D finish on a plain dark grey
+    background: four views on one baseline (front, left side, back, right side) and two action poses
+    (sword raised, mid-leap). Dark brown skin, a high black ponytail bound with three gold rings, a thin
+    gold nose ring on her left nostril, a fitted charcoal armoured suit with copper plates on shoulders
+    and shins, a short red sash-cape on her right shoulder only, a glowing teal rune on the back of her
+    left glove, and a curved single-edged sword with a veena-head brass guard always in her right hand.
+  avoid: ["text", "watermark", "resemblance to an existing game character"]
+  must_contain:
+    - "Four views and two action poses"
+    - "Cape on the right shoulder and rune on the left glove in every view"
+  alt_real: ""
+
+- id: SRC-VREF-SQUAD-SHEET
+  kind: image
+  role: reference
+  used_by: [VCHR-GAM-05]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A character line-up sheet of an original five-member game squad in a clean cel-shaded style on a
+    plain light background, standing on one baseline, front view, left to right: a tall bearded man with
+    a round shield and a blue turban; a short young woman with goggles and a small drone on her right
+    shoulder; a heavy older man with a grey moustache and a rocket launcher; a lean woman archer with a
+    long white braid and a green scarf; a teenage boy with a skateboard and red headphones. Heights to
+    scale; each face clearly distinct.
+  avoid: ["text", "watermark", "resemblance to existing characters"]
+  must_contain:
+    - "Five characters in the stated order on one baseline"
+    - "Drone on the second character's right shoulder"
+  alt_real: ""
+
+- id: SRC-VREF-PIXEL-HERO
+  kind: image
+  role: reference
+  used_by: [VCHR-GAM-06]
+  aspect: "16:9"
+  resolution: "at least 1920 px on the long side"
+  source_prompt: |
+    A pixel-art sprite sheet at 64 by 64 pixel scale, shown enlarged with crisp pixels and no
+    anti-aliasing, a 16-colour palette, on a dark background: one hero in four standing frames facing
+    right. She is a young woman with a red headscarf, a brown face with a single white pixel highlight
+    in each eye, a yellow tunic, a brown belt, a wooden staff in her left hand, and a small green parrot
+    that always sits on her right shoulder.
+  avoid: ["anti-aliasing", "text", "watermark"]
+  must_contain:
+    - "Crisp pixels, 16-colour palette"
+    - "Parrot on her right shoulder in every frame"
+  alt_real: ""
+
+# ------------------------------------------------------------ Real estate, interiors & architecture
+
+- id: SRC-VCLIP-FLAT-WALKTHROUGH
+  kind: clip
+  role: scene
+  used_by: [VEDT-RES-01]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 10
+  camera_move: "Gimbal walkthrough at chest height, 16 mm, verticals level: from the entrance across the living room to the balcony door."
+  action_timing: "0–10 s steady walk; the sofa passes on the left at 3 s; the TV wall on the right at 5 s; the balcony door fills the frame at 10 s."
+  source_prompt: |
+    A ten-second real-estate walkthrough on a gimbal through the living room of a lived-in two-bedroom
+    Mumbai flat in late-morning daylight, verticals kept straight. From the entrance the camera walks
+    across the room to the sliding balcony door. A grey three-seat sofa on the left wall with a pile of
+    newspapers on its left cushion and a framed print above passes at about three seconds; a wall-
+    mounted TV, off, over a low white console with loose wires hanging below passes on the right at
+    about five seconds; a round wooden coffee table on a beige rug in the centre; a snake plant by the
+    kitchen doorway at the back left; a laundry rack on the balcony outside, which fills the frame at
+    the end. Ceiling lights off; daylight only from the balcony door.
+  avoid: ["people", "pets", "readable text", "brand logos", "watermark"]
+  must_contain:
+    - "Newspapers on the sofa, wires below the console, laundry rack on the balcony"
+    - "Steady walk ending on the balcony door at 10 s"
+    - "Verticals straight throughout"
+  alt_real: "Real walkthrough footage is preferred."
+
+- id: SRC-VCLIP-BEDROOM-PAN
+  kind: clip
+  role: scene
+  used_by: [VEDT-RES-02]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 8
+  camera_move: "Slow pan right from the wardrobe wall to the window wall, chest height, 18 mm, verticals level."
+  action_timing: "0–8 s steady pan; the window is centred at 5 s; the sun panels on the floor pass through frame 4–8 s."
+  source_prompt: |
+    An eight-second slow pan right across an empty, unfurnished new bedroom in Pune at golden hour:
+    off-white walls, grey-beige vitrified floor tiles, a three-shutter white built-in wardrobe on the
+    right wall at the start, then the far wall with a wide black-framed three-pane window looking out on
+    a hill, centred at five seconds, throwing three bright panels of golden sunlight across the floor
+    towards the camera. A switchboard and an air-conditioner outlet on the left wall. No furniture.
+  avoid: ["furniture", "people", "text", "watermark"]
+  must_contain:
+    - "Three-pane window centred at 5 s"
+    - "Three sun panels on the floor"
+    - "Empty room"
+  alt_real: "Real footage is preferred."
+
+- id: SRC-VCLIP-VILLA-ORBIT
+  kind: clip
+  role: scene
+  used_by: [VEDT-RES-03, VPHY-RES-07]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 10
+  camera_move: "Drone orbiting a quarter circle from the front of the villa to its right side at 8 m height, looking at the house."
+  action_timing: "0–10 s steady quarter orbit; the overhang and porch swing are centred at 5 s."
+  source_prompt: |
+    A ten-second drone shot at eight metres orbiting a quarter circle from the front of a contemporary
+    two-storey villa in a Bengaluru gated community to its right side, mid-morning sun from the front-
+    left. A flat-roofed white ground floor with a teak wall on the left and a wide glass door on the
+    right; an exposed-concrete upper floor cantilevered two metres over the right side with a long
+    window; an empty wooden swing on two chains under the overhang, centred at about five seconds; a
+    lawn in front with a frangipani on the left; a black gate and low granite wall. Clear blue sky.
+  avoid: ["people", "cars", "text", "watermark"]
+  must_contain:
+    - "Quarter orbit front to right side"
+    - "Swing under the overhang centred at about 5 s"
+    - "Front lawn visible throughout"
+  alt_real: "Real drone footage is preferred."
+
+- id: SRC-VCLIP-PLOT-DRONE
+  kind: clip
+  role: scene
+  used_by: [VEDT-RES-04]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 8
+  camera_move: "Drone flying slowly up the plot from the access track towards the ridge at 15 m, tilted down 30 degrees."
+  action_timing: "0–8 s steady forward flight; the survey marker passes under the frame at 2 s; the cashew trees pass at 5 s."
+  source_prompt: |
+    An eight-second drone flight up an empty hillside plot in North Goa at golden hour, from the access
+    track at the bottom towards a ridge of coconut palms, at fifteen metres. A red laterite survey
+    marker at the bottom-left corner of the plot passes under the frame at about two seconds; two
+    cashew trees mid-plot, the left one larger, pass at about five seconds; a dry stream bed runs from
+    the lower right towards the middle; an electricity pole stands at the top right by the ridge; the
+    sea is a thin line beyond the ridge on the left. Tall dry grass; low sun from the right.
+  avoid: ["buildings", "people", "vehicles", "text", "watermark"]
+  must_contain:
+    - "Marker passes at 2 s; two cashews at 5 s"
+    - "Pole at the top right; sea on the left"
+  alt_real: "Real drone footage is preferred."
+
+# ------------------------------------------------------------ Media, publishing & events
+
+- id: SRC-VCLIP-NEWS-BROADCAST
+  kind: clip
+  role: scene
+  used_by: [VEDT-MED-01, VTXT-MED-04]
+  aspect: "16:9"
+  resolution: "1920x1080, 25 fps"
+  duration: 8
+  camera_move: "Locked-off studio camera, medium shot."
+  action_timing: "0–8 s the anchor reads to camera; at 4 s he glances down at his notes; the ticker scrolls right to left throughout."
+  source_prompt: |
+    An eight-second clip of a Hindi television news broadcast: a fictional anchor of about forty with
+    short grey-flecked hair, rectangular black glasses, a navy suit and a maroon tie, behind a curved
+    white desk, medium shot, reading to camera (no audio needed); at four seconds he glances down at his
+    notes. Behind him a large screen of a blurred city skyline. At the bottom, a static red lower-third
+    band reading "मुंबई में भारी बारिश" in white Devanagari, and below it a blue ticker scrolling right to
+    left with "ट्रेनें 20 मिनट देरी से चल रही हैं" repeating. A small white clock "09:15" at the top right.
+    One soft key light from front left.
+  avoid: ["channel logos", "any other text", "watermark", "resemblance to a real anchor"]
+  must_contain:
+    - "Lower third exactly मुंबई में भारी बारिश"
+    - "Ticker text exact, scrolling right to left"
+    - "Clock 09:15"
+  alt_real: ""
+
+- id: SRC-VCLIP-CONCERT-CROWD
+  kind: clip
+  role: scene
+  used_by: [VEDT-MED-02, VPHY-MED-07, VCAM-MED-03]
+  aspect: "16:9"
+  resolution: "1920x1080, 25 fps"
+  duration: 8
+  camera_move: "Slow push in from the front-of-house position over the crowd towards the stage, 35 mm."
+  action_timing: "0–8 s the band plays; the crowd jumps on the beat; at 3 s the singer moves from the centre mic to stage right and back by 6 s; three phones are held up throughout."
+  source_prompt: |
+    An eight-second concert clip at a Bengaluru music festival at night from the front-of-house desk,
+    pushing slowly in over the crowd. A four-piece band: the singer in a silver jacket, a guitarist on
+    stage left, a bassist on stage right, a drummer on a raised riser at the back. At three seconds the
+    singer walks from the centre microphone to stage right and is back by six seconds. Behind them, a wide
+    LED screen with a slow orange-to-purple gradient. Magenta beams sweep from the stage-left truss and
+    cyan from the stage-right truss through haze. In the foreground, the crowd jumps on the beat; three
+    raised hands hold glowing phones throughout.
+  avoid: ["readable text or logos", "watermark"]
+  must_contain:
+    - "Four musicians; singer walks to stage right at 3 s and back by 6 s"
+    - "Three phones held up throughout"
+    - "Magenta from stage left, cyan from stage right"
+  alt_real: "Licensed concert footage is preferred."
+
+- id: SRC-VCLIP-PODIUM-SPEECH
+  kind: clip
+  role: scene
+  used_by: [VEDT-MED-03]
+  aspect: "16:9"
+  resolution: "1920x1080, 25 fps"
+  duration: 8
+  camera_move: "Slow push in from a medium wide to a medium shot, 85 mm, from the audience."
+  action_timing: "0–8 s a speaker talks at a podium, gesturing with her right hand at 2 s and 5 s."
+  source_prompt: |
+    An eight-second clip of a conference keynote in Chennai: a fictional speaker, a woman of about fifty
+    with short grey hair and a navy blazer, stands at a wooden podium on stage, talking and gesturing with
+    her right hand at two and five seconds. The front of the podium carries a small blue circular logo of
+    a stylised lotus. Behind her, a large LED backdrop shows an orange abstract wave graphic. Two potted
+    palms flank the stage. Warm stage key from the front left; slow push in from the audience.
+  avoid: ["readable text", "real brand logos", "watermark", "resemblance to a real person"]
+  must_contain:
+    - "Blue lotus logo on the podium front"
+    - "Orange wave graphic on the backdrop"
+    - "Gestures at 2 s and 5 s"
+  alt_real: "Real footage with a release is preferred."
+
+- id: SRC-VCLIP-WILDLIFE
+  kind: clip
+  role: scene
+  used_by: [VEDT-MED-04]
+  aspect: "16:9"
+  resolution: "3840x2160, 25 fps"
+  duration: 8
+  camera_move: "Long-lens pan following the tiger left to right, 400 mm."
+  action_timing: "0–8 s a tiger walks left to right through tall grass; at 4 s it passes a grey camera-trap box strapped to a tree; tyre tracks cross the ground in front."
+  source_prompt: |
+    An eight-second wildlife clip in Kaziranga in morning light: a Bengal tiger walks left to right
+    through tall golden elephant grass, filmed with a long lens that pans to follow it, the grass
+    softly blurred in front and behind. At about four seconds it passes a tree with a small grey
+    camera-trap box strapped to the trunk at knee height. Two muddy jeep tyre tracks run across the open
+    ground in the foreground. Mist in the far background.
+  avoid: ["people", "vehicles", "text", "watermark"]
+  must_contain:
+    - "Tiger walking left to right"
+    - "Camera-trap box on a tree at about 4 s"
+    - "Tyre tracks in the foreground"
+  alt_real: "Licensed wildlife footage is preferred."
+
+- id: SRC-VCLIP-TRAVEL-TEMPLE
+  kind: clip
+  role: scene
+  used_by: [VEDT-MED-05, VTXT-MED-05]
+  aspect: "16:9"
+  resolution: "1920x1080, 30 fps"
+  duration: 8
+  camera_move: "Handheld walk across a temple courtyard, slowly tilting up to the tower, 24 mm."
+  action_timing: "0–8 s the camera walks towards a tall granite temple tower; a tourist with a selfie stick crosses at 2 s; a small drone hovers in the sky at the upper right throughout; the tower's base wall fills the left of frame from 5 s."
+  source_prompt: |
+    An eight-second handheld travel clip walking across the sunlit stone courtyard of a great Chola-era
+    granite temple in Thanjavur, slowly tilting up towards its tall pyramidal tower against a blue sky.
+    A tourist in a red cap with a selfie stick crosses from left to right at about two seconds; a small
+    white drone hovers in the sky at the upper right throughout; a woman with a blue umbrella stands in
+    the middle distance. From about five seconds a broad plain granite wall at the tower's base fills
+    the left of the frame, in sunlight.
+  avoid: ["readable signs", "logos", "watermark"]
+  must_contain:
+    - "Selfie-stick tourist at 2 s; drone at upper right throughout"
+    - "Plain granite wall on the left from 5 s"
+    - "Woman with a blue umbrella"
+  alt_real: "Real travel footage is preferred."
+
+- id: SRC-VCLIP-MAG-SHOOT
+  kind: clip
+  role: scene
+  used_by: [VTXT-MED-06]
+  aspect: "16:9"
+  resolution: "1920x1080, 25 fps"
+  duration: 6
+  camera_move: "Slow push in on a printed magazine held in two hands, 50 mm."
+  action_timing: "0–6 s hands hold a magazine and tilt it slightly towards the camera at 3 s; a page corner lifts in a breeze at 5 s."
+  source_prompt: |
+    A six-second close shot of two hands holding a printed fashion magazine, ORBIT, in a sunlit café,
+    the camera pushing slowly in. The cover: a model in a white blazer on coral, the masthead "ORBIT" in
+    tall black serif capitals, cover lines on the right "THE MONSOON EDIT" and "48 looks for the rains",
+    a small red box "Designers to watch: 10 new names", and "OCTOBER 2026 · ₹150" bottom left. At three
+    seconds the hands tilt the magazine slightly towards the camera, changing its perspective; at five
+    seconds the cover's corner lifts a little in a breeze.
+  avoid: ["any other readable text", "real magazine names", "watermark"]
+  must_contain:
+    - "Every cover line exactly as given"
+    - "Tilt at 3 s; corner lift at 5 s"
+  alt_real: "Real footage with a mock cover is preferred."

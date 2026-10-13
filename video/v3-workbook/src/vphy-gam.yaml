@@ -1,0 +1,95 @@
+# Physics and depth in motion — Gaming scenarios. Slots: vphy.yaml.
+code: VPHY
+scenarios:
+
+- id: VPHY-GAM-01
+  title: "The heroine turns slowly in the mirror hall; every reflection turns with her the right way"
+  persona: "Game studio's cinematics lead testing reflections for a boss-arena cutscene."
+  evidence: "Mirror reflections in generated clips turn the wrong way or lag."
+  levers: [physics, identity, count, layout, long-brief]
+  prompt: |
+    A 6-second stylised 3D game cinematic in a hall of mirrors lit by cyan neon strips. The heroine: dark
+    brown skin, a high black ponytail with three gold rings, a charcoal armoured suit with copper plates, a
+    short red sash-cape on her RIGHT shoulder only, a curved sword in her RIGHT hand. She stands in the
+    middle between two facing mirrors and a third behind her, and turns slowly on the spot a full circle.
+    In every mirror her reflection turns with her, mirrored correctly: in a reflection the cape appears on
+    the reflection's left, and the receding reflections between the two facing mirrors alternate and get
+    smaller. No text.
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, wide"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Do the reflections turn with her, in step?"]
+    - [physics_plausibility, "Are the reflections mirrored, with the cape on the reflection's left?"]
+    - [physics_plausibility, "Do the receding reflections get smaller between the facing mirrors?"]
+    - [prompt_adherence, "Are there three mirrors?"]
+    - [prompt_adherence, "Is the cape on her right shoulder?"]
+    - [prompt_adherence, "Is the sword in her right hand?"]
+    - [motion_coherence, "Does she turn a full circle smoothly?"]
+    - [prompt_adherence, "Is it lit by cyan neon strips?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [style, "Is it a stylised 3D cinematic?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the reflections clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-GAM-02
+  title: "The camera glides down the causeway; the twenty lamp posts pass at speeds set by their distance"
+  persona: "Level designer previewing a cutscene approach to a fortress."
+  evidence: "Generated parallax flattens: near and far posts move at the same speed."
+  levers: [parallax, count, camera-move, light-lock, layout]
+  prompt: |
+    A 10-second stylised 3D game cinematic at golden hour. A long stone causeway runs straight across a
+    misty lake to a fortress on an island. Twenty iron lamp posts with lit lanterns line the causeway, ten
+    on each side, evenly spaced. The camera glides forward along the causeway at walking height, slightly
+    left of centre. The nearest posts sweep past the frame edges fast; posts further ahead move slowly and
+    grow gradually; the fortress barely changes size. By the end the camera has passed eight posts on each
+    side. Lantern light warm on the stone; low sun behind the fortress. No characters, no text.
+  clip: {duration: 10, aspect: "2.39:1", camera: "forward glide at walking height"}
+  deliverable: "One 10-second clip, 2.39:1."
+  checks:
+    - [physics_plausibility, "Do near posts move faster than far ones?"]
+    - [physics_plausibility, "Does the fortress barely change size?"]
+    - [prompt_adherence, "Are there ten posts on each side at the start?"]
+    - [prompt_adherence, "Does the camera pass about eight on each side?"]
+    - [prompt_adherence, "Are the posts evenly spaced?"]
+    - [prompt_adherence, "Is it a steady forward glide at walking height?"]
+    - [prompt_adherence, "Is the sun low behind the fortress?"]
+    - [prompt_adherence, "Are the lanterns warm on the stone?"]
+    - [motion_coherence, "Is there no warping of the causeway?"]
+    - [style, "Is it a stylised 3D cinematic?"]
+    - [prompt_adherence, "Are there no characters?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VPHY-GAM-03
+  title: "Shoppers flow down the market street around the pillars and stalls, never passing through them"
+  persona: "Game studio's AI designer previewing crowd flow on a street level."
+  evidence: "Generated crowds walk through obstacles and each other."
+  levers: [physics, layout, count, light-lock, locale]
+  inputs: [{source: SRC-GAM-CYBER-STREET, role: first_frame}]
+  prompt: |
+    Start on this empty cyberpunk market street at dusk and make an 8-second clip in the same stylised 3D
+    look, locked off: about thirty shoppers in future-Mumbai clothes flow in both directions down the street.
+    They weave round the three concrete pillars on the right, step round the four food stalls on the left,
+    and pass each other without touching; some stop at a stall. Nobody walks through a pillar, a stall or
+    another person. The holographic lotus floats at the far end; the pillars' long shadows lie towards the
+    camera, and the shoppers cast matching shadows. No readable text.
+  clip: {duration: 8, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does nobody walk through a pillar or stall?"]
+    - [physics_plausibility, "Do people pass each other without overlapping?"]
+    - [prompt_adherence, "Are there about thirty shoppers?"]
+    - [motion_coherence, "Do they walk in both directions naturally?"]
+    - [prompt_adherence, "Are the stalls left and pillars right as in the screenshot?"]
+    - [prompt_adherence, "Do shoppers cast shadows towards the camera like the pillars?"]
+    - [prompt_adherence, "Is the lotus at the far end?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [style, "Is the stylised 3D look kept?"]
+    - [prompt_adherence, "Do some stop at a stall?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Are figures free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}

@@ -1,0 +1,73 @@
+# Precision editing — Media, publishing & events scenarios. Slots: edt.yaml.
+code: EDT
+scenarios:
+
+- id: EDT-MED-01
+  title: "Update the broadcast frame: new Hindi lower third and ticker, clock to 09:40; the anchor untouched"
+  persona: "News channel's graphics editor making a corrected frame for a promo."
+  evidence: "Broadcast graphics edits next to a face; the anchor must not change."
+  levers: [multi-step, exact-text, script, keep-rest, identity]
+  inputs: [{source: SRC-MED-NEWSROOM, role: source}]
+  prompt: |
+    Make exactly these three changes to this news broadcast frame, and nothing else.
+    1. The red lower-third text becomes "मुंबई में बारिश थमी" in the same white Devanagari font and
+       size.
+    2. The blue ticker text becomes "लोकल ट्रेनें समय पर चल रही हैं" in the same style.
+    3. The clock at the top right changes from "09:15" to "09:40".
+    The anchor's face, glasses, suit, tie and expression, the desk, the skyline screen and the light
+    are unchanged. The red and blue bands keep their sizes and positions.
+  exact_text:
+    - "मुंबई में बारिश थमी"
+    - "लोकल ट्रेनें समय पर चल रही हैं"
+    - "09:40"
+  deliverable: "One image at the same size."
+  checks:
+    - [text_accuracy, "Is the lower third exact and correctly formed?"]
+    - [text_accuracy, "Is the ticker exact and correctly formed?"]
+    - [text_accuracy, "Does the clock read 09:40?"]
+    - [style, "Do the new texts match the original fonts?"]
+    - [prompt_adherence, "Are the bands the same size and position?"]
+    - [reference_fidelity, "Is the anchor's face unchanged?"]
+    - [preservation, "Are his glasses, suit and tie unchanged?"]
+    - [preservation, "Is the desk and screen unchanged?"]
+    - [preservation, "Is the light unchanged?"]
+    - [visual_quality, "Are there no ghost letters?"]
+    - [text_accuracy, "Is no old text left?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V9: the same graphics replaced on a moving broadcast clip."
+
+- id: EDT-MED-02
+  title: "Remove the three filming phones, add confetti, switch the screen to green; the band unchanged"
+  persona: "Festival's photo editor cleaning a hero image for the official gallery."
+  evidence: "Removing objects from a crowd and changing a light source spills onto the stage."
+  levers: [multi-step, keep-rest, physics, light-lock, count]
+  inputs: [{source: SRC-MED-CONCERT, role: source}]
+  prompt: |
+    Make exactly these three changes to this festival photo, and nothing else.
+    1. Remove the three raised phones and the hands holding them from the foreground crowd, filling in
+       with the silhouettes of heads and shoulders.
+    2. Add gold and silver confetti falling over the stage and the front of the crowd, catching the
+       stage light.
+    3. Change the LED screen behind the band from the orange-purple gradient to a green-to-teal
+       gradient; the screen's glow on the band's backs turns green accordingly.
+    The four musicians, their places and clothes, the magenta and cyan beams, the trusses and the haze
+    are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Are the three phones gone?"]
+    - [visual_quality, "Are the gaps filled with natural crowd silhouettes?"]
+    - [prompt_adherence, "Is gold and silver confetti falling?"]
+    - [prompt_adherence, "Does the confetti catch the stage light?"]
+    - [prompt_adherence, "Is the screen now a green-to-teal gradient?"]
+    - [prompt_adherence, "Is the screen's glow on the band now green?"]
+    - [preservation, "Are there still four musicians?"]
+    - [preservation, "Are the musicians unchanged?"]
+    - [preservation, "Are the magenta and cyan beams unchanged?"]
+    - [preservation, "Are the trusses and haze unchanged?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

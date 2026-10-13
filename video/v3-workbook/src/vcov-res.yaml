@@ -1,0 +1,305 @@
+# Coverage and camera move — Real estate, interiors & architecture scenarios. Slots: vcov.yaml.
+code: VCOV
+scenarios:
+
+- id: VCOV-RES-01
+  seed: true
+  title: "One walkthrough of the listing room: entrance to balcony, then a turn back to the unseen entrance wall"
+  persona: "Listing videographer for a Mumbai property portal who has one wide photo and needs the walkthrough video."
+  evidence: "Call at 17:26: 'five shots of the same setup ... the video they want is a camera moving across the same room from different angles'. The image seed COV-RES-01 holds the room across five stills; here it must hold as the camera walks through it and turns round."
+  levers: [camera-move, unseen, layout, parallax, light-lock, keep-rest, locale]
+  inputs:
+    - {source: SRC-RES-LIVING-FLAT, role: first_frame, note: "the listing photo from the entrance corner"}
+  prompt: |
+    Start exactly on this listing photo of a lived-in living room and make a 12-second gimbal
+    walkthrough at chest height, verticals kept straight, daylight only from the balcony door, ceiling
+    lights off. 0–6 s: walk forward across the room towards the sliding balcony door, the grey sofa with
+    newspapers on its left cushion passing on the left, the TV over the white console with hanging
+    wires on the right, the round table on the beige rug passing below. 6–9 s: stop just inside the
+    balcony door, the laundry rack outside, and turn slowly 180 degrees to the left. 9–12 s: hold on the
+    room seen from the balcony end: now the sofa is on the right, the TV wall on the left, and the
+    entrance wall the photo never shows is ahead: a plain wooden front door with a shoe rack beside it
+    and a light switch. Nothing is tidied, added or moved; the daylight now comes from behind the camera.
+    No people, no text.
+  clip: {duration: 12, aspect: "16:9", camera: "gimbal walk forward 0–6 s, 180-degree turn left 6–9 s, hold 9–12 s"}
+  deliverable: "One 12-second clip, 16:9, starting on the photo."
+  checks:
+    - [prompt_adherence, "Does the clip start on the photo's framing?"]
+    - [prompt_adherence, "Does it walk forward, turn about 180 degrees left, and hold, in that order?"]
+    - [prompt_adherence, "Do the phases land near 0–6, 6–9 and 9–12 s?"]
+    - [prompt_adherence, "After the turn, is the sofa on the right and the TV wall on the left?"]
+    - [prompt_adherence, "Is the entrance wall a wooden door with a shoe rack and a switch?"]
+    - [temporal_consistency, "Are the newspapers, wires and laundry rack still there throughout?"]
+    - [physics_plausibility, "Do the furniture pieces pass at speeds set by their distance as the camera walks?"]
+    - [prompt_adherence, "Does daylight come from the balcony, and from behind the camera after the turn?"]
+    - [visual_quality, "Do verticals stay straight throughout?"]
+    - [motion_coherence, "Is the move smooth, with no warping walls or furniture?"]
+    - [physics_plausibility, "Does the room keep a plausible size as it is revealed?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-RES-02
+  title: "A slow 360-degree pan from the middle of the empty bedroom; window, wardrobe and door come round in order"
+  persona: "Builder's sales team making a 360 video of a show-flat bedroom from one photo."
+  evidence: "Empty rooms give few cues; a full pan reveals walls the photo never showed and must keep their order."
+  levers: [camera-move, unseen, layout, light-lock, physics]
+  inputs: [{source: SRC-RES-BEDROOM, role: first_frame}]
+  prompt: |
+    Start on this photo of an empty bedroom at golden hour, taken from the doorway, then move the camera
+    to the middle of the room and make a 12-second slow 360-degree pan to the right at chest height,
+    verticals straight. In order the camera sees: the wide three-pane window on the far wall with the hill
+    view and three panels of sunlight on the floor; the white three-shutter wardrobe on the right wall;
+    the door wall, never shown, with a plain white door and a light switch; the left wall with a
+    switchboard and an air-conditioner outlet; and back to the window. The room stays about 3.5 by 4
+    metres; the sun panels stay fixed on the floor. No furniture, no people.
+  clip: {duration: 12, aspect: "16:9", camera: "360-degree pan right from the room's middle"}
+  deliverable: "One 12-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a full 360-degree pan at an even speed?"]
+    - [prompt_adherence, "Do the walls come round in the stated order?"]
+    - [prompt_adherence, "Is the door wall a plain white door with a switch?"]
+    - [prompt_adherence, "Does the window have three panes and the wardrobe three shutters?"]
+    - [prompt_adherence, "Do the sun panels stay fixed on the floor?"]
+    - [physics_plausibility, "Does the room keep a plausible size?"]
+    - [visual_quality, "Are verticals straight throughout?"]
+    - [motion_coherence, "Is there no warping of walls?"]
+    - [prompt_adherence, "Is the room empty?"]
+    - [temporal_consistency, "Does the window view stay the same?"]
+    - [text_accuracy, "Is there no text?"]
+    - [style, "Is the grade consistent?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-RES-03
+  title: "A drone orbit from the villa's front round its side to the rear garden and pool it never showed"
+  persona: "Developer's marketing lead who has only the front photo and needs the orbit for the brochure film."
+  evidence: "Earlier bank IMG-VIEW-31 (front to side elevation) and IMG-VIEW-08 (street to drone) were high tier."
+  levers: [camera-move, unseen, layout, light-lock, locale]
+  inputs: [{source: SRC-RES-VILLA-EXT, role: first_frame}]
+  prompt: |
+    Start on this front elevation of a contemporary two-storey villa and make a 12-second drone move: rise
+    to 10 metres and orbit 180 degrees to the right round the house, ending behind it. Front: white ground
+    floor with a teak wall on the left and a glass door on the right, concrete upper floor overhanging the
+    right side, an empty swing under the overhang, a frangipani on the front lawn. The right side, the
+    rear and the roof, never shown, use the same materials: the rear has a full-width glass wall onto a
+    lawn with a small plunge pool. The mid-morning sun stays fixed at the front-left of the house, so the
+    rear ends in partial shade. No people, no cars, no text.
+  clip: {duration: 12, aspect: "16:9", camera: "rise to 10 m and 180-degree orbit right"}
+  deliverable: "One 12-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the drone rise and orbit 180 degrees to end behind the house?"]
+    - [prompt_adherence, "Is the overhang on the right side of the front throughout?"]
+    - [prompt_adherence, "Is the rear a full-width glass wall with a lawn and plunge pool?"]
+    - [reference_fidelity, "Are materials consistent on every side?"]
+    - [prompt_adherence, "Does the sun stay at the front-left, leaving the rear in partial shade?"]
+    - [physics_plausibility, "Does the house keep its proportions as it turns?"]
+    - [motion_coherence, "Is there no warping of walls or roofline?"]
+    - [reference_fidelity, "Is the swing under the overhang when visible?"]
+    - [prompt_adherence, "Are there no people or cars?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines straight?"]
+    - [prompt_adherence, "Does it read as a Bengaluru gated community?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-RES-04
+  title: "A half orbit of the tower at constant height and distance, south-east to north-west"
+  persona: "Developer's site-progress team making the monthly drone video from one frame."
+  evidence: "Named drone moves must keep height and distance while each facade appears correctly."
+  levers: [camera-move, unseen, layout, light-lock, count]
+  inputs: [{source: SRC-RES-TOWER-SITE, role: first_frame}]
+  prompt: |
+    Start on this drone photo of a 22-storey tower from the south-east and make a 12-second half orbit at
+    the same height and distance, round the east side to the north-west. The south face's zig-zag
+    balconies slide out of view; the plain east face with its single vertical window strip passes; the
+    yellow crane at the north-east corner swings past close to camera; the north and west faces, never
+    shown, are plain with regular window rows. The blue lift room stays on the roof. Harsh noon sun:
+    short shadows that do not swing. The site cabins and green fence stay at the base. No readable signs.
+  clip: {duration: 12, aspect: "16:9", camera: "half orbit at constant height and distance"}
+  deliverable: "One 12-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is the height and distance constant through the half orbit?"]
+    - [prompt_adherence, "Do the faces appear in the right order: south, east, north, west?"]
+    - [prompt_adherence, "Are the north and west faces plain with regular windows?"]
+    - [prompt_adherence, "Does the crane pass at the north-east corner?"]
+    - [prompt_adherence, "Is the tower 22 storeys throughout?"]
+    - [reference_fidelity, "Is the lift room blue throughout?"]
+    - [physics_plausibility, "Do the short noon shadows stay put?"]
+    - [motion_coherence, "Is there no warping of the tower?"]
+    - [prompt_adherence, "Are the cabins and fence at the base?"]
+    - [text_accuracy, "Are there no readable signs?"]
+    - [visual_quality, "Are lines straight?"]
+    - [style, "Is the look consistent?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-RES-05
+  title: "From the floor plan, a rendered walkthrough from camera mark 1 to mark 2 that agrees with the plan"
+  persona: "Architectural visualiser giving a client a first walkthrough from the plan alone."
+  evidence: "Plan-to-walkthrough is the archviz task; rooms and openings must match the plan as the camera moves."
+  levers: [camera-move, layout, unseen, count, long-brief]
+  inputs: [{source: SRC-RES-PLAN, role: still1}]
+  prompt: |
+    This floor plan of a three-bedroom flat shows seven labelled rooms and five numbered camera marks with
+    view arrows. Make a 12-second photoreal architectural walkthrough at 1.5 metres height, warm evening
+    interior lights on, white walls, light oak floors: start at camera mark 1 in the living-room corner by
+    the entrance looking towards the balcony, with the three-seat sofa and TV wall where the plan draws
+    them; walk across the living room and turn right into the dining area, ending at camera mark 2 looking
+    into the kitchen past the six-seat table. Every wall, opening and piece of furniture the camera sees
+    agrees with the plan. No people, no text.
+  clip: {duration: 12, aspect: "16:9", camera: "walk from mark 1 to mark 2 with a right turn"}
+  deliverable: "One 12-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does it start at mark 1 facing the balcony and end at mark 2 facing the kitchen?"]
+    - [prompt_adherence, "Are the sofa and TV wall where the plan draws them?"]
+    - [prompt_adherence, "Is the dining table six-seat?"]
+    - [prompt_adherence, "Does the turn into dining follow the plan's opening?"]
+    - [prompt_adherence, "Is the kitchen where the plan places it relative to dining?"]
+    - [prompt_adherence, "Is it warm evening interior light?"]
+    - [visual_quality, "Are verticals straight?"]
+    - [motion_coherence, "Is the walk smooth with no warping?"]
+    - [physics_plausibility, "Are room proportions plausible for the plan?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [style, "Is the render quality consistent?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the plan as a reference."}
+
+- id: VCOV-RES-06
+  title: "A drone rise from the access track up over the plot to the ridge; landmarks hold depth"
+  persona: "Land broker making a drone-style preview from the one site-visit photo."
+  evidence: "Landscapes with few landmarks flatten when a generated camera moves."
+  levers: [camera-move, parallax, layout, light-lock, locale]
+  inputs: [{source: SRC-RES-PLOT-LAND, role: first_frame}]
+  prompt: |
+    Start on this photo of an empty hillside plot in North Goa at golden hour from the access track and
+    make a 10-second drone move: rise to 20 metres while flying forward up the slope to the ridge of
+    palms. The laterite survey marker at the bottom left slides under the frame first; the two cashew
+    trees (the left one larger) pass beneath at about 5 seconds; the dry stream bed runs from the lower
+    right to the middle; the electricity pole at the top right grows as the drone nears; the sea appears
+    as a thin line beyond the ridge on the left. Near grass rushes past; the ridge moves slowly. Low sun
+    from the right; long shadows to the left. No buildings, no people.
+  clip: {duration: 10, aspect: "16:9", camera: "rise to 20 m flying forward up the slope"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the near grass rush past while the ridge moves slowly?"]
+    - [prompt_adherence, "Does the marker pass first, then the cashews at about 5 s?"]
+    - [prompt_adherence, "Are there two cashew trees, the left one larger?"]
+    - [prompt_adherence, "Is the pole at the top right and the sea on the left?"]
+    - [prompt_adherence, "Are shadows long to the left throughout?"]
+    - [prompt_adherence, "Does the drone rise while flying forward?"]
+    - [temporal_consistency, "Does the stream bed keep its course?"]
+    - [motion_coherence, "Is there no warping of the landscape?"]
+    - [prompt_adherence, "Are there no buildings or people?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the grass natural?"]
+    - [style, "Is the golden grade consistent?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-RES-07
+  title: "A Steadicam walk from the entrance to the reception; the chandelier's reflection tracks in the floor"
+  persona: "Hospitality videographer making the hotel website's lobby walk-in."
+  evidence: "Reflections in polished floors must move with the camera, not stay painted on."
+  levers: [camera-move, physics, light-lock, layout, keep-rest]
+  inputs: [{source: SRC-RES-HOTEL-LOBBY, role: first_frame}]
+  prompt: |
+    Start on this photo of a hotel lobby in the evening and make a 10-second Steadicam walk from the
+    entrance to the white marble reception, passing under the ring chandelier of brass hoops. The green
+    velvet sofas pass on the left, the bookshelves with the rolling ladder on the right. The polished
+    terrazzo floor reflects the chandelier, and the reflection slides towards the camera and passes
+    under it as the camera walks, exactly as a real reflection would. The backlit onyx panel behind the
+    reception grows as the camera nears. Warm practical light only; verticals straight. No people, no
+    readable signs.
+  clip: {duration: 10, aspect: "3:2", camera: "Steadicam walk from the entrance to the reception"}
+  deliverable: "One 10-second clip, 3:2."
+  checks:
+    - [physics_plausibility, "Does the chandelier's reflection slide and pass under the camera correctly?"]
+    - [prompt_adherence, "Is it a steady walk from the entrance to the reception?"]
+    - [prompt_adherence, "Are the sofas on the left and bookshelves on the right?"]
+    - [prompt_adherence, "Is it warm practical light only?"]
+    - [reference_fidelity, "Is the onyx panel backlit?"]
+    - [visual_quality, "Are verticals straight?"]
+    - [physics_plausibility, "Do near objects pass faster than far ones?"]
+    - [motion_coherence, "Is there no warping of the space?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Are there no readable signs?"]
+    - [preservation, "Is the lobby unchanged from the photo?"]
+    - [style, "Is the grade consistent?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-RES-08
+  title: "An animated pencil walkaround of the described garden pavilion; wall, steps and tree hold"
+  persona: "Architect presenting a hand-drawn animated concept to a client."
+  evidence: "Sketch-style animation tends to redraw the building differently each frame."
+  levers: [camera-move, layout, count, long-brief, physics]
+  prompt: |
+    A 10-second animated pencil sketch on white paper, confident architect's line with light hatching,
+    of a garden pavilion: a square 6 by 6 metre platform raised three steps, four slim steel columns at
+    the corners, a thin flat roof overhanging one metre on every side, one solid stone wall on the north
+    side with a built-in bench, a single neem tree to the south-east. The camera circles 180 degrees
+    round the pavilion at eye level from the south to the north, drawn as a continuous perspective
+    sketch; the lines stay stable, without boiling or redrawing, and the perspective stays correct as
+    the viewpoint turns. No figures, no text.
+  clip: {duration: 10, aspect: "16:9", camera: "180-degree walkaround at eye level"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Are there four columns and three steps wherever visible?"]
+    - [prompt_adherence, "Is the stone wall on the north side throughout?"]
+    - [prompt_adherence, "Is the tree to the south-east throughout?"]
+    - [physics_plausibility, "Is the perspective correct as the view turns?"]
+    - [temporal_consistency, "Do the lines stay stable, without boiling or redrawing?"]
+    - [prompt_adherence, "Does the camera circle 180 degrees from south to north?"]
+    - [temporal_consistency, "Does the pavilion keep its size and proportions?"]
+    - [style, "Is it a pencil sketch with light hatching throughout?"]
+    - [prompt_adherence, "Is the roof overhang about a metre on every side?"]
+    - [prompt_adherence, "Are there no figures?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCOV-RES-09
+  title: "Four coverage clips of the described architect on her terrace garden"
+  persona: "Studio's PR lead making a profile video of a fictional founder."
+  evidence: "A described person and a described space must agree across clips from text alone."
+  levers: [set, identity, layout, locale, long-brief]
+  prompt: |
+    A terrace garden on the roof of a Bengaluru studio at golden hour, photoreal. The architect: a woman of
+    about forty-five with short grey-streaked hair, round tortoiseshell glasses, dark brown skin and a
+    silver cuff on her right wrist, in an indigo linen shirt and charcoal trousers, a roll of drawings
+    under her left arm. The terrace: a long concrete planter of tall grasses along the west edge; a young
+    frangipani in a round pot at the north-east corner; a wooden deck with a low teak bench in the middle;
+    a steel railing with the city to the east. Make four 4-second clips of the same moment: she unrolls the
+    drawings on the bench and looks up at the city. 4:5.
+  clip: {duration: 4, aspect: "4:5", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, glasses, hair, skin tone; cuff on the right wrist"
+      - "Indigo shirt, charcoal trousers; the drawings"
+      - "Planter west, frangipani north-east, bench middle, city east"
+    members:
+      - {name: "Front", prompt: "From the front at eye level, 50 mm.", checks: [[set_consistency, "Is the cuff on her right wrist?"], [motion_coherence, "Does she unroll the drawings naturally?"]]}
+      - {name: "From the grasses", prompt: "From among the grasses on the west, the city behind her.", checks: [[prompt_adherence, "Is the city behind her?"], [physics_plausibility, "Are grasses soft and swaying in the foreground?"]]}
+      - {name: "From behind", prompt: "From behind as she looks up at the city.", checks: [[prompt_adherence, "Is the bench beside her?"], [set_consistency, "Is her hair the same?"]]}
+      - {name: "High", prompt: "From a water-tank platform above, looking down.", checks: [[prompt_adherence, "Is the frangipani pot at the north-east corner?"], [prompt_adherence, "Is it a high view?"]]}
+  deliverable: "Four 4-second clips, 4:5."
+  checks:
+    - [set_consistency, "Is she the same woman in all four?"]
+    - [set_consistency, "Is the cuff on her right wrist in every clip?"]
+    - [set_consistency, "Is her skin tone the same in all four?"]
+    - [set_consistency, "Is the terrace layout the same in all four?"]
+    - [set_consistency, "Does the action happen at the same moment in all four?"]
+    - [prompt_adherence, "Is it golden hour from one direction in all four?"]
+    - [prompt_adherence, "Does each clip match its description?"]
+    - [temporal_consistency, "Is there no morphing of her face or the drawings?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no readable text on the drawings?"]
+    - [visual_quality, "Are hands natural?"]
+    - [set_consistency, "Are the glasses round tortoiseshell?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Four text-to-video calls with one description; set agreement needs the set review."}

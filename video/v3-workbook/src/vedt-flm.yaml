@@ -1,0 +1,238 @@
+# Precision video edits — Film, OTT & micro-drama scenarios. Slots: vedt.yaml.
+code: VEDT
+scenarios:
+
+- id: VEDT-FLM-01
+  seed: true
+  title: "Five continuity fixes on moving chai-stall footage, tracked through the pour"
+  persona: "Online editor on a Hindi OTT thriller fixing a shot after the continuity supervisor's notes, the night before delivery."
+  evidence: "The image seed EDT-FLM-01 asks for the same five fixes on a still; on footage each fix must hold on every frame while the vendor pours and the rain falls."
+  levers: [multi-step, keep-rest, exact-text, script, physics, timing, locale]
+  inputs:
+    - {source: SRC-VCLIP-CHAI-POUR, role: source, note: "the delivered six-second shot"}
+  prompt: |
+    Make exactly these five changes to this six-second shot of a rainy chai stall, on every frame, and
+    nothing else.
+    1. The young man on the stool on the left is scrolling a smartphone in his right hand. Replace it
+       with a small glass of milky tea held the same way for the whole shot; his face is no longer lit
+       by a screen, only by the stall's tube light.
+    2. The painted board reading "RAJU TEA STALL" now reads "राजू चाय स्टॉल" in Devanagari, same red
+       paint and size, with the rain streaking across it as before.
+    3. The wall clock behind the vendor shows twenty to twelve instead of ten past nine, steady.
+    4. A thin curl of steam rises continuously from the spout of the large kettle, drifting with the air.
+    5. The blue stool is brick red, with its wet sheen and its reflection in the puddle.
+    The vendor's pour from 0 to 4 s and his hand-over from 4 to 6 s, the rider, the rain, the puddle
+    reflections (which now show the new sign, mirrored, and the red stool), the framing and the grade
+    are unchanged.
+  exact_text: ["राजू चाय स्टॉल"]
+  clip: {duration: 6, aspect: "16:9", camera: "locked off, as the source"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the phone replaced by a glass of tea for the whole clip?"]
+    - [prompt_adherence, "Is the screen glow gone from his face throughout?"]
+    - [text_accuracy, "Does the board read राजू चाय स्टॉल correctly on every frame?"]
+    - [temporal_consistency, "Does the new sign text stay stable with no flicker or re-spelling between frames?"]
+    - [prompt_adherence, "Does the clock show about 11:40 steadily?"]
+    - [temporal_consistency, "Does the steam rise continuously and drift naturally?"]
+    - [prompt_adherence, "Is the stool brick red throughout, with its sheen?"]
+    - [physics_plausibility, "Do the puddle reflections show the new sign mirrored and the red stool?"]
+    - [preservation, "Does the pour still run 0–4 s and the hand-over 4–6 s?"]
+    - [preservation, "Are the vendor, rider and their actions unchanged?"]
+    - [preservation, "Are the rain, framing and grade unchanged?"]
+    - [reference_fidelity, "Are all three faces unchanged?"]
+    - [visual_quality, "Is the hand holding the glass natural on every frame?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-FLM-02
+  title: "Remove the constable crossing the corridor behind her, under a handheld camera"
+  persona: "Online editor on a crime series removing a background extra who walked into a hero take."
+  evidence: "Object removal under handheld motion must rebuild the background consistently on every frame."
+  levers: [keep-rest, physics, timing, camera, unseen]
+  inputs: [{source: SRC-VCLIP-CORRIDOR, role: source}]
+  prompt: |
+    In this 8-second handheld shot following a detective down a police-station corridor at night, a
+    constable in khaki crosses the far end from right to left at about 3 seconds. Remove him completely on
+    every frame. Rebuild what he covered: the far end of the corridor, the green walls with peeling patches,
+    the tube lights and the wooden doors, matching the handheld sway and the perspective as the camera
+    moves. His shadow and any reflection on the floor go too. The detective, her walk, her glance at the
+    notice board at 6 seconds, the camera move and the grade stay exactly as they are.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged handheld follow"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the constable gone on every frame?"]
+    - [physics_plausibility, "Are his shadow and floor reflection gone?"]
+    - [preservation, "Is the rebuilt far end consistent with the corridor?"]
+    - [motion_coherence, "Does the rebuilt area follow the handheld sway without sliding?"]
+    - [temporal_consistency, "Is there no shimmer or smear where he was?"]
+    - [preservation, "Is the detective unchanged?"]
+    - [preservation, "Does she still glance at the board at 6 seconds?"]
+    - [preservation, "Is the camera move unchanged?"]
+    - [preservation, "Are the tube lights and doors unchanged?"]
+    - [prompt_adherence, "Is the detective the only person?"]
+    - [preservation, "Is the grade unchanged?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-FLM-03
+  title: "Recolour the green-lehenga dancer to maroon through the dance; faces and the other dancers untouched"
+  persona: "Wedding-film colourist matching a costume to a client's later request."
+  evidence: "Recolouring one moving costume in a line of dancers spills onto neighbours."
+  levers: [keep-rest, identity, layout, light-lock, count]
+  inputs: [{source: SRC-VCLIP-WEDDING-DANCE, role: source}]
+  prompt: |
+    In this 8-second sangeet clip, five women dance in a line; the second from the left wears a green
+    lehenga. Recolour her lehenga, blouse and dupatta to a deep maroon on every frame, keeping its
+    embroidery, folds, sheen and the way it swings. Her skin, face, hair and jewellery do not change colour.
+    The other four dancers (pink, sky-blue lead, yellow, orange) and their skin, the fairy lights, the
+    marigolds, the guests and the dolly stay exactly as they are. The maroon takes the warm fairy light the
+    way the green did.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged dolly right"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the second dancer's outfit deep maroon on every frame?"]
+    - [preservation, "Are her embroidery and folds kept?"]
+    - [reference_fidelity, "Are her skin and face unchanged?"]
+    - [preservation, "Are the other four dancers' colours unchanged?"]
+    - [motion_coherence, "Does the colour stay inside the costume edges as she moves?"]
+    - [prompt_adherence, "Does the maroon take the warm fairy light?"]
+    - [prompt_adherence, "Are there five dancers?"]
+    - [preservation, "Is the lead's spin at 4 s unchanged?"]
+    - [preservation, "Are the guests and lights unchanged?"]
+    - [preservation, "Is she still second from the left?"]
+    - [preservation, "Is the dolly unchanged?"]
+    - [visual_quality, "Is the clip free of colour flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-FLM-04
+  title: "Three fixes on the tracking shot: remove the truck, tank to deep green, add a rolled blanket on the carrier"
+  persona: "VFX editor on an action film doing three notes on one tracking shot."
+  evidence: "Several edits in one pass: one of them is usually skipped."
+  levers: [multi-step, keep-rest, physics, identity, timing]
+  inputs: [{source: SRC-VCLIP-BIKE-RIDE, role: source}]
+  prompt: |
+    Make exactly these three changes to this 6-second tracking shot of a rider on a desert highway, on every
+    frame, and nothing else.
+    1. Remove the white truck that passes in the opposite lane at about 2 seconds; rebuild the road, haze
+       and dunes behind it.
+    2. Recolour the black fuel tank to a deep bottle green, keeping its chrome, its dent on the right side
+       facing camera, and its reflections of the sky.
+    3. Add a rolled grey wool blanket strapped with two leather straps across the rear carrier, bouncing
+       slightly with the bike.
+    The rider, his glance at the camera at 5 seconds, the saddlebags, the red thread and the camera move are
+    unchanged.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged tracking"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the truck gone with the road rebuilt?"]
+    - [prompt_adherence, "Is the tank deep bottle green on every frame?"]
+    - [preservation, "Is the dent on the tank's right side kept?"]
+    - [physics_plausibility, "Does the green tank reflect the sky?"]
+    - [prompt_adherence, "Is there a rolled grey blanket with two straps on the carrier?"]
+    - [physics_plausibility, "Does the blanket bounce slightly with the bike?"]
+    - [preservation, "Does the rider still glance at 5 seconds?"]
+    - [preservation, "Are the rider and saddlebags unchanged?"]
+    - [motion_coherence, "Do the edits track the bike without sliding?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [preservation, "Is the camera move unchanged?"]
+    - [visual_quality, "Is there no edge flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-FLM-05
+  title: "Period fix: replace the pink plastic bags with jute bags across the market; the old man and crowd untouched"
+  persona: "Production designer's VFX request on a period film shot in a modern market."
+  evidence: "Many small repeated objects across a moving crowd: some get missed, others spill onto people."
+  levers: [keep-rest, count, locale, identity, camera-move]
+  inputs: [{source: SRC-VCLIP-MARKET-WALK, role: source}]
+  prompt: |
+    In this 8-second Steadicam shot of an elderly man walking through an old Hyderabad vegetable market,
+    several stalls have bright pink plastic carry bags hanging from hooks. Replace every pink plastic bag, on
+    every frame, with a plain natural jute bag of a similar size hanging the same way, and swing them gently
+    as the plastic ones did. Nothing else changes: the old man, his white beard, cap, green kurta, cane and
+    cloth bag, his stop to lift a tomato at 3 seconds, the boy on the bicycle at 6 seconds, the vendors, the
+    shoppers, the vegetables and the camera move.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged Steadicam"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Are all pink plastic bags replaced with jute bags?"]
+    - [prompt_adherence, "Is no pink bag left on any frame?"]
+    - [physics_plausibility, "Do the jute bags hang and swing naturally?"]
+    - [preservation, "Is the old man unchanged, including his cloth bag?"]
+    - [preservation, "Does he still lift the tomato at 3 seconds?"]
+    - [preservation, "Does the boy on the bicycle still cross at 6 seconds?"]
+    - [preservation, "Are the vendors and shoppers unchanged?"]
+    - [preservation, "Are the vegetables unchanged?"]
+    - [motion_coherence, "Do the new bags track with the stalls without sliding?"]
+    - [reference_fidelity, "Are faces in the crowd unchanged?"]
+    - [preservation, "Is the camera move unchanged?"]
+    - [visual_quality, "Is there no edge flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-FLM-06
+  title: "Day to monsoon dusk in the moving compartment: rain on the window, grey light, pole shadows kept"
+  persona: "Colourist and VFX lead on an indie train film changing the time and weather of a scene."
+  evidence: "Relights tend to repaint people and drop periodic light events like passing pole shadows."
+  levers: [light-lock, keep-rest, physics, timing, identity]
+  inputs: [{source: SRC-VCLIP-TRAIN-INT, role: source}]
+  prompt: |
+    Change this 6-second shot inside a moving sleeper compartment from bright day to monsoon dusk on every
+    frame. Through the barred window, the fields are dark green-grey under heavy cloud and rain streaks the
+    glass, with droplets running back with the train's motion. The hard white daylight becomes soft cool
+    grey with a faint warm glow from the ceiling light. The shadows of the trackside poles still sweep
+    across the bay about once a second, softer. The man still turns his page at 2 seconds and the woman
+    lifts the tiffin lid at 4 seconds; their faces are relit, not redrawn.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged, fixed to the train"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is it monsoon dusk light, soft cool grey?"]
+    - [physics_plausibility, "Does rain streak the window, running back with the motion?"]
+    - [prompt_adherence, "Is there a faint warm glow from the ceiling light?"]
+    - [preservation, "Do the pole shadows still sweep about once a second?"]
+    - [prompt_adherence, "Does he turn the page at 2 s and she lift the lid at 4 s?"]
+    - [reference_fidelity, "Are both faces relit, not redrawn?"]
+    - [preservation, "Are the trunk, suitcase and berths unchanged?"]
+    - [physics_plausibility, "Does the carriage still sway?"]
+    - [temporal_consistency, "Is the relight stable without flicker?"]
+    - [prompt_adherence, "Are the fields dark under cloud?"]
+    - [preservation, "Is the framing unchanged?"]
+    - [visual_quality, "Is the clip free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-FLM-07
+  title: "Remove the mobile tower and add a waterfall on the left slope, both tracked through the drone move"
+  persona: "VFX editor cleaning up a drone establishing shot for a period drama."
+  evidence: "Removal and addition in one pass on a moving aerial: both must track with parallax."
+  levers: [multi-step, keep-rest, physics, parallax, locale]
+  inputs: [{source: SRC-VCLIP-GHAT-DRONE, role: source}]
+  prompt: |
+    Make these two changes to this 8-second drone shot of a Western Ghats valley in the monsoon, on every
+    frame, and nothing else.
+    1. Remove the grey steel mobile tower with red-and-white bands on the right ridge, which passes under
+       the right edge at about 6 seconds; rebuild the forested ridge behind it.
+    2. Add a tall thin waterfall falling in three steps down the left slope above the hairpin road, white
+       water with mist at its base, moving and sounding nothing, locked to the slope with the right
+       parallax as the drone flies forward and rises.
+    The road, the white car climbing it from 2 to 7 seconds, the stream, the low cloud and the light are
+    unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged drone forward and rise"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the tower gone with the ridge rebuilt?"]
+    - [prompt_adherence, "Is there a tall waterfall in three steps on the left slope?"]
+    - [physics_plausibility, "Does the water fall and mist naturally?"]
+    - [physics_plausibility, "Is the waterfall locked to the slope with correct parallax?"]
+    - [motion_coherence, "Is there no sliding of either edit?"]
+    - [preservation, "Does the car still climb from 2 to 7 seconds?"]
+    - [preservation, "Are the road and stream unchanged?"]
+    - [preservation, "Are the clouds unchanged?"]
+    - [prompt_adherence, "Does the waterfall sit in the overcast light?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [preservation, "Is the drone move unchanged?"]
+    - [visual_quality, "Is there no shimmer?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

@@ -1,0 +1,392 @@
+# Product and ad spots — Advertising & agencies scenarios. Slots: vspt.yaml.
+code: VSPT
+scenarios:
+
+- id: VSPT-ADS-02
+  seed: true
+  title: "An 8-second scooter spot in three cuts that lands the packshot at exactly 6 seconds"
+  persona: "Agency producer finishing a bumper ad whose packshot must sit at a fixed second for the media plan."
+  evidence: "Spots are cut to time; product spots fail on timing and on the product drifting between cuts."
+  levers: [timing, identity, exact-text, camera-move, light-lock, locale]
+  inputs:
+    - {source: SRC-ADS-SCOOTER, role: product, note: "the Hawa E1 scooter"}
+  prompt: |
+    An 8-second commercial for this exact scooter, the Hawa E1, in three cuts, golden hour on a
+    tree-lined Bengaluru street. Cut 1, 0–2.5 s: a low tracking shot beside the front wheel as a woman
+    in a white kurta and denim jacket rides past, the black five-spoke wheel turning, the white apron
+    catching the sun. Cut 2, 2.5–6 s: a side tracking shot of the whole scooter and rider from its left,
+    keeping pace, the "HAWA" on the side panel readable, trees streaming behind. Cut 3, 6–8 s: a
+    locked-off packshot, starting exactly at 6 s, of the scooter parked on its side stand in left
+    profile on the same street, no rider, sun behind the camera, a long shadow to the right. The
+    scooter's matte teal body, white apron, round headlamp, tan seat and silver grab rail are the same
+    in all three cuts. No other text, no logos.
+  exact_text: ["HAWA"]
+  clip: {duration: 8, aspect: "16:9", camera: "low track, side track, locked-off packshot"}
+  deliverable: "One 8-second clip with three cuts, 16:9."
+  checks:
+    - [prompt_adherence, "Are the cuts at about 2.5 s and exactly 6 s?"]
+    - [prompt_adherence, "Does the packshot hold from 6 to 8 s?"]
+    - [reference_fidelity, "Is the scooter the same in all three cuts?"]
+    - [text_accuracy, "Is HAWA on the side panel readable and correct in cut 2?"]
+    - [prompt_adherence, "Is cut 1 a low track by the front wheel and cut 2 a side track?"]
+    - [prompt_adherence, "Is cut 3 locked off with the scooter in left profile?"]
+    - [motion_coherence, "Do the wheels turn plausibly for the speed?"]
+    - [temporal_consistency, "Is there no morphing of the scooter or rider?"]
+    - [prompt_adherence, "Is it golden hour throughout, with the packshot's shadow to the right?"]
+    - [physics_plausibility, "Does the parked scooter lean correctly on its side stand?"]
+    - [prompt_adherence, "Is there no rider in the packshot?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference; multi-cut output depends on the model's support for cuts within a clip."}
+
+- id: VSPT-ADS-01
+  title: "A 6-second ghee spot: the jar turns, the lid lifts, ghee pours on rice, packshot at 5 s; the Devanagari label never melts"
+  persona: "Agency producer making the ghee brand's 6-second bumper."
+  evidence: "Earlier image bank PRD-ADS-07: Devanagari on a tilted label garbles; turning in motion melts it."
+  levers: [exact-text, script, timing, identity, physics, locale]
+  inputs: [{source: SRC-ADS-GHEE-JAR, role: product}]
+  prompt: |
+    A 6-second commercial for this exact ghee jar in a warm Indian kitchen at morning, window light from
+    the left. 0–2 s: the jar turns slowly on the counter from a quarter-turn to face the camera, so the deep
+    red label comes round with "साँझ" in large gold Devanagari and "SAANJH GHEE" in small gold capitals
+    below. 2–3.5 s: a hand lifts the gold lid. 3.5–5 s: a spoon pours golden ghee over a mound of hot rice
+    on a brass plate, glistening and melting in. 5–6 s: a locked-off packshot of the jar beside the plate,
+    label to camera. The label's letters never change as the jar turns. No other text.
+  exact_text: ["साँझ", "SAANJH GHEE"]
+  clip: {duration: 6, aspect: "4:5", camera: "close turntable, insert, locked-off packshot"}
+  deliverable: "One 6-second clip, 4:5."
+  checks:
+    - [text_accuracy, "Does the label read साँझ in correctly formed Devanagari throughout?"]
+    - [text_accuracy, "Does SAANJH GHEE read correctly under it?"]
+    - [motion_coherence, "Does the label stay intact as the jar turns, without melting letters?"]
+    - [prompt_adherence, "Does the packshot start at about 5 seconds?"]
+    - [prompt_adherence, "Does the lid lift at about 2 seconds?"]
+    - [physics_plausibility, "Does the ghee melt into the hot rice believably?"]
+    - [reference_fidelity, "Is it the real jar with its gold lid and 500 ml badge?"]
+    - [prompt_adherence, "Is it window light from the left throughout?"]
+    - [visual_quality, "Is the hand natural?"]
+    - [prompt_adherence, "Does it read as an Indian kitchen?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Is the glass free of warping?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ADS-03
+  title: "A 6-second shoe spot: turntable, laces tighten, a slow-motion strike; the shoe's shape holds through the flex"
+  persona: "Sportswear brand's product marketer making a launch bumper."
+  evidence: "Shoes lose their single stripe and their sole shape when they flex in generated slow motion."
+  levers: [identity, physics, timing, camera-move, small-text]
+  inputs: [{source: SRC-ADS-SHOE, role: product}]
+  prompt: |
+    A 6-second commercial for this exact running shoe, right foot, on a dark studio set with one hard
+    white key from the left and a coral rim from behind. 0–2 s: the shoe alone on a turntable rotating 180
+    degrees, from toe-right to toe-left, the single navy stripe running the midsole's full length.
+    2–3.5 s: a foot is inside it and the flat white laces pull tight on their own. 3.5–6 s: extreme slow
+    motion of the foot striking a black rubber floor: the foam midsole compresses and springs back, the
+    knit creases, and the shoe returns exactly to its shape. The small heel tab stays navy. No other text.
+  clip: {duration: 6, aspect: "16:9", camera: "turntable, close, slow-motion side"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [reference_fidelity, "Is it the real shoe: coral to off-white knit, white midsole, one navy stripe?"]
+    - [prompt_adherence, "Is there one navy stripe, never two?"]
+    - [prompt_adherence, "Does the turntable rotate 180 degrees in the first 2 seconds?"]
+    - [physics_plausibility, "Do the laces tighten believably?"]
+    - [physics_plausibility, "Does the midsole compress and spring back?"]
+    - [reference_fidelity, "Does the shoe return exactly to its shape after the strike?"]
+    - [prompt_adherence, "Do the three parts land at about 2 and 3.5 seconds?"]
+    - [prompt_adherence, "Is the key hard from the left with a coral rim?"]
+    - [motion_coherence, "Is the slow motion smooth?"]
+    - [reference_fidelity, "Is the heel tab navy?"]
+    - [text_accuracy, "Is there no text other than the heel tab?"]
+    - [visual_quality, "Is the knit texture stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ADS-04
+  title: "A push-in from the flyover to the hoarding as the Myna Pay ad animates on; logo geometry holds in perspective"
+  persona: "Payments brand's media planner previewing the launch hoarding in context."
+  evidence: "Earlier image bank PRD-ADS-01: logos in perspective distort; a moving camera re-distorts each frame."
+  levers: [exact-text, multi-ref, camera-move, layout, light-lock]
+  inputs:
+    - {source: SRC-ADS-BILLBOARD-SITE, role: first_frame, note: "the blank hoarding"}
+    - {source: SRC-ADS-LOGO, role: logo, note: "the logo"}
+  prompt: |
+    Start on this blank hoarding by a Bengaluru flyover and make an 8-second push in from the road below
+    towards it. At 2 seconds the ad animates on as if printed: a deep indigo field, the logo's symbol (an
+    indigo circle with a white myna head facing right, a saffron beak and a white eye-ring) and the
+    lower-case wordmark "myna pay" beside it, as in the logo image. As the camera moves, the ad stays locked
+    to the panel's perspective; the circle stays a correctly foreshortened circle and the wordmark's cap
+    height stays half the circle's diameter. Morning sun; the lamp-bracket shadows stay on the top edge.
+  exact_text: ["myna pay"]
+  clip: {duration: 8, aspect: "16:9", camera: "push in from the road towards the hoarding"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Does the wordmark read myna pay in lower case?"]
+    - [reference_fidelity, "Is the myna facing right with a saffron beak?"]
+    - [prompt_adherence, "Does the ad stay locked to the panel's perspective as the camera moves?"]
+    - [physics_plausibility, "Does the circle stay a correctly foreshortened circle?"]
+    - [prompt_adherence, "Is the wordmark's cap height half the circle's diameter?"]
+    - [prompt_adherence, "Does the ad animate on at about 2 seconds?"]
+    - [prompt_adherence, "Is it a push in from the road?"]
+    - [prompt_adherence, "Do the lamp-bracket shadows stay on the top edge?"]
+    - [motion_coherence, "Is the traffic below natural?"]
+    - [temporal_consistency, "Is there no swimming of the logo?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the logo's edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame and a logo reference."}
+
+- id: VSPT-ADS-05
+  title: "A phone launch spot: the Nimbus 7 flips in the air and lands on wet stone; reflections and splash match"
+  persona: "Phone brand's launch producer making the hero teaser."
+  evidence: "Products interacting with water and reflections are where generated spots lose realism."
+  levers: [physics, identity, timing, light-lock, multi-step]
+  inputs: [{source: SRC-VREF-PHONE, role: product}]
+  prompt: |
+    A 6-second launch teaser for this exact phone on a black set with one wide softbox overhead. 0–3 s: the
+    phone flips slowly end over end in mid-air in slow motion, alternating its violet-gradient screen and
+    its sage-green frosted back with the camera island in the top-left corner holding three lenses in a
+    vertical line. 3–4 s: it lands flat on its back on a slab of wet black slate, throwing a crown of
+    droplets. 4–6 s: it rests; the screen faces up, and the slate's thin water film reflects it. The
+    reflection matches the phone; the droplets fall back. No text on the screen.
+  clip: {duration: 6, aspect: "9:16", camera: "locked off, slow motion"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [reference_fidelity, "Is it the real phone: sage frosted back, island top left, three lenses in a line?"]
+    - [prompt_adherence, "Are there three lenses in a vertical line?"]
+    - [motion_coherence, "Does it flip end over end smoothly?"]
+    - [prompt_adherence, "Does it land at about 3 seconds?"]
+    - [physics_plausibility, "Does it throw a crown of droplets on landing?"]
+    - [physics_plausibility, "Does the water film reflect the phone correctly?"]
+    - [physics_plausibility, "Do the droplets fall back believably?"]
+    - [prompt_adherence, "Is there one wide softbox overhead?"]
+    - [reference_fidelity, "Does the phone keep its shape throughout?"]
+    - [prompt_adherence, "Is the screen showing a violet gradient with no text?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are the edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ADS-06
+  title: "A cold-coffee pour into a glass of ice; the coffee stays the label's caramel colour"
+  persona: "Beverage brand's content lead making a pour shot for social."
+  evidence: "Liquids drift in colour as they pour; the product must stay its real colour."
+  levers: [physics, identity, light-lock, timing, camera]
+  inputs: [{source: SRC-VREF-COLD-COFFEE, role: product}]
+  prompt: |
+    A 5-second pour shot for this exact bottled cold coffee on an off-white set, soft light from the upper
+    left. The bottle, cap off, tilts in from the right and pours a steady stream into a tall glass of clear
+    ice cubes. The coffee is the same light caramel-brown as in the bottle: it does not darken to black or
+    lighten to milk. It swirls between the cubes and fills the glass to two-thirds; the ice shifts and
+    clinks. Condensation forms on the glass. The kraft label stays to camera. Locked off, slight slow
+    motion. No other text.
+  clip: {duration: 5, aspect: "4:5", camera: "locked off, slight slow motion"}
+  deliverable: "One 5-second clip, 4:5."
+  checks:
+    - [reference_fidelity, "Does the coffee stay light caramel-brown throughout the pour?"]
+    - [physics_plausibility, "Does the stream pour and swirl between the ice believably?"]
+    - [physics_plausibility, "Does the ice shift as it fills?"]
+    - [prompt_adherence, "Does the glass fill to about two-thirds?"]
+    - [reference_fidelity, "Is it the real bottle with the kraft label?"]
+    - [physics_plausibility, "Does condensation form on the glass?"]
+    - [prompt_adherence, "Is the light soft from the upper left?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [motion_coherence, "Is the slow motion smooth?"]
+    - [visual_quality, "Is the glass free of warping?"]
+    - [text_accuracy, "Is there no text other than the label?"]
+    - [prompt_adherence, "Is the set off-white?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VSPT-ADS-07
+  title: "The ambassador turns the phone to camera in a 6-second spot; the back's NIMBUS and camera island stay exact"
+  persona: "Phone brand's agency producer making a celebrity spot from two approved references."
+  evidence: "A product held and turned by a person changes its details and the person's identity drifts."
+  levers: [exact-text, multi-ref, identity, timing, small-text]
+  inputs:
+    - {source: SRC-VREF-AMBASSADOR, role: character, note: "the ambassador"}
+    - {source: SRC-VREF-PHONE, role: product, note: "the phone"}
+  prompt: |
+    A 6-second spot. The first image is the ambassador: deep brown skin, a short undercut with a curly top,
+    a small scar on her chin, a silver stud in her left ear, a black band on her right wrist. The second is
+    the phone. In a warm studio with a soft key from the left, she holds the phone in her right hand, screen
+    to her, smiling; at 3 seconds she turns it to show the camera its back: sage frosted glass, the camera
+    island in the top-left corner with three lenses in a vertical line, and "NIMBUS" in small silver capitals
+    near the bottom. She holds it still from 4 to 6 seconds. No other text.
+  exact_text: ["NIMBUS"]
+  clip: {duration: 6, aspect: "9:16", camera: "medium close-up, locked off"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [reference_fidelity, "Is she the ambassador: undercut, chin scar, ear stud on the left?"]
+    - [text_accuracy, "Does the back read NIMBUS correctly?"]
+    - [prompt_adherence, "Is the camera island in the top-left corner of the back?"]
+    - [prompt_adherence, "Are there three lenses in a vertical line?"]
+    - [prompt_adherence, "Does she turn it at about 3 seconds and hold from 4?"]
+    - [reference_fidelity, "Is the phone in her right hand?"]
+    - [motion_coherence, "Does the phone keep its shape as it turns?"]
+    - [prompt_adherence, "Is the key soft from the left?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [visual_quality, "Are her fingers natural around the phone?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [prompt_adherence, "Is it locked off?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with two reference images."}
+
+- id: VSPT-ADS-08
+  title: "Chotu dances on a kitchen counter; the line Mood off? Mirchi on! lands at 4 s"
+  persona: "Snack brand's agency creative making a 6-second social cut with the mascot."
+  evidence: "On-screen lines must land on time and be spelt exactly, beside a moving character."
+  levers: [exact-text, timing, identity, layout, locale]
+  inputs: [{source: SRC-VREF-CHOTU-SHEET, role: character}]
+  prompt: |
+    A 6-second spot in the model sheet's polished 3D style: Chotu, the glossy red chilli with the green quiff
+    curling to his left, the gold tooth on his right, white four-fingered gloves and red-laced sneakers,
+    dances a quick bhangra on a kitchen counter in a sunny Indian home, between a steel tiffin and a jar of
+    pickle. At 4 seconds he strikes a pose, arms up, and the line "Mood off? Mirchi on!" pops on in chunky
+    white letters with a black outline in the top third of the frame, centred, and holds to the end.
+    Locked off. No other text.
+  exact_text: ["Mood off? Mirchi on!"]
+  clip: {duration: 6, aspect: "9:16", camera: "locked off"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [text_accuracy, "Does the line read exactly Mood off? Mirchi on!, with both punctuation marks?"]
+    - [prompt_adherence, "Does the line pop on at about 4 seconds?"]
+    - [prompt_adherence, "Is the line centred in the top third?"]
+    - [reference_fidelity, "Does Chotu match the model sheet?"]
+    - [reference_fidelity, "Does the quiff curl to his left and the tooth sit on his right?"]
+    - [motion_coherence, "Is the dance lively and cartoon-natural?"]
+    - [prompt_adherence, "Does he pose at about 4 seconds?"]
+    - [prompt_adherence, "Is he between the tiffin and the pickle jar?"]
+    - [style, "Is it in the polished 3D style?"]
+    - [prompt_adherence, "Is it locked off?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the gloves four-fingered?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a character reference."}
+
+- id: VSPT-ADS-09
+  title: "A lipstick spot from a written brand spec: bullet twist-up, swatch on skin, packshot; the shade stays its hex"
+  persona: "Beauty D2C founder visualising a launch spot before the product exists."
+  evidence: "Exact shade from a hex spec drifts with lighting and motion."
+  levers: [exact-text, long-brief, light-lock, timing, physics]
+  prompt: |
+    A 6-second lipstick commercial from this spec. The lipstick: a slim matte black square tube with a
+    brushed-gold band; the bullet a deep brick red (#9B2D20), slanted tip. The brand "RANG" in thin gold
+    capitals on the cap. 0–2 s: macro, the bullet twists up out of the tube, the light catching its satin
+    surface. 2–4 s: it draws one smooth swatch across the inside of a medium-brown wrist; the swatch is the
+    same brick red. 4–6 s: a locked-off packshot, the capped tube standing on a rust velvet block, the cap's
+    wordmark to camera. Soft warm studio light. The shade stays #9B2D20 throughout.
+  exact_text: ["RANG"]
+  clip: {duration: 6, aspect: "4:5", camera: "macro, close, locked-off packshot"}
+  deliverable: "One 6-second clip, 4:5."
+  checks:
+    - [prompt_adherence, "Is the bullet deep brick red close to #9B2D20?"]
+    - [temporal_consistency, "Is the swatch the same red as the bullet?"]
+    - [text_accuracy, "Does the cap read RANG?"]
+    - [prompt_adherence, "Do the parts change at about 2 and 4 seconds?"]
+    - [physics_plausibility, "Does the bullet twist up smoothly?"]
+    - [physics_plausibility, "Does the swatch apply believably on skin?"]
+    - [prompt_adherence, "Is the tube square and black with a gold band?"]
+    - [prompt_adherence, "Is the light soft and warm throughout?"]
+    - [prompt_adherence, "Is the wrist skin medium brown?"]
+    - [temporal_consistency, "Is there no morphing of the bullet?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Is the macro sharp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VSPT-ADS-10
+  title: "A mattress spot: a child jumps on one side while a glass of water on the other side barely ripples"
+  persona: "Mattress brand's agency producer making a motion-isolation demo."
+  evidence: "Physics claims in ads must be shown truthfully; generated beds either bounce everything or nothing."
+  levers: [physics, layout, timing, locale, long-brief]
+  prompt: |
+    An 8-second mattress commercial in a bright Indian bedroom with white walls and a jute rug. A low bed
+    with a plain white mattress and no sheets, filmed from the foot of the bed at mattress height. On the
+    right half, a full clear glass of water stands on the mattress. On the left half, a girl of about seven
+    in a yellow frock jumps up and down four times, the mattress deforming under her feet. The glass on the
+    right stays upright; its water surface shows only a tiny ripple on each landing, and nothing spills.
+    Daylight from a window on the left. Locked off. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "locked off at mattress height"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [physics_plausibility, "Does the mattress deform under her landings on the left?"]
+    - [physics_plausibility, "Does the glass stay upright with only tiny ripples?"]
+    - [physics_plausibility, "Is no water spilt?"]
+    - [prompt_adherence, "Does she jump four times?"]
+    - [prompt_adherence, "Is she on the left half and the glass on the right?"]
+    - [motion_coherence, "Is the jumping natural for a child?"]
+    - [prompt_adherence, "Is daylight from the left?"]
+    - [prompt_adherence, "Is it locked off at mattress height?"]
+    - [prompt_adherence, "Does it read as an Indian bedroom?"]
+    - [visual_quality, "Is the glass free of warping?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is she in a yellow frock?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VSPT-ADS-11
+  title: "Cut the 16:9 juice spot into a 9:16 vertical; the pour and the packshot stay in frame"
+  persona: "Agency editor delivering a vertical cut of a TV spot for reels."
+  evidence: "Reframing must follow the action: the pour at 2 s and the packshot after the cut."
+  levers: [layout, keep-rest, timing, exact-text, camera]
+  inputs: [{source: SRC-VCLIP-SPOT-PACKSHOT, role: source}]
+  prompt: |
+    This 8-second juice spot is 16:9: a breakfast table with a dolly left, the mother pouring from the
+    orange carton into the boy's glass at 2 seconds, then a cut at 5 seconds to a packshot of the carton
+    beside a full glass and two orange halves. Make a 9:16 vertical version. In shot one, the vertical frame
+    pans with the action so that the carton, the pour and the boy's glass are all in frame at 2 seconds. In
+    shot two, the carton and glass are centred, the brand "Morning Sun" fully in frame. Keep the timing and
+    the cut exactly. Do not stretch or squash anything.
+  exact_text: ["Morning Sun"]
+  clip: {duration: 8, aspect: "9:16", camera: "reframed from the source"}
+  deliverable: "One 8-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Are the carton, pour and glass all in frame at 2 seconds?"]
+    - [prompt_adherence, "Is the carton centred in the packshot?"]
+    - [text_accuracy, "Is Morning Sun fully in frame and correct?"]
+    - [preservation, "Is the cut still at 5 seconds?"]
+    - [preservation, "Is nothing stretched or squashed?"]
+    - [preservation, "Are the people and the table unchanged?"]
+    - [prompt_adherence, "Does the vertical frame follow the action smoothly?"]
+    - [motion_coherence, "Is the reframing free of jumps?"]
+    - [visual_quality, "Is resolution adequate after the reframe?"]
+    - [preservation, "Is the light unchanged?"]
+    - [text_accuracy, "Is there no new text?"]
+    - [prompt_adherence, "Is it 9:16?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit of one source clip."}
+
+- id: VSPT-ADS-12
+  title: "Swap the juice carton in the packshot for the ghee jar; light, shadow and placement match"
+  persona: "Agency producer reusing a packshot plate for a different client's product."
+  evidence: "Product swaps in video must match light, shadow and reflections across frames."
+  levers: [keep-rest, exact-text, script, multi-ref, light-lock]
+  inputs:
+    - {source: SRC-VCLIP-SPOT-PACKSHOT, role: source}
+    - {source: SRC-ADS-GHEE-JAR, role: product, note: "the jar to put in"}
+  prompt: |
+    In this 8-second spot, replace the orange juice carton with this ghee jar everywhere it appears: in the
+    mother's hand in shot one (she now spoons ghee from it onto the boy's paratha instead of pouring juice)
+    and standing on the table in the packshot from 5 seconds, beside the plate. The jar's label faces camera
+    in the packshot: "साँझ" in large gold Devanagari and "SAANJH GHEE" in small gold capitals. It takes the
+    morning window light from the left and casts a matching shadow. The family, the dolly, the cut at 5
+    seconds and the rest of the table stay as they are; the full glass becomes a glass of milk.
+  exact_text: ["साँझ", "SAANJH GHEE"]
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is the carton replaced by the ghee jar in both shots?"]
+    - [text_accuracy, "Does the label read साँझ in correct Devanagari?"]
+    - [text_accuracy, "Does SAANJH GHEE read correctly?"]
+    - [prompt_adherence, "Does the jar take the window light from the left?"]
+    - [physics_plausibility, "Does the jar cast a matching shadow?"]
+    - [physics_plausibility, "Is the spooning onto the paratha believable?"]
+    - [preservation, "Are the family, dolly and cut unchanged?"]
+    - [preservation, "Is the cut still at 5 seconds?"]
+    - [prompt_adherence, "Is the glass now milk?"]
+    - [temporal_consistency, "Is the jar stable in her hand?"]
+    - [text_accuracy, "Is there no orange-juice branding left?"]
+    - [visual_quality, "Is there no edge flicker around the jar?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with a product reference."}

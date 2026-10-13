@@ -1,0 +1,130 @@
+# Camera work — Film, OTT & micro-drama scenarios. Slots: vcam.yaml.
+code: VCAM
+scenarios:
+
+- id: VCAM-FLM-01
+  seed: true
+  sahil: composition
+  title: "The lone rider at sunset: a slow lateral move that keeps him on the left third"
+  persona: "Cinematographer pitching the look of a western-style Indian period film in motion."
+  evidence: "Sahil's composition example (screenshots 223–225): models centre the subject. In motion the subject also drifts to the centre during the move; holding the left third is the test."
+  levers: [off-centre, camera-move, parallax, light-lock, exclude, long-brief]
+  prompt: |
+    A ten-second 2.39:1 film shot at sunset on open grassland with low hills. A lone rider on a horse
+    walks slowly to frame right along a gentle rise, a near silhouette with a thin warm rim along the
+    horse's back and the rider's hat. The camera tracks right at the same speed, so the rider stays on
+    the left third of the frame for the whole shot, his horse between a quarter and two-fifths of the
+    way across, about an eighth of the frame's height. Far behind at about four-fifths across, a walker
+    on foot moves towards him, tiny. The sun stays low in the upper right third behind dust haze. The
+    tall out-of-focus grass along the bottom edge slides past fast; the three layers of hills behind
+    slide past slowly, each slower than the one in front. The horizon stays on the lower third. Film
+    grain and halation; warm, readable shadows. No lens-flare rings, no birds, no fences, no text.
+  clip: {duration: 10, aspect: "2.39:1", camera: "slow track right matching the rider's walk"}
+  deliverable: "One 10-second clip, 2.39:1."
+  checks:
+    - [composition, "Does the rider stay on the left third for the whole clip?"]
+    - [composition, "Does he never drift to the centre?"]
+    - [composition, "Is he about an eighth of the frame's height?"]
+    - [composition, "Does the horizon stay on the lower third?"]
+    - [prompt_adherence, "Is the move a steady track right at the rider's pace?"]
+    - [physics_plausibility, "Does the foreground grass slide faster than the hills?"]
+    - [physics_plausibility, "Do the three hill layers slide at decreasing speeds with distance?"]
+    - [prompt_adherence, "Is the walker tiny at about four-fifths across throughout?"]
+    - [prompt_adherence, "Is the sun low in the upper right third behind haze?"]
+    - [motion_coherence, "Is the horse's walk natural with correct leg order?"]
+    - [style, "Is there film grain and halation?"]
+    - [prompt_adherence, "Is there no flare ring, bird, fence or text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-FLM-02
+  title: "A dolly zoom on a woman in a long haveli corridor: she stays the same size while the corridor stretches"
+  persona: "Director of a psychological thriller previewing a vertigo-effect shot."
+  evidence: "Named lens moves like the dolly zoom are rarely executed; models push in or zoom instead."
+  levers: [camera-move, parallax, locale, light-lock, timing]
+  prompt: |
+    A 6-second dolly zoom in a long arched corridor of an old Lucknow haveli at dusk, lit by brass wall
+    lamps. A woman of about thirty in a dark green kurta stands still in the middle of the corridor, centred,
+    from the waist up, staring at camera. Over the six seconds the camera dollies back while zooming in, so
+    she stays exactly the same size and position in frame, but the corridor behind her stretches away: the
+    arches behind her appear to recede and shrink, the far doorway grows distant, and the side walls
+    flatten. Her hair stirs slightly. The effect starts at 1 second and runs smoothly to 6. No text.
+  clip: {duration: 6, aspect: "2.39:1", camera: "dolly back while zooming in"}
+  deliverable: "One 6-second clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Is it a dolly zoom, not a push in or a zoom?"]
+    - [composition, "Does she stay the same size and position in frame?"]
+    - [physics_plausibility, "Does the corridor behind her stretch away?"]
+    - [physics_plausibility, "Do the side walls flatten?"]
+    - [prompt_adherence, "Does the effect run from about 1 to 6 seconds?"]
+    - [motion_coherence, "Is the move smooth?"]
+    - [temporal_consistency, "Is she the same woman throughout?"]
+    - [prompt_adherence, "Is it lit by brass wall lamps at dusk?"]
+    - [prompt_adherence, "Does it read as a Lucknow haveli?"]
+    - [prompt_adherence, "Is she alone?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is her face stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-FLM-03
+  title: "A slow push-in on the woman at the parapet that eases in and out over exactly eight seconds"
+  persona: "Director of a micro-drama cutting a push-in to a fixed music phrase."
+  evidence: "Camera speed curves (ease in, constant, ease out) are rarely controlled in generated moves."
+  levers: [camera-move, timing, time-code, light-lock, identity]
+  inputs: [{source: SRC-ROOFTOP, role: first_frame}]
+  prompt: |
+    Start on this photo of a woman at a Mumbai rooftop parapet at night and make an 8-second push in from
+    behind and to her left towards her three-quarter profile. The move eases in from rest from 00:00:00:00 to
+    00:00:02:00, travels at a steady speed from 00:00:02:00 to 00:00:06:00, and eases out to rest by
+    00:00:08:00, ending as a medium close-up of her face with the city soft behind. She stays still, leaning
+    on the parapet, and blinks once at about 5 seconds. The city glow and the faint orange edge light on her
+    right side are unchanged. No text.
+  clip: {duration: 8, aspect: "16:9", camera: "push in with ease in and ease out"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Does the move ease in over the first 2 seconds?"]
+    - [prompt_adherence, "Is the speed steady from 2 to 6 seconds?"]
+    - [prompt_adherence, "Does it ease out to rest by 8 seconds?"]
+    - [composition, "Does it end as a medium close-up of her face?"]
+    - [prompt_adherence, "Does she blink once at about 5 seconds?"]
+    - [reference_fidelity, "Is she the woman from the photo?"]
+    - [prompt_adherence, "Is the orange edge light on her right side kept?"]
+    - [physics_plausibility, "Do the tanks and dish pass with correct parallax?"]
+    - [motion_coherence, "Does she stay still?"]
+    - [prompt_adherence, "Is the city soft behind at the end?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is her face stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCAM-FLM-04
+  title: "Reframe the market Steadicam shot from 16:9 to 9:16, following the old man and keeping the tomato beat"
+  persona: "OTT platform's promo editor cutting vertical trailers from the film's masters."
+  evidence: "Automatic reframes lose the action: the tomato is on frame right of a centred man."
+  levers: [layout, keep-rest, timing, camera, identity]
+  inputs: [{source: SRC-VCLIP-MARKET-WALK, role: source}]
+  prompt: |
+    This 8-second 16:9 Steadicam shot walks backwards in front of an elderly man through an old Hyderabad
+    market; at 3 seconds he stops at a stall on frame right and lifts a tomato; at 5 seconds he walks on; a
+    boy on a bicycle crosses behind him at 6 seconds. Make a 9:16 vertical version by choosing a moving
+    vertical window inside the frame: keep him in it at all times, and from 2.5 to 5 seconds glide right so
+    his hand and the tomato are in frame too, then glide back to him. Move the window smoothly, like an
+    operator. Do not stretch, squash or invent picture.
+  clip: {duration: 8, aspect: "9:16", camera: "moving vertical window inside the source"}
+  deliverable: "One 8-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Is he in the vertical frame at all times?"]
+    - [prompt_adherence, "Are his hand and the tomato in frame from about 3 to 5 seconds?"]
+    - [prompt_adherence, "Does the window glide right and back smoothly?"]
+    - [preservation, "Are the stop at 3 s and the walk on at 5 s unchanged?"]
+    - [preservation, "Is nothing stretched or squashed?"]
+    - [preservation, "Is no picture invented?"]
+    - [reference_fidelity, "Is the man unchanged?"]
+    - [motion_coherence, "Is there no jitter in the reframe?"]
+    - [preservation, "Is the boy on the bicycle visible if inside the window?"]
+    - [visual_quality, "Is resolution adequate?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is it 9:16?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit of one source clip."}

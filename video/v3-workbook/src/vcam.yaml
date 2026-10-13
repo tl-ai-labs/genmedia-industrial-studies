@@ -1,0 +1,43 @@
+# V8 — Cinematography and composition in motion (header). Built on image family CMP. Scenarios: vcam-*.yaml.
+
+family: Camera work
+code: VCAM
+number: 8
+about: "Composition held through a camera move, named moves executed with the right path and speed, lens character, and reframes from 16:9 to vertical."
+outputs: "1 clip"
+
+rubric:
+  weights: {composition: 4, prompt_adherence: 3, motion_coherence: 3, preservation: 2, physics_plausibility: 1, visual_quality: 1, text_accuracy: 1, temporal_consistency: 1, style: 1, reference_fidelity: 1}
+  gate: [composition, motion_coherence]
+  gate_rule: "The framing must be the one described, and the camera move must hold its path without warping."
+
+targets:
+  centre-bias: "The subject drifts to the centre during the move"
+  move-wrong: "The named move is not executed (path, direction or end position)"
+  lens-look: "The perspective does not match the named lens"
+  horizon: "The horizon is not where, or at the tilt, the brief asks"
+  reframe-lost: "A reframe loses the subject or the action"
+  speed: "The move's speed or easing is not as described"
+
+slots:
+  # Film, OTT & micro-drama — 4 (2 t2v, 1 i2v, 1 edit · 2 hard, 2 extreme)
+  - {id: VCAM-FLM-01, task: t2v, subject: landscape, style: cinematic, light: golden, locale: global, diff: extreme, target: centre-bias, sources: [], from_image: CMP-FLM-01, idea: "Sahil's composition test in motion: the lone rider at sunset, a slow lateral move that keeps him on the left third"}
+  - {id: VCAM-FLM-02, task: t2v, subject: person, style: cinematic, light: practical, locale: IN, diff: hard, target: move-wrong, sources: [], idea: "A dolly zoom on a woman in a long haveli corridor: she stays the same size while the corridor stretches"}
+  - {id: VCAM-FLM-03, task: i2v, subject: person, style: cinematic, light: night, locale: IN, diff: hard, target: speed, sources: [SRC-ROOFTOP], idea: "A slow push-in on the woman at the parapet that eases in and out over exactly eight seconds"}
+  - {id: VCAM-FLM-04, task: edit, subject: child-elderly, style: cinematic, light: daylight, locale: IN, diff: extreme, target: reframe-lost, sources: [SRC-VCLIP-MARKET-WALK], idea: "Reframe the market Steadicam shot from 16:9 to 9:16, following the old man and keeping the tomato beat"}
+  # Advertising & agencies — 2 (1 t2v, 1 i2v · 1 hard, 1 extreme)
+  - {id: VCAM-ADS-01, task: t2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: centre-bias, sources: [], from_image: CMP-ADS-03, idea: "Top-down filter coffee that slowly rotates; it stays in the right 30 percent with the copy space kept clean"}
+  - {id: VCAM-ADS-02, task: i2v, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: hard, target: speed, sources: [SRC-ADS-BILLBOARD-SITE], idea: "A whip pan from the traffic that lands square on the hoarding at exactly 2 s and holds"}
+  # E-commerce, D2C & retail — 3 (2 t2v, 1 edit · 2 hard, 1 extreme)
+  - {id: VCAM-ECM-01, task: t2v, subject: product, style: photoreal, light: golden, locale: global, diff: extreme, target: centre-bias, sources: [], from_image: CMP-ECM-01, idea: "A slow push on the watch on river stone; it stays in the lower right and the top 60 percent stays clean"}
+  - {id: VCAM-ECM-02, task: t2v, subject: child-elderly, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: move-wrong, sources: [], from_image: CMP-ECM-05, idea: "A straight-up crane from the child in the yellow raincoat to a top-down of the umbrellas"}
+  - {id: VCAM-ECM-03, task: edit, subject: fashion, style: photoreal, light: practical, locale: IN, diff: hard, target: reframe-lost, sources: [SRC-VCLIP-RUNWAY-WALK], idea: "Reframe the catalogue walk to 4:5 for the product page, the garment fully in frame through the turn"}
+  # Gaming — 1 (1 t2v · 1 hard)
+  - {id: VCAM-GAM-01, task: t2v, subject: landscape, style: illustration, light: golden, locale: global, diff: hard, target: move-wrong, sources: [], from_image: CMP-GAM-01, idea: "A slow crane up from the tiny hero to reveal the colossal titan, the hero staying small in the lower right"}
+  # Real estate, interiors & architecture — 2 (1 t2v, 1 i2v · 1 hard, 1 extreme)
+  - {id: VCAM-RES-01, task: t2v, subject: architecture, style: photoreal, light: golden, locale: IN, diff: extreme, target: centre-bias, sources: [], from_image: CMP-RES-01, idea: "The Kerala villa hero shot as a slow crane up; the house stays on the right third and verticals stay vertical"}
+  - {id: VCAM-RES-02, task: i2v, subject: interior, style: photoreal, light: golden, locale: IN, diff: hard, target: lens-look, sources: [SRC-RES-BEDROOM], idea: "A 14 mm walk-in to the empty bedroom: wide-lens stretch at the edges, verticals straight throughout"}
+  # Media, publishing & events — 3 (1 t2v, 1 i2v, 1 edit · 2 hard, 1 extreme)
+  - {id: VCAM-MED-01, task: t2v, subject: animal, style: photoreal, light: daylight, locale: IN, diff: extreme, target: centre-bias, sources: [], from_image: CMP-MED-03, idea: "A slow push on the tiger at the bottom edge of the grass wall; it stays in the bottom fifth, the grass above kept clean"}
+  - {id: VCAM-MED-02, task: i2v, subject: landscape, style: photoreal, light: fog-rain, locale: IN, diff: hard, target: horizon, sources: [SRC-MED-TRAVEL-PHOTO], from_image: CMP-MED-06, idea: "Start on the tilted travel photo and roll level while pushing in, ending with the horizon on the lower fifth"}
+  - {id: VCAM-MED-03, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: hard, target: reframe-lost, sources: [SRC-VCLIP-CONCERT-CROWD], idea: "Reframe the concert push-in to 9:16, following the singer to stage right and back"}

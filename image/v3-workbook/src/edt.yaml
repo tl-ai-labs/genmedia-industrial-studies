@@ -1,0 +1,52 @@
+# Family 8 — Precision multi-step editing (header). Scenarios: edt-*.yaml.
+
+family: Precision editing
+code: EDT
+number: 8
+about: "Several exact edits in one instruction on a real image, with everything else left as it was."
+outputs: "1"
+
+rubric:
+  weights: {preservation: 4, prompt_adherence: 4, reference_fidelity: 3, text_accuracy: 2, physics_plausibility: 2, visual_quality: 1, style: 1}
+  gate: [preservation]
+  gate_rule: "Nothing outside the asked-for changes may be altered."
+
+targets:
+  spill: "Something outside the asked-for change is altered"
+  step-missed: "One of the asked-for changes is not made"
+  identity-drift: "A face or product in the image changes"
+  text-damage: "Existing text is damaged, or new text is wrong"
+  over-edit: "The change is heavier than asked (restyle instead of a fix)"
+
+slots:
+  # Film, OTT & micro-drama — 3 (3 edit · 2 hard, 1 extreme)
+  - {id: EDT-FLM-01, task: edit, subject: group, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: spill, sources: [SRC-CHAI-STALL], script: devanagari, idea: "Five continuity fixes on the chai stall: phone to tea glass, sign into Hindi, clock time, kettle steam, stool colour"}
+  - {id: EDT-FLM-02, task: edit, subject: interior, style: cinematic, light: practical, locale: IN, diff: hard, target: step-missed, sources: [SRC-SET-LIVING], idea: "Period clean-up of the 1970s set: remove the bottle and switchboard, warm the bulb, recover the sofa"}
+  - {id: EDT-FLM-03, task: edit, subject: person, style: cinematic, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [SRC-ROOFTOP], idea: "Night to dawn on the rooftop, remove the dish, add a washing line; the woman unchanged"}
+  # Advertising & agencies — 4 (4 edit · 2 hard, 2 extreme)
+  - {id: EDT-ADS-01, task: edit, subject: food, style: graphic, light: practical, locale: IN, diff: extreme, target: text-damage, sources: [SRC-ADS-KEYVISUAL], script: devanagari, idea: "Five offer updates on the ghee key visual: price, date, pack size, one diya removed, a ribbon added"}
+  - {id: EDT-ADS-02, task: edit, subject: person, style: photoreal, light: noon, locale: IN, diff: hard, target: identity-drift, sources: [SRC-ADS-RUNNER], idea: "Campaign clean-up: remove the bib, recolour the track, add stands blur; the sprinter's face untouched"}
+  - {id: EDT-ADS-03, task: edit, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: hard, target: spill, sources: [SRC-ADS-SUV], idea: "SUV paint white to deep red, headlights on, the far hatchback removed; reflections follow"}
+  - {id: EDT-ADS-04, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: step-missed, sources: [SRC-ADS-DIWALI-FAMILY], idea: "Six changes to turn the Diwali frame into a next-year sequel without touching the four faces"}
+  # E-commerce, D2C & retail — 8 (8 edit · 5 hard, 3 extreme)
+  - {id: EDT-ECM-01, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: spill, sources: [SRC-ECM-HANDBAG], script: latin, idea: "Packshot clean-up: dust off, handle untwisted, background to a hex, new contact shadow; leather grain untouched"}
+  - {id: EDT-ECM-02, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: over-edit, sources: [SRC-ECM-KURTA-MODEL], idea: "Five catalogue fixes on the kurta photo: colour variant, pin removed, dupatta straightened, canvas to 1:1, crease fixed"}
+  - {id: EDT-ECM-03, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: spill, sources: [SRC-ECM-BIRYANI], idea: "Remove the plastic spoon, add steam, swap mint for coriander, napkin to green; rice and handi untouched"}
+  - {id: EDT-ECM-04, task: edit, subject: interior, style: photoreal, light: golden, locale: global, diff: hard, target: step-missed, sources: [SRC-ECM-ARMCHAIR-ROOM], idea: "Room tidy for a listing: remove the cable and slippers, add a plant, swap the lampshade, books to three"}
+  - {id: EDT-ECM-05, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: hard, target: identity-drift, sources: [SRC-ECM-CREATOR], idea: "Tidy the creator's frame: plain shelf, no ring light in the mirror, top to white; her face untouched"}
+  - {id: EDT-ECM-06, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: text-damage, sources: [SRC-ECM-SPICE-JARS], script: tamil, idea: "Add a price sticker to the chilli jar and recolour the cumin lid without touching any Tamil letter"}
+  - {id: EDT-ECM-07, task: edit, subject: child-elderly, style: photoreal, light: golden, locale: IN, diff: hard, target: over-edit, sources: [SRC-ECM-WATCH-ELDER], script: latin, idea: "Strap to a new hex, watch time to 07:30, jogger removed; her face neither smoothed nor made younger"}
+  - {id: EDT-ECM-08, task: edit, subject: stylised, style: photoreal, light: daylight, locale: global, diff: hard, target: step-missed, sources: [SRC-ECM-PLUSH], idea: "Colour variant of the knitted elephant: pink wool, blue patch, green collar, gold bell; knit texture kept"}
+  # Gaming — 4 (4 edit · 2 hard, 2 extreme)
+  - {id: EDT-GAM-01, task: edit, subject: animal, style: illustration, light: golden, locale: IN, diff: extreme, target: spill, sources: [SRC-GAM-MOUNT], idea: "Winter variant of the tiger: armour to silver, saddle bag removed, snow on the ground; the tiger itself untouched"}
+  - {id: EDT-GAM-02, task: edit, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: step-missed, sources: [SRC-GAM-TEMPLE-LEVEL], idea: "Level art pass: remove the placeholder cube, vines on the gopuram, water in the tank, a second pillar fallen"}
+  - {id: EDT-GAM-03, task: edit, subject: group, style: illustration, light: daylight, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-GAM-SQUAD], idea: "Swap one weapon, change the banner colour, add a storm sky; all five faces unchanged"}
+  - {id: EDT-GAM-04, task: edit, subject: stylised, style: graphic, light: neon, locale: global, diff: hard, target: text-damage, sources: [SRC-GAM-STORE-BANNER], script: latin, idea: "Launch-day update of the banner: button to Play now, date line to Out now; the logo untouched"}
+  # Real estate, interiors & architecture — 4 (4 edit · 3 hard, 1 extreme)
+  - {id: EDT-RES-01, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: extreme, target: step-missed, sources: [SRC-RES-LIVING-FLAT], idea: "Listing clean-up: newspapers, laundry rack and wires gone, TV on a set image, lights on, plant moved"}
+  - {id: EDT-RES-02, task: edit, subject: interior, style: photoreal, light: golden, locale: IN, diff: hard, target: spill, sources: [SRC-RES-BEDROOM], idea: "Repaint the far wall to a hex and lay oak flooring; the window view and sun panels stay"}
+  - {id: EDT-RES-03, task: edit, subject: architecture, style: photoreal, light: night, locale: IN, diff: hard, target: over-edit, sources: [SRC-RES-VILLA-EXT], idea: "Day to twilight: sky to dusk, interior lights on, porch light on; the architecture unchanged"}
+  - {id: EDT-RES-04, task: edit, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: step-missed, sources: [SRC-RES-PLOT-LAND], idea: "Plot preparation: boundary wall, gate at the track, a path to the trees, the smaller cashew removed"}
+  # Media, publishing & events — 2 (2 edit · 1 hard, 1 extreme)
+  - {id: EDT-MED-01, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: text-damage, sources: [SRC-MED-NEWSROOM], script: devanagari, idea: "Update the broadcast frame: new Hindi lower third and ticker, clock to 09:40; the anchor untouched"}
+  - {id: EDT-MED-02, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: hard, target: spill, sources: [SRC-MED-CONCERT], idea: "Remove the three filming phones, add confetti, switch the screen to a green gradient; the band unchanged"}

@@ -1,0 +1,98 @@
+# Camera work — Media, publishing & events scenarios. Slots: vcam.yaml.
+code: VCAM
+scenarios:
+
+- id: VCAM-MED-01
+  seed: true
+  title: "A slow push on the tiger at the bottom edge of the grass wall; it stays in the bottom fifth"
+  persona: "Wildlife magazine's video editor making a moving opener with space for the headline."
+  evidence: "Call at 23:45: models centre the subject; in a push-in they also drift the subject up into the middle of the frame."
+  levers: [off-centre, camera-move, light-lock, locale, exclude]
+  prompt: |
+    An 8-second wildlife shot in Kaziranga in morning light, 16:9. A wall of tall golden elephant grass
+    fills the frame, swaying softly in a breeze. At the bottom edge, slightly right of centre, a Bengal
+    tiger's head and shoulders emerge from the grass, looking straight into the lens, its chest cut by
+    the bottom of the frame. The camera pushes in slowly and steadily on a long lens over the eight
+    seconds, about 15 percent tighter by the end, and tilts so that the tiger stays in the bottom fifth
+    of the frame and never rises towards the middle; the upper eighty percent stays swaying grass,
+    softly out of focus, clean enough for a headline. The tiger blinks once at about five seconds. Light
+    from the left. No text, no people.
+  clip: {duration: 8, aspect: "16:9", camera: "slow steady push in on a long lens, about 15 percent"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [composition, "Does the tiger stay in the bottom fifth for the whole clip?"]
+    - [composition, "Does it never rise towards the middle?"]
+    - [composition, "Is its chest cut by the bottom edge throughout?"]
+    - [composition, "Does the upper eighty percent stay soft grass, clean for a headline?"]
+    - [prompt_adherence, "Is the push-in slow and steady, about 15 percent?"]
+    - [prompt_adherence, "Does the tiger blink once at about 5 s?"]
+    - [motion_coherence, "Does the grass sway naturally around and in front of the tiger?"]
+    - [physics_plausibility, "Do grass blades in front of the tiger overlap it correctly?"]
+    - [prompt_adherence, "Is morning light from the left?"]
+    - [temporal_consistency, "Is the tiger's face stable, with no morphing?"]
+    - [prompt_adherence, "Are there no people or text?"]
+    - [prompt_adherence, "Is the tiger slightly right of centre?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}
+
+- id: VCAM-MED-02
+  title: "Start on the tilted travel photo and roll level while pushing in, ending with the horizon on the lower fifth"
+  persona: "Travel publication's video editor fixing a contributor's crooked photo into a moving opener."
+  evidence: "Camera roll and horizon placement are rarely obeyed."
+  levers: [camera-move, layout, off-centre, physics, time-code]
+  inputs: [{source: SRC-MED-TRAVEL-PHOTO, role: first_frame}]
+  prompt: |
+    Start on this travel photo of a hill temple in the mist at dawn, tilted about three degrees clockwise,
+    the horizon through the middle. Over 8 seconds, roll the camera three degrees anticlockwise so the
+    horizon becomes level by 00:00:04:00, while tilting up and pushing in slowly so that by 00:00:08:00 the
+    horizon sits on the lower fifth of the frame and the temple sits on the lower left third intersection,
+    with the sky and pink clouds filling the top. The mist drifts slowly in the valleys. The tree stays to
+    the right of the temple. No text.
+  clip: {duration: 8, aspect: "3:2", camera: "roll level, tilt up and push in"}
+  deliverable: "One 8-second clip, 3:2."
+  checks:
+    - [prompt_adherence, "Does the camera roll three degrees anticlockwise?"]
+    - [prompt_adherence, "Is the horizon level by about 4 seconds?"]
+    - [composition, "Is the horizon on the lower fifth at the end?"]
+    - [composition, "Is the temple at the lower left third intersection at the end?"]
+    - [prompt_adherence, "Does it push in and tilt up smoothly?"]
+    - [prompt_adherence, "Is the tree to the right of the temple?"]
+    - [physics_plausibility, "Does the mist drift slowly?"]
+    - [prompt_adherence, "Is it dawn light?"]
+    - [motion_coherence, "Is there no warping?"]
+    - [prompt_adherence, "Do the sky and pink clouds fill the top?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame sharp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCAM-MED-03
+  title: "Reframe the concert push-in to 9:16, following the singer to stage right and back"
+  persona: "Festival's social editor cutting vertical clips from the main camera feed."
+  evidence: "Reframes lose the performer when they move across the stage."
+  levers: [layout, keep-rest, timing, camera, count]
+  inputs: [{source: SRC-VCLIP-CONCERT-CROWD, role: source}]
+  prompt: |
+    This 8-second 16:9 concert clip pushes in over the crowd towards a four-piece band; at 3 seconds the
+    singer in the silver jacket walks from the centre microphone to stage right and is back by 6 seconds.
+    Make a 9:16 vertical version by moving a vertical window inside the frame that follows the singer
+    smoothly to stage right and back, keeping her in the upper half with a slice of the jumping crowd and
+    at least one raised phone in the lower half. The drummer may leave the window. Keep the timing; do not
+    stretch, squash or invent picture.
+  clip: {duration: 8, aspect: "9:16", camera: "moving vertical window following the singer"}
+  deliverable: "One 8-second clip, 9:16."
+  checks:
+    - [prompt_adherence, "Is the singer in the window throughout?"]
+    - [prompt_adherence, "Is she in the upper half?"]
+    - [prompt_adherence, "Is at least one raised phone in the lower half?"]
+    - [prompt_adherence, "Does the window follow her smoothly to stage right and back?"]
+    - [preservation, "Is her move 3 to 6 seconds unchanged?"]
+    - [preservation, "Is nothing stretched or squashed?"]
+    - [preservation, "Is no picture invented?"]
+    - [motion_coherence, "Is there no jitter?"]
+    - [preservation, "Are the beams unchanged?"]
+    - [visual_quality, "Is resolution adequate?"]
+    - [text_accuracy, "Is there no text?"]
+    - [prompt_adherence, "Is it 9:16?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit of one source clip."}

@@ -1,0 +1,59 @@
+# V4 — Character continuity and performance, no lip-sync (header). Built on image family CHR.
+# Scenarios: vchr-*.yaml.
+
+family: Character continuity in motion
+code: VCHR
+number: 4
+about: "The same character across 3 clips of action and performance: face, body, costume and marks held while they move. No lip-sync is judged."
+outputs: "3 clips (set)"
+set: {min: 3, max: 4, required: true}
+
+rubric:
+  weights: {set_consistency: 4, reference_fidelity: 3, prompt_adherence: 2, motion_coherence: 2, preservation: 2, physics_plausibility: 1, text_accuracy: 1, visual_quality: 1, style: 1, composition: 1, temporal_consistency: 2}
+  gate: [set_consistency]
+  gate_rule: "The character must be the same person in every clip."
+
+targets:
+  identity-drift: "The face or design changes between clips"
+  morph: "The face or body morphs during a clip"
+  wardrobe-drift: "Costume details change when they should not"
+  prop-drift: "A signature prop or mark moves, flips sides or disappears"
+  expression: "The asked-for performance is not delivered"
+  ensemble-blend: "Features blend between characters sharing a frame"
+  skin-tone: "Skin tone drifts across clips or light changes"
+
+slots:
+  # Film, OTT & micro-drama — 12 (3 t2v, 7 i2v, 2 edit · 7 hard, 5 extreme)
+  - {id: VCHR-FLM-01, task: i2v, subject: person, style: cinematic, light: neon, locale: IN, diff: extreme, target: morph, sources: [SRC-ACTOR-M], from_image: CHR-FLM-01, idea: "The lead in three action clips: sprinting through rain, a fight in an autorickshaw stand, dancing at a baraat; no morphing mid-clip"}
+  - {id: VCHR-FLM-02, task: i2v, subject: person, style: cinematic, light: night, locale: global, diff: hard, target: prop-drift, sources: [SRC-CROSSWALK], from_image: CHR-FLM-07, idea: "The headphone man in three clips: metro, hospital corridor, dawn beach; headphones and shirt held through movement"}
+  - {id: VCHR-FLM-03, task: i2v, subject: person, style: cinematic, light: night, locale: global, diff: hard, target: wardrobe-drift, sources: [SRC-ASTRO-FOREST], from_image: CHR-FLM-08, idea: "The astronaut in three clips deeper in the forest; band and device stay on the left arm while moving"}
+  - {id: VCHR-FLM-04, task: i2v, subject: person, style: cinematic, light: fog-rain, locale: global, diff: extreme, target: expression, sources: [SRC-RIDGE-WANDERER], from_image: CHR-FLM-12, idea: "Three performance clips of the wanderer: grief building, anger breaking, release; identity held through the acting"}
+  - {id: VCHR-FLM-05, task: i2v, subject: child-elderly, style: cinematic, light: practical, locale: IN, diff: hard, target: identity-drift, sources: [SRC-THALI-DINNER], idea: "The twelve-year-old girl from the dinner in three clips: homework, running down stairs, at a temple; the same child"}
+  - {id: VCHR-FLM-06, task: i2v, subject: stylised, style: 3d, light: daylight, locale: global, diff: extreme, target: identity-drift, sources: [SRC-VREF-BITTU], from_image: CHR-FLM-15, idea: "Bittu animated in three clips: climbing, running, stargazing; socks and knee patch on their sides"}
+  - {id: VCHR-FLM-07, task: i2v, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: ensemble-blend, sources: [SRC-VREF-SIBLINGS], from_image: CHR-FLM-14, idea: "The three siblings in three clips together; faces never borrow from each other as they move"}
+  - {id: VCHR-FLM-08, task: t2v, subject: animal, style: cinematic, light: daylight, locale: IN, diff: hard, target: identity-drift, sources: [], idea: "A described street dog with one torn ear in three clips across a day in a Kolkata lane"}
+  - {id: VCHR-FLM-09, task: t2v, subject: child-elderly, style: cinematic, light: golden, locale: IN, diff: hard, target: skin-tone, sources: [], idea: "A described old fisherman in three clips from noon sun to lantern light; skin tone held"}
+  - {id: VCHR-FLM-10, task: t2v, subject: fashion, style: cinematic, light: practical, locale: IN, diff: hard, target: skin-tone, sources: [], idea: "A described bride in a red Banarasi in three clips under haldi sun, mehendi lamps and stage lights"}
+  - {id: VCHR-FLM-11, task: edit, subject: person, style: cinematic, light: practical, locale: IN, diff: extreme, target: identity-drift, sources: [SRC-VCLIP-CORRIDOR], idea: "Three edits of the corridor clip, each changing her outfit; her face and walk stay identical"}
+  - {id: VCHR-FLM-12, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: wardrobe-drift, sources: [SRC-VCLIP-WEDDING-DANCE], idea: "Three edits of the sangeet clip, each re-dressing the lead only; the other four dancers untouched"}
+  # Advertising & agencies — 4 (1 t2v, 2 i2v, 1 edit · 2 hard, 2 extreme)
+  - {id: VCHR-ADS-01, task: i2v, subject: stylised, style: 3d, light: daylight, locale: IN, diff: extreme, target: morph, sources: [SRC-VREF-CHOTU-SHEET], from_image: CHR-ADS-01, idea: "Chotu in three clips: running, jumping, dancing; his quiff, tooth and gloves never morph"}
+  - {id: VCHR-ADS-02, task: i2v, subject: person, style: photoreal, light: noon, locale: IN, diff: hard, target: skin-tone, sources: [SRC-VREF-AMBASSADOR], idea: "The cricketer ambassador in three clips: nets at noon, a night match under floodlights, an indoor shoot"}
+  - {id: VCHR-ADS-03, task: t2v, subject: animal, style: photoreal, light: daylight, locale: global, diff: hard, target: identity-drift, sources: [], from_image: CHR-ADS-04, idea: "The described pet-food dog with the heart patch and folded ear in three clips"}
+  - {id: VCHR-ADS-04, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: extreme, target: ensemble-blend, sources: [SRC-VCLIP-FAMILY-SOFA], idea: "Three edits of the sofa clip, dressing the family for Diwali, Eid and Christmas; four faces never merge"}
+  # E-commerce, D2C & retail — 5 (1 t2v, 3 i2v, 1 edit · 3 hard, 2 extreme)
+  - {id: VCHR-ECM-01, task: i2v, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: hard, target: wardrobe-drift, sources: [SRC-ECM-JACKET-FLAT], idea: "The jacket worn by one described model in three clips: street, metro, rooftop; marigold and fray stay put"}
+  - {id: VCHR-ECM-02, task: i2v, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: skin-tone, sources: [SRC-ECM-CREATOR], from_image: CHR-ECM-04, idea: "The creator in three clips: ring-light tutorial, daylight unboxing, neon street; her dark skin never lightened"}
+  - {id: VCHR-ECM-03, task: i2v, subject: stylised, style: photoreal, light: daylight, locale: global, diff: hard, target: morph, sources: [SRC-ECM-PLUSH], from_image: CHR-ECM-03, idea: "The knitted elephant animated stop-motion style in three clips; knit, trunk side and patch never morph"}
+  - {id: VCHR-ECM-04, task: t2v, subject: group, style: photoreal, light: night, locale: IN, diff: extreme, target: identity-drift, sources: [], from_image: CHR-ECM-05, idea: "The described mattress-ad family of four in three clips: bedtime story, pillow fight, morning"}
+  - {id: VCHR-ECM-05, task: edit, subject: child-elderly, style: photoreal, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [SRC-VCLIP-GRANDMA-YOGA], idea: "Three edits of the yoga clip in three sari colourways; her face, braid and movement unchanged"}
+  # Gaming — 9 (2 t2v, 6 i2v, 1 edit · 6 hard, 3 extreme)
+  - {id: VCHR-GAM-01, task: i2v, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: morph, sources: [SRC-VREF-IRA-SHEET], from_image: CHR-GAM-01, idea: "Ira in three combat clips: a spin slash, a wall run, a landing; nothing morphs or swaps sides"}
+  - {id: VCHR-GAM-02, task: i2v, subject: stylised, style: sketch, light: daylight, locale: global, diff: hard, target: expression, sources: [SRC-GAM-VILLAIN], from_image: CHR-GAM-03, idea: "The villain in three pencil-animated clips: contempt, rage, laughter; the mask stays on the left"}
+  - {id: VCHR-GAM-03, task: i2v, subject: animal, style: illustration, light: golden, locale: IN, diff: hard, target: identity-drift, sources: [SRC-GAM-MOUNT], from_image: CHR-GAM-05, idea: "The war-tiger in three clips: charge, river swim, rest; torn ear, scar and V held"}
+  - {id: VCHR-GAM-04, task: i2v, subject: child-elderly, style: illustration, light: daylight, locale: IN, diff: hard, target: morph, sources: [SRC-GAM-SAGE], from_image: CHR-GAM-06, idea: "The sage in three clips: meditating, walking with a staff, blocking a blow; the cloudy left eye holds"}
+  - {id: VCHR-GAM-05, task: i2v, subject: group, style: illustration, light: daylight, locale: IN, diff: extreme, target: ensemble-blend, sources: [SRC-VREF-SQUAD-SHEET], from_image: CHR-GAM-02, idea: "The five-member squad in three clips together; no character borrows another's face or prop"}
+  - {id: VCHR-GAM-06, task: i2v, subject: stylised, style: illustration, light: daylight, locale: global, diff: hard, target: identity-drift, sources: [SRC-VREF-PIXEL-HERO], from_image: CHR-GAM-10, idea: "The pixel hero in three animations: walk, jump, staff attack; crisp pixels, parrot on the right shoulder"}
+  - {id: VCHR-GAM-07, task: t2v, subject: stylised, style: 3d, light: daylight, locale: global, diff: hard, target: skin-tone, sources: [], from_image: CHR-GAM-07, idea: "The described dark-skinned heroine in three clips under sun, cyan neon and firelight; skin tone holds"}
+  - {id: VCHR-GAM-08, task: t2v, subject: product, style: 3d, light: practical, locale: global, diff: extreme, target: prop-drift, sources: [], from_image: CHR-GAM-09, idea: "The legendary sword in three clips: pulled from stone, breaking, reforged; the seven glyphs hold"}
+  - {id: VCHR-GAM-09, task: edit, subject: fashion, style: 3d, light: neon, locale: global, diff: hard, target: wardrobe-drift, sources: [SRC-VCLIP-GAME-CITY], idea: "Three re-skins of the gameplay run: monsoon, damaged, gold; her silhouette and moves untouched"}

@@ -1,0 +1,153 @@
+# Precision editing — Advertising & agencies scenarios. Slots: edt.yaml.
+code: EDT
+scenarios:
+
+- id: EDT-ADS-01
+  seed: true
+  title: "Five offer updates on a finished Diwali key visual without damaging its Devanagari"
+  persona: "Studio artist at a Delhi agency turning around a price and date change on a live key visual an hour before the media deadline."
+  evidence: "Earlier bank IMG-TXT-10 (in-place typo fix matching the font) was in the medium tier with Pro at 7.1; this stacks text changes with object changes next to a Devanagari headline that must survive untouched."
+  levers: [multi-step, keep-rest, exact-text, script, count, locale]
+  inputs:
+    - {source: SRC-ADS-KEYVISUAL, role: source, note: "the live key visual"}
+  prompt: |
+    Make exactly these five changes to this key visual and nothing else.
+    1. In the gold starburst at the bottom right, change the price "₹349" to "₹399", in the same
+       font, colour and size.
+    2. Under it, change "Offer till 31 October" to "Offer till 15 November", in the same small
+       cream type, on one line.
+    3. On the jar's label, change the round gold badge from "500 ml" to "1 L"; the jar itself
+       stays the same size and shape.
+    4. Remove the rightmost of the seven diyas, with its flame and its glow; the other six stay
+       exactly where they are, and the marigold petals fill the space where it stood.
+    5. Tie a thin gold satin ribbon with a small bow around the jar's neck, just under the lid,
+       catching the diya light.
+    Everything else stays exactly as it is, letter for letter: the headline "इस दिवाली, घर की ख़ुशबू",
+    the line "Pure cow ghee since 1962", the label's "साँझ" and "SAANJH GHEE", the maroon
+    background and bokeh, the jar's position and the colour grade.
+  exact_text:
+    - "₹399"
+    - "Offer till 15 November"
+    - "1 L"
+    - "इस दिवाली, घर की ख़ुशबू"
+    - "Pure cow ghee since 1962"
+    - "साँझ"
+    - "SAANJH GHEE"
+  deliverable: "One image at the same size as the input."
+  checks:
+    - [text_accuracy, "Does the starburst now read ₹399 in the same font, colour and size?"]
+    - [text_accuracy, "Does the line read Offer till 15 November on one line?"]
+    - [text_accuracy, "Does the label badge read 1 L?"]
+    - [prompt_adherence, "Are there now exactly six lit diyas?"]
+    - [prompt_adherence, "Is it the rightmost diya that is gone, with the other six in their original places?"]
+    - [prompt_adherence, "Is there a thin gold ribbon with a small bow under the lid?"]
+    - [prompt_adherence, "Does the ribbon catch the warm diya light like the jar does?"]
+    - [text_accuracy, "Is the Devanagari headline exactly as before, every letter and mark intact?"]
+    - [text_accuracy, "Is Pure cow ghee since 1962 unchanged?"]
+    - [text_accuracy, "Do साँझ and SAANJH GHEE on the label stay exactly as before?"]
+    - [preservation, "Is the jar the same size, shape and position as before?"]
+    - [preservation, "Are the background, bokeh and colour grade unchanged?"]
+    - [preservation, "Is the space where the diya stood filled naturally with petals, with no glow left behind?"]
+    - [visual_quality, "Are there no smudges, ghost letters or leftover digits where text was changed?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V9: replace the price and date supers on a 6-second animated version of the same key visual."
+
+- id: EDT-ADS-02
+  title: "Campaign clean-up: remove the bib, recolour the track, blur the stands; her face untouched"
+  persona: "Sportswear agency retoucher preparing the hero frame for print."
+  evidence: "Earlier bank IMG-LE-02 (person removal) and IMG-LE-03 (recolour one item) were medium tier; stacking them on a person is harder."
+  levers: [multi-step, keep-rest, identity, physics, locale]
+  inputs: [{source: SRC-ADS-RUNNER, role: source}]
+  prompt: |
+    Make exactly these three changes to this sprinter frame, and nothing else.
+    1. Remove the race bib "214" and its pins from her teal vest, leaving clean fabric with the
+       vest's natural folds.
+    2. Recolour the red track to a deep blue track, keeping its texture, the white lane lines and the
+       painted lane number "4".
+    3. Add stronger horizontal motion blur to the grey stands behind her so she pops more.
+    Her face, hair, body, skin tone, stride, vest colour and shoes are unchanged. Her short shadow
+    under her stays and now falls on blue.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the bib gone with clean fabric?"]
+    - [prompt_adherence, "Is the track now deep blue with texture?"]
+    - [preservation, "Are the white lane lines and the 4 still there?"]
+    - [prompt_adherence, "Is the stands' motion blur stronger?"]
+    - [reference_fidelity, "Is her face unchanged?"]
+    - [reference_fidelity, "Is her skin tone unchanged?"]
+    - [preservation, "Is her stride unchanged?"]
+    - [preservation, "Is the vest still teal?"]
+    - [physics_plausibility, "Is her shadow still under her on the blue track?"]
+    - [visual_quality, "Are there no smudges where the bib was?"]
+    - [preservation, "Are her shoes unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-ADS-03
+  title: "SUV paint white to deep red, headlights on, the far hatchback removed; reflections follow"
+  persona: "Automotive agency retoucher making a colour variant of the hero frame."
+  evidence: "Earlier bank IMG-LE-06 (object swap preserving lighting) was medium tier; a recolour must keep paint reflections."
+  levers: [multi-step, keep-rest, physics, light-lock, locale]
+  inputs: [{source: SRC-ADS-SUV, role: source}]
+  prompt: |
+    Make exactly these three changes to this SUV hero frame, and nothing else.
+    1. Recolour the SUV's paint from white to a deep metallic red; the orange sky still reflects on
+       the bonnet and the sun's highlights stay where they are, now on red paint.
+    2. Switch the headlights on, with a soft glow and a faint light cast on the road just ahead.
+    3. Remove the grey hatchback from the lower bend, rebuilding the road and the hillside there.
+    The SUV's shape, wheels, glass and grille, the hairpin, the mist and the light are unchanged. No
+    badges or lettering.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the paint deep metallic red?"]
+    - [physics_plausibility, "Does the bonnet still reflect the orange sky?"]
+    - [physics_plausibility, "Are the sun's highlights in the same places?"]
+    - [prompt_adherence, "Are the headlights on with a glow?"]
+    - [prompt_adherence, "Is there a faint light cast on the road ahead?"]
+    - [prompt_adherence, "Is the hatchback gone?"]
+    - [visual_quality, "Is the lower bend rebuilt without a seam?"]
+    - [preservation, "Are the wheels, glass and grille unchanged?"]
+    - [preservation, "Is the mist and light unchanged?"]
+    - [preservation, "Is the SUV's shape unchanged?"]
+    - [prompt_adherence, "Are there no badges or lettering?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V6: the same recolour on a driving clip."
+
+- id: EDT-ADS-04
+  title: "Six changes to turn the Diwali frame into a next-year sequel without touching the four faces"
+  persona: "Agency studio making next year's festive frame from this year's photo."
+  evidence: "Six edits on a group photo: one is usually missed, or faces drift."
+  levers: [multi-step, keep-rest, identity, count, locale]
+  inputs: [{source: SRC-ADS-DIWALI-FAMILY, role: source}]
+  prompt: |
+    Make exactly these six changes to this Diwali balcony photo, and nothing else.
+    1. The mother's sari changes from red to emerald green silk.
+    2. The father's plate of sweets becomes a box of sweets tied with a gold ribbon.
+    3. Add an eighth diya at the right end of the row on the ledge, lit like the others.
+    4. The rangoli changes from pink, yellow and white to blue, orange and white, same pattern.
+    5. The single firework burst in the sky becomes two bursts, gold and green.
+    6. Add a hanging paper lantern, red, from the top of the balcony on the left.
+    All four faces, the grandfather's chair and shawl, the girl's green lehenga and pose, the fairy
+    lights and the framing are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the mother's sari emerald green silk?"]
+    - [prompt_adherence, "Is the father holding a box with a gold ribbon?"]
+    - [prompt_adherence, "Are there now eight lit diyas?"]
+    - [prompt_adherence, "Is the rangoli blue, orange and white in the same pattern?"]
+    - [prompt_adherence, "Are there two firework bursts, gold and green?"]
+    - [prompt_adherence, "Is there a red paper lantern hanging on the left?"]
+    - [reference_fidelity, "Are all four faces unchanged?"]
+    - [preservation, "Is the girl's lehenga still green?"]
+    - [preservation, "Is the grandfather unchanged?"]
+    - [preservation, "Are the fairy lights unchanged?"]
+    - [preservation, "Are there still exactly four people?"]
+    - [prompt_adherence, "Are all six changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

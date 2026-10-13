@@ -1,0 +1,132 @@
+# Precision video edits — Gaming scenarios. Slots: vedt.yaml.
+code: VEDT
+scenarios:
+
+- id: VEDT-GAM-01
+  title: "Remove the whole interface from the gameplay run for a trailer; the scene behind it rebuilt, nothing else touched"
+  persona: "Game studio's trailer editor who only has a capture with the interface burnt in."
+  evidence: "Interface removal over a moving scene must rebuild four corners on every frame."
+  levers: [keep-rest, small-text, count, timing, unseen]
+  inputs: [{source: SRC-VCLIP-GAME-CITY, role: source}]
+  prompt: |
+    This 8-second gameplay capture has the interface burnt in: a red health bar and a teal stamina bar at
+    the top left, a round minimap at the top right, an ammo counter at the bottom left and three ability
+    icons at the bottom right. Remove all of it on every frame and rebuild the wet neon street, the
+    buildings and the sky behind each element, moving with the third-person camera. The heroine, her run,
+    the vault at 3 seconds, the slide at 6 seconds, the street, the neon and the camera are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged third-person follow"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Are both bars gone from the top left?"]
+    - [prompt_adherence, "Is the minimap gone from the top right?"]
+    - [prompt_adherence, "Is the ammo counter gone from the bottom left?"]
+    - [prompt_adherence, "Are all three ability icons gone?"]
+    - [preservation, "Is the scene rebuilt plausibly behind each element?"]
+    - [temporal_consistency, "Do the rebuilt areas move with the camera, without smears?"]
+    - [preservation, "Is the heroine unchanged?"]
+    - [preservation, "Are the vault at 3 s and slide at 6 s unchanged?"]
+    - [preservation, "Are the street and neon unchanged?"]
+    - [text_accuracy, "Is there no text left on screen?"]
+    - [preservation, "Is the camera unchanged?"]
+    - [visual_quality, "Is there no ghosting of the interface?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-GAM-02
+  title: "Art pass on the fly-through: cube removed, vines on the gopuram, water in the tank, all tracked"
+  persona: "Environment artist previewing an art pass on a level fly-through before building it."
+  evidence: "Earlier image bank EDT-GAM-02: three art notes on a still; on a fly-through each must track."
+  levers: [multi-step, keep-rest, physics, parallax, locale]
+  inputs: [{source: SRC-VCLIP-GAME-TEMPLE-FLY, role: source}]
+  prompt: |
+    Make exactly these three changes to this 8-second fly-through of a ruined temple courtyard, on every
+    frame, and nothing else.
+    1. Remove the grey placeholder cube by the stone chariot's right wheel, which passes on the right at
+       about 5 seconds; rebuild the paving.
+    2. Add dark-green creeping vines hanging down the left side of the gopuram's lower three tiers, swaying
+       slightly in a breeze.
+    3. Fill the dry stepped tank on the right with still green water up to the third step, reflecting the
+       shrine and the sky.
+    The pillars, the fallen third pillar at 3 seconds, the chariot, the low sun from the right and the glide
+    are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged forward glide"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the cube gone with the paving rebuilt?"]
+    - [prompt_adherence, "Are there vines on the left side of the lower three tiers?"]
+    - [prompt_adherence, "Is the tank filled with green water to the third step?"]
+    - [physics_plausibility, "Does the water reflect the shrine and sky with correct parallax?"]
+    - [physics_plausibility, "Do the vines sway slightly?"]
+    - [motion_coherence, "Do all three edits track with the glide?"]
+    - [preservation, "Are the pillars and fallen pillar unchanged?"]
+    - [preservation, "Is the chariot unchanged?"]
+    - [preservation, "Is the low sun from the right unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [preservation, "Is the glide unchanged?"]
+    - [visual_quality, "Is there no shimmer?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-GAM-03
+  title: "Change the hover-bike's stripe to violet and its decal from 07 to TEAM 12 through the banking race"
+  persona: "Racing game's marketing editor making a team-livery variant from one capture."
+  evidence: "Livery edits on a banking vehicle slip off its surface and garble decals."
+  levers: [multi-step, exact-text, keep-rest, small-text, timing]
+  inputs: [{source: SRC-VCLIP-GAME-RACE, role: source}]
+  prompt: |
+    Make exactly these two changes to this 6-second race capture, on every frame, and nothing else.
+    1. Recolour the orange stripe running from nose to tail to a bright violet; the orange seat stays
+       orange.
+    2. Replace the white "07" decal on each rear fairing with a white decal reading "TEAM 12" in the same
+       style, wrapping the fairing's curve.
+    The graphite body, the dent on the right front fairing, the cyan pods and their glow on the floor, the
+    rider, the banks left at 2 seconds and right at 4 seconds, the tunnel and the chase camera are unchanged.
+  exact_text: ["TEAM 12"]
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged chase camera"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the stripe violet nose to tail?"]
+    - [preservation, "Is the seat still orange?"]
+    - [text_accuracy, "Do the decals read TEAM 12 correctly?"]
+    - [physics_plausibility, "Do the decals wrap the fairing's curve?"]
+    - [motion_coherence, "Do the edits stay on the bike as it banks?"]
+    - [preservation, "Are the banks at 2 s and 4 s unchanged?"]
+    - [preservation, "Is the dent on the right front fairing kept?"]
+    - [preservation, "Are the cyan pods and their glow unchanged?"]
+    - [preservation, "Is the rider unchanged?"]
+    - [text_accuracy, "Is no 07 left?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Is there no flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-GAM-04
+  title: "Turn the clear sky into a storm with lightning; the squad, their walk and the archer's draw untouched"
+  persona: "Game studio's trailer lead changing the mood of a cinematic without re-rendering."
+  evidence: "Earlier image bank EDT-GAM-03: weather changes repaint characters; lightning must light them, not redraw them."
+  levers: [light-lock, keep-rest, timing, identity, count]
+  inputs: [{source: SRC-VCLIP-GAME-TRAILER, role: source}]
+  prompt: |
+    In this 8-second cel-shaded trailer shot of five squad members walking along a fort rampart, replace the
+    clear blue sky with dark storm clouds rolling slowly, and dim the daylight to a flat grey-blue. At 3
+    seconds and again at 6.5 seconds a fork of lightning strikes on the horizon and briefly lights the squad
+    and the rampart cool white from behind. The saffron banner flaps harder in the wind. The five characters,
+    their faces, props and walk, the archer's draw at 5 seconds and the dolly back are unchanged: relit, not
+    redrawn.
+  clip: {duration: 8, aspect: "2.39:1", camera: "unchanged dolly back"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the sky dark storm clouds, rolling?"]
+    - [prompt_adherence, "Is the daylight dimmed to flat grey-blue?"]
+    - [prompt_adherence, "Does lightning strike at about 3 s and 6.5 s?"]
+    - [prompt_adherence, "Does each strike light the squad from behind briefly?"]
+    - [physics_plausibility, "Does the banner flap harder?"]
+    - [prompt_adherence, "Are there five characters?"]
+    - [reference_fidelity, "Are the characters relit, not redrawn?"]
+    - [preservation, "Does the archer still draw at 5 seconds?"]
+    - [preservation, "Are their props and walk unchanged?"]
+    - [style, "Is the cel-shaded style kept?"]
+    - [preservation, "Is the dolly unchanged?"]
+    - [temporal_consistency, "Is there no flicker outside the strikes?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

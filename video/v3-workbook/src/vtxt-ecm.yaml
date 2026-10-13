@@ -1,0 +1,77 @@
+# Text in motion — E-commerce, D2C & retail scenarios. Slots: vtxt.yaml.
+code: VTXT
+scenarios:
+
+- id: VTXT-ECM-02
+  seed: true
+  title: "Bilingual shelf tags on a moving shot: a Tamil name added above each, stuck through the dolly"
+  persona: "Retail chain's in-store media team localising shelf footage for Tamil Nadu stores."
+  evidence: "Text added to a moving surface drifts off it (track loss) and Tamil glyphs shimmer between frames."
+  levers: [exact-text, script, small-text, keep-rest, camera-move, locale]
+  inputs:
+    - {source: SRC-VCLIP-SHELF-PAN, role: source, note: "the 6-second shelf dolly"}
+  prompt: |
+    In this 6-second dolly along a supermarket shelf, add a Tamil product name in black above the
+    existing first line of each of the six price tags, in a clean Tamil sans the same height as the
+    existing product name, so each tag reads Tamil, then English, then price, then unit price. The Tamil
+    names, in order: "பாசுமதி அரிசி", "சோனா மசூரி", "துவரம் பருப்பு", "பாசிப் பருப்பு", "கடலைப் பருப்பு",
+    "மசூர் பருப்பு". Each name stays printed on its own tag as the camera moves: same position on the
+    tag, same perspective, same focus and light as the tag's own text, with no sliding, flicker or
+    re-spelling between frames. The English names, prices and unit prices, the bags and the move are
+    unchanged.
+  exact_text:
+    - "பாசுமதி அரிசி"
+    - "சோனா மசூரி"
+    - "துவரம் பருப்பு"
+    - "பாசிப் பருப்பு"
+    - "கடலைப் பருப்பு"
+    - "மசூர் பருப்பு"
+  clip: {duration: 6, aspect: "16:9", camera: "as the source: slow dolly right"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Is every Tamil name exact and correctly formed?"]
+    - [prompt_adherence, "Is each Tamil name on the right tag, above the English name?"]
+    - [motion_coherence, "Does each Tamil name stay locked to its tag through the dolly?"]
+    - [temporal_consistency, "Is there no flicker or re-spelling of Tamil glyphs between frames?"]
+    - [physics_plausibility, "Do the names follow each tag's perspective and focus?"]
+    - [style, "Are the names the same height as the English names, in black?"]
+    - [preservation, "Are the English names, prices and unit prices unchanged?"]
+    - [preservation, "Are the bags and shelf unchanged?"]
+    - [preservation, "Is the dolly unchanged?"]
+    - [prompt_adherence, "Do the new names take the same fluorescent light as the tags?"]
+    - [prompt_adherence, "Are there six tags, each with one Tamil name?"]
+    - [text_accuracy, "Is no other text added?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VTXT-ECM-01
+  title: "The summer-sale hero banner animated: headline, discount, dates, button and code arrive on cue"
+  persona: "Fashion e-commerce site's designer turning the static sale banner into a homepage video."
+  evidence: "Five text elements on cue: generated motion typography drops or misspells one."
+  levers: [exact-text, timing, time-code, layout, small-text]
+  prompt: |
+    An 8-second animated homepage banner, 16:9, flat graphic style: a warm golden-hour gradient from coral at
+    the left to sunflower yellow at the right, with a model in a white linen dress on the right third, her
+    hem moving in a breeze. Text on the left half arrives in order and then holds: at 00:00:00:12 the headline
+    "SUMMER SALE" slides up in heavy white capitals; at 00:00:01:12 "UP TO 50% OFF" scales in below it, larger;
+    at 00:00:02:12 "1–7 June" fades in below in a thin font; at 00:00:03:12 a white rounded button reading
+    "SHOP NOW" pops in; at 00:00:04:12 a small line "Code: SUN50" types on under the button. Every line stays
+    exact and still once it lands. No other text.
+  exact_text: ["SUMMER SALE", "UP TO 50% OFF", "1–7 June", "SHOP NOW", "Code: SUN50"]
+  clip: {duration: 8, aspect: "16:9", camera: "locked off"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Does the headline read SUMMER SALE?"]
+    - [text_accuracy, "Does it read UP TO 50% OFF?"]
+    - [text_accuracy, "Does it read 1–7 June?"]
+    - [text_accuracy, "Does the button read SHOP NOW?"]
+    - [text_accuracy, "Does the code read Code: SUN50?"]
+    - [prompt_adherence, "Do the five elements arrive in order about a second apart?"]
+    - [prompt_adherence, "Is all the text on the left half?"]
+    - [motion_coherence, "Does every line stay still and exact once it lands?"]
+    - [motion_coherence, "Does the model's hem move in a breeze?"]
+    - [style, "Is it flat graphic with a coral-to-yellow gradient?"]
+    - [text_accuracy, "Is there no other text?"]
+    - [visual_quality, "Are the letter edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

@@ -1,0 +1,68 @@
+# Family 6 — Typography and layout, multi-script (header). Scenarios: typ-*.yaml.
+
+family: Typography and layout
+code: TYP
+number: 6
+about: "Posters, title cards and layouts with exact copy in Latin, Devanagari, Telugu and Tamil, including localising a finished design. Compared with a type-led tool."
+outputs: "1"
+text_family: true
+
+rubric:
+  weights: {text_accuracy: 4, prompt_adherence: 3, style: 2, preservation: 2, visual_quality: 1, physics_plausibility: 1, composition: 1, set_consistency: 1, reference_fidelity: 1}
+  gate: [text_accuracy]
+  gate_rule: "Every letter must be right, in every script."
+
+targets:
+  string-exact: "A word is misspelled, missing, doubled or invented"
+  script-render: "Devanagari, Telugu or Tamil letters are malformed or joined wrongly"
+  hierarchy: "The type sizes and order do not follow the brief"
+  layout-kept: "A localised or edited layout loses the original design"
+  small-text: "Small text (credits, fine print) is garbled"
+  font-match: "New text does not match the existing font, weight or treatment"
+
+slots:
+  # Film, OTT & micro-drama — 4 (3 t2i, 1 edit · 2 hard, 2 extreme)
+  - {id: TYP-FLM-01, task: t2i, subject: person, style: graphic, light: night, locale: IN, diff: extreme, target: small-text, sources: [], script: telugu, idea: "Telugu film one-sheet: Telugu title, English tagline, full billing block"}
+  - {id: TYP-FLM-02, task: t2i, subject: landscape, style: cinematic, light: golden, locale: IN, diff: hard, target: script-render, sources: [], script: devanagari, idea: "OTT series title card: a distressed Devanagari title over a cinematic still"}
+  - {id: TYP-FLM-03, task: t2i, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: string-exact, sources: [], script: tamil, idea: "A film frame with burned-in two-line subtitles, Tamil above English, in the safe area"}
+  - {id: TYP-FLM-04, task: edit, subject: person, style: graphic, light: night, locale: IN, diff: extreme, target: layout-kept, sources: [SRC-POSTER-NOIR], script: devanagari, idea: "Localise the English noir poster into Hindi; every block keeps its place, size and treatment"}
+  # Advertising & agencies — 8 (6 t2i, 2 edit · 5 hard, 3 extreme)
+  - {id: TYP-ADS-01, task: t2i, subject: product, style: graphic, light: daylight, locale: IN, diff: extreme, target: hierarchy, sources: [], script: mixed, idea: "Full-page newspaper ad for the scooter: English headline, Hindi line, price, spec labels, fine print"}
+  - {id: TYP-ADS-02, task: t2i, subject: food, style: graphic, light: practical, locale: IN, diff: hard, target: script-render, sources: [], script: tamil, idea: "Pongal sweets hoarding in Tamil with an English brand line"}
+  - {id: TYP-ADS-03, task: t2i, subject: fashion, style: graphic, light: golden, locale: global, diff: hard, target: string-exact, sources: [], script: latin, idea: "End-of-season sale poster: stacked display type, dates and store list"}
+  - {id: TYP-ADS-04, task: t2i, subject: architecture, style: photoreal, light: night, locale: IN, diff: hard, target: script-render, sources: [], script: telugu, idea: "A lit hoarding on a Hyderabad building with a Telugu ad, in true perspective"}
+  - {id: TYP-ADS-05, task: t2i, subject: vehicle, style: graphic, light: night, locale: IN, diff: extreme, target: small-text, sources: [], script: latin, idea: "Car press ad with a spec table and a long disclaimer at 6-point size"}
+  - {id: TYP-ADS-06, task: t2i, subject: stylised, style: illustration, light: daylight, locale: IN, diff: hard, target: hierarchy, sources: [], script: latin, idea: "Comic-strip snack ad with Hinglish speech bubbles in a set reading order"}
+  - {id: TYP-ADS-07, task: edit, subject: food, style: graphic, light: practical, locale: IN, diff: extreme, target: layout-kept, sources: [SRC-ADS-KEYVISUAL], script: tamil, idea: "Localise the ghee key visual into Tamil; every block keeps its place, size and colour"}
+  - {id: TYP-ADS-08, task: edit, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: hard, target: font-match, sources: [SRC-ADS-STORE-POSTER], script: latin, idea: "Change the shop-door sale poster to 50% and 15 August in the same font, perspective and glare"}
+  # E-commerce, D2C & retail — 8 (6 t2i, 2 edit · 5 hard, 3 extreme)
+  - {id: TYP-ECM-01, task: t2i, subject: product, style: graphic, light: daylight, locale: IN, diff: extreme, target: small-text, sources: [], script: mixed, idea: "Back of a spice pack: bilingual ingredients, nutrition table, MRP, dates and batch lines at small size"}
+  - {id: TYP-ECM-02, task: t2i, subject: food, style: graphic, light: practical, locale: IN, diff: hard, target: string-exact, sources: [], script: telugu, idea: "A sweet shop's Diwali box lid with a Telugu brand name and an English line"}
+  - {id: TYP-ECM-03, task: t2i, subject: fashion, style: graphic, light: golden, locale: global, diff: hard, target: hierarchy, sources: [], script: latin, idea: "Desktop hero banner 1440×480 for a sale: discount, dates, a button and a code, in a strict size order"}
+  - {id: TYP-ECM-04, task: t2i, subject: person, style: photoreal, light: daylight, locale: IN, diff: extreme, target: script-render, sources: [], script: tamil, idea: "A model in a printed T-shirt whose Tamil slogan follows the fabric folds"}
+  - {id: TYP-ECM-05, task: t2i, subject: child-elderly, style: illustration, light: daylight, locale: global, diff: hard, target: string-exact, sources: [], script: latin, idea: "Picture-book cover for a D2C kids' brand: title, subtitle, author and age band"}
+  - {id: TYP-ECM-06, task: t2i, subject: interior, style: photoreal, light: practical, locale: IN, diff: hard, target: small-text, sources: [], script: latin, idea: "A supermarket shelf with six price tags, each with exact product, price and unit price"}
+  - {id: TYP-ECM-07, task: edit, subject: product, style: graphic, light: daylight, locale: IN, diff: hard, target: layout-kept, sources: [SRC-ECM-INFOGRAPHIC], script: devanagari, idea: "Localise the bottle listing infographic into Hindi; callouts, leader lines and badge keep their places"}
+  - {id: TYP-ECM-08, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: font-match, sources: [SRC-ECM-SODA-CAN], script: latin, idea: "Change the can's flavour to Mango in the same hand-lettered script, following the can's curve"}
+  # Gaming — 4 (3 t2i, 1 edit · 2 hard, 2 extreme)
+  - {id: TYP-GAM-01, task: t2i, subject: stylised, style: graphic, light: neon, locale: global, diff: extreme, target: hierarchy, sources: [], script: latin, idea: "Title lock-up for the game: logo, season line, tagline and platform line in a strict order"}
+  - {id: TYP-GAM-02, task: t2i, subject: group, style: graphic, light: night, locale: IN, diff: hard, target: string-exact, sources: [], script: mixed, idea: "Esports final poster: two team names in Hindi and English, date, venue and prize pool"}
+  - {id: TYP-GAM-03, task: t2i, subject: product, style: graphic, light: daylight, locale: IN, diff: hard, target: script-render, sources: [], script: telugu, idea: "An in-game item card in Telugu: item name, rarity, four stats and flavour text"}
+  - {id: TYP-GAM-04, task: edit, subject: stylised, style: graphic, light: neon, locale: IN, diff: extreme, target: layout-kept, sources: [SRC-GAM-STORE-BANNER], script: tamil, idea: "Localise the store banner into Tamil; logo stays English, every other block keeps its place"}
+  # Media, publishing & events — 16 (12 t2i, 4 edit · 10 hard, 6 extreme)
+  - {id: TYP-MED-01, task: t2i, subject: group, style: graphic, light: neon, locale: IN, diff: extreme, target: hierarchy, sources: [], script: mixed, idea: "Sahil's typography test: a club-night poster with a huge lower-case display word, date, headliners and a Devanagari line"}
+  - {id: TYP-MED-02, task: t2i, subject: person, style: graphic, light: daylight, locale: global, diff: extreme, target: small-text, sources: [], script: latin, idea: "Sahil's second poster: a stacked collage headline around a falling figure, with small body-text columns"}
+  - {id: TYP-MED-03, task: t2i, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: hard, target: string-exact, sources: [], script: devanagari, idea: "Hindi magazine cover: masthead, six cover lines and the issue line"}
+  - {id: TYP-MED-04, task: t2i, subject: group, style: graphic, light: daylight, locale: IN, diff: extreme, target: script-render, sources: [], script: telugu, idea: "Telugu newspaper front page: masthead, headline, three columns, photo caption"}
+  - {id: TYP-MED-05, task: t2i, subject: architecture, style: graphic, light: daylight, locale: IN, diff: hard, target: hierarchy, sources: [], script: tamil, idea: "Conference wayfinding sheet: hall signs and arrows in English and Tamil"}
+  - {id: TYP-MED-06, task: t2i, subject: food, style: illustration, light: practical, locale: IN, diff: hard, target: string-exact, sources: [], script: telugu, idea: "A café chalkboard menu: ten items with prices in Telugu and English"}
+  - {id: TYP-MED-07, task: t2i, subject: stylised, style: illustration, light: neon, locale: global, diff: hard, target: script-render, sources: [], script: tamil, idea: "A comic-book page of six panels with Tamil speech bubbles in reading order"}
+  - {id: TYP-MED-08, task: t2i, subject: landscape, style: cinematic, light: golden, locale: global, diff: extreme, target: small-text, sources: [], script: latin, idea: "Travel-magazine spread: headline over a photo, standfirst, drop cap, two columns of body"}
+  - {id: TYP-MED-09, task: t2i, subject: child-elderly, style: illustration, light: daylight, locale: IN, diff: extreme, target: script-render, sources: [], script: devanagari, idea: "A Hindi primer page: twelve letters, each with a word and a picture"}
+  - {id: TYP-MED-10, task: t2i, subject: animal, style: graphic, light: daylight, locale: global, diff: hard, target: string-exact, sources: [], script: latin, idea: "Wildlife census infographic: five species with counts and a bar chart"}
+  - {id: TYP-MED-11, task: t2i, subject: vehicle, style: graphic, light: night, locale: IN, diff: hard, target: small-text, sources: [], script: latin, idea: "Motor-show entry pass: name, zone, gate, day and a block of fine print"}
+  - {id: TYP-MED-12, task: t2i, subject: interior, style: photoreal, light: practical, locale: IN, diff: hard, target: string-exact, sources: [], script: latin, idea: "A bookshop window with five books whose spine titles are readable"}
+  - {id: TYP-MED-13, task: edit, subject: person, style: graphic, light: neon, locale: IN, diff: extreme, target: layout-kept, sources: [SRC-MED-EVENT-POSTER], script: telugu, idea: "Localise the club poster into Telugu; the huge title block, frame and order stay"}
+  - {id: TYP-MED-14, task: edit, subject: fashion, style: photoreal, light: practical, locale: global, diff: hard, target: font-match, sources: [SRC-MED-MAG-COVER], script: latin, idea: "Next month's cover: new cover lines and date in the exact fonts; masthead still behind her head"}
+  - {id: TYP-MED-15, task: edit, subject: product, style: photoreal, light: daylight, locale: IN, diff: hard, target: font-match, sources: [SRC-MED-NEWSPAPER], script: devanagari, idea: "Replace the printed Hindi headline with a new one that follows the paper's curl and the cup's shadow"}
+  - {id: TYP-MED-16, task: edit, subject: person, style: graphic, light: neon, locale: IN, diff: hard, target: hierarchy, sources: [SRC-MED-EVENT-POSTER], script: latin, idea: "Re-lay the portrait club poster as a 3:1 landscape billboard with the same hierarchy"}

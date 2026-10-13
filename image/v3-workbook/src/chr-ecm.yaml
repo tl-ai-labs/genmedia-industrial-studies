@@ -1,0 +1,241 @@
+# Character continuity — E-commerce, D2C & retail scenarios. Slots: chr.yaml.
+code: CHR
+scenarios:
+
+- id: CHR-ECM-01
+  seed: true
+  title: "Catalogue try-on: one model in a silk saree and a denim jacket across four frames"
+  persona: "Catalogue manager at an Indian fashion marketplace producing on-model images for new listings from flat-lays, without a second shoot."
+  evidence: "Virtual try-on is the highest-volume edit in fashion e-commerce. Earlier bank IMG-VIEW-36 (straight-on model to three-quarter) held one garment; this needs a draped garment built from a flat-lay, where the border and pallu must land in the right places, plus a second garment with side-specific details."
+  levers: [set, identity, multi-ref, layout, locale, unseen, keep-rest]
+  inputs:
+    - {source: SRC-ECM-KURTA-MODEL, role: source, note: "the model, the backdrop and the light"}
+    - {source: SRC-ECM-SAREE-FLAT, role: reference, note: "the saree for frames 1 and 2"}
+    - {source: SRC-ECM-JACKET-FLAT, role: reference, note: "the jacket for frames 3 and 4"}
+  prompt: |
+    The first photo is our catalogue model, backdrop and light. Produce one new catalogue image of
+    the same woman wearing the garment named below, as if shot in the same session: same face,
+    same medium-brown skin tone, same wavy shoulder-length hair, same silver jhumkas, same height
+    and build, same warm beige paper backdrop and the same soft window light from frame left. The
+    garments must be exactly the ones in the reference photos: the saree with its peacock-green
+    body and small gold buttis, the magenta border with the gold temple pattern, and the magenta
+    pallu with gold stripes and peacocks; the denim jacket in mid-blue stone wash with copper
+    buttons, the embroidered yellow marigold on the left chest flap and the frayed patch on the
+    right cuff. Full length, 4:5, no text, no other people, no retouching of her face or body.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, hair, jhumkas and medium-brown skin tone"
+      - "Her height and build"
+      - "The beige backdrop and the soft light from frame left"
+      - "The saree's colours and patterns exactly as the flat-lay"
+      - "The jacket's marigold on the left chest and fray on the right cuff"
+    members:
+      - name: "Saree, front"
+        prompt: "She wears the saree draped in the nivi style with the magenta blouse, pleats at the front, the border running along the hem and up the edge of the pallu, the pallu over her left shoulder. Facing the camera."
+        checks:
+          - [reference_fidelity, "Does the border run along the hem and up the pallu's edge?"]
+          - [prompt_adherence, "Is the pallu over her left shoulder?"]
+          - [reference_fidelity, "Is the blouse magenta?"]
+      - name: "Saree, back three-quarter"
+        prompt: "The same drape seen from her back three-quarter, she looks back over her right shoulder; the pallu hangs down her back showing the gold stripes and the row of peacocks."
+        checks:
+          - [reference_fidelity, "Does the pallu on her back show gold stripes and a row of peacocks?"]
+          - [prompt_adherence, "Is she seen from the back three-quarter, looking over her right shoulder?"]
+          - [reference_fidelity, "Is her face, seen in part, still recognisably her?"]
+      - name: "Jacket over the kurta"
+        prompt: "She wears the denim jacket open over her own mustard kurta and white palazzos, sleeves turned up once. Facing the camera, hands in the jacket's side pockets."
+        checks:
+          - [reference_fidelity, "Is the marigold on her left chest flap?"]
+          - [preservation, "Is the mustard kurta with white print still visible under the jacket?"]
+          - [visual_quality, "Do the hands go naturally into the pockets with no warped fingers?"]
+      - name: "Jacket, walking"
+        prompt: "The same outfit, walking towards the camera mid-stride, her right arm swinging forward so the frayed right cuff is visible."
+        checks:
+          - [reference_fidelity, "Is the frayed patch visible on the right cuff?"]
+          - [prompt_adherence, "Is she mid-stride walking towards the camera?"]
+          - [prompt_adherence, "Is the dupatta gone, as it is not part of this outfit?"]
+  deliverable: "Four images, 4:5, one per member."
+  checks:
+    - [set_consistency, "Is she recognisably the same woman as the first photo in all four frames?"]
+    - [set_consistency, "Is her skin tone the same in all four, with no lightening?"]
+    - [set_consistency, "Are her hair and silver jhumkas the same in all four?"]
+    - [set_consistency, "Do her height and build stay the same across the frames?"]
+    - [set_consistency, "Are the backdrop and the light from frame left the same in all four?"]
+    - [reference_fidelity, "Is the saree body peacock green with small gold buttis, matching the flat-lay?"]
+    - [reference_fidelity, "Is the border magenta with a gold temple pattern, not a different motif?"]
+    - [reference_fidelity, "Is the jacket mid-blue stone wash with copper buttons?"]
+    - [reference_fidelity, "Is the marigold on the left chest flap in both jacket frames, never on the right?"]
+    - [physics_plausibility, "Do the saree's folds and pleats drape like silk, with the border following the folds?"]
+    - [prompt_adherence, "Is she the only person in every frame?"]
+    - [text_accuracy, "Is there no text or logo in any frame?"]
+    - [visual_quality, "Are hands and feet natural in all four frames?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Each frame is one image edit with three inputs. The judge scores one image at a time; whole-set identity needs the set review."}
+  video_followon: "V4: the saree front frame as the first frame of a slow turn, border and pallu holding through the motion."
+
+- id: CHR-ECM-02
+  title: "The smartwatch wearer in three frames: yoga at dawn, market at noon, video call at night"
+  persona: "Wearables brand's content lead building a day-in-the-life set for the launch."
+  evidence: "Skin tone drifting lighter in bright light and greyer at night is a known failure on dark skin."
+  levers: [set, identity, light-lock, locale, exact-text]
+  inputs: [{source: SRC-ECM-WATCH-ELDER, role: source}]
+  prompt: |
+    This lifestyle photo shows a woman of about sixty-eight with dark brown skin, a grey braid and a
+    red bindi, in a lilac sari, wearing a smartwatch with a square black face and a sage-green strap
+    on her left wrist. Make one frame of her day as described below, photoreal. Her face, braid,
+    bindi and dark brown skin stay exactly hers in every light: never lightened by sun, never greyed
+    by screen light. The watch stays on her left wrist and its face shows the time stated. 3:2, no
+    logos.
+  exact_text: ["06:10", "12:30", "21:05"]
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, grey braid, red bindi"
+      - "Dark brown skin tone in every light"
+      - "Watch on the left wrist, square black face, sage-green strap"
+    members:
+      - {name: "Yoga at dawn", prompt: "Dawn on a terrace, doing a standing yoga pose, the watch face reading 06:10.", checks: [[text_accuracy, "Does the watch read 06:10?"], [prompt_adherence, "Is it soft dawn light?"]]}
+      - {name: "Market at noon", prompt: "Harsh noon at a vegetable market, holding a cloth bag, the watch face reading 12:30.", checks: [[text_accuracy, "Does the watch read 12:30?"], [reference_fidelity, "Is her skin still dark brown in the harsh sun?"]]}
+      - {name: "Video call at night", prompt: "Night at home, on a video call on a tablet, lit by the screen and a warm lamp, the watch face reading 21:05.", checks: [[text_accuracy, "Does the watch read 21:05?"], [reference_fidelity, "Is her skin tone held under screen light?"]]}
+  deliverable: "Three images, 3:2."
+  checks:
+    - [set_consistency, "Is she the same woman in all three?"]
+    - [set_consistency, "Is her skin tone the same dark brown in all three lights?"]
+    - [set_consistency, "Is the watch on her left wrist in all three?"]
+    - [set_consistency, "Is the strap sage green in all three?"]
+    - [text_accuracy, "Does each watch face show its stated time?"]
+    - [set_consistency, "Are the braid and bindi the same in all three?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [prompt_adherence, "Is she the only person in focus?"]
+    - [prompt_adherence, "Are there no logos?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [style, "Is the look consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-ECM-03
+  title: "The knitted elephant in four nursery scenes; trunk side, ear patch and bell never move"
+  persona: "D2C toy brand's content lead making lifestyle images of a hand-knitted toy."
+  evidence: "Toy details on one side drift between generated lifestyle shots."
+  levers: [set, identity, continuity, physics, keep-rest]
+  inputs: [{source: SRC-ECM-PLUSH, role: source}]
+  prompt: |
+    This product photo shows a hand-knitted grey elephant toy about 25 cm tall: stitched black
+    button eyes, a trunk curled up to its right, a mustard knitted patch sewn on its left ear, and a
+    red ribbon collar with a tiny brass bell. Make one lifestyle photo of the same toy in the nursery
+    scene described below, soft daylight. The toy keeps its size, its knit texture and its
+    one-sided details exactly: trunk to its right, patch on its left ear. Any child is shown only
+    as hands or a soft background. 4:5, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Grey knit, button eyes, about 25 cm tall"
+      - "Trunk curled to its right; mustard patch on its left ear"
+      - "Red ribbon collar with a brass bell"
+    members:
+      - {name: "Cot", prompt: "Sitting in a white cot beside a folded muslin blanket.", checks: [[reference_fidelity, "Is the trunk curled to its right?"], [physics_plausibility, "Does it sink slightly into the mattress?"]]}
+      - {name: "Bookshelf", prompt: "On a low bookshelf between picture books, seen from its left.", checks: [[reference_fidelity, "Is the mustard patch on the near (left) ear?"], [physics_plausibility, "Is it the right size next to the books?"]]}
+      - {name: "Bath time", prompt: "Perched on the edge of a bath tub, dry, rubber duck beside it.", checks: [[reference_fidelity, "Is the bell on the collar?"], [physics_plausibility, "Is it balanced plausibly?"]]}
+      - {name: "Held", prompt: "Held in a toddler's two hands, close-up, the child's face soft behind.", checks: [[physics_plausibility, "Does the knit squash under the fingers?"], [reference_fidelity, "Are the button eyes black?"]]}
+  deliverable: "Four images, 4:5."
+  checks:
+    - [set_consistency, "Is it the same toy in all four?"]
+    - [set_consistency, "Is the trunk curled to its right in all four?"]
+    - [set_consistency, "Is the patch on its left ear in all four where visible?"]
+    - [set_consistency, "Is the collar red with a bell in all four?"]
+    - [physics_plausibility, "Is the toy about 25 cm in each scene?"]
+    - [style, "Is the knit texture visible in all four?"]
+    - [prompt_adherence, "Is the light soft daylight in all four?"]
+    - [prompt_adherence, "Does each image show its scene?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are children's hands natural where shown?"]
+    - [prompt_adherence, "Is there one elephant only?"]
+    - [style, "Is the look consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one reference; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-ECM-04
+  title: "Makeup tutorial in four steps: bare, base, eyes, lips; the base matches her dark skin"
+  persona: "Beauty brand's social team turning one creator photo into a tutorial carousel."
+  evidence: "Generated makeup routinely lightens dark skin at the 'base' step; that is the failure target."
+  levers: [set, identity, multi-step, continuity, locale]
+  inputs: [{source: SRC-ECM-CREATOR, role: source}]
+  prompt: |
+    This vertical frame shows a beauty creator of about twenty-three with dark brown skin, a natural
+    bare face, black hair in a claw clip, small gold hoops and a sage-green ribbed tank top, lit by
+    a ring light. Make one tutorial frame, as described below, in the same room, framing and light.
+    Her face, hair, earrings and top stay exactly hers. Each step adds to the last: the base must
+    match her own dark brown skin exactly, with no lightening or grey cast, and her skin texture
+    stays visible. 9:16, no text.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, claw clip, gold hoops, sage tank top"
+      - "Ring-light key, same room and framing"
+      - "Her dark brown skin tone; steps accumulate"
+    members:
+      - {name: "1 Bare", prompt: "Bare face as in the photo.", checks: [[reference_fidelity, "Is it identical to the photo?"], [reference_fidelity, "Is her skin texture visible?"]]}
+      - {name: "2 Base", prompt: "Foundation and concealer applied, a natural matte finish matched to her skin.", checks: [[set_consistency, "Is the base the same depth as her skin, not lighter?"], [reference_fidelity, "Is there no grey cast?"]]}
+      - {name: "3 Eyes", prompt: "Base plus a bronze smoky eye and black liner.", checks: [[prompt_adherence, "Is the base still there?"], [prompt_adherence, "Is there a bronze smoky eye?"]]}
+      - {name: "4 Lips", prompt: "Everything plus a deep berry lipstick.", checks: [[prompt_adherence, "Are the base and eyes still there?"], [prompt_adherence, "Is the lipstick deep berry?"]]}
+  deliverable: "Four images, 9:16."
+  checks:
+    - [set_consistency, "Is she the same woman in all four?"]
+    - [set_consistency, "Is her skin tone the same depth in all four?"]
+    - [prompt_adherence, "Do the steps build up without resetting?"]
+    - [set_consistency, "Are the hoops, clip and top the same in all four?"]
+    - [set_consistency, "Are the room, framing and ring light the same?"]
+    - [set_consistency, "Is her skin texture visible in every step, not airbrushed away?"]
+    - [prompt_adherence, "Does each step show its makeup?"]
+    - [prompt_adherence, "Is she alone in each?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are eyes and lips clean?"]
+    - [prompt_adherence, "Are ring catchlights in her eyes in all four?"]
+    - [style, "Is the look consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Four image edits from one base; set agreement needs the set review."}
+  video_followon: ""
+
+- id: CHR-ECM-05
+  title: "A described family of four in a mattress brand's three frames"
+  persona: "Mattress D2C brand's agency visualising a campaign family before casting."
+  evidence: "Several described people held across frames blend features."
+  levers: [set, identity, count, long-brief, light-lock]
+  prompt: |
+    A family of four for a mattress brand campaign in a Bengaluru flat, photoreal, warm interior
+    light, 3:2. Father, about forty, with a trimmed beard and rectangular glasses; mother, about
+    thirty-eight, with a short pixie cut and a small nose ring on the left; a boy of about ten with
+    round glasses and a gap-toothed smile; a girl of about five with curly hair in two puffs. The
+    bed has a plain white duvet and grey pillows. Make the frame described below. Each person keeps
+    their face and look; the children stay the same ages.
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Father: trimmed beard, rectangular glasses"
+      - "Mother: pixie cut, nose ring on the left"
+      - "Boy with round glasses; girl with two curly puffs"
+    members:
+      - {name: "Bedtime story", prompt: "Night, the mother reading to both children on the bed, the father in the doorway.", checks: [[prompt_adherence, "Are all four in the frame?"], [prompt_adherence, "Is it warm lamp light?"]]}
+      - {name: "Pillow fight", prompt: "Evening, the father and both children in a pillow fight on the bed, the mother laughing.", checks: [[physics_plausibility, "Does the mattress dip under them?"], [set_consistency, "Are the boy's round glasses on?"]]}
+      - {name: "Morning", prompt: "Morning sunlight, all four waking up in the bed, the girl stretching.", checks: [[prompt_adherence, "Is it morning sunlight?"], [set_consistency, "Is the mother's nose ring on the left?"]]}
+  deliverable: "Three images, 3:2."
+  checks:
+    - [set_consistency, "Is each person the same in all three?"]
+    - [set_consistency, "Are the four faces distinct with no blended features?"]
+    - [prompt_adherence, "Are there four people in each frame?"]
+    - [set_consistency, "Are the children the same ages?"]
+    - [set_consistency, "Are the glasses on the father and the boy in all three?"]
+    - [set_consistency, "Is the nose ring on the mother's left in all three?"]
+    - [prompt_adherence, "Does each frame have its described light?"]
+    - [prompt_adherence, "Does each frame show its scene?"]
+    - [set_consistency, "Is the bed the same white duvet and grey pillows?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands clean?"]
+    - [style, "Is the look consistent?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: partly, note: "Three text-to-image calls; set agreement needs the set review."}
+  video_followon: ""

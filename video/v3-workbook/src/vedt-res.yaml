@@ -1,0 +1,133 @@
+# Precision video edits — Real estate, interiors & architecture scenarios. Slots: vedt.yaml.
+code: VEDT
+scenarios:
+
+- id: VEDT-RES-01
+  title: "Listing clean-up on the walkthrough: newspapers, wires and laundry rack gone, TV on, tracked throughout"
+  persona: "Real-estate agency's editor making a seller's walkthrough listing-ready."
+  evidence: "Earlier image bank EDT-RES-01: clean-up on a still; a walkthrough reveals each fix at a different time."
+  levers: [multi-step, keep-rest, light-lock, camera-move, locale]
+  inputs: [{source: SRC-VCLIP-FLAT-WALKTHROUGH, role: source}]
+  prompt: |
+    Make exactly these changes to this 10-second walkthrough of a Mumbai flat, on every frame, and nothing
+    else.
+    1. Remove the pile of newspapers from the sofa's left cushion, which passes at about 3 seconds.
+    2. Remove the loose wires hanging below the TV console, which passes at about 5 seconds.
+    3. Remove the laundry rack from the balcony; the other towers show behind where it stood.
+    4. Switch the TV on, showing a calm blue landscape with no text, its glow faint on the console.
+    The sofa, the print, the coffee table, the rug, the snake plant, the daylight from the balcony and the
+    walk with straight verticals are unchanged.
+  clip: {duration: 10, aspect: "16:9", camera: "unchanged gimbal walk"}
+  deliverable: "One 10-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Are the newspapers gone?"]
+    - [prompt_adherence, "Are the wires gone?"]
+    - [prompt_adherence, "Is the laundry rack gone with towers behind?"]
+    - [prompt_adherence, "Is the TV on with a blue landscape?"]
+    - [prompt_adherence, "Is the TV's glow faint on the console?"]
+    - [motion_coherence, "Do all fixes hold as the walk reveals them?"]
+    - [preservation, "Are the sofa, print, table and rug unchanged?"]
+    - [preservation, "Is the balcony daylight unchanged?"]
+    - [preservation, "Is the walk unchanged with verticals straight?"]
+    - [text_accuracy, "Is there no text on the TV?"]
+    - [prompt_adherence, "Are all four changes made?"]
+    - [visual_quality, "Is there no smear?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-RES-02
+  title: "Repaint the window wall terracotta and lay oak flooring on the pan; the sun panels and view untouched"
+  persona: "Interior designer previewing finishes on a builder's empty-flat video."
+  evidence: "Earlier image bank EDT-RES-02: finishes on a still; on a pan the sun panels must sit on the new floor."
+  levers: [multi-step, keep-rest, light-lock, physics, layout]
+  inputs: [{source: SRC-VCLIP-BEDROOM-PAN, role: source}]
+  prompt: |
+    Make exactly these two changes to this 8-second pan across an empty bedroom at golden hour, on every
+    frame, and nothing else.
+    1. Repaint only the far wall with the three-pane window a warm terracotta matt paint; the other walls
+       stay off-white.
+    2. Replace the grey-beige tiles with wide-plank natural oak flooring, planks running towards the window.
+    The three golden sun panels on the floor stay exactly where they are and now fall warm on the oak; the
+    window frame, the hill view, the wardrobe, the switchboard and the pan, with the window centred at 5
+    seconds, are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged pan right"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is only the window wall terracotta?"]
+    - [preservation, "Are the other walls off-white?"]
+    - [prompt_adherence, "Is the floor wide-plank oak running towards the window?"]
+    - [prompt_adherence, "Do the sun panels stay in place and fall on the oak?"]
+    - [prompt_adherence, "Are there three sun panels?"]
+    - [physics_plausibility, "Does the floor's perspective stay correct as it pans?"]
+    - [preservation, "Are the window and view unchanged?"]
+    - [preservation, "Are the wardrobe and switchboard unchanged?"]
+    - [prompt_adherence, "Is the window centred at 5 seconds?"]
+    - [temporal_consistency, "Is there no swimming of the planks?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Are edges clean where wall meets ceiling?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-RES-03
+  title: "Day to twilight on the drone orbit: dusk sky, lit windows, porch light; the building line for line"
+  persona: "Developer's marketing team making the evening version of a villa orbit."
+  evidence: "Earlier image bank EDT-RES-03: twilight relights redraw buildings; an orbit must keep every line."
+  levers: [light-lock, keep-rest, physics, layout, timing]
+  inputs: [{source: SRC-VCLIP-VILLA-ORBIT, role: source}]
+  prompt: |
+    Change this 10-second drone orbit of a villa from mid-morning to twilight on every frame. The sky becomes
+    a deep blue fading to orange at the horizon; warm interior light glows through the glass door and the
+    upper floor's long window; a warm porch light under the overhang lights the empty swing, centred at 5
+    seconds; two garden uplights wash the frangipani. The house, every edge, the teak wall, the gate and the
+    orbit stay line for line as in the clip; only the light changes.
+  clip: {duration: 10, aspect: "16:9", camera: "unchanged quarter orbit"}
+  deliverable: "One 10-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is it twilight, deep blue to orange?"]
+    - [prompt_adherence, "Do the glass door and long window glow warm?"]
+    - [prompt_adherence, "Does a porch light light the swing?"]
+    - [prompt_adherence, "Is the swing centred at 5 seconds?"]
+    - [prompt_adherence, "Are there two uplights on the frangipani?"]
+    - [preservation, "Is the house line for line the same?"]
+    - [physics_plausibility, "Do the interior lights stay fixed in the windows as it orbits?"]
+    - [preservation, "Are the teak wall and gate unchanged?"]
+    - [preservation, "Is the orbit unchanged?"]
+    - [temporal_consistency, "Is the relight stable without flicker?"]
+    - [prompt_adherence, "Is the overhang on the right?"]
+    - [visual_quality, "Is there no noise in the sky?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-RES-04
+  title: "Plot preparation tracked through the drone flight: boundary wall, gate, path, the smaller cashew gone"
+  persona: "Land broker visualising a prepared plot on the drone footage for buyers."
+  evidence: "Earlier image bank EDT-RES-04: plot changes on a still; a forward flight needs every addition locked to the ground."
+  levers: [multi-step, keep-rest, parallax, count, locale]
+  inputs: [{source: SRC-VCLIP-PLOT-DRONE, role: source}]
+  prompt: |
+    Make exactly these changes to this 8-second drone flight up a Goa hillside plot, on every frame, and
+    nothing else.
+    1. Add a low laterite boundary wall round the plot, about a metre high, following the ground.
+    2. Add a black steel gate in the wall at the access track at the bottom.
+    3. Add a gravel path from the gate up the middle of the plot to the ridge, curving round the remaining
+       cashew tree.
+    4. Remove the smaller of the two cashew trees (the right one), leaving grass.
+    The survey marker at 2 seconds, the larger cashew at 5 seconds, the stream bed, the pole, the sea line
+    and the low sun from the right are unchanged; every addition is locked to the ground as the drone flies.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged forward flight"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is there a laterite boundary wall following the ground?"]
+    - [prompt_adherence, "Is there a black gate at the bottom?"]
+    - [prompt_adherence, "Is there a gravel path up the middle?"]
+    - [prompt_adherence, "Is there only one cashew tree, the larger left one?"]
+    - [physics_plausibility, "Are the additions locked to the ground with correct parallax?"]
+    - [prompt_adherence, "Do the additions cast shadows to the left?"]
+    - [prompt_adherence, "Does the marker pass at 2 s and the cashew at 5 s?"]
+    - [preservation, "Are the stream, pole and sea unchanged?"]
+    - [motion_coherence, "Is there no sliding?"]
+    - [prompt_adherence, "Are all four changes made?"]
+    - [preservation, "Is the flight unchanged?"]
+    - [visual_quality, "Is the grass natural where the tree was?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

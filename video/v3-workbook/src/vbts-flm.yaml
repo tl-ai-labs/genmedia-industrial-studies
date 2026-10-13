@@ -1,0 +1,344 @@
+# Story beats — Film, OTT & micro-drama scenarios. Slots: vbts.yaml.
+code: VBTS
+scenarios:
+
+- id: VBTS-FLM-01
+  seed: true
+  sahil: beat-sheet
+  title: "Beats B4 to B6 of 'The Last Transmission' as three chained clips timed to the sheet"
+  persona: "Editor on an independent short cutting the descent sequence straight from the beat sheet."
+  evidence: "Sahil's beat-sheet example (screenshots 236–237): nine time-coded beats with start and end frames. In video, each beat must last its stated time and cut into the next."
+  levers: [set, timing, time-code, identity, continuity, end-frame, light-lock]
+  inputs:
+    - {source: SRC-RIDGE-WANDERER, role: first_frame, note: "the man and the ridge; beat B4 starts here"}
+  prompt: |
+    These are beats B4 to B6 of a beat sheet for a solo character piece. The man in this photo (late
+    fifties, short grey beard, long charcoal wool coat, rust scarf, an olive field radio with a whip
+    antenna in his right hand, a satchel on his left hip) is the only character; this ridge and fog-
+    filled valley are the location. Make one clip per beat, as described below. Each clip starts on
+    the last frame of the clip before it, so the three cut together as one passage of 4 + 6 + 3 = 13
+    seconds. The light moves from pale gold dawn at the start of B4 to flat grey fog by the end of B6.
+    Muted grade, 2.39:1, fine grain, no text, no one else.
+  clip: {duration: 13, aspect: "2.39:1", camera: "per beat: static wide, slow follow, static macro"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "His face, beard, coat, scarf and satchel"
+      - "The radio in his right hand"
+      - "The ridge, valley and fog as one continuous place"
+    members:
+      - {name: "B4 DESCENT · BEGIN (0:17–0:21, 4 s)", prompt: "Static wide from the ridge top. He takes his first three steps down the grassy slope towards the valley, radio swinging in his right hand.", checks: [[prompt_adherence, "Does the clip last about 4 seconds with three steps?"], [prompt_adherence, "Is the camera static and wide?"]]}
+      - {name: "B5 DESCENT · FOG (0:21–0:27, 6 s)", prompt: "Slow follow from behind as he walks down into the fog; by the end he is half lost in it, a grey shape.", checks: [[prompt_adherence, "Does the clip last about 6 seconds?"], [physics_plausibility, "Does the fog thicken around him so he is half lost by the end?"]]}
+      - {name: "B6 DETAIL · GRASS (0:27–0:30, 3 s)", prompt: "Static macro of his left hand brushing the tops of tall wet grass as he passes, droplets flicking off.", checks: [[prompt_adherence, "Does the clip last about 3 seconds?"], [reference_fidelity, "Is it his left hand, with the coat sleeve?"]]}
+  deliverable: "Three chained clips, 4, 6 and 3 seconds, 2.39:1."
+  checks:
+    - [prompt_adherence, "Do the three clips last about 4, 6 and 3 seconds?"]
+    - [set_consistency, "Does each clip start where the previous one ended, so they cut together?"]
+    - [set_consistency, "Is it the same man in all three?"]
+    - [set_consistency, "Is the radio in his right hand throughout B4 and B5?"]
+    - [set_consistency, "Are the coat, scarf and satchel the same throughout?"]
+    - [prompt_adherence, "Does the light move from pale gold dawn to flat grey fog?"]
+    - [prompt_adherence, "Are the camera styles static wide, slow follow, static macro in that order?"]
+    - [motion_coherence, "Is his walking natural on the slope, with no sliding feet?"]
+    - [physics_plausibility, "Do the droplets flick off the grass naturally in B6?"]
+    - [prompt_adherence, "Is he the only person throughout?"]
+    - [style, "Is the grade muted with fine grain in all three?"]
+    - [temporal_consistency, "Is there no morphing of face or coat?"]
+    - [text_accuracy, "Is there no text?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip B4 runs from the photo. Chaining B5 and B6 from each previous clip's last frame is not in the runner; they can run from the photo with the set review judging the cuts."}
+
+- id: VBTS-FLM-02
+  title: "Three haldi beats: the water pour, a phone rings, the grandfather stands; each cut joins"
+  persona: "Wedding-drama editor previewing a three-beat scene from one location still."
+  evidence: "Six people across three cuts: places, turmeric and the splash pattern drift between clips."
+  levers: [set, count, continuity, identity, locale, timing]
+  inputs: [{source: SRC-HALDI, role: first_frame}]
+  prompt: |
+    This is a haldi ceremony in a haveli courtyard with exactly six people: the bride on the low stool
+    in yellow, her mother in a green sari pouring water from a brass lota, two cousins in pink kurtas
+    rubbing turmeric on her arms, the grandfather in a white kurta and grey Nehru jacket on a cane chair
+    at the far right, and a boy in an orange kurta holding the brass bowl. Make three chained clips, each
+    starting on the last frame of the one before, so they cut together as one 12-second passage. Every
+    person keeps their place and costume; the yellow splashes on the floor only grow. Overcast daylight
+    throughout. No text.
+  clip: {duration: 12, aspect: "3:2", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Six people in their places and costumes"
+      - "Turmeric on the bride's face and arms"
+      - "Marigold strings, sandstone arch, yellow-splashed floor"
+    members:
+      - {name: "Beat 1 · The pour (4 s)", prompt: "Static wide as the mother pours the lota of water over the bride's head; she gasps and laughs; water runs off her shoulders.", checks: [[physics_plausibility, "Does the water pour and run off naturally?"], [prompt_adherence, "Are there six people?"]]}
+      - {name: "Beat 2 · The phone (4 s)", prompt: "Medium shot on the grandfather: a phone rings in his jacket pocket; he pulls it out and frowns at it.", checks: [[reference_fidelity, "Is the grandfather in a white kurta and grey jacket?"], [motion_coherence, "Does he take the phone out naturally?"]]}
+      - {name: "Beat 3 · He stands (4 s)", prompt: "Back to the wide: the grandfather stands up from the cane chair; everyone turns to look at him; the clapping stops.", checks: [[set_consistency, "Is everyone where they were in beat 1?"], [motion_coherence, "Do the others turn to him?"]]}
+  deliverable: "Three chained clips of 4 seconds, 3:2."
+  checks:
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Are there exactly six people wherever all are visible?"]
+    - [set_consistency, "Does everyone keep their place and costume across all three?"]
+    - [set_consistency, "Is the bride the same in all three, with turmeric?"]
+    - [physics_plausibility, "Does the bride stay wet after the pour?"]
+    - [set_consistency, "Do the floor splashes only grow?"]
+    - [prompt_adherence, "Is the overcast daylight the same throughout?"]
+    - [prompt_adherence, "Does each clip last about 4 seconds?"]
+    - [motion_coherence, "Is everyone's motion natural?"]
+    - [prompt_adherence, "Are the shots wide, medium, wide in that order?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces and hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining from each last frame is not in the runner, so the set review judges the cuts."}
+
+- id: VBTS-FLM-03
+  title: "Three beats in the sleeper bay: newspaper lowered, tiffin offered, the train enters a tunnel and the light goes"
+  persona: "Indie director previewing a train scene's beats before booking the coach."
+  evidence: "A light change mid-scene must hit everything at once and not drift back."
+  levers: [set, light-lock, continuity, timing, layout, physics]
+  inputs: [{source: SRC-TRAIN, role: first_frame}]
+  prompt: |
+    This is one bay of a sleeper-class train compartment by day: the elderly man in the white shirt
+    reading a newspaper on the left berth, the young woman in the teal salwar kameez opening a steel
+    tiffin on the right berth, the green trunk under the left berth, the red suitcase on the right upper
+    berth, the water bottle on its hook, fields passing the barred window. Make three chained clips, each
+    starting on the last frame of the one before, 4 + 4 + 5 seconds. The train sways gently throughout.
+    The bags, the bottle and the berths do not move from their places. No text.
+  clip: {duration: 13, aspect: "3:2", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Both passengers' faces and clothes"
+      - "Trunk, suitcase and bottle in their places"
+      - "The bay's layout and the window at the back"
+    members:
+      - {name: "Beat 1 · Newspaper (4 s)", prompt: "Static from the aisle: he lowers the newspaper and looks across at her tiffin.", checks: [[motion_coherence, "Does he lower the paper naturally?"], [prompt_adherence, "Is it hard daylight from the window?"]]}
+      - {name: "Beat 2 · Tiffin (4 s)", prompt: "Same frame: she smiles and holds the open top tier out to him across the table.", checks: [[reference_fidelity, "Is the tiffin a three-tier steel one?"], [motion_coherence, "Does she offer it naturally?"]]}
+      - {name: "Beat 3 · Tunnel (5 s)", prompt: "Same frame: at 1 second the train enters a tunnel; the window goes black and the bay drops to the dim yellow of the ceiling light at once; he takes a piece in the dark.", checks: [[prompt_adherence, "Does the light go at about 1 second?"], [prompt_adherence, "Does the whole bay go dim at once, lit only by the ceiling light?"]]}
+  deliverable: "Three chained clips, 4, 4 and 5 seconds, 3:2."
+  checks:
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Does the light change hit the whole bay at once in beat 3?"]
+    - [prompt_adherence, "Does the bay stay dim after the tunnel, without drifting back?"]
+    - [set_consistency, "Are the trunk, suitcase and bottle in their places throughout?"]
+    - [set_consistency, "Are both passengers the same in all three?"]
+    - [physics_plausibility, "Does the train sway gently throughout?"]
+    - [prompt_adherence, "Is the camera static from the aisle?"]
+    - [prompt_adherence, "Do the clips last about 4, 4 and 5 seconds?"]
+    - [motion_coherence, "Are the hands and food natural?"]
+    - [prompt_adherence, "Is the window at the back centre throughout?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces natural in the dim light?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining is not in the runner."}
+
+- id: VBTS-FLM-04
+  title: "Three rooftop beats that must end exactly on the given door frame"
+  persona: "Micro-drama editor whose next scene starts from a fixed frame at the stairwell door."
+  evidence: "End-frame control is what editors ask for; generated passages rarely land on the given frame."
+  levers: [set, end-frame, identity, layout, light-lock, timing]
+  inputs:
+    - {source: SRC-ROOFTOP, role: first_frame, note: "the passage starts here"}
+    - {source: SRC-VFRAME-ROOFTOP-DOOR, role: last_frame, note: "the passage must end exactly here"}
+  prompt: |
+    The first image is where the passage starts: the woman in the white shirt leaning on the parapet of a
+    Mumbai rooftop at night. The second image is exactly where it must end: her right hand on the green
+    door of the stairwell at the far right, half turned back to the city, the parapet empty. Make three
+    chained clips, each starting on the last frame of the one before, 4 + 4 + 4 seconds, with the camera
+    in the same position as both stills throughout. The tanks, the dish and the cables never move. Only
+    the city glow lights her. No text.
+  clip: {duration: 12, aspect: "16:9", camera: "locked off from the stills' position"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Her face, hair, white shirt and dark trousers"
+      - "Tanks, dish and cables in their places"
+      - "Camera position and the orange-pink city glow"
+    members:
+      - {name: "Beat 1 · The call (4 s)", prompt: "She straightens from the parapet as her phone buzzes, looks at it and puts it away.", checks: [[motion_coherence, "Does she straighten naturally?"], [reference_fidelity, "Is her face in three-quarter profile?"]]}
+      - {name: "Beat 2 · The walk (4 s)", prompt: "She walks right along the parapet towards the stairwell.", checks: [[motion_coherence, "Does she walk right with no sliding feet?"], [prompt_adherence, "Do the tanks stay on the left?"]]}
+      - {name: "Beat 3 · The door (4 s)", prompt: "She reaches the stairwell, puts her right hand on the green door and half turns back to the city, ending exactly on the given end frame.", checks: [[prompt_adherence, "Does the last frame match the end frame?"], [reference_fidelity, "Is her right hand on the door?"]]}
+  deliverable: "Three chained clips of 4 seconds, 16:9, ending on the given frame."
+  checks:
+    - [prompt_adherence, "Does the passage end exactly on the given end frame?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is she the same woman throughout?"]
+    - [prompt_adherence, "Is the parapet empty at the end?"]
+    - [set_consistency, "Do the tanks, dish and cables never move?"]
+    - [prompt_adherence, "Does the camera stay in the stills' position?"]
+    - [prompt_adherence, "Is she lit only by the city glow?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [motion_coherence, "Is her walk natural?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are her hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Needs a last-frame input and chaining; neither is in the current runner."}
+
+- id: VBTS-FLM-05
+  title: "Three interrogation beats: the photo slides across, he looks, he breaks; the photo stays where it lands"
+  persona: "Crime-series editor previewing the confession from one set still."
+  evidence: "Props that move in one beat must stay put in the next; generated cuts reset them."
+  levers: [set, continuity, identity, light-lock, layout]
+  inputs: [{source: SRC-INTERROGATION, role: first_frame}]
+  prompt: |
+    This is a police interrogation room at night: the detective in a maroon kurta at frame left with a
+    case file, the suspect in a torn grey T-shirt with a bruise on his left cheekbone at frame right, the
+    constable at the door, one hanging lamp with a green shade, a steel water jug on the table. Make three
+    chained clips, each starting on the last frame of the one before, 4 + 4 + 5 seconds. A photograph
+    she slides across the table in beat 1 stays exactly where it lands, face up, in beats 2 and 3. The
+    jug never moves. Hard top light only. No readable text on the photo or file.
+  clip: {duration: 13, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The three people's faces, clothes and places"
+      - "The photo where it lands, face up; the jug"
+      - "Hard top light from the one lamp"
+    members:
+      - {name: "Beat 1 · The photo (4 s)", prompt: "Side wide: she takes a photograph from the file and slides it across the table; it stops just in front of his right hand.", checks: [[physics_plausibility, "Does the photo slide and stop believably?"], [prompt_adherence, "Does it stop in front of his right hand?"]]}
+      - {name: "Beat 2 · He looks (4 s)", prompt: "Close-up on him: he looks down at the photo, his jaw tightens.", checks: [[reference_fidelity, "Is the bruise on his left cheekbone?"], [motion_coherence, "Is the expression change subtle and natural?"]]}
+      - {name: "Beat 3 · He breaks (5 s)", prompt: "Back to the side wide: he covers his face with both hands and his shoulders shake; she sits back.", checks: [[set_consistency, "Is the photo where it landed in beat 1?"], [motion_coherence, "Is his breaking down natural?"]]}
+  deliverable: "Three chained clips, 4, 4 and 5 seconds, 16:9."
+  checks:
+    - [set_consistency, "Does the photo stay exactly where it landed?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Are all three people the same throughout?"]
+    - [set_consistency, "Does the jug never move?"]
+    - [prompt_adherence, "Is it hard top light from the one lamp throughout?"]
+    - [prompt_adherence, "Is the detective at left and suspect at right?"]
+    - [prompt_adherence, "Are the shots wide, close-up, wide in that order?"]
+    - [prompt_adherence, "Do the clips last about 4, 4 and 5 seconds?"]
+    - [text_accuracy, "Is there no readable text on the photo or file?"]
+    - [prompt_adherence, "Are there three people?"]
+    - [visual_quality, "Are the hands natural?"]
+    - [temporal_consistency, "Is there no morphing of faces?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining is not in the runner."}
+
+- id: VBTS-FLM-06
+  title: "Three dinner beats: sambar served, a tumbler knocked over, everyone laughs; the spill stays"
+  persona: "Tamil family-drama director previewing a dinner scene's beats."
+  evidence: "Spills must persist; five identical leaves make any reset obvious."
+  levers: [set, count, continuity, physics, locale, layout]
+  inputs: [{source: SRC-THALI-DINNER, role: first_frame}]
+  prompt: |
+    This is a family dinner on a mat in Chennai: five people in a U on banana leaves, left to right a
+    grandfather in a white veshti, a mother in a maroon sari, a girl in a yellow frock, a father in a
+    light-blue shirt and a teenage boy in a black T-shirt; on every leaf rice in the centre, beans top
+    left, pickle top right, a papad bottom right; a brass tumbler to the right of each leaf; a steel
+    bucket of sambar in the middle. Make three chained clips, each starting on the last frame of the one
+    before, 4 + 3 + 4 seconds. The water spilt in beat 2 stays on the mat in beat 3. Warm tungsten light.
+    No text.
+  clip: {duration: 11, aspect: "16:9", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Five people in their order and clothes"
+      - "The food on every leaf in its place"
+      - "Five brass tumblers, one of them knocked over after beat 2"
+    members:
+      - {name: "Beat 1 · Sambar (4 s)", prompt: "Wide from the open side: the mother ladles sambar onto the girl's rice.", checks: [[physics_plausibility, "Does the sambar pour onto the rice believably?"], [prompt_adherence, "Are there five people?"]]}
+      - {name: "Beat 2 · The spill (3 s)", prompt: "Close on the girl's leaf: her elbow knocks her tumbler over and water spreads across the mat.", checks: [[physics_plausibility, "Does the water spread on the mat believably?"], [prompt_adherence, "Is the tumbler to the right of her leaf?"]]}
+      - {name: "Beat 3 · Laughter (4 s)", prompt: "Back to the wide: everyone laughs; the father hands her his napkin.", checks: [[set_consistency, "Is the spill still on the mat and her tumbler on its side?"], [motion_coherence, "Is the laughter natural?"]]}
+  deliverable: "Three chained clips, 4, 3 and 4 seconds, 16:9."
+  checks:
+    - [set_consistency, "Does the spill and fallen tumbler persist into beat 3?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Are there five people and five leaves?"]
+    - [set_consistency, "Do the people keep their order and clothes?"]
+    - [set_consistency, "Is the food on every leaf in its place?"]
+    - [prompt_adherence, "Is the light warm tungsten throughout?"]
+    - [prompt_adherence, "Are the shots wide, close, wide in that order?"]
+    - [prompt_adherence, "Do the clips last about 4, 3 and 4 seconds?"]
+    - [motion_coherence, "Are hands and eating natural?"]
+    - [prompt_adherence, "Does it read as a Chennai home?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are faces natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining is not in the runner."}
+
+- id: VBTS-FLM-07
+  title: "Three beats of the actor in the 1940s costume running through paddy in the rain"
+  persona: "Period-film director previewing the cast actor in costume before the shoot."
+  evidence: "Earlier image bank CHR: the actor's face and costume drift; motion and rain make it harder."
+  levers: [set, identity, multi-ref, physics, locale, continuity]
+  inputs:
+    - {source: SRC-ACTOR-F, role: character, note: "the actor"}
+    - {source: SRC-COSTUME-REF, role: still1, note: "the costume, front and back"}
+  prompt: |
+    The first image is the actor: dusky skin, a low braid over her left shoulder, a gold stud in her
+    left nostril, a mole above the right corner of her lip. The second is her 1940s costume: an indigo
+    handloom sari with a mustard checked border, the end over her left shoulder, a maroon blouse with
+    elbow-length sleeves, silver anklets. Make three clips of her in that costume running through green
+    paddy fields in heavy monsoon rain under a dark sky, each starting on the last frame of the one
+    before, 4 + 4 + 4 seconds. The wet sari darkens and clings; mud splashes her ankles. No text.
+  clip: {duration: 12, aspect: "2.39:1", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Her face, nose stud on the left, mole above the right lip corner"
+      - "Indigo sari with mustard border, end over the left shoulder; maroon blouse"
+      - "Rain, dark sky and paddy throughout"
+    members:
+      - {name: "Beat 1 · Run (4 s)", prompt: "Wide, tracking right as she runs along the narrow bund between flooded paddy, left to right.", checks: [[motion_coherence, "Does she run left to right with natural steps?"], [physics_plausibility, "Does the wet sari cling and swing?"]]}
+      - {name: "Beat 2 · Feet (4 s)", prompt: "Low close tracking shot of her bare feet and silver anklets splashing through mud.", checks: [[reference_fidelity, "Are the silver anklets on both ankles?"], [physics_plausibility, "Does mud splash naturally?"]]}
+      - {name: "Beat 3 · She stops (4 s)", prompt: "Medium close-up: she stops, breathless, rain running down her face, and looks back over her left shoulder.", checks: [[reference_fidelity, "Is her nose stud on her left nostril?"], [reference_fidelity, "Is the mole above the right corner of her lip?"]]}
+  deliverable: "Three chained clips of 4 seconds, 2.39:1."
+  checks:
+    - [set_consistency, "Is it the same actor in all three?"]
+    - [set_consistency, "Is the costume the same in all three, with the sari end over the left shoulder?"]
+    - [reference_fidelity, "Is the costume's border mustard and checked?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [physics_plausibility, "Is the rain heavy and the sari darker where wet?"]
+    - [prompt_adherence, "Is the sky dark and the light flat throughout?"]
+    - [motion_coherence, "Is her running natural?"]
+    - [prompt_adherence, "Are the shots wide, low close, medium close-up in that order?"]
+    - [prompt_adherence, "Does it read as the 1940s?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is her face free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Two reference images without a first frame; chaining is not in the runner."}
+
+- id: VBTS-FLM-08
+  title: "Thumbnails 3 to 5 of the market chase as three cut-together beats with the actor as the runner"
+  persona: "Action director turning rough thumbnails into a previz chase with the cast actor."
+  evidence: "Rough thumbnails leave most of the frame unsaid; the runner must still be the actor in every beat."
+  levers: [set, multi-ref, identity, unseen, continuity, camera]
+  inputs:
+    - {source: SRC-THUMBS-CHASE, role: still1, note: "the thumbnails; this set is boxes 3 to 5"}
+    - {source: SRC-ACTOR-M, role: character, note: "the actor as the runner"}
+  prompt: |
+    The first image is a page of rough chase thumbnails; make boxes 3, 4 and 5 as three cut-together
+    live-action clips, 3 + 4 + 4 seconds, each starting on the last frame of the one before. The second
+    image is the actor who plays the runner: short wavy hair parted on his left, thick moustache, a pale
+    scar through his right eyebrow, white shirt with sleeves rolled, a steel kada on his right wrist.
+    Set it in a crowded Old Delhi market lane after rain, daylight, wet stones. The thumbnails only
+    sketch the frames; make the market, the cloth stall and the alley real and consistent. No text.
+  clip: {duration: 11, aspect: "2.39:1", camera: "per beat, following the thumbnails"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "His face, scar through the right eyebrow, moustache"
+      - "White shirt, rolled sleeves, steel kada on the right wrist"
+      - "The same wet market lane"
+    members:
+      - {name: "Box 3 · Feet (3 s)", prompt: "Close tracking shot of his running feet in brown sandals splashing on wet stones.", checks: [[physics_plausibility, "Do the feet splash on wet stones?"], [prompt_adherence, "Is it a close tracking shot as in box 3?"]]}
+      - {name: "Box 4 · The junction (4 s)", prompt: "Top-down view of an alley junction: he runs in and turns right, as the arrow shows.", checks: [[prompt_adherence, "Is it top-down as in box 4?"], [motion_coherence, "Does he turn right?"]]}
+      - {name: "Box 5 · Hiding (4 s)", prompt: "Medium shot: he slips behind hanging bolts of cloth at a stall and holds his breath, peeking through.", checks: [[reference_fidelity, "Is the scar through his right eyebrow?"], [reference_fidelity, "Is the kada on his right wrist?"]]}
+  deliverable: "Three chained clips, 3, 4 and 4 seconds, 2.39:1."
+  checks:
+    - [set_consistency, "Is the runner the actor in every clip?"]
+    - [set_consistency, "Is his shirt and kada the same in every clip?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Does each clip follow its thumbnail's framing?"]
+    - [motion_coherence, "Does he turn right at the junction?"]
+    - [prompt_adherence, "Does the market read as Old Delhi after rain?"]
+    - [physics_plausibility, "Are the stones wet with splashes?"]
+    - [prompt_adherence, "Do the clips last about 3, 4 and 4 seconds?"]
+    - [motion_coherence, "Is his running natural?"]
+    - [prompt_adherence, "Is it consistent daylight?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [visual_quality, "Are faces in the crowd natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Two reference images without a first frame; chaining is not in the runner."}

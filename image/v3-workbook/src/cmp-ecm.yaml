@@ -1,0 +1,186 @@
+# Composition and aesthetic — E-commerce, D2C & retail scenarios. Slots: cmp.yaml.
+code: CMP
+scenarios:
+
+- id: CMP-ECM-01
+  title: "A 21:9 site banner: a watch on river stone in the lower right, top 60 percent clean"
+  persona: "Watch brand's web designer briefing a hero banner with space for the headline."
+  evidence: "Banners need copy space where the layout puts it; models fill frames."
+  levers: [off-centre, layout, light-lock, exclude]
+  prompt: |
+    A product banner photo, 21:9. A men's steel watch with a deep green dial and a brown leather strap
+    lies on a smooth grey river stone at the lower right of the frame, the dial facing camera at a
+    slight angle. Shallow clear water ripples round the stone's base. The top sixty percent of the
+    frame is a calm, softly out-of-focus background of blurred green leaves and warm golden light,
+    even enough to set white text on. Low golden sun from behind the stone throws a soft highlight
+    along the watch's bezel. No text on the dial, no logos.
+  deliverable: "One image, 21:9."
+  checks:
+    - [composition, "Is the watch in the lower right?"]
+    - [composition, "Is the top sixty percent calm and clean enough for text?"]
+    - [composition, "Is the frame 21:9?"]
+    - [prompt_adherence, "Is the dial deep green with a brown leather strap?"]
+    - [physics_plausibility, "Do ripples surround the stone's base?"]
+    - [prompt_adherence, "Is a golden highlight along the bezel from behind?"]
+    - [style, "Is the background softly out of focus?"]
+    - [prompt_adherence, "Is there no text on the dial or logos?"]
+    - [visual_quality, "Is the watch's geometry clean?"]
+    - [physics_plausibility, "Is the watch resting plausibly on the stone?"]
+    - [prompt_adherence, "Is the light golden?"]
+    - [prompt_adherence, "Is there one watch?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ECM-02
+  title: "Millet cookies on rough linen with crumbs and jaggery shards; texture you could touch"
+  persona: "D2C snack brand's photographer pitching a tactile product look."
+  evidence: "Sahil's texture complaint (screenshots 223–231): generated food often looks clean and plastic."
+  levers: [off-centre, physics, light-lock, locale, exclude]
+  prompt: |
+    A food photograph for a millet cookie brand, 4:5. Five round ragi and jaggery cookies, dark brown
+    and rough-surfaced, stacked unevenly on crumpled natural linen in the lower left third; one cookie
+    broken in half showing its crumbly inside. Around them, crumbs, two shards of golden jaggery, a
+    small pile of whole ragi grains and a sprig of curry leaves. A low raking window light from the
+    right picks out every crumb and the linen's weave, with soft deep shadows to the left. Muted
+    earthy palette. No packaging, no text, no hands.
+  deliverable: "One image, 4:5."
+  checks:
+    - [composition, "Are the cookies in the lower left third?"]
+    - [prompt_adherence, "Are there five cookies, one broken in half?"]
+    - [style, "Is the cookies' surface rough and crumbly, not smooth?"]
+    - [style, "Is the linen's weave visible?"]
+    - [physics_plausibility, "Does the raking light from the right pick out crumbs?"]
+    - [physics_plausibility, "Do shadows fall to the left?"]
+    - [prompt_adherence, "Are jaggery shards, ragi grains and curry leaves present?"]
+    - [prompt_adherence, "Is the palette muted and earthy?"]
+    - [prompt_adherence, "Are there no packaging, text or hands?"]
+    - [visual_quality, "Is the food free of melted artefacts?"]
+    - [style, "Does it feel touchable rather than plastic?"]
+    - [prompt_adherence, "Does it read as Indian millet cookies?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ECM-03
+  title: "Saree campaign at Hampi at 24 mm from knee height; the boulders loom"
+  persona: "Fashion photographer pitching a dramatic location look for a saree label."
+  evidence: "Lens character from knee height with a wide lens is a specific look models flatten."
+  levers: [camera, off-centre, locale, light-lock]
+  prompt: |
+    A fashion campaign photo among the giant boulders of Hampi at harsh noon, 4:5. Shot on a 24 mm
+    lens from knee height, close to the model. She stands on a rock in the right third, in a
+    mustard handloom saree with a black border, the pallu blowing to her left; she is large in frame
+    because the camera is close, and the wide lens makes her legs long and the boulders behind her
+    loom and lean outward. A slice of hard blue sky at the top. Hard overhead sun with short shadows.
+    No text, no logos.
+  deliverable: "One image, 4:5."
+  checks:
+    - [prompt_adherence, "Does the perspective read as a wide lens from knee height?"]
+    - [prompt_adherence, "Do the boulders loom and lean outward?"]
+    - [composition, "Is she in the right third?"]
+    - [prompt_adherence, "Is the saree mustard with a black border?"]
+    - [physics_plausibility, "Is the pallu blowing to her left?"]
+    - [prompt_adherence, "Is it harsh noon with short shadows?"]
+    - [prompt_adherence, "Is there a slice of blue sky at the top?"]
+    - [prompt_adherence, "Do the boulders read as Hampi?"]
+    - [visual_quality, "Is her anatomy natural despite the wide lens?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [style, "Is the handloom texture visible?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ECM-04
+  title: "A single reading chair tiny in a vast white loft, under a tenth of frame height"
+  persona: "Furniture brand's art director pitching a minimal scale frame."
+  evidence: "Models enlarge the product; a tiny product in a vast space is the test."
+  levers: [off-centre, camera, light-lock, exclude]
+  prompt: |
+    A minimalist interior photo, 3:2. A vast white loft with a polished concrete floor and a wall of
+    tall industrial windows on the right throwing long parallel bars of morning light across the
+    floor. A single mustard-yellow reading chair with a small round side table stands in the lower
+    left third, small, under a tenth of the frame's height. Everything else is empty floor, white
+    wall and light. Camera at standing height from the far corner, 24 mm, verticals straight. No
+    people, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is the chair under a tenth of the frame's height?"]
+    - [composition, "Is the chair in the lower left third?"]
+    - [prompt_adherence, "Do window bars of light run across the floor from the right?"]
+    - [prompt_adherence, "Is the chair mustard yellow with a small side table?"]
+    - [prompt_adherence, "Are verticals straight?"]
+    - [physics_plausibility, "Does the loft's scale read as vast?"]
+    - [style, "Is the concrete floor polished with soft reflections?"]
+    - [prompt_adherence, "Is there only the chair and table?"]
+    - [prompt_adherence, "Are there no people or text?"]
+    - [visual_quality, "Are window bars and lines clean?"]
+    - [prompt_adherence, "Is it morning light?"]
+    - [prompt_adherence, "Are the windows on the right?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ECM-05
+  title: "Top-down: a child in a yellow raincoat in the lower-left third among black umbrellas"
+  persona: "Kids' rainwear brand's art director pitching a hero image."
+  evidence: "Call at 23:45: the default is to centre the subject; here it must not be."
+  levers: [off-centre, camera, count, locale, exclude]
+  prompt: |
+    A top-down photo from about eight metres above a crowded Mumbai pavement in heavy rain, 4:5. The
+    frame is filled with about thirty open black umbrellas seen from above, shining wet. In the
+    lower-left third, among them, a single child of about six in a bright yellow raincoat with the
+    hood up, no umbrella, looks straight up at the camera, arms out to catch the rain. The yellow is
+    the only colour in the frame besides the grey pavement visible in gaps. Rain streaks, puddle
+    glints. No text, no logos.
+  deliverable: "One image, 4:5."
+  checks:
+    - [composition, "Is the child in the lower-left third, not centred?"]
+    - [prompt_adherence, "Is it straight top-down from above?"]
+    - [prompt_adherence, "Are there about thirty black umbrellas?"]
+    - [style, "Is yellow the only strong colour?"]
+    - [prompt_adherence, "Is the child in a yellow raincoat with the hood up?"]
+    - [prompt_adherence, "Is the child looking up with arms out?"]
+    - [physics_plausibility, "Are the umbrellas wet and is rain visible?"]
+    - [prompt_adherence, "Is grey pavement visible in gaps?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [visual_quality, "Is the child's face natural from above?"]
+    - [prompt_adherence, "Is there one child only in yellow?"]
+    - [prompt_adherence, "Does it read as a crowded city pavement?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ECM-06
+  title: "Recompose the centred serum packshot into a banner crop cut by the right edge"
+  persona: "D2C beauty brand's designer adapting a packshot for a site banner."
+  evidence: "Edits that recompose often re-centre; a deliberate edge crop is the test."
+  levers: [off-centre, keep-rest, exact-text, layout, identity]
+  inputs: [{source: SRC-ECM-SERUM, role: source}]
+  prompt: |
+    This packshot shows the Tara serum, a 30 ml amber dropper bottle with a white bulb, a gold collar
+    and a white label reading "TARA", "Niacinamide 10%" and "30 ml", centred on blush pink.
+    Recompose it into a 3:1 wide banner: the bottle moves to the right edge so the frame cuts it
+    vertically through the label's right half and the dropper is out of the top of frame; the label's
+    "TARA" stays fully readable. Extend the blush-pink background to the left, keeping its soft
+    gradient and the bottle's soft shadow. The bottle's look, light and label are unchanged. No
+    other text.
+  exact_text: ["TARA"]
+  deliverable: "One image, 3:1."
+  checks:
+    - [composition, "Is the bottle cut by the right frame edge?"]
+    - [composition, "Is the dropper out of the top of the frame?"]
+    - [text_accuracy, "Is TARA fully readable?"]
+    - [composition, "Is the frame 3:1?"]
+    - [preservation, "Is the bottle's glass, collar and label unchanged?"]
+    - [preservation, "Is the blush-pink background extended seamlessly?"]
+    - [preservation, "Is the light unchanged, with the long highlight on the glass?"]
+    - [physics_plausibility, "Is the soft shadow consistent?"]
+    - [visual_quality, "Is there no seam or stretching?"]
+    - [text_accuracy, "Is there no other new text?"]
+    - [reference_fidelity, "Is the liquid amber?"]
+    - [prompt_adherence, "Is the left two-thirds empty pink?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit; output size 3:1 may need the closest supported size."}
+  video_followon: ""

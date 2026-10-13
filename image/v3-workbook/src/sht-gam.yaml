@@ -1,0 +1,195 @@
+# Production sheets — Gaming scenarios. Slots: sht.yaml.
+code: SHT
+scenarios:
+
+- id: SHT-GAM-01
+  title: "From a concept sketch to the 3D hand-off sheet for the villain"
+  persona: "Lead character artist turning a concept sketch into the sheet a 3D modeller works from."
+  evidence: "Earlier bank IMG-GAME-41 (gear callout sheet that must agree with the figure) was high tier."
+  levers: [identity, unseen, count, exact-text, small-text, layout]
+  inputs: [{source: SRC-GAM-VILLAIN, role: source}]
+  prompt: |
+    From this pencil concept sketch of the villain Kaal, produce a 3D character hand-off sheet on
+    one landscape page, mid-grey background, white labels. Title: "KAAL — HANDOFF v1". Top row: a
+    four-view turnaround of him as a finished stylised 3D render, on one baseline, labelled "FRONT",
+    "SIDE", "BACK", "3/4". Middle: material callouts with leader lines and labels exactly: "Coat:
+    wool, black", "Mask: cracked bronze", "Staff: ebony, glass hourglass", "Hair: white". Palette
+    strip of four swatches. Bottom: a budget box exactly: "Tris: 60k", "Textures: 4 x 2K", "Rig:
+    humanoid + coat sim". The mask is on the left side of his face, the staff in his left hand, in
+    every view. No other text.
+  exact_text:
+    - "KAAL — HANDOFF v1"
+    - "Mask: cracked bronze"
+    - "Staff: ebony, glass hourglass"
+    - "Tris: 60k"
+    - "Rig: humanoid + coat sim"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there four turnaround views on one baseline?"]
+    - [reference_fidelity, "Does the render match the sketch's design?"]
+    - [reference_fidelity, "Is the mask on the left side of his face in every view that shows it?"]
+    - [reference_fidelity, "Is the staff in his left hand in every view?"]
+    - [reference_fidelity, "Does the coat hem break into ribbons?"]
+    - [text_accuracy, "Are the four material callouts exact?"]
+    - [prompt_adherence, "Does each callout's leader line touch the right part?"]
+    - [text_accuracy, "Is the budget box exact?"]
+    - [prompt_adherence, "Are there four palette swatches?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [style, "Is the render a consistent stylised 3D?"]
+    - [text_accuracy, "Is every label readable?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-GAM-02
+  title: "Environment art bible for the temple level: kit pieces, materials, palette, lighting keys"
+  persona: "Environment art lead documenting the level's look for outsourced artists."
+  evidence: "Art bibles must match the built level; palette swatches drift from the imagery."
+  levers: [identity, count, exact-text, layout, locale, light-lock]
+  inputs: [{source: SRC-GAM-TEMPLE-LEVEL, role: source}]
+  prompt: |
+    From this screenshot of the temple-courtyard level, design an environment art bible on one
+    landscape page, dark grey background, light sans labels. Title: "LEVEL 3 — HAMPI COURT — ART
+    BIBLE". Section "MODULAR KIT": six isolated pieces drawn as grey 3D renders and labelled
+    exactly: "Pillar A", "Pillar fallen", "Slab 2x2", "Gopuram tier", "Tank step", "Chariot wheel".
+    Section "MATERIALS": four material balls labelled "Granite", "Weathered granite", "Moss",
+    "Dust". Section "PALETTE": five swatches taken from the screenshot. Section "LIGHTING KEYS":
+    three small frames of the courtyard labelled "Dawn", "Late afternoon", "Night (torches)". The
+    late-afternoon key matches the screenshot. No other text.
+  exact_text:
+    - "LEVEL 3 — HAMPI COURT — ART BIBLE"
+    - "Pillar fallen"
+    - "Gopuram tier"
+    - "Weathered granite"
+    - "Night (torches)"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are there six kit pieces with exact labels?"]
+    - [reference_fidelity, "Do the kit pieces match their counterparts in the screenshot?"]
+    - [prompt_adherence, "Are there four material balls with exact labels?"]
+    - [prompt_adherence, "Are there five palette swatches?"]
+    - [prompt_adherence, "Do the swatches match colours in the screenshot?"]
+    - [prompt_adherence, "Are there three lighting keys with exact labels?"]
+    - [prompt_adherence, "Does the late-afternoon key match the screenshot's light?"]
+    - [prompt_adherence, "Does the night key show torch light?"]
+    - [style, "Is the sheet consistent?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-GAM-03
+  title: "Hover-bike asset sheet: orthographic front, side, top and rear with dimensions"
+  persona: "Vehicle artist producing the ortho sheet for modelling."
+  evidence: "Orthographic sheets must agree across views; dimensions must match the drawings."
+  levers: [identity, unseen, count, exact-text, layout]
+  inputs: [{source: SRC-GAM-MECH, role: source}]
+  prompt: |
+    From this render of the hover-bike, produce an orthographic asset sheet on one landscape page,
+    dark blueprint-blue background, white line drawings with flat colour fills. Title: "HB-07 —
+    ORTHO SHEET". Four orthographic views aligned to each other: "SIDE" (right side, matching the
+    render), "FRONT", "TOP" and "REAR", each labelled. Dimension lines exactly: overall length
+    "3.2 m", overall width "1.1 m", height to windscreen top "1.0 m", hover height "0.5 m". Callouts
+    exactly: "Orange stripe", "Cyan pod (x2)", "Decal 07 (both sides)", "Dent: right front only".
+    The views line up: the front and rear widths match the top view. No other text.
+  exact_text:
+    - "HB-07 — ORTHO SHEET"
+    - "3.2 m"
+    - "1.1 m"
+    - "Dent: right front only"
+    - "Decal 07 (both sides)"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there four orthographic views with labels?"]
+    - [prompt_adherence, "Are the views aligned, widths matching between front, rear and top?"]
+    - [reference_fidelity, "Does the side view match the render?"]
+    - [text_accuracy, "Are the dimensions exact?"]
+    - [text_accuracy, "Are the callouts exact?"]
+    - [reference_fidelity, "Is the dent drawn only on the right front?"]
+    - [reference_fidelity, "Is the stripe continuous in the top view?"]
+    - [physics_plausibility, "Is the hover gap shown under the bike?"]
+    - [style, "Is the blueprint style consistent?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: SHT-GAM-04
+  title: "Run-of-show for a Hindi esports final broadcast"
+  persona: "Broadcast producer at an esports league laying out the final's run-of-show."
+  evidence: "Run-of-show sheets carry time codes that must add up and names that must be exact."
+  levers: [time-code, exact-text, script, count, small-text, locale]
+  prompt: |
+    Design a run-of-show sheet on one landscape page, black background, white and neon-green type,
+    for a Hindi-language esports final. Title: "ग्रैंड फ़ाइनल — RUN OF SHOW". A table with columns
+    "Time", "Segment", "On air" and eight rows exactly:
+    "18:00 · प्री-शो · Casters"; "18:20 · टीम परिचय · Team videos"; "18:30 · मैच 1 · Live";
+    "19:15 · ब्रेक · Sponsor reel"; "19:25 · मैच 2 · Live"; "20:10 · हाफ़-टाइम शो · Live band";
+    "20:30 · मैच 3 · Live"; "21:15 · ट्रॉफ़ी · Ceremony". On the right, two team logos as simple
+    shields labelled "MUMBAI MAVERICKS" and "CHENNAI CHARGE". No other text.
+  exact_text:
+    - "ग्रैंड फ़ाइनल — RUN OF SHOW"
+    - "प्री-शो"
+    - "टीम परिचय"
+    - "हाफ़-टाइम शो"
+    - "ट्रॉफ़ी"
+    - "MUMBAI MAVERICKS"
+    - "CHENNAI CHARGE"
+  deliverable: "One landscape image."
+  checks:
+    - [text_accuracy, "Is the title exact?"]
+    - [prompt_adherence, "Are there eight rows?"]
+    - [text_accuracy, "Are all times exact and in order?"]
+    - [text_accuracy, "Are the Hindi segment names exact, with nuqtas?"]
+    - [text_accuracy, "Are the on-air entries exact?"]
+    - [prompt_adherence, "Are there two team shields with exact names?"]
+    - [prompt_adherence, "Are the columns Time, Segment, On air?"]
+    - [style, "Is the palette black, white and neon green?"]
+    - [text_accuracy, "Is every word readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the table cleanly ruled?"]
+    - [prompt_adherence, "Are the shields on the right?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: SHT-GAM-05
+  title: "HUD spec sheet: every on-screen element labelled with size, position and state"
+  persona: "UI designer handing engineering the HUD spec."
+  evidence: "Earlier bank IMG-UI-06 (responsive pair, nothing dropped) was high tier; HUD specs are dense labelled layouts."
+  levers: [count, exact-text, small-text, layout, long-brief]
+  prompt: |
+    Design a HUD spec sheet on one landscape page: a 16:9 game screenshot of a neon city street with
+    the HUD overlaid, surrounded by a margin of labelled callouts on dark grey. HUD elements and
+    their exact labels with leader lines: top left "Health bar · 320×24 · red", top left below it
+    "Stamina · 320×12 · teal", top right "Minimap · 220×220 · round", bottom left "Ammo · 30 / 90",
+    bottom right "Ability cooldowns · 3 icons", centre "Crosshair · 24×24", top centre "Objective ·
+    Reach the tower". Title: "HUD v3 — SPEC". Each element appears in the screenshot where its
+    label says. No other text.
+  exact_text:
+    - "HUD v3 — SPEC"
+    - "Health bar · 320×24 · red"
+    - "Minimap · 220×220 · round"
+    - "Ammo · 30 / 90"
+    - "Objective · Reach the tower"
+  deliverable: "One landscape image."
+  checks:
+    - [prompt_adherence, "Are there seven labelled HUD elements?"]
+    - [text_accuracy, "Are all labels exact?"]
+    - [prompt_adherence, "Is each element where its label says (top left, top right, etc.)?"]
+    - [prompt_adherence, "Does each leader line touch its element?"]
+    - [prompt_adherence, "Is the minimap round and the crosshair centred?"]
+    - [prompt_adherence, "Are there three ability icons bottom right?"]
+    - [text_accuracy, "Does the objective read Reach the tower in the screenshot too?"]
+    - [text_accuracy, "Does the ammo read 30 / 90 in the screenshot?"]
+    - [text_accuracy, "Is the title exact?"]
+    - [style, "Is the sheet consistent?"]
+    - [text_accuracy, "Is every label readable?"]
+    - [prompt_adherence, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

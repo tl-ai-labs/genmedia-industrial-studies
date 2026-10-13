@@ -1,0 +1,57 @@
+# V5 — Product and ad spots (header). Built on image family PRD. Scenarios: vspt-*.yaml.
+
+family: Product and ad spots
+code: VSPT
+number: 5
+about: "Short multi-shot spots in which a real product stays exact through motion: label, shape, logo, colour; packshots that land on time; vertical variants."
+outputs: "1 multi-shot clip"
+
+rubric:
+  weights: {reference_fidelity: 4, text_accuracy: 3, prompt_adherence: 3, motion_coherence: 2, physics_plausibility: 2, preservation: 2, visual_quality: 1, style: 1, temporal_consistency: 1, composition: 1}
+  gate: [reference_fidelity, text_accuracy]
+  gate_rule: "The product, its logo and its label text must stay exactly the real ones through the motion."
+
+targets:
+  label-drift: "Label text or artwork changes or melts during the motion"
+  shape-drift: "The product's shape or proportions change during the motion"
+  logo-geometry: "The logo distorts as it moves or turns"
+  colour-drift: "Brand or product colours shift across the spot"
+  integration: "Light, shadow or reflections on the product do not match the scene as it moves"
+  timing: "The packshot or beat lands at the wrong second"
+  aspect-reframe: "A vertical or square variant loses the product or the action"
+
+slots:
+  # Advertising & agencies — 12 (2 t2v, 8 i2v, 2 edit · 7 hard, 5 extreme)
+  - {id: VSPT-ADS-01, task: i2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: label-drift, sources: [SRC-ADS-GHEE-JAR], script: devanagari, from_image: PRD-ADS-07, idea: "A 6-second ghee spot: the jar turns, the lid lifts, ghee pours on rice, packshot at 5 s; the Devanagari label never melts"}
+  - {id: VSPT-ADS-02, task: i2v, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: extreme, target: timing, sources: [SRC-ADS-SCOOTER], script: latin, from_image: PRD-ADS-03, idea: "An 8-second scooter spot in three cuts landing the packshot at exactly 6 s"}
+  - {id: VSPT-ADS-03, task: i2v, subject: fashion, style: photoreal, light: practical, locale: global, diff: hard, target: shape-drift, sources: [SRC-ADS-SHOE], idea: "A 6-second shoe spot: turntable, laces tighten, a slow-motion strike; the shoe's shape holds through the flex"}
+  - {id: VSPT-ADS-04, task: i2v, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: extreme, target: logo-geometry, sources: [SRC-ADS-BILLBOARD-SITE, SRC-ADS-LOGO], script: latin, from_image: PRD-ADS-01, idea: "A push-in from the flyover to the hoarding as the Myna Pay ad animates on; logo geometry holds in perspective"}
+  - {id: VSPT-ADS-05, task: i2v, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: integration, sources: [SRC-VREF-PHONE], idea: "A phone launch spot: the Nimbus 7 flips in the air and lands on wet stone; reflections and splash match"}
+  - {id: VSPT-ADS-06, task: i2v, subject: food, style: photoreal, light: daylight, locale: global, diff: hard, target: colour-drift, sources: [SRC-VREF-COLD-COFFEE], idea: "A cold-coffee pour into a glass of ice; the coffee stays the label's caramel colour"}
+  - {id: VSPT-ADS-07, task: i2v, subject: person, style: photoreal, light: practical, locale: IN, diff: hard, target: label-drift, sources: [SRC-VREF-AMBASSADOR, SRC-VREF-PHONE], script: latin, idea: "The ambassador turns the phone to camera in a 6-second spot; the back's NIMBUS and camera island stay exact"}
+  - {id: VSPT-ADS-08, task: i2v, subject: stylised, style: 3d, light: practical, locale: IN, diff: hard, target: timing, sources: [SRC-VREF-CHOTU-SHEET], script: latin, idea: "Chotu dances on a kitchen counter; the line Mood off? Mirchi on! lands at 4 s"}
+  - {id: VSPT-ADS-09, task: t2v, subject: fashion, style: photoreal, light: practical, locale: global, diff: extreme, target: colour-drift, sources: [], script: latin, idea: "A lipstick spot from a written brand spec: bullet twist-up, swatch on skin, packshot; the shade stays its hex"}
+  - {id: VSPT-ADS-10, task: t2v, subject: interior, style: photoreal, light: daylight, locale: IN, diff: hard, target: integration, sources: [], idea: "A mattress spot: a child jumps on one side while a glass of water on the other side barely ripples"}
+  - {id: VSPT-ADS-11, task: edit, subject: group, style: photoreal, light: daylight, locale: IN, diff: extreme, target: aspect-reframe, sources: [SRC-VCLIP-SPOT-PACKSHOT], script: latin, idea: "Cut the 16:9 juice spot into a 9:16 vertical; the pour and the packshot stay in frame"}
+  - {id: VSPT-ADS-12, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: integration, sources: [SRC-VCLIP-SPOT-PACKSHOT, SRC-ADS-GHEE-JAR], script: devanagari, idea: "Swap the juice carton in the packshot for the ghee jar; light, shadow and placement match"}
+  # E-commerce, D2C & retail — 14 (2 t2v, 9 i2v, 3 edit · 9 hard, 5 extreme)
+  - {id: VSPT-ECM-01, task: i2v, subject: product, style: cinematic, light: practical, locale: global, diff: extreme, target: label-drift, sources: [SRC-ECM-SODA-CAN, SRC-VBIBLE-ANANAS], script: latin, from_image: PRD-ECM-01, idea: "Sahil's product-bible test in motion: the bible's storyboard frames 2–5 as one spot; the can never melts"}
+  - {id: VSPT-ECM-02, task: i2v, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: shape-drift, sources: [SRC-ECM-SERUM], script: latin, idea: "A serum spot: the dropper rises, one drop falls, the bottle turns its label to camera"}
+  - {id: VSPT-ECM-03, task: i2v, subject: landscape, style: photoreal, light: golden, locale: IN, diff: extreme, target: integration, sources: [SRC-ECM-TENT], idea: "A time-lapse spot: the tent is pitched on a Spiti river flat as the shadows sweep and the sun sets"}
+  - {id: VSPT-ECM-04, task: i2v, subject: interior, style: photoreal, light: daylight, locale: global, diff: hard, target: colour-drift, sources: [SRC-ECM-RUG], idea: "The rug unrolls across a living-room floor; its rust and indigo hold through the motion"}
+  - {id: VSPT-ECM-05, task: i2v, subject: animal, style: photoreal, light: daylight, locale: global, diff: hard, target: integration, sources: [SRC-ECM-DOG-BED], idea: "A dog steps into the bed, circles twice and lies down; the cushion takes its weight"}
+  - {id: VSPT-ECM-06, task: i2v, subject: child-elderly, style: photoreal, light: daylight, locale: IN, diff: hard, target: shape-drift, sources: [SRC-ECM-SCHOOLBAG], idea: "A girl swings the backpack on and runs for the school bus; the bag's shape and pocket hold"}
+  - {id: VSPT-ECM-07, task: i2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: label-drift, sources: [SRC-ECM-SPICE-JARS], script: tamil, idea: "The three jars spin to face camera and turmeric pours; every Tamil label stays exact in motion"}
+  - {id: VSPT-ECM-08, task: i2v, subject: product, style: photoreal, light: golden, locale: IN, diff: extreme, target: logo-geometry, sources: [SRC-ECM-TEA-TIN], script: latin, idea: "The tea tin turns 360 degrees; the embossed logo and curved lettering keep their geometry"}
+  - {id: VSPT-ECM-09, task: i2v, subject: fashion, style: photoreal, light: practical, locale: global, diff: hard, target: shape-drift, sources: [SRC-ECM-JACKET-FLAT], idea: "The jacket as a ghost-mannequin turntable; cut, pockets and marigold hold"}
+  - {id: VSPT-ECM-10, task: t2v, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: colour-drift, sources: [], script: latin, from_image: PRD-ECM-08, idea: "The millet snack pouch from its written spec: pouch drops, puffs spill, hex colours hold"}
+  - {id: VSPT-ECM-11, task: t2v, subject: stylised, style: 3d, light: daylight, locale: global, diff: hard, target: logo-geometry, sources: [], script: latin, from_image: PRD-ECM-20, idea: "The BOLTBOT toy box spot: the box opens and the robot mascot waves; the gear-O logo holds"}
+  - {id: VSPT-ECM-12, task: edit, subject: product, style: photoreal, light: daylight, locale: global, diff: hard, target: integration, sources: [SRC-VCLIP-UNBOX-HANDS, SRC-ECM-TEA-TIN], script: latin, idea: "Swap the unboxed white case for the tea tin, lifted by the same hands with matching light"}
+  - {id: VSPT-ECM-13, task: edit, subject: fashion, style: photoreal, light: practical, locale: IN, diff: extreme, target: aspect-reframe, sources: [SRC-VCLIP-RUNWAY-WALK], idea: "Make a 9:16 vertical of the catalogue walk; the full outfit and the turn stay in frame"}
+  - {id: VSPT-ECM-14, task: edit, subject: group, style: photoreal, light: neon, locale: IN, diff: hard, target: label-drift, sources: [SRC-VCLIP-PARTY-CANS], script: latin, idea: "Print the Ananas label on all five plain cans, tracked through the toast"}
+  # Gaming — 2 (1 t2v, 1 i2v · 1 hard, 1 extreme)
+  - {id: VSPT-GAM-01, task: i2v, subject: fashion, style: photoreal, light: practical, locale: IN, diff: extreme, target: logo-geometry, sources: [SRC-GAM-LOGO], script: latin, from_image: PRD-GAM-02, idea: "A merch spot: the hoodie with the game logo on its back turns and is pulled on; the logo holds through the folds"}
+  - {id: VSPT-GAM-02, task: t2v, subject: product, style: 3d, light: neon, locale: global, diff: hard, target: colour-drift, sources: [], script: latin, from_image: PRD-GAM-03, idea: "The limited-edition controller from its written spec on a desk at night, a slow turn; hex colours hold"}
+  # Real estate, interiors & architecture — 2 (2 i2v · 1 hard, 1 extreme)
+  - {id: VSPT-RES-01, task: i2v, subject: interior, style: photoreal, light: daylight, locale: IN, diff: extreme, target: integration, sources: [SRC-RES-LIVING-FLAT, SRC-RES-SOFA], from_image: PRD-RES-01, idea: "A staging spot: push in on the listing room with the rust sofa in place; its scale and light hold as the camera moves"}
+  - {id: VSPT-RES-02, task: i2v, subject: architecture, style: photoreal, light: noon, locale: IN, diff: hard, target: integration, sources: [SRC-RES-TOWER-SITE, SRC-RES-CLADDING], from_image: PRD-RES-02, idea: "A drone push on the tower's east face clad in the terracotta louvres; gap shadows stay true as it moves"}

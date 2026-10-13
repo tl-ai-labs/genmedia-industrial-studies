@@ -1,0 +1,133 @@
+# Depth, light and physics — Media, publishing & events scenarios. Slots: phy.yaml.
+code: PHY
+scenarios:
+
+- id: PHY-MED-01
+  seed: true
+  title: "Concert crowd under three stage colours and phone screens, each light where its source is"
+  persona: "Festival photo desk checking whether generated images can stand in for missing photos in a recap gallery without a lighting designer spotting them."
+  evidence: "Call at 17:26: spatial depth and light are where customers see models differ. Mixed coloured light is easy to make pretty and hard to make right: every colour has to fall on the side of each head that faces its source."
+  levers: [physics, light-lock, layout, count, locale, exclude]
+  prompt: |
+    A festival photo from inside the crowd at a Mumbai concert, at night, 35 mm at standing height.
+    The stage fills the back third: a singer in a white kurta at a centre microphone. Three light
+    sources only: a magenta wash from a truss at stage left (frame left), a cyan wash from a truss
+    at stage right (frame right), and one white follow spot from the front, high above the crowd,
+    on the singer. Haze makes the magenta and cyan beams visible as cones that start at their
+    trusses. In the foreground and middle, the crowd: every head and shoulder has a magenta edge on
+    its left side and a cyan edge on its right side. Four people hold phones up, filming; each
+    phone screen lights only that person's face and hands from below with a cold white glow. The
+    singer casts one shadow on the stage floor behind her, from the follow spot. No other light
+    sources, no text, no logos.
+  deliverable: "One image, 3:2."
+  checks:
+    - [prompt_adherence, "Do the heads in the crowd have magenta on their left side and cyan on their right?"]
+    - [prompt_adherence, "Do the beams start at the trusses, magenta on the left and cyan on the right?"]
+    - [physics_plausibility, "Are the beams visible as cones in the haze, narrowing towards their trusses?"]
+    - [prompt_adherence, "Are there exactly four phones held up?"]
+    - [prompt_adherence, "Does each phone light only its holder's face and hands, from below?"]
+    - [prompt_adherence, "Is the singer lit white by the follow spot?"]
+    - [physics_plausibility, "Does the singer cast one shadow on the floor behind her, matching a spot from the front and above?"]
+    - [physics_plausibility, "Is there no light falling from a direction where there is no source?"]
+    - [prompt_adherence, "Does the stage fill the back third with the singer at the centre microphone?"]
+    - [prompt_adherence, "Is the singer in a white kurta?"]
+    - [physics_plausibility, "Do heads shrink with distance towards the stage, with the crowd's depth readable?"]
+    - [prompt_adherence, "Is there no text or logo anywhere?"]
+    - [visual_quality, "Are the hands holding phones natural?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: the same crowd over six seconds as the washes sweep; the colours on each head follow the beams."
+
+- id: PHY-MED-02
+  title: "A crystal award trophy bending the stage lights and the backdrop lettering behind it"
+  persona: "Awards-show producer testing a generated stage image."
+  evidence: "Refraction of text through faceted crystal is hard."
+  levers: [physics, exact-text, light-lock, layout]
+  prompt: |
+    A photo of an awards-show stage, 4:5: a faceted crystal trophy shaped like a tall flame stands on a
+    black podium in the foreground. Behind it, out of focus, a large backdrop with the words "AWARDS
+    2026" in white capitals and a row of warm spotlights. Through the crystal, the lettering and the
+    spotlights are split into several displaced, inverted fragments by the facets, with small rainbow
+    fringes at the edges; around the crystal, the backdrop reads normally. A bright highlight on the
+    flame's tip from a top spot. No other text.
+  exact_text: ["AWARDS 2026"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [text_accuracy, "Does the backdrop read AWARDS 2026 where seen directly?"]
+    - [physics_plausibility, "Is the lettering split into displaced fragments through the crystal?"]
+    - [physics_plausibility, "Are some fragments inverted?"]
+    - [physics_plausibility, "Are there small rainbow fringes?"]
+    - [physics_plausibility, "Are the spotlights also fragmented in the crystal?"]
+    - [physics_plausibility, "Does the backdrop read normally around the crystal?"]
+    - [prompt_adherence, "Is there a bright highlight on the flame's tip?"]
+    - [prompt_adherence, "Is the trophy on a black podium in the foreground?"]
+    - [prompt_adherence, "Is the backdrop out of focus?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Are facets clean?"]
+    - [prompt_adherence, "Is the trophy a faceted flame?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PHY-MED-03
+  title: "A projection-mapped riverside building at a Varanasi festival, mirrored in the Ganga with boats"
+  persona: "Festival's media team testing a generated night image for a press kit."
+  evidence: "Projected light on architecture and its reflection in moving water combine two physics tests."
+  levers: [physics, light-lock, locale, count]
+  prompt: |
+    A night photo from the Ganga at Varanasi during Dev Deepawali, 16:9: an old riverside palace with
+    stepped ghats in front is covered in a projection-mapped pattern of glowing blue and gold lotus
+    shapes that follow its windows and cornices. Thousands of small diyas line the ghat steps. The
+    river in the foreground mirrors the palace, the projection and the diyas, broken into vertical
+    streaks by gentle ripples. Three wooden boats with silhouetted passengers sit in the middle
+    distance; each one blocks part of the reflection behind it. No text.
+  deliverable: "One image, 16:9."
+  checks:
+    - [physics_plausibility, "Does the projection follow the building's windows and cornices?"]
+    - [prompt_adherence, "Is the projection blue and gold lotus shapes?"]
+    - [physics_plausibility, "Does the river mirror the palace and projection?"]
+    - [physics_plausibility, "Is the reflection broken into vertical streaks by ripples?"]
+    - [physics_plausibility, "Do the boats block parts of the reflection behind them?"]
+    - [prompt_adherence, "Are there three boats?"]
+    - [prompt_adherence, "Are diyas lining the ghat steps?"]
+    - [prompt_adherence, "Does it read as Varanasi?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is the architecture clean under the projection?"]
+    - [prompt_adherence, "Is it night?"]
+    - [physics_plausibility, "Are diya reflections visible in the water?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: "V7: boats crossing, reflections rippling."
+
+- id: PHY-MED-04
+  title: "Add a second key light from front right to the anchor; a second shadow appears, both consistent"
+  persona: "Broadcast lighting director previewing a two-key setup on the programme frame."
+  evidence: "Adding a light means adding a shadow; generated relights usually just brighten."
+  levers: [physics, light-lock, keep-rest, identity, locale]
+  inputs: [{source: SRC-MED-NEWSROOM, role: source}]
+  prompt: |
+    In this news broadcast frame, the anchor is lit by one soft key from front left, with a faint shadow
+    of his head on the screen behind to his left. Add a second key light of equal strength from the
+    front right, so the lower third "मुंबई में भारी बारिश" and the clock "09:15" stay exactly as they
+    are. His face becomes evenly lit from both sides, with two soft catchlights in each eye; a
+    second faint shadow of his head appears on the screen behind him to his right, matching the first.
+    The anchor's face, glasses, suit and tie, the desk, the screen, the graphics and the clock are
+    unchanged apart from the light.
+  exact_text: ["मुंबई में भारी बारिश", "09:15"]
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is his face now lit evenly from both sides?"]
+    - [prompt_adherence, "Are there two catchlights in each eye?"]
+    - [physics_plausibility, "Is there a second faint head shadow on the screen to his right?"]
+    - [physics_plausibility, "Does it match the first shadow in softness and strength?"]
+    - [reference_fidelity, "Is his face unchanged apart from the light?"]
+    - [preservation, "Are his glasses, suit and tie unchanged?"]
+    - [preservation, "Is the desk unchanged?"]
+    - [text_accuracy, "Are the lower third and clock unchanged?"]
+    - [physics_plausibility, "Do the glasses show two reflections?"]
+    - [visual_quality, "Is the face free of artefacts?"]
+    - [preservation, "Is the screen unchanged apart from the shadow?"]
+    - [preservation, "Is he still the only person?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

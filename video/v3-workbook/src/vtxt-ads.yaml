@@ -1,0 +1,43 @@
+# Text in motion — Advertising & agencies scenarios. Slots: vtxt.yaml.
+code: VTXT
+scenarios:
+
+- id: VTXT-ADS-01
+  seed: true
+  title: "Scooter launch end card: English headline, Hindi line, price and fine print arrive on cue"
+  persona: "Motion designer at a Bengaluru agency finishing the TV commercial's end card."
+  evidence: "Call at 26:48: text rendering is compared against a type-led tool. In motion, text must also stay exact on every frame and arrive on time."
+  levers: [exact-text, script, small-text, timing, layout, exclude]
+  prompt: |
+    A 6-second animated end card for a TV commercial, 16:9, on a flat teal (#1F7A7A) background. The
+    fictional Hawa E1 scooter (matte teal body, gloss-white front apron, tan seat, black five-spoke
+    wheels) slides in from the left to the left half of the frame between 0 and 1 s and stops. Text
+    arrives on the right half, in this order and timing, each line fading up and settling in under 0.3
+    seconds, then holding still and exact until the end: at 1.0 s "Ride the breeze." large in white;
+    at 2.0 s "Hawa E1" under it; at 2.8 s the Hindi line "हर दिन 120 किमी, एक चार्ज में"; at 3.6 s the
+    price "₹89,999*" in a white circle; at 4.4 s the fine print along the bottom "*Ex-showroom
+    Bengaluru. T&C apply." No other text, no logos, no movement after 4.6 s.
+  exact_text:
+    - "Ride the breeze."
+    - "Hawa E1"
+    - "हर दिन 120 किमी, एक चार्ज में"
+    - "₹89,999*"
+    - "*Ex-showroom Bengaluru. T&C apply."
+  clip: {duration: 6, aspect: "16:9", camera: "locked off motion graphic"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Is Ride the breeze. exact on every frame once shown?"]
+    - [text_accuracy, "Is Hawa E1 exact?"]
+    - [text_accuracy, "Is the Hindi line exact and correctly formed on every frame?"]
+    - [text_accuracy, "Is the price exact with the rupee sign, comma and asterisk?"]
+    - [text_accuracy, "Is the fine print exact and readable?"]
+    - [prompt_adherence, "Do the lines arrive at about 1.0, 2.0, 2.8, 3.6 and 4.4 s, in that order?"]
+    - [motion_coherence, "Does each line settle in under 0.3 s and then hold still?"]
+    - [temporal_consistency, "Does no text flicker, shimmer or re-spell between frames?"]
+    - [motion_coherence, "Does the scooter slide in from the left and stop by 1 s?"]
+    - [prompt_adherence, "Does the scooter match the description?"]
+    - [prompt_adherence, "Is the scooter on the left half and the text on the right half?"]
+    - [prompt_adherence, "Is there no movement after about 4.6 s?"]
+    - [prompt_adherence, "Is there no other text or logo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

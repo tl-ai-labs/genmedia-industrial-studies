@@ -1,0 +1,100 @@
+# The rubric for the v3 image and video banks. Every yes/no check in every scenario is tagged
+# with one of these criteria; each family header sets the criteria's weights and its gate.
+# The video bank reads this file too (criteria marked for video), as it reads the image sources.
+
+scoring:
+  criterion: "A criterion scores 10 × the share of its checks answered yes, whole-output and set-member checks together."
+  scenario: "A scenario scores the weighted mean of the criteria it checks, using its family's weights."
+  gate: "Every check under the family's gate criteria must be a yes. A gate criterion the scenario does not check does not apply."
+  pass: "A scenario passes when it clears its gate and scores at least the pass score."
+
+pass_score: 8.0
+
+criteria:
+  - key: prompt_adherence
+    name: Prompt adherence
+    lanes: [image, video]
+    judges: "Everything the brief asks for is there and as asked: subjects, actions, changes, counts, positions, camera, light and timing."
+    full: "Every asked-for element is present and correct; nothing is invented that the brief rules out."
+    half: "The main subject or change is right, but about half of the specific asks (a count, a position, the camera, the light, a time) are missed."
+    applies: "Every scenario."
+
+  - key: reference_fidelity
+    name: Reference fidelity
+    lanes: [image, video]
+    judges: "A face, character, product, place or design taken from an input image is the same one in the output: shape, proportions, colour, markings, label."
+    full: "Unmistakably the same person or object as the input, in every view shown."
+    half: "Recognisably related to the input, but a marking, a proportion, a colour or a label detail has changed."
+    applies: "Scenarios with input images."
+
+  - key: preservation
+    name: Preservation
+    lanes: [image, video]
+    judges: "Everything the brief does not ask to change stays as it was in the input: other objects, background, light, framing, colour grade, and in video the timing of the action."
+    full: "Comparing input and output, no difference can be found beyond the asked-for changes."
+    half: "The asked-for area is right, but something outside it has visibly shifted: a recoloured object, a moved prop, a changed grade or a re-timed action."
+    applies: "Edits, and any scenario whose brief says what must stay the same."
+
+  - key: set_consistency
+    name: Set consistency
+    lanes: [image, video]
+    judges: "The outputs of a set, or the panels of one sheet, agree with each other: the same people, costume, props, space, light direction and moment."
+    full: "Every output or panel shows the same subject, space and moment; nothing drifts between them."
+    half: "The main subject holds, but a costume detail, a prop, a side (left or right) or the light direction changes between outputs."
+    applies: "Sets, storyboards and multi-panel sheets."
+
+  - key: temporal_consistency
+    name: Temporal consistency
+    lanes: [video]
+    judges: "Within one clip, things stay themselves from the first frame to the last: no flicker, texture crawl, faces or objects changing, light or colour drifting."
+    full: "Stable on a frame-by-frame scrub; nothing changes that should not."
+    half: "Visible drift or flicker in part of the clip, though the subject stays recognisable."
+    applies: "Single clips."
+
+  - key: motion_coherence
+    name: Motion coherence
+    lanes: [video]
+    judges: "Movement of people, objects and camera is plausible and continuous: weight, momentum, contact, a camera move that holds its path, no warping or popping."
+    full: "The motion reads as filmed rather than generated."
+    half: "The motion is smooth but wrong in places: sliding feet, a limb through an object, weightless movement, a camera that drifts off its path."
+    applies: "Every video scenario."
+
+  - key: physics_plausibility
+    name: Physics plausibility
+    lanes: [image, video]
+    judges: "Reflections, shadows, refraction, occlusion, contact, depth and scale behave as they would in the real scene."
+    full: "Nothing contradicts how light and objects behave; a physics-literate viewer finds no error."
+    half: "Most of it holds, but one reflection, shadow or contact is wrong in a way an expert would notice."
+    applies: "Wherever the brief depends on light, surfaces, contact or depth."
+
+  - key: text_accuracy
+    name: Text accuracy
+    lanes: [image, video]
+    judges: "Required text is spelled exactly, letter for letter, in the right script and correctly formed, with no garbled or invented text; text that must not appear does not."
+    full: "Every required string is exact and readable; there is no stray text."
+    half: "Most strings are right, but one has a wrong, missing or malformed letter, or stray text appears."
+    applies: "Every scenario that has required text, or that rules text out."
+
+  - key: composition
+    name: Composition
+    lanes: [image, video]
+    judges: "Framing, subject placement and scale, horizon, negative space and balance, as the brief describes them."
+    full: "The framing is the one described, including any off-centre or unusual placement."
+    half: "The subject is placed sensibly, but the default centred framing has crept back or the asked-for scale or space is lost."
+    applies: "Scenarios whose brief sets the framing."
+
+  - key: style
+    name: Style
+    lanes: [image, video]
+    judges: "The requested visual register and texture: photoreal, cinematic grade, illustration, pencil, 3D render, graphic design."
+    full: "The output is clearly in the asked-for style and holds it throughout."
+    half: "The style is close but drifts toward a generic look, or is mixed across the output."
+    applies: "Scenarios whose brief names a style."
+
+  - key: visual_quality
+    name: Visual quality
+    lanes: [image, video]
+    judges: "Sharpness, clean anatomy and structure, and no artefacts: hands, faces, seams, halos, smearing, duplicated objects."
+    full: "Would pass as a finished photograph, frame or render."
+    half: "Usable, but with a noticeable artefact such as a malformed hand or a soft, smeared area."
+    applies: "Every scenario."

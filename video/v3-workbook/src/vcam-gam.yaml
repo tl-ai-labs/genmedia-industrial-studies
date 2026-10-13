@@ -1,0 +1,33 @@
+# Camera work — Gaming scenarios. Slots: vcam.yaml.
+code: VCAM
+scenarios:
+
+- id: VCAM-GAM-01
+  title: "A slow crane up from the tiny hero to reveal the colossal titan, the hero staying small in the lower right"
+  persona: "Game studio's cinematic director planning a boss reveal."
+  evidence: "Scale reveals fail when the camera recentres the hero or the titan grows wrongly."
+  levers: [camera-move, off-centre, physics, light-lock, long-brief]
+  prompt: |
+    A 10-second illustrated game cinematic in a painterly style at golden hour. A small hero with a spear and
+    a red cloak stands on a rocky plateau in the lower right of the 2.39:1 frame, facing left. The camera
+    starts low behind the hero and cranes slowly up and back. As it rises, a colossal stone titan sitting
+    cross-legged in the valley ahead is revealed bit by bit: first its knee, then its torso, then its mossy
+    head with closed eyes, finally filling the left two-thirds of the frame. The hero stays small in the
+    lower right the whole time. At 9 seconds the titan's eyes open, glowing amber. No text.
+  clip: {duration: 10, aspect: "2.39:1", camera: "crane up and back"}
+  deliverable: "One 10-second clip, 2.39:1."
+  checks:
+    - [prompt_adherence, "Does the camera crane up and back?"]
+    - [composition, "Does the hero stay small in the lower right?"]
+    - [composition, "Does the titan fill the left two-thirds at the end?"]
+    - [physics_plausibility, "Is the titan revealed knee, torso, head in order?"]
+    - [prompt_adherence, "Do the titan's eyes open at about 9 seconds?"]
+    - [prompt_adherence, "Is it golden hour throughout?"]
+    - [physics_plausibility, "Is the titan's scale consistent with the hero's?"]
+    - [prompt_adherence, "Is the hero's cloak red?"]
+    - [style, "Is it painterly?"]
+    - [motion_coherence, "Is the crane smooth?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the frame free of artefacts?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

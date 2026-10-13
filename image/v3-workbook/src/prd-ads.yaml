@@ -1,0 +1,344 @@
+# Product and brand — Advertising & agencies scenarios. Slots: prd.yaml.
+code: PRD
+scenarios:
+
+- id: PRD-ADS-01
+  seed: true
+  title: "A payments-app campaign placed on a blank flyover hoarding: exact logo, colours and perspective"
+  persona: "Media planner at an outdoor agency making the site mock-up the client approves before the flex is printed."
+  evidence: "Ravi's walkthrough at 09:30: the box-and-logo scenario (IMG-BRAND-04, logo geometry on packaging) was in the high tier, with Lite invalid and Flash 7.2 against Pro 9.7. This adds a real site photo in perspective, hex colours and exact type."
+  levers: [identity, multi-ref, physics, exact-text, keep-rest, layout, camera]
+  inputs:
+    - {source: SRC-ADS-BILLBOARD-SITE, role: source, note: "the site photo; everything except the panel stays"}
+    - {source: SRC-ADS-LOGO, role: reference, note: "the logo, colours and wordmark"}
+  prompt: |
+    Put a finished advertisement on the blank white hoarding in this photo, as it would look once
+    the printed flex is mounted, and change nothing else in the photo. The artwork fills the
+    panel edge to edge with its four corners on the panel's four corners, following the panel's
+    perspective exactly: the left edge nearer and taller, the right edge farther and shorter.
+
+    The artwork: a flat deep indigo background, #2B2A8C. At the top left, the logo from the
+    second image, exactly: the indigo circle (with a thin white outline so it reads on the indigo)
+    holding the white myna head with the saffron #FF9F1C beak, and the lower-case wordmark
+    "myna pay" in white to its right, with the same proportions as the reference. Across the left
+    two-thirds, the headline "Pay in a blink." in a heavy white geometric sans, and under it in
+    saffron, "UPI · Cards · Bills". On the right third, a large saffron circle with a white tick.
+
+    It must look printed and mounted, not pasted on: the four lamp brackets keep casting their
+    short shadows across the top edge of the artwork; the panel's even morning light falls on it
+    with a slight falloff towards the far right; the frame and catwalk stay in front of it. The
+    traffic, the bus, the autorickshaws, the trees and the sky stay exactly as they are.
+  exact_text:
+    - "myna pay"
+    - "Pay in a blink."
+    - "UPI · Cards · Bills"
+  deliverable: "One image at the same size and framing as the site photo."
+  checks:
+    - [prompt_adherence, "Do the artwork's four corners sit on the panel's four corners?"]
+    - [physics_plausibility, "Does the artwork follow the panel's perspective, left edge taller than the right?"]
+    - [reference_fidelity, "Is the logo symbol the reference's: circle, white myna head facing right, saffron beak, eye-ring?"]
+    - [reference_fidelity, "Does the symbol stay a true circle seen in perspective, not an egg or a squashed shape?"]
+    - [reference_fidelity, "Does the wordmark read myna pay in lower case with the reference's proportions to the circle?"]
+    - [prompt_adherence, "Is the background a flat deep indigo close to #2B2A8C, and the beak and subline saffron close to #FF9F1C?"]
+    - [text_accuracy, "Is the headline exactly Pay in a blink. with the full stop?"]
+    - [text_accuracy, "Is the subline exactly UPI · Cards · Bills?"]
+    - [physics_plausibility, "Do the lamp-bracket shadows fall across the top edge of the artwork?"]
+    - [physics_plausibility, "Does the frame and catwalk stay in front of the artwork?"]
+    - [prompt_adherence, "Does the artwork's light match the panel, with a slight falloff to the far right?"]
+    - [preservation, "Are the bus, the two autorickshaws and the cars unchanged?"]
+    - [preservation, "Are the trees, the sky and the flyover unchanged?"]
+    - [prompt_adherence, "Is there a saffron circle with a white tick on the right third?"]
+    - [prompt_adherence, "Is there no other text or logo on the panel?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: "V5: a slow push-in from the flyover towards the hoarding with the artwork locked to the panel."
+
+- id: PRD-ADS-02
+  title: "The perfume on a wet black rock by the sea at night with spray in the air; label unchanged"
+  persona: "Fragrance brand's art director placing the packshot into a campaign scene."
+  evidence: "Earlier bank IMG-BRAND-06 (label legibility through reflections) was medium tier; spray and wet stone add physics."
+  levers: [identity, exact-text, physics, light-lock, keep-rest]
+  inputs: [{source: SRC-ADS-PERFUME, role: source}]
+  prompt: |
+    Place this exact perfume bottle, Varsha No. 3, on a wet black volcanic rock by the sea at night,
+    4:5. Waves break behind it and fine sea spray hangs in the air, catching a cold rim light from
+    behind. A soft warm key from the front left lights the bottle and the label. The bottle keeps its
+    exact shape, bevels, black cap, amber liquid and cream label reading "VARSHA", "No. 3" and "EAU DE
+    PARFUM · 50 ml". Water droplets bead on the glass; the rock reflects the bottle faintly in its wet
+    surface. No other text, no props.
+  exact_text: ["VARSHA", "No. 3", "EAU DE PARFUM · 50 ml"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the bottle the same shape with the same bevels?"]
+    - [text_accuracy, "Is the label text exact and readable?"]
+    - [reference_fidelity, "Is the cap black and cylindrical?"]
+    - [reference_fidelity, "Is the liquid pale amber?"]
+    - [physics_plausibility, "Do droplets bead on the glass?"]
+    - [physics_plausibility, "Does the wet rock reflect the bottle faintly?"]
+    - [physics_plausibility, "Does spray hang in the air with a cold rim light?"]
+    - [prompt_adherence, "Is there a warm key from the front left on the bottle?"]
+    - [physics_plausibility, "Does the bottle sit on the rock with correct contact?"]
+    - [prompt_adherence, "Are there no props or other text?"]
+    - [visual_quality, "Is the glass free of artefacts?"]
+    - [prompt_adherence, "Is it night?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V5: waves breaking behind the bottle in a 4-second spot."
+
+- id: PRD-ADS-03
+  title: "The scooter placed on a Bengaluru street at golden hour: matching shadow and puddle reflection"
+  persona: "Agency retoucher compositing the launch scooter into a location for the press kit."
+  evidence: "Integration (shadow, reflection, light) is where pasted products give themselves away."
+  levers: [identity, physics, light-lock, locale, exact-text]
+  inputs: [{source: SRC-ADS-SCOOTER, role: source}]
+  prompt: |
+    Place this exact scooter, the Hawa E1, parked on its side stand on a tree-lined Bengaluru street
+    at golden hour, 16:9, in left side profile as photographed. The street: a cobbled kerb, a rain tree
+    canopy, a café front with blurred warm lights behind, a shallow puddle on the road in front of the
+    scooter. Low sun from behind the camera on the left throws the scooter's long shadow to the right
+    on the road; the puddle reflects the scooter upside down; the matte teal body takes the warm light.
+    The scooter's design and the small "HAWA" on its side panel are unchanged. No rider, no other text.
+  exact_text: ["HAWA"]
+  deliverable: "One image, 16:9."
+  checks:
+    - [reference_fidelity, "Is the scooter the same design: teal body, white apron, tan seat, five-spoke wheels?"]
+    - [text_accuracy, "Is HAWA on the side panel unchanged?"]
+    - [physics_plausibility, "Does it rest on its side stand, leaning correctly?"]
+    - [physics_plausibility, "Does its shadow fall to the right on the road?"]
+    - [physics_plausibility, "Does the puddle reflect it upside down?"]
+    - [prompt_adherence, "Does the matte teal take the warm golden light?"]
+    - [prompt_adherence, "Is the light direction consistent between scooter and street?"]
+    - [prompt_adherence, "Is there a café front and a rain tree behind?"]
+    - [prompt_adherence, "Is there no rider and no other text?"]
+    - [visual_quality, "Is the scooter's geometry clean?"]
+    - [physics_plausibility, "Is its scale right for the street?"]
+    - [prompt_adherence, "Does it read as Bengaluru?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ADS-04
+  title: "Put the coral running shoe on the sprinter's feet mid-stride; colours and stripe exact"
+  persona: "Sportswear agency retoucher producing the campaign hero with the real product."
+  evidence: "Two-input product swaps keep the person but drift the product's colours."
+  levers: [identity, multi-ref, keep-rest, physics, exact-text]
+  inputs:
+    - {source: SRC-ADS-RUNNER, role: source, note: "the campaign frame"}
+    - {source: SRC-ADS-SHOE, role: reference, note: "the shoe"}
+  prompt: |
+    In this campaign frame of a sprinter mid-stride, replace her white running shoes with the DAUD One
+    from the second image, on both feet: coral knit upper fading to off-white at the heel, white
+    midsole with a navy stripe along its length, black outsole, flat white laces and the navy heel tab
+    with "DAUD" in white. The shoes follow her feet's exact positions and angles in the stride, the
+    left shoe mirroring the right. Her body, kit, bib "214", the track and the light are unchanged.
+    No other logos.
+  exact_text: ["DAUD", "214"]
+  deliverable: "One image at the same size."
+  checks:
+    - [reference_fidelity, "Are both shoes the DAUD One: coral fading to off-white?"]
+    - [reference_fidelity, "Is the navy midsole stripe on both shoes?"]
+    - [text_accuracy, "Is DAUD on the heel tab where visible?"]
+    - [physics_plausibility, "Do the shoes follow her feet's positions in the stride?"]
+    - [reference_fidelity, "Is the left shoe a correct mirror of the right?"]
+    - [physics_plausibility, "Is the striking foot in contact with the track?"]
+    - [preservation, "Is her body unchanged?"]
+    - [text_accuracy, "Is the bib still 214?"]
+    - [preservation, "Is the track and lane unchanged?"]
+    - [prompt_adherence, "Do the shoes take the noon light like the rest of the frame?"]
+    - [prompt_adherence, "Are there no other logos?"]
+    - [visual_quality, "Are the shoes clean, not melted into the feet?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-ADS-05
+  title: "The chips pack torn open in a hand at a cricket screening; shape and print hold"
+  persona: "Snack brand's agency producing a lifestyle image of the pack in use."
+  evidence: "Packs deform when held and opened; print and shape must still match."
+  levers: [identity, exact-text, physics, locale, keep-rest]
+  inputs: [{source: SRC-ADS-CHIPS, role: source}]
+  prompt: |
+    Show this exact chips pack, Mirchi Mood, held open in a young man's hand at a living-room
+    cricket screening at night, 4:5. The pack is torn open along the top seal, slightly squeezed by the
+    hand, chips visible inside; the front print is unchanged and readable: the red pack, the yellow
+    sunburst with the mascot's face, "Mirchi Mood", the green "Masala Blast" flag, the "₹20" circle and
+    "52 g". Friends cheer soft in the background with the TV glow. No other text, no other brands.
+  exact_text: ["Mirchi Mood", "Masala Blast", "₹20", "52 g"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the pack the same design?"]
+    - [text_accuracy, "Are Mirchi Mood, Masala Blast, ₹20 and 52 g exact?"]
+    - [physics_plausibility, "Is the pack torn along the top seal with chips inside?"]
+    - [physics_plausibility, "Does the pack deform plausibly under the hand?"]
+    - [reference_fidelity, "Is the mascot face in the sunburst?"]
+    - [prompt_adherence, "Is the scene lit by a TV glow at night?"]
+    - [prompt_adherence, "Are friends cheering soft in the background?"]
+    - [visual_quality, "Is the hand natural?"]
+    - [prompt_adherence, "Is there no other brand or text?"]
+    - [physics_plausibility, "Is the pack's size right in the hand?"]
+    - [prompt_adherence, "Does it read as an Indian living room?"]
+    - [style, "Is it photoreal?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ADS-06
+  title: "The mascot hugging the pack, which is exactly as tall as he is"
+  persona: "Snack brand's 3D studio making a hero visual with the mascot and the pack."
+  evidence: "Relative scale between two references is a known failure."
+  levers: [identity, multi-ref, physics, exact-text, layout]
+  inputs:
+    - {source: SRC-ADS-MASCOT, role: source, note: "the mascot"}
+    - {source: SRC-ADS-CHIPS, role: reference, note: "the pack"}
+  prompt: |
+    Make a hero visual of the mascot Chotu Mirchi hugging the Mirchi Mood chips pack, on a plain red
+    background with a soft floor shadow, 1:1, in the mascot's polished 3D style. The pack stands upright
+    and is exactly as tall as Chotu, from his feet to the tip of his stalk quiff. He stands on its left
+    side, one arm round its front, grinning at the camera. The pack's print is unchanged: "Mirchi
+    Mood", "Masala Blast", "₹20", the sunburst with his face. His design is unchanged: quiff curling to
+    his left, gold tooth on his right, four-fingered gloves, red laces. No other text.
+  exact_text: ["Mirchi Mood", "Masala Blast", "₹20"]
+  deliverable: "One image, 1:1."
+  checks:
+    - [physics_plausibility, "Is the pack exactly as tall as Chotu including his quiff?"]
+    - [prompt_adherence, "Is he on the pack's left side with one arm round its front?"]
+    - [reference_fidelity, "Is the quiff curling to his left?"]
+    - [reference_fidelity, "Is the gold tooth on his right side?"]
+    - [reference_fidelity, "Are his gloves four-fingered?"]
+    - [text_accuracy, "Is the pack's print exact?"]
+    - [reference_fidelity, "Is the pack's shape and crinkles as in the reference?"]
+    - [physics_plausibility, "Does his arm wrap the pack with plausible contact?"]
+    - [physics_plausibility, "Is there a soft floor shadow under both?"]
+    - [style, "Is the 3D style consistent between mascot and pack?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the image clean?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-ADS-07
+  title: "A mother pouring ghee from the jar onto hot rotis; the Devanagari label legible and exact"
+  persona: "Agency producer making the ghee brand's lifestyle hero."
+  evidence: "Labels on products held at an angle in use are where text garbles."
+  levers: [identity, exact-text, script, physics, locale]
+  inputs: [{source: SRC-ADS-GHEE-JAR, role: source}]
+  prompt: |
+    A warm kitchen photo, 4:5: a mother in her forties in a green cotton sari spoons golden ghee from
+    this exact jar onto a stack of hot rotis on a steel plate, steam rising. She holds the jar tilted
+    towards the camera in her left hand so its label is clearly readable: the deep red label with a
+    gold border, "साँझ" in large gold Devanagari, "SAANJH GHEE" in small gold capitals and the "500
+    ml" badge. Morning window light from the right. No other text, no other brands.
+  exact_text: ["साँझ", "SAANJH GHEE", "500 ml"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [reference_fidelity, "Is the jar the same: glass, gold lid, red label?"]
+    - [text_accuracy, "Is साँझ exact, with the chandrabindu?"]
+    - [text_accuracy, "Are SAANJH GHEE and 500 ml exact?"]
+    - [text_accuracy, "Is the label clearly readable at its tilt?"]
+    - [physics_plausibility, "Is ghee on the spoon and melting on the rotis?"]
+    - [physics_plausibility, "Is steam rising from the rotis?"]
+    - [prompt_adherence, "Is the jar in her left hand?"]
+    - [prompt_adherence, "Is morning light from the right?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [prompt_adherence, "Is there no other text or brand?"]
+    - [prompt_adherence, "Does it read as an Indian home kitchen?"]
+    - [reference_fidelity, "Is the ghee golden and grainy in the jar?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: PRD-ADS-08
+  title: "Place the ghee jar on the commercial-set counter; light and steel reflections match"
+  persona: "Agency retoucher placing the product into the approved commercial set."
+  evidence: "Product placement into an existing photo must take that photo's light."
+  levers: [identity, multi-ref, physics, keep-rest, exact-text]
+  inputs:
+    - {source: SRC-ADS-KITCHEN, role: source, note: "the set"}
+    - {source: SRC-ADS-GHEE-JAR, role: reference, note: "the product"}
+  prompt: |
+    Place this ghee jar on the white quartz counter of this kitchen set, just to the left of the open
+    brass masala dabba, label facing the camera. It sits at the right scale for a 500 ml jar (about
+    the height of the dabba's width). The set's soft daylight from the window on the left lights it
+    from the left; it casts a soft shadow to the right on the counter; the quartz shows a faint
+    reflection of its base. The label "साँझ", "SAANJH GHEE" and "500 ml" is unchanged. Nothing else in
+    the set changes.
+  exact_text: ["साँझ", "SAANJH GHEE", "500 ml"]
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the jar just left of the masala dabba?"]
+    - [physics_plausibility, "Is its scale right for a 500 ml jar next to the dabba?"]
+    - [prompt_adherence, "Is it lit from the window side on the left?"]
+    - [physics_plausibility, "Does it cast a soft shadow to the right?"]
+    - [physics_plausibility, "Is there a faint reflection of its base on the quartz?"]
+    - [text_accuracy, "Is the label exact and facing the camera?"]
+    - [reference_fidelity, "Is the jar the same design?"]
+    - [preservation, "Is the rest of the set unchanged?"]
+    - [visual_quality, "Is the jar's edge clean, not haloed?"]
+    - [prompt_adherence, "Is there no other new object?"]
+    - [physics_plausibility, "Does it sit flat on the counter?"]
+    - [style, "Does it match the photo's colour and grain?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with two inputs."}
+  video_followon: ""
+
+- id: PRD-ADS-09
+  title: "A pet-food bag from a written brand spec with exact hex colours and copy, beside the dog"
+  persona: "Brand designer at a pet-food start-up visualising the pack before artwork."
+  evidence: "Packaging from a text spec tests colour accuracy and exact copy."
+  levers: [exact-text, layout, small-text, light-lock, long-brief]
+  prompt: |
+    A product photo, 4:5: a stand-up pouch of dry dog food on a pale wooden floor, a happy golden
+    Indian dog lying beside it. The pouch, from this spec: matte forest green (#1F4D3A) with a bright
+    orange (#F28C28) band across the lower third; the brand "WAGLE" in large white rounded capitals
+    at the top; under it "Chicken & Rice · Adult" in white; in the orange band "Made in India · No
+    by-products" in dark green; at the bottom left "3 kg" in white; a small white paw icon at the top
+    right. Soft daylight from the left. No other text, no other brands.
+  exact_text: ["WAGLE", "Chicken & Rice · Adult", "Made in India · No by-products", "3 kg"]
+  deliverable: "One image, 4:5."
+  checks:
+    - [prompt_adherence, "Is the pouch forest green close to #1F4D3A?"]
+    - [prompt_adherence, "Is the band orange close to #F28C28, across the lower third?"]
+    - [text_accuracy, "Is WAGLE exact at the top?"]
+    - [text_accuracy, "Is the variant line exact?"]
+    - [text_accuracy, "Is the band text exact?"]
+    - [text_accuracy, "Is 3 kg exact at the bottom left?"]
+    - [prompt_adherence, "Is the paw icon at the top right?"]
+    - [physics_plausibility, "Does the pouch stand with a natural shape?"]
+    - [prompt_adherence, "Is a golden dog lying beside it?"]
+    - [prompt_adherence, "Is there no other text or brand?"]
+    - [visual_quality, "Is the dog natural?"]
+    - [style, "Is the pouch matte?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: PRD-ADS-10
+  title: "Diwali gift box for the ghee brand from a written spec: logo, Devanagari wordmark, pattern"
+  persona: "Packaging designer briefing a festive gift box before the dieline."
+  evidence: "Logo and wordmark geometry from a text spec, with Devanagari, is the hardest packaging test."
+  levers: [exact-text, script, layout, locale, long-brief]
+  prompt: |
+    A product photo of a square festive gift box, 1:1, three-quarter view from above on a maroon silk
+    cloth with marigolds. The box, from this spec: deep red (#8B1E2D) with a repeating gold paisley
+    pattern on the sides; on the lid, centred, the brand wordmark "साँझ" in large gold Devanagari with
+    the shirorekha unbroken, inside a thin gold circle; under the circle "SAANJH GHEE" in small gold
+    capitals; on the front side "Diwali Gift Box · 2 × 500 ml" in gold. A gold satin ribbon crosses the
+    lid diagonally without covering the wordmark. Soft warm light. No other text.
+  exact_text: ["साँझ", "SAANJH GHEE", "Diwali Gift Box · 2 × 500 ml"]
+  deliverable: "One image, 1:1."
+  checks:
+    - [text_accuracy, "Is साँझ exact with an unbroken shirorekha?"]
+    - [prompt_adherence, "Is the wordmark centred on the lid inside a thin gold circle?"]
+    - [text_accuracy, "Is SAANJH GHEE exact under the circle?"]
+    - [text_accuracy, "Is the front-side line exact, with ×?"]
+    - [prompt_adherence, "Is the box deep red close to #8B1E2D?"]
+    - [style, "Is there a gold paisley pattern on the sides?"]
+    - [prompt_adherence, "Does the ribbon cross diagonally without covering the wordmark?"]
+    - [prompt_adherence, "Is it a three-quarter view from above?"]
+    - [prompt_adherence, "Is it on maroon silk with marigolds?"]
+    - [prompt_adherence, "Is there no other text?"]
+    - [visual_quality, "Is the box geometry clean?"]
+    - [physics_plausibility, "Does the foil catch the light?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

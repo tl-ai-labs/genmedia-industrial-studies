@@ -1,0 +1,61 @@
+# Family 7 — Product and brand fidelity (header). Scenarios: prd-*.yaml.
+
+family: Product and brand
+code: PRD
+number: 7
+about: "A real product or brand kept exact while it is placed into scenes, angles and packaging."
+outputs: "1"
+
+rubric:
+  weights: {reference_fidelity: 4, text_accuracy: 3, prompt_adherence: 3, physics_plausibility: 2, preservation: 2, visual_quality: 1, style: 1, composition: 1}
+  gate: [reference_fidelity, text_accuracy]
+  gate_rule: "The product, its logo and its label text must be exactly the real ones."
+
+targets:
+  label-drift: "Label text or artwork on the product changes"
+  shape-drift: "The product's shape or proportions change"
+  colour-drift: "Brand or product colours shift from the given values"
+  scale-wrong: "The product is the wrong size for the scene"
+  logo-geometry: "The logo is distorted, re-drawn or wrongly placed"
+  integration: "Light, shadow or reflections do not match the scene"
+
+slots:
+  # Advertising & agencies — 10 (2 t2i, 8 edit · 6 hard, 4 extreme)
+  - {id: PRD-ADS-01, task: edit, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: extreme, target: logo-geometry, sources: [SRC-ADS-BILLBOARD-SITE, SRC-ADS-LOGO], script: latin, idea: "The payments-app campaign placed on the blank flyover hoarding: exact logo, colours and perspective"}
+  - {id: PRD-ADS-02, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: label-drift, sources: [SRC-ADS-PERFUME], script: latin, idea: "The perfume on a wet black rock by the sea at night with spray in the air; label unchanged"}
+  - {id: PRD-ADS-03, task: edit, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: extreme, target: integration, sources: [SRC-ADS-SCOOTER], script: latin, idea: "The scooter placed on a Bengaluru street at golden hour: matching shadow, puddle reflection, rider-less"}
+  - {id: PRD-ADS-04, task: edit, subject: fashion, style: photoreal, light: noon, locale: IN, diff: hard, target: colour-drift, sources: [SRC-ADS-RUNNER, SRC-ADS-SHOE], script: latin, idea: "Put the coral running shoe on the sprinter's feet mid-stride; colours and stripe exact"}
+  - {id: PRD-ADS-05, task: edit, subject: food, style: photoreal, light: practical, locale: IN, diff: hard, target: shape-drift, sources: [SRC-ADS-CHIPS], script: latin, idea: "The chips pack torn open in a hand at a cricket screening; pack shape and print hold"}
+  - {id: PRD-ADS-06, task: edit, subject: stylised, style: 3d, light: daylight, locale: IN, diff: hard, target: scale-wrong, sources: [SRC-ADS-MASCOT, SRC-ADS-CHIPS], script: latin, idea: "The mascot hugging the pack, which is exactly as tall as he is"}
+  - {id: PRD-ADS-07, task: edit, subject: person, style: photoreal, light: daylight, locale: IN, diff: extreme, target: label-drift, sources: [SRC-ADS-GHEE-JAR], script: devanagari, idea: "A mother pouring ghee from the jar onto hot rotis; the Devanagari label legible and exact"}
+  - {id: PRD-ADS-08, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: hard, target: integration, sources: [SRC-ADS-KITCHEN, SRC-ADS-GHEE-JAR], script: mixed, idea: "Place the ghee jar on the commercial-set counter by the masala dabba; light and reflections match"}
+  - {id: PRD-ADS-09, task: t2i, subject: animal, style: photoreal, light: daylight, locale: global, diff: hard, target: colour-drift, sources: [], script: latin, idea: "Pet-food bag from a written brand spec with exact hex colours, beside the dog it is for"}
+  - {id: PRD-ADS-10, task: t2i, subject: product, style: graphic, light: daylight, locale: IN, diff: extreme, target: logo-geometry, sources: [], script: devanagari, idea: "Diwali gift box for the ghee brand from a written spec: logo, Devanagari wordmark, pattern"}
+  # E-commerce, D2C & retail — 20 (2 t2i, 18 edit · 12 hard, 8 extreme)
+  - {id: PRD-ECM-01, task: edit, subject: product, style: photoreal, light: daylight, locale: global, diff: extreme, target: label-drift, sources: [SRC-ECM-SODA-CAN], script: latin, idea: "The can in a beach cooler full of ice, half buried, condensation; script and pineapple drawing intact"}
+  - {id: PRD-ECM-02, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: shape-drift, sources: [SRC-ECM-SERUM], script: latin, idea: "The serum on a bathroom shelf among stones and a towel; bottle shape and dropper proportions exact"}
+  - {id: PRD-ECM-03, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: extreme, target: colour-drift, sources: [SRC-ECM-HANDBAG], idea: "The tote in four colourways in one line-up, each to a given hex; leather grain, stitching and lock unchanged"}
+  - {id: PRD-ECM-04, task: edit, subject: product, style: photoreal, light: daylight, locale: global, diff: hard, target: scale-wrong, sources: [SRC-ECM-SERUM], script: latin, idea: "The 9 cm serum bottle held between two fingers; true size against the hand"}
+  - {id: PRD-ECM-05, task: edit, subject: product, style: photoreal, light: golden, locale: IN, diff: extreme, target: logo-geometry, sources: [SRC-ECM-TEA-TIN], script: latin, idea: "The tea tin on a breakfast table at a tilt; embossed logo and curved lettering keep their geometry"}
+  - {id: PRD-ECM-06, task: edit, subject: food, style: photoreal, light: practical, locale: IN, diff: hard, target: integration, sources: [SRC-ECM-BIRYANI], idea: "The biryani handi moved onto an Eid family table at night; shadows and copper reflections match the new light"}
+  - {id: PRD-ECM-07, task: edit, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: label-drift, sources: [SRC-ECM-SPICE-JARS], script: tamil, idea: "The three jars on a kitchen spice rack at an angle; every Tamil and English label exact"}
+  - {id: PRD-ECM-08, task: t2i, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: colour-drift, sources: [], script: latin, idea: "A millet snack pouch from a written brand spec with exact hex colours and copy"}
+  - {id: PRD-ECM-09, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: colour-drift, sources: [SRC-ECM-SAREE-FLAT], idea: "The saree draped on a dress form from the flat-lay; peacock green, magenta and gold exact, pallu pattern right"}
+  - {id: PRD-ECM-10, task: edit, subject: fashion, style: photoreal, light: practical, locale: global, diff: hard, target: shape-drift, sources: [SRC-ECM-JACKET-FLAT], idea: "The jacket as an invisible-mannequin shot; cut, pockets, marigold and frayed cuff in place"}
+  - {id: PRD-ECM-11, task: edit, subject: fashion, style: photoreal, light: golden, locale: IN, diff: hard, target: integration, sources: [SRC-ECM-KURTA-MODEL], idea: "The model moved from the studio to a Jaipur street at golden hour; light, shadow and colour match the street"}
+  - {id: PRD-ECM-12, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: label-drift, sources: [SRC-ECM-CREATOR, SRC-ECM-SERUM], script: latin, idea: "The creator holding the serum to the camera; label sharp, readable and exact in her hand"}
+  - {id: PRD-ECM-13, task: edit, subject: person, style: photoreal, light: daylight, locale: IN, diff: hard, target: scale-wrong, sources: [SRC-ECM-CREATOR, SRC-ECM-HANDBAG], script: latin, idea: "The creator carrying the 32 cm tote on her forearm on a street; bag the right size for her body"}
+  - {id: PRD-ECM-14, task: edit, subject: child-elderly, style: photoreal, light: daylight, locale: IN, diff: hard, target: integration, sources: [SRC-ECM-SCHOOLBAG], idea: "A girl walking to school in Kochi wearing the backpack; straps over shoulders, reflective strips catching light"}
+  - {id: PRD-ECM-15, task: edit, subject: interior, style: photoreal, light: golden, locale: global, diff: extreme, target: scale-wrong, sources: [SRC-ECM-ARMCHAIR-ROOM, SRC-ECM-RUG], idea: "The 2 × 3 m rug laid in the room under the armchair; true size, perspective and the sunlight across it"}
+  - {id: PRD-ECM-16, task: edit, subject: interior, style: photoreal, light: golden, locale: global, diff: hard, target: colour-drift, sources: [SRC-ECM-ARMCHAIR-ROOM], idea: "The armchair re-shown in three fabric options in three crops, each to a given hex"}
+  - {id: PRD-ECM-17, task: edit, subject: animal, style: photoreal, light: daylight, locale: global, diff: hard, target: integration, sources: [SRC-ECM-DOG-BED], idea: "An indie dog curled asleep in the pet bed in a sunny living room; the cushion compresses under it"}
+  - {id: PRD-ECM-18, task: edit, subject: landscape, style: photoreal, light: golden, locale: IN, diff: hard, target: integration, sources: [SRC-ECM-TENT], idea: "The tent pitched in Spiti at golden hour; guy ropes, shadows and wind in the fly match the valley"}
+  - {id: PRD-ECM-19, task: edit, subject: group, style: photoreal, light: night, locale: IN, diff: extreme, target: label-drift, sources: [SRC-ECM-SODA-CAN], script: latin, idea: "Five friends on a rooftop toasting with the can; every can's script readable at its own angle"}
+  - {id: PRD-ECM-20, task: t2i, subject: stylised, style: 3d, light: daylight, locale: global, diff: hard, target: logo-geometry, sources: [], script: latin, idea: "A toy brand's box from a written logo spec, with its mascot printed on two faces of the box"}
+  # Gaming — 3 (1 t2i, 2 edit · 2 hard, 1 extreme)
+  - {id: PRD-GAM-01, task: edit, subject: stylised, style: photoreal, light: practical, locale: global, diff: extreme, target: shape-drift, sources: [SRC-GAM-HERO], script: latin, idea: "The heroine as a 20 cm painted collectible figure on a base, photographed as a real product"}
+  - {id: PRD-GAM-02, task: edit, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: hard, target: logo-geometry, sources: [SRC-GAM-LOGO], script: latin, idea: "Merch hoodie with the game logo printed large on the back, worn by a fan at a gaming expo"}
+  - {id: PRD-GAM-03, task: t2i, subject: product, style: 3d, light: neon, locale: global, diff: hard, target: colour-drift, sources: [], script: latin, idea: "A limited-edition game controller in a colourway given by hex values, on a desk at night"}
+  # Real estate, interiors & architecture — 2 (2 edit · 1 hard, 1 extreme)
+  - {id: PRD-RES-01, task: edit, subject: interior, style: photoreal, light: daylight, locale: IN, diff: extreme, target: scale-wrong, sources: [SRC-RES-LIVING-FLAT, SRC-RES-SOFA], idea: "Replace the grey sofa with the 2.2 m rust sofa at true scale in the listing room"}
+  - {id: PRD-RES-02, task: edit, subject: architecture, style: photoreal, light: noon, locale: IN, diff: hard, target: integration, sources: [SRC-RES-TOWER-SITE, SRC-RES-CLADDING], idea: "Clad the tower's plain east face in the terracotta louvres; noon shadows through the gaps"}

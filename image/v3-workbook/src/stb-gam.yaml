@@ -1,0 +1,242 @@
+# Storyboards — Gaming scenarios. Slots: stb.yaml.
+code: STB
+scenarios:
+
+- id: STB-GAM-01
+  seed: true
+  title: "Nine-panel launch-trailer board for the game's heroine"
+  persona: "Trailer director at a game publisher boarding the launch cinematic for the outsourced animation team."
+  evidence: "Sahil's storyboard example (234–235) was a 3×3 pencil board with 'action • shot size • camera' captions from one base image. Gaming adds side-specific details (cape on one shoulder, rune on one glove) that a mirrored or careless drawing flips."
+  levers: [count, exact-text, camera, continuity, identity, layout]
+  inputs:
+    - {source: SRC-GAM-HERO, role: source, note: "the heroine, Ira"}
+  prompt: |
+    Using this character render, draw the storyboard for the game's launch trailer as one image:
+    nine panels in a three-by-three grid, read left to right, top to bottom, in black-and-white
+    pencil with grey marker tones, 16:9 frame lines in each panel. Under each panel, a caption
+    with exactly this text:
+
+    1 · Rain on the rooftop · EWS · Crane down
+    2 · Ira opens her eyes · ECU · Static
+    3 · She draws the sword · MS · Push in
+    4 · Rune flares on her glove · Insert · Static
+    5 · She leaps the gap · WS · Track right
+    6 · Mid-air, cape trailing · MS · Handheld
+    7 · Lands, sword down · WS · Static
+    8 · Enemies close in · OTS · Pan left
+    9 · Title card · SHADOW RAAGA · Static
+
+    Each drawing matches its shot size, and the panels with camera moves carry a drawn arrow for
+    the move. Ira stays exactly the character in the render: high ponytail with three rings, the
+    red sash-cape on her right shoulder only, the rune on the back of her left glove, the curved
+    sword with the veena-head guard always in her right hand. In panels 5 to 7 she moves left to
+    right. In panel 8 the enemies are three hooded figures, seen over her right shoulder. Panel 9
+    is a title card with the words SHADOW RAAGA drawn as the game logo. No other text.
+  exact_text:
+    - "1 · Rain on the rooftop · EWS · Crane down"
+    - "2 · Ira opens her eyes · ECU · Static"
+    - "3 · She draws the sword · MS · Push in"
+    - "4 · Rune flares on her glove · Insert · Static"
+    - "5 · She leaps the gap · WS · Track right"
+    - "6 · Mid-air, cape trailing · MS · Handheld"
+    - "7 · Lands, sword down · WS · Static"
+    - "8 · Enemies close in · OTS · Pan left"
+    - "9 · Title card · SHADOW RAAGA · Static"
+  deliverable: "One landscape image, nine panels in a 3×3 grid with captions."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels in a three-by-three grid?"]
+    - [text_accuracy, "Does every caption match its given text exactly?"]
+    - [prompt_adherence, "Is panel 1 an extreme wide of the rooftop in rain with a crane-down arrow?"]
+    - [prompt_adherence, "Is panel 2 an extreme close-up of her eyes?"]
+    - [prompt_adherence, "Is panel 4 a frame-filling insert of the rune on the back of a glove?"]
+    - [reference_fidelity, "Is the rune on her left glove in panel 4 and wherever it shows?"]
+    - [reference_fidelity, "Is the cape on her right shoulder in every panel where it shows?"]
+    - [reference_fidelity, "Is the sword in her right hand in every panel, with the veena-head guard?"]
+    - [set_consistency, "Does she move left to right in panels 5, 6 and 7?"]
+    - [prompt_adherence, "Are there exactly three hooded enemies in panel 8, seen over her right shoulder?"]
+    - [prompt_adherence, "Do panels 3, 5, 6 and 8 carry arrows or marks for push in, track right, handheld and pan left?"]
+    - [text_accuracy, "Does panel 9 show SHADOW RAAGA spelled correctly as a title card?"]
+    - [reference_fidelity, "Is her ponytail with three rings recognisable wherever her head is seen from the side or back?"]
+    - [style, "Are all nine panels pencil with grey marker, in one consistent style?"]
+    - [visual_quality, "Are her hands on the sword drawn with natural grip and finger count?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V2: panels 5 and 6 as storyboard panel to shot, cape and rune sides held."
+
+- id: STB-GAM-02
+  title: "Six-panel level-intro cutscene board through the temple courtyard"
+  persona: "Cinematic designer boarding a level's intro from the built level."
+  evidence: "Boards drift from the built level; landmarks with fixed states (broken tier, fallen pillar) make it checkable."
+  levers: [count, exact-text, layout, camera, locale]
+  inputs: [{source: SRC-GAM-TEMPLE-LEVEL, role: source}]
+  prompt: |
+    Using this screenshot of a ruined temple-courtyard level, draw a six-panel cutscene storyboard in
+    grey-shaded 3D frames, two rows of three, 16:9. Captions exactly: "1 · Gopuram silhouette ·
+    EWS", "2 · Through the gate · WS", "3 · Fallen pillar · MS", "4 · Stone chariot · LS", "5 ·
+    Dry tank, shrine · WS", "6 · Hero's shadow falls · CU". The level's layout is respected: the
+    gopuram's top tier is broken, the third pillar from the entrance is fallen, the chariot is in
+    the centre, the tank and shrine are on the right as seen from the entrance. The low sun is on
+    the right of the entrance view. No other text.
+  exact_text:
+    - "1 · Gopuram silhouette · EWS"
+    - "3 · Fallen pillar · MS"
+    - "6 · Hero's shadow falls · CU"
+  deliverable: "One landscape image, six panels."
+  checks:
+    - [prompt_adherence, "Are there six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [prompt_adherence, "Is the gopuram's top tier broken in panel 1?"]
+    - [prompt_adherence, "Is a pillar fallen in panel 3, consistent with the third from the entrance?"]
+    - [prompt_adherence, "Is the chariot in the courtyard's centre?"]
+    - [prompt_adherence, "Are the tank and shrine on the side the level shows?"]
+    - [prompt_adherence, "Do shadows fall consistently with a low sun from one side?"]
+    - [prompt_adherence, "Does each panel match its shot size?"]
+    - [style, "Is the grey 3D style consistent?"]
+    - [prompt_adherence, "Is panel 6 a close view of a shadow on the paving?"]
+    - [visual_quality, "Are perspective lines correct?"]
+    - [prompt_adherence, "Is no character fully shown before panel 6?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V2: panel 2 as a shot through the gate."
+
+- id: STB-GAM-03
+  title: "Eight-panel squad battle on the rampart; the enemy always on screen right"
+  persona: "Trailer artist boarding a squad battle for a launch trailer."
+  evidence: "Multi-character battle boards break screen direction and swap props between characters."
+  levers: [count, exact-text, continuity, identity, locale]
+  inputs: [{source: SRC-GAM-SQUAD, role: source}]
+  prompt: |
+    Using this key art of a five-character squad on a fort rampart, draw an eight-panel battle
+    storyboard in the same cel-shaded style, two rows of four, 16:9 frames. Captions exactly: "1 ·
+    Squad lines up · WS", "2 · Enemies on the far wall · LS", "3 · Shield up · MS", "4 · Drone
+    launches · CU", "5 · Rocket fired · MS", "6 · Archer's shot · ECU", "7 · Boy skates the
+    parapet · WS", "8 · Banner still flying · LS". The squad always faces frame right; the enemies
+    (masked figures in grey) are always on frame right. Each character keeps their own prop. No
+    other text.
+  exact_text:
+    - "1 · Squad lines up · WS"
+    - "5 · Rocket fired · MS"
+    - "8 · Banner still flying · LS"
+  deliverable: "One landscape image, eight panels."
+  checks:
+    - [prompt_adherence, "Are there eight panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [set_consistency, "Does the squad face frame right in every panel?"]
+    - [set_consistency, "Are enemies always on frame right?"]
+    - [reference_fidelity, "Does each character keep their own prop?"]
+    - [reference_fidelity, "Is the archer's braid white and scarf green?"]
+    - [prompt_adherence, "Is panel 4 a close-up of a drone launching from a shoulder?"]
+    - [prompt_adherence, "Is panel 6 an extreme close-up of an arrow or eye?"]
+    - [prompt_adherence, "Is the banner saffron in panel 8?"]
+    - [style, "Is the cel-shaded style consistent?"]
+    - [visual_quality, "Are figures clean?"]
+    - [prompt_adherence, "Are the five squad members all present in panel 1?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-GAM-04
+  title: "Hover-bike race intro: six panels with shot sizes and moves"
+  persona: "Cinematic designer boarding a race mode's intro."
+  evidence: "Vehicle-identity details and moves must hold across a fast board."
+  levers: [count, exact-text, camera, identity, continuity]
+  inputs: [{source: SRC-GAM-MECH, role: source}]
+  prompt: |
+    Using this render of a graphite hover-bike with an orange stripe, cyan pods, a "07" decal and a
+    dent on the right front fairing, draw a six-panel storyboard in ink and marker, one row of six,
+    2.39:1 frames. Captions exactly: "1 · Start grid at night · EWS · Crane down", "2 · Pods ignite
+    · Insert · Static", "3 · Rider's visor · ECU · Static", "4 · Launch · WS · Whip pan", "5 ·
+    Through the tunnel · MS · Tracking", "6 · Over the finish · LS · Static". The bike's stripe,
+    decal and dent stay as in the render wherever visible; the bike moves frame left to frame
+    right in panels 4 to 6. The rider wears a black suit and a mirrored visor. No other text.
+  exact_text:
+    - "1 · Start grid at night · EWS · Crane down"
+    - "4 · Launch · WS · Whip pan"
+    - "07"
+  deliverable: "One wide image of six panels."
+  checks:
+    - [prompt_adherence, "Are there six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [reference_fidelity, "Is the stripe orange and the decal 07 wherever visible?"]
+    - [reference_fidelity, "Is the dent on the right front wherever that side shows?"]
+    - [set_consistency, "Does the bike move left to right in panels 4 to 6?"]
+    - [prompt_adherence, "Is panel 2 an insert of a pod glowing?"]
+    - [prompt_adherence, "Is panel 3 an extreme close-up of a mirrored visor?"]
+    - [style, "Is the ink and marker style consistent?"]
+    - [prompt_adherence, "Is it night with cyan pod glow?"]
+    - [prompt_adherence, "Is panel 5 inside a tunnel?"]
+    - [visual_quality, "Is the bike's shape consistent?"]
+    - [prompt_adherence, "Is there one rider?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-GAM-05
+  title: "A great eagle mount's first flight in six panels in Kalamkari style"
+  persona: "Art director on an Indian mythology game boarding a cutscene in a traditional style."
+  evidence: "Traditional Indian styles drift towards generic fantasy across panels."
+  levers: [count, exact-text, locale, continuity, exclude]
+  prompt: |
+    Paint a six-panel storyboard in the style of Kalamkari hand-painted textile: natural dyes
+    (indigo, madder red, ochre, black outlines), flat decorative patterns, no shading, two rows of
+    three, 16:9 frames. A young prince in a red dhoti and gold crown approaches a giant eagle with
+    a white head, a red-brown body and gold-tipped wings on a mountain top; he offers it a lotus;
+    it bows; he climbs on; they leap; they fly over a river city. Captions exactly: "1 · The
+    mountain top", "2 · The great eagle", "3 · The lotus", "4 · It bows", "5 · The leap", "6 ·
+    Over the river city". The eagle's colours and the prince's crown stay the same. No other text.
+  exact_text:
+    - "1 · The mountain top"
+    - "6 · Over the river city"
+  deliverable: "One landscape image, six panels."
+  checks:
+    - [prompt_adherence, "Are there six panels?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [style, "Is every panel in Kalamkari style: flat dyes, black outlines, patterns, no shading?"]
+    - [style, "Is the palette limited to indigo, madder red, ochre and black?"]
+    - [set_consistency, "Is the eagle white-headed with a red-brown body and gold wing tips in every panel?"]
+    - [set_consistency, "Is the prince in a red dhoti and gold crown throughout?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [prompt_adherence, "Is a lotus offered in panel 3?"]
+    - [prompt_adherence, "Is a river city below in panel 6?"]
+    - [prompt_adherence, "Are there only the prince and the eagle?"]
+    - [visual_quality, "Is each panel clean at full size?"]
+    - [style, "Does it avoid a generic fantasy-painting look?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: STB-GAM-06
+  title: "A boss-reveal storm sequence from a written script: twelve panels, three by four"
+  persona: "Narrative designer boarding a boss reveal from the script."
+  evidence: "Twelve panels in a specified grid tests panel count and order."
+  levers: [count, exact-text, camera, light-lock, long-brief]
+  prompt: |
+    Draw a twelve-panel storyboard in a three-by-four grid (three across, four down), pencil with
+    grey tone, 16:9 frames. Script: a lone knight crosses a storm-swept plain towards a ruined arch;
+    lightning shows a vast shape in the clouds; the ground cracks; a stone giant rises from the
+    earth; its single glowing eye opens; the knight raises a shield; the giant's fist falls; dust
+    swallows the frame. Captions exactly, in order: "1 Plain", "2 Knight walks", "3 Arch", "4
+    Lightning", "5 Shape in clouds", "6 Ground cracks", "7 Giant rises", "8 Eye opens", "9 Shield
+    up", "10 Fist falls", "11 Impact", "12 Dust". The giant's single eye is always on the left side
+    of its face. Rain in every panel. No other text.
+  exact_text:
+    - "1 Plain"
+    - "8 Eye opens"
+    - "12 Dust"
+  deliverable: "One portrait-leaning image, twelve panels in a 3×4 grid."
+  checks:
+    - [prompt_adherence, "Are there exactly twelve panels in three columns and four rows?"]
+    - [text_accuracy, "Are the captions exact and in order?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [set_consistency, "Is the giant's single eye on the left side of its face wherever seen?"]
+    - [physics_plausibility, "Is rain drawn in every panel?"]
+    - [prompt_adherence, "Is panel 8 a close-up of the eye?"]
+    - [prompt_adherence, "Are there wide panels for the plain and the rising giant?"]
+    - [set_consistency, "Is the knight the same figure with a shield?"]
+    - [prompt_adherence, "Is lightning used in panel 4?"]
+    - [style, "Is the pencil style consistent?"]
+    - [prompt_adherence, "Are there only the knight and the giant?"]
+    - [visual_quality, "Are panels clean at full size?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""

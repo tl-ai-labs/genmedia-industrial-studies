@@ -1,0 +1,195 @@
+# Precision video edits — Advertising & agencies scenarios. Slots: vedt.yaml.
+code: VEDT
+scenarios:
+
+- id: VEDT-ADS-02
+  seed: true
+  title: "Recolour the SUV white to deep red through a drone follow and orbit; moving highlights stay"
+  persona: "Automotive agency's online editor making a colour variant of the hero drive without a reshoot."
+  evidence: "Earlier bank IMG-LE-06 (object swap preserving lighting) was medium tier as a still; on drone footage the paint highlights move every frame and must survive the recolour."
+  levers: [keep-rest, physics, light-lock, camera-move, locale, multi-step]
+  inputs:
+    - {source: SRC-VCLIP-SUV-DRIVE, role: source, note: "the 8-second drone shot"}
+  prompt: |
+    Recolour the SUV in this 8-second drone shot from white to a deep metallic red on every frame, and
+    change nothing else. The paint keeps behaving like real car paint as the drone follows and then
+    orbits: the low sun's warm highlights keep sliding across the roof and bonnet exactly as they do in
+    the source, now as bright streaks on red; the orange sky's reflection stays on the upper surfaces;
+    the darker sides fall into deep red shadow. The glass, wheels, grille, lights and trim keep their
+    own colours; the car has no badges. The road, the stone parapets, the slopes, the mist and the
+    car's shadow across the road are unchanged. The recolour must not flicker, slip at the edges of
+    the body, or bleed onto the road or parapet as the drone moves.
+  clip: {duration: 8, aspect: "16:9", camera: "as the source: follow, then rise and quarter orbit"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the SUV deep metallic red on every frame?"]
+    - [physics_plausibility, "Do the warm highlights keep sliding across roof and bonnet as in the source?"]
+    - [physics_plausibility, "Does the sky still reflect on the upper surfaces?"]
+    - [temporal_consistency, "Is the recolour stable with no flicker?"]
+    - [motion_coherence, "Do the body edges stay clean with no slipping or halo during the orbit?"]
+    - [preservation, "Are glass, wheels, grille and lights their own colours?"]
+    - [preservation, "Is there no red bleeding onto the road or parapet?"]
+    - [preservation, "Is the car's shadow unchanged?"]
+    - [preservation, "Are the road, slopes and mist unchanged?"]
+    - [preservation, "Is the drone move unchanged?"]
+    - [prompt_adherence, "Are there no badges or lettering?"]
+    - [visual_quality, "Is the car's shape unchanged on every frame?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ADS-01
+  title: "Remove the channel logo from the TV and recolour the mustard cushions to coral; the family untouched"
+  persona: "Agency editor clearing a broadcaster's logo and matching cushions to a new brand palette."
+  evidence: "Small edits next to moving people spill onto them; cushions are thrown and caught."
+  levers: [multi-step, keep-rest, small-text, count, timing]
+  inputs: [{source: SRC-VCLIP-FAMILY-SOFA, role: source}]
+  prompt: |
+    Make exactly these two changes to this 6-second living-room shot, on every frame, and nothing else.
+    1. Remove the small white channel logo in the top-right corner of the TV screen; the blurred cricket
+       match continues underneath it.
+    2. Recolour the two mustard cushions to coral, keeping their texture and creases; the teal cushion that
+       the mother throws to the son at 4 seconds stays teal.
+    The family of four, their faces, clothes and laughter, the girl falling into her father's lap at 2
+    seconds, the throw and catch at 4 seconds, the warm lamp light and the push in are unchanged.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged slow push in"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the channel logo gone on every frame?"]
+    - [preservation, "Does the match continue under where the logo was?"]
+    - [prompt_adherence, "Are both mustard cushions coral?"]
+    - [preservation, "Is the thrown cushion still teal?"]
+    - [prompt_adherence, "Are there two coral cushions and one teal?"]
+    - [preservation, "Are the fall at 2 s and the throw at 4 s unchanged?"]
+    - [preservation, "Are the four faces and clothes unchanged?"]
+    - [motion_coherence, "Does the coral stay inside the cushions as people move?"]
+    - [prompt_adherence, "Does the coral take the lamp light?"]
+    - [preservation, "Is the push in unchanged?"]
+    - [prompt_adherence, "Are both changes made?"]
+    - [visual_quality, "Is there no flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ADS-03
+  title: "Remove the bib, turn the track blue and the vest teal, every frame of the sprint"
+  persona: "Sportswear agency editor turning a stock sprint into a brand-coloured shot."
+  evidence: "Earlier image bank EDT-ADS-02: three edits on a still; on a fast tracking shot each must hold."
+  levers: [multi-step, keep-rest, identity, physics, small-text]
+  inputs: [{source: SRC-VCLIP-RUN-TRACK, role: source}]
+  prompt: |
+    Make exactly these three changes to this 6-second tracking shot of a sprinter, on every frame, and
+    nothing else.
+    1. Remove the race bib with 37 from her vest, leaving the vest plain where it was, with no pins.
+    2. Recolour the red track surface to a deep blue, keeping its rubber texture and the white lane lines
+       and lane number.
+    3. Recolour her white vest to teal, keeping its folds as she runs.
+    Her face, braided bun, black shorts, orange shoes, stride, the moment she crosses the white line at 3
+    seconds, the stands and the camera move are unchanged.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged tracking"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the bib gone on every frame, with no pins?"]
+    - [prompt_adherence, "Is the track deep blue?"]
+    - [preservation, "Are the lane lines and lane number white and unchanged?"]
+    - [prompt_adherence, "Is the vest teal with folds kept?"]
+    - [reference_fidelity, "Is her face unchanged?"]
+    - [preservation, "Are the shorts and shoes unchanged?"]
+    - [prompt_adherence, "Does she cross the line at 3 seconds?"]
+    - [motion_coherence, "Do the edits hold through the fast motion?"]
+    - [physics_plausibility, "Does her shadow fall on the blue track correctly?"]
+    - [preservation, "Are the stands unchanged?"]
+    - [prompt_adherence, "Are all three changes made?"]
+    - [visual_quality, "Is there no edge flicker?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ADS-04
+  title: "Swap the steel kadhai for a black cast-iron one; the hands, oil, seeds and leaves untouched"
+  persona: "Cookware brand's agency editor reusing a cooking shot for a cast-iron launch."
+  evidence: "Swapping a vessel with action inside it disturbs the action."
+  levers: [keep-rest, physics, light-lock, timing, identity]
+  inputs: [{source: SRC-VCLIP-KITCHEN-COOK, role: source}]
+  prompt: |
+    In this 8-second cooking shot, replace the shiny steel kadhai on the flame with a black seasoned cast-iron
+    kadhai of the same size and shape with two loop handles, on every frame. Its surface is matte black with
+    a soft sheen, and it shows the warm window light from the left as a dull highlight, not a mirror. The oil
+    poured at 1 second, the mustard seeds crackling at 3 seconds, the curry leaves sputtering at 5 seconds,
+    the stirring at 7 seconds, the woman's hands and gold bangle, the counter, onions and lemon are unchanged.
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged locked off at 45 degrees"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the kadhai black cast iron with two loop handles?"]
+    - [prompt_adherence, "Does it show a dull highlight, not a mirror?"]
+    - [preservation, "Is it the same size and position?"]
+    - [prompt_adherence, "Are the oil, seeds, leaves and stirring at their times?"]
+    - [physics_plausibility, "Do the seeds still crackle and jump inside it?"]
+    - [preservation, "Are the hands and bangle unchanged?"]
+    - [preservation, "Are the counter, onions and lemon unchanged?"]
+    - [temporal_consistency, "Does the kadhai stay stable as the spoon stirs?"]
+    - [physics_plausibility, "Does the flame sit under it naturally?"]
+    - [preservation, "Is the framing unchanged?"]
+    - [visual_quality, "Is there no edge flicker?"]
+    - [reference_fidelity, "Is the bangle on the left wrist?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ADS-05
+  title: "Localise the carton in both shots: Morning Sun becomes सुबह in Devanagari, tracked through the pour"
+  persona: "Agency adaptation editor making the Hindi-market version of a juice spot."
+  evidence: "Replacing text on a moving, tilting carton in Devanagari damages letters."
+  levers: [exact-text, script, keep-rest, timing, physics]
+  inputs: [{source: SRC-VCLIP-SPOT-PACKSHOT, role: source}]
+  prompt: |
+    In this 8-second juice spot, the orange carton carries the brand "Morning Sun" in white rounded letters.
+    On every frame, in both shots, change the brand to "सुबह" in white rounded Devanagari at the same size
+    and position, with "100% संतरा" in place of "100% Orange" below it. The text tilts with the carton as
+    the mother pours at 2 seconds and stands upright in the packshot from 5 seconds. The sun graphic, the
+    carton's colour, the family, the dolly, the cut at 5 seconds and the light are unchanged.
+  exact_text: ["सुबह", "100% संतरा"]
+  clip: {duration: 8, aspect: "16:9", camera: "unchanged"}
+  deliverable: "One 8-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does the brand read सुबह in correct Devanagari on every frame?"]
+    - [text_accuracy, "Does the line read 100% संतरा correctly?"]
+    - [motion_coherence, "Does the text tilt with the carton during the pour?"]
+    - [temporal_consistency, "Is the text stable with no flicker or re-spelling?"]
+    - [prompt_adherence, "Is it at the same size and position as the old brand?"]
+    - [preservation, "Is the sun graphic unchanged?"]
+    - [prompt_adherence, "Is the pour at 2 s and the cut at 5 s?"]
+    - [preservation, "Are the family and dolly unchanged?"]
+    - [text_accuracy, "Is no English brand text left?"]
+    - [prompt_adherence, "Does the text take the window light?"]
+    - [preservation, "Is the packshot unchanged otherwise?"]
+    - [visual_quality, "Are the letters crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}
+
+- id: VEDT-ADS-06
+  title: "Replace the cola ad on the moving billboard with a new ad; it stays locked in perspective as the camera walks"
+  persona: "Out-of-home agency previewing a client's ad on a real site from walking footage."
+  evidence: "Billboard replacement on handheld footage must track perspective frame by frame."
+  levers: [keep-rest, layout, physics, timing, camera-move]
+  inputs: [{source: SRC-VCLIP-STREET-BILLBOARD, role: source}]
+  prompt: |
+    In this 6-second handheld walk along a Pune pavement, the camera pans up to a lit billboard on a building
+    corner that shows a red cola ad. On every frame, replace the ad with a new one: a deep green background,
+    a single white stylised tea leaf in the centre, and nothing else, no words. The new ad fills the
+    billboard's frame exactly, stays locked to its changing perspective as the camera moves, and glows as a
+    backlit billboard at dusk does. The billboard's frame, the building, the bus passing at 3 seconds, the
+    traffic and the shop lights are unchanged.
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged handheld walk and pan"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [prompt_adherence, "Is the ad replaced with green and a white tea leaf?"]
+    - [prompt_adherence, "Does the new ad fill the billboard frame exactly?"]
+    - [physics_plausibility, "Does it stay locked to the changing perspective?"]
+    - [motion_coherence, "Is there no sliding or jitter of the new ad?"]
+    - [prompt_adherence, "Does it glow as a backlit billboard?"]
+    - [preservation, "Does the bus still pass at 3 seconds?"]
+    - [preservation, "Are the building and frame unchanged?"]
+    - [text_accuracy, "Is there no text on the new ad?"]
+    - [preservation, "Is the camera move unchanged?"]
+    - [preservation, "Are traffic and shop lights unchanged?"]
+    - [prompt_adherence, "Is no part of the cola ad left?"]
+    - [visual_quality, "Are the edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

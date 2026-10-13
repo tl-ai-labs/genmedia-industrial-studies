@@ -1,0 +1,71 @@
+# Product and ad spots — Gaming scenarios. Slots: vspt.yaml.
+code: VSPT
+scenarios:
+
+- id: VSPT-GAM-01
+  seed: true
+  title: "Merch spot: the game-logo hoodie turns and is pulled on; the logo holds through the folds"
+  persona: "Game publisher's merchandise team making a 6-second store video for a hoodie."
+  evidence: "Earlier bank IMG-BRAND-04 (logo geometry on packaging) was high tier; on moving fabric the logo bends every frame and is easily redrawn."
+  levers: [identity, exact-text, physics, timing, locale, exclude]
+  inputs:
+    - {source: SRC-GAM-LOGO, role: logo, note: "the game logo"}
+  prompt: |
+    A 6-second merch spot at a Bengaluru gaming-expo booth, photoreal, 9:16. A black hoodie with this
+    exact game logo screen-printed large across the back: the teal crescent lying on its back with the
+    vertical silver sword through it and its veena-head guard, and below it the wordmark "SHADOW RAAGA"
+    in tall angular silver capitals, twice the crescent's width. 0–2 s: the hoodie hangs on a rotating
+    display, turning to show the back. 2–5 s: a fan in his twenties takes it, pulls it over his head and
+    tugs it down, the print stretching and folding with the fabric. 5–6 s: he turns his back to the
+    camera and the logo settles flat across his shoulders. The print follows every fold and stretch but
+    is never redrawn: its shapes and proportions return exactly when the fabric is flat. Booth lights
+    and screens glow behind. No other logos or text.
+  exact_text: ["SHADOW RAAGA"]
+  clip: {duration: 6, aspect: "9:16", camera: "locked off, then a small follow as he turns"}
+  deliverable: "One 6-second clip, 9:16."
+  checks:
+    - [reference_fidelity, "Is the logo the reference's: crescent on its back, vertical sword, veena guard?"]
+    - [text_accuracy, "Does the wordmark read SHADOW RAAGA on every frame where it is visible?"]
+    - [reference_fidelity, "Is the wordmark about twice the crescent's width when flat?"]
+    - [physics_plausibility, "Does the print stretch and fold with the fabric?"]
+    - [motion_coherence, "Does the logo return to its exact shape when the fabric is flat at the end?"]
+    - [temporal_consistency, "Is the print never redrawn, melted or re-spelled during the motion?"]
+    - [prompt_adherence, "Do the three phases land at 0–2, 2–5 and 5–6 s?"]
+    - [visual_quality, "Does he pull the hoodie on with natural arm movement?"]
+    - [prompt_adherence, "Is the crescent teal and the sword silver throughout?"]
+    - [prompt_adherence, "Is the setting an expo booth?"]
+    - [composition, "Is it a true vertical 9:16?"]
+    - [text_accuracy, "Is there no other text or logo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with the logo as a reference."}
+
+- id: VSPT-GAM-02
+  title: "The limited-edition controller from its written spec on a desk at night, a slow turn; hex colours hold"
+  persona: "Hardware partner's product marketer making a teaser for the limited edition."
+  evidence: "Earlier image bank PRD-GAM-03: hex colourways from text; under a turn the colours and small print drift."
+  levers: [exact-text, long-brief, light-lock, small-text, camera-move]
+  prompt: |
+    A 6-second stylised 3D product teaser of a game controller on a dark desk at night, lit by a monitor's
+    cool glow from behind and a warm desk lamp from the left. A standard two-handle controller with two
+    thumbsticks, a D-pad on the left and four face buttons on the right. The colourway: body in deep teal
+    (#0E6E6E), matte black grips, copper (#B87333) thumbsticks, translucent amber face buttons, a thin copper
+    line where body meets grip. It turns slowly on the desk to show the back of the right grip, where the
+    small copper text "LIMITED EDITION 0427/1000" is printed. The colours hold through the turn. No brand.
+  exact_text: ["LIMITED EDITION 0427/1000"]
+  clip: {duration: 6, aspect: "16:9", camera: "slow push in as it turns"}
+  deliverable: "One 6-second clip, 16:9."
+  checks:
+    - [text_accuracy, "Does the grip read LIMITED EDITION 0427/1000 exactly?"]
+    - [prompt_adherence, "Is the body deep teal close to #0E6E6E?"]
+    - [prompt_adherence, "Are the thumbsticks copper close to #B87333?"]
+    - [prompt_adherence, "Are the face buttons translucent amber?"]
+    - [prompt_adherence, "Are there two sticks, a D-pad and four face buttons?"]
+    - [prompt_adherence, "Is the D-pad on the left and the buttons on the right?"]
+    - [prompt_adherence, "Is there cool monitor glow behind and warm lamp from the left?"]
+    - [motion_coherence, "Do the colours hold through the turn?"]
+    - [physics_plausibility, "Do the amber buttons glow translucently?"]
+    - [prompt_adherence, "Is there a slow push in?"]
+    - [text_accuracy, "Is there no brand or other text?"]
+    - [visual_quality, "Are the edges clean?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One text-to-video call."}

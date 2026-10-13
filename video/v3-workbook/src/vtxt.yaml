@@ -1,0 +1,37 @@
+# V9 — Text and graphics in motion, multi-script (header). Built on image family TYP. Scenarios: vtxt-*.yaml.
+
+family: Text in motion
+code: VTXT
+number: 9
+about: "Titles, supers and on-surface text in Latin, Devanagari, Telugu and Tamil that stay exact on every frame, animate on time and stick to moving surfaces."
+outputs: "1 clip"
+text_family: true
+
+rubric:
+  weights: {text_accuracy: 4, prompt_adherence: 3, motion_coherence: 2, preservation: 2, physics_plausibility: 1, visual_quality: 1, style: 1, temporal_consistency: 2}
+  gate: [text_accuracy]
+  gate_rule: "Every letter must be right in every frame it is on screen."
+
+targets:
+  string-exact: "A word is misspelled, missing, doubled or invented at any frame"
+  script-render: "Devanagari, Telugu or Tamil letters are malformed at any frame"
+  flicker: "Text shimmers, morphs or re-spells itself between frames"
+  track-loss: "Text does not stick to the moving surface it is on"
+  timing: "Text arrives or leaves at the wrong second"
+  layout-kept: "A replaced super loses the original layout or style"
+
+slots:
+  # Film, OTT & micro-drama — 1 (1 edit · 1 hard)
+  - {id: VTXT-FLM-01, task: edit, subject: architecture, style: cinematic, light: night, locale: IN, diff: hard, target: track-loss, sources: [SRC-VCLIP-STATION-SIGN], script: mixed, idea: "Rename the station on the moving board in three scripts; the new text sticks to the board through the dolly"}
+  # Advertising & agencies — 1 (1 t2v · 1 extreme)
+  - {id: VTXT-ADS-01, task: t2v, subject: vehicle, style: graphic, light: daylight, locale: IN, diff: extreme, target: timing, sources: [], script: mixed, from_image: TYP-ADS-01, idea: "The scooter launch end card: English headline, Hindi line, price and fine print arrive on cue"}
+  # E-commerce, D2C & retail — 2 (1 t2v, 1 edit · 1 hard, 1 extreme)
+  - {id: VTXT-ECM-01, task: t2v, subject: fashion, style: graphic, light: golden, locale: global, diff: hard, target: timing, sources: [], script: latin, from_image: TYP-ECM-03, idea: "The summer-sale hero banner animated: headline, discount, dates, button and code arrive on cue"}
+  - {id: VTXT-ECM-02, task: edit, subject: interior, style: photoreal, light: practical, locale: IN, diff: extreme, target: track-loss, sources: [SRC-VCLIP-SHELF-PAN], script: tamil, idea: "Make the moving shelf tags bilingual: a Tamil product name added above each, stuck to the tag through the dolly"}
+  # Media, publishing & events — 6 (3 t2v, 3 edit · 4 hard, 2 extreme)
+  - {id: VTXT-MED-01, task: t2v, subject: group, style: graphic, light: neon, locale: IN, diff: extreme, target: timing, sources: [], script: mixed, from_image: TYP-MED-01, idea: "Sahil's typography test in motion: the club-night poster animates in, every line on cue and exact on every frame"}
+  - {id: VTXT-MED-02, task: t2v, subject: person, style: graphic, light: practical, locale: IN, diff: hard, target: flicker, sources: [], script: devanagari, idea: "A Hindi news programme's title sequence: the title and the anchor's name super, stable on every frame"}
+  - {id: VTXT-MED-03, task: t2v, subject: food, style: graphic, light: practical, locale: IN, diff: hard, target: string-exact, sources: [], script: telugu, idea: "A Telugu cooking-show opener: title and five ingredient names pop in over sizzling food"}
+  - {id: VTXT-MED-04, task: edit, subject: person, style: photoreal, light: practical, locale: IN, diff: extreme, target: layout-kept, sources: [SRC-VCLIP-NEWS-BROADCAST], script: telugu, idea: "Localise the broadcast graphics into Telugu: lower third, scrolling ticker, same bands and timing"}
+  - {id: VTXT-MED-05, task: edit, subject: architecture, style: photoreal, light: daylight, locale: IN, diff: hard, target: track-loss, sources: [SRC-VCLIP-TRAVEL-TEMPLE], script: tamil, idea: "Add a location title in Tamil and English carved into the granite wall, stuck to it through the handheld move"}
+  - {id: VTXT-MED-06, task: edit, subject: fashion, style: photoreal, light: daylight, locale: global, diff: hard, target: string-exact, sources: [SRC-VCLIP-MAG-SHOOT], script: latin, idea: "Replace the magazine's cover lines through the tilt and the corner lift, in the cover's own fonts"}

@@ -1,0 +1,122 @@
+# Precision editing — Film, OTT & micro-drama scenarios. Slots: edt.yaml.
+code: EDT
+scenarios:
+
+- id: EDT-FLM-01
+  seed: true
+  title: "Five continuity fixes on a rainy chai-stall frame, everything else untouched"
+  persona: "Online editor on a Hindi OTT thriller, fixing a hero frame the night before delivery after the continuity supervisor's notes."
+  evidence: "Call at 23:45 onwards: the gap between models shows in corner cases, not generic edits. Earlier banks: IMG-LE-06 (object swap keeping light) and IMG-TXT-10 (in-place text fix) were single edits; this stacks five, including a sign changed into Devanagari."
+  levers: [multi-step, keep-rest, exact-text, script, physics, locale, layout]
+  inputs:
+    - {source: SRC-CHAI-STALL, role: source, note: "the delivered frame"}
+  prompt: |
+    Make exactly these five changes to this film frame and nothing else.
+    1. The young man on the blue stool on the left is holding a smartphone in his right hand.
+       Replace the phone with a small glass of milky tea held the same way; his face is no longer
+       lit by a screen, only by the stall's tube light.
+    2. The painted board above the stall reads "RAJU TEA STALL". Change it to read "राजू चाय स्टॉल"
+       in Devanagari, in the same red paint on the same white board, at the same size, with the
+       same weathering and rain streaks across it.
+    3. The round wall clock behind the vendor shows ten past nine. Set its hands to twenty to
+       twelve.
+    4. Add a thin curl of steam rising from the spout of the large aluminium kettle on the left of
+       the counter, catching the tube light.
+    5. Change the stool he sits on from blue to brick red, keeping its shape, its wet sheen and its
+       reflection in the puddle.
+    Everything else stays exactly as it is: the vendor and his pour, the delivery rider in the red
+    jacket and his tea glass, all three faces, the rain streaks, the puddles and their reflections
+    of the board and the light, the tin shed, the framing and the colour grade. The reflection of
+    the board in the puddle must now show the new Devanagari text, mirrored.
+  exact_text:
+    - "राजू चाय स्टॉल"
+  deliverable: "One image at the same size and framing as the input."
+  checks:
+    - [prompt_adherence, "Is the phone gone and replaced by a small glass of milky tea in his right hand?"]
+    - [prompt_adherence, "Is the screen glow gone from his face?"]
+    - [text_accuracy, "Does the board read exactly राजू चाय स्टॉल, with correctly formed Devanagari?"]
+    - [text_accuracy, "Is the new text in red paint on the same white board, at a similar size and with weathering?"]
+    - [prompt_adherence, "Do the clock hands show about 11:40?"]
+    - [prompt_adherence, "Is there a thin curl of steam from the kettle spout?"]
+    - [prompt_adherence, "Is the stool brick red with the same shape and wet sheen?"]
+    - [physics_plausibility, "Does the puddle reflection show the red stool, not the blue one?"]
+    - [physics_plausibility, "Does the puddle reflection of the board show the Devanagari text, mirrored?"]
+    - [preservation, "Are the vendor's face, pose and pour unchanged?"]
+    - [preservation, "Is the delivery rider unchanged, including his red jacket and tea glass?"]
+    - [reference_fidelity, "Is the young man's face unchanged apart from the light change?"]
+    - [preservation, "Are the rain streaks, the tin shed and the framing unchanged?"]
+    - [preservation, "Is the colour grade unchanged outside the edited areas?"]
+    - [preservation, "Are there still exactly three people?"]
+    - [visual_quality, "Does the hand around the glass have five natural fingers?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: "V6: the same five changes on a five-second clip of the stall with rain and the pour moving."
+
+- id: EDT-FLM-02
+  title: "Period clean-up of the 1970s set: remove the bottle and switchboard, warm the bulb, recover the sofa"
+  persona: "Online editor fixing anachronisms on a period OTT series' set photo before it goes to publicity."
+  evidence: "Earlier bank IMG-LE-01 (single removal) was low tier; four period fixes in one pass, each easy to miss, is the test."
+  levers: [multi-step, keep-rest, locale, layout, light-lock]
+  inputs: [{source: SRC-SET-LIVING, role: source}]
+  prompt: |
+    Make exactly these four changes to this photo of a 1970s drawing-room set, and nothing else.
+    1. Remove the clear plastic water bottle from the coffee table; the table surface, the ashtray and
+       the folded newspaper stay where they are.
+    2. Replace the modern white modular switchboard on the right wall with an old round black bakelite
+       switch plate with two toggle switches, at the same height.
+    3. Change the floor lamp's cool-white LED glow to the warm amber glow of an incandescent bulb; the
+       lamp's light on the wall and floor near it becomes warm too.
+    4. Re-cover the teal vinyl sofa in a mustard floral cotton print, keeping its exact shape, creases
+       and the window light on it.
+    The radio cabinet, wedding photo, rattan chair, curtains, floor, fan and framing are unchanged.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is the plastic bottle gone?"]
+    - [preservation, "Are the ashtray and newspaper still on the table?"]
+    - [prompt_adherence, "Is the switchboard replaced by a round black bakelite plate with two toggles?"]
+    - [prompt_adherence, "Is the lamp's glow warm amber?"]
+    - [prompt_adherence, "Is the light near the lamp warm on the wall and floor?"]
+    - [prompt_adherence, "Is the sofa re-covered in mustard floral cotton?"]
+    - [preservation, "Does the sofa keep its shape and creases?"]
+    - [preservation, "Are the radio, photo, chair and curtains unchanged?"]
+    - [preservation, "Is the window daylight unchanged?"]
+    - [preservation, "Is the floor and fan unchanged?"]
+    - [visual_quality, "Are there no smudges where the bottle and switchboard were?"]
+    - [prompt_adherence, "Are all four changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: EDT-FLM-03
+  title: "Night to dawn on the rooftop, remove the dish, add a washing line; the woman unchanged"
+  persona: "VFX artist turning a night still into a dawn variant for a micro-drama's ending."
+  evidence: "Global relights tend to repaint the person; she must stay identical."
+  levers: [multi-step, keep-rest, identity, light-lock, locale]
+  inputs: [{source: SRC-ROOFTOP, role: source}]
+  prompt: |
+    Make exactly these three changes to this night photo of a woman on a Mumbai rooftop.
+    1. Change the time to blue hour just before dawn: the sky a deep blue fading to pale pink at the
+       horizon, the city lights fewer and dimmer, soft cool light from the sky on everything.
+    2. Remove the grey satellite dish and its stand at the back, rebuilding the parapet and sky
+       behind it.
+    3. Add a washing line strung between two of the blue water tanks, with three saris (orange,
+       green, white) drying on it, hanging still.
+    The woman, her white shirt, pose, face in three-quarter profile, the tanks and the cables are
+    unchanged. Her face is lit by the new soft dawn light, not repainted.
+  deliverable: "One image at the same size."
+  checks:
+    - [prompt_adherence, "Is it blue hour with a pink horizon?"]
+    - [prompt_adherence, "Are the city lights fewer and dimmer?"]
+    - [prompt_adherence, "Is the satellite dish gone with the background rebuilt?"]
+    - [prompt_adherence, "Is there a washing line between two tanks with three saris?"]
+    - [reference_fidelity, "Is the woman's face unchanged?"]
+    - [preservation, "Is her pose and white shirt unchanged?"]
+    - [preservation, "Are the three tanks and the cables unchanged?"]
+    - [prompt_adherence, "Is she lit by soft cool dawn light?"]
+    - [physics_plausibility, "Do the saris hang still under gravity?"]
+    - [visual_quality, "Is there no seam where the dish was?"]
+    - [preservation, "Is she still the only person?"]
+    - [prompt_adherence, "Are all three changes made?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""

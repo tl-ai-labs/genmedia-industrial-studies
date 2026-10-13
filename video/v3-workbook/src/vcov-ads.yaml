@@ -1,0 +1,173 @@
+# Coverage and camera move — Advertising & agencies scenarios. Slots: vcov.yaml.
+code: VCOV
+scenarios:
+
+- id: VCOV-ADS-01
+  title: "A drone orbit round the parked SUV on the hairpin, half a circle at constant height"
+  persona: "Agency producer previewing a drone move for an SUV launch."
+  evidence: "Car paint must keep reflecting the real sky and sun as the camera circles."
+  levers: [camera-move, physics, light-lock, unseen, exclude]
+  inputs: [{source: SRC-ADS-SUV, role: first_frame}]
+  prompt: |
+    Start on this frame of a white badge-less SUV parked on the outside of a Western Ghats hairpin at
+    golden hour and make a 10-second drone orbit: half a circle round the SUV at a constant height of
+    about 6 metres and a constant distance, from its front-left to its rear-right, the camera always
+    pointing at the car. The low sun stays fixed on the right of the original frame, so the warm side and
+    the bright reflections move across the paint as the camera circles, and the car's shadow stays
+    pointing the same way on the road. The far side of the car, never shown, matches the near side. The
+    grey hatchback stays on the lower bend; mist sits in the valley. No badges, lettering or plates.
+  clip: {duration: 10, aspect: "16:9", camera: "half orbit at constant height and distance"}
+  deliverable: "One 10-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it half an orbit at constant height and distance?"]
+    - [physics_plausibility, "Do reflections slide across the paint as the camera circles?"]
+    - [prompt_adherence, "Does the sun stay in one world direction?"]
+    - [physics_plausibility, "Does the car's shadow keep pointing the same way?"]
+    - [reference_fidelity, "Is the SUV the same design all round, the far side matching?"]
+    - [prompt_adherence, "Does the hatchback stay on the lower bend?"]
+    - [temporal_consistency, "Is the car's shape stable, with no morphing?"]
+    - [physics_plausibility, "Does the mist stay in the valley?"]
+    - [prompt_adherence, "Are there no badges, lettering or plates?"]
+    - [prompt_adherence, "Are there no people outside the car?"]
+    - [visual_quality, "Is the frame clean?"]
+    - [prompt_adherence, "Does the camera keep pointing at the car?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-ADS-02
+  title: "A slow dolly along the commercial kitchen counter from the fridge to the masala dabba"
+  persona: "Agency producer previewing the opening move of a cooking-oil spot."
+  evidence: "Interiors flatten into a sliding image when the camera tracks along them."
+  levers: [camera-move, parallax, layout, keep-rest, locale]
+  inputs: [{source: SRC-ADS-KITCHEN, role: first_frame}]
+  prompt: |
+    Start on this photo of a kitchen set and make an 8-second dolly to the right along the counter at
+    counter height, from the white fridge on the left, past the window and sink with the tulsi plant,
+    past the stove with the kadhai and pressure cooker and the chopping board with tomatoes and
+    chillies, ending on the open brass masala dabba at the right end. Near objects (the counter edge,
+    the chopping board) slide past faster than the shelves of steel dabbas and the tiles behind them.
+    Every object stays where the photo has it; nothing is tidied or added. Soft daylight from the
+    window. No people, no labels.
+  clip: {duration: 8, aspect: "16:9", camera: "dolly right along the counter at counter height"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a steady dolly right at counter height?"]
+    - [prompt_adherence, "Does it pass fridge, sink, stove, chopping board and dabba in that order?"]
+    - [physics_plausibility, "Do near objects slide faster than the shelves and tiles?"]
+    - [preservation, "Is every object where the photo has it?"]
+    - [prompt_adherence, "Does it end on the open masala dabba?"]
+    - [prompt_adherence, "Is the light soft daylight from the window?"]
+    - [motion_coherence, "Is there no warping of the counter or cabinets?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Are there no labels?"]
+    - [prompt_adherence, "Is the tulsi plant on the sill?"]
+    - [visual_quality, "Are straight lines straight?"]
+    - [style, "Is the look consistent with the photo?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-ADS-03
+  title: "A macro orbit round the perfume bottle; bevels and label hold, the label reads mirrored through the back"
+  persona: "Still-life director previewing the hero move of a fragrance film."
+  evidence: "Glass products deform and labels re-spell as the camera moves round them."
+  levers: [camera-move, identity, unseen, physics, exact-text]
+  inputs: [{source: SRC-ADS-PERFUME, role: product}]
+  prompt: |
+    A 10-second macro orbit round this exact perfume bottle, Varsha No. 3, standing on a black marble
+    plinth against deep charcoal, lit by a soft key from upper left and a thin rim from behind. The camera
+    circles 180 degrees at label height from the front to the back. At the start the cream label reads
+    "VARSHA", "No. 3" and "EAU DE PARFUM · 50 ml"; as the camera passes the side the bevels flash with
+    light one after another; at the back the label is seen through the glass and the amber liquid,
+    mirrored and softened. The bottle's proportions, bevels and black cap never change shape. The
+    plinth reflects the bottle softly. No other text, no props.
+  clip: {duration: 10, aspect: "4:5", camera: "180-degree macro orbit at label height"}
+  deliverable: "One 10-second clip, 4:5."
+  checks:
+    - [prompt_adherence, "Is it a steady 180-degree orbit at label height?"]
+    - [reference_fidelity, "Does the bottle keep its shape, bevels and cap throughout?"]
+    - [physics_plausibility, "Do the bevels flash in turn as the camera passes?"]
+    - [physics_plausibility, "Is the label seen mirrored through the glass at the back?"]
+    - [reference_fidelity, "Is the liquid pale amber throughout?"]
+    - [physics_plausibility, "Does the plinth reflect the bottle softly?"]
+    - [prompt_adherence, "Is the key from upper left with a rim from behind?"]
+    - [temporal_consistency, "Does the label never melt or re-spell?"]
+    - [prompt_adherence, "Are there no props?"]
+    - [visual_quality, "Is the glass free of artefacts?"]
+    - [composition, "Is the bottle centred throughout?"]
+    - [style, "Is the background deep charcoal?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a product reference."}
+
+- id: VCOV-ADS-04
+  title: "Drive-by along the flyover: the blank hoarding passes from its face to its unseen back structure"
+  persona: "Outdoor agency's site manager previewing the hoarding from a moving car."
+  evidence: "The unseen back of a structure must be invented consistently as the camera passes."
+  levers: [camera-move, unseen, physics, locale, light-lock]
+  inputs: [{source: SRC-ADS-BILLBOARD-SITE, role: first_frame}]
+  prompt: |
+    Start on this photo of a blank white hoarding beside a Bengaluru flyover and make an 8-second shot
+    from a car driving along the flyover past it, the camera facing the hoarding. The blank face slides
+    across the frame in changing perspective; as the car passes, the hoarding's back comes into view,
+    which the photo never shows: a grey steel lattice frame with diagonal bracing, a ladder up to the
+    catwalk, and the backs of the four lamp brackets. The morning sun stays behind the camera on the
+    left, so the face is lit and the back falls into shade. Traffic moves below; rain trees on the
+    right. No text on the hoarding.
+  clip: {duration: 8, aspect: "16:9", camera: "drive-by along the flyover, camera turning to keep the hoarding in frame"}
+  deliverable: "One 8-second clip, 16:9."
+  checks:
+    - [prompt_adherence, "Is it a drive-by with the camera turning to follow the hoarding?"]
+    - [physics_plausibility, "Does the face change perspective correctly as the car passes?"]
+    - [prompt_adherence, "Is the back a steel lattice with bracing, a ladder and the lamp brackets?"]
+    - [prompt_adherence, "Is the face lit and the back in shade?"]
+    - [reference_fidelity, "Is the hoarding blank throughout?"]
+    - [physics_plausibility, "Does the hoarding's size stay plausible against the traffic?"]
+    - [motion_coherence, "Is there no warping of the structure?"]
+    - [motion_coherence, "Does traffic below move naturally?"]
+    - [prompt_adherence, "Does it read as Bengaluru?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are lines straight?"]
+    - [prompt_adherence, "Are there four lamp brackets?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One image-to-video call with a first frame."}
+
+- id: VCOV-ADS-05
+  title: "No base: the described bridal lehenga look as four clips"
+  persona: "Fashion campaign producer previewing look-book motion before the shoot."
+  evidence: "A described garment with a specific back design must hold across clips from text alone."
+  levers: [set, identity, unseen, locale, long-brief]
+  prompt: |
+    A bridal look-book shoot in a sandstone courtyard in Jaipur at golden hour, photoreal. The model: a
+    woman in her mid-twenties with a medium-brown complexion, a low bun with white jasmine, a gold maang
+    tikka and a nose ring on her left nostril. The outfit: a deep maroon velvet lehenga with a wide gold
+    zardozi border at the hem; a matching blouse with elbow sleeves and a single embroidered gold lotus on
+    its back; a vertical panel of small gold peacocks on the back of the skirt from waist to hem; a sheer
+    rose-pink dupatta with a scalloped gold edge. Make four 4-second clips of the same model in the same
+    outfit, as described below. 4:5.
+  clip: {duration: 4, aspect: "4:5", camera: "per clip as described"}
+  set_members:
+    mode: separate
+    must_stay_same:
+      - "Her face, bun with jasmine, tikka, nose ring on the left"
+      - "Maroon velvet lehenga with gold hem border; rose-pink dupatta"
+      - "Back: gold lotus on the blouse; peacock panel on the skirt"
+    members:
+      - {name: "Front walk", prompt: "She walks towards camera, slow, eyes down then up.", checks: [[set_consistency, "Is the gold hem border visible as she walks?"], [motion_coherence, "Does the velvet move with weight?"]]}
+      - {name: "Back reveal", prompt: "From behind, she lifts the dupatta aside to show the back.", checks: [[set_consistency, "Is there a single gold lotus on the blouse back?"], [set_consistency, "Is the peacock panel on the skirt back?"]]}
+      - {name: "Twirl", prompt: "From the front-right, a full twirl, the skirt flaring.", checks: [[physics_plausibility, "Does the skirt flare outward plausibly?"], [set_consistency, "Is the peacock panel glimpsed as she turns?"]]}
+      - {name: "Hem close-up", prompt: "Close on the hem border as she steps, 100 mm.", checks: [[set_consistency, "Is the zardozi border consistent?"], [motion_coherence, "Is the step natural?"]]}
+  deliverable: "Four 4-second clips, 4:5."
+  checks:
+    - [set_consistency, "Is she the same model in all four?"]
+    - [set_consistency, "Is the outfit identical in all four?"]
+    - [set_consistency, "Is the nose ring on her left in every clip that shows it?"]
+    - [set_consistency, "Is the back exactly a lotus on the blouse and a peacock panel on the skirt?"]
+    - [prompt_adherence, "Is it golden hour in the same courtyard?"]
+    - [motion_coherence, "Does the fabric move naturally in every clip?"]
+    - [temporal_consistency, "Is there no morphing of face or embroidery?"]
+    - [prompt_adherence, "Does each clip match its description?"]
+    - [set_consistency, "Is her skin tone the same in all four?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Four text-to-video calls with one description; set agreement needs the set review."}

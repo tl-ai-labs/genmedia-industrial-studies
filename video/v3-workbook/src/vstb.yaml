@@ -1,0 +1,51 @@
+# V2 — Storyboard panel to shot (header). Built on image family STB. Scenarios: vstb-*.yaml.
+
+family: Storyboard to shot
+code: VSTB
+number: 2
+about: "A storyboard panel or frame becomes a shot that honours its shot size, camera move, action and screen direction."
+outputs: "1 clip"
+
+rubric:
+  weights: {reference_fidelity: 3, prompt_adherence: 3, motion_coherence: 2, composition: 2, physics_plausibility: 2, text_accuracy: 1, style: 1, visual_quality: 1, temporal_consistency: 2}
+  gate: [reference_fidelity, composition]
+  gate_rule: "The clip must keep the panel's characters, setting and framing."
+
+targets:
+  shot-size: "The clip's framing does not match the panel's shot size"
+  move-wrong: "The camera move does not match the panel's move"
+  panel-ignored: "The clip drifts from the panel's composition or staging"
+  continuity: "A character, prop or costume detail changes from the panel"
+  style-drift: "The clip's look drifts from the board's world"
+  axis-break: "Screen direction flips against the board"
+
+slots:
+  # Film, OTT & micro-drama — 11 (11 i2v · 7 hard, 4 extreme)
+  - {id: VSTB-FLM-01, task: i2v, subject: person, style: cinematic, light: night, locale: global, diff: extreme, target: shot-size, sources: [SRC-VBOARD-ASTRO, SRC-ASTRO-FOREST], from_image: STB-FLM-01, idea: "Sahil's storyboard test in motion: panel 4, the visor ECU reflecting the forest, as a live shot"}
+  - {id: VSTB-FLM-02, task: i2v, subject: landscape, style: cinematic, light: night, locale: global, diff: hard, target: move-wrong, sources: [SRC-VBOARD-ASTRO, SRC-ASTRO-FOREST], from_image: STB-FLM-01, idea: "Panel 8, the whole forest pulsing, as a crane up that leaves the astronaut tiny"}
+  - {id: VSTB-FLM-03, task: i2v, subject: group, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: axis-break, sources: [SRC-VBOARD-CHASE, SRC-CHAI-STALL], from_image: STB-FLM-03, idea: "Chase panel 2: the hoodie man bolts left to right from the chai stall in the rain, pan right"}
+  - {id: VSTB-FLM-04, task: i2v, subject: person, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: continuity, sources: [SRC-VBOARD-CHASE], from_image: STB-FLM-03, idea: "Chase panel 5: the vault over the banana handcart, same hoodie, same direction"}
+  - {id: VSTB-FLM-05, task: i2v, subject: child-elderly, style: cinematic, light: golden, locale: IN, diff: hard, target: continuity, sources: [SRC-VBOARD-KIDS, SRC-KIDS-TREE], from_image: STB-FLM-02, idea: "Panel 5: the boy lifts her bag with his left hand under the banyan, as the still's world"}
+  - {id: VSTB-FLM-06, task: i2v, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: panel-ignored, sources: [SRC-VBOARD-INTERROGATION, SRC-INTERROGATION], from_image: STB-FLM-04, idea: "Panel 2: the over-the-shoulder onto the suspect, held to the panel's composition"}
+  - {id: VSTB-FLM-07, task: i2v, subject: animal, style: cinematic, light: golden, locale: IN, diff: hard, target: axis-break, sources: [SRC-VBOARD-HORSE, SRC-HORSE-RIDER], from_image: STB-FLM-09, idea: "Panel 2: the gallop over the crest, moving right with the pan"}
+  - {id: VSTB-FLM-08, task: i2v, subject: vehicle, style: cinematic, light: noon, locale: IN, diff: hard, target: move-wrong, sources: [SRC-VBOARD-BIKE, SRC-HERO-BIKE], from_image: STB-FLM-05, idea: "Panel 9: the bike leaves the road into the dunes as the camera cranes up"}
+  - {id: VSTB-FLM-09, task: i2v, subject: architecture, style: 3d, light: night, locale: global, diff: extreme, target: shot-size, sources: [SRC-VBOARD-PALACE], from_image: STB-FLM-14, idea: "The whole six-panel previs crane move as one continuous shot, gate to figure"}
+  - {id: VSTB-FLM-10, task: i2v, subject: stylised, style: illustration, light: neon, locale: global, diff: extreme, target: style-drift, sources: [SRC-VBOARD-ANIME, SRC-ANIME-HEROINE], from_image: STB-FLM-06, idea: "Panel 3: the rooftop leap as a cel-animated shot in the board's style"}
+  - {id: VSTB-FLM-11, task: i2v, subject: child-elderly, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: panel-ignored, sources: [SRC-VBOARD-ELDER, SRC-ELDER-PORCH], from_image: STB-FLM-10, idea: "Panel 6: the match reaches the lamp's wick and it catches, push in"}
+  # Advertising & agencies — 6 (6 i2v · 3 hard, 3 extreme)
+  - {id: VSTB-ADS-01, task: i2v, subject: stylised, style: 3d, light: practical, locale: IN, diff: extreme, target: continuity, sources: [SRC-VBOARD-MASCOT-TVC, SRC-ADS-MASCOT], from_image: STB-ADS-01, idea: "Panel 3: Chotu bursts out of the pack towards frame right, in the board's 3D style and timing"}
+  - {id: VSTB-ADS-02, task: i2v, subject: product, style: 3d, light: practical, locale: IN, diff: hard, target: panel-ignored, sources: [SRC-VBOARD-MASCOT-TVC, SRC-ADS-CHIPS], from_image: STB-ADS-01, idea: "Panel 8: the packshot end card held to the panel's layout, the pack's print exact"}
+  - {id: VSTB-ADS-03, task: i2v, subject: vehicle, style: cinematic, light: golden, locale: IN, diff: extreme, target: move-wrong, sources: [SRC-VBOARD-SUV, SRC-ADS-SUV], from_image: STB-ADS-02, idea: "Panel 5: the SUV climbs past a low camera right to left and the camera whip-pans after it"}
+  - {id: VSTB-ADS-04, task: i2v, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: continuity, sources: [SRC-VBOARD-DIWALI, SRC-ADS-DIWALI-FAMILY], from_image: STB-ADS-03, idea: "Panel 3: the mother lights the fourth diya; the three already lit stay lit"}
+  - {id: VSTB-ADS-05, task: i2v, subject: person, style: cinematic, light: noon, locale: IN, diff: extreme, target: axis-break, sources: [SRC-VBOARD-RACE], from_image: STB-ADS-04, idea: "Panel 3: the drive phase out of the blocks, running right, with the camera tracking"}
+  - {id: VSTB-ADS-06, task: i2v, subject: food, style: cinematic, light: practical, locale: IN, diff: hard, target: shot-size, sources: [SRC-VBOARD-BIRYANI], from_image: STB-ADS-06, idea: "Panel 5: the biryani lid lifts in a vertical top shot and steam rises into the top of frame"}
+  # E-commerce, D2C & retail — 2 (2 i2v · 1 hard, 1 extreme)
+  - {id: VSTB-ECM-01, task: i2v, subject: fashion, style: photoreal, light: daylight, locale: IN, diff: extreme, target: continuity, sources: [SRC-VBOARD-SAREE, SRC-ECM-SAREE-FLAT], from_image: STB-ECM-01, idea: "Panel 4: the model mid-drape in the saree from the flat-lay; border and pallu land where the panel shows"}
+  - {id: VSTB-ECM-02, task: i2v, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: shot-size, sources: [SRC-VBOARD-UNBOXING], from_image: STB-ECM-02, idea: "Panel 2: the extreme close-up of a thumb breaking the seal, as a vertical live shot"}
+  # Gaming — 6 (6 i2v · 4 hard, 2 extreme)
+  - {id: VSTB-GAM-01, task: i2v, subject: stylised, style: 3d, light: neon, locale: global, diff: extreme, target: axis-break, sources: [SRC-VBOARD-TRAILER, SRC-VREF-IRA-SHEET], from_image: STB-GAM-01, idea: "Trailer panel 5: Ira leaps the gap left to right with the camera tracking; cape and sword sides held mid-air"}
+  - {id: VSTB-GAM-02, task: i2v, subject: stylised, style: 3d, light: neon, locale: global, diff: hard, target: shot-size, sources: [SRC-VBOARD-TRAILER], from_image: STB-GAM-01, idea: "Trailer panel 4: the rune flares on the back of her left glove, a frame-filling insert"}
+  - {id: VSTB-GAM-03, task: i2v, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: move-wrong, sources: [SRC-VBOARD-TEMPLE-INTRO], from_image: STB-GAM-02, idea: "Intro panel 2: push through the gateway into the courtyard, framing the chariot and gopuram"}
+  - {id: VSTB-GAM-04, task: i2v, subject: group, style: illustration, light: daylight, locale: IN, diff: hard, target: continuity, sources: [SRC-VBOARD-SQUAD-BATTLE], from_image: STB-GAM-03, idea: "Battle panel 5: the heavy man kneels and fires right; smoke trails left; the squad stays in its order"}
+  - {id: VSTB-GAM-05, task: i2v, subject: vehicle, style: 3d, light: night, locale: global, diff: extreme, target: shot-size, sources: [SRC-VBOARD-HOVER-RACE], from_image: STB-GAM-04, idea: "Race panel 4: the launch off the grid left to right with a whip pan"}
+  - {id: VSTB-GAM-06, task: i2v, subject: animal, style: illustration, light: golden, locale: IN, diff: hard, target: style-drift, sources: [SRC-VBOARD-GARUDA], from_image: STB-GAM-05, idea: "Panel 5: the eagle leaps off the cliff with the prince, animated in the board's Kalamkari style"}

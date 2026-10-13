@@ -1,0 +1,57 @@
+# Family 2 — Storyboards and shot sheets (header). Scenarios: stb-*.yaml.
+
+family: Storyboards
+code: STB
+number: 2
+about: "One grid of numbered panels with captions, from a base image or from a written script; the panels must match their own captions and each other."
+outputs: "1 grid"
+
+rubric:
+  weights: {prompt_adherence: 3, set_consistency: 3, text_accuracy: 2, reference_fidelity: 2, style: 1, visual_quality: 1, physics_plausibility: 1, composition: 1, preservation: 1}
+  gate: [set_consistency, text_accuracy]
+  gate_rule: "No character, prop or costume may change between panels, and every caption must be exact."
+
+targets:
+  panel-count: "Wrong number of panels, or panels out of order"
+  shot-size: "A panel's drawing does not match its caption's shot size or camera move"
+  caption-text: "Caption text is misspelled, missing or garbled"
+  continuity: "A character, prop or costume detail changes between panels"
+  style-drift: "Panels are drawn in different styles"
+  base-ignored: "The panels drift away from the base image's world or composition"
+  axis-break: "Screen direction flips without a reason (the 180-degree rule is broken)"
+
+slots:
+  # Film, OTT & micro-drama — 14 (4 t2i, 10 edit · 8 hard, 6 extreme)
+  - {id: STB-FLM-01, task: edit, subject: person, style: sketch, light: night, locale: global, diff: extreme, target: shot-size, sources: [SRC-ASTRO-FOREST], script: latin, idea: "Sahil's storyboard test: nine-panel pencil board of the astronaut in the alien forest with exact captions and camera moves"}
+  - {id: STB-FLM-02, task: edit, subject: child-elderly, style: sketch, light: golden, locale: IN, diff: hard, target: continuity, sources: [SRC-KIDS-TREE], script: latin, idea: "Six panels: the girl gets up and leaves, the boy follows with the bag; bag and ribbons tracked"}
+  - {id: STB-FLM-03, task: edit, subject: group, style: sketch, light: fog-rain, locale: IN, diff: extreme, target: axis-break, sources: [SRC-CHAI-STALL], script: latin, idea: "Eight-panel chase that starts at the chai stall in the rain; screen direction held left to right"}
+  - {id: STB-FLM-04, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: caption-text, sources: [SRC-INTERROGATION], script: devanagari, idea: "Six-panel colour board of the interrogation with Hindi dialogue captions in Devanagari"}
+  - {id: STB-FLM-05, task: edit, subject: vehicle, style: sketch, light: noon, locale: IN, diff: hard, target: continuity, sources: [SRC-HERO-BIKE], script: latin, idea: "Nine-panel highway chase from the stopped bike; saddlebags, dent and sunglasses tracked"}
+  - {id: STB-FLM-06, task: edit, subject: stylised, style: illustration, light: neon, locale: global, diff: hard, target: style-drift, sources: [SRC-ANIME-HEROINE], script: latin, idea: "Six-panel anime board of the heroine leaping between rooftops, one line weight throughout"}
+  - {id: STB-FLM-07, task: edit, subject: person, style: sketch, light: daylight, locale: global, diff: extreme, target: base-ignored, sources: [SRC-THUMBS-CHASE, SRC-ACTOR-M], script: latin, idea: "Clean up six rough thumbnails into finished boards, keeping each thumbnail's composition, with the actor as the runner"}
+  - {id: STB-FLM-08, task: edit, subject: interior, style: 3d, light: practical, locale: IN, diff: hard, target: shot-size, sources: [SRC-SET-LIVING], script: latin, idea: "Grey-shaded previs board in the drawing-room set: eight shots with lens and shot-size captions"}
+  - {id: STB-FLM-09, task: edit, subject: animal, style: sketch, light: golden, locale: IN, diff: hard, target: axis-break, sources: [SRC-HORSE-RIDER], script: latin, idea: "Six-panel gallop across the dunes; the horse keeps moving frame right in every panel"}
+  - {id: STB-FLM-10, task: edit, subject: child-elderly, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: base-ignored, sources: [SRC-ELDER-PORCH], script: latin, idea: "Nine-panel colour board of the grandmother lighting the lamp at dusk; house details match the base"}
+  - {id: STB-FLM-11, task: t2i, subject: person, style: sketch, light: night, locale: global, diff: extreme, target: panel-count, sources: [], script: latin, idea: "Script only: a one-page heist scene into a twelve-panel board, four by three, numbered, captioned"}
+  - {id: STB-FLM-12, task: t2i, subject: group, style: sketch, light: daylight, locale: IN, diff: hard, target: shot-size, sources: [], script: latin, idea: "Vertical 9:16 micro-drama board: six panels of a family confrontation at a wedding"}
+  - {id: STB-FLM-13, task: t2i, subject: landscape, style: illustration, light: fog-rain, locale: IN, diff: hard, target: style-drift, sources: [], script: latin, idea: "Watercolour board for an animated feature: the monsoon rolling over paddy fields in six panels"}
+  - {id: STB-FLM-14, task: t2i, subject: architecture, style: 3d, light: night, locale: global, diff: extreme, target: continuity, sources: [], script: latin, idea: "Previs board of a crane move across a described palace facade at night; lit windows stay the same"}
+  # Advertising & agencies — 8 (3 t2i, 5 edit · 5 hard, 3 extreme)
+  - {id: STB-ADS-01, task: edit, subject: stylised, style: 3d, light: practical, locale: IN, diff: extreme, target: continuity, sources: [SRC-ADS-MASCOT, SRC-ADS-CHIPS], script: latin, idea: "20-second chips commercial board with the mascot: eight time-coded panels, Hinglish captions, packshot end"}
+  - {id: STB-ADS-02, task: edit, subject: vehicle, style: sketch, light: golden, locale: IN, diff: hard, target: shot-size, sources: [SRC-ADS-SUV], script: latin, idea: "Nine-panel SUV commercial board climbing the ghat road; shot sizes and moves from the captions"}
+  - {id: STB-ADS-03, task: edit, subject: group, style: cinematic, light: practical, locale: IN, diff: hard, target: caption-text, sources: [SRC-ADS-DIWALI-FAMILY], script: devanagari, idea: "Six-panel colour board of the Diwali ad with Hindi voice-over captions"}
+  - {id: STB-ADS-04, task: edit, subject: person, style: sketch, light: noon, locale: IN, diff: extreme, target: axis-break, sources: [SRC-ADS-RUNNER], script: latin, idea: "Eight-panel race board for a sportswear spot; the sprinter keeps running left to right"}
+  - {id: STB-ADS-05, task: edit, subject: product, style: illustration, light: night, locale: global, diff: hard, target: base-ignored, sources: [SRC-ADS-PERFUME], script: latin, idea: "Six-panel marker-rendered perfume board in the rain; the bottle drawn true to the packshot"}
+  - {id: STB-ADS-06, task: t2i, subject: food, style: sketch, light: daylight, locale: IN, diff: hard, target: panel-count, sources: [], script: latin, idea: "From a written script: a 15-second biryani delivery spot as six vertical panels"}
+  - {id: STB-ADS-07, task: t2i, subject: child-elderly, style: illustration, light: golden, locale: IN, diff: extreme, target: style-drift, sources: [], script: latin, idea: "Nine watercolour panels for a life-insurance film: a grandfather teaching his granddaughter to cycle"}
+  - {id: STB-ADS-08, task: t2i, subject: animal, style: sketch, light: fog-rain, locale: global, diff: hard, target: continuity, sources: [], script: latin, idea: "Eight-panel pet-food spot: a wet dog finds its way home in the rain; collar and patch tracked"}
+  # E-commerce, D2C & retail — 2 (1 t2i, 1 edit · 1 hard, 1 extreme)
+  - {id: STB-ECM-01, task: edit, subject: fashion, style: illustration, light: daylight, locale: IN, diff: hard, target: continuity, sources: [SRC-ECM-SAREE-FLAT], script: latin, idea: "Six-panel board for a saree product video: unfolding, border close-up, draping, pallu reveal, twirl, end card"}
+  - {id: STB-ECM-02, task: t2i, subject: product, style: sketch, light: practical, locale: global, diff: extreme, target: panel-count, sources: [], script: latin, idea: "A 9:16 unboxing reel for a phone case from a written script, nine vertical panels in a three-by-three grid"}
+  # Gaming — 6 (2 t2i, 4 edit · 4 hard, 2 extreme)
+  - {id: STB-GAM-01, task: edit, subject: stylised, style: sketch, light: neon, locale: global, diff: extreme, target: continuity, sources: [SRC-GAM-HERO], script: latin, idea: "Nine-panel launch-trailer board for the heroine; cape, rune and sword hand held through action"}
+  - {id: STB-GAM-02, task: edit, subject: architecture, style: 3d, light: golden, locale: IN, diff: hard, target: base-ignored, sources: [SRC-GAM-TEMPLE-LEVEL], script: latin, idea: "Six-panel level-intro cutscene board through the temple courtyard; the level's layout respected"}
+  - {id: STB-GAM-03, task: edit, subject: group, style: illustration, light: daylight, locale: IN, diff: hard, target: axis-break, sources: [SRC-GAM-SQUAD], script: latin, idea: "Eight-panel squad battle on the rampart; the enemy always on screen right"}
+  - {id: STB-GAM-04, task: edit, subject: vehicle, style: sketch, light: night, locale: global, diff: hard, target: shot-size, sources: [SRC-GAM-MECH], script: latin, idea: "Hover-bike race intro, six panels with shot sizes and camera moves"}
+  - {id: STB-GAM-05, task: t2i, subject: animal, style: illustration, light: golden, locale: IN, diff: extreme, target: style-drift, sources: [], script: latin, idea: "A great eagle mount's first flight in six panels, painted in the style of Kalamkari"}
+  - {id: STB-GAM-06, task: t2i, subject: landscape, style: sketch, light: fog-rain, locale: global, diff: hard, target: panel-count, sources: [], script: latin, idea: "A boss-reveal storm sequence from a written script, twelve panels in a three-by-four grid"}

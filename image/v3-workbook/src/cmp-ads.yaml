@@ -1,0 +1,218 @@
+# Composition and aesthetic — Advertising & agencies scenarios. Slots: cmp.yaml.
+code: CMP
+scenarios:
+
+- id: CMP-ADS-01
+  title: "Skincare still life among dried botanicals on rough stone, rich texture, off-centre"
+  persona: "Still-life photographer pitching a skincare brand's campaign look."
+  evidence: "Sahil's screen-share (screenshot 227): a skincare still-life pair where the other tool's frame was richer and darker."
+  levers: [off-centre, light-lock, physics, exclude, long-brief]
+  prompt: |
+    A still-life photograph for a skincare campaign, 4:5. Three amber glass dropper bottles of
+    different heights and a squat matte-green jar stand on a rough grey slab of stone, grouped in the
+    lower right third. Around and behind them, dried botanicals: wheat stalks, dried lavender, olive
+    branches, a scatter of turmeric powder and a broken piece of dried orange. A low warm key from
+    the left rakes across the stone, picking out every pit and crumb; deep soft shadows fall to the
+    right. The background is a mottled olive-and-ochre plaster wall, softly out of focus. Rich,
+    tactile, slightly dark mood like an oil painting. Labels are blank. No text, no logos, no
+    people.
+  deliverable: "One image, 4:5."
+  checks:
+    - [composition, "Are the products grouped in the lower right third?"]
+    - [prompt_adherence, "Are there three dropper bottles and one green jar?"]
+    - [physics_plausibility, "Does a low warm key from the left rake across the stone?"]
+    - [physics_plausibility, "Do shadows fall to the right?"]
+    - [style, "Is the stone's texture visible in pits and crumbs?"]
+    - [style, "Does the image feel tactile and painterly rather than clean and plastic?"]
+    - [prompt_adherence, "Are wheat, lavender, olive, turmeric and dried orange present?"]
+    - [prompt_adherence, "Is the background a mottled plaster wall, out of focus?"]
+    - [prompt_adherence, "Are the labels blank?"]
+    - [prompt_adherence, "Is there no text, logo or person?"]
+    - [visual_quality, "Is the glass free of artefacts?"]
+    - [prompt_adherence, "Is the mood slightly dark and warm?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Midjourney arm is not wired today."}
+  video_followon: ""
+
+- id: CMP-ADS-02
+  title: "Streetwear ad in a Mumbai lane at night; the model cut by the right frame edge"
+  persona: "Fashion art director pitching an edgy streetwear campaign."
+  evidence: "Models avoid cropping subjects at frame edges; deliberate edge cropping is the test."
+  levers: [off-centre, light-lock, locale, exclude]
+  prompt: |
+    A streetwear campaign photo in a narrow Mumbai lane at night, 4:5. A young man in an oversized
+    black hoodie, cargo pants and chunky white sneakers leans against a wall; the right edge of the
+    frame cuts through him, so only his left half, from shoulder to sneaker, is in frame, with his
+    face in left profile at the edge. The rest of the frame is the lane receding into the distance:
+    wet stone, hanging laundry, a tangle of cables, a single green tube light far down the lane.
+    Magenta light from an unseen shop sign spills on him. Grain, crisp night colour. No readable
+    text, no logos.
+  deliverable: "One image, 4:5."
+  checks:
+    - [composition, "Is the model cut by the right frame edge, only his left half in frame?"]
+    - [composition, "Does the lane recede through the rest of the frame?"]
+    - [prompt_adherence, "Is he in a black hoodie, cargo pants and white sneakers?"]
+    - [prompt_adherence, "Is magenta light spilling on him?"]
+    - [prompt_adherence, "Is there one green tube light far down the lane?"]
+    - [prompt_adherence, "Are laundry and cables visible in the lane?"]
+    - [physics_plausibility, "Is the stone wet and reflective?"]
+    - [style, "Is there grain with crisp night colour?"]
+    - [text_accuracy, "Is there no readable text or logo?"]
+    - [prompt_adherence, "Is he the only person?"]
+    - [visual_quality, "Is his profile clean?"]
+    - [prompt_adherence, "Does it read as a Mumbai lane?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ADS-03
+  title: "Top-down filter coffee with 70 percent clean copy space on the left"
+  persona: "Art director making a print ad photo that must leave room for the headline."
+  evidence: "Ads need empty copy space; models fill frames."
+  levers: [off-centre, layout, locale, exclude]
+  prompt: |
+    A top-down food photo for a print ad, 3:2. A South Indian filter coffee in a steel tumbler and
+    dabarah, froth on top, sits on a rough terracotta-tiled surface in the right thirty percent of the
+    frame, with two banana-leaf-wrapped idlis beside it and a scatter of coffee beans. The left
+    seventy percent of the frame is the same tiled surface, plain and empty, evenly lit, ready for a
+    headline. Soft daylight from the top of the frame, gentle shadows falling down. Warm natural
+    colour. No text, no logos, no hands.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is the food in the right thirty percent?"]
+    - [composition, "Is the left seventy percent empty tiled surface?"]
+    - [composition, "Is the empty area evenly lit with no distracting objects?"]
+    - [prompt_adherence, "Is it straight top-down?"]
+    - [prompt_adherence, "Is it a steel tumbler and dabarah with froth?"]
+    - [prompt_adherence, "Are there two wrapped idlis?"]
+    - [prompt_adherence, "Is soft light from the top with shadows falling down?"]
+    - [style, "Is the tile texture natural?"]
+    - [prompt_adherence, "Are there no hands, text or logos?"]
+    - [visual_quality, "Is the food free of artefacts?"]
+    - [prompt_adherence, "Does it read as South Indian?"]
+    - [prompt_adherence, "Are coffee beans scattered near the tumbler?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ADS-04
+  title: "An SUV under four percent of the frame on a ghat hairpin in cloud"
+  persona: "Car-campaign art director pitching an epic scale frame."
+  evidence: "Product shots are usually large; making the product tiny while still readable is the test."
+  levers: [off-centre, camera, physics, locale, exclude]
+  prompt: |
+    A car-campaign landscape photo, 2.39:1. A vast green Western Ghats escarpment wrapped in moving
+    cloud, with a road carved into it in a series of hairpin bends. A single white SUV with its
+    headlights on drives up the third hairpin from the bottom, at the right third; it is tiny, under
+    four percent of the frame's width, but its white body and headlights make it readable. Cloud
+    covers the upper left, waterfalls stream down the cliff at the left. Soft grey monsoon light,
+    deep greens. No other vehicles, no text, no logos.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [composition, "Is the SUV under four percent of the frame's width?"]
+    - [composition, "Is it at the right third, on the third hairpin from the bottom?"]
+    - [prompt_adherence, "Is it still readable as a white SUV with headlights on?"]
+    - [physics_plausibility, "Does the escarpment's scale read as vast?"]
+    - [prompt_adherence, "Are there several hairpin bends?"]
+    - [prompt_adherence, "Do waterfalls stream down on the left?"]
+    - [prompt_adherence, "Is it soft grey monsoon light?"]
+    - [style, "Are the greens deep and rich?"]
+    - [prompt_adherence, "Are there no other vehicles?"]
+    - [prompt_adherence, "Is there no text or logo?"]
+    - [visual_quality, "Is the frame free of artefacts?"]
+    - [prompt_adherence, "Is cloud covering the upper left?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ADS-05
+  title: "A cricketer at 600 mm with the stadium crowd stacked and compressed behind"
+  persona: "Sports-campaign photographer pitching a telephoto hero shot."
+  evidence: "Earlier bank IMG-VIEW-50 (telephoto compression) was medium tier."
+  levers: [camera, off-centre, light-lock, exclude]
+  prompt: |
+    A sports-campaign photo shot on a 600 mm lens from the boundary, 3:2. A fictional batswoman in
+    a plain sky-blue kit and helmet, no logos, is in her stance at the crease, placed on the left
+    third, sharp. Behind her, the stadium crowd is flattened into a dense compressed wall of colour
+    and faces that seems close behind her, softly out of focus; the stumps and the wicketkeeper are
+    stacked tightly behind her. Harsh noon sun from above. The background bokeh is creamy. No text,
+    no logos, no sponsor boards.
+  deliverable: "One image, 3:2."
+  checks:
+    - [prompt_adherence, "Does the image show strong telephoto compression?"]
+    - [prompt_adherence, "Does the crowd seem close behind her, flattened?"]
+    - [composition, "Is she on the left third?"]
+    - [prompt_adherence, "Are the stumps and keeper stacked tightly behind her?"]
+    - [prompt_adherence, "Is she in a sky-blue kit and helmet without logos?"]
+    - [prompt_adherence, "Is it harsh noon light?"]
+    - [style, "Is the background bokeh creamy?"]
+    - [prompt_adherence, "Is she in a batting stance at the crease?"]
+    - [text_accuracy, "Is there no text, logo or sponsor board?"]
+    - [visual_quality, "Is the bat and grip natural?"]
+    - [prompt_adherence, "Is she the only player in focus?"]
+    - [prompt_adherence, "Does it read as an Indian stadium?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ADS-06
+  title: "Sofa campaign: the sofa on the right third, long window light across an empty floor"
+  persona: "Furniture brand's art director pitching a minimalist campaign frame."
+  evidence: "Furniture shots default to centred; negative space for copy is required."
+  levers: [off-centre, light-lock, layout, exclude]
+  prompt: |
+    A furniture campaign photo, 16:9. A large white plastered room with a pale concrete floor. A low
+    three-seat sofa in deep blue velvet sits on the right third against the back wall. A tall window
+    out of frame on the left throws one long golden rectangle of late-afternoon light across the
+    empty floor towards the sofa, its far end just touching the sofa's front leg. Nothing else in the
+    room except one small ceramic vase on the floor beside the sofa. The left two-thirds is empty
+    wall and floor. No text, no people.
+  deliverable: "One image, 16:9."
+  checks:
+    - [composition, "Is the sofa on the right third?"]
+    - [composition, "Is the left two-thirds empty wall and floor?"]
+    - [prompt_adherence, "Is there one long golden light rectangle from the left?"]
+    - [physics_plausibility, "Does the light's far end just touch the sofa's front leg?"]
+    - [prompt_adherence, "Is the sofa deep blue velvet, three-seat, low?"]
+    - [prompt_adherence, "Is there only one vase besides the sofa?"]
+    - [style, "Is the plaster and concrete texture natural?"]
+    - [prompt_adherence, "Are verticals straight?"]
+    - [prompt_adherence, "Are there no people or text?"]
+    - [visual_quality, "Is the velvet sheen natural?"]
+    - [prompt_adherence, "Is it late-afternoon warm light?"]
+    - [prompt_adherence, "Is the window out of frame on the left?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-ADS-07
+  title: "Recompose the centred ghee key visual: jar to the right third, headline to the open left"
+  persona: "Studio artist adapting a key visual for a wide outdoor format."
+  evidence: "Sahil: models centre-frame everything; this recomposes a finished centred layout."
+  levers: [off-centre, keep-rest, exact-text, script, layout]
+  inputs: [{source: SRC-ADS-KEYVISUAL, role: source}]
+  prompt: |
+    This Diwali key visual for Saanjh Ghee has the jar dead centre with seven diyas in front, the
+    Devanagari headline "इस दिवाली, घर की ख़ुशबू" and "Pure cow ghee since 1962" across the top, and
+    the "₹349" starburst bottom right. Recompose it as a 3:1 wide banner: the jar and diyas move to
+    the right third; the headline and the English line move to the open left half, set on two lines,
+    left-aligned; the starburst sits at the far right below the jar. Extend the maroon background
+    and bokeh to fill the new width. The jar, label, diyas, text and colours are unchanged.
+  exact_text: ["इस दिवाली, घर की ख़ुशबू", "Pure cow ghee since 1962", "₹349"]
+  deliverable: "One image, 3:1."
+  checks:
+    - [composition, "Is the jar on the right third?"]
+    - [composition, "Is the headline on the open left half, left-aligned?"]
+    - [composition, "Is the frame 3:1?"]
+    - [text_accuracy, "Is the Devanagari headline exact?"]
+    - [text_accuracy, "Is the English line exact?"]
+    - [text_accuracy, "Is the price ₹349 at the far right?"]
+    - [preservation, "Is the jar and label unchanged?"]
+    - [preservation, "Are there still seven diyas?"]
+    - [prompt_adherence, "Is the maroon background extended seamlessly?"]
+    - [preservation, "Is the diya warmth on the jar unchanged?"]
+    - [visual_quality, "Is there no seam or stretched area?"]
+    - [text_accuracy, "Is there no other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit; output size 3:1 may need the closest supported size."}
+  video_followon: ""

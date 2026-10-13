@@ -1,0 +1,209 @@
+# Story beats — E-commerce, D2C & retail scenarios. Slots: vbts.yaml.
+code: VBTS
+scenarios:
+
+- id: VBTS-ECM-02
+  seed: true
+  title: "Three timed beats: turmeric jar opened, a spoonful into hot milk, the milk turning gold"
+  persona: "D2C spice brand's content lead making a 9-second recipe reel for regional marketplaces."
+  evidence: "Recipe reels are cut to the second; the Tamil label must survive close handling, and the colour change must happen on cue."
+  levers: [set, timing, exact-text, script, physics, locale]
+  inputs:
+    - {source: SRC-ECM-SPICE-JARS, role: product, note: "the three jars; the turmeric jar is used"}
+  prompt: |
+    A 9-second recipe reel in three beats that run on from each other, in a sunny Madurai kitchen,
+    using the turmeric jar from these three spice jars (black lid, kraft label reading "மஞ்சள்" over
+    "TURMERIC", "Aadi" at the top, "100 g" at the bottom, bright yellow powder inside). The other two jars
+    stand behind it, labels facing out, soft. The jar's label stays exact and readable whenever it faces
+    the camera. A steel saucepan of milk steams on a gas stove at frame right.
+  exact_text: ["மஞ்சள்", "TURMERIC"]
+  clip: {duration: 9, aspect: "9:16", camera: "close, locked off per beat"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The turmeric jar and its Tamil and English label"
+      - "The kitchen, the stove and the saucepan"
+      - "Morning light from the left"
+    members:
+      - {name: "Beat 1 · 0–3 s · Jar opened", prompt: "Close on the jar, label to camera; a hand twists the black lid off and sets it down at 2 s.", checks: [[text_accuracy, "Is the label exact while the jar is handled?"], [prompt_adherence, "Is the lid set down at about 2 s?"]]}
+      - {name: "Beat 2 · 3–6 s · Into the milk", prompt: "A steel teaspoon of turmeric is tipped into the steaming milk at 4 s; the powder floats, then starts to sink.", checks: [[prompt_adherence, "Does the turmeric go in at about 4 s?"], [physics_plausibility, "Does the powder float and then start to sink?"]]}
+      - {name: "Beat 3 · 6–9 s · Gold", prompt: "A spoon stirs twice; the milk turns an even golden yellow by 8 s; steam keeps rising.", checks: [[prompt_adherence, "Is the milk evenly gold by about 8 s?"], [physics_plausibility, "Does the colour spread with the stirring, not all at once?"]]}
+  deliverable: "One 9-second vertical sequence in three chained beats."
+  checks:
+    - [prompt_adherence, "Do the beats land at 0–3, 3–6 and 6–9 s?"]
+    - [text_accuracy, "Is மஞ்சள் correctly formed whenever the label faces camera?"]
+    - [text_accuracy, "Is TURMERIC exact?"]
+    - [temporal_consistency, "Does the label stay stable with no swimming or re-spelling?"]
+    - [set_consistency, "Is the jar the same throughout, with the other two behind it?"]
+    - [physics_plausibility, "Does the milk keep steaming?"]
+    - [physics_plausibility, "Does the powder behave like powder on milk?"]
+    - [set_consistency, "Do the beats run on with no jumps in the kitchen or saucepan?"]
+    - [prompt_adherence, "Is the light from the left throughout?"]
+    - [visual_quality, "Are hands natural?"]
+    - [prompt_adherence, "Does it read as a South Indian kitchen?"]
+    - [composition, "Is it a true vertical 9:16?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Each beat runs from the jar photo as a product reference; chaining from the previous beat's last frame is not in the runner."}
+
+- id: VBTS-ECM-01
+  title: "Three beats: the jacket on a hanger, a model puts it on, she walks out of a café; marigold and fray hold"
+  persona: "Denim D2C brand's content lead making a product reel from the flat-lay."
+  evidence: "Small product marks (embroidery on one pocket, a fray on one cuff) swap sides in motion."
+  levers: [set, identity, layout, continuity, locale, unseen]
+  inputs: [{source: SRC-ECM-JACKET-FLAT, role: product}]
+  prompt: |
+    The image is the real jacket: mid-blue stone-washed denim, trucker cut, two chest pockets with pointed
+    flaps, copper buttons, a yellow marigold embroidered on the LEFT chest pocket flap, and a small frayed
+    patch on the RIGHT cuff. Make three chained clips in a Bengaluru café, each starting on the last frame
+    of the one before, 4 + 4 + 4 seconds. The model is a woman in her twenties with curly shoulder-length
+    hair, a white tee and black jeans. The back of the jacket, not in the photo, is plain denim with a
+    yoke. Daylight from the café windows. No text.
+  clip: {duration: 12, aspect: "9:16", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Marigold on the left chest pocket; fray on the right cuff"
+      - "Copper buttons and stone-wash"
+      - "The model's face and hair"
+    members:
+      - {name: "Beat 1 · Hanger (4 s)", prompt: "The jacket hangs on a wooden hanger on a hook by the café window; slow push in to the marigold.", checks: [[prompt_adherence, "Is the marigold on the left chest pocket?"], [prompt_adherence, "Is it a slow push in?"]]}
+      - {name: "Beat 2 · She puts it on (4 s)", prompt: "She lifts it off the hook and shrugs it on, flicking her hair out of the collar.", checks: [[physics_plausibility, "Does the denim move like stiff cotton?"], [prompt_adherence, "Is the fray on the right cuff?"]]}
+      - {name: "Beat 3 · She leaves (4 s)", prompt: "From behind as she walks out of the café door into the street, then she glances back.", checks: [[reference_fidelity, "Is the back plain denim with a yoke?"], [motion_coherence, "Is her walk natural?"]]}
+  deliverable: "Three chained clips of 4 seconds, 9:16."
+  checks:
+    - [prompt_adherence, "Is the marigold on the left chest pocket in every clip?"]
+    - [prompt_adherence, "Is the fray on the right cuff wherever visible?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is the jacket the same wash and cut throughout?"]
+    - [set_consistency, "Is the model the same in beats 2 and 3?"]
+    - [prompt_adherence, "Is it daylight from the windows throughout?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [physics_plausibility, "Does the denim move believably?"]
+    - [temporal_consistency, "Is there no morphing of the embroidery?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Are hands natural?"]
+    - [prompt_adherence, "Does it read as a Bengaluru café?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One product reference; chaining is not in the runner."}
+
+- id: VBTS-ECM-03
+  title: "Three beats: the elephant on a shelf, a toddler grabs it, it is tucked into bed; bell and patch stay"
+  persona: "Handmade-toy brand owner making a bedtime reel from the product photo."
+  evidence: "Soft toys lose small sewn details and change size once handled."
+  levers: [set, identity, layout, physics, continuity]
+  inputs: [{source: SRC-ECM-PLUSH, role: product}]
+  prompt: |
+    The image is the real knitted elephant: grey wool, black button eyes, trunk curled to its right, a
+    small mustard patch on its LEFT ear, a red ribbon collar with a tiny brass bell; about 25 cm tall.
+    Make three chained clips in a child's bedroom at dusk, warm lamp light, each starting on the last
+    frame of the one before, 4 + 4 + 4 seconds. A toddler of about two in striped pyjamas, then a parent's
+    hands. The elephant keeps its size against the shelf, the child and the pillow. The bell jingles
+    when it moves. No text.
+  clip: {duration: 12, aspect: "4:5", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Mustard patch on the left ear; bell on the red collar"
+      - "About 25 cm tall"
+      - "Warm lamp light"
+    members:
+      - {name: "Beat 1 · Shelf (4 s)", prompt: "The elephant sits on a low white shelf among books; the toddler's hand reaches up into frame.", checks: [[reference_fidelity, "Is the patch on the left ear?"], [motion_coherence, "Does the hand reach naturally?"]]}
+      - {name: "Beat 2 · Grab (4 s)", prompt: "The toddler pulls it down and hugs it, squashing the soft body; the bell swings.", checks: [[physics_plausibility, "Does the knitted body squash softly?"], [physics_plausibility, "Does the bell swing?"]]}
+      - {name: "Beat 3 · Tucked in (4 s)", prompt: "Top shot: the toddler asleep, a parent's hands tuck the elephant beside the pillow and pull up the blanket.", checks: [[set_consistency, "Is it the same size next to the pillow?"], [visual_quality, "Are the parent's hands natural?"]]}
+  deliverable: "Three chained clips of 4 seconds, 4:5."
+  checks:
+    - [set_consistency, "Is it the same elephant in all three?"]
+    - [prompt_adherence, "Is the patch on the left ear in every clip?"]
+    - [set_consistency, "Is the brass bell on the red collar throughout?"]
+    - [set_consistency, "Does it keep its size throughout?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is the toddler the same in all three?"]
+    - [prompt_adherence, "Is it warm lamp light throughout?"]
+    - [physics_plausibility, "Does the knit squash softly?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [motion_coherence, "Is the toddler's motion natural?"]
+    - [text_accuracy, "Is there no text?"]
+    - [visual_quality, "Is the knit texture stable?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One product reference; chaining is not in the runner."}
+
+- id: VBTS-ECM-04
+  title: "Three beats: the watch buzzes on the bench, she stands, she sets off on a walk; each cut joins"
+  persona: "Smartwatch brand's marketer making an ad for older buyers from the lifestyle photo."
+  evidence: "The watch must stay on the left wrist and the screen must stay readable as she moves."
+  levers: [set, identity, continuity, small-text, light-lock, locale]
+  inputs: [{source: SRC-ECM-WATCH-ELDER, role: first_frame}]
+  prompt: |
+    This is a woman of about sixty-eight on a stone bench in a Chennai park at early-morning golden hour:
+    grey braid, red bindi, lilac sari with a thin gold border, white sports shoes, a square black watch
+    with a sage-green strap on her LEFT wrist. Make three chained clips, each starting on the last frame of
+    the one before, 4 + 4 + 4 seconds. The watch stays on her left wrist throughout. The sun stays low
+    from frame right. The jogger in the background keeps running away. No text except the watch screen.
+  clip: {duration: 12, aspect: "3:2", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "Her face, braid, bindi, sari and shoes"
+      - "The watch on her left wrist, sage-green strap"
+      - "Low sun from frame right"
+    members:
+      - {name: "Beat 1 · Buzz (4 s)", prompt: "Close on her left wrist: the watch buzzes and its screen lights with a walking-figure icon; she smiles.", checks: [[reference_fidelity, "Is the watch on her left wrist?"], [motion_coherence, "Does the screen light up?"]]}
+      - {name: "Beat 2 · She stands (4 s)", prompt: "Medium: she stands up from the bench, adjusts the sari's end on her shoulder.", checks: [[motion_coherence, "Does she stand naturally for her age?"], [reference_fidelity, "Is the sari lilac with a gold border?"]]}
+      - {name: "Beat 3 · Walk (4 s)", prompt: "Wide, tracking alongside: she walks briskly along the path, arms swinging.", checks: [[motion_coherence, "Is her walk brisk and natural?"], [set_consistency, "Is the watch still on her left wrist?"]]}
+  deliverable: "Three chained clips of 4 seconds, 3:2."
+  checks:
+    - [set_consistency, "Is it the same woman in all three?"]
+    - [set_consistency, "Is the watch on her left wrist in every clip?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [prompt_adherence, "Is the sun low from frame right throughout?"]
+    - [motion_coherence, "Are her movements natural for her age?"]
+    - [reference_fidelity, "Is the strap sage-green?"]
+    - [prompt_adherence, "Do the clips last about 4 seconds each?"]
+    - [prompt_adherence, "Are the shots close, medium, wide tracking in that order?"]
+    - [prompt_adherence, "Does it read as a Chennai park in the morning?"]
+    - [text_accuracy, "Is there no text except the watch screen?"]
+    - [visual_quality, "Are her hands natural?"]
+    - [prompt_adherence, "Is the jogger far in the background, running away?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "Clip 1 runs from the photo; chaining is not in the runner."}
+
+- id: VBTS-ECM-05
+  title: "Three dawn beats: the tea tin opened, leaves into the kettle, tea poured as sunlight reaches the table"
+  persona: "Tea D2C founder making a morning-ritual reel from the tin packshot."
+  evidence: "A light change across cuts (sun reaching the table) must progress, not reset each clip."
+  levers: [set, light-lock, identity, physics, timing, locale]
+  inputs: [{source: SRC-ECM-TEA-TIN, role: product}]
+  prompt: |
+    The image is the real tea tin: glossy emerald green, gold lid, an embossed gold teacup logo ringed by
+    small capitals, the weight below in gold. Make three chained clips on a wooden kitchen table in Assam
+    at dawn, each starting on the last frame of the one before, 4 + 4 + 5 seconds. The sun rises through
+    the window behind: in beat 1 the table is in blue shade; in beat 2 a thin line of sun creeps on to its
+    far edge; in beat 3 the sunlight reaches the cups as the tea is poured. The light only grows. No text
+    other than the tin.
+  clip: {duration: 13, aspect: "4:5", camera: "per beat as described"}
+  set_members:
+    mode: chained
+    must_stay_same:
+      - "The tin's colour, gold lid and emboss"
+      - "The table, window and kettle"
+      - "Sunlight only growing across the three"
+    members:
+      - {name: "Beat 1 · Tin (4 s)", prompt: "Close: hands twist the gold lid off the tin in blue dawn shade; dark leaves show.", checks: [[prompt_adherence, "Is the table in blue shade?"], [reference_fidelity, "Is it the real tin?"]]}
+      - {name: "Beat 2 · Kettle (4 s)", prompt: "A spoon of leaves drops into a steel kettle of boiling water; steam rises; a thin line of sun creeps on to the far edge of the table.", checks: [[physics_plausibility, "Do the leaves swirl in the boiling water?"], [prompt_adherence, "Does a line of sun reach the far edge?"]]}
+      - {name: "Beat 3 · Pour (5 s)", prompt: "Tea is poured from the kettle into two glass cups; the sunlight reaches the cups and the tea glows amber.", checks: [[prompt_adherence, "Does the sunlight reach the cups?"], [physics_plausibility, "Is the pour natural?"]]}
+  deliverable: "Three chained clips, 4, 4 and 5 seconds, 4:5."
+  checks:
+    - [prompt_adherence, "Does the sunlight only grow across the three clips?"]
+    - [set_consistency, "Does each clip start where the previous one ended?"]
+    - [set_consistency, "Is the tin the same in every clip?"]
+    - [physics_plausibility, "Are the steam and pour believable?"]
+    - [prompt_adherence, "Is the window behind the table throughout?"]
+    - [prompt_adherence, "Do the clips last about 4, 4 and 5 seconds?"]
+    - [motion_coherence, "Are the hands natural?"]
+    - [prompt_adherence, "Are the shots close, medium, medium in that order?"]
+    - [prompt_adherence, "Does it read as dawn in Assam?"]
+    - [text_accuracy, "Is there no text other than the tin?"]
+    - [visual_quality, "Is the emboss stable?"]
+    - [style, "Is the grade consistent apart from the light change?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: partly, note: "One product reference; chaining is not in the runner."}

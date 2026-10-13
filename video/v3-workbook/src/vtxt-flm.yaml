@@ -1,0 +1,35 @@
+# Text in motion — Film, OTT & micro-drama scenarios. Slots: vtxt.yaml.
+code: VTXT
+scenarios:
+
+- id: VTXT-FLM-01
+  title: "Rename the station on the moving board in three scripts; the new text sticks to the board through the dolly"
+  persona: "VFX editor on a period series renaming a real station to the story's fictional one."
+  evidence: "Replaced text on a board passing a moving camera must track its perspective in all three scripts."
+  levers: [exact-text, script, keep-rest, timing, physics]
+  inputs: [{source: SRC-VCLIP-STATION-SIGN, role: source}]
+  prompt: |
+    In this 6-second dolly along a hill-railway platform at dusk, a yellow station name board passes from
+    frame right to frame left between 1 and 5 seconds. Its three black lines name the station in Devanagari,
+    English and Telugu. Rename it on every frame: top line "पर्वतपुर", middle line "PARVATPUR", bottom line
+    "పర్వతపూర్", in the same black sign-painter lettering, same sizes and spacing, centred. The new text is
+    painted on the board: it follows the board's perspective as it passes, takes the warm platform light and
+    the light mist, and never slides. The posts, the train passing at 3 seconds and the dolly are unchanged.
+  exact_text: ["पर्वतपुर", "PARVATPUR", "పర్వతపూర్"]
+  clip: {duration: 6, aspect: "16:9", camera: "unchanged dolly left"}
+  deliverable: "One 6-second clip at the source's size and frame rate."
+  checks:
+    - [text_accuracy, "Does the top line read पर्वतपुर in correct Devanagari?"]
+    - [text_accuracy, "Does the middle line read PARVATPUR?"]
+    - [text_accuracy, "Does the bottom line read పర్వతపూర్ in correct Telugu?"]
+    - [prompt_adherence, "Are the three lines centred with the same sizes and spacing?"]
+    - [physics_plausibility, "Does the text follow the board's perspective as it passes?"]
+    - [temporal_consistency, "Does the text never slide or flicker?"]
+    - [prompt_adherence, "Does the text take the platform light and mist?"]
+    - [text_accuracy, "Is no old text left?"]
+    - [preservation, "Does the train still pass at 3 seconds?"]
+    - [preservation, "Are the board, posts and platform unchanged?"]
+    - [preservation, "Is the dolly unchanged?"]
+    - [visual_quality, "Are the letters crisp?"]
+  competitor: "Seedance 2.5"
+  runnable_today: {status: "yes", note: "One video edit with the source clip."}

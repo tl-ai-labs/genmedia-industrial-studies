@@ -1,0 +1,64 @@
+# Family 5 — Composition and cinematic aesthetic (header). Scenarios: cmp-*.yaml.
+
+family: Composition and aesthetic
+code: CMP
+number: 5
+about: "Framing, scale, horizon, negative space and texture against the default centred, clean look. Compared with a composition-led tool."
+outputs: "1"
+
+rubric:
+  weights: {composition: 4, prompt_adherence: 3, style: 2, physics_plausibility: 1, visual_quality: 1, preservation: 1, text_accuracy: 1, reference_fidelity: 1}
+  gate: [composition]
+  gate_rule: "The framing must be the one described, not the default centred look."
+
+targets:
+  centre-bias: "The subject lands dead centre when the brief places it elsewhere"
+  horizon: "The horizon is not where, or at the tilt, the brief asks"
+  negative-space: "Not enough empty space where the brief asks for it"
+  scale-small: "The subject is larger in frame than asked"
+  lens-look: "The perspective does not match the named lens"
+  texture-flat: "Clean, plastic surfaces instead of the asked-for texture, grain and atmosphere"
+  crop-edge: "The subject is not cut by the frame edge as asked"
+
+slots:
+  # Film, OTT & micro-drama — 10 (9 t2i, 1 edit · 6 hard, 4 extreme)
+  - {id: CMP-FLM-01, task: t2i, subject: landscape, style: cinematic, light: golden, locale: global, diff: extreme, target: centre-bias, sources: [], idea: "Sahil's composition test: lone rider at sunset with a walker far behind, small and off-centre"}
+  - {id: CMP-FLM-02, task: t2i, subject: group, style: cinematic, light: neon, locale: IN, diff: hard, target: texture-flat, sources: [], idea: "Dance floor in a Mumbai club, lead dancer off-centre, crowd and haze with real grain"}
+  - {id: CMP-FLM-03, task: t2i, subject: child-elderly, style: cinematic, light: golden, locale: global, diff: hard, target: negative-space, sources: [], idea: "Parent with a child on the shoulders facing the sea, lower right, two-thirds sky"}
+  - {id: CMP-FLM-04, task: t2i, subject: person, style: cinematic, light: daylight, locale: global, diff: extreme, target: lens-look, sources: [], idea: "Longboarder on a mountain road at 16 mm from the asphalt, crossing frame left"}
+  - {id: CMP-FLM-05, task: t2i, subject: architecture, style: cinematic, light: fog-rain, locale: IN, diff: hard, target: scale-small, sources: [], idea: "A tiny figure at the bottom of a huge stepwell in the rain, under five percent of frame height"}
+  - {id: CMP-FLM-06, task: t2i, subject: person, style: cinematic, light: practical, locale: IN, diff: hard, target: crop-edge, sources: [], idea: "A woman cut by the left frame edge in a doorway, dirty foreground, frame within a frame"}
+  - {id: CMP-FLM-07, task: t2i, subject: vehicle, style: cinematic, light: night, locale: IN, diff: extreme, target: horizon, sources: [], idea: "An autorickshaw on an empty wet street, 15-degree Dutch tilt, in the lower third"}
+  - {id: CMP-FLM-08, task: t2i, subject: landscape, style: cinematic, light: noon, locale: IN, diff: hard, target: horizon, sources: [], idea: "Ladakh plateau at harsh noon with the horizon in the top tenth of the frame"}
+  - {id: CMP-FLM-09, task: t2i, subject: animal, style: illustration, light: daylight, locale: IN, diff: extreme, target: centre-bias, sources: [], idea: "Painted matte: an elephant herd crossing at the far right edge under 80 percent sky"}
+  - {id: CMP-FLM-10, task: edit, subject: person, style: cinematic, light: daylight, locale: global, diff: hard, target: centre-bias, sources: [SRC-CROSSWALK], idea: "Recompose the centred crosswalk photo: man on the left third, more of the accident on the right"}
+  # Advertising & agencies — 7 (6 t2i, 1 edit · 4 hard, 3 extreme)
+  - {id: CMP-ADS-01, task: t2i, subject: product, style: photoreal, light: golden, locale: global, diff: extreme, target: texture-flat, sources: [], idea: "Skincare still life among dried botanicals on rough stone, rich texture, off-centre (Sahil's 227 pair)"}
+  - {id: CMP-ADS-02, task: t2i, subject: fashion, style: cinematic, light: neon, locale: IN, diff: hard, target: crop-edge, sources: [], idea: "Streetwear ad in a Mumbai lane at night; the model cut by the right frame edge"}
+  - {id: CMP-ADS-03, task: t2i, subject: food, style: photoreal, light: daylight, locale: IN, diff: hard, target: negative-space, sources: [], idea: "Top-down filter coffee with 70 percent clean copy space on the left for a headline"}
+  - {id: CMP-ADS-04, task: t2i, subject: vehicle, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: scale-small, sources: [], idea: "The SUV under four percent of the frame on a ghat hairpin in cloud"}
+  - {id: CMP-ADS-05, task: t2i, subject: person, style: cinematic, light: noon, locale: IN, diff: hard, target: lens-look, sources: [], idea: "A cricketer at 600 mm with the stadium crowd stacked and compressed behind"}
+  - {id: CMP-ADS-06, task: t2i, subject: interior, style: photoreal, light: golden, locale: global, diff: hard, target: centre-bias, sources: [], idea: "Sofa campaign: the sofa on the right third, long window light across an empty floor"}
+  - {id: CMP-ADS-07, task: edit, subject: food, style: graphic, light: practical, locale: IN, diff: extreme, target: centre-bias, sources: [SRC-ADS-KEYVISUAL], script: mixed, idea: "Recompose the centred ghee key visual: jar to the right third, headline moved to the open left"}
+  # E-commerce, D2C & retail — 6 (5 t2i, 1 edit · 4 hard, 2 extreme)
+  - {id: CMP-ECM-01, task: t2i, subject: product, style: photoreal, light: golden, locale: global, diff: hard, target: negative-space, sources: [], idea: "A 21:9 site banner: a watch on river stone in the lower right, the top 60 percent clean for text"}
+  - {id: CMP-ECM-02, task: t2i, subject: food, style: photoreal, light: daylight, locale: IN, diff: extreme, target: texture-flat, sources: [], idea: "Millet cookies on rough linen with crumbs and jaggery shards; texture you could touch"}
+  - {id: CMP-ECM-03, task: t2i, subject: fashion, style: photoreal, light: noon, locale: IN, diff: hard, target: lens-look, sources: [], idea: "Saree campaign at Hampi at 24 mm from knee height; boulders loom, model small but dominant"}
+  - {id: CMP-ECM-04, task: t2i, subject: interior, style: photoreal, light: daylight, locale: global, diff: hard, target: scale-small, sources: [], idea: "A single reading chair tiny in a vast white loft, under a tenth of frame height"}
+  - {id: CMP-ECM-05, task: t2i, subject: child-elderly, style: cinematic, light: fog-rain, locale: IN, diff: extreme, target: centre-bias, sources: [], idea: "Top-down: a child in a yellow raincoat in the lower-left third among a crowd of black umbrellas"}
+  - {id: CMP-ECM-06, task: edit, subject: product, style: photoreal, light: practical, locale: global, diff: hard, target: crop-edge, sources: [SRC-ECM-SERUM], script: latin, idea: "Recompose the centred serum packshot into a banner crop: the bottle cut by the right edge, dropper out of frame"}
+  # Gaming — 3 (3 t2i · 2 hard, 1 extreme)
+  - {id: CMP-GAM-01, task: t2i, subject: landscape, style: illustration, light: golden, locale: global, diff: extreme, target: scale-small, sources: [], idea: "Key art: a tiny hero before a colossal stone titan rising from a valley"}
+  - {id: CMP-GAM-02, task: t2i, subject: architecture, style: 3d, light: fog-rain, locale: IN, diff: hard, target: horizon, sources: [], idea: "Looking down a cliff city in the monsoon with the horizon in the top 15 percent"}
+  - {id: CMP-GAM-03, task: t2i, subject: stylised, style: graphic, light: neon, locale: global, diff: hard, target: negative-space, sources: [], idea: "Store banner art with the hero on the right and the left 55 percent clean for text"}
+  # Real estate, interiors & architecture — 3 (2 t2i, 1 edit · 2 hard, 1 extreme)
+  - {id: CMP-RES-01, task: t2i, subject: architecture, style: photoreal, light: golden, locale: IN, diff: extreme, target: centre-bias, sources: [], idea: "Villa hero shot: the house on the right third, a laterite path as a leading line, straight verticals"}
+  - {id: CMP-RES-02, task: t2i, subject: landscape, style: photoreal, light: fog-rain, locale: IN, diff: hard, target: negative-space, sources: [], idea: "A hill-station plot in mist with 70 percent of the frame given to fog"}
+  - {id: CMP-RES-03, task: edit, subject: interior, style: photoreal, light: practical, locale: global, diff: hard, target: crop-edge, sources: [SRC-RES-HOTEL-LOBBY], idea: "Recompose the centred lobby photo into a 4:5 with the chandelier cut by the top edge"}
+  # Media, publishing & events — 6 (5 t2i, 1 edit · 3 hard, 3 extreme)
+  - {id: CMP-MED-01, task: t2i, subject: person, style: photoreal, light: golden, locale: IN, diff: extreme, target: centre-bias, sources: [], idea: "Double-page editorial portrait: the violinist on the right page's outer third, nothing important in the gutter"}
+  - {id: CMP-MED-02, task: t2i, subject: group, style: cinematic, light: night, locale: IN, diff: hard, target: scale-small, sources: [], idea: "Photojournalism: a vast concert crowd with the performer tiny on a huge stage"}
+  - {id: CMP-MED-03, task: t2i, subject: animal, style: photoreal, light: daylight, locale: IN, diff: extreme, target: negative-space, sources: [], idea: "Wildlife-magazine opener: a tiger at the bottom edge of a wall of tall grass, 80 percent grass"}
+  - {id: CMP-MED-04, task: t2i, subject: architecture, style: photoreal, light: noon, locale: global, diff: hard, target: lens-look, sources: [], idea: "Architecture feature at 17 mm tilt-shift: straight verticals, deep foreground paving"}
+  - {id: CMP-MED-05, task: t2i, subject: food, style: photoreal, light: practical, locale: IN, diff: extreme, target: crop-edge, sources: [], idea: "Food-magazine overhead spread with dishes cut by all four frame edges"}
+  - {id: CMP-MED-06, task: edit, subject: landscape, style: photoreal, light: fog-rain, locale: IN, diff: hard, target: horizon, sources: [SRC-MED-TRAVEL-PHOTO], idea: "Fix the reader's travel photo: level the tilt, drop the horizon to the lower fifth, temple off-centre"}

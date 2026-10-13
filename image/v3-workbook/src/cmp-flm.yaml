@@ -1,0 +1,325 @@
+# Composition and aesthetic — Film, OTT & micro-drama scenarios. Slots: cmp.yaml.
+code: CMP
+scenarios:
+
+- id: CMP-FLM-01
+  seed: true
+  sahil: composition
+  title: "Lone rider at sunset, small and off-centre, with a walker far behind"
+  persona: "Cinematographer pitching the look of a western-style Indian period film, comparing tools for mood frames before the recce."
+  evidence: "Sahil's screen-share, 'Texture / aesthetic' (screenshots 223–225): the same rider-at-sunset prompt in two tools. Call at 23:45: customers compare against a composition-led tool, 'Gemini models tend to center-frame everything, which they don't want'. Four more pairs in the same section (226–231) make the same point."
+  levers: [off-centre, camera, light-lock, layout, exclude, long-brief]
+  prompt: |
+    A widescreen 2.39:1 film frame at sunset on open grassland with low hills. A lone rider on a
+    horse stands still on a gentle rise, seen in full side profile facing frame right, as a near
+    silhouette with a thin warm rim of light along the horse's back and the rider's hat. Place the
+    rider on the left third of the frame: the horse's body sits between a quarter and two-fifths
+    of the way across from the left edge, and horse and rider together are only about an eighth
+    of the frame's height. Far behind and to the right, at about four-fifths of the way across,
+    a second person walks on foot towards the rider, tiny, less than half the rider's height,
+    soft with distance. The sun sits low in the upper right third, partly veiled by dust haze,
+    not centred and not behind the rider. The horizon of the hills runs along the lower third of
+    the frame, not through the middle. The bottom edge is filled with tall out-of-focus grass
+    stems catching the light. Three layers of hills fade into warm haze behind each other. The
+    look is shot on film: visible grain, gentle halation around the brightest edges, rich warm
+    shadows that are not crushed to black, no digital sharpening. Leave the right half of the
+    sky mostly empty. No lens-flare rings, no birds, no fences, no buildings, no text.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [composition, "Is the horse's body between a quarter and two-fifths of the way across from the left edge?"]
+    - [composition, "Are horse and rider together about an eighth of the frame height, clearly small?"]
+    - [composition, "Is the rider facing frame right, into the open space?"]
+    - [composition, "Does the horizon of the hills sit in the lower third, not through the middle?"]
+    - [composition, "Is the sun in the upper right third and not behind the rider?"]
+    - [composition, "Is the right half of the sky mostly empty?"]
+    - [prompt_adherence, "Is there a second person on foot at about four-fifths of the way across, far behind?"]
+    - [physics_plausibility, "Is the walker less than half the rider's height, consistent with distance?"]
+    - [prompt_adherence, "Is the frame a true 2.39:1 widescreen?"]
+    - [prompt_adherence, "Is there a thin warm rim light along the horse's back and the rider's hat, from the sun's side?"]
+    - [prompt_adherence, "Is the sun veiled by dust haze rather than a hard disc?"]
+    - [physics_plausibility, "Do three distinct hill layers fade into haze with distance?"]
+    - [style, "Is there visible film grain and soft halation on the brightest edges?"]
+    - [style, "Are the shadows warm and readable rather than crushed black or plastic-smooth?"]
+    - [composition, "Is the bottom edge filled with out-of-focus grass stems?"]
+    - [prompt_adherence, "Is there no lens-flare ring, bird, fence, building or text?"]
+    - [visual_quality, "Does the horse have correct anatomy: four legs, one head, natural proportions?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Midjourney arm is not wired today; compare against the existing arms until it is."}
+  video_followon: "V8: the same frame as a slow push-in with the composition held."
+
+- id: CMP-FLM-02
+  title: "Dance floor in a Mumbai club: lead dancer off-centre, haze and real grain"
+  persona: "Cinematographer on a nightlife OTT series building mood frames."
+  evidence: "Sahil's screen-share (screenshot 226): a club dancer prompt where the other tool's frame had more texture and atmosphere."
+  levers: [off-centre, light-lock, physics, locale, exclude]
+  prompt: |
+    A film still of a crowded dance floor in a Mumbai club at 1 a.m., 2.39:1. The lead dancer, a
+    woman in her twenties with curly hair and a sequinned black top, is caught mid-move with both
+    arms up, placed on the right third, her face turned towards frame left. Around and in front of
+    her, the crowd is soft and partly cut by the frame, some hands blurring through the foreground.
+    A mirror ball hangs at the upper left, throwing small specks of light across faces and haze.
+    Magenta and cyan beams cut through thick haze from behind. The look is shot on fast film: heavy
+    grain, halation round the brightest lights, skin with real texture and sweat sheen, motion blur
+    on hands, deep blacks that are not crushed. No logos, no text, no lens flare rings.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [composition, "Is the lead dancer on the right third, not centred?"]
+    - [composition, "Is her face turned towards frame left, into the space?"]
+    - [composition, "Is the crowd partly cut by the frame edges?"]
+    - [composition, "Are there blurred hands in the foreground?"]
+    - [prompt_adherence, "Is the mirror ball at the upper left?"]
+    - [physics_plausibility, "Do mirror-ball specks fall on faces and haze?"]
+    - [prompt_adherence, "Do magenta and cyan beams cut through haze from behind?"]
+    - [style, "Is there heavy grain and halation?"]
+    - [style, "Does skin show real texture and sweat sheen rather than plastic smoothness?"]
+    - [physics_plausibility, "Is there motion blur on moving hands?"]
+    - [prompt_adherence, "Are there no logos, text or flare rings?"]
+    - [visual_quality, "Are faces and hands free of artefacts?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call. A Midjourney arm is not wired today."}
+  video_followon: ""
+
+- id: CMP-FLM-03
+  title: "Parent with a child on the shoulders facing the sea: lower right, two-thirds sky"
+  persona: "Director of photography on a family drama making a poster-frame option."
+  evidence: "Sahil's screen-share (screenshots 228–229): the parent-and-child-by-the-sea pair; the other tool's frame used the sky better."
+  levers: [off-centre, light-lock, layout, exclude]
+  prompt: |
+    A film still at sunset on a rocky Konkan beach, 16:9. A father seen from behind carries his
+    small daughter on his shoulders; she spreads her arms wide. They stand at the water's edge in the
+    lower right of the frame, their combined height about a quarter of the frame. The horizon sits
+    low, on the lower third; the upper two-thirds are a dramatic sky of broken clouds lit orange and
+    violet with sun rays fanning from behind a cloud on the left. Small waves wash round his ankles.
+    The left half of the frame is open sea and sky. Backlit silhouettes with a thin warm rim. Fine
+    grain, natural colour. No other people, no text, no birds.
+  deliverable: "One image, 16:9."
+  checks:
+    - [composition, "Are the father and daughter in the lower right?"]
+    - [composition, "Is their combined height about a quarter of the frame?"]
+    - [composition, "Is the horizon on the lower third?"]
+    - [composition, "Does the sky fill about the upper two-thirds?"]
+    - [composition, "Is the left half open sea and sky?"]
+    - [prompt_adherence, "Is the father seen from behind with the girl's arms spread?"]
+    - [prompt_adherence, "Are sun rays fanning from behind a cloud on the left?"]
+    - [prompt_adherence, "Are the figures backlit with a thin warm rim?"]
+    - [physics_plausibility, "Are waves washing round his ankles?"]
+    - [style, "Is the sky rich and textured rather than flat?"]
+    - [prompt_adherence, "Are there no other people, birds or text?"]
+    - [visual_quality, "Is the anatomy of both figures right?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-04
+  title: "Longboarder on a mountain road at 16 mm from the asphalt, crossing frame left"
+  persona: "Action DP pitching the look of a sports film."
+  evidence: "Sahil's screen-share (screenshot 230): the longboarder pair; lens character and dynamism differed."
+  levers: [camera, off-centre, physics, light-lock, exclude]
+  prompt: |
+    A film still on a winding mountain road in Himachal under a stormy sky with sun breaking through,
+    16:9. Shot on a 16 mm lens with the camera ten centimetres above the asphalt. A young man in a
+    maroon hoodie and jeans crouches low on a longboard, carving left; he is in the left third and
+    fills about half the frame's height because he is close. The wide lens shows: the road surface
+    texture huge in the foreground, the board's front wheels large, the road curving away fast behind
+    him, the mountains small and far, strong converging lines. Motion blur on the road edges. Sun
+    from frame left, rim on his hood. No text, no logos.
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Does the perspective read as a very wide lens close to the ground?"]
+    - [prompt_adherence, "Is the road texture large in the foreground?"]
+    - [prompt_adherence, "Are the board's front wheels exaggerated in size?"]
+    - [composition, "Is he in the left third, not centred?"]
+    - [composition, "Does he fill about half the frame height?"]
+    - [physics_plausibility, "Does the road curve away behind him with converging lines?"]
+    - [physics_plausibility, "Is there motion blur on the road edges?"]
+    - [prompt_adherence, "Is the sun from the left with a rim on his hood?"]
+    - [prompt_adherence, "Is the sky stormy with sun breaking through?"]
+    - [prompt_adherence, "Is he carving left in a low crouch?"]
+    - [prompt_adherence, "Are there no logos or text?"]
+    - [visual_quality, "Is his anatomy right at this wide angle?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-05
+  title: "A tiny figure at the bottom of a huge stepwell in the rain"
+  persona: "Production designer pitching a stepwell location for a thriller's climax."
+  evidence: "Models enlarge subjects; a figure under five percent of frame height is the test."
+  levers: [off-centre, camera, physics, locale, exclude]
+  prompt: |
+    A film still from the top edge of a vast Rajasthani stepwell in monsoon rain, looking down, 3:2.
+    The stepwell's geometric flights of steps descend in a deep inverted pyramid of thousands of
+    criss-crossing steps, wet and dark, rain streaking through the frame. At the very bottom, by the
+    green water, a single figure in a white kurta stands looking up; he is tiny, under five percent
+    of the frame's height, placed in the lower-left third. The steps' pattern leads the eye down to
+    him. Grey flat light, deep wet stone colours, fine grain. No other people, no text.
+  deliverable: "One image, 3:2."
+  checks:
+    - [composition, "Is the figure under five percent of the frame height?"]
+    - [composition, "Is the figure in the lower-left third?"]
+    - [composition, "Do the steps lead the eye down to him?"]
+    - [prompt_adherence, "Is it shot from the top edge looking down?"]
+    - [physics_plausibility, "Does the stepwell's scale read as vast?"]
+    - [physics_plausibility, "Is rain streaking through the frame?"]
+    - [prompt_adherence, "Is the figure in a white kurta looking up?"]
+    - [prompt_adherence, "Is the light grey and flat?"]
+    - [prompt_adherence, "Is there green water at the bottom?"]
+    - [style, "Is the stone wet and textured?"]
+    - [prompt_adherence, "Are there no other people or text?"]
+    - [visual_quality, "Is the step geometry clean and consistent?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-06
+  title: "A woman cut by the left frame edge in a doorway, dirty foreground, frame within a frame"
+  persona: "DP on a psychological drama pitching an unsettling composition."
+  evidence: "Models avoid cropping subjects; deliberate edge-cropping is the test."
+  levers: [off-centre, layout, camera, light-lock, locale]
+  prompt: |
+    A film still inside an old Kolkata house at dusk, 2.39:1. We look through a dark corridor towards
+    a lit doorway in the middle distance; the doorway frames a room with a single bare bulb. A woman
+    in a white sari with a red border stands at the left edge of the frame in the foreground, so the
+    frame's edge cuts through her: only her right shoulder, the side of her face in profile and one
+    eye are visible. The out-of-focus wooden door jamb fills the right edge as a dirty foreground.
+    The lit doorway sits right of centre. Warm practical light ahead, cold blue dusk from an unseen
+    window behind. Fine grain. No text.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [composition, "Is the woman cut by the left frame edge, only part of her face visible?"]
+    - [composition, "Is the lit doorway right of centre, framing the room?"]
+    - [composition, "Is an out-of-focus door jamb filling the right edge?"]
+    - [prompt_adherence, "Is there a clear foreground, middle and background?"]
+    - [prompt_adherence, "Is she in a white sari with a red border?"]
+    - [prompt_adherence, "Is there a single bare bulb in the room ahead?"]
+    - [prompt_adherence, "Is there cold blue light from behind mixing with the warm light ahead?"]
+    - [prompt_adherence, "Does it read as an old Kolkata house?"]
+    - [style, "Is there fine grain?"]
+    - [prompt_adherence, "Is she the only person?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Is her visible eye and profile clean?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-07
+  title: "An autorickshaw on an empty wet street, 15-degree Dutch tilt, in the lower third"
+  persona: "Music-video director pitching a stylised night look."
+  evidence: "A specified tilt angle (IMG-VIEW-48, Dutch angle at a numeric tilt) was medium tier; combining it with placement is harder."
+  levers: [camera, off-centre, light-lock, physics, locale]
+  prompt: |
+    A film still of an empty street in old Hyderabad at 3 a.m. after rain, 16:9. The whole frame is
+    tilted 15 degrees clockwise (a Dutch angle): building verticals lean right. A single
+    green-and-yellow autorickshaw is parked in the lower third, right of centre, its headlamp on.
+    Sodium streetlights cast orange pools on the wet road; one shop's blue tube light glows at the
+    far left. Long reflections stretch across the wet road. Charminar-style arches fade into mist at
+    the far end. Deep shadows, film grain. No people, no readable signs.
+  deliverable: "One image, 16:9."
+  checks:
+    - [prompt_adherence, "Is the frame tilted about 15 degrees clockwise?"]
+    - [prompt_adherence, "Do the verticals lean consistently to the right?"]
+    - [composition, "Is the autorickshaw in the lower third, right of centre?"]
+    - [prompt_adherence, "Is it a green-and-yellow autorickshaw with its headlamp on?"]
+    - [prompt_adherence, "Are there orange sodium pools and one blue tube at the far left?"]
+    - [physics_plausibility, "Do reflections stretch across the wet road from the lights?"]
+    - [prompt_adherence, "Do arches fade into mist at the far end?"]
+    - [style, "Is there grain with deep shadows?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [text_accuracy, "Are there no readable signs?"]
+    - [visual_quality, "Is the vehicle undistorted apart from the tilt?"]
+    - [prompt_adherence, "Does it read as old Hyderabad?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-08
+  title: "Ladakh plateau at harsh noon with the horizon in the top tenth"
+  persona: "Landscape DP pitching an unusual frame for a road film."
+  evidence: "Models default to horizons on the middle or a third; a top-tenth horizon is the test."
+  levers: [off-centre, camera, light-lock, exclude]
+  prompt: |
+    A film still of a high-altitude plateau in Ladakh at harsh noon, 2.39:1. The horizon, a thin line
+    of snow peaks, sits in the top tenth of the frame; the rest is the plateau's surface stretching
+    towards the camera: cracked pale earth, scattered stones, tyre tracks curving from the lower
+    left towards the peaks. A small white prayer-flag pole stands at the right edge, a third of the
+    way down. Hard overhead sun, almost no shadows, bleached colours, intense blue sky in the thin
+    strip above the peaks. Shot at 35 mm from standing height. No people, no vehicles, no text.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [composition, "Is the horizon in the top tenth of the frame?"]
+    - [composition, "Does the ground fill the rest of the frame?"]
+    - [composition, "Do tyre tracks curve from the lower left towards the peaks?"]
+    - [prompt_adherence, "Is the prayer-flag pole at the right edge, a third of the way down?"]
+    - [prompt_adherence, "Is the light harsh overhead with almost no shadows?"]
+    - [prompt_adherence, "Are colours bleached with a strip of intense blue sky?"]
+    - [style, "Is the cracked earth textured?"]
+    - [prompt_adherence, "Does the perspective read as 35 mm from standing height?"]
+    - [prompt_adherence, "Are there no people or vehicles?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [prompt_adherence, "Do the peaks read as Ladakh?"]
+    - [visual_quality, "Is the frame free of artefacts?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-09
+  title: "Painted matte: an elephant herd crossing at the far right edge under 80 percent sky"
+  persona: "Matte painter on an animated feature exploring a wide establishing shot."
+  evidence: "Sahil's main composition complaint (call at 23:45) applied to a painted style."
+  levers: [off-centre, camera, locale, exclude]
+  prompt: |
+    A painted matte for an animated feature, 2.39:1, in a soft gouache style. A herd of six elephants,
+    adults and two calves, walks in single file along a low grassy ridge at the far right edge of the
+    frame, the last calf partly cut off by the frame edge. They are small, together less than a fifth
+    of the frame's width. The ridge and the plain below take the bottom fifth; the sky takes the
+    remaining eighty percent: towering monsoon clouds in layers of grey, violet and gold, with one
+    break of pale blue in the upper left. Afternoon light from the left catches the cloud tops. No
+    people, no text.
+  deliverable: "One image, 2.39:1."
+  checks:
+    - [composition, "Is the herd at the far right edge, the last calf cut by the frame?"]
+    - [composition, "Is the herd less than a fifth of the frame's width?"]
+    - [composition, "Does the sky take about eighty percent of the frame?"]
+    - [prompt_adherence, "Are there six elephants, two of them calves?"]
+    - [prompt_adherence, "Are they in single file along the ridge?"]
+    - [prompt_adherence, "Is the light from the left catching cloud tops?"]
+    - [prompt_adherence, "Is there a break of blue in the upper left?"]
+    - [style, "Is it a soft gouache painting?"]
+    - [style, "Are the clouds layered in grey, violet and gold?"]
+    - [prompt_adherence, "Are there no people?"]
+    - [prompt_adherence, "Is there no text?"]
+    - [visual_quality, "Are the elephants' shapes right at small size?"]
+  competitor: "Midjourney"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
+
+- id: CMP-FLM-10
+  title: "Recompose the centred crosswalk photo: man on the left third, more accident on the right"
+  persona: "Editor reframing a still for a poster where the title sits over the accident side."
+  evidence: "Sahil's screen-share (screenshot 244) shows the man dead centre; the plan's edit example is recomposing a centred photo."
+  levers: [off-centre, keep-rest, identity, unseen, layout]
+  inputs: [{source: SRC-CROSSWALK, role: source}]
+  prompt: |
+    This photo has the man in the yellow shirt dead centre on the zebra crossing with a two-car
+    accident behind him. Recompose it as a wider 21:9 frame so the man stands on the left third and
+    the accident with the steaming sedan and the three arguing men sits on the right half, with more
+    of the street revealed beyond them on the right: a continuation of the same low shops and trees.
+    The man, the cars, the men and the light are unchanged; only the framing and the newly revealed
+    area change, and the new area must match the photo's light, focus and grain. No readable text.
+  deliverable: "One image, 21:9."
+  checks:
+    - [composition, "Is the man now on the left third?"]
+    - [composition, "Is the accident on the right half?"]
+    - [composition, "Is the frame 21:9?"]
+    - [reference_fidelity, "Is the man unchanged: face, shirt, headphones?"]
+    - [preservation, "Are the two cars and three men unchanged?"]
+    - [preservation, "Is the steam still rising from the sedan?"]
+    - [prompt_adherence, "Does the newly revealed area continue the same shops and trees?"]
+    - [prompt_adherence, "Does the new area match the photo's light direction?"]
+    - [style, "Does the new area match focus and grain?"]
+    - [visual_quality, "Is there no seam between original and new areas?"]
+    - [text_accuracy, "Is there no readable text?"]
+    - [prompt_adherence, "Are there no new people in focus?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input; output size 21:9."}
+  video_followon: ""

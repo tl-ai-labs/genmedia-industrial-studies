@@ -1,0 +1,1723 @@
+# Image v3 — sources: every input image the bank needs, with a model-neutral source prompt.
+# Shape and rules: ../README.md. Written one industry at a time; Film, OTT & micro-drama first.
+#
+# role: scene      a base photo or frame that scenarios edit (a scene kit, reused 2–5 times)
+#       reference  a character, product, costume, poster or sketch that scenarios copy from
+# used_by must list exactly the slots that name this source (the build checks both ways).
+
+sources:
+
+# ------------------------------------------------------------ Film, OTT & micro-drama
+
+- id: SRC-KIDS-TREE
+  kind: image
+  role: scene
+  used_by: [COV-FLM-01, STB-FLM-02, CHR-FLM-03]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A still from a coming-of-age feature set in rural Karnataka. Two Indian children, about
+    ten years old, sit side by side on one thick exposed root at the base of a very old banyan
+    tree. The boy sits on frame left, the girl on frame right, shoulders almost touching, both
+    looking slightly off camera to frame left. The boy wears a white half-sleeve school shirt and
+    navy shorts; short side-parted hair. The girl wears a white school shirt and a navy pinafore;
+    her hair is in two plaits tied with red ribbons. A brown canvas school bag leans against the
+    root just to the right of the girl. Hanging aerial roots frame the left third. Behind them on
+    the right, a weathered wooden rail fence runs from mid-frame to the right edge, with a dry
+    grass field beyond. Time is about twenty minutes before sunset: the sun is low behind the tree
+    at upper frame right, so both children are backlit with warm rim light on hair and shoulders
+    and their faces sit in soft open shade. Camera at the children's seated eye height, about six
+    metres away, natural 35 mm perspective, the children in the lower middle of the frame and
+    about a third of frame height. Fine film grain, soft warm haze, deep shadows under the canopy.
+  avoid: ["any other person", "readable text or logos", "watermark", "children looking into the lens", "a sun disc in frame"]
+  must_contain:
+    - "Exactly two children, boy on frame left, girl on frame right"
+    - "Both faces fully visible and in focus"
+    - "Two plaits with red ribbons on the girl"
+    - "Brown school bag right of the girl, not cropped"
+    - "Wooden fence visible on the right"
+    - "Backlight from upper right: rim light on both children"
+  alt_real: "A real or licensed photo of two children under a large tree at golden hour, matching this layout, is also acceptable."
+
+- id: SRC-CROSSWALK
+  kind: image
+  role: scene
+  used_by: [COV-FLM-02, CHR-FLM-07, CMP-FLM-10]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A late-afternoon city street, shot straight on. A man of about thirty stands dead centre on
+    a white zebra crossing, facing the camera, arms at his sides, calm expression. He wears a
+    mustard-yellow short-sleeved camp-collar shirt, dark jeans and black over-ear headphones. Behind him, on
+    the far side of the crossing, a minor two-car accident: a silver sedan with a crumpled bonnet
+    and thin steam rising, nose-to-nose with a dark blue hatchback, and three men arguing beside
+    the sedan, one pointing at the damage. Parked cars line the left kerb; leafy trees and
+    low-rise shops with blank, unreadable signs fill the background. Warm sun from frame left,
+    long soft shadows falling to the right. Camera at chest height, 40 mm perspective, the man
+    from the knees up and sharp, the accident in gentle focus fall-off.
+  avoid: ["readable shop names or number plates", "brand logos on clothes or cars", "watermark", "people looking at the camera other than the man"]
+  must_contain:
+    - "The man is centred horizontally"
+    - "Headphones and yellow shirt clearly visible"
+    - "Two damaged cars and exactly three men behind him"
+    - "Steam from the sedan's bonnet"
+    - "Sun from frame left, shadows falling right"
+  alt_real: "A real or licensed street photo with this layout is also acceptable."
+
+- id: SRC-ASTRO-FOREST
+  kind: image
+  role: scene
+  used_by: [STB-FLM-01, CHR-FLM-08]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A science-fiction film still. An astronaut in a bulky white suit stands at the edge of an
+    alien forest, seen from behind and three-quarter left, walking into the frame towards the
+    right. The suit has one orange band around the upper left arm, a boxy grey life-support
+    pack on the back, and a small rectangular device strapped to the left forearm with a faintly
+    lit green screen. The helmet visor is gold-tinted. The forest: tall, straight, very dark
+    trunks rising out of frame, each traced with thin teal-blue glowing veins; a low carpet of
+    pale glowing moss; floating spores like dust in the air. One shaft of cold white light
+    comes down through the canopy at upper frame right. Night-like darkness everywhere else.
+    Camera at waist height, 28 mm perspective, astronaut on the left third and about half of
+    frame height. Teal and black palette, soft haze, film grain.
+  avoid: ["the astronaut's face", "any second figure", "text or insignia on the suit", "watermark"]
+  must_contain:
+    - "Orange band on the upper left arm"
+    - "Device on the left forearm with a green screen"
+    - "Glowing veins on the trunks"
+    - "One light shaft at upper right"
+    - "Astronaut on the left third, moving right"
+  alt_real: ""
+
+- id: SRC-RIDGE-WANDERER
+  kind: image
+  role: scene
+  used_by: [SHT-FLM-01, CHR-FLM-12]
+  aspect: "21:9"
+  resolution: "at least 2800 px on the long side"
+  source_prompt: |
+    A widescreen film still at dawn. A man in his late fifties stands on a grassy ridge, seen
+    in a medium-wide shot from his front-left, looking down into a valley below frame right. He
+    has a short grey beard, a weathered face, and wears a long dark-charcoal wool coat, a
+    rust-coloured knitted scarf and heavy brown boots. In his right hand he carries an old
+    olive-green field radio with a long whip antenna; a canvas satchel hangs on his left hip.
+    The valley below is filled with low fog, with three receding hill ridgelines fading into
+    blue-grey. Pale gold sunlight from low frame left, cool shadows on the right of his face.
+    Camera at chest height, 50 mm perspective, the man on the left third and three-quarters of
+    frame height, horizon on the upper third. Muted desaturated palette, fine grain.
+  avoid: ["any second person", "buildings", "text", "watermark"]
+  must_contain:
+    - "Grey beard, charcoal coat, rust scarf"
+    - "Radio with antenna in the right hand"
+    - "Satchel on the left hip"
+    - "Fog-filled valley with three ridgelines"
+  alt_real: "A real or licensed photo of a similarly dressed man on a misty ridge is acceptable if the radio and scarf match."
+
+- id: SRC-HALDI
+  kind: image
+  role: scene
+  used_by: [COV-FLM-03, SHT-FLM-02]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A North Indian haldi ceremony in the open courtyard of an old haveli, late morning, soft
+    bright overcast daylight. Exactly six people. The bride, mid-twenties, sits centre-left on a
+    low carved wooden stool in a plain yellow cotton suit, face and forearms smeared with
+    turmeric paste, laughing with eyes half closed. Standing behind her on frame left, her
+    mother in a green sari pours water from a brass lota over her head. Kneeling on frame right,
+    two cousins in pink kurtas rub turmeric on her arms. On the far right edge an elderly
+    grandfather in a white kurta and grey Nehru jacket sits on a cane chair, clapping. Behind
+    the bride, a boy of about eight in an orange kurta holds a large brass bowl of turmeric
+    paste. Strings of marigold hang across the top of the frame; a sandstone arch fills the back
+    wall; the stone floor is splashed yellow. Camera at standing eye level, 35 mm, slightly to
+    the right of centre.
+  avoid: ["more or fewer than six people", "readable text", "watermark", "phones or cameras in hands"]
+  must_contain:
+    - "Exactly six people, all faces at least partly visible"
+    - "Brass lota pouring water"
+    - "Boy holding the brass bowl"
+    - "Grandfather on the cane chair at the far right"
+    - "Marigold strings across the top"
+  alt_real: "A real, licensed ceremony photo is acceptable if it has six people in a similar arrangement."
+
+- id: SRC-CHAI-STALL
+  kind: image
+  role: scene
+  used_by: [COV-FLM-04, STB-FLM-03, EDT-FLM-01]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A roadside tea stall in Mumbai on a monsoon night, heavy rain. The stall is a narrow tin
+    shed facing the camera. Behind the counter, the vendor, a wiry man of about fifty in a
+    vest and checked lungi, pours tea from a height between two steel pots. A large dented
+    aluminium kettle sits on a kerosene stove at counter left, with no steam. Above the shed a
+    painted tin board reads "RAJU TEA STALL" in red block capitals on white. A round wall clock
+    behind the vendor shows ten past nine. One bare cyan-white tube light under the awning is
+    the key light. In front of the counter, two customers under the dripping awning: on frame
+    left a young man in a wet grey hoodie, sitting on a blue plastic stool, holding a
+    smartphone in his right hand, its screen lighting his face; on frame right a delivery rider
+    in a red rain jacket standing, holding a small glass of tea. Rain streaks across the frame,
+    puddles on the road in the foreground reflecting the tube light and the red board. Camera
+    at standing eye level from across the lane, 35 mm.
+  avoid: ["any other people", "readable text other than the sign", "brand logos", "watermark"]
+  must_contain:
+    - "Sign reads exactly RAJU TEA STALL"
+    - "Clock shows about 9:10"
+    - "Smartphone in the young man's right hand"
+    - "Blue plastic stool"
+    - "Kettle without steam"
+    - "Exactly three people"
+  alt_real: ""
+
+- id: SRC-TRAIN
+  kind: image
+  role: scene
+  used_by: [COV-FLM-05, PHY-FLM-04]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    Inside an Indian Railways sleeper-class compartment in daytime, seen from the aisle looking
+    into one bay. Two blue rexine lower berths face each other with a fold-down table between
+    them at the window. On the left berth, by the window, an elderly man in a white shirt reads
+    a folded newspaper; on the right berth a young woman in a teal salwar kameez opens a
+    three-tier steel tiffin on her lap. A green metal trunk sits under the left berth; a red
+    hard suitcase lies on the right upper berth; a water bottle hangs from a hook by the window.
+    The barred window is at the back centre, letting in hard white daylight and passing green
+    fields, motion-blurred. The bare grey partition wall on frame right is empty. Ceiling fan
+    in a cage at the top. Camera at seated eye level from the aisle, 24 mm, slightly wide.
+  avoid: ["readable newspaper text", "brand labels", "watermark", "other passengers"]
+  must_contain:
+    - "Two facing lower berths and the window at the back"
+    - "Green trunk under the left berth"
+    - "Red suitcase on the right upper berth"
+    - "Empty partition wall on frame right"
+  alt_real: "A real or licensed photo of a sleeper compartment with the same props is acceptable."
+
+- id: SRC-ELDER-PORCH
+  kind: image
+  role: scene
+  used_by: [COV-FLM-06, STB-FLM-10, CHR-FLM-04, CHR-FLM-09]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    The front verandah of an old tiled-roof house in Kerala during monsoon rain, late afternoon.
+    An elderly woman of about seventy-five sits in a long-armed wooden easy chair, angled
+    three-quarters towards frame left, holding a steel tumbler in both hands. She has grey hair
+    in a low bun, round wire-rimmed spectacles, and wears an off-white cotton sari with a thin
+    dark-green border. Her skin is deep brown with fine wrinkles. Two square wooden pillars
+    stand at frame left and frame right; a tall brass oil lamp, unlit, stands to the left of
+    the chair. The floor is polished red oxide. Beyond the verandah, rain falls in sheets off the
+    roof edge and a coconut palm and green garden blur behind it. Soft grey daylight from the
+    garden side, frame left. Camera at seated eye level, 50 mm, the woman in the centre-right
+    third.
+  avoid: ["any other person", "text", "watermark", "a lit lamp"]
+  must_contain:
+    - "Spectacles and grey bun clearly visible"
+    - "Off-white sari with a dark green border"
+    - "Unlit brass lamp to the left of the chair"
+    - "Rain falling off the roof edge"
+  alt_real: "A real or licensed photo is acceptable if the sari, spectacles, lamp and rain match."
+
+- id: SRC-INTERROGATION
+  kind: image
+  role: scene
+  used_by: [COV-FLM-07, STB-FLM-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A small police-station interrogation room at night, lit only by one bare bulb under a
+    conical green metal shade hanging low over a steel table. At the table on frame left sits
+    the detective, a woman of about forty with short hair, in a maroon cotton kurta, a brown
+    case file open in front of her. Opposite her on frame right sits the suspect, a man in his
+    twenties in a torn grey T-shirt, a bruise on his left cheekbone, both hands flat on the
+    table. Standing at the back by the closed door, slightly right of centre, a constable in
+    khaki uniform with his arms folded. Green-painted walls with peeling patches, a wall
+    calendar with blank pages, a steel water jug on the table. Hard top light, deep falloff,
+    faces half in shadow. Camera at seated eye level from the side of the table, 35 mm.
+  avoid: ["readable text on the file or calendar", "weapons", "watermark"]
+  must_contain:
+    - "Exactly three people"
+    - "Detective frame left, suspect frame right, constable at the back"
+    - "One hanging lamp as the only light"
+    - "Bruise on the suspect's left cheekbone"
+  alt_real: ""
+
+- id: SRC-HERO-BIKE
+  kind: image
+  role: scene
+  used_by: [COV-FLM-08, STB-FLM-05, CHR-FLM-11]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A desert highway in Rajasthan at harsh midday. A man in his thirties sits astride a stopped
+    classic black single-cylinder motorcycle on the road shoulder, seen from the front-right
+    three-quarter view. The motorcycle has a round chrome headlamp, a black fuel tank with a
+    visible dent on its right side, olive canvas saddlebags on both sides, and a red thread tied
+    around the left handlebar grip. The rider wears aviator sunglasses, a brown leather jacket
+    open over a white kurta, and dark trousers; he has a short beard. The straight road runs to a
+    vanishing point at frame left; heat haze shimmers on the asphalt; scrub and low dunes on both
+    sides; hard sun almost overhead, short dark shadows directly under bike and rider. Camera at
+    standing eye level, 50 mm.
+  avoid: ["brand names or logos on the bike", "number plate text", "any second person", "watermark"]
+  must_contain:
+    - "Dent on the right side of the tank"
+    - "Red thread on the left grip"
+    - "Saddlebags on both sides"
+    - "Short shadows straight down"
+  alt_real: ""
+
+- id: SRC-HORSE-RIDER
+  kind: image
+  role: scene
+  used_by: [COV-FLM-09, STB-FLM-09, CHR-FLM-10]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    Sand dunes in the Thar desert just after sunrise. A rider sits on a standing dark-bay horse
+    with the inward-curving ear tips of a Marwari horse, seen in full side profile facing frame
+    right. The horse has a white blaze down its face and one white sock on the front left leg; a
+    red and gold woven saddle cloth. The rider, a man of about forty with a thick moustache,
+    wears a white kurta, white dhoti and an orange turban. The sun sits just above the dunes at
+    frame left, so long shadows of horse and rider stretch towards frame right across rippled
+    sand. Camera low at the horse's knee height, 85 mm, horse and rider on the right third.
+  avoid: ["any other people or animals", "text", "watermark", "modern objects"]
+  must_contain:
+    - "White blaze and one white sock on the front left leg"
+    - "Ear tips curving inwards"
+    - "Orange turban"
+    - "Sun at frame left, shadows to the right"
+  alt_real: "A real or licensed photo of a Marwari horse with these markings is acceptable."
+
+- id: SRC-SET-LIVING
+  kind: image
+  role: scene
+  used_by: [COV-FLM-10, STB-FLM-08, SHT-FLM-03, EDT-FLM-02]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A film set dressed as a 1970s middle-class Indian drawing room, empty of people, shot from
+    the doorway at standing eye level with a 24 mm perspective. Exact layout: the back wall is
+    pale green; in its centre stands a wooden radio cabinet with a fabric speaker grille, and
+    above it hangs a framed black-and-white wedding photograph. On frame left, a three-seat
+    teal vinyl sofa sits under a window with white lace curtains, afternoon daylight coming
+    through them. On frame right, a rattan armchair, and beside it a brass floor lamp with a
+    cream shade. In the centre of the room, a low wooden coffee table holding a glass ashtray, a
+    folded newspaper and a clear plastic water bottle. On the right wall, a modern white modular
+    switchboard. The floor lamp holds a cool-white LED bulb that is switched on. The floor is
+    red-and-black checkered tiles; a ceiling fan with three brown blades hangs at the top.
+  avoid: ["people", "readable newspaper text", "brand labels", "watermark"]
+  must_contain:
+    - "Radio cabinet centred on the back wall with the photo above it"
+    - "Teal sofa on the left, rattan chair and lamp on the right"
+    - "Plastic bottle on the coffee table"
+    - "Modern switchboard on the right wall"
+    - "Lit cool-white bulb in the floor lamp"
+  alt_real: ""
+
+- id: SRC-THALI-DINNER
+  kind: image
+  role: scene
+  used_by: [COV-FLM-11]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A South Indian family dinner on the floor of a home in Chennai at night, under a warm
+    tungsten ceiling light. Five people sit cross-legged on a woven mat in a U shape, each with a
+    banana leaf in front of them. Left to right: a grandfather in a white veshti, a mother in a
+    maroon cotton sari, a girl of about twelve in a yellow frock, a father in a light-blue shirt
+    and a teenage boy in a black T-shirt. Each leaf holds the same dishes in the same places: a
+    mound of white rice in the centre, a small pile of beans poriyal at the top left, a dollop of
+    mango pickle at the top right, a papad at the bottom right. A steel bucket of sambar with a
+    ladle stands in the middle of the U, and a brass water tumbler sits to the right of every
+    leaf. Camera at standing eye level from the open side of the U, 35 mm.
+  avoid: ["cutlery", "readable text", "watermark", "any sixth person"]
+  must_contain:
+    - "Exactly five people in the stated order"
+    - "Same dish layout on all five leaves"
+    - "Sambar bucket in the middle"
+    - "A tumbler to the right of every leaf"
+  alt_real: ""
+
+- id: SRC-ANIME-HEROINE
+  kind: image
+  role: reference
+  used_by: [COV-FLM-12, STB-FLM-06, SHT-FLM-05, CHR-FLM-06]
+  aspect: "2:3"
+  resolution: "at least 2000 px on the long side"
+  source_prompt: |
+    A full-body front view of an original anime-style heroine for a television series, standing
+    straight with arms relaxed, on a city rooftop at night with pink and cyan signs glowing out
+    of focus behind her. She is about seventeen, with a short asymmetric black bob that is
+    longer on her right side and one teal streak on that longer side. She wears an oversized
+    grey hoodie with a yellow patch reading "07" on the left sleeve, a long red scarf, black
+    cargo shorts, white high-top sneakers with red laces, and a white bandage on her left knee.
+    Clean line art, cel shading, large expressive eyes, pink rim light from frame left and cyan
+    from frame right.
+  avoid: ["any resemblance to an existing character", "other text", "watermark", "a second character"]
+  must_contain:
+    - "Teal streak on her right side only"
+    - "Yellow 07 patch on the left sleeve"
+    - "Bandage on the left knee"
+    - "Red laces"
+  alt_real: ""
+
+- id: SRC-THUMBS-CHASE
+  kind: image
+  role: reference
+  used_by: [STB-FLM-07]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A scanned page of rough storyboard thumbnails drawn quickly in blue pencil on off-white
+    paper, six boxes in two rows of three, each numbered 1 to 6 in the top left corner. Simple
+    stick-figure level drawing with hand-drawn arrows. Box 1: a wide market street, a running
+    figure entering from the left edge. Box 2: a second figure vaulting over a fruit cart. Box 3:
+    close view of running feet splashing on wet stones. Box 4: a top-down view of an alley
+    junction with an arrow turning right. Box 5: the first figure hiding behind hanging cloth.
+    Box 6: the second figure running past in the background while the first figure exhales in
+    the foreground. No words other than the numbers.
+  avoid: ["shading or finished rendering", "any words", "watermark"]
+  must_contain:
+    - "Six numbered boxes in two rows"
+    - "Each box's action readable as described"
+    - "Arrows in boxes 1, 2 and 4"
+  alt_real: "A hand-drawn and scanned page is preferred."
+
+- id: SRC-ACTOR-M
+  kind: image
+  role: reference
+  used_by: [STB-FLM-07, CHR-FLM-01, CHR-FLM-04]
+  aspect: "4:5"
+  resolution: "at least 2000 px on the long side"
+  source_prompt: |
+    A casting reference portrait of a fictional Indian man of about thirty-four, front-facing,
+    from the waist up, against a plain mid-grey backdrop with soft even light from both sides.
+    Medium-brown skin, short wavy black hair parted on his left, a thick black moustache, light
+    stubble, and a small pale scar cutting through his right eyebrow. He wears a plain white
+    cotton shirt with sleeves rolled to the elbow and a steel kada on his right wrist. Neutral
+    expression, eyes to the lens, 85 mm perspective.
+  avoid: ["resemblance to a real actor", "jewellery other than the kada", "text", "watermark"]
+  must_contain:
+    - "Scar through the right eyebrow"
+    - "Steel kada on the right wrist"
+    - "Moustache and stubble"
+    - "Even light, no strong shadows"
+  alt_real: "A licensed casting photo with a signed release is acceptable."
+
+- id: SRC-ACTOR-F
+  kind: image
+  role: reference
+  used_by: [SHT-FLM-04, CHR-FLM-02, CHR-FLM-04, CHR-FLM-05]
+  aspect: "4:5"
+  resolution: "at least 2000 px on the long side"
+  source_prompt: |
+    A casting reference portrait of a fictional Indian woman of about twenty-eight, front-facing,
+    from the waist up, against a plain mid-grey backdrop with soft even light. Dusky medium-dark
+    brown skin, long black hair in a single low braid over her left shoulder, a small gold stud
+    in her left nostril, a small mole just above the right corner of her upper lip, and a
+    thin black-bead mangalsutra. She wears a plain mustard cotton kurta. Neutral expression,
+    eyes to the lens, 85 mm perspective.
+  avoid: ["resemblance to a real actor", "makeup that lightens the skin", "text", "watermark"]
+  must_contain:
+    - "Nose stud on the left nostril"
+    - "Mole above the right corner of the lip"
+    - "Braid over the left shoulder"
+    - "Skin tone clearly dusky, not lightened"
+  alt_real: "A licensed casting photo with a signed release is acceptable."
+
+- id: SRC-COSTUME-REF
+  kind: image
+  role: reference
+  used_by: [SHT-FLM-04, CHR-FLM-05]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A costume department reference photo: a 1940s Telugu village woman's costume shown on two
+    headless dress forms side by side against a plain light-grey backdrop, front view on frame
+    left, back view on frame right. An indigo handloom cotton sari with a mustard checked
+    border, draped in the local style with the pleats at the front and the end over the left
+    shoulder; a maroon cotton blouse with elbow-length sleeves; a pair of plain silver anklets
+    placed on the floor in front of each form. Soft even studio light, true colours, 50 mm.
+  avoid: ["a person", "text", "watermark", "embroidery or sequins"]
+  must_contain:
+    - "Front and back views"
+    - "Indigo body, mustard checked border"
+    - "Maroon elbow-sleeve blouse"
+    - "Silver anklets"
+  alt_real: "A photo of a real costume on dress forms is preferred."
+
+- id: SRC-POSTER-NOIR
+  kind: image
+  role: reference
+  used_by: [TYP-FLM-04]
+  aspect: "2:3"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A theatrical one-sheet poster for a fictional English-language noir film. A silhouetted man
+    in a hat stands under a single streetlight in heavy rain, small in the lower middle of the
+    frame; deep black and teal palette. Exact text, nothing else: at the top, small spaced
+    capitals "A FILM BY MEERA DAS"; across the upper third, the title "THE LAST MONSOON" in a
+    tall condensed serif, cream colour; under it the tagline "Some debts are paid in rain." in
+    italic; at the bottom a billing block in small condensed capitals reading "VIKRAM SETHI
+    ANJALI ROY KABIR MALIK  MUSIC BY ARUN NAIR  CINEMATOGRAPHY BY LEELA IYER"; and under that
+    "IN CINEMAS 14 NOVEMBER".
+  avoid: ["any other words", "studio logos", "rating badges", "watermark"]
+  must_contain:
+    - "Every line of text spelled exactly as given"
+    - "Title in the upper third, tagline under it"
+    - "Billing block and date at the bottom"
+  alt_real: "A designer-made poster with exactly this text is preferred."
+
+- id: SRC-ROOFTOP
+  kind: image
+  role: scene
+  used_by: [PHY-FLM-05, EDT-FLM-03]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A flat rooftop of an old Mumbai apartment block at night. A woman of about thirty in a
+    loose white shirt and dark trousers leans with both forearms on the low parapet on frame
+    right, looking out at the city, her face in three-quarter profile. Around her: three blue
+    plastic water tanks on the left, a grey satellite dish on a stand at the back, a tangle of
+    cables along the parapet. The city skyline glows orange-pink with scattered lit windows;
+    a distant sodium streetlight below gives a faint orange edge on her right side. No other
+    light. Camera at standing eye level, 35 mm, a few metres behind and to her left.
+  avoid: ["any other person", "readable signs", "watermark", "a lamp on the roof"]
+  must_contain:
+    - "Three blue water tanks on the left"
+    - "Satellite dish at the back"
+    - "The woman's face visible in three-quarter profile"
+  alt_real: ""
+
+# ------------------------------------------------------------ Advertising & agencies
+# Brands here are fictional: Saanjh Ghee, Mirchi Mood chips, Myna Pay, Hawa E1 scooter,
+# Varsha No. 3 perfume, DAUD One running shoe.
+
+- id: SRC-ADS-SUV
+  kind: image
+  role: scene
+  used_by: [COV-ADS-01, STB-ADS-02, EDT-ADS-03]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A car-commercial hero frame on a mountain road in the Western Ghats at golden hour. A white
+    mid-size SUV with no badges or lettering is parked on the outside of a hairpin bend, seen
+    from the front-left three-quarter view, headlights off, front wheels turned slightly to the
+    left. Behind it the road curls down the hillside; a second car, a small grey hatchback, is
+    far down the road on the lower bend. Low sun from frame right, warm light on the SUV's right
+    flank and bonnet, long shadow across the road to the left; mist sitting in the valley below.
+    The SUV's glossy paint reflects the orange sky on the bonnet. Camera low, at headlight height,
+    35 mm, the SUV on the left half of the frame filling about half its width.
+  avoid: ["brand badges, logos or lettering", "number plate text", "people", "watermark"]
+  must_contain:
+    - "White SUV, front-left three-quarter, no badges"
+    - "Grey hatchback far down the lower bend"
+    - "Sun from frame right, shadow to the left"
+    - "Sky reflected on the bonnet"
+  alt_real: "A real or licensed car photo with badges removed is acceptable."
+
+- id: SRC-ADS-DIWALI-FAMILY
+  kind: image
+  role: scene
+  used_by: [COV-ADS-02, STB-ADS-03, CHR-ADS-03, EDT-ADS-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A festive advertising frame on the balcony of a Delhi apartment on Diwali evening, just
+    after dusk. Exactly four people. A grandfather in a cream kurta and brown shawl sits on a
+    cane chair on frame left; the mother, in a red silk sari, kneels in the centre lighting a
+    row of seven clay diyas along the balcony ledge with a long matchstick; the father in a
+    mustard kurta stands on frame right holding a steel plate of sweets; a girl of about seven
+    in a green lehenga sits on the floor in front of the mother, finishing a round rangoli of
+    pink, yellow and white powder. A string of warm fairy lights hangs along the top of the
+    balcony railing; the city behind has scattered lights and one burst of fireworks in the
+    upper right. The diyas are the main light, warm and low on all faces. Camera at standing eye
+    level from inside the doorway, 35 mm.
+  avoid: ["more or fewer than four people", "readable text", "brand logos", "watermark"]
+  must_contain:
+    - "Exactly four people in the stated places"
+    - "Seven diyas on the ledge"
+    - "A round rangoli in front of the girl"
+    - "One firework burst in the upper right"
+  alt_real: "A licensed photo with model releases is acceptable if the layout matches."
+
+- id: SRC-ADS-KITCHEN
+  kind: image
+  role: scene
+  used_by: [COV-ADS-03, PRD-ADS-08, PHY-ADS-06]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An empty modern Indian kitchen dressed for a cooking commercial, late morning. Shot straight
+    on from the open side at standing eye level, 28 mm. Layout, left to right: a tall white
+    fridge; a window over a steel sink with a potted tulsi plant on the sill and soft daylight
+    coming in; a long white quartz counter with a two-burner stove holding a steel kadhai and a
+    pressure cooker; a wooden chopping board with chopped tomatoes and green chillies; open
+    wall shelves of steel dabbas above the counter; a brass spice box (masala dabba) with its
+    lid off on the right end of the counter. Pale sage-green cabinets below; white subway tiles
+    behind. No people.
+  avoid: ["people", "brand labels on appliances or jars", "readable text", "watermark"]
+  must_contain:
+    - "Fridge on the far left, window over the sink"
+    - "Kadhai and pressure cooker on the stove"
+    - "Masala dabba open on the right end"
+    - "Sage-green lower cabinets"
+  alt_real: "A real or licensed kitchen photo with this layout is acceptable."
+
+- id: SRC-ADS-PERFUME
+  kind: image
+  role: reference
+  used_by: [COV-ADS-04, STB-ADS-05, SHT-ADS-01, PRD-ADS-02]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A product packshot of a fictional perfume, Varsha No. 3, on seamless pale grey. The bottle is
+    a heavy rectangular block of clear glass about twice as tall as it is wide, with bevelled
+    vertical edges, holding pale amber liquid. A black matte cylindrical cap. On the front, a
+    small vertical cream paper label printed in black: "VARSHA" in spaced capitals, under it
+    "No. 3", under that "EAU DE PARFUM · 50 ml" in tiny type. Soft key light from upper left, a
+    thin bright highlight down the left bevel, a gentle shadow to the right. Shot straight on at
+    label height, 100 mm macro perspective, the bottle centred and filling two-thirds of the
+    frame height.
+  avoid: ["any other text", "props", "reflections of a studio", "watermark"]
+  must_contain:
+    - "Label text exactly VARSHA / No. 3 / EAU DE PARFUM · 50 ml"
+    - "Bevelled rectangular bottle, black cylindrical cap"
+    - "Pale amber liquid"
+  alt_real: "A real bottle with a printed mock label is preferred."
+
+- id: SRC-ADS-RUNNER
+  kind: image
+  role: scene
+  used_by: [COV-ADS-05, STB-ADS-04, CHR-ADS-02, PRD-ADS-04, EDT-ADS-02]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A sportswear campaign frame at a city athletics stadium at harsh midday. A fictional Indian
+    woman sprinter of about twenty-four is caught mid-stride in lane four of a red track, running
+    left to right, side-on to the camera. She has short-cropped black hair, a determined look,
+    and wears a sleeveless teal running vest and black shorts with no logos, a race bib reading
+    "214" pinned to her vest, and white running shoes. Lane lines and the lane number "4" are
+    painted on the track in white. Empty grey concrete stands behind. Hard overhead sun, short
+    shadow directly beneath her. Camera at hip height, 85 mm, panning so she is sharp and the
+    stands are slightly streaked.
+  avoid: ["logos on clothing or shoes", "other athletes", "watermark", "resemblance to a real athlete"]
+  must_contain:
+    - "Running left to right, side-on"
+    - "Bib reads 214"
+    - "Lane 4 marking visible"
+    - "Shadow directly beneath her"
+  alt_real: "A licensed photo with a model release is acceptable if the bib and lane are set to match."
+
+- id: SRC-ADS-SHOE
+  kind: image
+  role: reference
+  used_by: [SHT-ADS-03, PRD-ADS-04]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A product photo of a fictional running shoe, the DAUD One, on seamless white, right shoe only,
+    in exact side profile with the toe pointing to frame right. Knit upper in coral (close to
+    #FF6F59) fading to off-white at the heel; a thick white foam midsole with a single navy
+    (close to #1D2A5B) stripe running its full length; a black rubber outsole; flat white laces;
+    a small navy heel tab printed with "DAUD" in white capitals. Even soft studio light, a soft
+    contact shadow under the sole. 85 mm, shoe filling three-quarters of the frame width.
+  avoid: ["any other text or logos", "a second shoe", "watermark"]
+  must_contain:
+    - "Right shoe, toe to frame right"
+    - "Coral upper fading to off-white"
+    - "Navy stripe along the midsole"
+    - "DAUD on the heel tab"
+  alt_real: "A real shoe with a mock heel tab is preferred."
+
+- id: SRC-ADS-MASCOT
+  kind: image
+  role: reference
+  used_by: [STB-ADS-01, SHT-ADS-04, CHR-ADS-01, PRD-ADS-06]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A character reference for a fictional snack-brand mascot, Chotu Mirchi, front view, full body,
+    standing on a plain white background, in a polished 3D animated style. Chotu is a glossy red
+    chilli about as tall as a child's forearm, standing upright on two short green legs, with a
+    curled green stalk on top like a quiff that curls to his left. Big round white eyes with black
+    pupils, thick black eyebrows, a wide grin showing one gold tooth on his right side. Thin green
+    arms with white four-fingered gloves. White sneakers with red laces. Soft even studio light,
+    a soft shadow under his feet.
+  avoid: ["resemblance to an existing mascot", "text", "watermark", "a second character"]
+  must_contain:
+    - "Stalk quiff curling to his left"
+    - "One gold tooth on his right side"
+    - "Four-fingered white gloves"
+    - "White sneakers with red laces"
+  alt_real: ""
+
+- id: SRC-ADS-CHIPS
+  kind: image
+  role: reference
+  used_by: [STB-ADS-01, PRD-ADS-05, PRD-ADS-06, PHY-ADS-05]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A product packshot of a fictional chips pack, Mirchi Mood, on seamless white, front face to
+    camera, standing slightly puffed with natural crinkles at the top and bottom seals. The pack is
+    glossy red with a yellow sunburst in the centre; in the sunburst sits the face of the chilli
+    mascot (big round eyes, grin with one gold tooth); above it the brand name "Mirchi Mood" in
+    chunky white rounded letters with a black outline; below, a green flag reading "Masala Blast";
+    bottom right a white circle reading "₹20"; bottom left "52 g". Soft top light, a gentle
+    highlight along the top crinkle. 85 mm, pack centred.
+  avoid: ["any other text", "real snack brands", "watermark"]
+  must_contain:
+    - "Text exactly Mirchi Mood / Masala Blast / ₹20 / 52 g"
+    - "Mascot face in the yellow sunburst"
+    - "Crinkled top and bottom seals"
+  alt_real: "A printed mock pack photographed for real is preferred."
+
+- id: SRC-ADS-KEYVISUAL
+  kind: image
+  role: reference
+  used_by: [SHT-ADS-02, CMP-ADS-07, TYP-ADS-07, EDT-ADS-01]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished Diwali key visual for a fictional ghee brand, Saanjh Ghee, landscape. A glass jar
+    of golden ghee with a gold lid stands dead centre. Its label is deep red with a gold border;
+    on it the brand name "साँझ" in large gold Devanagari, "SAANJH GHEE" in small gold capitals
+    below, and a round gold badge "500 ml" at the lower right of the label. In front of the jar,
+    seven lit clay diyas stand in a shallow arc; marigold petals are scattered on a dark maroon
+    surface; the background is a deep maroon with soft bokeh lights. Across the top, the headline
+    "इस दिवाली, घर की ख़ुशबू" in cream Devanagari; under it, smaller, "Pure cow ghee since 1962"
+    in cream. Bottom right, a gold starburst reading "₹349" and under it "Offer till 31 October"
+    in small cream type. Warm light from the diyas on the jar.
+  avoid: ["any other text", "real brand names", "people", "watermark"]
+  must_contain:
+    - "Every line of text exactly as given, Devanagari correctly formed"
+    - "Jar centred"
+    - "Seven lit diyas in an arc"
+    - "Price starburst bottom right"
+  alt_real: "A designer-made key visual with exactly this text is preferred."
+
+- id: SRC-ADS-STORE-POSTER
+  kind: image
+  role: scene
+  used_by: [TYP-ADS-08]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A photo of a printed sale poster taped inside the glass door of a clothing shop in a
+    Hyderabad market, taken from the street at a slight angle from the left, so the poster is in
+    gentle perspective. The A2 poster is yellow with black type: "MONSOON SALE" in a heavy
+    condensed sans across the top, "FLAT 40% OFF" very large in the middle, and "TILL 31 JULY" in
+    the same font at the bottom. Strips of clear tape at each corner; a diagonal streak of
+    reflected daylight crosses the glass over the lower right of the poster; the shop's clothes
+    rail is dimly visible behind. Daylight, overcast. 50 mm.
+  avoid: ["any other readable text", "brand names", "people", "watermark"]
+  must_contain:
+    - "Poster text exactly MONSOON SALE / FLAT 40% OFF / TILL 31 JULY"
+    - "Poster in gentle perspective"
+    - "Glare streak over the lower right"
+  alt_real: "A real photo of a printed poster on a glass door is preferred."
+
+- id: SRC-ADS-LOGO
+  kind: image
+  role: reference
+  used_by: [PRD-ADS-01]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A flat brand logo card for a fictional payments app, Myna Pay, on pure white. The symbol: a
+    solid deep indigo circle (#2B2A8C) holding the head of a myna bird in profile facing right,
+    made of three flat shapes: a white head, a saffron (#FF9F1C) beak, and a white eye-ring around
+    a small indigo eye. To the right of the symbol, the wordmark "myna pay" in lower-case
+    geometric sans, indigo, with the cap height equal to half the circle's diameter and the
+    baseline aligned with the circle's lower third. Flat colour, no gradients, no shadow.
+  avoid: ["gradients", "any other text", "watermark"]
+  must_contain:
+    - "Indigo circle, white head, saffron beak"
+    - "Wordmark myna pay in lower case"
+    - "Flat colours matching the hex values"
+  alt_real: "A vector logo exported to PNG is preferred."
+
+- id: SRC-ADS-BILLBOARD-SITE
+  kind: image
+  role: scene
+  used_by: [PRD-ADS-01]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A photo of a large blank white hoarding beside a flyover in Bengaluru on a clear morning.
+    The hoarding is a 40 by 20 foot landscape panel on a grey steel frame with a catwalk along its
+    bottom and four lamp brackets along its top; it is seen from the road below and to the left,
+    so its left edge is nearer and taller than its right edge. Morning sun from behind the camera
+    on the left lights the panel evenly, and the lamp brackets cast four short shadows down onto
+    its top edge. Below, traffic on the flyover: an orange city bus, two autorickshaws and
+    several cars, slightly motion-blurred. Rain trees on the right; pale blue sky.
+  avoid: ["any text on the hoarding", "readable signs or number plates", "watermark"]
+  must_contain:
+    - "Blank white panel in clear perspective, left edge nearer"
+    - "Four lamp brackets with shadows on the top edge"
+    - "Bus and two autorickshaws below"
+  alt_real: "A real photo of an empty hoarding is preferred."
+
+- id: SRC-ADS-SCOOTER
+  kind: image
+  role: reference
+  used_by: [PRD-ADS-03]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A product photo of a fictional electric scooter, the Hawa E1, on seamless light grey, in exact
+    left side profile facing frame left. Matte teal body (close to #1F7A7A) with a gloss-white
+    front apron; a round LED headlamp ringed in white; a tan stitched seat; black alloy wheels
+    with five spokes; a slim silver grab rail behind the seat; "HAWA" in small white capitals on
+    the side panel below the seat. Even soft studio light, soft contact shadow. 85 mm.
+  avoid: ["any other text or logos", "a rider", "watermark"]
+  must_contain:
+    - "Left side profile facing left"
+    - "Matte teal body, white front apron, tan seat"
+    - "HAWA on the side panel"
+  alt_real: ""
+
+- id: SRC-ADS-GHEE-JAR
+  kind: image
+  role: reference
+  used_by: [PRD-ADS-07, PRD-ADS-08]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of the fictional Saanjh Ghee jar on seamless cream, straight on at label height:
+    a round glass jar of golden, slightly grainy ghee with a gold metal lid. Deep red label with a
+    thin gold border; "साँझ" in large gold Devanagari; "SAANJH GHEE" in small gold capitals below;
+    a round gold badge reading "500 ml" at the lower right of the label. Soft light from upper
+    left, a vertical highlight on the glass on the left. 100 mm, jar filling two-thirds of the
+    frame height.
+  avoid: ["any other text", "props", "watermark"]
+  must_contain:
+    - "Label text exactly साँझ / SAANJH GHEE / 500 ml"
+    - "Grainy golden ghee visible through the glass"
+    - "Gold lid"
+  alt_real: "A real jar with a printed mock label is preferred."
+
+# ------------------------------------------------------------ E-commerce, D2C & retail
+# Brands here are fictional: Ananas & Co. soda, Kosu handbags, Neela kurtas, Aadi spices,
+# Tara serum, Chai Jaan tea, Haathi plush, Sathi smartwatch.
+
+- id: SRC-ECM-SODA-CAN
+  kind: image
+  role: reference
+  used_by: [SHT-ECM-01, TYP-ECM-08, PRD-ECM-01, PRD-ECM-19]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A product photo of a fictional pineapple soda can, Ananas & Co., standing on a dark slate
+    surface against a deep navy backdrop. A slim 330 ml aluminium can, matte cobalt blue. On the
+    front, the word "Ananas" in big hand-lettered yellow script running diagonally upward from
+    lower left to upper right; under it, small white capitals "PINEAPPLE FIZZ"; at the bottom,
+    "330 ml" in small white type. To the right of the script, a thin white line drawing of a
+    pineapple, half wrapping round the curve of the can. Fine cold condensation droplets over the
+    lower two-thirds. A silver ring-pull top. Key light from upper left giving a vertical
+    highlight down the left side of the can, cool rim light from behind on the right. Shot at
+    label height, 85 mm, can centred.
+  avoid: ["any other text", "real soda brands", "watermark"]
+  must_contain:
+    - "Text exactly Ananas / PINEAPPLE FIZZ / 330 ml"
+    - "Yellow script running diagonally upward"
+    - "White line-drawn pineapple on the right"
+    - "Condensation on the lower two-thirds"
+  alt_real: "A real can with a printed mock wrap is preferred."
+
+- id: SRC-ECM-HANDBAG
+  kind: image
+  role: reference
+  used_by: [COV-ECM-01, PRD-ECM-03, PRD-ECM-13, EDT-ECM-01]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A catalogue packshot of a fictional leather handbag, the Kosu Tote, on seamless off-white, in
+    straight front view. A structured tote about 32 cm wide and 26 cm tall, in tan pebbled leather
+    (close to #B5763A), with two rolled top handles in darker brown, a front flap closed by a brass
+    turn-lock, contrast cream stitching along every edge, and a small blind-embossed "KOSU" on the
+    front below the lock. One handle has a slight twist where it meets the bag; a few specks of
+    dust on the flap. Soft light from upper left, a soft contact shadow under the base. 85 mm.
+  avoid: ["any other branding", "a model", "props", "watermark"]
+  must_contain:
+    - "Tan pebbled leather, brass turn-lock"
+    - "Cream contrast stitching"
+    - "Blind-embossed KOSU below the lock"
+    - "A visible twist in one handle and dust specks on the flap"
+  alt_real: "A real bag photographed on white is preferred."
+
+- id: SRC-ECM-KURTA-MODEL
+  kind: image
+  role: scene
+  used_by: [COV-ECM-02, CHR-ECM-01, PRD-ECM-11, EDT-ECM-02]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An on-model catalogue photo for a fictional ethnic-wear label, Neela. A fictional Indian woman
+    of about twenty-six with a medium-brown complexion, shoulder-length wavy black hair and small
+    silver jhumka earrings stands facing the camera, weight on her left leg, against a warm beige
+    paper backdrop. She wears a mustard cotton straight kurta reaching her knees, with a small
+    white block-printed floral pattern, three-quarter sleeves and a round neck with a short
+    placket of five white buttons; white cotton palazzo pants; a white mulmul dupatta over her left
+    shoulder that hangs crookedly. A small safety pin is visible at the kurta's right hem. Soft
+    daylight from a large window at frame left. Full length, 70 mm, 4:5.
+  avoid: ["logos", "other people", "watermark", "resemblance to a real model"]
+  must_contain:
+    - "Mustard kurta with white floral block print and five buttons"
+    - "Dupatta over the left shoulder, hanging crookedly"
+    - "Safety pin at the right hem"
+    - "Silver jhumkas"
+  alt_real: "A licensed catalogue photo with a model release is acceptable if the garment and the pin match."
+
+- id: SRC-ECM-BIRYANI
+  kind: image
+  role: scene
+  used_by: [COV-ECM-03, PRD-ECM-06, EDT-ECM-03]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A food-delivery listing photo of Hyderabadi chicken dum biryani, shot at a 45-degree angle on a
+    dark wooden table in daylight. A copper handi with its dough seal broken and the lid leaning on
+    its left side; long-grain rice with saffron streaks, two chicken pieces visible on top, fried
+    onions and mint leaves scattered. On the right, a small steel bowl of raita with a cucumber
+    slice and a halved boiled egg; on the left, a folded red-checked napkin with a white plastic
+    spoon lying on it. Soft daylight from frame left. 50 mm.
+  avoid: ["text", "brand packaging", "hands", "watermark"]
+  must_contain:
+    - "Copper handi with the lid leaning on its left"
+    - "Raita bowl with cucumber and half an egg on the right"
+    - "Red-checked napkin with a white plastic spoon on the left"
+  alt_real: "A real food photo with this layout is preferred."
+
+- id: SRC-ECM-ARMCHAIR-ROOM
+  kind: image
+  role: scene
+  used_by: [COV-ECM-04, PRD-ECM-15, PRD-ECM-16, EDT-ECM-04]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A furniture brand's lifestyle photo of a living room in late-afternoon light. Centre-right, a
+    mid-century armchair with a walnut frame and tapered legs, upholstered in ochre bouclé, angled
+    three-quarters towards frame left. To its left, a round walnut side table with a stack of two
+    books and a ceramic mug. Behind, a white wall with a large tall window at frame left throwing
+    a long warm rectangle of sunlight across the bare oak floor. A brass floor lamp with a white
+    drum shade on the right of the chair. Some clutter: a phone charger cable across the floor and
+    a pair of slippers by the chair. 35 mm, standing eye level.
+  avoid: ["people", "pets", "brand labels", "readable book titles", "watermark"]
+  must_contain:
+    - "Ochre bouclé armchair angled towards frame left"
+    - "Round side table with books and a mug on its left"
+    - "Sunlight rectangle on the bare oak floor"
+    - "Charger cable and slippers visible"
+  alt_real: "A real room photo is preferred."
+
+- id: SRC-ECM-WATCH-ELDER
+  kind: image
+  role: scene
+  used_by: [COV-ECM-05, CHR-ECM-02, EDT-ECM-07]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A lifestyle photo for a fictional smartwatch, the Sathi, in a Chennai park in early-morning
+    golden light. A fictional woman of about sixty-eight with dark brown skin, grey hair in a
+    braid, and a red bindi sits on a stone bench in a lilac cotton sari with a thin gold border and
+    white sports shoes, glancing at the watch on her left wrist, smiling. The watch has a square
+    black face showing "06:45" in white digits and a sage-green silicone strap. Behind her, a
+    walking path, rain trees, and one man jogging far in the background on the right. Sun low from
+    frame right. 85 mm, eye level.
+  avoid: ["logos", "other text", "watermark", "resemblance to a real person"]
+  must_contain:
+    - "Watch on the left wrist, square black face showing 06:45"
+    - "Sage-green strap"
+    - "Lilac sari, red bindi, grey braid"
+    - "One jogger far in the background, right"
+  alt_real: "A licensed photo with a model release is acceptable if the watch face is set to match."
+
+- id: SRC-ECM-SAREE-FLAT
+  kind: image
+  role: reference
+  used_by: [STB-ECM-01, SHT-ECM-02, CHR-ECM-01, PRD-ECM-09]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A catalogue flat-lay of a fictional Kanchipuram-style silk saree on a pale grey surface, shot
+    from directly above. The saree is folded to show three parts side by side: on the left, the
+    body in deep peacock green (close to #0F5257) with small gold buttis in a diamond grid; in the
+    middle, the border, a 12 cm magenta (close to #B0186A) band with a gold temple-tower pattern;
+    on the right, the pallu in magenta with broad gold stripes and a row of gold peacocks. A
+    matching magenta blouse piece is folded on top of the body. Even soft light. 50 mm.
+  avoid: ["a model", "props", "text", "watermark"]
+  must_contain:
+    - "Peacock-green body with gold buttis"
+    - "Magenta border with gold temple pattern"
+    - "Pallu with gold stripes and peacocks"
+  alt_real: "A real saree flat-lay is preferred."
+
+- id: SRC-ECM-JACKET-FLAT
+  kind: image
+  role: reference
+  used_by: [CHR-ECM-01, PRD-ECM-10]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A catalogue flat-lay of a denim jacket on white, shot from directly above. Mid-blue
+    stone-washed denim, a classic trucker cut with two chest pockets with pointed button flaps,
+    copper buttons, and a hand-embroidered yellow marigold on the left chest pocket flap. The
+    sleeves are folded in at the sides. The right cuff has a small frayed patch. Even light, true
+    colour.
+  avoid: ["brand tags", "text", "a model", "watermark"]
+  must_contain:
+    - "Embroidered yellow marigold on the left chest flap"
+    - "Copper buttons"
+    - "Frayed patch on the right cuff"
+  alt_real: "A real jacket flat-lay is preferred."
+
+- id: SRC-ECM-SPICE-JARS
+  kind: image
+  role: reference
+  used_by: [SHT-ECM-03, PRD-ECM-07, EDT-ECM-06]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of three glass spice jars from a fictional Madurai brand, Aadi, in a row on a white
+    surface, straight on. Each jar has a black lid and a kraft-paper label. The labels read, left to
+    right: "மஞ்சள்" over "TURMERIC"; "மிளகாய்" over "CHILLI"; "சீரகம்" over "CUMIN"; each with "Aadi" in
+    a small terracotta wordmark at the top and "100 g" at the bottom. The jars show their contents:
+    bright yellow powder, deep red powder, whole brown seeds. Soft light from upper left. 85 mm.
+  avoid: ["any other text", "real brands", "watermark"]
+  must_contain:
+    - "Tamil and English names exactly as given on each jar"
+    - "Aadi wordmark and 100 g on each label"
+    - "Turmeric, chilli and cumin left to right"
+  alt_real: "Real jars with printed mock labels are preferred."
+
+- id: SRC-ECM-PLUSH
+  kind: image
+  role: reference
+  used_by: [CHR-ECM-03, EDT-ECM-08]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A product photo of a fictional hand-knitted elephant toy, Haathi, sitting on white, front
+    three-quarter view. About 25 cm tall, knitted in soft grey wool, with stitched black button
+    eyes, a curled trunk raised to its right, a small mustard knitted patch sewn on its left ear,
+    and a red ribbon collar with a tiny brass bell. Visible knit texture. Soft even light. 85 mm.
+  avoid: ["text", "tags", "watermark", "resemblance to an existing toy character"]
+  must_contain:
+    - "Trunk curled to its right"
+    - "Mustard patch on the left ear"
+    - "Red ribbon collar with a brass bell"
+  alt_real: "A real knitted toy is preferred."
+
+- id: SRC-ECM-CREATOR
+  kind: image
+  role: scene
+  used_by: [CHR-ECM-04, PRD-ECM-12, PRD-ECM-13, EDT-ECM-05]
+  aspect: "9:16"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A vertical selfie-style frame of a fictional beauty creator of about twenty-three filming in her
+    bedroom in Pune at night. Dark brown skin, a natural bare face, black hair pulled back in a
+    claw clip, small gold hoops. She wears a sage-green ribbed tank top. Behind her, a white shelf
+    crowded with bottles and a fairy-light string; in the mirror behind her on the right, the round
+    ring light is reflected. The ring light in front is her key light, with catchlights as rings
+    in both eyes. Phone-camera look, 26 mm equivalent, framed from mid-chest up.
+  avoid: ["readable brand names on the bottles", "makeup already applied", "watermark", "resemblance to a real creator"]
+  must_contain:
+    - "Natural bare face, dark brown skin"
+    - "Ring light reflected in the mirror on the right"
+    - "Sage-green tank top"
+  alt_real: "A licensed photo with a model release is acceptable."
+
+- id: SRC-ECM-INFOGRAPHIC
+  kind: image
+  role: reference
+  used_by: [TYP-ECM-07]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A marketplace listing infographic for a fictional steel water bottle, square, on a pale mint
+    background. The bottle stands in the centre, matte navy with a bamboo cap. Four callouts with
+    thin leader lines and simple line icons, two on each side: top left "Cold for 24 hours", bottom
+    left "Hot for 12 hours", top right "100% leak-proof", bottom right "BPA-free steel". A headline
+    across the top: "One bottle. All day." A small "1 litre" badge at the bottom centre. Clean
+    rounded sans, dark navy text.
+  avoid: ["any other text", "brand logos", "watermark"]
+  must_contain:
+    - "Every line of text exactly as given"
+    - "Four callouts with leader lines touching the bottle"
+  alt_real: "A designer-made infographic with this text is preferred."
+
+- id: SRC-ECM-SERUM
+  kind: image
+  role: reference
+  used_by: [CMP-ECM-06, PRD-ECM-02, PRD-ECM-04, PRD-ECM-12]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of a fictional face serum, Tara, centred on seamless blush pink. A 30 ml amber glass
+    dropper bottle about 9 cm tall including the dropper, with a white rubber bulb and a gold
+    collar. A white label wraps the front: "TARA" in thin spaced capitals, "Niacinamide 10%" below,
+    "30 ml" at the bottom. Soft light from upper left with a long highlight on the glass. 100 mm.
+  avoid: ["any other text", "props", "watermark"]
+  must_contain:
+    - "Label text exactly TARA / Niacinamide 10% / 30 ml"
+    - "Amber glass, white bulb, gold collar"
+    - "Bottle centred"
+  alt_real: "A real bottle with a printed mock label is preferred."
+
+- id: SRC-ECM-TEA-TIN
+  kind: image
+  role: reference
+  used_by: [PRD-ECM-05]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of a fictional Assam tea tin, Chai Jaan, on white. A round tin 12 cm tall in glossy
+    emerald green with a gold lid. On the front, an embossed gold logo: a teacup inside a circle,
+    with steam rising as three wavy lines, the circle ringed by the words "CHAI JAAN · ASSAM" in
+    small capitals following the curve. Below it, "250 g" in gold. Highlights show the emboss.
+    85 mm, straight on.
+  avoid: ["any other text", "watermark"]
+  must_contain:
+    - "Embossed circular logo with a cup and three steam lines"
+    - "Curved text CHAI JAAN · ASSAM"
+    - "Emerald tin, gold lid"
+  alt_real: "A real tin with a mock embossed label is preferred."
+
+- id: SRC-ECM-SCHOOLBAG
+  kind: image
+  role: reference
+  used_by: [PRD-ECM-14]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of a children's school backpack on white, front view. About 38 cm tall, in bright
+    sky blue with a yellow zipped front pocket shaped like a rounded cloud, two mesh water-bottle
+    pockets on the sides, reflective silver strips down both shoulder straps, and a small orange
+    rocket-shaped zip puller on the main zip. Even light. 85 mm.
+  avoid: ["text", "logos", "a child", "watermark"]
+  must_contain:
+    - "Cloud-shaped yellow front pocket"
+    - "Orange rocket zip puller"
+    - "Reflective strips on the straps"
+  alt_real: "A real bag photo is preferred."
+
+- id: SRC-ECM-RUG
+  kind: image
+  role: reference
+  used_by: [PRD-ECM-15]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A flat top-down photo of a fictional hand-tufted wool rug, 2 by 3 metres, on a white floor.
+    Cream field with a geometric pattern of rust and indigo lines forming large overlapping
+    diamonds; a 10 cm indigo border all round; short cream fringes on the two short ends only.
+    Even light, true colour, the whole rug in frame with a little floor around it.
+  avoid: ["furniture", "text", "watermark"]
+  must_contain:
+    - "Whole rug in frame, fringes on the short ends only"
+    - "Rust and indigo diamonds on cream"
+    - "Indigo border"
+  alt_real: "A real rug photo is preferred."
+
+- id: SRC-ECM-DOG-BED
+  kind: image
+  role: reference
+  used_by: [PRD-ECM-17]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A packshot of a round pet bed on white, three-quarter view from above. About 70 cm across, a
+    raised bolster rim in charcoal corduroy and a removable cushion in oatmeal sherpa fleece, with
+    a small terracotta fabric tab stitched on the rim at the front. The rim is slightly lower at
+    the front so a dog can step in; the cushion sits flat and uncompressed. Even soft studio light
+    from above, a soft contact shadow around the base. 50 mm, the bed filling most of the frame.
+  avoid: ["a pet", "text", "logos", "watermark"]
+  must_contain:
+    - "Charcoal corduroy rim, oatmeal fleece cushion"
+    - "Terracotta tab at the front"
+  alt_real: "A real product photo is preferred."
+
+- id: SRC-ECM-TENT
+  kind: image
+  role: reference
+  used_by: [PRD-ECM-18]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A packshot of a two-person dome tent pitched on white, front three-quarter view. Burnt-orange
+    fly sheet with charcoal panels at the base, two crossing aluminium poles visible under the fly,
+    a front door zipped half open showing a grey inner tent, four guy ropes in reflective
+    white pegged out at the corners, each rope taut at the same angle. The fly is tight with no
+    wrinkles and the vestibule is closed on the right side. Even soft studio light, a soft
+    contact shadow under the groundsheet. 35 mm, standing eye level, the whole tent in frame.
+  avoid: ["text", "logos", "people", "watermark"]
+  must_contain:
+    - "Burnt-orange fly with charcoal base panels"
+    - "Door half open"
+    - "Four pegged guy ropes"
+  alt_real: "A real product photo is preferred."
+
+# ------------------------------------------------------------ Gaming
+# The game is fictional: Shadow Raaga, with its heroine Ira, the villain Kaal, the tiger mount
+# Vyaghra and the squad of five.
+
+- id: SRC-GAM-HERO
+  kind: image
+  role: reference
+  used_by: [COV-GAM-02, STB-GAM-01, CHR-GAM-01, PRD-GAM-01]
+  aspect: "2:3"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A character key render for an original action game, full body, front three-quarter view
+    facing frame left, standing on a dark wet rooftop with blurred magenta and cyan signs behind.
+    The heroine, Ira, is a stylised 3D character with realistic proportions and a slightly painted
+    finish. Dark brown skin, a high black ponytail bound with three gold rings, a thin gold nose
+    ring on the left nostril. She wears a fitted charcoal armoured bodysuit with copper plates on
+    the shoulders and shins, a short red sash-cape hanging from her right shoulder only, a
+    glowing teal rune on the back of her left glove, and carries a curved single-edged sword with
+    a brass guard shaped like a veena's head in her right hand, blade pointing down. Rim light from
+    a magenta sign behind on the left, teal fill from the right.
+  avoid: ["resemblance to an existing game character", "text", "logos", "watermark"]
+  must_contain:
+    - "Cape on the right shoulder only"
+    - "Teal rune on the back of the left glove"
+    - "Veena-head sword guard, sword in the right hand"
+    - "Three gold rings on the ponytail, nose ring on the left"
+  alt_real: ""
+
+- id: SRC-GAM-VILLAIN
+  kind: image
+  role: reference
+  used_by: [SHT-GAM-01, CHR-GAM-03]
+  aspect: "2:3"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A concept artist's pencil and grey-marker sketch on white paper of an original game villain,
+    Kaal, full body front view. A tall gaunt figure with a long black coat whose hem breaks into
+    smoke-like ribbons, a cracked bronze half-mask covering the left side of his face, long white
+    hair, a third eye drawn as a vertical glowing slit on his forehead, and a staff topped with a
+    small hourglass held in his left hand. Thin construction lines are still visible around the
+    figure. A small arrow note sketched beside the mask without words.
+  avoid: ["any words", "colour", "watermark", "resemblance to an existing villain"]
+  must_contain:
+    - "Half-mask on the left side of the face"
+    - "Staff with an hourglass in the left hand"
+    - "Coat hem breaking into ribbons"
+    - "Construction lines visible"
+  alt_real: "A real scanned sketch is preferred."
+
+- id: SRC-GAM-MOUNT
+  kind: image
+  role: reference
+  used_by: [CHR-GAM-05, EDT-GAM-01]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A painted game illustration of a war-tiger mount, Vyaghra, in side profile facing frame right
+    on a sunlit savanna at golden hour. A huge Bengal tiger with one torn left ear, a white scar
+    across its right eye, and a pattern of stripes that forms a clear "V" shape on its forehead.
+    It wears a turquoise and brass saddle with a red tasselled saddle cloth and a small leather
+    saddle bag on its left flank. Warm sun from frame left, long shadow to the right. Painterly
+    style, visible brush strokes.
+  avoid: ["a rider", "text", "watermark"]
+  must_contain:
+    - "Torn left ear and scar across the right eye"
+    - "V stripe on the forehead"
+    - "Turquoise and brass saddle, red tassels"
+    - "Saddle bag on the left flank"
+  alt_real: ""
+
+- id: SRC-GAM-TEMPLE-LEVEL
+  kind: image
+  role: scene
+  used_by: [COV-GAM-01, STB-GAM-02, SHT-GAM-02, EDT-GAM-02]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An in-game screenshot without any interface of a stylised 3D level: a ruined granite temple
+    courtyard inspired by Hampi, late afternoon. Exact layout: a square courtyard paved in big
+    cracked stone slabs; at the far end a tall gopuram gateway with five tiers, its top tier broken
+    off; on the left side a colonnade of six carved pillars, the third from the front fallen and
+    lying across the paving; on the right a stepped stone water tank, empty and dry, with a small
+    shrine at its corner; in the centre a stone chariot on four stone wheels. One grey placeholder
+    cube sits by the chariot's right wheel. Low sun from the right throws long pillar shadows
+    across the courtyard to the left. Camera at the courtyard entrance, standing height, 24 mm.
+  avoid: ["interface elements", "characters", "text", "watermark"]
+  must_contain:
+    - "Gopuram at the far end with its top tier broken"
+    - "Six pillars on the left, the third fallen"
+    - "Dry stepped tank on the right"
+    - "Stone chariot in the centre with a grey cube by its right wheel"
+  alt_real: ""
+
+- id: SRC-GAM-MECH
+  kind: image
+  role: reference
+  used_by: [COV-GAM-03, STB-GAM-04, SHT-GAM-03, CHR-GAM-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A 3D vehicle concept render of an original hover-bike in exact right side profile, facing frame
+    right, floating half a metre above a dark reflective floor at night. A long low body in matte
+    graphite with an orange stripe running from nose to tail, two round turbine pods under the
+    front and rear glowing cyan underneath, a single curved windscreen, a seat with a quilted
+    orange cover, and a white "07" decal on the rear fairing. A dent and scraped paint on the front
+    fairing. Cool studio rim lights, the cyan glow reflected in the floor.
+  avoid: ["a rider", "other text", "logos", "watermark"]
+  must_contain:
+    - "Right side profile, facing right"
+    - "Orange stripe nose to tail"
+    - "07 decal on the rear fairing"
+    - "Dent on the front fairing"
+  alt_real: ""
+
+- id: SRC-GAM-SQUAD
+  kind: image
+  role: scene
+  used_by: [COV-GAM-04, STB-GAM-03, CHR-GAM-02, EDT-GAM-03]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    Key art for an original squad game, illustrated in a clean cel-shaded style, daylight on a
+    dusty Rajasthani fort rampart. Exactly five characters stand in a line, left to right: a tall
+    bearded man with a shield and a blue turban; a short young woman with goggles and a drone on
+    her shoulder; a heavy-set older man with a grey moustache and a rocket launcher; a lean woman
+    archer with a white braid and a green scarf; and a teenage boy with a skateboard and red
+    headphones. A saffron banner flies from a pole behind the middle character. Sun high and to
+    the left; short shadows to the right.
+  avoid: ["more or fewer than five characters", "text", "logos", "watermark"]
+  must_contain:
+    - "Exactly five characters in the stated order"
+    - "Drone on the second character's shoulder"
+    - "White braid and green scarf on the archer"
+    - "Saffron banner behind the middle character"
+  alt_real: ""
+
+- id: SRC-GAM-SAGE
+  kind: image
+  role: reference
+  used_by: [CHR-GAM-06]
+  aspect: "4:5"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A painted game portrait of an original elderly sage character, chest up, three-quarter view
+    facing frame right, against a warm ochre background. About eighty, with deep brown wrinkled
+    skin, a long white beard tied with a single wooden bead, a shaved head with three ash lines
+    across the forehead, one cloudy left eye, a rudraksha mala around his neck, and a saffron
+    shawl. Soft light from upper left. Painterly, visible brush strokes.
+  avoid: ["text", "watermark", "resemblance to a real person or deity"]
+  must_contain:
+    - "Cloudy left eye"
+    - "Wooden bead tying the beard"
+    - "Three ash lines on the forehead"
+  alt_real: ""
+
+- id: SRC-GAM-STORE-BANNER
+  kind: image
+  role: reference
+  used_by: [TYP-GAM-04, EDT-GAM-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished app-store feature banner for the fictional game Shadow Raaga. On the right half, the
+    heroine Ira (dark skin, high black ponytail with gold rings, charcoal armour, red cape on the
+    right shoulder) leaps forward with her curved sword, against a stormy magenta and teal sky. On
+    the left half, top to bottom: the game logo "SHADOW RAAGA" in tall angular silver letters with
+    a thin teal glow; under it "Season 3: Monsoon Rift" in white; then a yellow rounded button
+    reading "Pre-register now"; and at the bottom "Available 21 November" in small white type.
+  avoid: ["any other text", "store badges", "ratings", "watermark"]
+  must_contain:
+    - "Every line of text exactly as given"
+    - "Heroine on the right, text on the left"
+    - "Yellow rounded button"
+  alt_real: "A designer-made banner with exactly this text is preferred."
+
+- id: SRC-GAM-LOGO
+  kind: image
+  role: reference
+  used_by: [PRD-GAM-02]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    The flat logo of the fictional game Shadow Raaga on pure black. A symbol above a wordmark. The
+    symbol: a teal (#19C2B5) crescent moon lying on its back, with a vertical silver sword passing
+    through its middle, the sword's guard shaped like the head of a veena. The wordmark below:
+    "SHADOW RAAGA" in tall angular silver capitals, the two words on one line, the width of the
+    wordmark equal to twice the width of the crescent. Flat colours, no gradients or glow.
+  avoid: ["gradients", "any other text", "watermark"]
+  must_contain:
+    - "Teal crescent on its back with a vertical sword through it"
+    - "Veena-head guard"
+    - "Wordmark twice the width of the crescent"
+  alt_real: "A vector logo exported to PNG is preferred."
+
+- id: SRC-GAM-CYBER-STREET
+  kind: image
+  role: scene
+  used_by: [PHY-GAM-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An in-game screenshot without interface of a stylised 3D cyberpunk market street in a future
+    Mumbai at dusk, golden light fading. Camera at standing height looking down the street, 28 mm.
+    On the left, a row of four food stalls with tarpaulin roofs; on the right, three thick concrete
+    pillars holding up an elevated metro track that runs overhead to the vanishing point; at the
+    far end a giant holographic lotus floating above the street. The street is empty of people.
+    Warm low sun from the far end, long shadows of the pillars toward the camera.
+  avoid: ["people", "readable text or signs", "interface elements", "watermark"]
+  must_contain:
+    - "Four stalls on the left"
+    - "Three pillars on the right under the metro track"
+    - "Holographic lotus at the far end"
+    - "No people"
+  alt_real: ""
+
+# ------------------------------------------------------------ Real estate, interiors & architecture
+
+- id: SRC-RES-LIVING-FLAT
+  kind: image
+  role: scene
+  used_by: [COV-RES-01, PRD-RES-01, EDT-RES-01]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A real-estate listing photo of the living room of a lived-in two-bedroom flat in a Mumbai
+    tower, late morning, shot from the entrance corner at chest height with a 16 mm wide
+    perspective, verticals kept straight. Exact layout: along the left wall, a grey three-seat
+    fabric sofa facing right, with a framed abstract print above it and a pile of newspapers on its
+    left cushion; at the back left, a doorway to the kitchen and beside it a tall snake plant in a
+    white pot; the back wall is a sliding glass door to a narrow balcony, through which other
+    towers and a laundry rack on the balcony are visible; on the right wall, a wall-mounted
+    television, switched off, over a low white console with loose wires hanging below it; in the
+    centre, a round wooden coffee table on a beige rug. White vitrified floor tiles, a ceiling fan
+    and four recessed lights, all off. Daylight comes only from the balcony door.
+  avoid: ["people", "pets", "readable text", "brand logos", "watermark"]
+  must_contain:
+    - "Sofa on the left wall facing right, newspapers on its left cushion"
+    - "Kitchen doorway and snake plant at the back left"
+    - "Sliding balcony door at the back with a laundry rack outside"
+    - "TV over a white console on the right wall, wires hanging"
+    - "Round coffee table on a beige rug in the centre"
+  alt_real: "A real listing photo with this layout is preferred."
+
+- id: SRC-RES-BEDROOM
+  kind: image
+  role: scene
+  used_by: [COV-RES-02, EDT-RES-02]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An empty, unfurnished bedroom in a new apartment in Pune at golden hour, shot from the doorway
+    at chest height, 18 mm, verticals straight. The room is about 3.5 by 4 metres with off-white
+    walls and grey-beige vitrified tiles. On the far wall, a wide window with a black aluminium
+    frame divided into three panes, looking out on a hill and a few low buildings; warm low
+    sunlight comes through it and lays three bright panels of light on the floor towards the
+    camera. On the right wall, a built-in wardrobe with three plain white shutters. On the left
+    wall, a single switchboard and an air-conditioner outlet near the ceiling. Nothing else in the
+    room.
+  avoid: ["furniture", "people", "text", "watermark"]
+  must_contain:
+    - "Three-pane window on the far wall"
+    - "Three panels of sunlight on the floor"
+    - "Three-shutter wardrobe on the right wall"
+    - "Room empty of furniture"
+  alt_real: "A real photo of an empty room is preferred."
+
+- id: SRC-RES-VILLA-EXT
+  kind: image
+  role: scene
+  used_by: [COV-RES-03, EDT-RES-03, PHY-RES-11]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    The front elevation of a contemporary two-storey villa in a Bengaluru gated community, shot
+    straight on from the street at 1.6 metres with a 24 mm perspective and straight verticals,
+    mid-morning sun from the left. Exact layout: a flat-roofed white box on the ground floor with a
+    wide glass door on the right and a teak-clad wall on the left; a cantilevered upper floor in
+    exposed grey concrete that overhangs the ground floor by about two metres on the right,
+    holding a long horizontal window; a covered porch under the overhang with an empty wooden
+    swing hanging on two chains; a black metal gate and a low granite boundary wall in the
+    foreground; a frangipani tree on the left of the lawn. Clear blue sky.
+  avoid: ["people", "cars", "house numbers or text", "watermark"]
+  must_contain:
+    - "Teak wall on the left, glass door on the right of the ground floor"
+    - "Concrete upper floor overhanging on the right"
+    - "Empty swing on two chains under the overhang"
+    - "Frangipani on the left, gate and granite wall in front"
+  alt_real: "A real or licensed photo of a villa with this layout is acceptable."
+
+- id: SRC-RES-TOWER-SITE
+  kind: image
+  role: scene
+  used_by: [COV-RES-04, PRD-RES-02]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A drone photo at about forty metres of a nearly finished 22-storey residential tower in
+    Hyderabad at harsh noon, seen from the south-east. The tower is a slim rectangle with balconies
+    on its south face (frame left) stacked in a zig-zag pattern, a plain east face (frame right)
+    with a single vertical strip of small windows, and a lift-machine room on the roof painted
+    blue. A yellow tower crane stands beside the north-east corner. At the base, a site office in
+    white portable cabins and a green mesh fence around the plot; a main road with traffic along
+    the bottom of the frame. Short hard shadows.
+  avoid: ["readable signs or text", "brand logos", "watermark"]
+  must_contain:
+    - "Zig-zag balconies on the south face, plain east face with one window strip"
+    - "Blue lift room on the roof"
+    - "Yellow crane at the north-east corner"
+    - "Site cabins and green fence at the base"
+  alt_real: "A real drone photo of a tower under construction is acceptable."
+
+- id: SRC-RES-PLAN
+  kind: image
+  role: reference
+  used_by: [COV-RES-05]
+  aspect: "4:3"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A clean architectural floor plan of a three-bedroom flat in black line on white, top-down,
+    with north arrow at the top right. Rooms labelled in plain capitals: "LIVING", "DINING",
+    "KITCHEN", "BED 1", "BED 2", "BED 3", "BALCONY". The living room sits in the south-west
+    corner with a balcony along its south side; dining is east of living and opens to the kitchen
+    to its north; the three bedrooms run along the north side. Furniture is drawn in simple line:
+    a three-seat sofa and TV wall in living, a six-seat table in dining, a double bed in each
+    bedroom. Five numbered camera marks, each a small circled number with an arrow showing the
+    view direction: 1 in the living-room corner by the entrance looking at the balcony; 2 in
+    dining looking into the kitchen; 3 in BED 1 doorway looking at the bed; 4 on the balcony
+    looking back into living; 5 in the kitchen looking out to dining.
+  avoid: ["colour fills", "dimensions", "any other text", "watermark"]
+  must_contain:
+    - "All seven room labels exactly as given"
+    - "Five numbered camera marks with direction arrows"
+    - "North arrow at the top right"
+  alt_real: "An architect-drawn plan with exactly this layout is preferred."
+
+- id: SRC-RES-PLOT-LAND
+  kind: image
+  role: scene
+  used_by: [COV-RES-06, EDT-RES-04, PHY-RES-10]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An empty hillside plot in North Goa at golden hour, shot from the access track at the bottom of
+    the plot at standing height, 24 mm. The plot slopes gently up from the camera towards a ridge
+    with a line of coconut palms. Exact layout: a red laterite stone survey marker in the lower
+    left; two cashew trees in the middle of the plot, the left one larger; a dry stream bed running
+    diagonally from the lower right up to the middle; a single electricity pole at the top right
+    by the ridge; tall dry grass everywhere. Low sun from the right, long shadows to the left. The
+    Arabian Sea is a thin blue line visible to the left of the ridge.
+  avoid: ["buildings", "people", "vehicles", "text", "watermark"]
+  must_contain:
+    - "Survey marker lower left"
+    - "Two cashew trees mid-plot, the left one larger"
+    - "Dry stream bed from lower right to the middle"
+    - "Electricity pole top right; sea to the left of the ridge"
+  alt_real: "A real or licensed land photo with this layout is acceptable."
+
+- id: SRC-RES-HOTEL-LOBBY
+  kind: image
+  role: scene
+  used_by: [COV-RES-07, CMP-RES-03, PHY-RES-08]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    The lobby of a contemporary hotel in the evening, empty, shot centred from the entrance at
+    chest height with a 20 mm perspective and straight verticals. A double-height space with a
+    large ring chandelier of brass hoops hanging dead centre; a long reception desk in white marble
+    along the back wall with a backlit onyx panel behind it; on the left, a seating group of two
+    green velvet sofas facing each other across a low brass table; on the right, a wall of
+    floor-to-ceiling bookshelves with a rolling ladder. Polished terrazzo floor that reflects the
+    chandelier. Warm practical light only.
+  avoid: ["people", "logos or readable signs", "watermark"]
+  must_contain:
+    - "Ring chandelier centred"
+    - "Reception with backlit onyx at the back"
+    - "Green velvet sofas on the left, bookshelves with ladder on the right"
+    - "Chandelier reflected in the floor"
+  alt_real: "A licensed hotel photo with this layout is acceptable."
+
+- id: SRC-RES-ARCH-SKETCH
+  kind: image
+  role: reference
+  used_by: [PHY-RES-09]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    An architect's black ink perspective sketch on white paper of a small three-storey office
+    building on a street corner, seen from across the road at eye level, two-point perspective.
+    The facade facing frame left is a full-height glass curtain wall in a grid of 4 by 3 panels;
+    the facade facing frame right is solid brick with three deep vertical window slots; a flat
+    roof with a thin overhang; a large rain tree drawn loosely across the street on the left,
+    opposite the glass facade. Light hatching only. No words.
+  avoid: ["any words or annotations", "colour", "watermark"]
+  must_contain:
+    - "Glass grid facade on the left, brick facade with three slots on the right"
+    - "Rain tree opposite the glass facade"
+  alt_real: "A real scanned sketch is preferred."
+
+- id: SRC-RES-SOFA
+  kind: image
+  role: reference
+  used_by: [PRD-RES-01]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A furniture packshot of a fictional three-seat sofa on seamless white, front three-quarter view
+    from the left. The sofa is 2.2 metres wide and 85 cm high, in rust-orange cotton-linen with
+    three seat cushions, two bolster cushions in mustard at the arms, a low back and thin solid
+    teak legs splayed outwards. Soft even light, soft contact shadow. 50 mm.
+  avoid: ["props", "text", "watermark"]
+  must_contain:
+    - "Rust-orange body, three seat cushions"
+    - "Mustard bolsters at both arms"
+    - "Splayed teak legs"
+  alt_real: "A real product photo is preferred."
+
+- id: SRC-RES-CLADDING
+  kind: image
+  role: reference
+  used_by: [PRD-RES-02]
+  aspect: "1:1"
+  resolution: "at least 2000 px"
+  source_prompt: |
+    A product photo of a facade cladding sample on white: a 1.2 by 1.2 metre panel of horizontal
+    terracotta louvres, each louvre a hollow rectangular tube 5 cm deep, in a warm burnt-orange
+    with slight colour variation between louvres, spaced with even 3 cm gaps, mounted on a
+    visible black aluminium sub-frame at the back. Three-quarter view from the left so the depth
+    and the gaps show. Even light, soft shadow through the gaps. 85 mm.
+  avoid: ["text", "logos", "watermark"]
+  must_contain:
+    - "Horizontal hollow terracotta louvres with even gaps"
+    - "Slight colour variation between louvres"
+    - "Black sub-frame visible"
+  alt_real: "A real sample photo is preferred."
+
+# ------------------------------------------------------------ Media, publishing & events
+
+- id: SRC-MED-CONCERT
+  kind: image
+  role: scene
+  used_by: [COV-MED-01, EDT-MED-02]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A music-festival stage in Bengaluru at night, photographed from the front-of-house desk in the
+    middle of the crowd, 35 mm, at standing height over the crowd's heads. A four-piece band: the
+    singer, a woman in a silver jacket, at a centre microphone; a guitarist on stage left (frame
+    left); a bassist on stage right; a drummer on a raised riser at the back centre. Behind them, a
+    wide LED screen showing a slow orange and purple gradient. Two lighting trusses above the stage
+    with moving heads throwing magenta beams from stage left and cyan beams from stage right
+    through haze. In the foreground, the crowd's silhouettes, with three raised hands holding
+    phones filming, their screens glowing.
+  avoid: ["readable text or logos", "brand names on instruments", "watermark"]
+  must_contain:
+    - "Four musicians in the stated positions"
+    - "LED screen with an orange-purple gradient"
+    - "Magenta beams from stage left, cyan from stage right"
+    - "Three raised phones in the foreground"
+  alt_real: "A licensed concert photo with this layout is acceptable."
+
+- id: SRC-MED-NEWSROOM
+  kind: image
+  role: scene
+  used_by: [COV-MED-02, EDT-MED-01, PHY-MED-04]
+  aspect: "16:9"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A frame from a Hindi television news broadcast. A fictional news anchor, a man of about forty
+    with short grey-flecked hair, rectangular black glasses and a navy suit with a maroon tie,
+    sits behind a curved white desk, medium shot, centred, looking into the lens. Behind him, a
+    large screen shows a blurred city skyline. One soft key light from front left; a faint shadow
+    of his head falls on the screen behind to his left. At the bottom, a red lower-third band
+    reading "मुंबई में भारी बारिश" in white Devanagari, and below it a blue ticker reading
+    "ट्रेनें 20 मिनट देरी से चल रही हैं". A small white clock "09:15" at the top right.
+  avoid: ["channel logos", "any other text", "watermark", "resemblance to a real anchor"]
+  must_contain:
+    - "Lower-third text exactly मुंबई में भारी बारिश"
+    - "Ticker text exactly ट्रेनें 20 मिनट देरी से चल रही हैं"
+    - "Clock 09:15 at the top right"
+    - "Key light from front left"
+  alt_real: ""
+
+- id: SRC-MED-TRAVEL-PHOTO
+  kind: image
+  role: scene
+  used_by: [CMP-MED-06]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A travel photo of a small stone hill temple on a ridge in the Western Ghats at dawn, in mist,
+    shot by an amateur: the horizon runs straight through the middle of the frame and the whole
+    picture is tilted about three degrees clockwise. The temple sits dead centre on the ridge;
+    layers of mist fill the valleys below; a few pink clouds in a pale sky above; a single tree on
+    the ridge to the right of the temple. 35 mm, standing height.
+  avoid: ["people", "text", "watermark"]
+  must_contain:
+    - "Horizon through the middle"
+    - "A visible clockwise tilt"
+    - "Temple dead centre; one tree to its right"
+  alt_real: "A real travel photo with these faults is preferred."
+
+- id: SRC-MED-EVENT-POSTER
+  kind: image
+  role: reference
+  used_by: [TYP-MED-13, TYP-MED-16]
+  aspect: "2:3"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished portrait event poster for a fictional night, on black. In the upper half, a DJ in
+    profile under a single red light, hands raised on the decks. Text, exactly: across the middle
+    in a huge condensed yellow sans "NIGHT SHIFT"; under it in white "with DJ KIRA"; then
+    "SAT 14 DEC · 10 PM TILL LATE"; then a smaller line "Tickets ₹999 at the door"; at the bottom
+    in small white capitals "THE BASEMENT, JUBILEE HILLS, HYDERABAD". A thin yellow frame runs
+    round the poster's edge.
+  avoid: ["any other text", "sponsor logos", "watermark"]
+  must_contain:
+    - "Every line of text exactly as given"
+    - "DJ in the upper half"
+    - "Thin yellow frame"
+  alt_real: "A designer-made poster with exactly this text is preferred."
+
+- id: SRC-MED-MAG-COVER
+  kind: image
+  role: reference
+  used_by: [TYP-MED-14]
+  aspect: "4:5"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A finished cover for a fictional fashion magazine, ORBIT. A model of about thirty in a sculpted
+    white blazer stands against a coral background, three-quarter length, slightly left of centre.
+    The masthead "ORBIT" in tall black serif capitals across the top, partly behind her head.
+    Cover lines on the right in a black condensed sans: "THE MONSOON EDIT", "48 looks for
+    the rains", and in a small red box "Designers to watch: 10 new names". Bottom left: "OCTOBER
+    2026 · ₹150". Studio light from the left.
+  avoid: ["any other text", "barcodes", "real magazine names", "watermark"]
+  must_contain:
+    - "Masthead ORBIT partly behind her head"
+    - "Every cover line exactly as given"
+    - "OCTOBER 2026 · ₹150 bottom left"
+  alt_real: "A designer-made cover with exactly this text is preferred."
+
+- id: SRC-MED-NEWSPAPER
+  kind: image
+  role: scene
+  used_by: [TYP-MED-15]
+  aspect: "3:2"
+  resolution: "at least 2400 px on the long side"
+  source_prompt: |
+    A photo of a printed Hindi newspaper front page lying on a café table beside a cup of chai,
+    seen from above at an angle, the paper slightly curled at the right edge so the headline bends.
+    The masthead "नगर समाचार" in heavy black at the top. The main headline in large bold
+    Devanagari across the top half: "शहर में नई मेट्रो लाइन शुरू". Under it a photo of a metro
+    train and three columns of small body text. Soft daylight from a window on the left, a gentle
+    shadow of the cup across the lower left of the page.
+  avoid: ["any English text", "real newspaper names", "watermark"]
+  must_contain:
+    - "Masthead नगर समाचार"
+    - "Headline exactly शहर में नई मेट्रो लाइन शुरू, bending with the curl"
+    - "Cup shadow across the lower left"
+  alt_real: "A photo of a real printed mock page is preferred."

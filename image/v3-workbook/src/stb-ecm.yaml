@@ -1,0 +1,75 @@
+# Storyboards — E-commerce, D2C & retail scenarios. Slots: stb.yaml.
+code: STB
+scenarios:
+
+- id: STB-ECM-01
+  title: "Six-panel board for a saree product video, from the flat-lay"
+  persona: "Content lead at a saree marketplace boarding a 20-second product video for the listing."
+  evidence: "Product videos are boarded from the flat-lay; the border, pallu and body must stay the same textile in every panel."
+  levers: [count, exact-text, identity, continuity, locale]
+  inputs: [{source: SRC-ECM-SAREE-FLAT, role: source}]
+  prompt: |
+    Using this flat-lay of a silk saree (peacock-green body with gold buttis, magenta border with
+    a gold temple pattern, magenta pallu with gold stripes and peacocks), draw a six-panel
+    storyboard in clean illustration with flat colour, two rows of three, 9:16 frames. Captions
+    exactly: "1 · Folded saree on the table", "2 · Hands unfold the pallu", "3 · Border close-up",
+    "4 · Model drapes it", "5 · Pallu over the shoulder", "6 · Slow twirl". The textile's colours
+    and motifs match the flat-lay in every panel; in panel 3 the temple pattern is clearly drawn;
+    in panel 5 the peacocks are on the pallu. The model is a woman in her thirties with a low bun.
+    No other text.
+  exact_text:
+    - "1 · Folded saree on the table"
+    - "3 · Border close-up"
+    - "6 · Slow twirl"
+  deliverable: "One wide image of six 9:16 panels."
+  checks:
+    - [prompt_adherence, "Are there six panels, each 9:16?"]
+    - [text_accuracy, "Are the captions exact?"]
+    - [reference_fidelity, "Is the body peacock green with gold buttis in every panel?"]
+    - [reference_fidelity, "Is the border magenta with a temple pattern?"]
+    - [reference_fidelity, "Are peacocks on the pallu in panel 5?"]
+    - [prompt_adherence, "Is panel 3 a close-up of the border?"]
+    - [set_consistency, "Is the model the same in panels 4 to 6?"]
+    - [physics_plausibility, "Does the drape fall naturally?"]
+    - [style, "Is the illustration style consistent?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [visual_quality, "Are hands clean in panel 2?"]
+    - [prompt_adherence, "Is there one model only?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One image edit with one input."}
+  video_followon: ""
+
+- id: STB-ECM-02
+  title: "Unboxing reel for a phone case from a written script: nine vertical panels"
+  persona: "D2C accessories brand's social lead boarding an unboxing reel."
+  evidence: "Panel count, order and a 3×3 grid of vertical frames is easy to get wrong."
+  levers: [count, exact-text, time-code, camera, exclude]
+  prompt: |
+    Draw a storyboard of nine 9:16 panels in a three-by-three grid, pencil with one accent colour
+    (coral), for a 15-second unboxing reel of a coral silicone phone case. Captions exactly: "1 ·
+    0:00 · Box on the desk", "2 · 0:01 · Thumb breaks the seal", "3 · 0:03 · Lid lifts",
+    "4 · 0:04 · Case in tissue", "5 · 0:06 · Case held up", "6 · 0:08 · Phone slides in",
+    "7 · 0:10 · Corner drop test", "8 · 0:12 · Case survives", "9 · 0:14 · End card". The case is
+    coral in every panel; the phone is plain black with no logo; hands are the only person shown.
+    No other text or logos.
+  exact_text:
+    - "1 · 0:00 · Box on the desk"
+    - "5 · 0:06 · Case held up"
+    - "9 · 0:14 · End card"
+  deliverable: "One image, nine 9:16 panels in a 3×3 grid."
+  checks:
+    - [prompt_adherence, "Are there exactly nine panels in a 3×3 grid?"]
+    - [composition, "Is every panel a 9:16 frame?"]
+    - [text_accuracy, "Are the captions exact and in time order?"]
+    - [style, "Is coral used only on the case?"]
+    - [prompt_adherence, "Does each panel show its caption?"]
+    - [prompt_adherence, "Are hands the only person visible?"]
+    - [prompt_adherence, "Is the phone plain black with no logo?"]
+    - [prompt_adherence, "Is panel 2 a close view of a thumb on a seal?"]
+    - [physics_plausibility, "Does panel 7 show the phone falling corner first?"]
+    - [style, "Is the pencil style consistent?"]
+    - [visual_quality, "Are hands drawn cleanly?"]
+    - [prompt_adherence, "Is panel 9 an end card without other text?"]
+  competitor: "GPT Image 2 (high)"
+  runnable_today: {status: "yes", note: "One text-to-image call."}
+  video_followon: ""
