@@ -235,9 +235,15 @@ Once, about ten minutes:
 
 What the script does: `POST` a vote as the reviewer saw it → resolve the
 models from `key` → append `ts, reviewer, lane, run_id, scenario_id, picked,
-over, reason`; `?action=votes&reviewer=` → that reviewer's last pick per
-item as a media id (no model name); `?action=results` → every reviewer's
-last vote per scenario, models named, for the hidden results page.
+over, reason`, and answer `{"ok": true}` and nothing else;
+`?action=votes&reviewer=` → that reviewer's last pick per item as a media id
+(no model name). The web app's URL is public, so the results (every
+reviewer's last vote, models named) are given only for a passcode: add a tab
+named `settings` with `results_passcode` in A1 and the passcode in B1, and
+the dashboard's results page asks for it. Without that tab there are none. A
+tab named `reviewers` (one name per row in column A) limits voting to those
+names. Do not sort or clear the `votes` tab in place; to remove test votes
+delete rows 2 downward.
 
 The correlation reads the sheet directly: File → Download → CSV of the
 `votes` tab, then `correlate --votes votes.csv`.
