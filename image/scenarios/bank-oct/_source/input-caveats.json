@@ -1,0 +1,398 @@
+{
+ "note": "Input images that still contradict their scenario after one correction round (2026-10-09). Both models get the SAME input, so the head-to-head stays fair, but checks that test the contradicted detail are noisy. Report headline results with and without these.",
+ "not_usable": [
+  "CHR-FLM-06",
+  "CHR-FLM-10",
+  "CHR-FLM-11",
+  "CHR-GAM-03",
+  "CHR-GAM-05",
+  "COV-ECM-05",
+  "COV-FLM-08",
+  "EDT-ECM-02"
+ ],
+ "partial": [
+  "CHR-ADS-01",
+  "CHR-ECM-02",
+  "CHR-FLM-01",
+  "CHR-FLM-02",
+  "CHR-FLM-04",
+  "CHR-GAM-01",
+  "COV-ADS-02",
+  "COV-ECM-02",
+  "COV-GAM-02",
+  "EDT-ECM-07",
+  "EDT-GAM-01",
+  "IMGEDIT-068",
+  "IMGEDIT-090",
+  "IMGEDIT-107",
+  "SHT-ADS-04",
+  "SHT-GAM-01",
+  "STB-ADS-01",
+  "STB-FLM-05",
+  "STB-FLM-06",
+  "STB-FLM-09",
+  "STB-GAM-01",
+  "STB-GAM-02"
+ ],
+ "detail": {
+  "CHR-FLM-04": [
+   {
+    "input": "src-68b989c754cf",
+    "input_usable": "partial",
+    "reason": "Works as Meera's reference for face, skin tone, stud side and mangalsutra. But the prompt and checklist say 'the mole above the right corner of her lip', and the photo has the mole on her LEFT corner, so a faithful model and the checklist will disagree.",
+    "still_wrong": [
+     "The mole sits at the PICTURE-RIGHT corner of the mouth, which is HER LEFT. That is the same side as the nose stud. The brief asks for her right upper-lip corner, on the picture's left, opposite the stud.",
+     "There are extra marks: two small dark spots on the chin and one just below the picture-left corner of the lower lip. The brief says no other moles, spots or marks.",
+     "The braid hangs over HER RIGHT shoulder (picture left). The brief asks for her left shoulder (picture right)."
+    ]
+   }
+  ],
+  "CHR-FLM-02": [
+   {
+    "input": "src-68b989c754cf",
+    "input_usable": "partial",
+    "reason": "The prompt says the mole is 'just above the right corner of her upper lip', and two checklist items test it at every age. The source has the mole on her left corner, so the identity-mark check is contradicted. The stud, mangalsutra and dusky skin are fine.",
+    "still_wrong": [
+     "The mole sits at the PICTURE-RIGHT corner of the mouth, which is HER LEFT. That is the same side as the nose stud. The brief asks for her right upper-lip corner, on the picture's left, opposite the stud.",
+     "There are extra marks: two small dark spots on the chin and one just below the picture-left corner of the lower lip. The brief says no other moles, spots or marks.",
+     "The braid hangs over HER RIGHT shoulder (picture left). The brief asks for her left shoulder (picture right)."
+    ]
+   }
+  ],
+  "CHR-FLM-01": [
+   {
+    "input": "src-bf39d78917a4",
+    "input_usable": "partial",
+    "reason": "The scar, kada, moustache, stubble and skin tone all match. But the prompt and two checklist items require 'hair parted on his left', and the source shows no clear part, so that check has no firm reference.",
+    "still_wrong": [
+     "The hair has no clearly visible side part. The wavy hair is swept up and across into a quiff, with only a faint parting line at the picture-right temple (his left).",
+     "The wrists sit at the very bottom edge. Both forearms are cut off by the frame and the hands are out of shot, so 'BOTH wrists inside the frame' is only just met. The kada is visible on his right forearm and his left forearm is bare."
+    ]
+   }
+  ],
+  "EDT-ECM-02": [
+   {
+    "input": "src-9c0107bc118b",
+    "input_usable": "no",
+    "reason": "Three of the five edits and checks do not match the source. Edit 2 asks to remove 'the safety pin at the kurta's right hem', but there is no pin there, and two pins hang elsewhere. Edit 3 asks to straighten a crooked dupatta that is already nearly straight. The checklist expects 'the five white buttons', but there are six. The recolour, outpaint and earring swap would still work.",
+    "still_wrong": [
+     "The placket has SIX white buttons, not five.",
+     "There are TWO safety pins, both on the PICTURE RIGHT (her left). One dangles from the kurta hem at picture right and one dangles from the lower end of the dupatta, right of centre. Neither is at the hem on her right side (picture left), and both hang below the hem instead of being pinned on the fabric.",
+     "The dupatta is over her left shoulder (picture right), which is correct. But it hangs almost straight down her front. It is not twisted or pulled at an angle across her body, and only one end is visible, so it does not read as 'visibly crooked'."
+    ]
+   }
+  ],
+  "COV-ECM-02": [
+   {
+    "input": "src-9c0107bc118b",
+    "input_usable": "partial",
+    "reason": "The dupatta on her left shoulder, the print, the jhumkas and the window light all match. But the prompt describes 'a five-button placket' and the checklist asks 'Are there five white buttons?', while the source has six.",
+    "still_wrong": [
+     "The placket has SIX white buttons, not five.",
+     "There are TWO safety pins, both on the PICTURE RIGHT (her left). One dangles from the kurta hem at picture right and one dangles from the lower end of the dupatta, right of centre. Neither is at the hem on her right side (picture left), and both hang below the hem instead of being pinned on the fabric.",
+     "The dupatta is over her left shoulder (picture right), which is correct. But it hangs almost straight down her front. It is not twisted or pulled at an angle across her body, and only one end is visible, so it does not read as 'visibly crooked'."
+    ]
+   }
+  ],
+  "SHT-ADS-04": [
+   {
+    "input": "src-4b9ffb2d6c7a",
+    "input_usable": "partial",
+    "reason": "The quiff, gloves and sneakers match. But the prompt and checklist require 'the gold tooth on his right side', and the source shows it on his left, so a model copying the reference fails that check.",
+    "still_wrong": [
+     "The single gold tooth is on the PICTURE-RIGHT side of the grin (his left). The brief asks for the picture-left side (his right)."
+    ]
+   }
+  ],
+  "CHR-ADS-01": [
+   {
+    "input": "src-4b9ffb2d6c7a",
+    "input_usable": "partial",
+    "reason": "The quiff, gloves and sneakers match. The prompt and two checklist items say the gold tooth is on his right side, but the source has it on his left.",
+    "still_wrong": [
+     "The single gold tooth is on the PICTURE-RIGHT side of the grin (his left). The brief asks for the picture-left side (his right)."
+    ]
+   }
+  ],
+  "STB-ADS-01": [
+   {
+    "input": "src-4b9ffb2d6c7a",
+    "input_usable": "partial",
+    "reason": "The 3D style, quiff, gloves and sneakers match. The prompt and checklist require 'one gold tooth on his right side', which the source contradicts.",
+    "still_wrong": [
+     "The single gold tooth is on the PICTURE-RIGHT side of the grin (his left). The brief asks for the picture-left side (his right)."
+    ]
+   }
+  ],
+  "STB-FLM-09": [
+   {
+    "input": "src-9da4fa60194b",
+    "input_usable": "partial",
+    "reason": "The rider, horse, dunes, sunrise direction and blaze all work for a charcoal storyboard. But the prompt and checklist require 'the single white sock on the front left leg', and the source has two hind socks and no front sock.",
+    "still_wrong": [
+     "Both HIND legs have white socks, from the hoof to above the fetlock, so there are two white socks, not one.",
+     "Both forelegs, including the far left foreleg, are solid dark bay to the hoof with no white. The required white sock on the left foreleg is missing."
+    ]
+   }
+  ],
+  "CHR-FLM-10": [
+   {
+    "input": "src-9da4fa60194b",
+    "input_usable": "no",
+    "reason": "This scenario tests marking consistency first: 'Is the white sock on the front left leg only, in every frame?' and 'Is the sock still on the front left?'. The source directly contradicts both, with white on both hind legs and none on the front, so a faithful model is marked wrong.",
+    "still_wrong": [
+     "Both HIND legs have white socks, from the hoof to above the fetlock, so there are two white socks, not one.",
+     "Both forelegs, including the far left foreleg, are solid dark bay to the hoof with no white. The required white sock on the left foreleg is missing."
+    ]
+   }
+  ],
+  "CHR-GAM-05": [
+   {
+    "input": "src-06e08564ef01",
+    "input_usable": "no",
+    "reason": "All three side markers the scenario tests contradict the prompt: there is no torn left ear, the scar is across the LEFT eye instead of the right, and the bag is on the right flank. Checklist items such as 'torn ear on frame right (its left)' and 'scar across its right eye' have no valid reference.",
+    "still_wrong": [
+     "The tiger walks toward frame RIGHT (head right, tail left), so its own RIGHT flank faces the camera. The brief asks for it to walk toward frame left with its left flank showing.",
+     "The saddle bag is therefore on its RIGHT flank.",
+     "Neither ear has a large, obvious torn notch. Both ears read as intact, with at most a tiny nick at the tip of the frame-left ear.",
+     "The white and red scar runs vertically across the eye on the FRAME-RIGHT side of the face, which is its own LEFT eye. The brief asks for its own right eye, on the frame-left side.",
+     "The forehead stripes converge into a loose V-like shape, not a bold, distinct dark V."
+    ]
+   }
+  ],
+  "EDT-GAM-01": [
+   {
+    "input": "src-06e08564ef01",
+    "input_usable": "partial",
+    "reason": "All four edits (silver and enamel saddle, removing the visible bag, snowfield, white fur cloth) can be done on this image. But the preservation checks 'torn left ear unchanged' and 'scar across the right eye unchanged' refer to features the source does not have, and the bag is not on its left flank.",
+    "still_wrong": [
+     "The tiger walks toward frame RIGHT (head right, tail left), so its own RIGHT flank faces the camera. The brief asks for it to walk toward frame left with its left flank showing.",
+     "The saddle bag is therefore on its RIGHT flank.",
+     "Neither ear has a large, obvious torn notch. Both ears read as intact, with at most a tiny nick at the tip of the frame-left ear.",
+     "The white and red scar runs vertically across the eye on the FRAME-RIGHT side of the face, which is its own LEFT eye. The brief asks for its own right eye, on the frame-left side.",
+     "The forehead stripes converge into a loose V-like shape, not a bold, distinct dark V."
+    ]
+   }
+  ],
+  "COV-ADS-02": [
+   {
+    "input": "src-0dd64a2776a6",
+    "input_usable": "partial",
+    "reason": "The four people, clothes, fairy lights and firework all match. But the prompt fixes 'seven diyas', and checklist items such as 'Are there seven diyas along the ledge in the foreground?' contradict the five on the source ledge. 'Is the rangoli round, pink, yellow and white?' is contradicted by the red centre.",
+    "still_wrong": [
+     "Only FIVE lit diyas sit in the row on the ledge. A sixth lit diya is held in the mother's hands, next to a lit matchstick. The brief asks for exactly seven in one row on the ledge.",
+     "The centre of the round rangoli is a filled RED disc. The brief asks for pink, yellow and white only, with nothing in the centre.",
+     "Minor (from the base brief): the girl sits at frame right in front of the father, not in front of the mother, and the bottom edge of the frame cuts off part of the rangoli."
+    ]
+   }
+  ],
+  "STB-FLM-05": [
+   {
+    "input": "src-630659fa9750",
+    "input_usable": "partial",
+    "reason": "The rider, the bike type and the highway work as references for a pencil storyboard. But the prompt says the dent stays on the right of the tank and the thread on the left grip, and the source has the thread on the right grip and no visible dent.",
+    "still_wrong": [
+     "The bike's nose points to frame LEFT and toward the camera. This is a front-LEFT three-quarter view showing the bike's LEFT side, not its right.",
+     "The red thread is wound on the far, picture-left grip under the rider's RIGHT hand, which is the bike's RIGHT grip. Its tassel also runs along the bar to the centre by the headlamp clamp. The brief asks for the left grip, with nothing red on the right grip or bar centre.",
+     "No concave dent is visible on the tank. The visible flank is the left one and shows only a diamond-shaped badge recess, and the right flank is not visible at all.",
+     "The visible near saddlebag is the LEFT one, not the right.",
+     "Little or no heat shimmer is visible on the asphalt."
+    ]
+   }
+  ],
+  "COV-FLM-08": [
+   {
+    "input": "src-630659fa9750",
+    "input_usable": "no",
+    "reason": "This scenario tests side-specific details: 'dent only ever on the right', 'thread only ever on the left grip', and the left view showing no dent. The source has the thread on the right grip and shows no dent or right flank, so the model's reference contradicts the prompt.",
+    "still_wrong": [
+     "The bike's nose points to frame LEFT and toward the camera. This is a front-LEFT three-quarter view showing the bike's LEFT side, not its right.",
+     "The red thread is wound on the far, picture-left grip under the rider's RIGHT hand, which is the bike's RIGHT grip. Its tassel also runs along the bar to the centre by the headlamp clamp. The brief asks for the left grip, with nothing red on the right grip or bar centre.",
+     "No concave dent is visible on the tank. The visible flank is the left one and shows only a diamond-shaped badge recess, and the right flank is not visible at all.",
+     "The visible near saddlebag is the LEFT one, not the right.",
+     "Little or no heat shimmer is visible on the asphalt."
+    ]
+   }
+  ],
+  "CHR-FLM-11": [
+   {
+    "input": "src-630659fa9750",
+    "input_usable": "no",
+    "reason": "The first two checklist items and the per-frame side checks ('dent visible on this right side', 'red thread on the near grip' from the left) depend on the dent being on the right and the thread on the left. The source has the thread on the right grip and no visible dent.",
+    "still_wrong": [
+     "The bike's nose points to frame LEFT and toward the camera. This is a front-LEFT three-quarter view showing the bike's LEFT side, not its right.",
+     "The red thread is wound on the far, picture-left grip under the rider's RIGHT hand, which is the bike's RIGHT grip. Its tassel also runs along the bar to the centre by the headlamp clamp. The brief asks for the left grip, with nothing red on the right grip or bar centre.",
+     "No concave dent is visible on the tank. The visible flank is the left one and shows only a diamond-shaped badge recess, and the right flank is not visible at all.",
+     "The visible near saddlebag is the LEFT one, not the right.",
+     "Little or no heat shimmer is visible on the asphalt."
+    ]
+   }
+  ],
+  "EDT-ECM-07": [
+   {
+    "input": "src-1b6661ec389c",
+    "input_usable": "partial",
+    "reason": "The strap recolour and jogger removal can be done and judged. But edit 2 changes the time 'from 06:45', and the source face does not show 06:45 (it reads roughly '6P:30'), so the starting state for that edit is wrong.",
+    "still_wrong": [
+     "The watch is on her RIGHT wrist. She faces frame right, so her near arm is her right arm (her near ear and the pallu over the far shoulder confirm this), and that arm wears the watch while the other hand touches it. The brief asks for her left wrist.",
+     "The watch face is small (about 4% of the frame width) and tilted. It is not square to the camera or large in frame.",
+     "The digits are garbled and read roughly '6P:30', not crisp 06:45.",
+     "A small icon or logo sits at the top of the watch face.",
+     "The jogger's shadow falls toward the camera and lower right, not toward frame left."
+    ]
+   }
+  ],
+  "CHR-ECM-02": [
+   {
+    "input": "src-1b6661ec389c",
+    "input_usable": "partial",
+    "reason": "Her face, skin tone, braid and bindi, and the sage strap all work. But the prompt and checklist say 'The watch stays on her left wrist', and the source has it on her right wrist.",
+    "still_wrong": [
+     "The watch is on her RIGHT wrist. She faces frame right, so her near arm is her right arm (her near ear and the pallu over the far shoulder confirm this), and that arm wears the watch while the other hand touches it. The brief asks for her left wrist.",
+     "The watch face is small (about 4% of the frame width) and tilted. It is not square to the camera or large in frame.",
+     "The digits are garbled and read roughly '6P:30', not crisp 06:45.",
+     "A small icon or logo sits at the top of the watch face.",
+     "The jogger's shadow falls toward the camera and lower right, not toward frame left."
+    ]
+   }
+  ],
+  "COV-ECM-05": [
+   {
+    "input": "src-1b6661ec389c",
+    "input_usable": "no",
+    "reason": "The prompt describes the source as reading '06:45' on her left wrist, and the checklist tests 06:45 three times and the left wrist twice. The source contradicts both: the digits are garbled and the watch is on her right wrist. Only the jogger, sun and framing match.",
+    "still_wrong": [
+     "The watch is on her RIGHT wrist. She faces frame right, so her near arm is her right arm (her near ear and the pallu over the far shoulder confirm this), and that arm wears the watch while the other hand touches it. The brief asks for her left wrist.",
+     "The watch face is small (about 4% of the frame width) and tilted. It is not square to the camera or large in frame.",
+     "The digits are garbled and read roughly '6P:30', not crisp 06:45.",
+     "A small icon or logo sits at the top of the watch face.",
+     "The jogger's shadow falls toward the camera and lower right, not toward frame left."
+    ]
+   }
+  ],
+  "STB-GAM-02": [
+   {
+    "input": "src-e27f010adc2a",
+    "input_usable": "partial",
+    "reason": "The broken gopuram top, a fallen pillar after two standing ones, the dry tank and corner shrine on the right, and low-sun shadows to the left are all present. But the prompt and checklist say the chariot is in the centre, while the source puts it right of the axis beside the tank.",
+    "still_wrong": [
+     "The left colonnade does not have exactly six pillars. I count seven standing (two before the fallen one at about x100 and x245, then five more at about x400, 445, 478, 500 and 520) plus the fallen one, so eight in all.",
+     "No empty plinth is clearly visible. The fallen pillar lies diagonally across the paving from the platform edge between the 2nd and 3rd standing pillars, so it still reads as roughly the third position.",
+     "The chariot is not on the central axis. It is centred around x835 against the gopuram doorway at about x697, overlaps the gopuram's right side and sits right up against the tank's left coping, not in the middle of the open paving."
+    ]
+   }
+  ],
+  "CHR-GAM-01": [
+   {
+    "input": "src-aabbb6057efa",
+    "input_usable": "partial",
+    "reason": "The pose, sword in the right hand, three ponytail rings and copper/charcoal/red materials are usable. But the prompt and checklist require the rune on the back of the LEFT glove, and the source has it on the right (sword) glove. The nose ring is also not on the left nostril.",
+    "still_wrong": [
+     "The glowing teal rune is on the back of the SWORD hand (her right, frame left). The frame-right (left) hand is empty and has no rune, so the sword and the rune are still on the same hand.",
+     "A red edge appears at the top of the frame-right (left) shoulder, behind the copper plate near the collar, so the cape does not read as hanging from the right shoulder only.",
+     "The magenta sign at frame left carries stacked letter-like glyphs (they look like T, V, S), and the teal sign at right is a K-like shape. This conflicts with 'no letters'.",
+     "The nose ring reads as a centre septum ring, not a ring in the left nostril (this is from the brief, not the exact-requirements block)."
+    ]
+   }
+  ],
+  "COV-GAM-02": [
+   {
+    "input": "src-aabbb6057efa",
+    "input_usable": "partial",
+    "reason": "The sword hand and cape side are fine. But several checks ('rune on her left glove', 'rune on this near glove', 'rune visible on the glove at frame left' in the back view) contradict the source, where the rune is on the right hand.",
+    "still_wrong": [
+     "The glowing teal rune is on the back of the SWORD hand (her right, frame left). The frame-right (left) hand is empty and has no rune, so the sword and the rune are still on the same hand.",
+     "A red edge appears at the top of the frame-right (left) shoulder, behind the copper plate near the collar, so the cape does not read as hanging from the right shoulder only.",
+     "The magenta sign at frame left carries stacked letter-like glyphs (they look like T, V, S), and the teal sign at right is a K-like shape. This conflicts with 'no letters'.",
+     "The nose ring reads as a centre septum ring, not a ring in the left nostril (this is from the brief, not the exact-requirements block)."
+    ]
+   }
+  ],
+  "STB-GAM-01": [
+   {
+    "input": "src-aabbb6057efa",
+    "input_usable": "partial",
+    "reason": "The character design is usable, but the panel 4 insert and 'rune on her left glove wherever it shows' contradict the source's rune on the right (sword) glove.",
+    "still_wrong": [
+     "The glowing teal rune is on the back of the SWORD hand (her right, frame left). The frame-right (left) hand is empty and has no rune, so the sword and the rune are still on the same hand.",
+     "A red edge appears at the top of the frame-right (left) shoulder, behind the copper plate near the collar, so the cape does not read as hanging from the right shoulder only.",
+     "The magenta sign at frame left carries stacked letter-like glyphs (they look like T, V, S), and the teal sign at right is a K-like shape. This conflicts with 'no letters'.",
+     "The nose ring reads as a centre septum ring, not a ring in the left nostril (this is from the brief, not the exact-requirements block)."
+    ]
+   }
+  ],
+  "SHT-GAM-01": [
+   {
+    "input": "src-0e364664d423",
+    "input_usable": "partial",
+    "reason": "The coat collar, ribbon hem, hourglass staff in the left hand, white hair and eye slit are all usable. But 'mask on the left side of his face in every view' contradicts the sketch, which has it on his right, so 'match the sketch' and the mask-side check conflict.",
+    "still_wrong": [
+     "The cracked bronze half-mask covers the face half on the LEFT side of the picture (his own right). It is required on picture right (his own left)."
+    ]
+   }
+  ],
+  "CHR-GAM-03": [
+   {
+    "input": "src-0e364664d423",
+    "input_usable": "no",
+    "reason": "The prompt states the mask is over the left side of his face and that only the visible right side carries expression. The source has the mask on his right, so the four mask-side checks, which are the sheet's central consistency test, contradict the input.",
+    "still_wrong": [
+     "The cracked bronze half-mask covers the face half on the LEFT side of the picture (his own right). It is required on picture right (his own left)."
+    ]
+   }
+  ],
+  "STB-FLM-06": [
+   {
+    "input": "src-316cb70466d3",
+    "input_usable": "partial",
+    "reason": "The red scarf, the 07 patch on her left sleeve, the red laces and the line-art and cel style are all usable. But 'bob longer on her right with the teal streak' and 'bandage on the left knee' contradict the source, which has both on the other side.",
+    "still_wrong": [
+     "The bob is longer on the PICTURE'S RIGHT (her left), and the teal streak is on that side. Both are required on picture left (her right).",
+     "The white bandage is on the knee at PICTURE LEFT (her right knee). It is required on picture right (her left knee).",
+     "The background signs carry katakana-like glyphs (resembling ヴ, ル, ゴ on the left sign and カ, ノ on the right) and a 7/2-like numeral shape on the middle sign, so 07 is not the only text.",
+     "Only the 07 patch is correct (on the picture-right sleeve, her left). A horizontal flip would fix the hair and bandage but move the patch and mirror the '07', so this needs a regeneration."
+    ]
+   }
+  ],
+  "CHR-FLM-06": [
+   {
+    "input": "src-316cb70466d3",
+    "input_usable": "no",
+    "reason": "Five checklist items (three streak-on-right, two bandage-on-left) contradict the source. The 'same neon rooftop' carries katakana-like signage, which puts 'Is 07 the only text?' at risk.",
+    "still_wrong": [
+     "The bob is longer on the PICTURE'S RIGHT (her left), and the teal streak is on that side. Both are required on picture left (her right).",
+     "The white bandage is on the knee at PICTURE LEFT (her right knee). It is required on picture right (her left knee).",
+     "The background signs carry katakana-like glyphs (resembling ヴ, ル, ゴ on the left sign and カ, ノ on the right) and a 7/2-like numeral shape on the middle sign, so 07 is not the only text.",
+     "Only the 07 patch is correct (on the picture-right sleeve, her left). A horizontal flip would fix the hair and bandage but move the patch and mirror the '07', so this needs a regeneration."
+    ]
+   }
+  ],
+  "IMGEDIT-068": [
+   {
+    "input": null,
+    "input_usable": "partial",
+    "reason": "Canvas: the importer read the word 'vertical' in the brief as an orientation and gave BOTH models a 2:3 canvas instead of the source's shape. Same for both arms, but not what the brief intended (found 2026-10-10).",
+    "still_wrong": []
+   }
+  ],
+  "IMGEDIT-090": [
+   {
+    "input": null,
+    "input_usable": "partial",
+    "reason": "Canvas: the importer read the word 'vertical' in the brief as an orientation and gave BOTH models a 2:3 canvas instead of the source's shape. Same for both arms, but not what the brief intended (found 2026-10-10).",
+    "still_wrong": []
+   }
+  ],
+  "IMGEDIT-107": [
+   {
+    "input": null,
+    "input_usable": "partial",
+    "reason": "Canvas: the importer read the word 'vertical' in the brief as an orientation and gave BOTH models a 2:3 canvas instead of the source's shape. Same for both arms, but not what the brief intended (found 2026-10-10).",
+    "still_wrong": []
+   }
+  ]
+ },
+ "fixed_after_review": {
+  "CHR-ECM-03": "elephant input mirrored horizontally (both one-sided details were exactly reversed, no text) on the user's instruction, 2026-10-09"
+ }
+}

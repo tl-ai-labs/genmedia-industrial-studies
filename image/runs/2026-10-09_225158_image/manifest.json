@@ -1,0 +1,5955 @@
+{
+  "run_id": "2026-10-09_225158_image",
+  "created": "2026-10-09T17:21:58.302Z",
+  "state": "scored",
+  "modality": "image",
+  "git_sha": "289d9373b6ede0a504401e7a38f861ca77f2b640",
+  "budget_usd": 50.0,
+  "budget_by_provider": {
+    "openai": 35.0
+  },
+  "events": [
+    {
+      "ts": "2026-10-09T17:21:58.327Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-10-09T17:21:58.821Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-10-09T17:22:00.162Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-10-09T22:53:14.108Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-10-10T00:05:16.517Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-10-10T00:05:18.697Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-10-10T00:06:01.334Z",
+      "state": "reported"
+    },
+    {
+      "ts": "2026-10-10T00:06:38.024Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-10-10T00:06:39.382Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-10-10T00:11:26.341Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-10-10T00:25:03.068Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-10-10T00:25:04.010Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-10-10T00:26:00.626Z",
+      "state": "scored"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-nano-banana-2-1-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-nano-banana-2.1",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-10-07",
+      "voice_map": null
+    },
+    {
+      "id": "gpt-image-2-5-sunburst-high",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2.5-sunburst-2026-09-08",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-10-09",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "text_to_image": "abf51b241a61ab9032ffd9517fc945e464af309014dc461fe80ed62c44378bce",
+    "image_edit": "8881785a9ed8196c39d3462418e2d650d2e5d107826de9564f6c2b23a6b84372"
+  },
+  "rubric_files": {
+    "text_to_image": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/image.yaml"
+    ],
+    "image_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMGGEN-005": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-006": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-011": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGGEN-012": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGGEN-017": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGGEN-023": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-029": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-032": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-034": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-036": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-039": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-053": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-054": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-058": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-060": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-065": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-067": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-080": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-088": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGGEN-089": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGGEN-093": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-095": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-096": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-098": {
+      "prompt_adherence": 0.4,
+      "visual_quality": 0.25,
+      "composition": 0.2,
+      "realism_style": 0.15
+    },
+    "IMGGEN-099": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "IMGEDIT-005": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-010": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-016": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-021": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-022": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-024": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-026": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-029": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-036": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-039": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-043": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-049": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-057": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-066": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-067": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-068": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-073": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-074": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-075": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-080": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-081": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-083": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-084": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-085": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-089": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-090": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "CHR-FLM-05": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "visual_quality": 0.080808,
+      "physics_plausibility": 0.080809
+    },
+    "CHR-FLM-04": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "visual_quality": 0.080808,
+      "composition": 0.080809
+    },
+    "SHT-FLM-04": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "reference_fidelity": 0.222223
+    },
+    "CHR-ECM-01": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079208,
+      "preservation_judged": 0.079207
+    },
+    "SHT-ECM-03": {
+      "text_accuracy_judged": 0.333333,
+      "prompt_adherence": 0.252525,
+      "reference_fidelity": 0.171717,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080808,
+      "physics_plausibility": 0.080809
+    },
+    "CHR-GAM-06": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "SHT-FLM-02": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "reference_fidelity": 0.181818,
+      "realism_style": 0.090909,
+      "composition": 0.09091
+    },
+    "CHR-FLM-02": {
+      "set_consistency": 0.363636,
+      "reference_fidelity": 0.272727,
+      "prompt_adherence": 0.181818,
+      "text_accuracy_judged": 0.090909,
+      "visual_quality": 0.09091
+    },
+    "SHT-ECM-02": {
+      "text_accuracy_judged": 0.31,
+      "prompt_adherence": 0.23,
+      "reference_fidelity": 0.15,
+      "set_consistency": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "CHR-ADS-01": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "CHR-FLM-10": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "STB-ADS-01": {
+      "prompt_adherence": 0.23,
+      "set_consistency": 0.23,
+      "text_accuracy_judged": 0.15,
+      "reference_fidelity": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08,
+      "composition": 0.08
+    },
+    "CHR-GAM-05": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "STB-ADS-03": {
+      "prompt_adherence": 0.333333,
+      "text_accuracy_judged": 0.222222,
+      "reference_fidelity": 0.222222,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "CHR-FLM-11": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "COV-MED-02": {
+      "set_consistency": 0.306931,
+      "prompt_adherence": 0.227723,
+      "reference_fidelity": 0.227723,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079207
+    },
+    "STB-GAM-03": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "CHR-ECM-04": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "STB-ECM-01": {
+      "prompt_adherence": 0.23,
+      "set_consistency": 0.23,
+      "text_accuracy_judged": 0.15,
+      "reference_fidelity": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08,
+      "physics_plausibility": 0.08
+    },
+    "SHT-FLM-03": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "reference_fidelity": 0.181818,
+      "realism_style": 0.090909,
+      "visual_quality": 0.09091
+    },
+    "COV-ADS-02": {
+      "set_consistency": 0.363636,
+      "prompt_adherence": 0.272727,
+      "reference_fidelity": 0.272727,
+      "visual_quality": 0.09091
+    },
+    "EDT-ECM-07": {
+      "preservation_judged": 0.29,
+      "prompt_adherence": 0.29,
+      "reference_fidelity": 0.21,
+      "text_accuracy_judged": 0.14,
+      "visual_quality": 0.07
+    },
+    "SHT-GAM-02": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "reference_fidelity": 0.2,
+      "realism_style": 0.1
+    },
+    "EDT-MED-01": {
+      "preservation_judged": 0.267327,
+      "prompt_adherence": 0.267327,
+      "reference_fidelity": 0.19802,
+      "text_accuracy_judged": 0.128713,
+      "visual_quality": 0.069307,
+      "realism_style": 0.069306
+    },
+    "COV-GAM-02": {
+      "set_consistency": 0.306931,
+      "prompt_adherence": 0.227723,
+      "reference_fidelity": 0.227723,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079207
+    },
+    "PRD-RES-02": {
+      "reference_fidelity": 0.27,
+      "text_accuracy_judged": 0.2,
+      "prompt_adherence": 0.2,
+      "physics_plausibility": 0.13,
+      "preservation_judged": 0.13,
+      "visual_quality": 0.07
+    },
+    "SHT-ADS-02": {
+      "text_accuracy_judged": 0.31,
+      "prompt_adherence": 0.23,
+      "reference_fidelity": 0.15,
+      "set_consistency": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "CHR-FLM-01": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079208,
+      "composition": 0.079207
+    },
+    "IMGEDIT-052": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "TYP-MED-15": {
+      "text_accuracy_judged": 0.31,
+      "prompt_adherence": 0.23,
+      "realism_style": 0.15,
+      "preservation_judged": 0.15,
+      "visual_quality": 0.08,
+      "physics_plausibility": 0.08
+    },
+    "COV-GAM-04": {
+      "set_consistency": 0.267327,
+      "prompt_adherence": 0.19802,
+      "reference_fidelity": 0.19802,
+      "physics_plausibility": 0.128713,
+      "text_accuracy_judged": 0.069307,
+      "realism_style": 0.069307,
+      "visual_quality": 0.069306
+    },
+    "CHR-ECM-03": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "STB-FLM-02": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "SHT-ADS-03": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "reference_fidelity": 0.181818,
+      "realism_style": 0.090909,
+      "visual_quality": 0.09091
+    },
+    "PRD-ECM-13": {
+      "reference_fidelity": 0.31,
+      "text_accuracy_judged": 0.23,
+      "prompt_adherence": 0.23,
+      "physics_plausibility": 0.15,
+      "visual_quality": 0.08
+    },
+    "IMGEDIT-115": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "EDT-ADS-02": {
+      "preservation_judged": 0.29,
+      "prompt_adherence": 0.29,
+      "reference_fidelity": 0.21,
+      "physics_plausibility": 0.14,
+      "visual_quality": 0.07
+    },
+    "STB-FLM-04": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "TYP-MED-13": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "preservation_judged": 0.2,
+      "visual_quality": 0.1
+    },
+    "CHR-GAM-01": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "SHT-ADS-04": {
+      "text_accuracy_judged": 0.292929,
+      "prompt_adherence": 0.212121,
+      "reference_fidelity": 0.141414,
+      "set_consistency": 0.141414,
+      "realism_style": 0.070707,
+      "visual_quality": 0.070707,
+      "physics_plausibility": 0.070708
+    },
+    "COV-ECM-05": {
+      "set_consistency": 0.306931,
+      "prompt_adherence": 0.227723,
+      "reference_fidelity": 0.227723,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079207
+    },
+    "STB-FLM-05": {
+      "prompt_adherence": 0.23,
+      "set_consistency": 0.23,
+      "text_accuracy_judged": 0.15,
+      "reference_fidelity": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08,
+      "physics_plausibility": 0.08
+    },
+    "CHR-GAM-02": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "PRD-RES-01": {
+      "reference_fidelity": 0.27,
+      "text_accuracy_judged": 0.2,
+      "prompt_adherence": 0.2,
+      "physics_plausibility": 0.13,
+      "preservation_judged": 0.13,
+      "visual_quality": 0.07
+    },
+    "TYP-ECM-07": {
+      "text_accuracy_judged": 0.33,
+      "prompt_adherence": 0.25,
+      "realism_style": 0.17,
+      "preservation_judged": 0.17,
+      "visual_quality": 0.08
+    },
+    "EDT-FLM-03": {
+      "preservation_judged": 0.29,
+      "prompt_adherence": 0.29,
+      "reference_fidelity": 0.21,
+      "physics_plausibility": 0.14,
+      "visual_quality": 0.07
+    },
+    "CHR-GAM-03": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "STB-FLM-09": {
+      "prompt_adherence": 0.23,
+      "set_consistency": 0.23,
+      "text_accuracy_judged": 0.15,
+      "reference_fidelity": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08,
+      "physics_plausibility": 0.08
+    },
+    "EDT-ADS-01": {
+      "preservation_judged": 0.363636,
+      "prompt_adherence": 0.363636,
+      "text_accuracy_judged": 0.181818,
+      "visual_quality": 0.09091
+    },
+    "COV-RES-01": {
+      "set_consistency": 0.333333,
+      "prompt_adherence": 0.252525,
+      "physics_plausibility": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "visual_quality": 0.080808,
+      "preservation_judged": 0.080809
+    },
+    "CHR-GAM-04": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "IMGEDIT-072": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-011": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "TYP-MED-14": {
+      "text_accuracy_judged": 0.33,
+      "prompt_adherence": 0.25,
+      "realism_style": 0.17,
+      "preservation_judged": 0.17,
+      "visual_quality": 0.08
+    },
+    "STB-ADS-04": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "SHT-FLM-01": {
+      "text_accuracy_judged": 0.33,
+      "prompt_adherence": 0.25,
+      "reference_fidelity": 0.17,
+      "set_consistency": 0.17,
+      "realism_style": 0.08
+    },
+    "COV-RES-06": {
+      "set_consistency": 0.306931,
+      "prompt_adherence": 0.227723,
+      "reference_fidelity": 0.227723,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079207
+    },
+    "EDT-GAM-01": {
+      "preservation_judged": 0.306931,
+      "prompt_adherence": 0.306931,
+      "reference_fidelity": 0.227723,
+      "visual_quality": 0.079208,
+      "realism_style": 0.079207
+    },
+    "CHR-FLM-03": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "IMGEDIT-123": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-014": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-116": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "TYP-GAM-04": {
+      "text_accuracy_judged": 0.33,
+      "prompt_adherence": 0.25,
+      "realism_style": 0.17,
+      "preservation_judged": 0.17,
+      "visual_quality": 0.08
+    },
+    "CHR-FLM-09": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "COV-ADS-05": {
+      "set_consistency": 0.267327,
+      "prompt_adherence": 0.19802,
+      "reference_fidelity": 0.19802,
+      "physics_plausibility": 0.128713,
+      "text_accuracy_judged": 0.069307,
+      "realism_style": 0.069307,
+      "visual_quality": 0.069306
+    },
+    "CHR-ECM-02": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "EDT-GAM-03": {
+      "preservation_judged": 0.333333,
+      "prompt_adherence": 0.333333,
+      "reference_fidelity": 0.252525,
+      "visual_quality": 0.080809
+    },
+    "PRD-ADS-04": {
+      "reference_fidelity": 0.27,
+      "text_accuracy_judged": 0.2,
+      "prompt_adherence": 0.2,
+      "physics_plausibility": 0.13,
+      "preservation_judged": 0.13,
+      "visual_quality": 0.07
+    },
+    "TYP-FLM-04": {
+      "text_accuracy_judged": 0.33,
+      "prompt_adherence": 0.25,
+      "realism_style": 0.17,
+      "preservation_judged": 0.17,
+      "visual_quality": 0.08
+    },
+    "EDT-RES-03": {
+      "preservation_judged": 0.363636,
+      "prompt_adherence": 0.363636,
+      "physics_plausibility": 0.181818,
+      "visual_quality": 0.09091
+    },
+    "COV-ECM-02": {
+      "set_consistency": 0.292929,
+      "prompt_adherence": 0.212121,
+      "reference_fidelity": 0.212121,
+      "physics_plausibility": 0.141414,
+      "text_accuracy_judged": 0.070707,
+      "visual_quality": 0.070708
+    },
+    "STB-GAM-04": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "PRD-ADS-08": {
+      "reference_fidelity": 0.252525,
+      "text_accuracy_judged": 0.191919,
+      "prompt_adherence": 0.191919,
+      "physics_plausibility": 0.121212,
+      "preservation_judged": 0.121212,
+      "visual_quality": 0.060606,
+      "realism_style": 0.060607
+    },
+    "COV-MED-01": {
+      "set_consistency": 0.267327,
+      "prompt_adherence": 0.19802,
+      "reference_fidelity": 0.19802,
+      "physics_plausibility": 0.128713,
+      "text_accuracy_judged": 0.069307,
+      "realism_style": 0.069307,
+      "visual_quality": 0.069306
+    },
+    "EDT-RES-04": {
+      "preservation_judged": 0.363636,
+      "prompt_adherence": 0.363636,
+      "physics_plausibility": 0.181818,
+      "visual_quality": 0.09091
+    },
+    "STB-FLM-07": {
+      "prompt_adherence": 0.3,
+      "text_accuracy_judged": 0.2,
+      "reference_fidelity": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "preservation_judged": 0.1
+    },
+    "IMGEDIT-031": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "CHR-ADS-02": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "SHT-GAM-01": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "reference_fidelity": 0.2,
+      "realism_style": 0.1
+    },
+    "IMGEDIT-124": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "COV-FLM-03": {
+      "set_consistency": 0.333333,
+      "prompt_adherence": 0.252525,
+      "reference_fidelity": 0.252525,
+      "text_accuracy_judged": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "EDT-ECM-02": {
+      "preservation_judged": 0.333333,
+      "prompt_adherence": 0.333333,
+      "reference_fidelity": 0.252525,
+      "visual_quality": 0.080809
+    },
+    "TYP-ADS-07": {
+      "text_accuracy_judged": 0.33,
+      "prompt_adherence": 0.25,
+      "realism_style": 0.17,
+      "preservation_judged": 0.17,
+      "visual_quality": 0.08
+    },
+    "SHT-GAM-03": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "reference_fidelity": 0.181818,
+      "realism_style": 0.090909,
+      "physics_plausibility": 0.09091
+    },
+    "IMGEDIT-107": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-110": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "COV-FLM-06": {
+      "set_consistency": 0.292929,
+      "prompt_adherence": 0.212121,
+      "reference_fidelity": 0.212121,
+      "physics_plausibility": 0.141414,
+      "text_accuracy_judged": 0.070707,
+      "visual_quality": 0.070708
+    },
+    "SHT-ECM-01": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "reference_fidelity": 0.2,
+      "realism_style": 0.1
+    },
+    "PRD-GAM-02": {
+      "reference_fidelity": 0.31,
+      "text_accuracy_judged": 0.23,
+      "prompt_adherence": 0.23,
+      "physics_plausibility": 0.15,
+      "visual_quality": 0.08
+    },
+    "STB-ADS-02": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "IMGEDIT-027": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "CHR-FLM-06": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "EDT-RES-01": {
+      "preservation_judged": 0.444444,
+      "prompt_adherence": 0.444444,
+      "visual_quality": 0.111112
+    },
+    "COV-FLM-08": {
+      "set_consistency": 0.292929,
+      "prompt_adherence": 0.212121,
+      "reference_fidelity": 0.212121,
+      "physics_plausibility": 0.141414,
+      "text_accuracy_judged": 0.070707,
+      "visual_quality": 0.070708
+    },
+    "PRD-ECM-06": {
+      "reference_fidelity": 0.292929,
+      "text_accuracy_judged": 0.212121,
+      "prompt_adherence": 0.212121,
+      "physics_plausibility": 0.141414,
+      "visual_quality": 0.070707,
+      "realism_style": 0.070708
+    },
+    "STB-GAM-01": {
+      "prompt_adherence": 0.25,
+      "set_consistency": 0.25,
+      "text_accuracy_judged": 0.17,
+      "reference_fidelity": 0.17,
+      "realism_style": 0.08,
+      "visual_quality": 0.08
+    },
+    "CHR-FLM-07": {
+      "set_consistency": 0.306931,
+      "reference_fidelity": 0.227723,
+      "prompt_adherence": 0.148515,
+      "text_accuracy_judged": 0.079208,
+      "realism_style": 0.079208,
+      "visual_quality": 0.079208,
+      "physics_plausibility": 0.079207
+    },
+    "IMGEDIT-108": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "IMGEDIT-051": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "CHR-GAM-08": {
+      "set_consistency": 0.4,
+      "prompt_adherence": 0.2,
+      "text_accuracy_judged": 0.1,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "SHT-ADS-06": {
+      "text_accuracy_judged": 0.333333,
+      "prompt_adherence": 0.252525,
+      "set_consistency": 0.171717,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080808,
+      "composition": 0.080809
+    },
+    "SHT-ECM-05": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "CHR-FLM-13": {
+      "set_consistency": 0.444444,
+      "prompt_adherence": 0.222222,
+      "text_accuracy_judged": 0.111111,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "CHR-ADS-04": {
+      "set_consistency": 0.4,
+      "prompt_adherence": 0.2,
+      "text_accuracy_judged": 0.1,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "CHR-FLM-14": {
+      "set_consistency": 0.505051,
+      "prompt_adherence": 0.252525,
+      "text_accuracy_judged": 0.121212,
+      "visual_quality": 0.121212
+    },
+    "CHR-GAM-10": {
+      "set_consistency": 0.444444,
+      "prompt_adherence": 0.222222,
+      "text_accuracy_judged": 0.111111,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "CHR-FLM-16": {
+      "set_consistency": 0.4,
+      "prompt_adherence": 0.2,
+      "text_accuracy_judged": 0.1,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "COV-RES-09": {
+      "set_consistency": 0.333333,
+      "prompt_adherence": 0.252525,
+      "physics_plausibility": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "SHT-GAM-04": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "STB-ADS-07": {
+      "prompt_adherence": 0.3,
+      "set_consistency": 0.3,
+      "text_accuracy_judged": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1
+    },
+    "SHT-FLM-06": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "TYP-MED-03": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "realism_style": 0.2,
+      "visual_quality": 0.1
+    },
+    "COV-ADS-06": {
+      "set_consistency": 0.363636,
+      "prompt_adherence": 0.272727,
+      "physics_plausibility": 0.181818,
+      "text_accuracy_judged": 0.090909,
+      "visual_quality": 0.09091
+    },
+    "TYP-MED-06": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "realism_style": 0.2,
+      "visual_quality": 0.1
+    },
+    "CHR-FLM-15": {
+      "set_consistency": 0.4,
+      "prompt_adherence": 0.2,
+      "text_accuracy_judged": 0.1,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "SHT-ADS-05": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "TYP-GAM-02": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "realism_style": 0.2,
+      "visual_quality": 0.1
+    },
+    "CHR-ECM-05": {
+      "set_consistency": 0.4,
+      "prompt_adherence": 0.2,
+      "text_accuracy_judged": 0.1,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "STB-ADS-08": {
+      "prompt_adherence": 0.272727,
+      "set_consistency": 0.272727,
+      "text_accuracy_judged": 0.181818,
+      "realism_style": 0.090909,
+      "visual_quality": 0.090909,
+      "physics_plausibility": 0.09091
+    },
+    "CHR-GAM-09": {
+      "set_consistency": 0.4,
+      "prompt_adherence": 0.2,
+      "text_accuracy_judged": 0.1,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "TYP-ECM-04": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "realism_style": 0.181818,
+      "visual_quality": 0.090909,
+      "physics_plausibility": 0.09091
+    },
+    "TYP-FLM-03": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "realism_style": 0.2,
+      "visual_quality": 0.1
+    },
+    "STB-GAM-05": {
+      "prompt_adherence": 0.3,
+      "set_consistency": 0.3,
+      "text_accuracy_judged": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1
+    },
+    "COV-RES-10": {
+      "set_consistency": 0.333333,
+      "prompt_adherence": 0.252525,
+      "physics_plausibility": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "TYP-MED-04": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "realism_style": 0.2,
+      "visual_quality": 0.1
+    },
+    "COV-FLM-14": {
+      "set_consistency": 0.363636,
+      "prompt_adherence": 0.272727,
+      "physics_plausibility": 0.181818,
+      "text_accuracy_judged": 0.090909,
+      "realism_style": 0.09091
+    },
+    "TYP-ECM-01": {
+      "text_accuracy_judged": 0.444444,
+      "prompt_adherence": 0.333333,
+      "realism_style": 0.222223
+    },
+    "TYP-MED-07": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "realism_style": 0.181818,
+      "visual_quality": 0.090909,
+      "set_consistency": 0.09091
+    },
+    "SHT-GAM-05": {
+      "text_accuracy_judged": 0.5,
+      "prompt_adherence": 0.38,
+      "realism_style": 0.12
+    },
+    "IMGGEN-043": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "visual_quality": 0.1,
+      "composition": 0.1,
+      "realism_style": 0.1
+    },
+    "STB-ADS-06": {
+      "prompt_adherence": 0.252525,
+      "set_consistency": 0.252525,
+      "text_accuracy_judged": 0.171717,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080808,
+      "physics_plausibility": 0.080808,
+      "composition": 0.080809
+    },
+    "SHT-FLM-08": {
+      "text_accuracy_judged": 0.4,
+      "prompt_adherence": 0.3,
+      "set_consistency": 0.2,
+      "realism_style": 0.1
+    },
+    "TYP-ECM-02": {
+      "text_accuracy_judged": 0.363636,
+      "prompt_adherence": 0.272727,
+      "realism_style": 0.181818,
+      "visual_quality": 0.090909,
+      "physics_plausibility": 0.09091
+    },
+    "CHR-GAM-07": {
+      "set_consistency": 0.444444,
+      "prompt_adherence": 0.222222,
+      "text_accuracy_judged": 0.111111,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111112
+    },
+    "PRD-ADS-10": {
+      "text_accuracy_judged": 0.3,
+      "prompt_adherence": 0.3,
+      "physics_plausibility": 0.2,
+      "visual_quality": 0.1,
+      "realism_style": 0.1
+    },
+    "STB-FLM-12": {
+      "prompt_adherence": 0.383838,
+      "text_accuracy_judged": 0.252525,
+      "realism_style": 0.121212,
+      "visual_quality": 0.121212,
+      "composition": 0.121213
+    },
+    "STB-ADS-05": {
+      "prompt_adherence": 0.3,
+      "text_accuracy_judged": 0.2,
+      "reference_fidelity": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "STB-ECM-02": {
+      "prompt_adherence": 0.333333,
+      "text_accuracy_judged": 0.222222,
+      "realism_style": 0.111111,
+      "visual_quality": 0.111111,
+      "physics_plausibility": 0.111111,
+      "composition": 0.111112
+    },
+    "STB-FLM-01": {
+      "prompt_adherence": 0.23,
+      "set_consistency": 0.23,
+      "text_accuracy_judged": 0.15,
+      "reference_fidelity": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08,
+      "composition": 0.08
+    },
+    "STB-FLM-03": {
+      "prompt_adherence": 0.214286,
+      "set_consistency": 0.214286,
+      "text_accuracy_judged": 0.142857,
+      "reference_fidelity": 0.142857,
+      "realism_style": 0.071429,
+      "visual_quality": 0.071429,
+      "physics_plausibility": 0.071429,
+      "composition": 0.071427
+    },
+    "STB-FLM-06": {
+      "prompt_adherence": 0.23,
+      "set_consistency": 0.23,
+      "text_accuracy_judged": 0.15,
+      "reference_fidelity": 0.15,
+      "realism_style": 0.08,
+      "visual_quality": 0.08,
+      "physics_plausibility": 0.08
+    },
+    "STB-FLM-08": {
+      "prompt_adherence": 0.43,
+      "text_accuracy_judged": 0.29,
+      "realism_style": 0.14,
+      "visual_quality": 0.14
+    },
+    "STB-FLM-10": {
+      "prompt_adherence": 0.3,
+      "text_accuracy_judged": 0.2,
+      "reference_fidelity": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1,
+      "physics_plausibility": 0.1
+    },
+    "STB-FLM-11": {
+      "prompt_adherence": 0.3,
+      "set_consistency": 0.3,
+      "text_accuracy_judged": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1
+    },
+    "STB-FLM-13": {
+      "prompt_adherence": 0.272727,
+      "set_consistency": 0.272727,
+      "text_accuracy_judged": 0.181818,
+      "realism_style": 0.090909,
+      "visual_quality": 0.090909,
+      "physics_plausibility": 0.09091
+    },
+    "STB-FLM-14": {
+      "prompt_adherence": 0.3,
+      "set_consistency": 0.3,
+      "text_accuracy_judged": 0.2,
+      "realism_style": 0.1,
+      "visual_quality": 0.1
+    },
+    "STB-GAM-02": {
+      "prompt_adherence": 0.43,
+      "text_accuracy_judged": 0.29,
+      "realism_style": 0.14,
+      "visual_quality": 0.14
+    },
+    "STB-GAM-06": {
+      "prompt_adherence": 0.272727,
+      "set_consistency": 0.272727,
+      "text_accuracy_judged": 0.181818,
+      "realism_style": 0.090909,
+      "visual_quality": 0.090909,
+      "physics_plausibility": 0.09091
+    }
+  },
+  "scenario_set_hash": "ca4e1fa89f61bfc852453b0055ee49df3061d2e5bdcb0c14451d84fbef9b5816",
+  "inputs": {
+    "IMGGEN-005": [],
+    "IMGGEN-006": [],
+    "IMGGEN-011": [],
+    "IMGGEN-012": [],
+    "IMGGEN-017": [],
+    "IMGGEN-023": [],
+    "IMGGEN-029": [],
+    "IMGGEN-032": [],
+    "IMGGEN-034": [],
+    "IMGGEN-036": [],
+    "IMGGEN-039": [],
+    "IMGGEN-053": [],
+    "IMGGEN-054": [],
+    "IMGGEN-058": [],
+    "IMGGEN-060": [],
+    "IMGGEN-065": [],
+    "IMGGEN-067": [],
+    "IMGGEN-080": [],
+    "IMGGEN-088": [],
+    "IMGGEN-089": [],
+    "IMGGEN-093": [],
+    "IMGGEN-095": [],
+    "IMGGEN-096": [],
+    "IMGGEN-098": [],
+    "IMGGEN-099": [],
+    "IMGEDIT-005": [
+      {
+        "role": "source",
+        "sha256": "e36b21485af372c2f138edd88a7f14c894eecbb52cbcb0021509ead44fae570d",
+        "path": "inputs/IMGEDIT-005/src-92f74924c12a.png"
+      }
+    ],
+    "IMGEDIT-010": [
+      {
+        "role": "source",
+        "sha256": "43db2a7483c3dd378658751d1aefcc2a00c55e306014dca4182d94e5adeb5678",
+        "path": "inputs/IMGEDIT-010/src-7b452dae05d3.png"
+      }
+    ],
+    "IMGEDIT-016": [
+      {
+        "role": "source",
+        "sha256": "5668e7ca821049faea5a0615d8edb6b6cd28a85cd1cc721f1c5018c93e63cd03",
+        "path": "inputs/IMGEDIT-016/src-e3922c37acc4.png"
+      }
+    ],
+    "IMGEDIT-021": [
+      {
+        "role": "source",
+        "sha256": "7e4bec5277147355d56f51e40df2003e4382301846492b18c107371e40b49355",
+        "path": "inputs/IMGEDIT-021/src-49447cc47822.png"
+      }
+    ],
+    "IMGEDIT-022": [
+      {
+        "role": "source",
+        "sha256": "2eb65a02242804d9338511353114a3b6dff5e22964649c491afd783371f3f102",
+        "path": "inputs/IMGEDIT-022/src-977e048e9482.png"
+      }
+    ],
+    "IMGEDIT-024": [
+      {
+        "role": "source",
+        "sha256": "1c837d499b4bfc841905a69f0c45e94502d79c6451b92a09cdf3c90a843b14c1",
+        "path": "inputs/IMGEDIT-024/src-0d95ff9412d4.png"
+      }
+    ],
+    "IMGEDIT-026": [
+      {
+        "role": "source",
+        "sha256": "6132232d589bbf3fe70cd87d7c3141290f824e926e276454303c4fad042f4f3b",
+        "path": "inputs/IMGEDIT-026/src-8bd0661b4dbe.png"
+      }
+    ],
+    "IMGEDIT-029": [
+      {
+        "role": "source",
+        "sha256": "29495ebd3436b24826880052bd483fb4dce56c39c7b4cd1324df82251e0141fe",
+        "path": "inputs/IMGEDIT-029/src-d043d619edaa.png"
+      }
+    ],
+    "IMGEDIT-036": [
+      {
+        "role": "source",
+        "sha256": "687b4d9cdcd611b577eb8d4996e2f80948c535dd2c30cab7f21d86c3dbc73d03",
+        "path": "inputs/IMGEDIT-036/src-d64454567bc0.png"
+      }
+    ],
+    "IMGEDIT-039": [
+      {
+        "role": "source",
+        "sha256": "2daed1c264a4126fe13d8503e8ed6db3032f7e7d1bc99fa6522e20a0aa76691c",
+        "path": "inputs/IMGEDIT-039/src-eb67c17e8350.png"
+      }
+    ],
+    "IMGEDIT-043": [
+      {
+        "role": "source",
+        "sha256": "a8d2a24b4752313fa14a91f7558d3b4eda7a1fb07d3082ada9c07145debf19e7",
+        "path": "inputs/IMGEDIT-043/src-2058f1a7593b.png"
+      }
+    ],
+    "IMGEDIT-049": [
+      {
+        "role": "source",
+        "sha256": "968a7d70f6227c89cbbb78a11b08afd20156b78613d9c91e4e766b84d8bffe3e",
+        "path": "inputs/IMGEDIT-049/src-3890f18d54b9.png"
+      }
+    ],
+    "IMGEDIT-057": [
+      {
+        "role": "source",
+        "sha256": "8fc8cea7201480e5243b524ed9189b7f44c02d2a2d35d0446e1346d60020c9fa",
+        "path": "inputs/IMGEDIT-057/src-8d21a9b04796.png"
+      }
+    ],
+    "IMGEDIT-066": [
+      {
+        "role": "source",
+        "sha256": "26e7d9829b2f7c3a951bfdd1d63fc3f0271df7f17195518ab9e053fadc23579a",
+        "path": "inputs/IMGEDIT-066/src-05e22ead3a25.png"
+      }
+    ],
+    "IMGEDIT-067": [
+      {
+        "role": "source",
+        "sha256": "59b4e769ffafc73bbd7055b8526a58cea76e91e7f8967a70192a8e0a6020ae5f",
+        "path": "inputs/IMGEDIT-067/src-0307025b33ef.png"
+      }
+    ],
+    "IMGEDIT-068": [
+      {
+        "role": "source",
+        "sha256": "6e2c32ac561d5938b1957921022d393f2dfd15ff687255697a8124ca7c55fc38",
+        "path": "inputs/IMGEDIT-068/src-d3fc15d6825f.png"
+      }
+    ],
+    "IMGEDIT-073": [
+      {
+        "role": "source",
+        "sha256": "3c70416a7cc67715fce7e5e97d89cc6b94960e622c697795896e62120705485d",
+        "path": "inputs/IMGEDIT-073/src-1c3cd4b209fe.png"
+      }
+    ],
+    "IMGEDIT-074": [
+      {
+        "role": "source",
+        "sha256": "9d3b8edf27ec972b2c804485751424c6cb6828750fac7336526df8e908b1e261",
+        "path": "inputs/IMGEDIT-074/src-1e5535de207f.png"
+      }
+    ],
+    "IMGEDIT-075": [
+      {
+        "role": "source",
+        "sha256": "5b0f334529d7d102a45b72279bb5f5707b8ba5a3e305d339f2779a627ac3f445",
+        "path": "inputs/IMGEDIT-075/src-9041a397a737.png"
+      }
+    ],
+    "IMGEDIT-080": [
+      {
+        "role": "source",
+        "sha256": "1f7c8e36154893778bc4ddd2a5984f580b95f7a7f1a755693f294efcef02c445",
+        "path": "inputs/IMGEDIT-080/src-8638f291e203.png"
+      }
+    ],
+    "IMGEDIT-081": [
+      {
+        "role": "source",
+        "sha256": "5798c9535524717ff8342991a56545c72d32dcf786f275409d9425eb4126c156",
+        "path": "inputs/IMGEDIT-081/src-0a228276356f.png"
+      }
+    ],
+    "IMGEDIT-083": [
+      {
+        "role": "source",
+        "sha256": "276743889a32f0460dbf5eb74ed216cc3730221e07dc5b662cd81d482ce164c5",
+        "path": "inputs/IMGEDIT-083/src-cd28ab667aba.png"
+      }
+    ],
+    "IMGEDIT-084": [
+      {
+        "role": "source",
+        "sha256": "58ece92f4fb5dc2cf95d5b93c59c0385dc9f4139e528e091859c47cc91637a00",
+        "path": "inputs/IMGEDIT-084/src-3ba75a07fe78.png"
+      }
+    ],
+    "IMGEDIT-085": [
+      {
+        "role": "source",
+        "sha256": "b6599df8eb9703089326a86c439bb3f6fe5420b97ed0bb786ba3b295e55b6d26",
+        "path": "inputs/IMGEDIT-085/src-02a0f4d5f866.png"
+      }
+    ],
+    "IMGEDIT-089": [
+      {
+        "role": "source",
+        "sha256": "49c0d8e8f3843edccc63b5f9208720677f29abcdab2642710825fe2361ca14a9",
+        "path": "inputs/IMGEDIT-089/src-27b4223278e5.png"
+      }
+    ],
+    "IMGEDIT-090": [
+      {
+        "role": "source",
+        "sha256": "85f58de26160dd43f6722c5ef3b9f9a94fbcca5c9306d36d9e6e683ad23afe93",
+        "path": "inputs/IMGEDIT-090/src-f1bf6bc7d074.png"
+      }
+    ],
+    "CHR-FLM-05": [
+      {
+        "role": "source",
+        "sha256": "e3ea95eda415f0e8c3210abcdd4af8d59bbdb757fc5a945d41a716c35b2fc7b7",
+        "path": "inputs/CHR-FLM-05/src-68b989c754cf.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "fb8b47156d275c13c5dce641d78cef5c89bd56be6eb56c56e31076f69ca21d42",
+        "path": "inputs/CHR-FLM-05/src-e86cdbe0d2f8.png"
+      }
+    ],
+    "CHR-FLM-04": [
+      {
+        "role": "source",
+        "sha256": "a40fb5caf4d71184c7c91fc28acc61e0dbf6c6af8c744a2572d9efc197dca596",
+        "path": "inputs/CHR-FLM-04/src-bf39d78917a4.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "e3ea95eda415f0e8c3210abcdd4af8d59bbdb757fc5a945d41a716c35b2fc7b7",
+        "path": "inputs/CHR-FLM-04/src-68b989c754cf.png"
+      },
+      {
+        "role": "reference2",
+        "sha256": "5a0c6a18339885831e815c7a17a8e1b0052b2d1e040955672a9c89604547c3d0",
+        "path": "inputs/CHR-FLM-04/src-d5917777b325.png"
+      }
+    ],
+    "SHT-FLM-04": [
+      {
+        "role": "source",
+        "sha256": "e3ea95eda415f0e8c3210abcdd4af8d59bbdb757fc5a945d41a716c35b2fc7b7",
+        "path": "inputs/SHT-FLM-04/src-68b989c754cf.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "fb8b47156d275c13c5dce641d78cef5c89bd56be6eb56c56e31076f69ca21d42",
+        "path": "inputs/SHT-FLM-04/src-e86cdbe0d2f8.png"
+      }
+    ],
+    "CHR-ECM-01": [
+      {
+        "role": "source",
+        "sha256": "fe9788c28cae5294f071d75df42ddea12f634785eaea22747a23b20e69496eec",
+        "path": "inputs/CHR-ECM-01/src-9c0107bc118b.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "aa5ad48fee94b7d8729453b11fc85ec83645b4f3ac38c4f9f2303bf539b3c533",
+        "path": "inputs/CHR-ECM-01/src-0f2a5f293a34.png"
+      },
+      {
+        "role": "reference2",
+        "sha256": "f209617bbd957d0bc87351bd1944d1cdc6814e74b400946d9f153a625ae75f71",
+        "path": "inputs/CHR-ECM-01/src-c04ebb6fe951-mirrored.png"
+      }
+    ],
+    "SHT-ECM-03": [
+      {
+        "role": "source",
+        "sha256": "449aa486d7a6f09b8d4160955bbcbb993ea8d7789ea785d0bfb6988f26409bfb",
+        "path": "inputs/SHT-ECM-03/src-602cb303800b.png"
+      }
+    ],
+    "CHR-GAM-06": [
+      {
+        "role": "source",
+        "sha256": "e1f04f994e711bfb673413ff36621c8374570e556c30eda09f27c9658cefa8b0",
+        "path": "inputs/CHR-GAM-06/src-f42836484c4a.png"
+      }
+    ],
+    "SHT-FLM-02": [
+      {
+        "role": "source",
+        "sha256": "6b1e366c8e5ca4efeb159cd8bda941a6bae0ef173c0d8607a5aeebfdd5be2ffd",
+        "path": "inputs/SHT-FLM-02/src-412ecd91ef29.png"
+      }
+    ],
+    "CHR-FLM-02": [
+      {
+        "role": "source",
+        "sha256": "e3ea95eda415f0e8c3210abcdd4af8d59bbdb757fc5a945d41a716c35b2fc7b7",
+        "path": "inputs/CHR-FLM-02/src-68b989c754cf.png"
+      }
+    ],
+    "SHT-ECM-02": [
+      {
+        "role": "source",
+        "sha256": "aa5ad48fee94b7d8729453b11fc85ec83645b4f3ac38c4f9f2303bf539b3c533",
+        "path": "inputs/SHT-ECM-02/src-0f2a5f293a34.png"
+      }
+    ],
+    "CHR-ADS-01": [
+      {
+        "role": "source",
+        "sha256": "df161c10897400c246398c00c9452fdc9b36a20fbd8dee51d5430eab34c8b3d5",
+        "path": "inputs/CHR-ADS-01/src-4b9ffb2d6c7a.png"
+      }
+    ],
+    "CHR-FLM-10": [
+      {
+        "role": "source",
+        "sha256": "b88e8551b52b61790e13b9f08e4cb187a4b9b661b44aa711202682424ac602bc",
+        "path": "inputs/CHR-FLM-10/src-9da4fa60194b.png"
+      }
+    ],
+    "STB-ADS-01": [
+      {
+        "role": "source",
+        "sha256": "df161c10897400c246398c00c9452fdc9b36a20fbd8dee51d5430eab34c8b3d5",
+        "path": "inputs/STB-ADS-01/src-4b9ffb2d6c7a.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "222b23921e576166e7640aa86608604c34b7b851685567534d35315444b4d318",
+        "path": "inputs/STB-ADS-01/src-7ee0f5bffc34.png"
+      }
+    ],
+    "CHR-GAM-05": [
+      {
+        "role": "source",
+        "sha256": "3c421be4d091a6e44098097442c6d8c72a35ca727f75238fc56105422ce8a41c",
+        "path": "inputs/CHR-GAM-05/src-06e08564ef01.png"
+      }
+    ],
+    "STB-ADS-03": [
+      {
+        "role": "source",
+        "sha256": "4e880d5aee9d0340f3e8fe12e2b11a3a5dea1f66e5a11efcb8b1afedc17a2d9c",
+        "path": "inputs/STB-ADS-03/src-0dd64a2776a6.png"
+      }
+    ],
+    "CHR-FLM-11": [
+      {
+        "role": "source",
+        "sha256": "0daafc0c1f0b201a66408bbb4db9f2c13d5e4a3ebca289a6d91aa436e098d708",
+        "path": "inputs/CHR-FLM-11/src-630659fa9750.png"
+      }
+    ],
+    "COV-MED-02": [
+      {
+        "role": "source",
+        "sha256": "4c1661cac9821740393837ed0f1128d71795ed675987a7d5c945173b5f519d44",
+        "path": "inputs/COV-MED-02/src-2b71efaae09a.png"
+      }
+    ],
+    "STB-GAM-03": [
+      {
+        "role": "source",
+        "sha256": "6124865ded05c5793f0dfaef96de877f5fa0d54836310615120871b6035fe221",
+        "path": "inputs/STB-GAM-03/src-11520a78d9ef.png"
+      }
+    ],
+    "CHR-ECM-04": [
+      {
+        "role": "source",
+        "sha256": "e21345c5db92ce0871c46c8576f7ae43ea5711bb265cbcc878f8f957818272c7",
+        "path": "inputs/CHR-ECM-04/src-3de97a3805f2.png"
+      }
+    ],
+    "STB-ECM-01": [
+      {
+        "role": "source",
+        "sha256": "aa5ad48fee94b7d8729453b11fc85ec83645b4f3ac38c4f9f2303bf539b3c533",
+        "path": "inputs/STB-ECM-01/src-0f2a5f293a34.png"
+      }
+    ],
+    "SHT-FLM-03": [
+      {
+        "role": "source",
+        "sha256": "744a7fa74559d587b82df428f271e7aa92e91bdcb2bef5dd81ee9b0e57c2d497",
+        "path": "inputs/SHT-FLM-03/src-286196b865ca.png"
+      }
+    ],
+    "COV-ADS-02": [
+      {
+        "role": "source",
+        "sha256": "4e880d5aee9d0340f3e8fe12e2b11a3a5dea1f66e5a11efcb8b1afedc17a2d9c",
+        "path": "inputs/COV-ADS-02/src-0dd64a2776a6.png"
+      }
+    ],
+    "EDT-ECM-07": [
+      {
+        "role": "source",
+        "sha256": "71353faf9737d8eaf36041ccc97cfd14ea86df6927e005ad6022798ba7b1f7f4",
+        "path": "inputs/EDT-ECM-07/src-1b6661ec389c.png"
+      }
+    ],
+    "SHT-GAM-02": [
+      {
+        "role": "source",
+        "sha256": "0c4f6f5e3ca280a0b5afcd44081f8b55cf882e0b120b65cd2e9cf365d0813611",
+        "path": "inputs/SHT-GAM-02/src-e27f010adc2a.png"
+      }
+    ],
+    "EDT-MED-01": [
+      {
+        "role": "source",
+        "sha256": "4c1661cac9821740393837ed0f1128d71795ed675987a7d5c945173b5f519d44",
+        "path": "inputs/EDT-MED-01/src-2b71efaae09a.png"
+      }
+    ],
+    "COV-GAM-02": [
+      {
+        "role": "source",
+        "sha256": "2a667679a6ab307ce0e8d1a1193ab1bfd3ea4058612fa1f2905e64f6568f4efa",
+        "path": "inputs/COV-GAM-02/src-aabbb6057efa.png"
+      }
+    ],
+    "PRD-RES-02": [
+      {
+        "role": "source",
+        "sha256": "9be1e9ca642d5578a852849b7625908fc9d2ada3fd0d3d14e18b3ae3166d0dfc",
+        "path": "inputs/PRD-RES-02/src-67c44d147a35.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "ae4cccce7d8b54c674ff4295b02a897ad42dc21b2aa5a4f600c56697b63e471e",
+        "path": "inputs/PRD-RES-02/src-dfe154e77129.png"
+      }
+    ],
+    "SHT-ADS-02": [
+      {
+        "role": "source",
+        "sha256": "b4b7444352146e98672e21e7ea9511dac0bc2bf12e8fc4531fab586c41e350cd",
+        "path": "inputs/SHT-ADS-02/src-52a6bbf77b9f.png"
+      }
+    ],
+    "CHR-FLM-01": [
+      {
+        "role": "source",
+        "sha256": "a40fb5caf4d71184c7c91fc28acc61e0dbf6c6af8c744a2572d9efc197dca596",
+        "path": "inputs/CHR-FLM-01/src-bf39d78917a4.png"
+      }
+    ],
+    "IMGEDIT-052": [
+      {
+        "role": "source",
+        "sha256": "282bb623b33458770d52ed6cf3cc5fbf057cf4afd129e18637a2af7e0c6564e2",
+        "path": "inputs/IMGEDIT-052/src-1636b7255db4.png"
+      }
+    ],
+    "TYP-MED-15": [
+      {
+        "role": "source",
+        "sha256": "425128db61a48d7bdcdc2f4e34c549f916b8daf821e7b39e408d455ee6a80128",
+        "path": "inputs/TYP-MED-15/src-b6c5e337bb35.png"
+      }
+    ],
+    "COV-GAM-04": [
+      {
+        "role": "source",
+        "sha256": "6124865ded05c5793f0dfaef96de877f5fa0d54836310615120871b6035fe221",
+        "path": "inputs/COV-GAM-04/src-11520a78d9ef.png"
+      }
+    ],
+    "CHR-ECM-03": [
+      {
+        "role": "source",
+        "sha256": "285ba125248839144fb208ae544450fa8481c5f88b400b127dbec1b81bfa98d0",
+        "path": "inputs/CHR-ECM-03/src-8b76516f57b5-mirrored.png"
+      }
+    ],
+    "STB-FLM-02": [
+      {
+        "role": "source",
+        "sha256": "6aa881cf0271733a600c98d34fe70ecc947b71d8b9f46f1e5e08fdab5b16186a",
+        "path": "inputs/STB-FLM-02/src-a5e728a9bd3e.png"
+      }
+    ],
+    "SHT-ADS-03": [
+      {
+        "role": "source",
+        "sha256": "843ad650b0fa9f8f70c8de3674c1adfbdb395282ca430a4e8d2af562468090de",
+        "path": "inputs/SHT-ADS-03/src-be797cd8e821.png"
+      }
+    ],
+    "PRD-ECM-13": [
+      {
+        "role": "source",
+        "sha256": "e21345c5db92ce0871c46c8576f7ae43ea5711bb265cbcc878f8f957818272c7",
+        "path": "inputs/PRD-ECM-13/src-3de97a3805f2.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "31b029947fa4575cbb5b1b489d88241e7bbe48c626c09dc4a852c1da3ed96b6a",
+        "path": "inputs/PRD-ECM-13/src-148db5d5ac6d.png"
+      }
+    ],
+    "IMGEDIT-115": [
+      {
+        "role": "source",
+        "sha256": "e8edfbdf2dc8c15a5b0e5d54ff9bf78161c2f6410228d21a2566887ceb069b99",
+        "path": "inputs/IMGEDIT-115/src-de729e589ac8.png"
+      }
+    ],
+    "EDT-ADS-02": [
+      {
+        "role": "source",
+        "sha256": "9d610963ff11efb4f22d27395b46181a8612f139d600e0383f375a717e36a213",
+        "path": "inputs/EDT-ADS-02/src-298c772bcfcc.png"
+      }
+    ],
+    "STB-FLM-04": [
+      {
+        "role": "source",
+        "sha256": "5aa13923b6a9fe71574661db94faf4b08d3c7ff44a2ba97e57b1271a688a151e",
+        "path": "inputs/STB-FLM-04/src-eb3eb4c8feb5.png"
+      }
+    ],
+    "TYP-MED-13": [
+      {
+        "role": "source",
+        "sha256": "129a857a2f34c7af5a292498a16f1c8550a193c5e0ad7cca977abbe9dcb1bdca",
+        "path": "inputs/TYP-MED-13/src-c4abb03bccbc.png"
+      }
+    ],
+    "CHR-GAM-01": [
+      {
+        "role": "source",
+        "sha256": "2a667679a6ab307ce0e8d1a1193ab1bfd3ea4058612fa1f2905e64f6568f4efa",
+        "path": "inputs/CHR-GAM-01/src-aabbb6057efa.png"
+      }
+    ],
+    "SHT-ADS-04": [
+      {
+        "role": "source",
+        "sha256": "df161c10897400c246398c00c9452fdc9b36a20fbd8dee51d5430eab34c8b3d5",
+        "path": "inputs/SHT-ADS-04/src-4b9ffb2d6c7a.png"
+      }
+    ],
+    "COV-ECM-05": [
+      {
+        "role": "source",
+        "sha256": "71353faf9737d8eaf36041ccc97cfd14ea86df6927e005ad6022798ba7b1f7f4",
+        "path": "inputs/COV-ECM-05/src-1b6661ec389c.png"
+      }
+    ],
+    "STB-FLM-05": [
+      {
+        "role": "source",
+        "sha256": "0daafc0c1f0b201a66408bbb4db9f2c13d5e4a3ebca289a6d91aa436e098d708",
+        "path": "inputs/STB-FLM-05/src-630659fa9750.png"
+      }
+    ],
+    "CHR-GAM-02": [
+      {
+        "role": "source",
+        "sha256": "6124865ded05c5793f0dfaef96de877f5fa0d54836310615120871b6035fe221",
+        "path": "inputs/CHR-GAM-02/src-11520a78d9ef.png"
+      }
+    ],
+    "PRD-RES-01": [
+      {
+        "role": "source",
+        "sha256": "f6464e91e1c9f00f0b8d0bdbb3a7a095c67746cde8939cca47927870791c3ec1",
+        "path": "inputs/PRD-RES-01/src-5159a9f92b70.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "c2131b28580077ef0ab496ff16411afd3d11a576e9f614db7d30364c815d92e7",
+        "path": "inputs/PRD-RES-01/src-87fb488f771c.png"
+      }
+    ],
+    "TYP-ECM-07": [
+      {
+        "role": "source",
+        "sha256": "026024c69cffced6769fe299e17ecd845f84d834eb2ba32b25493ba315628849",
+        "path": "inputs/TYP-ECM-07/src-87693aaa460e.png"
+      }
+    ],
+    "EDT-FLM-03": [
+      {
+        "role": "source",
+        "sha256": "bec8a014e147522ad63d584828c96faf92ca8027d0663f3e3b4ca2ce41bcf1de",
+        "path": "inputs/EDT-FLM-03/src-3ce84cd3a5fa.png"
+      }
+    ],
+    "CHR-GAM-03": [
+      {
+        "role": "source",
+        "sha256": "4d94f61c1ebe912d8e47c821d57d4c200f94702726f0de02ed0704cb02d52e63",
+        "path": "inputs/CHR-GAM-03/src-0e364664d423.png"
+      }
+    ],
+    "STB-FLM-09": [
+      {
+        "role": "source",
+        "sha256": "b88e8551b52b61790e13b9f08e4cb187a4b9b661b44aa711202682424ac602bc",
+        "path": "inputs/STB-FLM-09/src-9da4fa60194b.png"
+      }
+    ],
+    "EDT-ADS-01": [
+      {
+        "role": "source",
+        "sha256": "b4b7444352146e98672e21e7ea9511dac0bc2bf12e8fc4531fab586c41e350cd",
+        "path": "inputs/EDT-ADS-01/src-52a6bbf77b9f.png"
+      }
+    ],
+    "COV-RES-01": [
+      {
+        "role": "source",
+        "sha256": "f6464e91e1c9f00f0b8d0bdbb3a7a095c67746cde8939cca47927870791c3ec1",
+        "path": "inputs/COV-RES-01/src-5159a9f92b70.png"
+      }
+    ],
+    "CHR-GAM-04": [
+      {
+        "role": "source",
+        "sha256": "75f8ca10e7b468deae7b41d1bddbbb8e392f1571cc57bfdbcfc903ed63878acb",
+        "path": "inputs/CHR-GAM-04/src-be587b9cf8b9.png"
+      }
+    ],
+    "IMGEDIT-072": [
+      {
+        "role": "source",
+        "sha256": "f0d2a81c369d51eca0404cb75289ed785e8b9cd2cb3c88bfb6e04dbc6ddd4610",
+        "path": "inputs/IMGEDIT-072/src-6fef8c886867.png"
+      }
+    ],
+    "IMGEDIT-011": [
+      {
+        "role": "source",
+        "sha256": "0d0214e016da15d020fc5f31ccd62ca3863141c19d9ca3a5d504aa774463ad1f",
+        "path": "inputs/IMGEDIT-011/src-e3e490202e2a.png"
+      }
+    ],
+    "TYP-MED-14": [
+      {
+        "role": "source",
+        "sha256": "99667bfeb8a6260a99ffbd90c222aa844a41e88178217d0ee84a1b76bfddd864",
+        "path": "inputs/TYP-MED-14/src-7573d3138596.png"
+      }
+    ],
+    "STB-ADS-04": [
+      {
+        "role": "source",
+        "sha256": "9d610963ff11efb4f22d27395b46181a8612f139d600e0383f375a717e36a213",
+        "path": "inputs/STB-ADS-04/src-298c772bcfcc.png"
+      }
+    ],
+    "SHT-FLM-01": [
+      {
+        "role": "source",
+        "sha256": "3b0b1de85ec24cc72d9381c58e91ace20c901b587a766b8ccccc38bff22c6eaf",
+        "path": "inputs/SHT-FLM-01/src-7edf6e7de434.png"
+      }
+    ],
+    "COV-RES-06": [
+      {
+        "role": "source",
+        "sha256": "8050557d1df72a0bf1e904f127bcd7046fbc6c6edd1946a0005a184079e3d4c1",
+        "path": "inputs/COV-RES-06/src-18bd2ac8a4db.png"
+      }
+    ],
+    "EDT-GAM-01": [
+      {
+        "role": "source",
+        "sha256": "3c421be4d091a6e44098097442c6d8c72a35ca727f75238fc56105422ce8a41c",
+        "path": "inputs/EDT-GAM-01/src-06e08564ef01.png"
+      }
+    ],
+    "CHR-FLM-03": [
+      {
+        "role": "source",
+        "sha256": "6aa881cf0271733a600c98d34fe70ecc947b71d8b9f46f1e5e08fdab5b16186a",
+        "path": "inputs/CHR-FLM-03/src-a5e728a9bd3e.png"
+      }
+    ],
+    "IMGEDIT-123": [
+      {
+        "role": "source",
+        "sha256": "b615a1d4bddf7e9000e6156dd0b849fcf36a2900e41ef08b5c2446475a9cfaad",
+        "path": "inputs/IMGEDIT-123/src-1af2d06696e4.png"
+      }
+    ],
+    "IMGEDIT-014": [
+      {
+        "role": "source",
+        "sha256": "3ff233399e35fbc468bd3e2ab103b513a645479acbc12d5f8adf1d55cecbb60b",
+        "path": "inputs/IMGEDIT-014/src-82f70cf76e72.png"
+      }
+    ],
+    "IMGEDIT-116": [
+      {
+        "role": "source",
+        "sha256": "17773d5e4b825d0a5d00c3b3b026c4f357dd69d0d6c42c590d23ccdb66fd51b1",
+        "path": "inputs/IMGEDIT-116/src-b24ab08bead5.png"
+      }
+    ],
+    "TYP-GAM-04": [
+      {
+        "role": "source",
+        "sha256": "1747d99891a8500892c226677fd3161ffc97be8dddd943a2b181f9d799967366",
+        "path": "inputs/TYP-GAM-04/src-4be902902b1e.png"
+      }
+    ],
+    "CHR-FLM-09": [
+      {
+        "role": "source",
+        "sha256": "5a0c6a18339885831e815c7a17a8e1b0052b2d1e040955672a9c89604547c3d0",
+        "path": "inputs/CHR-FLM-09/src-d5917777b325.png"
+      }
+    ],
+    "COV-ADS-05": [
+      {
+        "role": "source",
+        "sha256": "9d610963ff11efb4f22d27395b46181a8612f139d600e0383f375a717e36a213",
+        "path": "inputs/COV-ADS-05/src-298c772bcfcc.png"
+      }
+    ],
+    "CHR-ECM-02": [
+      {
+        "role": "source",
+        "sha256": "71353faf9737d8eaf36041ccc97cfd14ea86df6927e005ad6022798ba7b1f7f4",
+        "path": "inputs/CHR-ECM-02/src-1b6661ec389c.png"
+      }
+    ],
+    "EDT-GAM-03": [
+      {
+        "role": "source",
+        "sha256": "6124865ded05c5793f0dfaef96de877f5fa0d54836310615120871b6035fe221",
+        "path": "inputs/EDT-GAM-03/src-11520a78d9ef.png"
+      }
+    ],
+    "PRD-ADS-04": [
+      {
+        "role": "source",
+        "sha256": "9d610963ff11efb4f22d27395b46181a8612f139d600e0383f375a717e36a213",
+        "path": "inputs/PRD-ADS-04/src-298c772bcfcc.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "843ad650b0fa9f8f70c8de3674c1adfbdb395282ca430a4e8d2af562468090de",
+        "path": "inputs/PRD-ADS-04/src-be797cd8e821.png"
+      }
+    ],
+    "TYP-FLM-04": [
+      {
+        "role": "source",
+        "sha256": "7853846b19a50e69e94f60e5b482a3c62fed37824c699c114e35a2d55a8648ab",
+        "path": "inputs/TYP-FLM-04/src-ee3851e6086a.png"
+      }
+    ],
+    "EDT-RES-03": [
+      {
+        "role": "source",
+        "sha256": "8a887fd0b5308f9412264613b3c2397e0f2e5fc74143ff818c6c83542f53e533",
+        "path": "inputs/EDT-RES-03/src-62013508d71b.png"
+      }
+    ],
+    "COV-ECM-02": [
+      {
+        "role": "source",
+        "sha256": "fe9788c28cae5294f071d75df42ddea12f634785eaea22747a23b20e69496eec",
+        "path": "inputs/COV-ECM-02/src-9c0107bc118b.png"
+      }
+    ],
+    "STB-GAM-04": [
+      {
+        "role": "source",
+        "sha256": "75f8ca10e7b468deae7b41d1bddbbb8e392f1571cc57bfdbcfc903ed63878acb",
+        "path": "inputs/STB-GAM-04/src-be587b9cf8b9.png"
+      }
+    ],
+    "PRD-ADS-08": [
+      {
+        "role": "source",
+        "sha256": "9ace3d00fcd2d2fbb7f7f778d8931f16e34684bda7893bbb8fdf442561bafe5f",
+        "path": "inputs/PRD-ADS-08/src-225642f3dd9b.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "b795569cfeed9c14072cdfa119823cf3317b07a6bbcea44b4ee1342dda0c3140",
+        "path": "inputs/PRD-ADS-08/src-07be0836e16f.png"
+      }
+    ],
+    "COV-MED-01": [
+      {
+        "role": "source",
+        "sha256": "e3e8cd2161df96d607b9888eb43619339fe9fdb44d8b58117de549077e74c07c",
+        "path": "inputs/COV-MED-01/src-1645398a6025.png"
+      }
+    ],
+    "EDT-RES-04": [
+      {
+        "role": "source",
+        "sha256": "8050557d1df72a0bf1e904f127bcd7046fbc6c6edd1946a0005a184079e3d4c1",
+        "path": "inputs/EDT-RES-04/src-18bd2ac8a4db.png"
+      }
+    ],
+    "STB-FLM-07": [
+      {
+        "role": "source",
+        "sha256": "fb9cee438f9edf3c3cf061c96cc755dc46eb659c0904bbdb719bfff47f284347",
+        "path": "inputs/STB-FLM-07/src-f29e011b99a5.png"
+      },
+      {
+        "role": "reference",
+        "sha256": "a40fb5caf4d71184c7c91fc28acc61e0dbf6c6af8c744a2572d9efc197dca596",
+        "path": "inputs/STB-FLM-07/src-bf39d78917a4.png"
+      }
+    ],
+    "IMGEDIT-031": [
+      {
+        "role": "source",
+        "sha256": "6c6a418d4ac955ed383a07c0e0b1afbca2f7b89d106452a25985e4785bba7b9c",
+        "path": "inputs/IMGEDIT-031/src-6bbca28a14c3.png"
+      }
+    ],
+    "CHR-ADS-02": [
+      {
+        "role": "source",
+        "sha256": "9d610963ff11efb4f22d27395b46181a8612f139d600e0383f375a717e36a213",
+        "path": "inputs/CHR-ADS-02/src-298c772bcfcc.png"
+      }
+    ],
+    "SHT-GAM-01": [
+      {
+        "role": "source",
+        "sha256": "4d94f61c1ebe912d8e47c821d57d4c200f94702726f0de02ed0704cb02d52e63",
+        "path": "inputs/SHT-GAM-01/src-0e364664d423.png"
+      }
+    ],
+    "IMGEDIT-124": [
+      {
+        "role": "source",
+        "sha256": "d3b88f90aa08cd1c799985d835abd98c5d0deefcadaee836810e30026dc08e24",
+        "path": "inputs/IMGEDIT-124/src-aaa7d06bf7f0.png"
+      }
+    ],
+    "COV-FLM-03": [
+      {
+        "role": "source",
+        "sha256": "6b1e366c8e5ca4efeb159cd8bda941a6bae0ef173c0d8607a5aeebfdd5be2ffd",
+        "path": "inputs/COV-FLM-03/src-412ecd91ef29.png"
+      }
+    ],
+    "EDT-ECM-02": [
+      {
+        "role": "source",
+        "sha256": "fe9788c28cae5294f071d75df42ddea12f634785eaea22747a23b20e69496eec",
+        "path": "inputs/EDT-ECM-02/src-9c0107bc118b.png"
+      }
+    ],
+    "TYP-ADS-07": [
+      {
+        "role": "source",
+        "sha256": "b4b7444352146e98672e21e7ea9511dac0bc2bf12e8fc4531fab586c41e350cd",
+        "path": "inputs/TYP-ADS-07/src-52a6bbf77b9f.png"
+      }
+    ],
+    "SHT-GAM-03": [
+      {
+        "role": "source",
+        "sha256": "75f8ca10e7b468deae7b41d1bddbbb8e392f1571cc57bfdbcfc903ed63878acb",
+        "path": "inputs/SHT-GAM-03/src-be587b9cf8b9.png"
+      }
+    ],
+    "IMGEDIT-107": [
+      {
+        "role": "source",
+        "sha256": "ddf344a24dd7c2f7252713e7038857061e0c359a677a92438028b2d02c7e892b",
+        "path": "inputs/IMGEDIT-107/src-af2d1e7bbc63.png"
+      }
+    ],
+    "IMGEDIT-110": [
+      {
+        "role": "source",
+        "sha256": "f5a3fdd0d83cfcc9cfbfc5f81888a7b92119c88fae56875ac7625985a0479478",
+        "path": "inputs/IMGEDIT-110/src-7bbce5574995.png"
+      }
+    ],
+    "COV-FLM-06": [
+      {
+        "role": "source",
+        "sha256": "5a0c6a18339885831e815c7a17a8e1b0052b2d1e040955672a9c89604547c3d0",
+        "path": "inputs/COV-FLM-06/src-d5917777b325.png"
+      }
+    ],
+    "SHT-ECM-01": [
+      {
+        "role": "source",
+        "sha256": "90b3dae23fbbd48f006b133e02413b19bf6158f4ff35d115a2a824bf387e81a1",
+        "path": "inputs/SHT-ECM-01/src-39e544d78733.png"
+      }
+    ],
+    "PRD-GAM-02": [
+      {
+        "role": "source",
+        "sha256": "bb625a0564e5f4071a34c60d1d172af4e4718fd2bd1915bb72fe8d285e454f29",
+        "path": "inputs/PRD-GAM-02/src-1c94d67b956d.png"
+      }
+    ],
+    "STB-ADS-02": [
+      {
+        "role": "source",
+        "sha256": "8e73829a710581838e525bdfc0f6af8cc8b6d16f60ed096acbee72e1cf7fbb2d",
+        "path": "inputs/STB-ADS-02/src-9c63bc32caf7.png"
+      }
+    ],
+    "IMGEDIT-027": [
+      {
+        "role": "source",
+        "sha256": "ffe4d98c1f670fa8c2ead9a4ab5de10a52556bdaa9059f6b1ae01c672b2d4bd0",
+        "path": "inputs/IMGEDIT-027/src-1a0d76f9b767.png"
+      }
+    ],
+    "CHR-FLM-06": [
+      {
+        "role": "source",
+        "sha256": "5b05eab339c1946a6ed75bbbf95aff93357b92fde7d1ddff7cfd103d4c08b14b",
+        "path": "inputs/CHR-FLM-06/src-316cb70466d3.png"
+      }
+    ],
+    "EDT-RES-01": [
+      {
+        "role": "source",
+        "sha256": "f6464e91e1c9f00f0b8d0bdbb3a7a095c67746cde8939cca47927870791c3ec1",
+        "path": "inputs/EDT-RES-01/src-5159a9f92b70.png"
+      }
+    ],
+    "COV-FLM-08": [
+      {
+        "role": "source",
+        "sha256": "0daafc0c1f0b201a66408bbb4db9f2c13d5e4a3ebca289a6d91aa436e098d708",
+        "path": "inputs/COV-FLM-08/src-630659fa9750.png"
+      }
+    ],
+    "PRD-ECM-06": [
+      {
+        "role": "source",
+        "sha256": "05ff78dd479f22323e7e641678c87d6544aa668299e91164a6d564ce48e5cb9e",
+        "path": "inputs/PRD-ECM-06/src-dbe6befb16d2.png"
+      }
+    ],
+    "STB-GAM-01": [
+      {
+        "role": "source",
+        "sha256": "2a667679a6ab307ce0e8d1a1193ab1bfd3ea4058612fa1f2905e64f6568f4efa",
+        "path": "inputs/STB-GAM-01/src-aabbb6057efa.png"
+      }
+    ],
+    "CHR-FLM-07": [
+      {
+        "role": "source",
+        "sha256": "02b4ea3a1ea031de76523362d25e68b67e3c50a404e6045f9db1aea24d958e7f",
+        "path": "inputs/CHR-FLM-07/src-5bfc8b9c3fc6.png"
+      }
+    ],
+    "IMGEDIT-108": [
+      {
+        "role": "source",
+        "sha256": "d67aca95f8b9cbb376a073beb45eba58250685c125f09d459dd052b672b9c9d7",
+        "path": "inputs/IMGEDIT-108/src-362bf8989ca0.png"
+      }
+    ],
+    "IMGEDIT-051": [
+      {
+        "role": "source",
+        "sha256": "8fd11a46194ad0669d6cbe1ea5f14146eb43459ad09379abbdec7c76fc4c1575",
+        "path": "inputs/IMGEDIT-051/src-620c150b8328.png"
+      }
+    ],
+    "CHR-GAM-08": [],
+    "SHT-ADS-06": [],
+    "SHT-ECM-05": [],
+    "CHR-FLM-13": [],
+    "CHR-ADS-04": [],
+    "CHR-FLM-14": [],
+    "CHR-GAM-10": [],
+    "CHR-FLM-16": [],
+    "COV-RES-09": [],
+    "SHT-GAM-04": [],
+    "STB-ADS-07": [],
+    "SHT-FLM-06": [],
+    "TYP-MED-03": [],
+    "COV-ADS-06": [],
+    "TYP-MED-06": [],
+    "CHR-FLM-15": [],
+    "SHT-ADS-05": [],
+    "TYP-GAM-02": [],
+    "CHR-ECM-05": [],
+    "STB-ADS-08": [],
+    "CHR-GAM-09": [],
+    "TYP-ECM-04": [],
+    "TYP-FLM-03": [],
+    "STB-GAM-05": [],
+    "COV-RES-10": [],
+    "TYP-MED-04": [],
+    "COV-FLM-14": [],
+    "TYP-ECM-01": [],
+    "TYP-MED-07": [],
+    "SHT-GAM-05": [],
+    "IMGGEN-043": [],
+    "STB-ADS-06": [],
+    "SHT-FLM-08": [],
+    "TYP-ECM-02": [],
+    "CHR-GAM-07": [],
+    "PRD-ADS-10": [],
+    "STB-FLM-12": [],
+    "STB-ADS-05": [
+      {
+        "role": "source",
+        "sha256": "e17b92e0b9a4ead819ff2b3eefe53780a4c528fabf6b6496ca5a58d2d5ddd895",
+        "path": "inputs/STB-ADS-05/src-e7f2240a8294.png"
+      }
+    ],
+    "STB-ECM-02": [],
+    "STB-FLM-01": [
+      {
+        "role": "source",
+        "sha256": "ab310027137bad93191c55ea5484a61882be1576e497e24d3d7ed20ae62d71ce",
+        "path": "inputs/STB-FLM-01/src-91b07185fcf7.png"
+      }
+    ],
+    "STB-FLM-03": [
+      {
+        "role": "source",
+        "sha256": "5844c46f83b008cb17aae5c092d2d24fdf826da873b844523c145a6b5d1f5ce6",
+        "path": "inputs/STB-FLM-03/src-88a1066d9b44.png"
+      }
+    ],
+    "STB-FLM-06": [
+      {
+        "role": "source",
+        "sha256": "5b05eab339c1946a6ed75bbbf95aff93357b92fde7d1ddff7cfd103d4c08b14b",
+        "path": "inputs/STB-FLM-06/src-316cb70466d3.png"
+      }
+    ],
+    "STB-FLM-08": [
+      {
+        "role": "source",
+        "sha256": "744a7fa74559d587b82df428f271e7aa92e91bdcb2bef5dd81ee9b0e57c2d497",
+        "path": "inputs/STB-FLM-08/src-286196b865ca.png"
+      }
+    ],
+    "STB-FLM-10": [
+      {
+        "role": "source",
+        "sha256": "5a0c6a18339885831e815c7a17a8e1b0052b2d1e040955672a9c89604547c3d0",
+        "path": "inputs/STB-FLM-10/src-d5917777b325.png"
+      }
+    ],
+    "STB-FLM-11": [],
+    "STB-FLM-13": [],
+    "STB-FLM-14": [],
+    "STB-GAM-02": [
+      {
+        "role": "source",
+        "sha256": "0c4f6f5e3ca280a0b5afcd44081f8b55cf882e0b120b65cd2e9cf365d0813611",
+        "path": "inputs/STB-GAM-02/src-e27f010adc2a.png"
+      }
+    ],
+    "STB-GAM-06": []
+  },
+  "cells": {
+    "IMGGEN-005::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-005",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-005::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-005",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-006::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-006",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-006::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-006",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-011::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-011",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-011::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-011",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-012::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-012",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-012::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-012",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-017::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-017",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-017::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-017",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-023::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-023",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-023::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-023",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-029::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-029",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-029::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-029",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-032::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-032",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-032::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-032",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-034::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-034",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-034::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-034",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-036::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-036",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-036::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-036",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-039::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-039",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-039::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-039",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-053::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-053",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-053::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-053",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-054::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-054",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-054::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-054",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-058::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-058",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-058::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-058",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-060::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-060",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-060::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-060",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-065::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-065",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-065::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-065",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-067::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-067",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-067::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-067",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-080::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-080",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-080::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-080",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-088::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-088",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-088::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-088",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-089::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-089",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-089::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-089",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-093::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-093",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-093::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-093",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-095::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-095",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-095::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-095",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-096::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-096",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-096::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-096",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-098::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-098",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-098::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-098",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-099::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-099",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-099::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-099",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-005::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-005",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-005::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-005",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-010::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-010",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-010::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-010",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-016::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-016",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-016::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-016",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-021::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-021",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-021::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-021",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-022::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-022",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-022::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-022",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-024::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-024",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-024::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-024",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-026::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-026",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-026::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-026",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-029::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-029",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-029::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-029",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-036::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-036",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-036::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-036",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-039::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-039",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-039::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-039",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-043::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-043",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-043::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-043",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-049::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-049",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-049::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-049",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-057::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-057",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-057::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-057",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-066::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-066",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-066::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-066",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-067::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-067",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-067::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-067",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-068::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-068",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-068::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-068",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-073::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-073",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-073::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-073",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-074::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-074",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-074::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-074",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-075::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-075",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-075::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-075",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-080::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-080",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-080::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-080",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-081::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-081",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-081::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-081",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-083::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-083",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-083::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-083",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-084::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-084",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-084::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-084",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-085::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-085",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-085::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-085",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-089::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-089",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-089::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-089",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-090::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-090",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-090::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-090",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ECM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ECM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ECM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ECM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ECM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ECM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ADS-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ADS-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ADS-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ADS-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-10::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-10",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "failed",
+      "reason": "member 4 (Stable): refused after 2 attempt(s): prompt blocked: BlockedReason.OTHER"
+    },
+    "CHR-FLM-10::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-10",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}}"
+    },
+    "CHR-GAM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "STB-ADS-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}}"
+    },
+    "STB-ADS-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-11::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-11",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-11::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-11",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-MED-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-MED-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-MED-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-MED-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-GAM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "STB-GAM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-GAM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ECM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ECM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ECM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ECM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ECM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ECM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ADS-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-ADS-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ADS-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-ADS-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ECM-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-ECM-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ECM-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-ECM-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-GAM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-GAM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-MED-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-MED-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-MED-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-MED-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-GAM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-GAM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-GAM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-GAM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-RES-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-RES-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-RES-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-RES-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ADS-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ADS-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-052::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-052",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-052::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-052",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-15::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-15",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-15::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-15",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-GAM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-GAM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-GAM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-GAM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ECM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ECM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ADS-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "SHT-ADS-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ADS-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ECM-13::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-ECM-13",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ECM-13::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-ECM-13",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-115::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-115",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-115::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-115",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ADS-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-ADS-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ADS-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-ADS-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-13::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-13",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-13::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-13",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ADS-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "SHT-ADS-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ADS-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ECM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-ECM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "failed",
+      "reason": "member 1 (24 mm): refused after 1 attempt(s): prompt blocked: BlockedReason.OTHER"
+    },
+    "COV-ECM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-ECM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-RES-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-RES-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-RES-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-RES-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-ECM-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-ECM-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-FLM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-FLM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-FLM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-FLM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-09::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-09",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-09::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-09",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ADS-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-ADS-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ADS-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-ADS-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-RES-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-RES-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-072::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-072",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-072::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-072",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-011::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-011",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-011::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-011",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-14::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-14",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-14::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-14",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "SHT-FLM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "COV-RES-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-RES-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-RES-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-GAM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-GAM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-GAM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-GAM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-123::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-123",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-123::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-123",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-014::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-014",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-014::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-014",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-116::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-116",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-116::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-116",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-GAM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-GAM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-GAM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-GAM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-09::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-09",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-09::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-09",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ADS-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-ADS-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ADS-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-ADS-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ECM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "failed",
+      "reason": "member 1 (Yoga at dawn): refused after 2 attempt(s): prompt blocked: BlockedReason.OTHER"
+    },
+    "CHR-ECM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ECM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-GAM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-GAM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-GAM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-GAM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ADS-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-ADS-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ADS-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-ADS-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-FLM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-FLM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-FLM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-FLM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-RES-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-RES-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-RES-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-RES-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ECM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-ECM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ECM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-ECM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-GAM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-GAM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ADS-08::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-ADS-08",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ADS-08::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-ADS-08",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-MED-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-MED-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-MED-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-MED-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-RES-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-RES-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-RES-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-RES-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-031::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-031",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-031::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-031",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ADS-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ADS-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ADS-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ADS-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-GAM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-GAM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-124::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-124",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-124::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-124",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-FLM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-FLM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ECM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-ECM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-ECM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-ECM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ADS-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-ADS-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ADS-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-ADS-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-GAM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-GAM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-107::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-107",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    "IMGEDIT-107::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-107",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-110::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-110",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "rate_limited after 3 attempt(s): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    "IMGEDIT-110::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-110",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-FLM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-FLM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ECM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ECM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-GAM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-GAM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-GAM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-GAM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}}"
+    },
+    "IMGEDIT-027::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-027",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-027::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-027",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-RES-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "EDT-RES-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "EDT-RES-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "EDT-RES-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-08::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-FLM-08",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-08::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-FLM-08",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ECM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-ECM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ECM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-ECM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-GAM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "STB-GAM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-GAM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-108::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-108",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-108::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-108",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-051::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-051",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-051::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-051",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-08::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-08",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-08::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-08",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ADS-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ADS-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ECM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ECM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ECM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-13::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-13",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-13::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-13",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ADS-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ADS-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ADS-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ADS-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-14::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-14",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "CHR-FLM-14::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-14",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-10::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-10",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-10::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-10",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-16::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-16",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-16::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-16",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-09::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-RES-09",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-09::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-RES-09",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-GAM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-GAM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ADS-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-ADS-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-ADS-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-ADS-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-15::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-FLM-15",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-FLM-15::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-FLM-15",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "failed",
+      "reason": "member 4 (Climbing): refused after 1 attempt(s): Error code: 400 - {'error': {'message': 'Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID req_fdb3d0f5fa704d45b4cec8123ca626a5.', 'type': 'image_generation_user_error', 'param': None, 'code': 'moderation_blocked', 'moderation_details': {'moderation_stage': 'output', 'categories': ['other']}}}"
+    },
+    "SHT-ADS-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-ADS-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-ADS-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-ADS-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-GAM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-GAM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-GAM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-GAM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-ECM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-ECM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-ECM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-08::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-08",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-08::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-08",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-09::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-09",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-09::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-09",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-ECM-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-ECM-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-FLM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-FLM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-FLM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-FLM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-GAM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-GAM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-10::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-RES-10",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-RES-10::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-RES-10",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-04::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-04",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-04::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-04",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-14::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "COV-FLM-14",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "COV-FLM-14::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "COV-FLM-14",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-ECM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-ECM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-MED-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-MED-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-MED-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-GAM-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-GAM-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-GAM-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-043::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGGEN-043",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGGEN-043::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGGEN-043",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-08::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "SHT-FLM-08",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "SHT-FLM-08::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "SHT-FLM-08",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "TYP-ECM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "TYP-ECM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "TYP-ECM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-07::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-07",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-07::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-07",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ADS-10::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "PRD-ADS-10",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "PRD-ADS-10::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "PRD-ADS-10",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-12::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-12",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-12::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-12",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-05::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ADS-05",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ADS-05::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ADS-05",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "STB-ECM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-ECM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-ECM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-ECM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-01::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-01",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-01::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-01",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-08::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-08",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-08::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-08",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-10::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-10",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-10::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-10",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-11::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-11",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-11::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-11",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-13::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-13",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-13::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-13",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-14::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-FLM-14",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-FLM-14::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-FLM-14",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-02::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-GAM-02",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-02::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-GAM-02",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": "ProviderError: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+    },
+    "STB-GAM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "STB-GAM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "STB-GAM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "STB-GAM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "text_to_image",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "CHR-ADS-01": "completed",
+    "CHR-ADS-02": "completed",
+    "CHR-ADS-04": "completed",
+    "CHR-ECM-01": "completed",
+    "CHR-ECM-02": "incomplete",
+    "CHR-ECM-03": "completed",
+    "CHR-ECM-04": "completed",
+    "CHR-ECM-05": "completed",
+    "CHR-FLM-01": "completed",
+    "CHR-FLM-02": "completed",
+    "CHR-FLM-03": "completed",
+    "CHR-FLM-04": "completed",
+    "CHR-FLM-05": "completed",
+    "CHR-FLM-06": "completed",
+    "CHR-FLM-07": "completed",
+    "CHR-FLM-09": "completed",
+    "CHR-FLM-10": "incomplete",
+    "CHR-FLM-11": "completed",
+    "CHR-FLM-13": "completed",
+    "CHR-FLM-14": "completed",
+    "CHR-FLM-15": "incomplete",
+    "CHR-FLM-16": "completed",
+    "CHR-GAM-01": "completed",
+    "CHR-GAM-02": "completed",
+    "CHR-GAM-03": "completed",
+    "CHR-GAM-04": "completed",
+    "CHR-GAM-05": "completed",
+    "CHR-GAM-06": "completed",
+    "CHR-GAM-07": "completed",
+    "CHR-GAM-08": "completed",
+    "CHR-GAM-09": "completed",
+    "CHR-GAM-10": "completed",
+    "COV-ADS-02": "completed",
+    "COV-ADS-05": "completed",
+    "COV-ADS-06": "completed",
+    "COV-ECM-02": "completed",
+    "COV-ECM-05": "incomplete",
+    "COV-FLM-03": "completed",
+    "COV-FLM-06": "completed",
+    "COV-FLM-08": "completed",
+    "COV-FLM-14": "completed",
+    "COV-GAM-02": "completed",
+    "COV-GAM-04": "completed",
+    "COV-MED-01": "completed",
+    "COV-MED-02": "completed",
+    "COV-RES-01": "completed",
+    "COV-RES-06": "completed",
+    "COV-RES-09": "completed",
+    "COV-RES-10": "completed",
+    "EDT-ADS-01": "completed",
+    "EDT-ADS-02": "completed",
+    "EDT-ECM-02": "completed",
+    "EDT-ECM-07": "completed",
+    "EDT-FLM-03": "completed",
+    "EDT-GAM-01": "completed",
+    "EDT-GAM-03": "completed",
+    "EDT-MED-01": "completed",
+    "EDT-RES-01": "completed",
+    "EDT-RES-03": "completed",
+    "EDT-RES-04": "completed",
+    "IMGEDIT-005": "completed",
+    "IMGEDIT-010": "completed",
+    "IMGEDIT-011": "completed",
+    "IMGEDIT-014": "completed",
+    "IMGEDIT-016": "completed",
+    "IMGEDIT-021": "completed",
+    "IMGEDIT-022": "completed",
+    "IMGEDIT-024": "completed",
+    "IMGEDIT-026": "completed",
+    "IMGEDIT-027": "completed",
+    "IMGEDIT-029": "completed",
+    "IMGEDIT-031": "completed",
+    "IMGEDIT-036": "completed",
+    "IMGEDIT-039": "completed",
+    "IMGEDIT-043": "completed",
+    "IMGEDIT-049": "completed",
+    "IMGEDIT-051": "completed",
+    "IMGEDIT-052": "completed",
+    "IMGEDIT-057": "completed",
+    "IMGEDIT-066": "completed",
+    "IMGEDIT-067": "completed",
+    "IMGEDIT-068": "completed",
+    "IMGEDIT-072": "completed",
+    "IMGEDIT-073": "completed",
+    "IMGEDIT-074": "completed",
+    "IMGEDIT-075": "completed",
+    "IMGEDIT-080": "completed",
+    "IMGEDIT-081": "completed",
+    "IMGEDIT-083": "completed",
+    "IMGEDIT-084": "completed",
+    "IMGEDIT-085": "completed",
+    "IMGEDIT-089": "completed",
+    "IMGEDIT-090": "completed",
+    "IMGEDIT-107": "completed",
+    "IMGEDIT-108": "completed",
+    "IMGEDIT-110": "completed",
+    "IMGEDIT-115": "completed",
+    "IMGEDIT-116": "completed",
+    "IMGEDIT-123": "completed",
+    "IMGEDIT-124": "completed",
+    "IMGGEN-005": "completed",
+    "IMGGEN-006": "completed",
+    "IMGGEN-011": "completed",
+    "IMGGEN-012": "completed",
+    "IMGGEN-017": "completed",
+    "IMGGEN-023": "completed",
+    "IMGGEN-029": "completed",
+    "IMGGEN-032": "completed",
+    "IMGGEN-034": "completed",
+    "IMGGEN-036": "completed",
+    "IMGGEN-039": "completed",
+    "IMGGEN-043": "completed",
+    "IMGGEN-053": "completed",
+    "IMGGEN-054": "completed",
+    "IMGGEN-058": "completed",
+    "IMGGEN-060": "completed",
+    "IMGGEN-065": "completed",
+    "IMGGEN-067": "completed",
+    "IMGGEN-080": "completed",
+    "IMGGEN-088": "completed",
+    "IMGGEN-089": "completed",
+    "IMGGEN-093": "completed",
+    "IMGGEN-095": "completed",
+    "IMGGEN-096": "completed",
+    "IMGGEN-098": "completed",
+    "IMGGEN-099": "completed",
+    "PRD-ADS-04": "completed",
+    "PRD-ADS-08": "completed",
+    "PRD-ADS-10": "completed",
+    "PRD-ECM-06": "completed",
+    "PRD-ECM-13": "completed",
+    "PRD-GAM-02": "completed",
+    "PRD-RES-01": "completed",
+    "PRD-RES-02": "completed",
+    "SHT-ADS-02": "completed",
+    "SHT-ADS-03": "completed",
+    "SHT-ADS-04": "completed",
+    "SHT-ADS-05": "completed",
+    "SHT-ADS-06": "completed",
+    "SHT-ECM-01": "completed",
+    "SHT-ECM-02": "completed",
+    "SHT-ECM-03": "completed",
+    "SHT-ECM-05": "completed",
+    "SHT-FLM-01": "completed",
+    "SHT-FLM-02": "completed",
+    "SHT-FLM-03": "completed",
+    "SHT-FLM-04": "completed",
+    "SHT-FLM-06": "completed",
+    "SHT-FLM-08": "completed",
+    "SHT-GAM-01": "completed",
+    "SHT-GAM-02": "completed",
+    "SHT-GAM-03": "completed",
+    "SHT-GAM-04": "completed",
+    "SHT-GAM-05": "completed",
+    "STB-ADS-01": "completed",
+    "STB-ADS-02": "completed",
+    "STB-ADS-03": "completed",
+    "STB-ADS-04": "completed",
+    "STB-ADS-05": "completed",
+    "STB-ADS-06": "completed",
+    "STB-ADS-07": "completed",
+    "STB-ADS-08": "completed",
+    "STB-ECM-01": "completed",
+    "STB-ECM-02": "completed",
+    "STB-FLM-01": "completed",
+    "STB-FLM-02": "completed",
+    "STB-FLM-03": "completed",
+    "STB-FLM-04": "completed",
+    "STB-FLM-05": "completed",
+    "STB-FLM-06": "completed",
+    "STB-FLM-07": "completed",
+    "STB-FLM-08": "completed",
+    "STB-FLM-09": "completed",
+    "STB-FLM-10": "completed",
+    "STB-FLM-11": "completed",
+    "STB-FLM-12": "completed",
+    "STB-FLM-13": "completed",
+    "STB-FLM-14": "completed",
+    "STB-GAM-01": "completed",
+    "STB-GAM-02": "completed",
+    "STB-GAM-03": "completed",
+    "STB-GAM-04": "completed",
+    "STB-GAM-05": "completed",
+    "STB-GAM-06": "completed",
+    "TYP-ADS-07": "completed",
+    "TYP-ECM-01": "completed",
+    "TYP-ECM-02": "completed",
+    "TYP-ECM-04": "completed",
+    "TYP-ECM-07": "completed",
+    "TYP-FLM-03": "completed",
+    "TYP-FLM-04": "completed",
+    "TYP-GAM-02": "completed",
+    "TYP-GAM-04": "completed",
+    "TYP-MED-03": "completed",
+    "TYP-MED-04": "completed",
+    "TYP-MED-06": "completed",
+    "TYP-MED-07": "completed",
+    "TYP-MED-13": "completed",
+    "TYP-MED-14": "completed",
+    "TYP-MED-15": "completed"
+  }
+}

@@ -43,3 +43,64 @@ criteria:
       Measured by OCR against the scenario's must_read_text. Match 1.0 maps
       to 10; below 0.6 maps to 0; linear between. Dropped and redistributed
       when the scenario checks no text.
+
+  # ---- Optional criteria (weight 0) -------------------------------------
+  # Same rule as the base rubric: opt-in by naming them in a scenario. The
+  # v3 bank scores edits on prompt adherence and composition too.
+  - name: prompt_adherence
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Every named subject, attribute, layout and count from the brief is
+      present. 10 = nothing missing or wrong; each missing or wrong element
+      costs about 2 points.
+
+  - name: composition
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Framing, subject placement, balance, depth; nothing important cropped.
+  # Never scored by default: effective_criteria() drops zero-weight criteria
+  # unless a scenario names them in its own criteria/weights. Added
+  # 2026-10-09 for the scenario-bank v2/v3 rubrics (October run).
+  - name: set_consistency
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Across every image in the set (or every panel on the sheet), what the
+      brief says must stay the same does: the same person, face, costume,
+      product, palette, light and style; a change the brief orders (damage
+      building up, age, time of day) happens in order and never resets.
+
+  - name: reference_fidelity
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      The output matches the supplied input and reference images as the
+      brief defines: identity (face, marks, skin tone), product, costume,
+      logo or layout carried over exactly, not reinterpreted.
+
+  - name: physics_plausibility
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Light, shadow, reflection, contact, gravity, materials and perspective
+      behave as they would physically; nothing floats, intersects or casts
+      the wrong shadow.
+
+  - name: text_accuracy_judged
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Read by the judge, for text the OCR cannot read back (Indian scripts)
+      or for briefs that demand no text at all: every required string is
+      present, spelled exactly, correctly formed in its script and legible;
+      no unrequested text appears.
+
+  - name: preservation_judged
+    weight: 0.0
+    judged_by: judge
+    description: >-
+      Compared with the input image: everything the instruction said to
+      keep is unchanged — identity, layout, colours, background, lighting —
+      and only the asked-for change was made.

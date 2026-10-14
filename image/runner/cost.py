@@ -46,6 +46,9 @@ def compute_cost(price, usage: dict) -> dict:
         out_rate = price.usd_out_per_1m or price.usd_per_1m
         if tokens_out and out_rate:
             micro += round(tokens_out * out_rate * MICRO / 1_000_000)
+        tokens_thinking = usage.get("thoughts_token_count")
+        if tokens_thinking and price.usd_thinking_per_1m:
+            micro += round(tokens_thinking * price.usd_thinking_per_1m * MICRO / 1_000_000)
         return _row(micro, "per_token", price, "api_reported")
 
     if unit == "per_1k_chars":

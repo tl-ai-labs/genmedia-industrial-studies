@@ -41,3 +41,23 @@ def test_single_rate_output_tokens():
 def test_preflight_estimates():
     assert estimate_call_micro_usd(PER_IMAGE) == 67000
     assert estimate_call_micro_usd(PER_TOKEN) == 70000
+
+
+NB21 = Price(unit="per_token", usd_in_per_1m=1.50, usd_out_per_1m=30.0,
+             usd_thinking_per_1m=7.50, est_usd_per_call=0.05, source="t", as_of="2026-10-07")
+
+
+def test_thinking_tokens_billed_on_top():
+    # Gemini reports thinking apart from candidates_token_count; a 1K image
+    # is 1,120 output tokens ($0.0336), and thinking must not vanish.
+    c = compute_cost(NB21, {"prompt_token_count": 50, "candidates_token_count": 1120,
+                            "thoughts_token_count": 1000})
+    assert c["micro_usd"] == 75 + 33600 + 7500
+    assert c["usage_source"] == "api_reported"
+
+
+def test_thinking_ignored_without_a_thinking_rate():
+    # Older per_token prices carry no thinking rate; their bills do not change.
+    c = compute_cost(PER_TOKEN, {"prompt_token_count": 1000, "candidates_token_count": 500,
+                                 "thoughts_token_count": 9999})
+    assert c["micro_usd"] == 10000 + 20000

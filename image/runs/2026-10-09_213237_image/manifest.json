@@ -1,0 +1,207 @@
+{
+  "run_id": "2026-10-09_213237_image",
+  "created": "2026-10-09T16:02:37.576Z",
+  "state": "reported",
+  "modality": "image",
+  "git_sha": "289d9373b6ede0a504401e7a38f861ca77f2b640",
+  "budget_usd": 2.0,
+  "budget_by_provider": null,
+  "events": [
+    {
+      "ts": "2026-10-09T16:02:37.595Z",
+      "state": "draft"
+    },
+    {
+      "ts": "2026-10-09T16:02:37.615Z",
+      "state": "planned"
+    },
+    {
+      "ts": "2026-10-09T16:02:38.725Z",
+      "state": "running"
+    },
+    {
+      "ts": "2026-10-09T16:07:28.637Z",
+      "state": "generated"
+    },
+    {
+      "ts": "2026-10-09T16:08:25.046Z",
+      "state": "judged"
+    },
+    {
+      "ts": "2026-10-09T16:08:25.134Z",
+      "state": "scored"
+    },
+    {
+      "ts": "2026-10-09T16:08:40.094Z",
+      "state": "reported"
+    }
+  ],
+  "models": [
+    {
+      "id": "gemini-nano-banana-2-1-vertex",
+      "provider": "google-vertex",
+      "adapter": "gemini_image",
+      "provider_model": "gemini-nano-banana-2.1",
+      "supports": [
+        "text_to_image",
+        "image_edit"
+      ],
+      "price_as_of": "2026-10-07",
+      "voice_map": null
+    },
+    {
+      "id": "gpt-image-2-5-sunburst-high",
+      "provider": "openai",
+      "adapter": "openai_image",
+      "provider_model": "gpt-image-2.5-sunburst-2026-09-08",
+      "supports": [
+        "text_to_image",
+        "image_edit",
+        "inpaint_mask"
+      ],
+      "price_as_of": "2026-10-09",
+      "voice_map": null
+    }
+  ],
+  "rubric_hashes": {
+    "image_edit": "8881785a9ed8196c39d3462418e2d650d2e5d107826de9564f6c2b23a6b84372"
+  },
+  "rubric_files": {
+    "image_edit": [
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/image.yaml",
+      "/Users/macbook/Documents/GitHub/Google-Projects/genmedia-industrial-studies/image/configs/rubrics/tasks/image_edit.yaml"
+    ]
+  },
+  "effective_weights": {
+    "IMGEDIT-075": {
+      "edit_fidelity": 0.4,
+      "text_accuracy_judged": 0.35,
+      "realism_style": 0.15,
+      "visual_quality": 0.1
+    },
+    "IMGEDIT-085": {
+      "edit_fidelity": 0.5,
+      "realism_style": 0.3,
+      "visual_quality": 0.2
+    },
+    "CHR-GAM-03": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    },
+    "CHR-GAM-06": {
+      "set_consistency": 0.333333,
+      "reference_fidelity": 0.252525,
+      "prompt_adherence": 0.171717,
+      "text_accuracy_judged": 0.080808,
+      "realism_style": 0.080808,
+      "visual_quality": 0.080809
+    }
+  },
+  "scenario_set_hash": "a98b887aff5e8ed9546dc9d472c06b32eb80bddbfece68d40780152f2504eeae",
+  "inputs": {
+    "IMGEDIT-075": [
+      {
+        "role": "source",
+        "sha256": "5b0f334529d7d102a45b72279bb5f5707b8ba5a3e305d339f2779a627ac3f445",
+        "path": "inputs/IMGEDIT-075/src-9041a397a737.png"
+      }
+    ],
+    "IMGEDIT-085": [
+      {
+        "role": "source",
+        "sha256": "b6599df8eb9703089326a86c439bb3f6fe5420b97ed0bb786ba3b295e55b6d26",
+        "path": "inputs/IMGEDIT-085/src-02a0f4d5f866.png"
+      }
+    ],
+    "CHR-GAM-03": [
+      {
+        "role": "source",
+        "sha256": "29d5812db50a430fe78f2df5fc193708861d25627c05d8a6d858d8c86d7adf0c",
+        "path": "inputs/CHR-GAM-03/src-ea6539200b43.png"
+      }
+    ],
+    "CHR-GAM-06": [
+      {
+        "role": "source",
+        "sha256": "e1f04f994e711bfb673413ff36621c8374570e556c30eda09f27c9658cefa8b0",
+        "path": "inputs/CHR-GAM-06/src-f42836484c4a.png"
+      }
+    ]
+  },
+  "cells": {
+    "IMGEDIT-075::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-075",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-075::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-075",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-085::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "IMGEDIT-085",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "IMGEDIT-085::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "IMGEDIT-085",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-03::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-03",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-03::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-03",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-06::gemini-nano-banana-2-1-vertex": {
+      "scenario_id": "CHR-GAM-06",
+      "model_id": "gemini-nano-banana-2-1-vertex",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    },
+    "CHR-GAM-06::gpt-image-2-5-sunburst-high": {
+      "scenario_id": "CHR-GAM-06",
+      "model_id": "gpt-image-2-5-sunburst-high",
+      "task": "image_edit",
+      "modality": "image",
+      "state": "scored",
+      "reason": ""
+    }
+  },
+  "scenario_status": {
+    "CHR-GAM-03": "completed",
+    "CHR-GAM-06": "completed",
+    "IMGEDIT-075": "completed",
+    "IMGEDIT-085": "completed"
+  }
+}

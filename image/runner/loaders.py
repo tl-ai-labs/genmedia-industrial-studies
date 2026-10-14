@@ -53,6 +53,22 @@ class Scenario(BaseModel):
     criteria: Optional[list[str]] = None
     weights: Optional[dict[str, float]] = None
     tags: list[str] = Field(default_factory=list)
+    # Scenario-bank v2/v3 fields (October run). A checklist turns on the
+    # checklist judge: every question is answered yes/no before any score,
+    # and each carries the criterion it belongs to (`dim`, None = a plain
+    # clause). `gate_criteria` + `pass_min_score` are the bank's pass rule:
+    # every check of a gate criterion is yes AND the score reaches the floor.
+    checklist: Optional[list[dict]] = None        # [{q, dim, scope}]
+    gate_criteria: list[str] = Field(default_factory=list)
+    pass_min_score: Optional[float] = None
+    pass_rule: Optional[str] = None               # the bank's wording, for the record
+    # A set of outputs that must agree. mode "each": one request per member,
+    # from the same inputs, prompt + the member's line; the judge sees them
+    # together. {mode, keep: [...], members: [{name, brief, checks, params?}]}
+    output_set: Optional[dict] = None
+    deliverable: Optional[str] = None
+    required_text: Optional[str] = None           # exact text, any script (judge-read)
+    meta: dict = Field(default_factory=dict)      # industry / use case / customers ...
 
     source_path: Optional[str] = None             # where this scenario was loaded from
 
@@ -86,12 +102,40 @@ class Scenario(BaseModel):
             if set(self.weights) != set(self.criteria or []):
                 raise ValueError(
                     f"scenario {self.id}: weights keys must match criteria list")
+        if self.output_set is not None:
+            if self.output_set.get("mode") not in ("each", "panels"):
+                raise ValueError(f"scenario {self.id}: output_set.mode must be "
+                                 f"'each' or 'panels'")
+            if self.output_set.get("mode") == "each" and not self.output_set.get("members"):
+                raise ValueError(f"scenario {self.id}: a set needs members")
         return self
 
     @property
     def text(self) -> str:
         """The exact string sent to every model — prompt or script."""
         return self.prompt if self.prompt else self.input.get("script", "")
+
+    @property
+    def gen_text(self) -> str:
+        """What a single request sends. For a one-image panel set, the brief
+        plus the panels it must contain, in order — the same text the judge
+        is shown as the brief."""
+        if self.output_set and self.output_set.get("mode") == "panels":
+            panels = "\n".join(f"  {k}. {m['name']}: {m['brief']}"
+                               for k, m in enumerate(self.output_set.get("members", []), 1))
+            return f"{self.text}\n\nThe panels, in order:\n{panels}"
+        return self.text
+
+    @property
+    def set_members(self) -> list[dict]:
+        """Members generated one request each; empty for a single output."""
+        if self.output_set and self.output_set.get("mode") == "each":
+            return list(self.output_set["members"])
+        return []
+
+    def member_text(self, member: dict) -> str:
+        """The brief plus this member's line — identical for every model."""
+        return f"{self.text}\n\nThis image — {member['name']}: {member['brief']}"
 
 
 def _check_weights(weights: dict[str, float], where: str) -> None:
@@ -242,6 +286,10 @@ class Price(BaseModel):
     usd_in_per_1m: Optional[float] = None
     usd_out_per_1m: Optional[float] = None
     usd_audio_in_per_1m: Optional[float] = None
+    # Thinking tokens, billed at the text-output rate. Gemini reports them apart
+    # from candidates_token_count (thoughts_token_count), so a per_token price
+    # without this field would silently drop them from the bill.
+    usd_thinking_per_1m: Optional[float] = None
     est_usd_per_call: Optional[float] = None  # pre-flight budget only, never billing
     # Per-task override of the above. One flat figure cannot serve a lane whose
     # tasks differ in cost by nearly 3x: on 2026-09-11 a Seedance edit billed
@@ -313,6 +361,9 @@ class JudgeCfg(BaseModel):
     auth_env: Optional[str] = None
     vertex: Optional[VertexCfg] = None
     temperature: float = 0.0
+    # Gemini 3 thinking level ("low" | "high"); None = the model's default.
+    # Stated in the run file so the record says how hard the judge thought.
+    thinking_level: Optional[str] = None
     price: Price
 
     @model_validator(mode="after")
@@ -445,7 +496,9 @@ def effective_criteria(rubric: Rubric, scenario: Scenario) -> list[Criterion]:
                     f"in the {rubric.modality} rubric — criteria live in "
                     f"configs/rubrics/, scenarios may only re-weight them")
     else:
-        crits = [c.model_copy() for c in rubric.criteria]
+        # zero-weight criteria are optional extras a scenario may opt into
+        # (set_consistency, reference_fidelity ...); never scored by default
+        crits = [c.model_copy() for c in rubric.criteria if c.weight > 0]
 
     def _drop(crits, name):
         kept = [c for c in crits if c.name != name]
