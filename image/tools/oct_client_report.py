@@ -2,8 +2,8 @@
 
 One self-contained file: the GenMedia study page's look (studies.adlc.tilicho.in,
 /studies/genmedia-model-comparison/models/image — fonts, colours, cards, chips,
-tables, head-to-head card, scenario rows, lightbox), with the Win Map: every
-categorisation the scenario bank carries, with each model's wins, win %, pass
+tables, head-to-head card, scenario rows, lightbox), with the Win Map: industry,
+use case, task type, difficulty, theme and target customer, with each model's wins, win %, pass
 criteria met, quality mean, reliability and latency p50 per value, sortable by
 any of them (default: the Google model's win rate, highest first).
 
@@ -99,7 +99,7 @@ CONFIDENT_MARGIN_PP = 5     # the site's "high confidence wins" switch (lib/genm
 # Names on the page: the site's rule is "the models alone, never their makers".
 DISPLAY = {
     "gemini-nano-banana-2-1-vertex": {"name": "Nano Banana 2.1", "short": "Nano Banana 2.1"},
-    "gpt-image-2-5-sunburst-high": {"name": "GPT Image 2.5 Sunburst (high)", "short": "GPT Image 2.5 Sunburst"},
+    "gpt-image-2-5-sunburst-high": {"name": "GPT Image 2.5 (high)", "short": "GPT Image 2.5"},
 }
 SIZE_WARN_BYTES = 20_000_000
 
@@ -147,6 +147,16 @@ NO_LEVERS = "none (v2 bank)"
 OUTPUTS = {None: "Single image", "each": "Each output is its own request, from the same inputs",
            "panels": "One image, every output a panel in it"}
 CAVEAT_LEVELS = {"no": "not usable", "partial": "partial"}
+# Google's prompt-block codes, with the API reference's own definition of each
+# (ai.google.dev/api/generate-content, PromptFeedback.BlockReason, read 2026-10-12).
+# A blocked prompt carries no other message, so the definition is all there is.
+GOOGLE_BLOCK_REASONS = {
+    "SAFETY": "Prompt was blocked due to safety reasons.",
+    "OTHER": "Prompt was blocked due to unknown reasons.",
+    "BLOCKLIST": "Prompt was blocked due to the terms which are included from the terminology blocklist.",
+    "PROHIBITED_CONTENT": "Prompt was blocked due to prohibited content.",
+    "IMAGE_SAFETY": "Candidates blocked due to unsafe image generation content.",
+}
 DIFF_RANK = {("v2", "Straightforward"): 0, ("v2", "Moderate"): 1, ("v3", "Moderate"): 1.5,
              ("v2", "High"): 2, ("v3", "Hard"): 2.5, ("v3", "Extreme"): 3}
 # rubric category names as the bank writes them (scenario-bank/v3/image.json rubric[].name);
@@ -448,6 +458,15 @@ def parse_reason(raw: str | None) -> dict | None:
     out["kind"] = kind
     out["msg"] = (msg.group(2).strip() if msg else (detail.strip() if not http else "")) or None
     out["codes"] = codes
+    # "prompt blocked: BlockedReason.OTHER" is the SDK's enum repr; show the code and
+    # Google's definition of it instead, and say that nothing else came back
+    gb = re.match(r"(prompt|judge prompt) blocked:\s*(?:BlockedReason\.)?([A-Z_]+)\s*$", detail.strip())
+    if gb and gb.group(2) in GOOGLE_BLOCK_REASONS:
+        code = gb.group(2)
+        out["msg"] = (f"Blocked by Google before generation. Reason code {code}: "
+                      f"\u201c{GOOGLE_BLOCK_REASONS[code]}\u201d No other message is returned for a blocked prompt.")
+        out["codes"] = [code]
+        out["kind"] = "Refused"
     return out
 
 
@@ -663,7 +682,7 @@ def dims_meta(scens: list[dict], internal: bool) -> list[dict]:
         diff_vals[s["v"]["difficulty"]] = DIFF_RANK.get((s["bankKey"], raw), 9)
     diff_order = sorted(diff_vals, key=lambda v: (diff_vals[v], v))
 
-    # `map: False` = an evidence filter only (too many small groups for the Win Map)
+    # `map: False` = an evidence filter only, not a Win Map grouping
     dims = [
         {"key": "industry", "label": "Industry", "multi": False,
          "order": ordered("industry", V3_INDUSTRIES + [OTHER_INDUSTRY])},
@@ -673,11 +692,11 @@ def dims_meta(scens: list[dict], internal: bool) -> list[dict]:
          "order": ordered("task", list(TASKS.values()))},
         {"key": "difficulty", "label": "Difficulty", "multi": False,
          "order": diff_order},
-        {"key": "output", "label": "Output", "multi": False,
+        {"key": "output", "label": "Output", "multi": False, "map": False,
          "order": ordered("output", list(OUTPUTS.values()))},
         {"key": "theme", "label": "Theme", "multi": True,
          "order": ordered("theme", THEMES)},
-        {"key": "customer", "label": "Target customer", "multi": True, "map": internal,
+        {"key": "customer", "label": "Target customer", "multi": True,
          "order": ordered("customer", [])},
     ]
     if internal:
@@ -1275,6 +1294,122 @@ def run_details(runs: list, arms: dict, scens: list, caveats: dict, args, cfg: d
 # Main
 # --------------------------------------------------------------------------
 
+# --------------------------------------------------------------------------
+# Voice lane: read from the voice study's own dashboard (oct-voice-200); its
+# report-data JSON and per-clip audio are taken as they are. Human review and
+# reviewer notes in that file are not carried over.
+# --------------------------------------------------------------------------
+VOICE_ARMS = {"a": {"name": "Gemini 3.8 Flash TTS", "short": "Gemini 3.8"},
+              "b": {"name": "ElevenLabs Eleven v4", "short": "ElevenLabs v4"}}
+VOICE_MID = {"a": "gemini-3-8-flash-tts", "b": "elevenlabs-v4"}
+VOICE_CRIT = {"text_accuracy": "Text accuracy", "pronunciation": "Pronunciation", "naturalness": "Naturalness",
+              "clarity": "Clarity", "audio_quality": "Audio quality", "style_adherence": "Style adherence"}
+VOICE_FIXED = {"language": ["English", "Hinglish", "Hindi", "Telugu", "Tenglish"], "difficulty": ["Easy", "Medium", "Hard"],
+               "task": ["Plain read", "With a delivery direction", "Two-voice scene"],
+               "speaker": ["Female voice", "Male voice", "Several characters"]}
+
+
+def load_voice(path: Path) -> tuple[dict, dict]:
+    text = path.read_text(encoding="utf-8")
+    m = re.search(r'<script type="application/json" id="report-data">(.*?)</script>', text, re.S)
+    if not m:
+        raise SystemExit(f"no report-data in {path}")
+    D = json.loads(m.group(1))
+    audio = {}
+    for k, b in re.findall(r'<script type="text/plain" id="au-(\d+)">(.*?)</script>', text, re.S):
+        b = b.strip()
+        if re.fullmatch(r"[A-Za-z0-9+/=]*", b):      # base64 only; anything else is dropped
+            audio[k] = b
+    rounds = sorted({r for sc in D["scenarios"] for r in (sc.get("rounds") or {})})
+
+    def vals(sc, key):
+        v = sc["v"][key]
+        return v if isinstance(v, list) else ([v] if v else [])
+
+    scens = []
+    for sc in D["scenarios"]:
+        bank = sc.get("bank") or {}
+        sp = bank.get("speaker") or ""
+        v = {"language": sc.get("language"), "industry": bank.get("industry"), "usecase": bank.get("useCase"),
+             "customer": bank.get("customers") or [], "skill": bank.get("skills") or [],
+             "difficulty": sc.get("difficulty"),
+             "speaker": "Several characters" if re.match(r"(A:|Narrator)", sp) else
+                        "Female voice" if sp.startswith("Female") else "Male voice",
+             "task": "Two-voice scene" if sc.get("speakers") else
+                     "With a delivery direction" if sc.get("task") == "styled_tts" else "Plain read"}
+        direction = "\n".join(f"{x.get('label')}: {x.get('style') or 'no direction'}" for x in sc.get("speakers") or []) \
+            or (sc.get("style") or "")
+        x = {"id": sc["id"], "title": sc.get("title") or sc["id"], "task": sc.get("task"), "v": v,
+             "lang": sc.get("language"), "brief": sc.get("script") or "", "langCode": sc.get("langCode") or "",
+             "direction": direction, "expectedList": sc.get("expected") or [],
+             "mustSay": sc.get("mustSay") or [], "mustSayAny": sc.get("mustSayAny") or [],
+             "mustNotSay": sc.get("mustNotSay") or [],
+             "maxWer": sc.get("maxWer") if sc.get("asrScored") else None,
+             "sources": [], "checklist": []}
+        for side in ("a", "b"):
+            clips = [(i, ((sc.get("rounds") or {}).get(r) or {}).get(VOICE_MID[side])) for i, r in enumerate(rounds)]
+            clips = [(i, c) for i, c in clips if c]
+            mean = (sc.get("mean") or {}).get(side)
+            arm = {"st": "scored" if any(c.get("status") == "scored" for _, c in clips)
+                   else (clips[0][1].get("status") if clips else "missing")}
+            if mean is not None:
+                arm["score"] = round(float(mean), 4)
+                arm["pct"] = round(float(mean) * 10, 1)
+            if clips:
+                passed = [bool(c.get("passed")) for _, c in clips]
+                arm["pass"], arm["gp"], arm["gn"] = all(passed), sum(passed), len(passed)
+                ok = [float(c["score"]) for _, c in clips
+                      if c.get("passed") and c.get("status") == "scored" and c.get("score") is not None]
+                arm["qs"], arm["qn"] = sum(ok), len(ok)
+            arm["calls"] = [[int(c.get("latency") or 0), int(c.get("cost") or 0)] for _, c in clips]
+            arm["ttfa"] = [c["ttfa"] for _, c in clips if c.get("ttfa") is not None]
+            arm["takes"] = [{
+                "r": f"Round {i + 1}", "st": c.get("status"), "score": c.get("score"), "passed": c.get("passed"),
+                "failed": c.get("failed") or [], "wer": c.get("wer"), "dur": c.get("duration"), "ttfa": c.get("ttfa"),
+                "lat": c.get("latency"), "cost": c.get("cost"),
+                "au": str(c.get("au")) if str(c.get("au")) in audio else None,
+                "crit": [[VOICE_CRIT.get(k, k), val] for k, val in (c.get("crit") or {}).items()] if c.get("judgeScores") else [],
+                "why": [[VOICE_CRIT.get(k, k), (c.get("judgeScores") or {}).get(k), w] for k, w in (c.get("reasoning") or {}).items()],
+                "note": c.get("judgeNote") or ""} for i, c in clips]
+            x[side] = arm
+        x["win"] = sc.get("winner") if sc.get("winner") in ("a", "b", "tie") else None
+        x["margin"] = sc.get("margin")
+        scens.append(x)
+
+    def order(key):
+        if key in VOICE_FIXED:
+            present = {v for sc in scens for v in vals(sc, key)}
+            return [v for v in VOICE_FIXED[key] if v in present]
+        cnt = collections.Counter(v for sc in scens for v in vals(sc, key))
+        return sorted(cnt, key=lambda v: (-cnt[v], v))
+
+    dims = [{"key": "language", "label": "Language", "multi": False, "order": order("language")},
+            {"key": "industry", "label": "Industry", "multi": False, "order": order("industry")},
+            {"key": "customer", "label": "Target customer", "multi": True, "order": order("customer")},
+            {"key": "usecase", "label": "Use case", "multi": False, "order": order("usecase")},
+            {"key": "task", "label": "Delivery", "multi": False, "order": order("task")},
+            {"key": "difficulty", "label": "Difficulty", "multi": False, "order": order("difficulty")},
+            {"key": "skill", "label": "Speech skill", "multi": True, "map": False, "order": order("skill")},
+            {"key": "speaker", "label": "Speaker", "multi": False, "map": False, "order": order("speaker")}]
+    used = {t["au"] for sc in scens for side in ("a", "b") for t in sc[side]["takes"]} - {None}
+    media = {
+        "key": "voice", "kind": "voice", "label": "Voice (TTS)", "desc": "Read a script aloud",
+        "title": f"{VOICE_ARMS['a']['name']} vs {VOICE_ARMS['b']['name']}",
+        "arms": VOICE_ARMS, "judge": {"model": D.get("judge")}, "unit": "clip",
+        "words": {"unit": "clip", "units": "clips"}, "dims": dims, "scenarios": scens,
+        "pricesAsOf": D.get("prices") or {}, "tieBandPP": round(float(D.get("tieBand") or 0) * 10, 2),
+        "rounds": len(rounds), "links": False,
+        "sections": ["language", "industry", "customer", "usecase", "task", "difficulty"],
+        "fam": {"win": "Win %", "pass": "Gates passed", "quality": "Quality mean", "rel": "Reliability", "lat": "Latency p50"},
+        "famGloss": {"win": "wins out of the scenarios both models completed",
+                     "pass": "share of clips that passed every automatic check · higher is better",
+                     "quality": "mean rubric rating on clips that passed · higher is better",
+                     "rel": "lowest two-round mean on any single scenario · higher is better",
+                     "lat": "whole call, median · lower is better"},
+    }
+    return media, {k: audio[k] for k in sorted(used, key=int)}
+
+
 def build(args) -> dict:
     out = Path(args.out).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1359,7 +1494,7 @@ def build(args) -> dict:
     model_cfg = load_models_config(args.models_config)
     judge_loc = ((model_cfg.get("judge") or {}).get(MEDIA_KEY) or {}).get("vertex", {}).get("location") if model_cfg else None
     media = {
-        "key": MEDIA_KEY, "label": words.pop("label"), "desc": words.pop("desc"),
+        "key": MEDIA_KEY, "kind": "image", "label": words.pop("label"), "desc": words.pop("desc"),
         "title": f"{da['name']} vs {db['name']}",
         "arms": {"a": da, "b": db},
         "judge": {"model": judge_cfg.get("provider_model"), "temperature": judge_cfg.get("temperature"),
@@ -1391,6 +1526,30 @@ def build(args) -> dict:
         "media": {MEDIA_KEY: media},
         "confidentPP": CONFIDENT_MARGIN_PP,
     }
+    audio_html = ""
+    if getattr(args, "voice_dashboard", None):
+        vmedia, vaudio = load_voice(Path(args.voice_dashboard))
+        data["media"]["voice"] = vmedia
+        if getattr(args, "audio_out", None):
+            adir = Path(args.audio_out)
+            adir.mkdir(parents=True, exist_ok=True)
+            for k, b in vaudio.items():
+                (adir / f"{k}.mp3").write_bytes(base64.b64decode(b))
+            data["audioBase"] = "audio/"
+        else:
+            audio_html = "".join(f'<script type="text/plain" id="au-{k}">{b}</script>' for k, b in vaudio.items())
+    data["embed"] = bool(getattr(args, "embed", False))
+    if getattr(args, "site_out", None):
+        sdir = Path(args.site_out)
+        (sdir / "img").mkdir(parents=True, exist_ok=True)
+        for iid, b in imgs.data.items():
+            (sdir / "img" / f"{iid}.jpg").write_bytes(base64.b64decode(b))
+        site = dict(data, imgBase="img/", audioBase="audio/", embed=False)
+        if data.get("media", {}).get("voice") and not getattr(args, "audio_out", None):
+            (sdir / "audio").mkdir(parents=True, exist_ok=True)
+            for k, b in vaudio.items():
+                (sdir / "audio" / f"{k}.mp3").write_bytes(base64.b64decode(b))
+        (sdir / "data.json").write_text(json.dumps(site, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     logo = logo_data(Path(args.logo)) if args.logo else logo_data(DEFAULT_LOGO)
 
     def blob(obj) -> str:
@@ -1405,7 +1564,8 @@ def build(args) -> dict:
             .replace("__CSS__", CSS)
             .replace("__JS__", JS)
             .replace("__DATA__", data_s)
-            .replace("__IMAGES__", img_s))
+            .replace("__IMAGES__", img_s)
+            .replace("__AUDIO__", audio_html))
     out.write_text(html, encoding="utf-8")
     size = out.stat().st_size
     proj = projection(imgs, len(data_s.encode()), len(scens))
@@ -1454,6 +1614,10 @@ def main(argv=None) -> int:
     ap.add_argument("--sources", default=str(DEFAULT_SOURCES), help="input-image generation log (internal)")
     ap.add_argument("--bank-inputs", default=str(DEFAULT_BANK_INPUTS), help="scenario -> input file map (internal)")
     ap.add_argument("--test-run", action="append", default=[], help="a test run of the same study, for its cost (internal)")
+    ap.add_argument("--site-out", help="also write the report's data for the study site: <dir>/data.json, <dir>/img/<id>.jpg, <dir>/audio/<id>.mp3")
+    ap.add_argument("--embed", action="store_true", help="for a host page's iframe: no own header or footer; ?media=<lane> opens that lane")
+    ap.add_argument("--audio-out", help="write the voice clips as <id>.mp3 into this folder and load them by URL (audio/<id>.mp3 next to the page)")
+    ap.add_argument("--voice-dashboard", help="the voice study's dashboard HTML (report-data + audio): adds the Voice (TTS) lane")
     args = ap.parse_args(argv)
     res = build(args)
     code = res.pop("_exit")
@@ -1506,6 +1670,7 @@ TEMPLATE = """<!doctype html>
 </footer>
 <div id="lb"></div>
 <script type="application/json" id="report-data">__DATA__</script>
+__AUDIO__
 <script type="application/json" id="img-data">__IMAGES__</script>
 <script>__JS__</script>
 </body>
@@ -1545,6 +1710,7 @@ p{margin:0}
 /* nav */
 .tl-sec{position:relative;width:100%}.tl-sec--data{background:#fff;color:var(--ink);padding:40px 0 72px;overflow:clip}
 .tl-wrap{max-width:80rem;margin:0 auto;padding:0 20px}@media(min-width:640px){.tl-wrap{padding:0 32px}}
+.embed .tl-nav,.embed .tl-foot{display:none}.embed .strip{top:0}.embed .strip-row{display:none}.embed #compare .lanehead{display:none}.embed #compare .h2h{margin-top:4px}.embed .strip-in{padding-top:4px}
 .tl-nav{position:sticky;top:0;z-index:30;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.06)}
 .tl-nav-in{height:64px;display:flex;align-items:center;gap:16px}
 .lock{display:flex;align-items:center;gap:16px;flex-shrink:0;text-decoration:none!important}
@@ -1557,7 +1723,7 @@ p{margin:0}
 .strip{position:sticky;top:64px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(15,23,42,.04);z-index:20}
 .strip-in{padding-top:16px}
 .strip-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 40px}
-.strip-row>div:first-child{min-height:62px;padding-bottom:8px;transition:height .3s ease-out}
+.strip-row>div:first-child{min-height:62px;padding-bottom:8px;transition:height .3s ease-out}.strip-row>div.home{min-height:0;padding-bottom:14px}
 .strip .crumbs{transition:opacity .2s}
 .strip.compact .crumbs{opacity:0;visibility:hidden}
 .strip.compact .strip-row>div:first-child{min-height:0;height:36px;overflow:hidden}
@@ -1605,15 +1771,8 @@ p{margin:0}
 :focus-visible{outline:none;box-shadow:0 0 0 1px #fff,0 0 0 3px rgba(224,9,23,.4);border-radius:6px}
 .linkbtn{border:0;background:none;padding:0;font:500 12px/16px var(--fs);color:var(--b600);cursor:pointer}.linkbtn:hover{text-decoration:underline;text-underline-offset:2px}
 
-/* lane head, set switch, caveat */
+/* lane head */
 .lanehead{max-width:48rem}.lanehead>.eyebrow{display:flex;width:max-content}.lanehead .sub{margin-top:6px;font-size:14px;line-height:20px;color:var(--mt)}
-.tiers{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;overflow:hidden;max-width:48rem;margin-top:20px;background:#fff}
-@media(min-width:640px){.tiers{flex-direction:row}}
-.tiers button{flex:1;text-align:left;padding:10px 14px;background:#fff;border:0;border-bottom:1px solid var(--line);cursor:pointer;border-radius:0}
-@media(min-width:640px){.tiers button{border-bottom:0;border-right:1px solid var(--line)}}
-.tiers button:last-child{border:0}.tiers button:hover{background:var(--muted)}
-.tiers b{display:block;font-size:13px;line-height:1.55;font-weight:600;color:var(--ink)}.tiers small{display:block;font-size:11px;line-height:1.55;margin-top:2px;color:var(--mt)}
-.tiers [aria-selected=true],.tiers [aria-selected=true]:hover{background:var(--b50)}.tiers [aria-selected=true] b{color:var(--b700)}.tiers [aria-selected=true] small{color:rgba(165,6,17,.7)}
 
 /* head-to-head */
 .h2h{max-width:42rem;margin-top:24px;padding:0 20px 16px}
@@ -1650,13 +1809,17 @@ p{margin:0}
 .toggle button:hover{background:var(--muted)}.toggle [aria-selected=true],.toggle [aria-selected=true]:hover{background:var(--ink);color:#fff}
 .sort{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;max-width:100%}
 .sort:focus-within{border-color:var(--ink)}
+.sort .label,.ctrl-lbl{font:600 14px/20px var(--fd);letter-spacing:-.01em;text-transform:none;color:var(--ink)}
 .sort .label{display:inline-flex;align-items:center;padding:0 12px;border-right:1px solid var(--line);background:rgba(245,245,245,.6);white-space:nowrap}
+.ctrl-g{display:inline-flex;align-items:center;gap:10px}
+.li{width:15px;height:15px;flex:none;color:var(--mt);vertical-align:-2px;margin-right:6px}.ctrl-lbl,.sort .label{display:inline-flex;align-items:center}.sg-sub .li{width:13px;height:13px;margin-right:5px}
 .sort .sel{position:relative;display:inline-flex;align-items:center;min-width:0}
 .sort select{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:8px 36px 8px 12px;font:500 14px/20px var(--fs);color:var(--ink);cursor:pointer;max-width:100%;text-overflow:ellipsis}
 .sort select:focus{outline:none;box-shadow:none}
 .sort .sel svg{position:absolute;right:12px;width:14px;height:14px;color:var(--mt);pointer-events:none}
 .fgroup{min-width:200px}.fgroup>.label{font-weight:600;margin-bottom:8px;display:block}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chipq{display:block;width:min(100%,260px);margin:0 0 8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:500 12px/16px var(--fs);color:var(--ink);background:#fff}.chipq:focus{outline:none;border-color:var(--ink)}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font:500 12px/16px var(--fs);background:#fff;color:var(--body);cursor:pointer;transition:border-color .15s,background .15s;text-align:left}
 .chip:hover{border-color:var(--ink)}.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
 .chip.a{border-color:var(--a);color:var(--a-ink)}.chip.a[aria-pressed=true]{background:var(--a);color:#fff}
@@ -1670,26 +1833,131 @@ p{margin:0}
 .switch[aria-checked=true]::after{left:18px}
 .nbadge{display:inline-flex;justify-content:center;min-width:1.75rem;border-radius:999px;padding:0 6px;font-size:10.5px;line-height:16px;background:var(--muted);color:var(--mt);font-variant-numeric:tabular-nums}
 .more{margin-top:4px}
+.fold>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;color:var(--b600)}.fold>summary::-webkit-details-marker{display:none}.fold>summary svg{width:14px;height:14px;transition:transform .15s}.fold[open]>summary svg{transform:rotate(180deg)}
 .more>summary{list-style:none;cursor:pointer;font:500 12px/16px var(--fs);color:var(--b600);display:inline-flex;align-items:center;gap:6px}
 .more>summary::-webkit-details-marker{display:none}
 .more>summary svg{width:14px;height:14px;transition:transform .15s}.more[open]>summary svg{transform:rotate(180deg)}
 .fstack{display:flex;flex-direction:column;align-items:flex-start;gap:16px;margin-top:16px}
 
 /* win map */
-.wm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:12px}
-.wtile{position:relative;display:flex;flex-direction:column;gap:10px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:6px;padding:14px 16px 12px;cursor:pointer;box-shadow:none;overflow:hidden;transition:background-color .15s,border-color .15s;font:inherit;color:inherit}
-.wtile:hover{border-color:#CBD5E1}
-.wtile[aria-pressed=true]{background:var(--b50);border-color:var(--b500);box-shadow:0 0 0 1px var(--b500)}
-.wt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.wt-name{font-size:14px;line-height:20px;font-weight:500;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.wt-n{font-size:12px;line-height:20px;color:var(--mt);white-space:nowrap;font-variant-numeric:tabular-nums}
+.wm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:14px}
+.wt-name{font-size:14px;line-height:20px;font-weight:500;color:var(--ink);overflow-wrap:anywhere}
 .wt-nums{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.wt-nums>span{min-width:0}
-.wt-nums .v{font:600 24px/1.05 var(--fd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.wt-nums .k{display:block;margin-top:3px;font:500 10.5px/1.3 var(--fm);letter-spacing:.04em;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wt-nums .r{text-align:right}
+.wt-nums .v{font:600 17px/1.1 var(--fd);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.wt-nums .k{display:block;margin-top:3px;font:500 10.5px/1.3 var(--fm);letter-spacing:.04em;color:var(--mt);overflow-wrap:anywhere}
+.wt-nums .r{text-align:right}.wt-nums .c{text-align:center;flex:none;white-space:nowrap}.wt-nums .c .k{white-space:nowrap}.wt-nums .tie{display:block;font:500 13px/1.3 var(--fs);color:var(--mt);font-variant-numeric:tabular-nums}
+.wt-k2{margin-top:4px;padding-top:8px;border-top:1px dashed var(--line)}.wt-nums2 .v{font-size:14px}
+.wt-x{display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:12px;row-gap:3px;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);font-size:12px;line-height:18px}
+.wt-xr{display:contents}
+.wt-x .xl{color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wt-x .xv{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;justify-self:end;min-width:56px;padding:0 7px;border-radius:999px;box-sizing:border-box}.wt-x .xv.a{color:#1A56B8}.wt-x .xv.b{color:#8F4227}
+.wt-x .xv.lead{}.wt-x .xv.lead.a{background:#EAF1FE;box-shadow:inset 0 0 0 1px #BFD3F8}.wt-x .xv.lead.b{background:#FBF0EA;box-shadow:inset 0 0 0 1px #EBC6B4}
 .wt-bar{display:flex;height:8px;border-radius:3px;overflow:hidden;background:var(--muted)}
 .wt-bar i{display:block;height:100%}
 .wt-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;font-size:11px;line-height:16px;color:var(--mt);font-variant-numeric:tabular-nums}
+.steps{align-items:center}.step{background:none;border-top:0;border-left:0;border-right:0;cursor:pointer;font-family:inherit}
+.step .sn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:999px;border:1.5px solid currentColor;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.step .sn.on{background:var(--b500);border-color:var(--b500);color:#fff}.step .sn.done{background:var(--ink);border-color:var(--ink);color:#fff}
+.step-gap{flex:1}
+.medgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:16px;margin-bottom:32px}
+.mcard{display:flex;flex-direction:column;gap:10px;text-align:left;font:inherit;color:inherit;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;cursor:pointer;transition:border-color .15s,transform .15s}
+.mcard:hover{border-color:#CBD5E1;transform:translateY(-1px)}.mcard.on{border-color:var(--b500);box-shadow:0 0 0 1px var(--b500)}
+.mc-top{display:flex;align-items:center;gap:10px}.mc-n{font:600 17px/24px var(--fd);color:var(--ink)}
+.mc-c{font:500 11px/16px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--mt)}.mc-c b{font:600 30px/1 var(--fd);letter-spacing:-.02em;color:var(--ink);margin-right:8px;vertical-align:-4px;text-transform:none}
+.mc-d{font-size:13px;line-height:19px;color:var(--body)}.mc-arms{font-size:12.5px;color:var(--mt)}
+.mc-go{font:500 11.5px/16px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--b600)}
+.ev-hero{padding:4px 0 16px;border-bottom:1px solid var(--line);margin-bottom:12px}.ev-h{margin:8px 0 6px;font:600 32px/1.15 var(--fd);letter-spacing:-.02em;color:var(--ink)}
+.lbar{position:sticky;top:var(--chrome,190px);z-index:7;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:10px 0;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.fbtn{height:40px}.fbtn svg{width:16px;height:16px}.fbadge{margin-left:2px;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--b500);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.sbox{position:relative;flex:1;min-width:200px;max-width:360px}.sbox svg{position:absolute;left:10px;top:50%;width:16px;height:16px;transform:translateY(-50%);color:var(--mt)}
+.sbox input{width:100%;height:40px;border:1px solid var(--line);border-radius:8px;padding:0 12px 0 34px;font:500 14px/20px var(--fs);color:var(--ink);background:#fff}.sbox input:focus{outline:none;border-color:var(--ink)}
+.lcount{margin-left:auto;font-size:13px;color:var(--mt)}.lcount b{color:var(--ink);font-weight:600}
+.achips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
+.ev-tools{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.sh{position:fixed;inset:0;z-index:60}.sh-back{position:absolute;inset:0;background:rgba(10,14,22,.55);backdrop-filter:blur(2px)}
+.sh-panel{position:absolute;left:0;top:0;height:100%;width:min(420px,100%);background:#fff;box-shadow:0 10px 40px rgba(15,23,42,.25);display:flex;flex-direction:column}.sh-panel.anim{animation:shin .25s ease-out}
+@keyframes shin{from{transform:translateX(-100%)}to{transform:none}}
+.sh-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}.sh-n{margin:2px 0 0;font-size:13px;color:var(--mt)}.sh-n b{color:var(--ink)}
+.sh-clear{margin-left:auto;font-size:13px}.sh-x{width:32px;height:32px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--mt);font-size:18px;line-height:1;cursor:pointer}.sh-x:hover{color:var(--ink);background:var(--muted)}
+.sh-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 20px 12px}
+.sg{border-top:1px solid var(--line);padding:10px 0}.sg:first-child{border-top:0}
+.sg-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0;background:none;border:0;cursor:pointer;text-align:left}.sg-h svg{width:14px;height:14px;color:var(--mt);transition:transform .15s}.sg-h[aria-expanded=false] svg{transform:rotate(-90deg)}
+.sg-b{margin-top:4px}
+.srow-opt{width:100%;display:flex;align-items:center;gap:10px;padding:6px 6px;border:0;border-radius:4px;background:none;cursor:pointer;text-align:left;font:400 14px/20px var(--fs);color:var(--body)}.srow-opt:hover{background:var(--muted)}.srow-opt.off{opacity:.4;cursor:not-allowed}
+.srow-opt .cb{width:16px;height:16px;flex:none;border:1.5px solid #BDBDBD;border-radius:3px;background:#fff;display:inline-flex;align-items:center;justify-content:center}.srow-opt .cb.on{background:var(--b500);border-color:var(--b500)}.srow-opt .cb svg{width:10px;height:10px}
+.srow-opt .ol{flex:1;min-width:0}.srow-opt[aria-checked=true] .ol{color:var(--ink);font-weight:500}
+.srow-opt .wp{font-size:11px;color:var(--mt);font-variant-numeric:tabular-nums;white-space:nowrap}.srow-opt .oc{font-size:12px;color:var(--mt);font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
+.sg-sub{padding:8px 6px 2px;font:500 10.5px/14px var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--mt)}
+.srow-opt .rb{width:16px;height:16px;flex:none;border:1.5px solid #BDBDBD;border-radius:999px;background:#fff;position:relative}.srow-opt .rb.on{border-color:var(--b500)}.srow-opt .rb.on::after{content:'';position:absolute;inset:3px;border-radius:999px;background:var(--b500)}
+.sh-foot{padding:12px 20px;border-top:1px solid var(--line)}
+.wtile{position:relative;display:flex;flex-direction:column;gap:12px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 18px 14px;cursor:pointer;overflow:hidden;font:inherit;color:inherit;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:transform .15s,box-shadow .15s,border-color .15s}
+.wtile::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--tc,#CBD5E1)}
+.wtile:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.08);border-color:#D5DBE3}
+.wtile[aria-pressed=true]{border-color:var(--b500);box-shadow:0 0 0 1px var(--b500),0 10px 24px rgba(224,9,23,.08);background:linear-gradient(180deg,#FFF8F8 0,#fff 60%)}
+.wt-head{display:flex;align-items:center;gap:10px;min-width:0}
+.wt-n{margin-left:auto;flex:none;min-width:28px;height:22px;padding:0 8px;border-radius:999px;background:var(--muted);color:var(--mt);font:600 11.5px/22px var(--fs);text-align:center;font-variant-numeric:tabular-nums}
+.wt-check{margin-left:auto;flex:none;width:22px;height:22px;border-radius:999px;background:var(--b500);display:inline-flex;align-items:center;justify-content:center}.wt-check svg{width:12px;height:12px}
+.wt-body{display:flex;flex-direction:column;gap:10px;padding:12px 12px 10px;margin:0 -2px;border-radius:10px;background:#F8FAFC}
+.wt-nums .v.lead{display:inline-block;border-radius:999px;padding:1px 9px;margin-left:-4px}
+.wt-nums .v.lead.a{color:#1A56B8;background:#EAF1FE;box-shadow:inset 0 0 0 1px #BFD3F8}.wt-nums .v.lead.b{color:#8F4227;background:#FBF0EA;box-shadow:inset 0 0 0 1px #EBC6B4}
+.wt-nums .r .v.lead{margin-left:0;margin-right:-4px}
+.wtile .wt-bar{height:6px;border-radius:999px}
+.wtile .wt-foot{font-size:11.5px}.wtile .wt-foot b{font-weight:600}
+.wtile.zero{align-self:start;opacity:.5;cursor:not-allowed;padding:14px 18px;box-shadow:none;background:#FAFAFA}.wtile.zero::before{display:none}.wtile.zero:hover{transform:none;box-shadow:none}
+.oi{width:22px;height:22px;flex:none;border-radius:6px;display:inline-flex;align-items:center;justify-content:center}.oi svg{width:13px;height:13px}
+.oi.lg{width:34px;height:34px;border-radius:9px}.oi.lg svg{width:18px;height:18px}
+.oi.meter{gap:2px;align-items:flex-end;padding-bottom:6px;background:#F1F5F9}.oi.meter i{display:block;width:3px;border-radius:1px}.oi.lg.meter{padding-bottom:9px}.oi.lg.meter i{width:4px}
+.wm-hn{font:500 12px/16px var(--fs);color:var(--mt)}
+.dd{position:relative;display:inline-flex;align-items:center;gap:10px}
+.dd-btn{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 12px 0 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font:500 14px/20px var(--fs);color:var(--ink);cursor:pointer}
+.dd-btn:hover{border-color:#CBD5E1}.dd-btn[aria-expanded=true]{border-color:var(--ink)}.dd-btn svg{width:14px;height:14px;color:var(--mt);transition:transform .15s}.dd-btn[aria-expanded=true] svg{transform:rotate(180deg)}
+.dd-menu{position:absolute;z-index:20;top:calc(100% + 6px);left:0;width:340px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.14);padding:8px}
+.dd-h{padding:6px 8px 8px;font:500 11px/16px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--mt);display:flex;align-items:center}.dd-h .li{width:13px;height:13px}
+.dd-menu.sortm{width:320px;max-height:360px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}.dd-menu.sortm .dd-h{padding-top:10px;border-top:1px solid var(--line);margin-top:4px}.dd-menu.sortm .dd-h:first-child{border-top:0;margin-top:0;padding-top:6px}.dd-menu.sortm .dd-opt{padding:7px 8px;align-items:center}.dd-menu.sortm .dd-opt .rb{flex:none;width:16px;height:16px;border-radius:50%;border:1.5px solid #BDBDBD;background:#fff;display:inline-block;box-sizing:border-box}.dd-menu.sortm .dd-opt .rb.on{border:5px solid var(--b500)}.dd-menu.sortm .dd-t b{font-weight:500}.dd-menu.sortm .dd-opt[aria-selected=true] .dd-t b{font-weight:600;color:var(--ink)}
+.dd-opt{width:100%;display:flex;align-items:flex-start;gap:10px;padding:8px;border:0;border-radius:8px;background:none;text-align:left;cursor:pointer;font:inherit}.dd-opt:hover{background:var(--muted)}.dd-opt[disabled]{cursor:default}.dd-opt[disabled]:hover{background:none}
+.dd-opt .cb{margin-top:2px;width:16px;height:16px;flex:none;border:1.5px solid #BDBDBD;border-radius:3px;background:#fff;display:inline-flex;align-items:center;justify-content:center}.dd-opt .cb.on{background:var(--b500);border-color:var(--b500)}.dd-opt .cb svg{width:10px;height:10px}.dd-opt[disabled] .cb.on{background:#94A3B8;border-color:#94A3B8}
+.dd-t{display:flex;flex-direction:column;gap:2px;min-width:0}.dd-t b{font-size:14px;line-height:20px;font-weight:500;color:var(--ink)}.dd-t span{font-size:12px;line-height:17px;color:var(--mt)}.dd-t em{font-style:normal;font-size:11.5px;line-height:16px;color:var(--b600)}
+.bk-hero{position:relative;margin:-40px calc(50% - 50vw) -72px;padding:56px 0 72px;background:var(--dark);color:var(--dark-ink);background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:22px 22px}
+.bk-in{max-width:80rem;margin:0 auto;padding:0 20px}@media(min-width:640px){.bk-in{padding:0 32px}}
+.bk-eye{color:rgba(255,255,255,.72)!important}.bk-eye::before{background:var(--b500)}
+.bk-h{margin:18px 0 0;font:600 clamp(36px,5.2vw,64px)/1.05 var(--fd);letter-spacing:-.03em;color:#fff}
+.bk-sub{margin:16px 0 0;max-width:42rem;font-size:17px;line-height:27px;color:rgba(255,255,255,.75)}
+.bk-grid{margin-top:32px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.bk{position:relative;display:flex;flex-direction:column;gap:12px;text-align:left;font:inherit;color:inherit;border:1px solid rgba(255,255,255,.10);border-radius:6px;background:rgba(255,255,255,.04);padding:22px;cursor:pointer;transition:border-color .2s,transform .2s;overflow:hidden}
+.bk:hover{border-color:rgba(255,255,255,.28);transform:translateY(-2px)}.bk::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--b500);transform:scaleX(0);transform-origin:left;transition:transform .3s}.bk:hover::after{transform:scaleX(1)}
+.bk.off{cursor:default;opacity:.45}.bk.off:hover{transform:none;border-color:rgba(255,255,255,.10)}.bk.off::after{display:none}
+.bk-ic{width:44px;height:44px;border-radius:6px;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;color:#fff}.bk-ic svg{width:22px;height:22px}
+.bk-n{margin:4px 0 0;font:600 19px/26px var(--fs);color:#fff}
+.bk-c{font:500 11px/16px var(--fm);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}.bk-c b{font:600 34px/1 var(--fd);letter-spacing:-.02em;color:#fff;margin-right:10px;vertical-align:-5px}
+.bk-l{margin:0;font-size:15px;line-height:24px;color:rgba(255,255,255,.68)}
+.bk-k{font-size:13px;line-height:18px;color:rgba(255,255,255,.55)}
+.bk-mix{display:flex;gap:2px;height:4px;border-radius:999px;overflow:hidden;margin-top:auto}.bk-mix i{display:block;height:100%}
+.bk-go{display:inline-flex;align-items:center;gap:8px;font:500 12px/16px var(--fm);letter-spacing:.14em;text-transform:uppercase;color:#fff;transition:gap .2s}.bk:hover .bk-go{gap:12px}.bk-go svg{width:15px;height:15px}
+.mbgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,420px));gap:16px;margin-top:16px}
+.mb{position:relative;display:flex;flex-direction:column;gap:12px;text-align:left;font:inherit;color:inherit;background:#fff;border:1px solid var(--line);border-top:3px solid var(--b500);border-radius:14px;padding:18px 20px 20px;cursor:pointer;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:transform .15s,box-shadow .15s,border-color .15s}
+.mb:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.08);border-color:#D5DBE3;border-top-color:var(--b500)}
+.mb-top{display:flex;align-items:center;gap:14px}.mb-n{display:block;font:600 18px/24px var(--fd);color:var(--ink)}.mb-l{display:block;margin-top:2px;font-size:13.5px;line-height:20px;color:var(--body)}
+.mb-c{display:flex;align-items:baseline;gap:6px;font-size:13px;color:var(--mt)}.mb-c b{font:600 28px/1 var(--fd);letter-spacing:-.02em;color:var(--ink)}
+.mb-k,.mb-arms{font-size:12.5px;line-height:18px;color:var(--mt)}
+.mb-mix{display:flex;gap:2px;height:6px;border-radius:999px;overflow:hidden}.mb-mix i{display:block;height:100%}
+.mb-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mt)}.mb-leg .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+.mb-go{font:500 11.5px/16px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--b600)}
+.wm-sec{margin-top:28px}.wm-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0;font:600 18px/26px var(--fd);letter-spacing:-.01em;color:var(--ink)}
+.wm-more{margin-top:10px;font-size:13px}
+.wtile.zero{opacity:.45;cursor:not-allowed;padding-bottom:14px;background:#FAFAFA}
+.wm-bar{position:sticky;bottom:12px;z-index:6;margin-top:24px;display:flex;flex-wrap:nowrap;align-items:center;gap:10px 18px;padding:12px 16px;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.10)}
+.wm-count{font-size:13px;color:var(--mt);white-space:nowrap}.wm-count b{font:600 26px/1 var(--fd);color:var(--ink);margin-right:8px;vertical-align:-3px}
+.wm-mini{flex:none;white-space:nowrap;font-size:12px;line-height:16px;color:var(--mt);font-variant-numeric:tabular-nums}@media(max-width:1180px){.wm-mini{display:none}}@media(max-width:760px){.wm-bar{flex-wrap:wrap}}
+.wm-bar .btn{flex:none;white-space:nowrap}.wm-mini b{font-weight:600}
+.wm-picks{flex:1;min-width:0;display:flex;flex-wrap:nowrap;align-items:center;gap:6px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.wm-picks .pk{flex:none;max-width:190px}.pk-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-more{flex:none;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px 0 12px;border-radius:999px;border:1px solid var(--line);background:#fff;font:600 12px/22px var(--fs);color:var(--ink);cursor:pointer}.pk-more:hover,.pk-more[aria-expanded=true]{border-color:var(--ink)}.pk-more svg{width:12px;height:12px;transform:rotate(180deg);transition:transform .15s}.pk-more[aria-expanded=true] svg{transform:none}
+.pk-pop{position:absolute;left:16px;right:16px;bottom:calc(100% + 8px);max-height:min(55vh,460px);overflow-y:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 -12px 32px rgba(15,23,42,.14);padding:12px 16px 14px}
+.pk-pop-h{display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink)}
+.pk-g{padding-top:10px}.pk-g .label{display:block;margin-bottom:6px}.pk-gc{display:flex;flex-wrap:wrap;gap:6px}
+.pk{display:inline-flex;align-items:center;min-width:0;gap:2px;border-radius:999px;background:var(--muted);box-shadow:inset 0 0 0 1px var(--line);padding:2px 3px 2px 10px;font-size:12px;line-height:18px;color:var(--ink)}
+.pk button{border:0;background:none;cursor:pointer;width:20px;height:20px;border-radius:999px;color:var(--mt);font-size:14px;line-height:1}.pk button:hover{background:#fff;color:var(--ink)}
+.wm-go{background:var(--b500);color:#fff}.wm-go:hover{background:var(--b600)}.wm-go[disabled]{opacity:.5;cursor:not-allowed}
+.chip .wp{font-size:10.5px;line-height:16px;color:var(--mt);font-variant-numeric:tabular-nums}.chip[aria-pressed=true] .wp b{color:#fff!important}
 .wm-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:11px;line-height:16px;color:var(--mt)}
 
 .wt-k{font:500 10.5px/1.45 var(--fm);letter-spacing:.04em;color:var(--mt);text-transform:uppercase}
@@ -1737,6 +2005,15 @@ p{margin:0}
 .brief ol{margin:6px 0 0;padding-left:20px;white-space:normal}
 .cv{margin-top:12px;border-left:3px solid #F59E0B;background:#FFFBEB;border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;line-height:19px}
 .cv b{color:var(--ink);font-weight:600}
+.takes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}@media(max-width:900px){.takes{grid-template-columns:1fr}}
+.arm{border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}.arm-h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:14px}
+.arm.a .arm-h{background:rgba(66,133,244,.07)}.arm.b .arm-h{background:rgba(184,92,56,.07)}.arm-h .fn{font-weight:600}.arm-h .sm{font-size:12.5px;color:var(--mt)}.arm-h .sm b{color:var(--ink)}
+.take{padding:12px 14px;border-bottom:1px solid var(--line)}.take:last-child{border-bottom:0}.take-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.take audio{width:100%;height:36px;margin-top:8px}.facts{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:6px;font-size:12px;line-height:18px;color:var(--mt)}.facts b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.failbox{margin-top:8px;font-size:12.5px;line-height:18px;color:#9F1239;background:#FFF1F2;border-radius:6px;padding:6px 10px}
+.tcrits{margin-top:10px;display:grid;gap:4px}.tcrit{display:grid;grid-template-columns:120px 1fr 34px;gap:8px;align-items:center;font-size:12px;color:var(--mt)}.tcrit .tb{height:6px;border-radius:4px;background:var(--muted);overflow:hidden}.tcrit .tb i{display:block;height:100%;border-radius:4px}.tcrit span:last-child{text-align:right;color:var(--ink)}
+.sindic{font-family:"IBM Plex Sans","IBM Plex Sans Devanagari","Noto Sans Telugu",sans-serif}
+.pf{font-size:12px;margin-left:3px}.pf.ok{color:#15803D}.pf.no{color:#B91C1C}
 .figs{display:grid;gap:14px;margin-top:16px;grid-template-columns:1fr}
 @media(min-width:640px){.figs{grid-template-columns:1fr 1fr}}@media(min-width:1024px){.figs.three{grid-template-columns:repeat(3,1fr)}}
 figure{margin:0;min-width:0}
@@ -1782,6 +2059,7 @@ figcaption a{font-size:11.5px}
 .cl .evd{display:none;margin-top:4px;font-size:11.5px;line-height:16px;color:var(--mt)}.clt.ev .evd{display:block}
 .cl .evd b{font-weight:500;color:var(--body)}
 .cl-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.clt.folded tr.extra{display:none}.cl-more{padding:8px 12px;border-top:1px solid var(--line)}
 
 /* method */
 .method{margin-top:12px;padding:8px 24px}
@@ -1845,16 +2123,37 @@ function imgSrc(id){
 }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 var CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
-var A_FILL = '#4285F4', B_FILL = '#B85C38', TIE = '#6B6B6B', A_INK = '#1A56B8', B_INK = '#8F4227';
+var LI = function(d){ return '<svg class="li" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>'; };
+var LICON = { fields: LI('<path d="M4 6h16M4 12h10M4 18h6"/>'), view: LI('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'), sort: LI('<path d="M3 6h12M3 12h8M3 18h4M17 8l3-3 3 3M20 5v14"/>'), order: LI('<path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/>'), won: LI('<path d="M8 21h8M12 17v4M5 4h14v4a7 7 0 0 1-14 0V4zM5 6H3v2a3 3 0 0 0 3 3M19 6h2v2a3 3 0 0 1-3 3"/>'), score: LI('<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'), speed: LI('<path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>'), scen: LI('<path d="M4 6h16M4 12h16M4 18h16"/>'), pass: LI('<path d="M20 6L9 17l-5-5"/>'), rel: LI('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>') };
+var GROUP_ICON = { 'Win %': 'won', 'Pass criteria met': 'pass', 'Quality mean': 'score', 'Reliability': 'rel', 'Latency p50': 'speed', 'Rows': 'scen', 'Who won': 'won', 'Score': 'score', 'Speed': 'speed', 'Scenario': 'scen' };
+// a sort menu in the page's own dropdown style: grouped, with icons and a radio on the current choice
+function sortMenu(act, val, groups, open, label){
+  var cur = '';
+  groups.forEach(function(g){ g[1].forEach(function(o){ if(o[0] === val) cur = o[1]; }); });
+  return '<div class="dd"><span class="ctrl-lbl">' + LICON.sort + esc(label || 'Sort by') + '</span>' +
+    '<button type="button" class="dd-btn" data-act="' + act + '-open" aria-haspopup="listbox" aria-expanded="' + open + '"><span>' + esc(cur) + '</span>' + CHEV + '</button>' +
+    (open ? '<div class="dd-menu sortm" role="listbox" aria-label="' + esc(label || 'Sort by') + '">' + groups.map(function(g){
+      return '<div class="dd-h">' + (LICON[GROUP_ICON[g[0]]] || '') + esc(g[0]) + '</div>' + g[1].map(function(o){ var on = o[0] === val;
+        return '<button type="button" class="dd-opt" role="option" aria-selected="' + on + '" data-act="' + (act === 'ev-sort' ? 'ev-sort-pick2' : act + '-pick') + '" data-v="' + o[0] + '"><span class="rb' + (on ? ' on' : '') + '" aria-hidden="true"></span><span class="dd-t"><b>' + esc(o[1]) + '</b></span></button>'; }).join('');
+    }).join('') + '</div>' : '') + '</div>';
+}
+var A_FILL = '#4285F4', B_FILL = '#B85C38', TIE = '#CDD1D7', A_INK = '#1A56B8', B_INK = '#8F4227';
 
 var st = {
-  media: D.defaultMedia, set: 'all',
-  wm: { dim: 'industry', sort: 'win:a', dir: 'desc', view: 'map', minN: 1 },
-  ev: { f: {}, result: 'all', confident: false, sort: 'id', more: false },
+  media: D.defaultMedia,
+  wm: { dim: 'industry', sort: 'win:a', dir: 'desc', view: 'map', fields: {}, more: {} },
+  ev: { f: {}, result: 'all', confident: false, sort: 'ga', more: false, optq: {}, q: '' },
+  step: 'media', sheet: false, shut: {}, sheetMore: {},
   open: {}, lb: null, menu: false
 };
 var INTERNAL = D.audience === 'internal';
-// URL hooks for screenshots and deep links: ?open=all|ID1,ID2 &wm=table &dim=usecase &sort=lat:a &dir=asc &set=clean &res=none &f=industry:Gaming &only=details
+// embedded in a host page (the study site): no header or footer of our own, no bank step; ?media= names the lane
+var EMBED = !!D.embed;
+if(EMBED) document.documentElement.classList.add('embed');
+var STEPS = [['media', 'Choose a scenario bank'], ['narrow', 'Narrow it down'], ['scenarios', 'Scenarios']].filter(function(x){ return !EMBED || x[0] !== 'media'; });
+var STEP_IDS = (INTERNAL ? ['media', 'narrow', 'scenarios', 'method'] : ['media', 'narrow', 'scenarios']).filter(function(x){ return !EMBED || x !== 'media'; });
+(function(){ var mm = /[?&]media=([a-z]+)/.exec(location.search); if(mm && D.media[mm[1]]) st.media = mm[1]; if(EMBED) st.step = 'narrow'; })();
+// URL hooks for screenshots and deep links: ?open=all|ID1,ID2 &wm=table &dim=usecase &sort=lat:a &dir=asc &res=none &f=industry:Gaming &only=details
 (function(){
   var q = function(k){ var m = new RegExp('[?&]' + k + '=([^&#]+)').exec(location.search); return m ? decodeURIComponent(m[1]) : null; };
   var o = q('open'); if(o){ o.split(',').forEach(function(id){ st.open[id] = true; }); }
@@ -1862,24 +2161,27 @@ var INTERNAL = D.audience === 'internal';
   if(q('dim')) st.wm.dim = q('dim');
   if(q('sort')){ st.wm.sort = q('sort'); st.wm.dir = defaultDir(st.wm.sort); }
   if(q('dir')) st.wm.dir = q('dir');
-  if(q('set')) st.set = q('set');
   if(q('res')) st.ev.result = q('res');
-  if(q('only')) st.only = q('only');
-  var f = q('f'); if(f){ var i = f.indexOf(':'); st.ev.f[f.slice(0, i)] = f.slice(i + 1); }
+  if(q('only')){ var o = q('only'); st.step = { compare: 'media', winmap: 'narrow', evidence: 'scenarios', method: 'method', details: 'method' }[o] || st.step; if(o === 'details') st.only = 'details'; }
+  var hs = location.hash.slice(1); if(STEP_IDS.indexOf(hs) >= 0) st.step = hs;
+  if(q('sheet')) st.sheet = true;
+  if(q('fields')) st.wm.fieldsOpen = true;
+  if(q('q')) st.ev.q = q('q');
+  var f = q('f'); if(f){ f.split(';').forEach(function(x){ var i = x.indexOf(':'); if(i > 0){ var k = x.slice(0, i); (st.ev.f[k] = st.ev.f[k] || []).push(x.slice(i + 1)); } }); }
+  if(q('picks')) st.wm.picksOpen = true;
 })();
 
 function M(){ return D.media[st.media]; }
 function arms(){ return M().arms; }
-function inSet(s, set){ return (set || st.set) === 'all' || !s.caveat; }
 function all(){ return M().scenarios; }
-function cur(){ return all().filter(function(s){ return inSet(s); }); }
-function hasCaveats(){ return all().some(function(s){ return s.caveat; }); }
+function cur(){ return all(); }
 
 // ---------- numbers ----------
 function median(v){ if(!v.length) return null; var x = v.slice().sort(function(a,b){return a-b;}); var n = x.length, h = n >> 1; return n % 2 ? x[h] : (x[h-1] + x[h]) / 2; }
 function tally(list){
   var r = { n: list.length, cmp: 0, a: 0, b: 0, tie: 0, none: 0, sa: 0, sb: 0, minA: null, minB: null,
-            passN: 0, passA: 0, passB: 0, latA: [], latB: [], costA: 0, costB: 0, imgA: 0, imgB: 0, conf: 0, est: false };
+            passN: 0, passA: 0, passB: 0, latA: [], latB: [], costA: 0, costB: 0, imgA: 0, imgB: 0, conf: 0, est: false,
+            qsA: 0, qnA: 0, qsB: 0, qnB: 0, vq: false, clips: false, ttA: [], ttB: [] };
   list.forEach(function(s){
     if(!s.win){ r.none++; return; }
     r.cmp++; r[s.win]++;
@@ -1887,13 +2189,18 @@ function tally(list){
     r.sa += xa; r.sb += xb;
     r.minA = r.minA == null ? xa : Math.min(r.minA, xa);
     r.minB = r.minB == null ? xb : Math.min(r.minB, xb);
-    if(s.a.pass != null && s.b.pass != null){ r.passN++; r.passA += s.a.pass ? 1 : 0; r.passB += s.b.pass ? 1 : 0; }
+    if(s.a.gn != null && s.b.gn != null){ r.clips = true; r.passN += s.a.gn; r.passA += s.a.gp; r.passB += s.b.gp; }   // voice: per clip
+    else if(s.a.pass != null && s.b.pass != null){ r.passN++; r.passA += s.a.pass ? 1 : 0; r.passB += s.b.pass ? 1 : 0; }
+    if(s.a.qn != null){ r.vq = true; r.qsA += s.a.qs; r.qnA += s.a.qn; r.qsB += s.b.qs || 0; r.qnB += s.b.qn || 0; }
+    (s.a.ttfa || []).forEach(function(x){ r.ttA.push(x); }); (s.b.ttfa || []).forEach(function(x){ r.ttB.push(x); });
     (s.a.calls || []).forEach(function(c){ r.latA.push(c[0]); r.costA += c[1]; r.imgA++; });
     (s.b.calls || []).forEach(function(c){ r.latB.push(c[0]); r.costB += c[1]; r.imgB++; });
     if(s.a.costEst || s.b.costEst) r.est = true;
     if(s.win === 'a' && s.margin >= D.confidentPP) r.conf++;
   });
   r.meanA = r.cmp ? r.sa / r.cmp : null; r.meanB = r.cmp ? r.sb / r.cmp : null;
+  if(r.vq){ r.meanA = r.qnA ? r.qsA / r.qnA * 10 : null; r.meanB = r.qnB ? r.qsB / r.qnB * 10 : null; }   // voice: clips that passed
+  r.f50A = median(r.ttA); r.f50B = median(r.ttB);
   r.passRateA = r.passN ? 100 * r.passA / r.passN : null; r.passRateB = r.passN ? 100 * r.passB / r.passN : null;
   r.cpiA = r.imgA ? r.costA / 1e6 / r.imgA : null; r.cpiB = r.imgB ? r.costB / 1e6 / r.imgB : null;
   r.p50A = median(r.latA); r.p50B = median(r.latB);
@@ -1930,23 +2237,22 @@ function glyphSvg(key){
 function glyph(key, off){ return '<span class="glyph' + (off ? ' off' : '') + '" aria-hidden="true">' + glyphSvg(key) + '</span>'; }
 var CHECK = '<svg class="pm-ok" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>';
 function renderStrip(){
-  var m = M(), keys = Object.keys(D.media);
-  var menu = st.menu ? '<div class="picker-menu" id="media-menu" aria-label="Media types">' + keys.map(function(k){
-      var x = D.media[k], on = k === st.media;
-      return '<button data-act="media" data-v="' + k + '"' + (on ? ' aria-current="page"' : '') + '>' + glyph(k, !on) +
-        '<span class="pm-t"><span class="pm-n">' + esc(x.label) + '</span>' + (x.desc ? '<span class="pm-k">' + esc(x.desc) + '</span>' : '') + '</span>' +
-        '<span class="pm-c">' + x.scenarios.length + '</span>' + CHECK + '</button>';
-    }).join('') + '</div>' : '';
+  applyMedia();
+  var m = M(), home = st.step === 'media';   // no bank picked yet: the study, not a lane
+  document.title = home ? D.study.name : m.title + ' · ' + D.study.name;
   document.getElementById('strip').innerHTML =
-    '<div class="tl-wrap strip-in"><div class="strip-row"><div style="min-width:0;flex:1">' +
-    '<h1>' + esc(m.title) + '</h1>' +
-    '<div class="crumbs"><a href="' + esc(D.study.href) + '">' + esc(D.study.name) + '</a><span class="sep">/</span><span class="cur">' + esc(m.label) + '</span>' + (INTERNAL ? '<span class="pill pill-warning" style="margin-left:6px">Internal</span>' : '') + '</div></div>' +
-    '<div class="picker"><span class="label">Change Media Type</span><button type="button" class="picker-btn" data-act="menu" aria-expanded="' + st.menu + '"' + (st.menu ? ' aria-controls="media-menu"' : '') + ' aria-label="Change media type: ' + esc(m.label) + '">' + glyph(st.media) + '<span>' + esc(m.label) + '</span><span class="cnt">' + m.scenarios.length + '</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' + menu + '</div></div>' +
-    '<nav class="tabs" aria-label="Sections">' + TABS.map(function(t){ return '<a class="tab" href="#' + t[0] + '" data-tab="' + t[0] + '">' + t[2] + esc(t[1]) + '</a>'; }).join('') + '</nav></div>';
-  markTab(activeTab);
+    '<div class="tl-wrap strip-in"><div class="strip-row"><div' + (home && !INTERNAL ? ' class="home"' : '') + ' style="min-width:0;flex:1">' +
+    '<h1>' + esc(home ? D.study.name : m.title) + '</h1>' +
+    (home && !INTERNAL ? '' : '<div class="crumbs">' + (home ? '' : '<a href="' + esc(D.study.href) + '">' + esc(D.study.name) + '</a><span class="sep">/</span><span class="cur">' + esc(m.label) + '</span>') + (INTERNAL ? '<span class="pill pill-warning" style="margin-left:6px">Internal</span>' : '') + '</div>') + '</div>' +
+    '</div>' +
+    '<nav class="tabs steps" aria-label="Steps">' + STEPS.map(function(t, i){
+      var on = st.step === t[0], done = STEP_IDS.indexOf(st.step) > i && st.step !== 'method';
+      return '<button class="tab step" data-act="step" data-v="' + t[0] + '"' + (on ? ' aria-current="step"' : '') + '><span class="sn' + (on ? ' on' : done ? ' done' : '') + '">' + (i + 1) + '</span>' + esc(t[1]) + '</button>';
+    }).join('') +
+    (INTERNAL ? '<span class="step-gap"></span><button class="tab step" data-act="step" data-v="method"' + (st.step === 'method' ? ' aria-current="step"' : '') + '>' + ICONS.book + 'Run details</button>' : '') + '</nav></div>';
   setChrome();
 }
-function setChrome(){ document.documentElement.style.setProperty('--chrome', (document.getElementById('strip').offsetHeight + 64) + 'px'); }
+function setChrome(){ document.documentElement.style.setProperty('--chrome', (document.getElementById('strip').offsetHeight + (EMBED ? 0 : 64)) + 'px'); }
 // the strip folds once the page scrolls, as on the study site: breadcrumbs fade,
 // the picker label goes, and under 1024px the title row goes too
 var compact = false;
@@ -1976,7 +2282,7 @@ function tallyLegend(t){
 }
 function tallyBar(t){
   var tot = (t.a + t.tie + t.b) || 1, leg = tallyLegend(t);
-  var seg = function(n, c){ return n > 0 ? '<span style="width:' + (n / tot * 100) + '%;background:' + c + '">' + n + '</span>' : ''; };
+  var seg = function(n, c){ return n > 0 ? '<span style="width:' + (n / tot * 100) + '%;background:' + c + (c === TIE ? ';color:var(--ink)' : '') + '">' + n + '</span>' : ''; };
   return '<div class="tallybar" role="img" aria-label="' + esc(leg.map(function(x){ return x[2]; }).join(', ')) + '">' + seg(t.a, A_FILL) + seg(t.tie, TIE) + seg(t.b, B_FILL) + '</div>' +
     '<div class="legend">' + leg.map(function(x){ return '<span><span class="sw" style="background:' + x[1] + '"></span>' + esc(x[2]) + '</span>'; }).join('') + '</div>';
 }
@@ -1999,38 +2305,163 @@ function noScoreTxt(list){
   });
   return order.map(function(k){ return esc(by[k].join(', ')) + ' (' + esc(k) + ')'; }).join('; ');
 }
+// Step 1 copies the sales view's "Choose a scenario bank" (studies.adlc.tilicho.in …/sales-view/scenario-bank/v2):
+// the dark band, a card per bank in the bank's own words. A bank this report has no results for shows, faded.
+var BANKS = [
+  ['image', 'Image', 'Make a new picture from a brief, or change one that exists.', '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 9"/>'],
+  ['video', 'Video', 'Change footage that already exists: swap, remove, relight, retime.', '<rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/>'],
+  ['voice', 'Voice (TTS)', 'Read a script aloud in Indian languages mixed with English.', '<path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/>'],
+  ['live', 'Live calls', 'Hold a whole customer call with a live voice agent.', '<path d="M5 4h3.5l1.5 4.5-2.2 1.4a11 11 0 0 0 6.3 6.3l1.4-2.2L20 15.5V19a1.5 1.5 0 0 1-1.6 1.5A16.5 16.5 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4z"/><path d="M15 3.5a5.5 5.5 0 0 1 5.5 5.5M15 7a2 2 0 0 1 2 2"/>']
+];
+function renderMediaStep(){
+  // In the report's own light style (the sales view's step 1 was the reference, not a copy): one card per
+  // scenario bank this report has results for.
+  var cards = BANKS.filter(function(b){ return D.media[b[0]]; }).map(function(b){
+    var x = D.media[b[0]], S = x.scenarios, ind = {}, mix = {}, task = {}, dd = (x.dims || []).filter(function(d){ return d.key === 'difficulty'; })[0];
+    S.forEach(function(sc){ ind[sc.v.industry] = 1; mix[sc.v.difficulty] = (mix[sc.v.difficulty] || 0) + 1; task[sc.v.task] = (task[sc.v.task] || 0) + 1; });
+    var order = dd ? dd.order : Object.keys(mix);
+    var bar = order.map(function(v, i){ return mix[v] ? '<i style="flex:' + mix[v] + ';background:' + TIER[Math.min(i, 3)] + '"></i>' : ''; }).join('');
+    var leg = order.map(function(v, i){ return mix[v] ? '<span><span class="sw" style="background:' + TIER[Math.min(i, 3)] + '"></span>' + esc(v) + ' ' + mix[v] + '</span>' : ''; }).join('');
+    return '<button class="mb' + (b[0] === st.media ? ' on' : '') + '" data-act="pick-media" data-v="' + b[0] + '">' +
+      '<span class="mb-top"><span class="oi lg" style="background:#E00917' + '1a;color:#C50714"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + b[3] + '</svg></span>' +
+      '<span><span class="mb-n">' + esc(b[1]) + '</span><span class="mb-l">' + esc(b[2]) + '</span></span></span>' +
+      '<span class="mb-c"><b class="tnum">' + S.length + '</b> scenarios · ' + plural(Object.keys(ind).length, 'industry', 'industries') + '</span>' +
+      '<span class="mb-k">' + Object.keys(task).map(function(k){ return esc(k) + ' ' + task[k]; }).join(' · ') + '</span>' +
+      '<span class="mb-arms"><span style="color:' + A_INK + '">' + esc(x.arms.a.name) + '</span> vs <span style="color:' + B_INK + '">' + esc(x.arms.b.name) + '</span></span>' +
+      '<span class="mb-mix">' + bar + '</span><span class="mb-leg">' + leg + '</span>' +
+      '<span class="mb-go">Choose →</span></button>';
+  }).join('');
+  return '<div class="block" id="media" style="margin-top:0"><div class="bhead"><div><div class="text-h4">Choose a scenario bank</div>' +
+    '</div></div>' +
+    '<div class="mbgrid">' + cards + '</div></div>';
+}
 function renderCompare(){
-  var m = M(), ar = m.arms, list = cur(), t = tally(list), allN = all().length;
-  var nCav = all().filter(function(s){ return s.caveat; }).length;
+  var m = M(), ar = m.arms, list = cur(), t = tally(list), allN = all().length, V = m.kind === 'voice';
   var h = '<div id="compare"><div class="lanehead"><div class="eyebrow">' + esc(m.label) + '</div>' +
-    '<p class="sub">' + plural(allN, 'scenario') + ' · one matched setting · ' + esc(runDate()) + ' run</p></div>';
-  if(nCav){
-    h += '<div class="tiers" role="tablist" aria-label="Scenario set">' +
-      '<button role="tab" data-act="set" data-v="all" aria-selected="' + (st.set === 'all') + '"><b>All scenarios</b><small>' + plural(allN, 'scenario') + '</small></button>' +
-      '<button role="tab" data-act="set" data-v="clean" aria-selected="' + (st.set === 'clean') + '"><b>Clean inputs only</b><small>' + plural(allN - nCav, 'scenario') + ' · ' + nCav + ' with an input caveat left out</small></button></div>';
-  }
+    '<p class="sub">' + plural(allN, 'scenario') + (V ? ' · ' + plural(m.rounds, 'round') + ' each' : ' · one matched setting') + '</p></div>';
   h += '<div class="card h2h"><div class="h2h-title"><div>Head-to-head results</div><div class="label" style="margin-top:2px">' + plural(list.length, 'scenario') + '</div></div>' +
     '<div class="arms"><span style="color:' + A_INK + '">◆ ' + esc(ar.a.name) + '</span><span class="label">vs</span><span class="ra" style="color:' + B_INK + '">' + esc(ar.b.name) + ' ◆</span></div>' +
+    (V ? measure('Quality', 'mean rubric rating on clips that passed · higher is better', t.meanA, t.meanB, p1, true) +
+      measure('Gates passed', plural(t.passN, 'clip') + ' · share that passed every automatic check · higher is better', t.passRateA, t.passRateB, p1, true) +
+      measure('Reliability', 'lowest two-round mean on any single scenario · higher is better', t.minA, t.minB, p1, true) +
+      measure('Cost per clip', 'lower is better', t.cpiA, t.cpiB, money, false) +
+      measure('First audio p50', 'median, streamed · lower is better', t.f50A, t.f50B, secs, false) +
+      measure('Latency p50', 'whole call, median · lower is better', t.p50A, t.p50B, secs, false) +
+      '<div class="tally"><div class="th">W–T–L<small>won, tied, lost across ' + t.cmp + ' scenarios · a win needs a lead of more than ' + (m.tieBandPP || 0).toFixed(1) + ' pp</small></div>' + tallyBar(t) + '</div></div>' :
     measure('Quality', 'mean rating · higher is better', t.meanA, t.meanB, p1, true) +
     (t.passN ? measure('Pass criteria met', plural(t.passN, 'scenario') + ' with pass criteria · higher is better', t.passRateA, t.passRateB, p1, true) : '') +
     measure('Reliability', 'lowest rating on any single scenario · higher is better', t.minA, t.minB, p1, true) +
     measure('Cost per ' + m.unit, (t.est ? 'partly estimated · ' : '') + 'lower is better', t.cpiA, t.cpiB, money, false) +
     measure('Latency p50', 'median · lower is better', t.p50A, t.p50B, secs, false) +
-    '<div class="tally"><div class="th">W–T–L<small>won, tied, lost across ' + t.cmp + ' decided scenarios</small></div>' + tallyBar(t) + '</div></div>';
+    '<div class="tally"><div class="th">W–T–L<small>won, tied, lost across ' + t.cmp + ' decided scenarios</small></div>' + tallyBar(t) + '</div></div>');
   var invalid = list.some(function(s){ return s.a.st === 'invalid' || s.b.st === 'invalid'; });
   var none = list.filter(function(s){ return !s.win; });
-  h += '<ul class="notes">' +
+  h += V ? voiceNotes(m) : '<ul class="notes">' +
     '<li><b>Quality</b> — the mean rubric rating, as a percentage. Higher is better.</li>' +
     (t.passN ? '<li><b>Pass criteria</b> — per scenario, from the scenario bank' + (m.passExample ? ', e.g. “' + esc(m.passExample) + '”' : '') + '; ' + t.passN + ' of the ' + t.cmp + ' decided scenarios have them.</li>' : '') +
     '<li><b>Reliability</b> — the model’s lowest rating on any single scenario. Higher is better.</li>' +
     '<li><b>Cost per ' + esc(m.unit) + '</b> — lower is better. Priced from the usage each provider returned, at its published price' + esc(pricesTxt()) + '.</li>' +
     '<li><b>Latency p50</b> — the median. Lower is better. Per ' + esc(m.unit) + ': the time of the request that returned it' + (INTERNAL ? '; waits after a rate-limited attempt are not included (Run details › Latency)' : '') + '.</li>' +
     (invalid ? '<li>A 0.0% comes from an image that failed an automated check, not from a judged rating.</li>' : '') +
-    (none.length ? '<li><b>No score</b> — ' + noScoreTxt(none) + '.</li>' : '') +
     '</ul></div>';
   return h;
 }
+// the voice study's own definitions, as its dashboard words them
+function voiceNotes(m){
+  var p = m.pricesAsOf || {};
+  return '<ul class="notes">' +
+    '<li><b>Quality</b> — the mean rubric rating, as a percentage, over the clips that passed their checks. Higher is better.</li>' +
+    '<li><b>Gates passed</b> — the share of clips that passed every automatic check: length, silence, loudness, the word error rate on English, and required or forbidden words such as “lakh”. A clip that fails scores 0.</li>' +
+    '<li><b>Reliability</b> — the model’s lowest two-round mean on any single scenario. Higher is better.</li>' +
+    '<li><b>Cost</b> — priced from the tokens Gemini reported and the characters sent to ElevenLabs, at list price' + (p.a || p.b ? ' (Gemini as of ' + esc(p.a || '—') + ', ElevenLabs as of ' + esc(p.b || '—') + ')' : '') + '.</li>' +
+    '<li><b>W–T–L</b> — a scenario’s score for a model is the mean of its two rounds, and a model wins it by leading by more than ' + (m.tieBandPP || 0).toFixed(1) + ' pp.</li>' +
+    '</ul></div>';
+}
 function fmtDate(iso){ var d = new Date(iso + 'T00:00:00Z'); return isNaN(d) ? iso : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }); }
+
+
+// ---------- option icons: the scenario bank's (industryIcons.tsx, filterIcons.tsx), matched on the words ----------
+var GL = {
+  sparkle: { d: ['M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z', 'M19 16v4M17 18h4'] },
+  pencil: { d: ['M4 20l1-4L15.5 5.5l3 3L8 19z', 'M13.5 7.5l3 3'] },
+  user: { d: ['M5 20a7 7 0 0114 0'], c: [[12, 8, 3.5]] },
+  users: { d: ['M2.5 20a6.5 6.5 0 0113 0', 'M15 14.2a5 5 0 016.5 5.8'], c: [[9, 8, 3], [17, 8.5, 2.5]] },
+  box: { d: ['M3 7.5l9-4.5 9 4.5v9L12 21l-9-4.5z', 'M3 7.5l9 4.5 9-4.5', 'M12 12v9'] },
+  tag: { d: ['M3 12V4a1 1 0 011-1h8l9 9-9 9z'], c: [[7.5, 7.5, 1.3]] },
+  card: { d: ['M3 6h18v12H3z', 'M3 10h18', 'M7 15h3'] },
+  shield: { d: ['M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z', 'M8.5 12l2.5 2.5 4.5-5'] },
+  calendar: { d: ['M4 6h16v14H4z', 'M4 10h16', 'M8 3v5M16 3v5'] },
+  bell: { d: ['M6 16v-5a6 6 0 0112 0v5l1.5 2h-15z', 'M10 20.5a2 2 0 004 0'] },
+  book: { d: ['M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z', 'M4 19V5'] },
+  image: { d: ['M4 5h16v14H4z', 'M4 16l4.5-4.5 4 4 2.5-2.5L20 18'], c: [[15.5, 9, 1.5]] },
+  layers: { d: ['M12 3l9 4.5-9 4.5-9-4.5z', 'M3 12l9 4.5 9-4.5', 'M3 16.5L12 21l9-4.5'] },
+  sun: { d: ['M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'], c: [[12, 12, 4]] },
+  palette: { d: ['M12 3a9 9 0 100 18c1.2 0 1.6-1 1.2-2-.6-1.4.2-2.5 1.6-2.5H17a4 4 0 004-4c0-5-4-9.5-9-9.5z'], c: [[7.5, 11, 1], [10, 7, 1], [14.5, 7, 1]] },
+  text: { d: ['M5 5h14', 'M12 5v14', 'M9 19h6'] },
+  crop: { d: ['M6 2v16h16', 'M2 6h16v16'] },
+  plan: { d: ['M4 4h16v16H4z', 'M4 12h8V4', 'M12 16h8'] },
+  camera: { d: ['M4 8h3l2-3h6l2 3h3v11H4z'], c: [[12, 13, 3.5]] },
+  film: { d: ['M4 4h16v16H4z', 'M8 4v16M16 4v16M4 8h4M4 16h4M16 8h4M16 16h4'] },
+  headset: { d: ['M4 14v-2a8 8 0 0116 0v2', 'M4 14h3v5H4z', 'M17 14h3v5h-3z', 'M20 19a3 3 0 01-3 3h-3'] },
+  landscape: { d: ['M3 20l6-9 4 6 3-4 5 7z'], c: [[16, 6.5, 2]] },
+  grid: { d: ['M4 4h6.5v6.5H4zM13.5 4H20v6.5h-6.5zM4 13.5h6.5V20H4zM13.5 13.5H20V20h-6.5z'] },
+  panels: { d: ['M3 5h18v14H3z', 'M9 5v14M15 5v14'] },
+  single: { d: ['M5 4h14v16H5z'] }
+};
+// industries, first match wins (the bank's order, with publishing/media ahead of events for this report's names)
+var IND = [
+  [/\b(ads|advertising)\b/i, { d: ['M3 10v4h3l8 4.5V5.5L6 10H3z', 'M17.5 9a4 4 0 010 6', 'M19.8 6.5a7.5 7.5 0 010 11'] }],
+  [/micro-drama|entertainment|film|ott|animation|streaming|production studios/i, { d: ['M3 10h18v10a1 1 0 01-1 1H4a1 1 0 01-1-1V10z', 'M3 10l1.2-4.6a1 1 0 011.2-.7l14.6 3.4-.6 1.9', 'M8.5 5.6l-1.3 4.4M13.5 6.8l-1.3 3.2'] }],
+  [/banking|financial/i, { d: ['M3 9.5L12 4l9 5.5', 'M5 10v8M9.7 10v8M14.3 10v8M19 10v8', 'M3 20.5h18'] }],
+  [/e-?commerce|retail|d2c|marketplace/i, { d: ['M5 8h14l-1.1 12.1a1 1 0 01-1 .9H7.1a1 1 0 01-1-.9L5 8z', 'M9 8V6.5a3 3 0 016 0V8'] }],
+  [/gaming|game|esports/i, { d: ['M7 8h10a4 4 0 014 4v1.5a2.8 2.8 0 01-5 1.7L15 14H9l-1 1.2a2.8 2.8 0 01-5-1.7V12a4 4 0 014-4z', 'M8 10.5v3M6.5 12h3'], c: [[15.5, 11.2, 0.6], [17.4, 12.8, 0.6]] }],
+  [/architecture|real estate|interior|property|building/i, { d: ['M4 21V6l8-3v18', 'M12 21V9l8 2.5V21', 'M2.5 21h19', 'M7 8h2M7 12h2M7 16h2M15 13.5h2M15 17h2'] }],
+  [/fashion|beauty|sportswear/i, { d: ['M12 7.5a2 2 0 112-2c0 1.1-2 1.4-2 3', 'M12 8.5l8.6 6.2a1 1 0 01-.6 1.8H4a1 1 0 01-.6-1.8L12 8.5'] }],
+  [/food|restaurant|beverage/i, { d: ['M4 9h13v3.5a6 6 0 01-6 6h-1a6 6 0 01-6-6V9z', 'M17 10.5h1.2a2.3 2.3 0 010 4.6H17', 'M8 3.5v2.5M12 3.5v2.5', 'M3 21h15'] }],
+  [/travel|tourism|hospitality|hotel|mobility|delivery/i, { d: ['M21 3L3 10.4l6.8 2.8L12.6 20 21 3z', 'M9.8 13.2l4.7-4.7'] }],
+  [/education|training/i, { d: ['M2 9l10-5 10 5-10 5L2 9z', 'M6 11v4.8c0 1.6 2.7 3.2 6 3.2s6-1.6 6-3.2V11', 'M22 9v5'] }],
+  [/automotive/i, { d: ['M3 13h18v4.5a1 1 0 01-1 1H4a1 1 0 01-1-1V13z', 'M5 13l1.8-4.6a1.5 1.5 0 011.4-.9h7.6a1.5 1.5 0 011.4.9L19 13'], c: [[7.5, 18.5, 1.6], [16.5, 18.5, 1.6]] }],
+  [/corporate/i, { d: ['M3.5 8h17a1 1 0 011 1v10a1 1 0 01-1 1h-17a1 1 0 01-1-1V9a1 1 0 011-1z', 'M9 8V5.5A1.5 1.5 0 0110.5 4h3A1.5 1.5 0 0115 5.5V8', 'M2.5 13.5h19'] }],
+  [/news|media|publish|broadcast/i, { d: ['M4 5h12.5v14H6a2 2 0 01-2-2V5z', 'M16.5 9H20v8a2 2 0 01-2 2h-1.5', 'M7 9h6.5M7 12.5h6.5M7 16h4'] }],
+  [/events|conference/i, { d: ['M4 5.5h16a1 1 0 011 1V20a1 1 0 01-1 1H4a1 1 0 01-1-1V6.5a1 1 0 011-1z', 'M3 10h18', 'M8 3v4M16 3v4'] }],
+  [/cross-industry|probe|any buyer/i, { d: ['M12 3l9 4.5-9 4.5-9-4.5L12 3z', 'M3 12l9 4.5 9-4.5', 'M3 16.5L12 21l9-4.5'] }]
+];
+var OPT_RULES = {
+  usecase: [[/multi-angle|angle|coverage/i, 'camera'], [/typography|layout|text/i, 'text'], [/character/i, 'user'], [/composition|aesthetic/i, 'crop'],
+    [/product|brand/i, 'box'], [/storyboard/i, 'film'], [/depth|light|physics/i, 'sun'], [/production sheet|sheet/i, 'plan'], [/precision|edit/i, 'pencil'], [/written brief/i, 'sparkle']],
+  task: [[/plain read/i, 'text'], [/direction/i, 'sparkle'], [/two-voice/i, 'users'], [/generate/i, 'sparkle'], [/edit/i, 'pencil']],
+  output: [[/panel/i, 'panels'], [/each/i, 'layers'], [/single/i, 'single']],
+  theme: [[/storytelling/i, 'book'], [/product/i, 'box'], [/sales|offers/i, 'tag'], [/people/i, 'user'], [/places/i, 'landscape'], [/characters/i, '@Gaming'],
+    [/brand|text|graphics/i, 'text'], [/art|illustration/i, 'palette'], [/explainer/i, '@Education'], [/events/i, '@Events'], [/support/i, 'headset'], [/bookings|orders/i, 'calendar'], [/payments/i, 'card'], [/alerts|reminders/i, 'bell'], [/verification|security/i, 'shield']]
+};
+var OPT_FALLBACK = { language: 'text', skill: 'sparkle', speaker: 'user', usecase: 'tag', task: 'image', output: 'grid', theme: 'tag' };
+// one colour per filter (the bank's), industries by name, difficulty by its meter
+var OPT_COLOR = { language: '#0d9488', skill: '#8b5cf6', speaker: '#64748b', customer: '#0891b2', usecase: '#6366f1', task: '#3b82f6', theme: '#8b5cf6', output: '#64748b', lever: '#64748b', edge: '#64748b', bank: '#64748b', caveat: '#b45309' };
+var TILE_PALETTE = ['#8b5cf6', '#3b82f6', '#06b6d4', '#6366f1', '#10b981', '#f59e0b', '#f43f5e', '#0891b2', '#7c3aed', '#2563eb'];
+var TIER = ['#10b981', '#f59e0b', '#f97316', '#f43f5e'];
+function tileColor(name){ var h = 0; for(var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0; return TILE_PALETTE[h % TILE_PALETTE.length]; }
+function svgOf(g, cls){
+  return '<svg class="' + (cls || '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    g.d.map(function(x){ return '<path d="' + x + '"/>'; }).join('') + (g.c || []).map(function(c){ return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '"/>'; }).join('') + '</svg>';
+}
+function indGlyph(name){ for(var i = 0; i < IND.length; i++){ if(IND[i][0].test(name)) return IND[i][1]; } return null; }
+function optColor(key, v){ return key === 'industry' ? tileColor(v) : (OPT_COLOR[key] || '#64748b'); }
+function optIcon(key, v, lg){
+  var cls = 'oi' + (lg ? ' lg' : ''), c = optColor(key, v), box = function(inner){ return '<span class="' + cls + '" style="background:' + c + '1f;color:' + c + '" aria-hidden="true">' + inner + '</span>'; };
+  if(key === 'difficulty'){
+    var d = dimOf('difficulty'), t = d ? d.order.indexOf(v) : -1, n = d ? Math.min(d.order.length, 4) : 3;
+    if(t < 0) return '';
+    var col = TIER[Math.min(t, 3)], bars = '';
+    for(var b = 0; b < n; b++) bars += '<i style="height:' + (lg ? 4 + b * 3 : 3 + b * 2.2) + 'px;background:' + (b <= t ? col : '#E5E7EB') + '"></i>';
+    return '<span class="' + cls + ' meter" aria-hidden="true">' + bars + '</span>';
+  }
+  if(key === 'industry'){ return box(svgOf(indGlyph(v) || GL.grid)); }
+  if(key === 'customer'){ return box(svgOf(indGlyph(v) || GL.users)); }
+  var rules = OPT_RULES[key] || [], hit = null;
+  for(var i = 0; i < rules.length; i++){ if(rules[i][0].test(v)){ hit = rules[i][1]; break; } }
+  var name = hit || OPT_FALLBACK[key] || 'tag';
+  return box(svgOf(name.charAt(0) === '@' ? (indGlyph(name.slice(1)) || GL.grid) : (GL[name] || GL.grid)));
+}
 
 // ---------- win map ----------
 function dimOf(key){ return M().dims.filter(function(d){ return d.key === key; })[0]; }
@@ -2069,9 +2500,19 @@ function dirLabels(key){
   if(key === 'n') return { desc: 'Most first', asc: 'Fewest first' };
   return { desc: 'Highest first', asc: 'Lowest first' };
 }
+// The evidence order that matches a Win Map sort: the Google model's measures and lead → its lead first; the rival's → the rival's lead first.
+// the Win Map sort carried into the scenario list: win % -> that model's lead, latency -> fastest first,
+// quality / pass criteria / reliability -> that model's score (a 'lead' pick follows the Google model)
+function evSortFor(key){
+  var p = key.split(':'), side = p[1] === 'b' ? 'b' : 'a';
+  if(p[0] === 'win') return side === 'b' ? 'gb' : 'ga';
+  if(p[0] === 'lat') return side === 'b' ? 'fb' : 'fa';
+  if(p[0] === 'quality' || p[0] === 'pass' || p[0] === 'rel') return side;
+  return st.ev.sort;
+}
 function sortVal(t, key){ var p = key.split(':'); if(p[0] === 'n') return t.cmp; return p[1] === 'lead' ? mlead(t, p[0]) : mval(t, p[0], p[1]); }
-function sortRows(rows, key, dir){
-  var d = dimOf(st.wm.dim), idx = function(v){ var i = d.order.indexOf(v); return i < 0 ? 1e9 : i; };
+function sortRows(rows, key, dir, dk){
+  var d = dimOf(dk || st.wm.dim), idx = function(v){ var i = d.order.indexOf(v); return i < 0 ? 1e9 : i; };
   if(key === 'order') return rows.slice().sort(function(x, y){ return idx(x.v) - idx(y.v); });
   var sg = dir === 'asc' ? 1 : -1;
   return rows.slice().sort(function(x, y){
@@ -2088,7 +2529,7 @@ function wmSortGroups(ar){
     ['Latency p50', three('lat')], ['Rows', [['n', 'Scenarios'], ['order', 'Category order']]]];
 }
 function selectGroups(act, val, groups, aria, label){
-  return '<label class="sort"><span class="label">' + esc(label || 'Sort by') + '</span><span class="sel"><select data-act="' + act + '" aria-label="' + esc(aria) + '">' +
+  return '<label class="sort"><span class="label">' + LICON.sort + esc(label || 'Sort by') + '</span><span class="sel"><select data-act="' + act + '" aria-label="' + esc(aria) + '">' +
     groups.map(function(g){ return '<optgroup label="' + esc(g[0]) + '">' + g[1].map(function(o){ return '<option value="' + esc(o[0]) + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</optgroup>'; }).join('') +
     '</select>' + CHEV.replace('<svg ', '<svg aria-hidden="true" ') + '</span></label>';
 }
@@ -2096,18 +2537,33 @@ function wtlSegs(t){
   var n = t.cmp || 1;
   return '<i style="width:' + (t.a / n * 100) + '%;background:' + A_FILL + '"></i><i style="width:' + (t.tie / n * 100) + '%;background:' + TIE + '"></i><i style="width:' + (t.b / n * 100) + '%;background:' + B_FILL + '"></i>';
 }
+var XLBL = { win: 'Win %', pass: 'Pass criteria', quality: 'Quality', rel: 'Reliability', lat: 'Latency p50' };
+function tileFams(fam){ return [fam].concat(FAMS.filter(function(f){ return f !== fam && st.wm.fields[f]; })); }
 function wmTile(r, key, fam, leadSel){
-  var ar = arms(), t = r.t, on = st.ev.f[key] === r.v, ld = leaderOf(t, fam);
-  var val = function(side){ var txt = mtxt(t, fam, side); return ld === side ? '<span class="v"><span class="vg">' + esc(txt) + '</span></span>' : '<span class="v">' + esc(txt) + '</span>'; };
-  var sub = esc(FAM[fam]) + (fam === 'pass' ? ' · ' + t.passN + ' with pass criteria' : '');
-  var leadLine = leadSel ? '<span class="wt-lead">' + esc(ar.a.short) + ' lead <b>' + leadTxt(fam, mlead(t, fam)) + '</b></span>' : '';
-  return '<button type="button" class="wtile" data-act="wm-pick" data-k="' + key + '" data-v="' + esc(r.v) + '" aria-pressed="' + on + '">' +
-    '<span class="wt-head"><span class="wt-name">' + esc(r.v) + '</span><span class="wt-n">' + plural(t.cmp, 'scenario') + '</span></span>' +
-    '<span class="wt-k">' + sub + '</span>' + leadLine +
-    '<span class="wt-nums"><span>' + val('a') + '<span class="k" style="color:' + A_INK + '">' + esc(ar.a.short) + '</span></span>' +
-    '<span class="r">' + val('b') + '<span class="k" style="color:' + B_INK + '">' + esc(ar.b.short) + '</span></span></span>' +
+  var ar = arms(), t = r.t, on = picked(key, r.v), zero = !t.n && !on, tc = optColor(key, r.v);
+  var head = '<span class="wt-head">' + optIcon(key, r.v, true) + '<span class="wt-name">' + esc(r.v) + '</span>' +
+    (on ? '<span class="wt-check" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>' : '<span class="wt-n">' + t.n + '</span>') + '</span>';
+  if(zero) return '<button type="button" class="wtile zero" disabled title="No scenario matches with the picks above">' + head + '</button>';
+  var block = function(f, first){
+    var ld = leaderOf(t, f);
+    var val = function(side){ var txt = mtxt(t, f, side); return '<span class="v' + (ld === side ? ' lead ' + side : '') + '">' + esc(txt) + '</span>'; };
+    var sub = esc(FAM[f]) + (f === 'pass' && !t.clips ? ' · ' + t.passN + ' with pass criteria' : '');
+    var leadLine = first && leadSel ? '<span class="wt-lead">' + esc(ar.a.short) + ' lead <b>' + leadTxt(f, mlead(t, f)) + '</b></span>' : '';
+    var tie = f === 'win' && t.cmp ? '<span class="c"><span class="tie">' + winPct(t.tie, t.cmp) + '</span><span class="k">tie</span></span>' : '';
+    return '<span class="wt-k' + (first ? '' : ' wt-k2') + '">' + sub + '</span>' + leadLine +
+      '<span class="wt-nums' + (first ? '' : ' wt-nums2') + '"><span>' + val('a') + '<span class="k" style="color:' + A_INK + '">' + esc(ar.a.short) + '</span></span>' + tie +
+      '<span class="r">' + val('b') + '<span class="k" style="color:' + B_INK + '">' + esc(ar.b.short) + '</span></span></span>';
+  };
+  var extra = function(fs){
+    if(!fs.length) return '';
+    var cell = function(f, side){ var ld = leaderOf(t, f), txt = mtxt(t, f, side); return '<span class="xv ' + side + (ld === side ? ' lead' : '') + '" title="' + esc(ar[side].short) + '">' + esc(txt) + '</span>'; };
+    return '<span class="wt-x">' +
+      fs.map(function(f){ return '<span class="wt-xr"' + (f === 'pass' && !t.clips ? ' title="' + t.passN + ' with pass criteria"' : '') + '><span class="xl">' + esc(XLBL[f] || FAM[f]) + '</span>' + cell(f, 'a') + cell(f, 'b') + '</span>'; }).join('') + '</span>';
+  };
+  return '<button type="button" class="wtile" style="--tc:' + tc + '" data-act="wm-pick" data-k="' + key + '" data-v="' + esc(r.v) + '" aria-pressed="' + on + '" title="' + esc(plural(t.n, 'scenario')) + '">' +
+    head + '<span class="wt-body">' + block(fam, true) + extra(tileFams(fam).slice(1)) + '</span>' +
     '<span class="wt-bar" title="' + esc(ar.a.short + ' won ' + t.a + ', tied ' + t.tie + ', ' + ar.b.short + ' won ' + t.b) + '">' + wtlSegs(t) + '</span>' +
-    '<span class="wt-foot"><span>W–T–L ' + t.a + '–' + t.tie + '–' + t.b + '</span>' + (on ? '<span class="pill pill-ink">shown below</span>' : '') + '</span>' +
+    '<span class="wt-foot"><span><b style="color:' + A_INK + '">' + t.a + '</b> won · ' + t.tie + ' tied · <b style="color:' + B_INK + '">' + t.b + '</b> won</span><span>' + plural(t.n, 'scenario') + '</span></span>' +
     '</button>';
 }
 function wmTable(rows, key){
@@ -2117,12 +2573,12 @@ function wmTable(rows, key){
     FAMS.map(function(f){ return '<th colspan="2" class="c bl' + hs(f) + '">' + esc(FAM[f]) + '</th>'; }).join('') + '</tr><tr>' +
     FAMS.map(function(f){ return '<th class="r bl sub' + hs(f) + '" style="color:' + A_INK + '">' + esc(ar.a.short) + '</th><th class="r sub' + hs(f) + '" style="color:' + B_INK + '">' + esc(ar.b.short) + '</th>'; }).join('') + '</tr></thead>';
   var body = rows.map(function(r){
-    var t = r.t, on = st.ev.f[key] === r.v;
+    var t = r.t, on = picked(key, r.v);
     var cells = FAMS.map(function(f){
       var ld = leaderOf(t, f);
       var c = function(side){
         var txt = mtxt(t, f, side);
-        var tip = f === 'pass' && t.passN ? (side === 'a' ? t.passA : t.passB) + ' of ' + t.passN + ' with pass criteria' : f === 'win' ? plural(t[side], 'win') : '';
+        var tip = f === 'pass' && t.passN && !t.clips ? (side === 'a' ? t.passA : t.passB) + ' of ' + t.passN + ' with pass criteria' : f === 'win' ? plural(t[side], 'win') : '';
         return '<td class="r' + (side === 'a' ? ' bl' : '') + hs(f) + '"' + (tip ? ' title="' + esc(tip) + '"' : '') + '>' + (ld === side ? '<span class="pill pill-success">' + esc(txt) + '</span>' : esc(txt)) + '</td>';
       };
       return c('a') + c('b');
@@ -2132,82 +2588,188 @@ function wmTable(rows, key){
   }).join('');
   return '<div class="card tblwrap"><table class="tbl wmt">' + head + '<tbody>' + body + '</tbody></table></div>';
 }
-function renderWinMap(){
-  var m = M(), ar = m.arms, list = cur();
-  var mapDims = m.dims.filter(function(d){ return d.map !== false && groups(d.key, list).length > 1; });
-  if(!mapDims.some(function(d){ return d.key === st.wm.dim; })) st.wm.dim = mapDims[0].key;
-  var key = st.wm.dim, d = dimOf(key);
-  var allRows = groups(key, list), rows = sortRows(allRows.filter(function(r){ return r.t.cmp >= st.wm.minN; }), st.wm.sort, st.wm.dir);
-  var hidden = allRows.length - rows.length;
-  var p = st.wm.sort.split(':'), fam = FAM[p[0]] ? p[0] : 'win', leadSel = p[1] === 'lead';
-  var dl = dirLabels(st.wm.sort), first = defaultDir(st.wm.sort), dirs = first === 'asc' ? ['asc', 'desc'] : ['desc', 'asc'];
-  var chips = mapDims.map(function(x){ return '<button type="button" class="chip" data-act="wm-dim" data-v="' + x.key + '" aria-pressed="' + (x.key === key) + '">' + esc(x.label) + '</button>'; }).join('');
-  var h = '<div class="block" id="winmap"><div class="bhead"><div><div class="text-h4">Win Map</div>' +
-    '<p class="hint">Click a row to show only its scenarios below; click it again to show all</p></div></div>' +
-    '<div class="card ctrl"><div class="fgroup" style="min-width:0"><span class="label">Categorise by</span><div class="chips" role="group" aria-label="Categorise by">' + chips + '</div></div>' +
-    '<div class="ctrl-row" style="margin-top:16px">' +
-      selectGroups('wm-sort', st.wm.sort, wmSortGroups(ar), 'Sort the Win Map') +
-      (dl ? '<div class="toggle" role="tablist" aria-label="Sort direction">' + dirs.map(function(x){ return '<button role="tab" data-act="wm-dir" data-v="' + x + '" aria-selected="' + (st.wm.dir === x) + '">' + esc(dl[x]) + '</button>'; }).join('') + '</div>' : '') +
-      '<div class="toggle" role="tablist" aria-label="View"><button role="tab" data-act="wm-view" data-v="map" aria-selected="' + (st.wm.view === 'map') + '">Map</button><button role="tab" data-act="wm-view" data-v="table" aria-selected="' + (st.wm.view === 'table') + '">Table</button></div>' +
-      sortControl('wm-min', String(st.wm.minN), [['1', 'Any number'], ['3', '3 or more'], ['5', '5 or more'], ['10', '10 or more']], 'Minimum scenarios per row', 'Min. scenarios') +
-    '</div></div>';
-  if(!rows.length){ h += '<div class="card card-pad sm mt" style="margin-top:12px">No row has that many scenarios.</div>'; }
-  else if(st.wm.view === 'table'){ h += wmTable(rows, key); }
-  else {
-    h += '<div class="wm-grid">' + rows.map(function(r){ return wmTile(r, key, fam, leadSel); }).join('') + '</div>' +
-      '<div class="wm-legend"><span class="label" style="letter-spacing:.06em">W–T–L</span>' + [[A_FILL, ar.a.short + ' won'], [TIE, 'Tied'], [B_FILL, ar.b.short + ' won']].map(function(x){ return '<span><span class="sw" style="background:' + x[0] + '"></span>' + esc(x[1]) + '</span>'; }).join('') + '</div>';
+// The Win Map is laid out like the scenario bank's step 2 (Ravi, 2026-10-12): a section per
+// categorisation, a tile per value, several picks per section. A section's tiles count only what
+// the picks in the sections above it allow (the bank's cascade); picks outside the map apply to all.
+var WM_SECTIONS = ['industry', 'customer', 'usecase', 'task', 'difficulty'];
+var WM_LABEL = { customer: 'Customers you can target', usecase: 'Use cases' };
+var WM_CAP = 12;
+function picked(k, v){ var a = st.ev.f[k]; return !!(a && a.indexOf(v) >= 0); }
+function nPicks(){ return Object.keys(st.ev.f).reduce(function(n, k){ return n + (st.ev.f[k] || []).length; }, 0); }
+function passKeys(s, keys){
+  for(var i = 0; i < keys.length; i++){ var a = st.ev.f[keys[i]]; if(a && a.length && !valuesOf(s, keys[i]).some(function(v){ return a.indexOf(v) >= 0; })) return false; }
+  return true;
+}
+function wmSections(){ var list = all(); return WM_SECTIONS.map(dimOf).filter(function(d){ return d && d.map !== false && groups(d.key, list).length > 1; }); }
+function sectionRows(d, secs){
+  var above = secs.slice(0, secs.indexOf(d)).map(function(x){ return x.key; });
+  var outside = Object.keys(st.ev.f).filter(function(k){ return WM_SECTIONS.indexOf(k) < 0; });
+  var base = all().filter(function(s){ return passKeys(s, above.concat(outside)); });
+  return d.order.map(function(v){ var l = base.filter(function(s){ return valuesOf(s, d.key).indexOf(v) >= 0; }); return { v: v, list: l, t: tally(l) }; });
+}
+// A pick the picks above it have ruled out is dropped, top-down, as in the bank.
+function prunePicks(){
+  var secs = wmSections();
+  secs.forEach(function(d){
+    var a = st.ev.f[d.key]; if(!a || !a.length) return;
+    var live = {}; sectionRows(d, secs).forEach(function(r){ if(r.t.n) live[r.v] = 1; });
+    var keep = a.filter(function(v){ return live[v]; });
+    if(keep.length) st.ev.f[d.key] = keep; else delete st.ev.f[d.key];
+  });
+}
+function togglePick(k, v){ var a = (st.ev.f[k] || []).slice(), i = a.indexOf(v); if(i >= 0) a.splice(i, 1); else a.push(v); if(a.length) st.ev.f[k] = a; else delete st.ev.f[k]; prunePicks(); }
+function miniTally(t){
+  var ar = arms();
+  if(!t.cmp) return '';
+  return '<span class="wm-mini">Won by <b style="color:' + A_INK + '">' + esc(ar.a.short) + '</b> ' + winPct(t.a, t.cmp) + ' · tied ' + winPct(t.tie, t.cmp) + ' · won by <b style="color:' + B_INK + '">' + esc(ar.b.short) + '</b> ' + winPct(t.b, t.cmp) + ' <span class="mt">(' + t.cmp + ' scenarios both models completed)</span></span>';
+}
+// What each card shows, in the study page's own words for each measure (the head-to-head card's glosses).
+var FAM_GLOSS = { win: 'wins out of the scenarios both models completed', pass: 'scenarios that met their pass criteria · higher is better',
+  quality: 'mean rating · higher is better', rel: 'lowest rating on any single scenario · higher is better', lat: 'median time per image · lower is better' };
+function fieldsDropdown(fam){
+  var shown = tileFams(fam), open = !!st.wm.fieldsOpen;
+  var summary = shown.length === 1 ? FAM[shown[0]] : FAM[shown[0]] + ' + ' + (shown.length - 1) + ' more';
+  return '<div class="dd"><span class="ctrl-lbl">' + LICON.fields + 'Select fields</span>' +
+    '<button type="button" class="dd-btn" data-act="wm-fields" aria-haspopup="true" aria-expanded="' + open + '"><span>' + esc(summary) + '</span>' + CHEV + '</button>' +
+    (open ? '<div class="dd-menu" role="menu" aria-label="Fields shown on each card"><div class="dd-h">Fields shown on each card</div>' +
+      FAMS.map(function(f){
+        var on = f === fam || !!st.wm.fields[f], lock = f === fam;
+        return '<button type="button" class="dd-opt" role="menuitemcheckbox" aria-checked="' + on + '" data-act="wm-field" data-v="' + f + '"' + (lock ? ' disabled' : '') + '>' +
+          '<span class="cb' + (on ? ' on' : '') + '" aria-hidden="true">' + (on ? '<svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg>' : '') + '</span>' +
+          '<span class="dd-t"><b>' + esc(FAM[f]) + '</b><span>' + esc(FAM_GLOSS[f]) + '</span>' + (lock ? '<em>Always shown: the cards are sorted by it</em>' : '') + '</span></button>';
+      }).join('') + '</div>' : '') + '</div>';
+}
+// The bar keeps to one line however many tiles are picked: the first few as chips, the rest
+// behind "+N more", which opens every pick, grouped by section, above the bar.
+var BAR_CHIPS = 2;
+function pickList(){
+  var keys = WM_SECTIONS.concat(Object.keys(st.ev.f).filter(function(k){ return WM_SECTIONS.indexOf(k) < 0; })), out = [];
+  keys.forEach(function(k){ (st.ev.f[k] || []).forEach(function(v){ out.push([k, v]); }); });
+  return out;
+}
+function pickChip(k, v){ return '<span class="pk" title="' + esc((dimOf(k) || { label: k }).label + ': ' + v) + '"><span class="pk-t">' + esc(v) + '</span><button data-act="wm-pick" data-k="' + esc(k) + '" data-v="' + esc(v) + '" aria-label="Remove ' + esc(v) + '">×</button></span>'; }
+function pickSummary(){
+  var all_ = pickList(), extra = all_.length - BAR_CHIPS, open = !!st.wm.picksOpen && extra > 0;
+  var h = '<span class="wm-picks">' + all_.slice(0, BAR_CHIPS).map(function(x){ return pickChip(x[0], x[1]); }).join('') + '</span>' +
+    (extra > 0 ? '<button type="button" class="pk-more" data-act="wm-picks" aria-expanded="' + open + '">All ' + all_.length + ' picks' + CHEV + '</button>' : '');
+  if(open){
+    var groups = {}, order = [];
+    all_.forEach(function(x){ if(!groups[x[0]]){ groups[x[0]] = []; order.push(x[0]); } groups[x[0]].push(x[1]); });
+    h += '<div class="pk-pop" role="dialog" aria-label="Everything picked"><div class="pk-pop-h"><b>' + plural(all_.length, 'pick') + '</b><button type="button" class="linkbtn" data-act="wm-picks">Close</button></div>' +
+      order.map(function(k){ return '<div class="pk-g"><span class="label">' + esc(WM_LABEL[k] || (dimOf(k) || { label: k }).label) + ' · ' + groups[k].length + '</span><div class="pk-gc">' + groups[k].map(function(v){ return pickChip(k, v); }).join('') + '</div></div>'; }).join('') + '</div>';
   }
-  h += '<ul class="notes">' +
-    '<li>Quality mean is the average rating across the row’s scenarios. Wins are scenarios where the model scored higher, by any margin; identical scores are a tie.</li>' +
-    '<li>Win % is wins out of the scenarios in that row both models completed. Green tags mark the row’s leader.</li>' +
-    (d.multi ? '<li>A scenario can carry several ' + esc(d.label.toLowerCase()) + ' values and counts under each.</li>' : '') +
-    (hidden ? '<li>' + plural(hidden, 'row') + ' with fewer than ' + st.wm.minN + ' scenarios hidden.</li>' : '') +
-    '</ul></div>';
   return h;
 }
+function renderWinMap(){
+  var m = M(), ar = m.arms, secs = wmSections();
+  var p = st.wm.sort.split(':'), fam = FAM[p[0]] ? p[0] : 'win', leadSel = p[1] === 'lead';
+  var dl = dirLabels(st.wm.sort), first = defaultDir(st.wm.sort), dirs = first === 'asc' ? ['asc', 'desc'] : ['desc', 'asc'];
+  var matched = all().filter(function(s){ return passKeys(s, Object.keys(st.ev.f)); }), mt = tally(matched), np = nPicks();
+  var h = '<div class="block" id="winmap"><div class="bhead"><div><div class="text-h4">Win Map</div>' +
+    '</div></div>' +
+    '<div class="card ctrl"><div class="ctrl-row">' +
+      (st.wm.view === 'map' ? fieldsDropdown(fam) : '') +
+      '<div class="ctrl-g"><span class="ctrl-lbl">' + LICON.view + 'View</span><div class="toggle" role="tablist" aria-label="View"><button role="tab" data-act="wm-view" data-v="map" aria-selected="' + (st.wm.view === 'map') + '">Map</button><button role="tab" data-act="wm-view" data-v="table" aria-selected="' + (st.wm.view === 'table') + '">Table</button></div></div>' +
+      sortMenu('wm-sort', st.wm.sort, wmSortGroups(ar), !!st.wm.sortOpen) +
+      (dl ? '<div class="ctrl-g"><span class="ctrl-lbl">' + LICON.order + 'Order</span><div class="toggle" role="tablist" aria-label="Sort direction">' + dirs.map(function(x){ return '<button role="tab" data-act="wm-dir" data-v="' + x + '" aria-selected="' + (st.wm.dir === x) + '">' + esc(dl[x]) + '</button>'; }).join('') + '</div></div>' : '') +
+    '</div>' +
+    '</div>';
+  secs.forEach(function(d){
+    var rows = sortRows(sectionRows(d, secs), st.wm.sort, st.wm.dir, d.key), on = st.ev.f[d.key] || [];
+    rows = rows.filter(function(r){ return r.t.n || on.indexOf(r.v) >= 0; }).concat(rows.filter(function(r){ return !r.t.n && on.indexOf(r.v) < 0; }));
+    var long = rows.length > WM_CAP + 2, open = !!st.wm.more[d.key];
+    var shown = long && !open ? rows.slice(0, WM_CAP).concat(rows.slice(WM_CAP).filter(function(r){ return on.indexOf(r.v) >= 0; })) : rows;
+    var hidden = rows.length - shown.length;
+    h += '<section class="wm-sec"><h3 class="wm-h">' + esc(WM_LABEL[d.key] || d.label) + '<span class="wm-hn">' + rows.filter(function(r){ return r.t.n; }).length + ' of ' + rows.length + '</span>' + (on.length ? '<span class="label" style="color:var(--b600)">' + on.length + ' picked</span>' : '') + '</h3>' +
+      (st.wm.view === 'table' ? wmTable(shown, d.key) : '<div class="wm-grid">' + shown.map(function(r){ return wmTile(r, d.key, fam, leadSel); }).join('') + '</div>') +
+      (long && (hidden || open) ? '<button class="linkbtn wm-more" data-act="wm-more" data-k="' + d.key + '">' + (open ? 'Show fewer' : 'Show ' + hidden + ' more') + '</button>' : '') +
+      '</section>';
+  });
+  if(st.wm.view === 'map') h += '<div class="wm-legend"><span class="label" style="letter-spacing:.06em">W–T–L</span>' + [[A_FILL, ar.a.short + ' won'], [TIE, 'Tied'], [B_FILL, ar.b.short + ' won']].map(function(x){ return '<span><span class="sw" style="background:' + x[0] + '"></span>' + esc(x[1]) + '</span>'; }).join('') + '</div>';
+  var multi = secs.filter(function(d){ return d.multi; }).map(function(d){ return d.label.toLowerCase(); });
+  // the way on, always in reach: what matches, what is picked, and the scenarios themselves
+  h += '<div class="wm-bar"><span class="wm-count"><b class="tnum">' + matched.length + '</b>of ' + all().length + ' scenarios match</span>' + miniTally(mt) +
+    pickSummary() +
+    (np ? '<button class="btn btn-secondary btn-sm" data-act="wm-clear">Clear</button>' : '') +
+    '<button class="btn wm-go" data-act="wm-go"' + (matched.length ? '' : ' disabled') + '>See detailed observations →</button></div>';
+  return h + '</div>';
+}
 function sortControl(act, val, opts, aria, label){
-  return '<label class="sort"><span class="label">' + esc(label || 'Sort by') + '</span><span class="sel"><select data-act="' + act + '" aria-label="' + esc(aria) + '">' +
+  return '<label class="sort"><span class="label">' + LICON.sort + esc(label || 'Sort by') + '</span><span class="sel"><select data-act="' + act + '" aria-label="' + esc(aria) + '">' +
     opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') +
     '</select>' + CHEV.replace('<svg ', '<svg aria-hidden="true" ') + '</span></label>';
 }
 
 // ---------- evidence ----------
 var MAIN_DIMS = ['industry', 'usecase', 'task', 'difficulty'];
+function textHit(s){
+  if(!st.ev.q) return true;
+  var hay = [s.id, s.title, s.brief, s.v.industry].concat(valuesOf(s, 'customer'), valuesOf(s, 'usecase')).join(' ').toLowerCase();
+  return st.ev.q.toLowerCase().split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w) >= 0; });
+}
 function passes(s, skip){
-  if(!inSet(s)) return false;
+  if(skip !== 'q' && !textHit(s)) return false;
   var f = st.ev.f;
-  for(var k in f){ if(k !== skip && f[k] != null && valuesOf(s, k).indexOf(f[k]) < 0) return false; }
+  for(var k in f){ var a = f[k]; if(k !== skip && a && a.length && !valuesOf(s, k).some(function(v){ return a.indexOf(v) >= 0; })) return false; }
   if(skip !== 'result' && st.ev.result !== 'all'){ var w = s.win || 'none'; if(w !== st.ev.result) return false; }
   if(skip !== 'confident' && st.ev.confident && !(s.win === 'a' && s.margin >= D.confidentPP)) return false;
   return true;
 }
-function chipGroup(label, act, key, opts, value, cap){
+function chipGroup(label, act, key, opts, sel, cap){
   cap = cap || 0;
+  var ar = arms(), isOn = function(o){ return o.v === 'all' ? !sel.length : sel.indexOf(o.v) >= 0; };
+  var q = (st.ev.optq[key] || '').toLowerCase(), searchable = opts.length > 11;
+  if(q) opts = opts.filter(function(o){ return o.v === 'all' || isOn(o) || o.l.toLowerCase().indexOf(q) >= 0; });
   var shown = opts, extra = 0;
   if(cap && opts.length > cap + 1 && !(st.ev.more && st.ev.moreKey === key)){
     var keep = opts.slice(0, cap + 1);
-    if(value !== 'all' && !keep.some(function(o){ return o.v === value; })) keep = keep.concat(opts.filter(function(o){ return o.v === value; }));
+    keep = keep.concat(opts.slice(cap + 1).filter(isOn));
     extra = opts.length - keep.length; shown = keep;
   }
-  return '<div class="fgroup"><span class="label">' + esc(label) + '</span><div class="chips" role="group" aria-label="' + esc(label) + '">' +
-    shown.map(function(o){ return '<button class="chip' + (o.arm ? ' ' + o.arm : '') + (o.n === 0 ? ' zero' : '') + '" data-act="' + act + '" data-k="' + esc(key) + '" data-v="' + esc(o.v) + '" aria-pressed="' + (o.v === value) + '">' + esc(o.l) + '<span class="n">' + o.n + '</span></button>'; }).join('') +
+  var wpTitle = ar.a.short + ' win % · ' + ar.b.short + ' win %';
+  return '<div class="fgroup"><span class="label">' + esc(label) + '</span>' +
+    (searchable ? '<input class="chipq" type="search" data-k="' + esc(key) + '" value="' + esc(st.ev.optq[key] || '') + '" placeholder="Search ' + esc(label.toLowerCase()) + '…" aria-label="Search ' + esc(label) + '">' : '') +
+    '<div class="chips" role="group" aria-label="' + esc(label) + '">' +
+    shown.map(function(o){ return '<button class="chip' + (o.arm ? ' ' + o.arm : '') + (o.n === 0 ? ' zero' : '') + '" data-act="' + act + '" data-k="' + esc(key) + '" data-v="' + esc(o.v) + '" aria-pressed="' + isOn(o) + '">' + esc(o.l) + '<span class="n">' + o.n + '</span>' +
+      (o.wp ? '<span class="wp" title="' + esc(wpTitle) + '"><b style="color:' + A_INK + '">' + o.wp[0] + '</b> · <b style="color:' + B_INK + '">' + o.wp[1] + '</b></span>' : '') + '</button>'; }).join('') +
     (extra ? '<button class="linkbtn" data-act="ev-moreopts" data-k="' + esc(key) + '" style="padding:6px 4px">Show ' + extra + ' more</button>' : '') +
     '</div></div>';
 }
 function dimChips(key){
   var d = dimOf(key), base = all().filter(function(s){ return passes(s, key); }), cnt = {};
   base.forEach(function(s){ valuesOf(s, key).forEach(function(v){ cnt[v] = (cnt[v] || 0) + 1; }); });
+  // each option's win %, over the scenarios the other picks allow (not the result filter)
+  var wpBase = all().filter(function(s){ return passKeys(s, Object.keys(st.ev.f).filter(function(k){ return k !== key; })); });
   var present = {}; cur().forEach(function(s){ valuesOf(s, key).forEach(function(v){ present[v] = 1; }); });
-  var opts = [{ v: 'all', l: 'All', n: base.length }].concat(d.order.filter(function(v){ return present[v]; }).map(function(v){ return { v: v, l: v, n: cnt[v] || 0 }; }));
+  var opts = [{ v: 'all', l: 'All', n: base.length }].concat(d.order.filter(function(v){ return present[v]; }).map(function(v){
+    var t = tally(wpBase.filter(function(s){ return valuesOf(s, key).indexOf(v) >= 0; }));
+    return { v: v, l: v, n: cnt[v] || 0, wp: t.cmp ? [winPct(t.a, t.cmp), winPct(t.b, t.cmp)] : null };
+  }));
   if(opts.length <= 2) return '';
-  return chipGroup(d.label, 'ev-dim', key, opts, st.ev.f[key] == null ? 'all' : st.ev.f[key], d.key === 'customer' ? 12 : 0);
+  return chipGroup(d.label, 'ev-dim', key, opts, st.ev.f[key] || [], 10);
 }
 function scoreOf(s, side){ return s[side] && s[side].pct != null ? s[side].pct : -Infinity; }
+function evSorts(){
+  var ar = arms();
+  return [['Who won', [['ga', 'Largest ' + ar.a.short + ' lead first'], ['gb', 'Largest ' + ar.b.short + ' lead first'], ['close', 'Closest results first']]],
+    ['Score', [['a', ar.a.short + ' score, highest first'], ['b', ar.b.short + ' score, highest first']]],
+    ['Speed', [['fa', ar.a.short + ' fastest first'], ['fb', ar.b.short + ' fastest first']]],
+    ['Scenario', [['hard', 'Hardest first'], ['title', 'Name, A to Z'], ['id', 'Scenario id']]]];
+}
+var SORT_GI = { 'Who won': LICON.won, 'Score': LICON.score, 'Speed': LICON.speed, 'Scenario': LICON.scen };
+function evSortLabel(k){ var l = ''; evSorts().forEach(function(g){ g[1].forEach(function(o){ if(o[0] === k) l = o[1]; }); }); return l; }
 function visible(){
   var list = all().filter(function(s){ return passes(s); });
   var key = st.ev.sort;
+  var ms = function(x, side){ var c = (x[side] && x[side].calls) || []; return c.length ? c.reduce(function(n, v){ return n + v[0]; }, 0) / c.length : Infinity; };
+  var rank = function(x){ var d = dimOf('difficulty'); return d ? d.order.indexOf(x.v.difficulty) : 0; };
   var by = {
     id: function(){ return 0; },
+    title: function(x, y){ return x.title.localeCompare(y.title); },
+    close: function(x, y){ return Math.abs(scoreOf(x, 'a') - scoreOf(x, 'b')) - Math.abs(scoreOf(y, 'a') - scoreOf(y, 'b')); },
+    fa: function(x, y){ return ms(x, 'a') - ms(y, 'a'); },
+    fb: function(x, y){ return ms(x, 'b') - ms(y, 'b'); },
+    hard: function(x, y){ return rank(y) - rank(x); },
     a: function(x, y){ return scoreOf(y, 'a') - scoreOf(x, 'a'); },
     b: function(x, y){ return scoreOf(y, 'b') - scoreOf(x, 'b'); },
     ga: function(x, y){ return (scoreOf(y, 'a') - scoreOf(y, 'b')) - (scoreOf(x, 'a') - scoreOf(x, 'b')); },
@@ -2215,35 +2777,104 @@ function visible(){
   }[key] || function(){ return 0; };
   return list.sort(function(x, y){ return ((x.win ? 0 : 1) - (y.win ? 0 : 1)) || by(x, y) || (x.id < y.id ? -1 : 1); });
 }
-function renderEvidence(){
-  var m = M(), ar = m.arms, list = visible(), base = cur();
-  var filtered = Object.keys(st.ev.f).some(function(k){ return st.ev.f[k] != null; }) || st.ev.result !== 'all' || st.ev.confident;
-  var rb = all().filter(function(s){ return passes(s, 'result'); });
-  var rc = { a: 0, b: 0, tie: 0, none: 0 }; rb.forEach(function(s){ rc[s.win || 'none']++; });
-  var ever = { a: 0, b: 0, tie: 0, none: 0 }; base.forEach(function(s){ ever[s.win || 'none']++; });
-  var resOpts = [{ v: 'all', l: 'All', n: rb.length }];
-  if(ever.a) resOpts.push({ v: 'a', l: ar.a.short + ' wins', n: rc.a, arm: 'a' });
-  if(ever.b) resOpts.push({ v: 'b', l: ar.b.short + ' wins', n: rc.b, arm: 'b' });
-  if(ever.tie) resOpts.push({ v: 'tie', l: 'Tied', n: rc.tie });
-  if(ever.none) resOpts.push({ v: 'none', l: 'No score', n: rc.none });
-  var confN = all().filter(function(s){ return passes(s, 'confident') && s.win === 'a' && s.margin >= D.confidentPP; }).length;
-  var moreKeys = m.dims.map(function(d){ return d.key; }).filter(function(k){ return MAIN_DIMS.indexOf(k) < 0; });
-  var moreActive = moreKeys.some(function(k){ return st.ev.f[k] != null; });
-  var confLabel = ar.a.short + ' High Confidence Wins [' + D.confidentPP + '% or more higher score]';
-  var h = '<div class="block" id="evidence"><div class="bhead"><div class="text-h4">Per-scenario evidence</div>' +
-    '<div style="display:flex;gap:8px"><button class="btn btn-secondary btn-sm" data-act="ev-expand">Expand all</button><button class="btn btn-secondary btn-sm" data-act="ev-collapse">Collapse all</button></div></div>' +
-    '<div class="card ctrl" style="margin-top:16px"><div class="ev-top"><div class="ev-count"><b class="tnum">' + (filtered ? list.length + ' of ' + base.length + ' scenarios' : 'All ' + base.length + ' scenarios') + '</b>' +
-    (filtered ? '<button class="linkbtn" data-act="ev-clear">Clear filters</button>' : '') + '</div>' +
-    sortControl('ev-sort', st.ev.sort, [['id', 'Scenario id'], ['a', ar.a.short + ' score, highest first'], ['b', ar.b.short + ' score, highest first'], ['ga', 'Largest ' + ar.a.short + ' lead first'], ['gb', 'Largest ' + ar.b.short + ' lead first']], 'Sort scenarios') + '</div>' +
-    '<div class="fstack">' + dimChips('industry') +
-    chipGroup('Winning Models', 'ev-res', 'result', resOpts, st.ev.result) +
-    '<div class="fgroup"><span class="label">' + esc(confLabel) + '</span><div class="switchrow"><button class="switch" role="switch" data-act="ev-conf" aria-checked="' + st.ev.confident + '" aria-label="' + esc(confLabel) + '" title="' + esc(ar.a.short + '’s score is ' + D.confidentPP + '% or more above the other model’s') + '"></button><span class="nbadge">' + confN + '</span></div></div>' +
-    dimChips('usecase') + dimChips('task') + dimChips('difficulty') +
-    (moreKeys.length ? '<details class="more" data-act="ev-more"' + (st.ev.more || moreActive ? ' open' : '') + '><summary>More filters: ' + moreKeys.map(function(k){ return esc(dimOf(k).label.toLowerCase()); }).join(', ') + CHEV + '</summary>' +
-    '<div class="fstack">' + moreKeys.map(dimChips).join('') + '</div></details>' : '') +
-    '</div></div><div class="rows" id="rows">' + (list.length ? list.map(rowHtml).join('') : '<div class="card card-pad sm mt">No scenarios match these filters.</div>') + '</div></div>';
-  return h;
+var FILTER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>';
+var SEARCH_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+function filterCount(){ return nPicks() + (st.ev.result !== 'all' ? 1 : 0) + (st.ev.confident ? 1 : 0); }
+var MODEL_GLYPH = {
+  a: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9.5c1.5 6 7 9.5 14 8.5-1.2 1.8-3.4 2.6-6 2.4C7.3 20 3.5 15.5 4.5 9.5z"/><path d="M18.5 18c2-2 2.6-5.3 1.6-8.5"/><path d="M19.2 7.2l1.3-2.2"/></svg>',
+  b: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="13" rx="2"/><path d="M3 16l4-4 3 3 2-2 4 4"/><path d="M19.5 2.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="currentColor" stroke="none"/></svg>'
+};
+function modelIcon(side){ var c = side === 'a' ? A_INK : B_INK; return '<span class="oi" style="background:' + c + '1f;color:' + c + '" aria-hidden="true">' + MODEL_GLYPH[side] + '</span>'; }
+function resultIcon(v){
+  if(v === 'a' || v === 'b') return modelIcon(v);
+  var c = v === 'tie' ? '#6B6B6B' : '#9CA3AF';
+  var inner = v === 'tie' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14M5 15h14"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>';
+  return '<span class="oi" style="background:' + c + '1f;color:' + c + '" aria-hidden="true">' + inner + '</span>';
 }
+function resultLabel(v){ var ar = arms(); return v === 'a' ? ar.a.short + ' wins' : v === 'b' ? ar.b.short + ' wins' : v === 'tie' ? 'Tied' : 'No score'; }
+function activeChips(){
+  var chips = [];
+  Object.keys(st.ev.f).forEach(function(k){ (st.ev.f[k] || []).forEach(function(v){ chips.push([k, v, (dimOf(k) || { label: k }).label + ': ' + v]); }); });
+  if(st.ev.result !== 'all') chips.push(['result', st.ev.result, 'Winning models: ' + resultLabel(st.ev.result)]);
+  if(st.ev.confident) chips.push(['confident', '1', arms().a.short + ' high-confidence wins']);
+  if(st.ev.q) chips.push(['q', st.ev.q, 'Search: “' + st.ev.q + '”']);
+  if(!chips.length) return '';
+  return '<div class="achips">' + chips.map(function(c){ return '<span class="pk">' + esc(c[2]) + '<button data-act="ev-unpick" data-k="' + esc(c[0]) + '" data-v="' + esc(c[1]) + '" aria-label="Remove ' + esc(c[2]) + '">×</button></span>'; }).join('') +
+    '<button class="linkbtn" data-act="ev-clear">Clear all</button></div>';
+}
+function renderEvidence(){
+  var m = M(), ar = m.arms, list = visible(), base = cur(), n = filterCount(), t = tally(list);
+  return '<div class="block" id="evidence" style="margin-top:0">' +
+    '<div class="ev-hero"><span class="eyebrow">' + esc(m.label) + ' · scenarios</span><h2 class="ev-h tnum">' + list.length + ' of ' + base.length + ' scenarios</h2>' + miniTally(t) + '</div>' +
+    '<div class="lbar"><button class="btn btn-secondary fbtn" data-act="sheet-open" aria-haspopup="dialog">' + FILTER_ICON + 'Filters' + (n ? '<span class="fbadge">' + n + '</span>' : '') + '</button>' +
+      sortMenu('ev-sort', st.ev.sort, evSorts(), !!st.ev.sortOpen) +
+      '<span class="lcount"><b class="tnum">' + list.length + '</b> of ' + base.length + ' scenarios</span></div>' +
+    activeChips() +
+    '<div class="ev-tools"><button class="btn btn-secondary btn-sm" data-act="ev-expand">Expand all</button><button class="btn btn-secondary btn-sm" data-act="ev-collapse">Collapse all</button></div>' +
+    '<div class="rows" id="rows">' + (list.length ? list.map(rowHtml).join('') : '<div class="card card-pad sm mt">No scenario matches all of these. Remove a filter to widen the list.</div>') + '</div></div>';
+}
+// The filters as a panel that slides in from the left, ticked like a checklist (the scenario bank's
+// FilterSheet): one folding group per filter, the picks apply as they are made, Apply closes it.
+var SHEET_OPEN = ['industry', 'customer', 'usecase', 'difficulty', 'result'];
+var SHEET_CAP = 8;
+function sheetRow(key, v, label, n, on, wp, act){
+  var off = !n && !on;
+  return '<button class="srow-opt' + (off ? ' off' : '') + '" role="checkbox" aria-checked="' + on + '"' + (off ? ' disabled' : '') + ' data-act="' + act + '" data-k="' + esc(key) + '" data-v="' + esc(v) + '">' +
+    '<span class="cb' + (on ? ' on' : '') + '" aria-hidden="true">' + (on ? '<svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg>' : '') + '</span>' +
+    (key === 'result' ? resultIcon(on ? st.ev.result : v) : key === 'confident' ? modelIcon('a') : optIcon(key, v === 'all' ? label : v)) + '<span class="ol">' + esc(label) + '</span>' +
+    (wp ? '<span class="wp"><b style="color:' + A_INK + '">' + wp[0] + '</b> · <b style="color:' + B_INK + '">' + wp[1] + '</b></span>' : '') +
+    '<span class="oc">' + n + '</span></button>';
+}
+function sheetGroup(key, label, rows, picks){
+  var isShut = st.shut[key] != null ? st.shut[key] : (SHEET_OPEN.indexOf(key) < 0 && !picks);
+  var long = rows.length > SHEET_CAP + 2, more = !!st.sheetMore[key];
+  var shown = long && !more ? rows.slice(0, SHEET_CAP).concat(rows.slice(SHEET_CAP).filter(function(r){ return r.on; })) : rows;
+  return '<section class="sg"><button class="sg-h" data-act="sheet-fold" data-k="' + esc(key) + '" aria-expanded="' + !isShut + '"><span class="label" style="color:var(--ink)">' + esc(label) + (picks ? ' · ' + picks : '') + '</span>' + CHEV + '</button>' +
+    (isShut ? '' : '<div class="sg-b">' + shown.map(function(r){ return r.html; }).join('') +
+      (long ? '<button class="linkbtn" data-act="sheet-more" data-k="' + esc(key) + '" style="padding:4px 6px">' + (more ? 'Show fewer' : 'Show ' + (rows.length - shown.length) + ' more') + '</button>' : '') + '</div>') + '</section>';
+}
+function renderSheet(){
+  var el = document.getElementById('sheet');
+  if(!el){ el = document.createElement('div'); el.id = 'sheet'; document.body.appendChild(el); }
+  if(!st.sheet || st.step !== 'scenarios'){ el.innerHTML = ''; document.body.style.overflow = ''; return; }
+  document.body.style.overflow = 'hidden';
+  var m = M(), list = visible(), base = cur(), n = filterCount(), html = '';
+  var order = ['industry', 'customer', 'usecase', 'task', 'difficulty'].concat(m.dims.map(function(d){ return d.key; }).filter(function(k){ return ['industry', 'customer', 'usecase', 'task', 'difficulty'].indexOf(k) < 0; }));
+  order.forEach(function(key, i){
+    var d = dimOf(key); if(!d) return;
+    var cnt = {}; all().filter(function(s){ return passes(s, key); }).forEach(function(s){ valuesOf(s, key).forEach(function(v){ cnt[v] = (cnt[v] || 0) + 1; }); });
+    var wpBase = all().filter(function(s){ return textHit(s) && passKeys(s, Object.keys(st.ev.f).filter(function(k){ return k !== key; })); });
+    var sel = st.ev.f[key] || [];
+    var rows = d.order.map(function(v){
+      var t = tally(wpBase.filter(function(s){ return valuesOf(s, key).indexOf(v) >= 0; })), on = sel.indexOf(v) >= 0;
+      return { on: on, n: cnt[v] || 0, html: sheetRow(key, v, v, cnt[v] || 0, on, t.cmp ? [winPct(t.a, t.cmp), winPct(t.b, t.cmp)] : null, 'ev-dim') };
+    });
+    rows = rows.filter(function(r){ return r.n || r.on; }).concat(rows.filter(function(r){ return !r.n && !r.on; }));
+    if(rows.length > 1) html += sheetGroup(key, (WM_LABEL[key] || d.label), rows, sel.length);
+    if(i === 0){
+      // who won, right after the industry, as on the evidence card before
+      var rb = all().filter(function(s){ return passes(s, 'result'); }), rc = { a: 0, b: 0, tie: 0, none: 0 }; rb.forEach(function(s){ rc[s.win || 'none']++; });
+      var rrows = ['a', 'b', 'tie', 'none'].filter(function(v){ return cur().some(function(s){ return (s.win || 'none') === v; }); }).map(function(v){
+        var on = st.ev.result === v; return { on: on, n: rc[v], html: sheetRow('result', on ? 'all' : v, resultLabel(v), rc[v], on, null, 'ev-res') }; });
+      var confN = all().filter(function(s){ return passes(s, 'confident') && s.win === 'a' && s.margin >= D.confidentPP; }).length;
+      rrows.push({ on: st.ev.confident, n: confN, html: sheetRow('confident', '1', m.arms.a.short + ' high-confidence wins (' + D.confidentPP + '% or more higher)', confN, st.ev.confident, null, 'ev-conf') });
+      html += sheetGroup('result', 'Winning models', rrows, (st.ev.result !== 'all' ? 1 : 0) + (st.ev.confident ? 1 : 0));
+    }
+  });
+  var prevBody = el.querySelector('.sh-body'), keepTop = prevBody ? prevBody.scrollTop : 0;
+  el.innerHTML = '<div class="sh" role="dialog" aria-modal="true" aria-labelledby="sh-title"><div class="sh-back" data-act="sheet-close"></div>' +
+    '<aside class="sh-panel' + (st.sheetAnim ? ' anim' : '') + '"><header class="sh-head"><div><h2 id="sh-title" class="text-h4">Filters</h2><p class="sh-n"><b class="tnum">' + list.length + '</b> of ' + base.length + ' scenarios</p></div>' +
+    '<button class="linkbtn sh-clear" data-act="ev-clear"' + (n ? '' : ' style="visibility:hidden"') + '>Clear all' + (n ? ' (' + n + ')' : '') + '</button>' +
+    '<button class="sh-x" data-act="sheet-close" aria-label="Close filters">×</button></header>' +
+    '<div class="sh-body">' + html + '</div>' +
+    '<footer class="sh-foot"><button class="btn btn-primary" data-act="sheet-close" style="width:100%">Apply</button></footer></aside></div>';
+  st.sheetAnim = false;
+  var nb = el.querySelector('.sh-body'); if(nb) nb.scrollTop = keepTop;
+}
+// the flag on a scenario whose input image still contradicts its brief (input-caveats.json)
+function cavLabel(level){ return level === 'partial' ? 'Input image partly off-brief' : 'Input image off-brief'; }
+var CAV_TIP = 'The input image given to both models does not fully match what the brief describes. Both models got the same input, so the comparison stays fair, but checks on the contradicted detail are noisy.';
 function outcome(s){
   var ar = arms();
   if(!s.win) return '<span class="pill pill-neutral">No score</span>';
@@ -2255,16 +2886,19 @@ function rowHtml(s){
   var open = !!(st.open[s.id] || st.open.all);
   var thumbs = '';
   if(s.sources.length) thumbs += '<img class="thumb src" alt="" data-img="' + s.sources[0].img + '">';
-  ['a', 'b'].forEach(function(k){ var id = firstImg(s[k]); thumbs += id ? '<img class="thumb" alt="" data-img="' + id + '">' : '<span class="thumb none">—</span>'; });
+  if(!s.a.takes) ['a', 'b'].forEach(function(k){ var id = firstImg(s[k]); thumbs += id ? '<img class="thumb" alt="" data-img="' + id + '">' : '<span class="thumb none">—</span>'; });
   var sa = s.a.pct != null ? p1(s.a.pct) : '—', sb = s.b.pct != null ? p1(s.b.pct) : '—';
+  var pf = function(a){ var ok = a.gn ? 'Passed every automatic check in both rounds' : 'Pass criteria met', no = a.gn ? 'Failed an automatic check in a round' : 'Pass criteria not met';
+    return a.pass === true ? '<span class="pf ok" title="' + ok + '">✓</span>' : a.pass === false ? '<span class="pf no" title="' + no + '">✗</span>' : ''; };
   return '<details class="card card-hover srow" data-id="' + esc(s.id) + '"' + (open ? ' open' : '') + '><summary>' +
     '<span class="sid">' + esc(s.id) + '</span><span class="stitle">' + esc(s.title) + '</span>' +
     '<span class="pill pill-neutral">' + esc(s.v.industry) + '</span>' +
+    (s.lang ? '<span class="pill pill-neutral">' + esc(s.lang) + '</span>' : '') +
     (s.set ? '<span class="pill pill-neutral">' + (s.set.mode === 'each' ? 'Set of ' + s.set.members.length : s.set.members.length + ' panels') + '</span>' : '') +
-    (s.caveat ? '<span class="pill pill-warning">Input caveat · ' + esc(s.caveat.level) + '</span>' : '') +
+    (s.caveat ? '<span class="pill pill-warning" title="' + CAV_TIP + '">' + cavLabel(s.caveat.level) + '</span>' : '') +
     (s.canvasIssue ? '<span class="pill pill-danger" title="' + esc(s.canvasIssue) + '">Canvas differs</span>' : '') +
     outcome(s) +
-    '<span class="scores"><b style="' + (s.win === 'a' ? 'color:' + A_INK : '') + '">' + sa + '</b><span class="mt"> vs </span><b style="' + (s.win === 'b' ? 'color:' + B_INK : '') + '">' + sb + '</b></span>' +
+    '<span class="scores"><b style="' + (s.win === 'a' ? 'color:' + A_INK : '') + '">' + sa + '</b>' + pf(s.a) + '<span class="mt"> vs </span><b style="' + (s.win === 'b' ? 'color:' + B_INK : '') + '">' + sb + '</b>' + pf(s.b) + '</span>' +
     '<span class="thumbs">' + thumbs + '</span>' + CHEV.replace('<svg ', '<svg class="chev" aria-hidden="true" ') +
     '</summary><div class="sbody">' + (open ? bodyHtml(s) : '') + '</div></details>';
 }
@@ -2347,33 +2981,59 @@ function checklist(s){
     if(d) split++;
     var eva = s.a.ev ? s.a.ev[i] : '', evb = s.b.ev ? s.b.ev[i] : '';
     if(eva || evb) hasEv = true;
-    return '<tr class="' + (d ? 'split' : '') + '"><td class="r mt">' + (i + 1) + '</td><td><span class="q">' + esc(c.q) + '</span> <span class="meta">' + esc([c.dim, c.scope].filter(Boolean).join(' · ')) + '</span>' +
+    return '<tr class="' + (d ? 'split' : '') + (i >= CL_SHOW ? ' extra' : '') + '"><td class="r mt">' + (i + 1) + '</td><td><span class="q">' + esc(c.q) + '</span> <span class="meta">' + esc([c.dim, c.scope].filter(Boolean).join(' · ')) + '</span>' +
       (eva ? '<span class="evd"><b style="color:' + A_INK + '">' + esc(ar.a.short) + ':</b> ' + esc(eva) + '</span>' : '') +
       (evb ? '<span class="evd"><b style="color:' + B_INK + '">' + esc(ar.b.short) + ':</b> ' + esc(evb) + '</span>' : '') +
       '</td><td class="c bl">' + yn(va) + '</td><td class="c">' + yn(vb) + '</td></tr>';
   }).join('');
-  return '<div class="cl"><div class="cl-tools"><span class="label" style="font-weight:600">Evaluation checklist</span>' +
-    '<span style="display:inline-flex;gap:12px;align-items:center;flex-wrap:wrap">' + (both ? (split ? '<span class="xs mt">' + plural(split, 'answer') + ' differ, highlighted</span>' : '<span class="xs mt">Same answers on every check</span>') : '') +
+  return '<details class="cl fold"><summary><span class="label" style="font-weight:600;color:inherit">Evaluation checklist · ' + plural(cl.length, 'check') + '</span>' +
+    (both ? (split ? '<span class="xs mt">' + plural(split, 'answer') + ' differ</span>' : '<span class="xs mt">same answers on every check</span>') : '') + CHEV + '</summary>' +
+    '<div class="cl-tools" style="margin-top:8px"><span></span><span style="display:inline-flex;gap:12px;align-items:center;flex-wrap:wrap">' + (both && split ? '<span class="xs mt">Differences highlighted</span>' : '') +
     (hasEv ? '<button class="btn btn-secondary btn-sm" data-act="cl-ev" aria-pressed="false">Show the judge’s evidence</button>' : '') + '</span></div>' +
-    '<div class="card tblwrap clt" style="margin-top:8px;border-radius:8px"><table class="tbl cltbl"><thead><tr><th class="r" style="width:40px">#</th><th>Check</th>' +
-    '<th class="c bl ans" style="color:' + A_INK + '">' + esc(ar.a.short) + '</th><th class="c ans" style="color:' + B_INK + '">' + esc(ar.b.short) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+    '<div class="card tblwrap clt' + (cl.length > CL_SHOW ? ' folded' : '') + '" style="margin-top:8px;border-radius:8px"><table class="tbl cltbl"><thead><tr><th class="r" style="width:40px">#</th><th>Check</th>' +
+    '<th class="c bl ans" style="color:' + A_INK + '">' + esc(ar.a.short) + '</th><th class="c ans" style="color:' + B_INK + '">' + esc(ar.b.short) + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    (cl.length > CL_SHOW ? '<div class="cl-more"><button class="linkbtn" data-act="cl-more" data-n="' + (cl.length - CL_SHOW) + '">Show ' + plural(cl.length - CL_SHOW, 'more check') + '</button></div>' : '') + '</div></details>';
+}
+var CL_SHOW = 5;
+// voice: the script and its checks, then each model's two takes with a player, facts and the judge's scores
+function voiceTake(t, side, s){
+  var fill = side === 'a' ? A_FILL : B_FILL;
+  var pill = t.st === 'scored' ? '<span class="pill ' + (s.win === side ? 'pill-success' : 'pill-neutral') + '">' + p1(t.score * 10) + '</span>'
+    : t.st === 'invalid' ? '<span class="pill pill-danger">failed a check · 0%</span>' : '<span class="pill pill-neutral">not judged</span>';
+  var crit = t.crit.map(function(c){ var v = c[1]; return '<div class="tcrit"><span>' + esc(c[0]) + '</span><span class="tb"><i style="width:' + (v * 10) + '%;background:' + fill + ';opacity:' + (v < 5 ? .35 : v < 7.5 ? .6 : 1) + '"></i></span><span class="tnum">' + v.toFixed(1) + '</span></div>'; }).join('');
+  var why = t.why.map(function(w){ return '<p><b>' + esc(w[0]) + '</b> <span class="mt">' + (w[1] != null ? w[1] + '/10' : '') + '</span><br>“' + esc(w[2]) + '”</p>'; }).join('') + (t.note ? '<p><b>Judge note:</b> “' + esc(t.note) + '”</p>' : '');
+  return '<div class="take"><div class="take-h"><span class="label" style="color:var(--ink)">' + esc(t.r) + '</span>' + pill + '</div>' +
+    (t.au ? '<audio controls preload="none" data-au="' + esc(t.au) + '"></audio>' : '<p class="xs mt">No audio</p>') +
+    '<div class="facts"><span>Length <b>' + (t.dur != null ? t.dur.toFixed(1) + 's' : '—') + '</b></span><span>First audio <b>' + secs(t.ttfa) + '</b></span><span>Whole call <b>' + secs(t.lat) + '</b></span>' +
+    (t.wer != null ? '<span>Word errors <b>' + (t.wer * 100).toFixed(1) + '%</b></span>' : '') + '<span>Cost <b>' + money(t.cost != null ? t.cost / 1e6 : null) + '</b></span></div>' +
+    (t.failed.length ? '<div class="failbox">' + t.failed.map(function(f){ return '✕ ' + esc(f); }).join('<br>') + '</div>' : '') +
+    (crit ? '<div class="tcrits">' + crit + '</div>' : '') +
+    (why ? '<details class="why"><summary>Automated judge reasoning — why these scores</summary><div class="wb">' + why + '</div></details>' : '') + '</div>';
+}
+function voiceBody(s){
+  var ar = arms();
+  var checks = [].concat(s.mustSay.map(function(w){ return 'must say “' + w + '”'; }), s.mustSayAny.map(function(ws){ return 'must say one of ' + ws.map(function(w){ return '“' + w + '”'; }).join(', '); }), s.mustNotSay.map(function(w){ return 'must not say “' + w + '”'; }));
+  var h = '<div class="briefs"><div class="brief sindic"><b>Script (verbatim' + (s.langCode ? ', ' + esc(s.langCode) : '') + '): </b>' + esc(s.brief) + (s.direction ? '\n<b>Delivery direction: </b>' + esc(s.direction) : '') + '</div>' +
+    '<div class="brief"><b>Expected: </b>' + esc(s.expectedList.map(function(e, i){ return (i + 1) + ') ' + e; }).join('\n')) +
+    (checks.length ? '\n<b>Word checks: </b>' + esc(checks.join('; ')) : '') + (s.maxWer != null ? '\n<b>Word error rate: </b>at most ' + Math.round(s.maxWer * 100) + '% against the script' : '') + '</div></div>';
+  h += '<div class="takes">' + ['a', 'b'].map(function(side){
+    return '<div class="arm ' + side + '"><div class="arm-h"><span class="fn" style="color:' + (side === 'a' ? A_INK : B_INK) + '">' + esc(ar[side].name) + '</span><span class="sm">Two-round mean <b class="tnum">' + (s[side].pct != null ? p1(s[side].pct) : '—') + '</b></span></div>' +
+      s[side].takes.map(function(t){ return voiceTake(t, side, s); }).join('') + '</div>';
+  }).join('') + '</div>';
+  return h;
 }
 function bodyHtml(s){
+  if(s.a.takes) return voiceBody(s);
   var h = '<div class="briefs"><div class="brief"><b>Brief (verbatim): </b>' + esc(s.brief) +
     (s.set && s.set.members.length ? '<ol>' + s.set.members.map(function(mm){ return '<li><b>' + esc(mm.name) + '</b> — ' + esc(mm.brief) + '</li>'; }).join('') + '</ol>' : '') + '</div>' +
     '<div class="brief"><b>Expected: </b>' + esc(s.expected) + (s.required ? '\n<b>Exact wording in the image: </b>' + esc(s.required) : '') +
     (s.passRule ? '\n<b>Pass criteria: </b>' + esc(s.passRule) : '') + '</div></div>';
   if(s.canvasIssue) h += '<div class="cv" style="border-left-color:#E11D48;background:#FFF1F2"><b>Canvas differs:</b> ' + esc(s.canvasIssue) + '</div>';
-  if(s.caveat) h += '<div class="cv"><b>Input caveat · ' + esc(s.caveat.level) + (s.caveat.why ? ':</b> ' + esc(s.caveat.why) : '</b>') +
+  if(s.caveat) h += '<div class="cv"><b>' + cavLabel(s.caveat.level) + (s.caveat.why ? ':</b> ' + esc(s.caveat.why) : '</b> ' + CAV_TIP) +
     (s.caveat.still && s.caveat.still.length ? '<ul class="still">' + s.caveat.still.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
   h += '<div class="figs' + (s.sources.length ? ' three' : '') + '">' + (s.sources.length ? srcFigure(s) : '') + figure(s, 'a') + figure(s, 'b') + '</div>';
   h += '<div class="diags">' + diag(s, 'a') + diag(s, 'b') + '</div>';
   h += checklist(s);
-  var meta = [['Industry', s.v.industry + (s.industryBank ? ' (bank label: ' + s.industryBank + ')' : '')], ['Use case', s.v.usecase + (s.usecaseBank ? ' (bank label: ' + s.usecaseBank + ')' : '')], ['Task type', s.v.task], ['Difficulty', s.v.difficulty],
-    ['Output', s.v.output], ['Theme', (s.v.theme || []).join(', ')], ['Target customer', (s.v.customer || []).join(', ')]];
-  if(INTERNAL) meta = meta.concat([['Levers', (s.v.lever || []).join(', ')], ['Run-plan edge', s.v.edge], ['Bank', s.v.bank]]);
-  meta.push(['Canvas', s.canvas ? s.canvas + ', same for both models' : '']);
-  h += '<p class="xs mt" style="margin-top:14px">' + meta.filter(function(x){ return x[1]; }).map(function(x){ return '<span class="ink" style="font-weight:500">' + esc(x[0]) + ':</span> ' + esc(x[1]); }).join(' &nbsp;·&nbsp; ') + '</p>';
   return h;
 }
 
@@ -2438,16 +3098,33 @@ function renderDetails(){
 }
 
 // ---------- page ----------
-function renderLane(){
-  var parts = { compare: renderCompare, winmap: renderWinMap, evidence: renderEvidence, method: renderMethod, details: INTERNAL ? renderDetails : function(){ return ''; } };
-  document.getElementById('lane').innerHTML = st.only && parts[st.only] ? parts[st.only]() : renderCompare() + renderWinMap() + renderEvidence() + renderMethod() + (INTERNAL ? renderDetails() : '');
-  hydrate(document.getElementById('lane'));
-  observeSections();
+// each lane may name its own measures and Win Map sections (Voice: gates passed, language first)
+var MEDIA_BASE = null;
+function applyMedia(){
+  if(!MEDIA_BASE) MEDIA_BASE = { fam: FAM, gloss: FAM_GLOSS, secs: WM_SECTIONS };
+  var m = M(); FAM = m.fam || MEDIA_BASE.fam; FAM_GLOSS = m.famGloss || MEDIA_BASE.gloss; WM_SECTIONS = m.sections || MEDIA_BASE.secs;
 }
+function renderLane(){
+  applyMedia();
+  var html = st.only === 'details' && INTERNAL ? renderDetails()
+    : st.step === 'narrow' ? renderCompare() + renderWinMap()
+    : st.step === 'scenarios' ? renderEvidence()
+    : st.step === 'method' && INTERNAL ? renderDetails()
+    : renderMediaStep();
+  document.getElementById('lane').innerHTML = html;
+  hydrate(document.getElementById('lane'));
+  renderSheet();
+}
+function goStep(v, replace){
+  st.step = v; st.sheet = false;
+  if(location.hash !== '#' + v) history[replace ? 'replaceState' : 'pushState'](null, '', location.pathname + location.search + '#' + v);
+  renderStrip(); renderLane(); window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', function(){ var h = location.hash.slice(1); st.step = STEP_IDS.indexOf(h) >= 0 ? h : STEP_IDS[0]; st.sheet = false; renderStrip(); renderLane(); });
 function renderBlock(id, html){
-  var el = document.getElementById(id); if(!el) return renderLane();
+  var el = document.getElementById(id); if(!el) return;
   var tmp = document.createElement('div'); tmp.innerHTML = html;
-  var neu = tmp.firstElementChild; el.parentNode.replaceChild(neu, el); hydrate(neu); observeSections();
+  var neu = tmp.firstElementChild; el.parentNode.replaceChild(neu, el); hydrate(neu);
 }
 function renderFoot(){
   var el = document.getElementById('foot-meta'); if(!el) return;
@@ -2457,6 +3134,7 @@ function renderFoot(){
 // images: data URIs are attached as rows render; the browser defers decoding
 // offscreen ones (loading=lazy), and printing or a screenshot still gets every picture
 function hydrate(root){
+  root.querySelectorAll('audio[data-au]').forEach(function(a){ var el = document.getElementById('au-' + a.getAttribute('data-au')); if(el) a.src = 'data:audio/mpeg;base64,' + el.textContent.trim(); else if(D.audioBase) a.src = D.audioBase + a.getAttribute('data-au') + '.mp3'; a.removeAttribute('data-au'); });
   root.querySelectorAll('img[data-img]').forEach(function(im){
     im.loading = 'lazy'; im.decoding = 'async';
     im.src = imgSrc(im.getAttribute('data-img')); im.removeAttribute('data-img');
@@ -2464,7 +3142,7 @@ function hydrate(root){
 }
 var so = null;
 function observeSections(){
-  if(!('IntersectionObserver' in window)) return;
+  return;
   if(so) so.disconnect();
   so = new IntersectionObserver(function(es){
     var vis = es.filter(function(e){ return e.isIntersecting; }).sort(function(a, b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
@@ -2506,39 +3184,70 @@ function fitLb(){
 document.addEventListener('click', function(e){
   var t = e.target.closest('[data-act]');
   if(st.menu && !(t && (t.getAttribute('data-act') === 'menu' || t.getAttribute('data-act') === 'media'))){ st.menu = false; renderStrip(); }
+  if(st.wm.fieldsOpen && !e.target.closest('.dd')){ st.wm.fieldsOpen = false; renderBlock('winmap', renderWinMap()); }
+  if(st.wm.sortOpen && !e.target.closest('.dd')){ st.wm.sortOpen = false; renderBlock('winmap', renderWinMap()); }
+  if(st.ev.sortOpen && !e.target.closest('.dd')){ st.ev.sortOpen = false; renderBlock('evidence', renderEvidence()); }
+  if(st.wm.picksOpen && !e.target.closest('.wm-bar')){ st.wm.picksOpen = false; renderBlock('winmap', renderWinMap()); }
   if(!t) return;
   var act = t.getAttribute('data-act'), v = t.getAttribute('data-v'), k = t.getAttribute('data-k');
   if(act === 'lb-close'){ if(e.target.closest('[data-stop]') && !e.target.closest('.lb-x')) return; st.lb = null; drawLb(); return; }
   switch(act){
     case 'menu': st.menu = !st.menu; renderStrip(); if(st.menu){ var cur0 = document.querySelector('.picker-menu [aria-current]'); if(cur0) cur0.focus(); } break;
     case 'media': st.menu = false; if(v !== st.media){ st.media = v; st.ev.f = {}; st.ev.result = 'all'; renderStrip(); renderLane(); } else renderStrip(); break;
-    case 'set': st.set = v; if(v === 'clean' && st.ev.f.caveat != null) st.ev.f.caveat = null; renderLane(); break;
     case 'wm-dim': st.wm.dim = v; renderBlock('winmap', renderWinMap()); break;
     case 'wm-dir': st.wm.dir = v; renderBlock('winmap', renderWinMap()); break;
     case 'wm-view': st.wm.view = v; renderBlock('winmap', renderWinMap()); break;
-    case 'wm-pick':
-      var off = st.ev.f[k] === v; st.ev.f = {}; if(!off) st.ev.f[k] = v;
-      renderBlock('winmap', renderWinMap()); renderBlock('evidence', renderEvidence());
-      if(!off){ var ev = document.getElementById('evidence'); if(ev) ev.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-      break;
-    case 'ev-dim': st.ev.f[k] = v === 'all' ? null : v; renderBlock('evidence', renderEvidence()); renderBlock('winmap', renderWinMap()); break;
-    case 'ev-res': st.ev.result = v; renderBlock('evidence', renderEvidence()); break;
-    case 'ev-conf': st.ev.confident = !st.ev.confident; renderBlock('evidence', renderEvidence()); break;
+    case 'wm-field': st.wm.fields[v] = !st.wm.fields[v]; renderBlock('winmap', renderWinMap()); break;
+    case 'wm-picks': st.wm.picksOpen = !st.wm.picksOpen; renderBlock('winmap', renderWinMap()); break;
+    case 'wm-fields': st.wm.fieldsOpen = !st.wm.fieldsOpen; renderBlock('winmap', renderWinMap()); break;
+    case 'wm-sort-open': st.wm.sortOpen = !st.wm.sortOpen; renderBlock('winmap', renderWinMap()); break;
+    case 'wm-sort-pick': st.wm.sortOpen = false; st.wm.sort = v; st.wm.dir = defaultDir(v); st.ev.sort = evSortFor(v); renderBlock('winmap', renderWinMap()); renderBlock('evidence', renderEvidence()); break;
+    case 'ev-sort-open': st.ev.sortOpen = !st.ev.sortOpen; renderBlock('evidence', renderEvidence()); break;
+    case 'ev-sort-pick2': st.ev.sortOpen = false; st.ev.sort = v; renderBlock('evidence', renderEvidence()); break;
+    case 'wm-pick': togglePick(k, v); renderBlock('winmap', renderWinMap()); renderBlock('evidence', renderEvidence()); break;
+    case 'wm-more': st.wm.more[k] = !st.wm.more[k]; renderBlock('winmap', renderWinMap()); break;
+    case 'wm-clear': st.ev.f = {}; renderBlock('winmap', renderWinMap()); renderBlock('evidence', renderEvidence()); break;
+    case 'wm-go': goStep('scenarios'); break;
+    case 'step': goStep(v); break;
+    case 'pick-media': if(v !== st.media){ st.media = v; st.ev.f = {}; st.ev.result = 'all'; } goStep('narrow'); break;
+    case 'ev-sort-pick': st.ev.sort = v; renderBlock('evidence', renderEvidence()); renderSheet(); break;
+    case 'sheet-open': st.sheet = true; st.sheetAnim = true; renderSheet(); break;
+    case 'sheet-close': st.sheet = false; renderSheet(); break;
+    case 'sheet-fold': st.shut[k] = t.getAttribute('aria-expanded') === 'true'; renderSheet(); break;
+    case 'sheet-more': st.sheetMore[k] = !st.sheetMore[k]; renderSheet(); break;
+    case 'ev-unpick': if(k === 'result') st.ev.result = 'all'; else if(k === 'confident') st.ev.confident = false; else if(k === 'q') st.ev.q = ''; else togglePick(k, v); renderBlock('evidence', renderEvidence()); renderSheet(); break;
+    case 'ev-dim': if(v === 'all') delete st.ev.f[k]; else togglePick(k, v); renderBlock('evidence', renderEvidence()); renderBlock('winmap', renderWinMap()); renderSheet(); break;
+    case 'ev-res': st.ev.result = v; renderBlock('evidence', renderEvidence()); renderSheet(); break;
+    case 'ev-conf': st.ev.confident = !st.ev.confident; renderBlock('evidence', renderEvidence()); renderSheet(); break;
     case 'ev-moreopts': st.ev.more = true; st.ev.moreKey = k; renderBlock('evidence', renderEvidence()); break;
-    case 'ev-clear': st.ev.f = {}; st.ev.result = 'all'; st.ev.confident = false; renderBlock('evidence', renderEvidence()); renderBlock('winmap', renderWinMap()); break;
+    case 'ev-clear': st.ev.f = {}; st.ev.result = 'all'; st.ev.confident = false; st.ev.q = ''; renderSheet(); renderBlock('evidence', renderEvidence()); renderBlock('winmap', renderWinMap()); break;
     case 'ev-expand': st.open = { all: true }; renderBlock('evidence', renderEvidence()); break;
     case 'ev-collapse': st.open = {}; renderBlock('evidence', renderEvidence()); break;
     case 'lb': e.preventDefault(); openLb(t.getAttribute('data-s'), t.getAttribute('data-i')); break;
     case 'lb-jump': st.lb.i = +v; drawLb(); break;
+    case 'cl-more': { var tb = t.closest('.clt'), fold = !tb.classList.contains('folded'); tb.classList.toggle('folded', fold); t.textContent = fold ? 'Show ' + plural(+t.getAttribute('data-n'), 'more check') : 'Show fewer checks'; break; }
     case 'cl-ev':
       var box = t.closest('.cl').querySelector('.clt'), on = !box.classList.contains('ev');
       box.classList.toggle('ev', on); t.setAttribute('aria-pressed', String(on)); t.textContent = on ? 'Hide the judge’s evidence' : 'Show the judge’s evidence'; break;
   }
 });
+document.addEventListener('input', function(e){
+  var t = e.target;
+  if(t && t.classList && t.classList.contains('evq')){
+    var pos = t.selectionStart; st.ev.q = t.value.trim() ? t.value : '';
+    renderBlock('evidence', renderEvidence());
+    var nq = document.querySelector('.evq'); if(nq){ nq.focus(); nq.value = t.value; try{ nq.setSelectionRange(pos, pos); }catch(_){} }
+    return;
+  }
+  if(!(t && t.classList && t.classList.contains('chipq'))) return;
+  var k = t.getAttribute('data-k'), pos = t.selectionStart;
+  st.ev.optq[k] = t.value;
+  renderBlock('evidence', renderEvidence());
+  var n = document.querySelector('.chipq[data-k="' + k + '"]'); if(n){ n.focus(); try{ n.setSelectionRange(pos, pos); }catch(_){} }
+});
 document.addEventListener('change', function(e){
   var t = e.target, act = t.getAttribute && t.getAttribute('data-act');
-  if(act === 'wm-sort'){ st.wm.sort = t.value; st.wm.dir = defaultDir(t.value); renderBlock('winmap', renderWinMap()); }
-  else if(act === 'wm-min'){ st.wm.minN = +t.value; renderBlock('winmap', renderWinMap()); }
+  if(act === 'wm-sort'){ st.wm.sort = t.value; st.wm.dir = defaultDir(t.value); st.ev.sort = evSortFor(t.value); renderBlock('winmap', renderWinMap()); renderBlock('evidence', renderEvidence()); }
   else if(act === 'ev-sort'){ st.ev.sort = t.value; renderBlock('evidence', renderEvidence()); }
 });
 document.addEventListener('toggle', function(e){
@@ -2550,6 +3259,7 @@ document.addEventListener('toggle', function(e){
   } else if(d.classList && d.classList.contains('more')){ st.ev.more = d.open; }
 }, true);
 document.addEventListener('keydown', function(e){
+  if(st.sheet && e.key === 'Escape'){ st.sheet = false; renderSheet(); return; }
   if(st.lb){
     if(e.key === 'Escape'){ st.lb = null; drawLb(); }
     else if(e.key === 'ArrowRight'){ st.lb.i = (st.lb.i + 1) % st.lb.items.length; drawLb(); }
@@ -2565,7 +3275,7 @@ window.addEventListener('resize', function(){ setChrome(); fitLb(); });
 window.addEventListener('scroll', onScroll, { passive: true });
 
 renderStrip(); renderLane(); renderFoot(); onScroll();
-if(location.hash){ var tgt = document.getElementById(location.hash.slice(1)); if(tgt) setTimeout(function(){ tgt.scrollIntoView(); }, 0); }
+if(STEP_IDS.indexOf(location.hash.slice(1)) < 0) history.replaceState(null, '', location.pathname + location.search + '#' + st.step);
 })();
 """
 
