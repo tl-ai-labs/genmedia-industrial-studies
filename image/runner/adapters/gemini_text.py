@@ -39,7 +39,7 @@ class GeminiTextAdapter:
 
         block = getattr(getattr(resp, "prompt_feedback", None), "block_reason", None)
         if block:
-            raise SafetyRefusal(f"judge prompt blocked: {block}")
+            raise SafetyRefusal(f"judge prompt blocked: {getattr(block, 'name', block)}")
         text = resp.text
         if not text:
             raise ProviderError("judge returned empty response", retryable=True)

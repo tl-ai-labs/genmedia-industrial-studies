@@ -75,9 +75,15 @@ class GeminiImageAdapter(Adapter):
         except Exception as e:  # translate — the SDK's taxonomy stays in this file
             raise _translate(e) from e
 
-        block = getattr(getattr(resp, "prompt_feedback", None), "block_reason", None)
+        pf = getattr(resp, "prompt_feedback", None)
+        block = getattr(pf, "block_reason", None)
         if block:
-            raise SafetyRefusal(f"prompt blocked: {block}")
+            # the bare code (SAFETY, OTHER, ...) plus any safety categories Google names;
+            # Google returns no message for a blocked prompt beyond these
+            cats = [f"{getattr(r, 'category', '')}={getattr(r, 'probability', '')}"
+                    for r in (getattr(pf, "safety_ratings", None) or []) if getattr(r, "blocked", False)]
+            raise SafetyRefusal(f"prompt blocked: {getattr(block, 'name', block)}"
+                                + (f" ({', '.join(cats)})" if cats else ""))
 
         image_parts = []
         for cand in (resp.candidates or []):
