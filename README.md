@@ -10,7 +10,8 @@ Implements the *GenMedia Model Comparison Plan v1.2* (31 Aug 2026). This
 README is the map of the whole repo. Each lane then documents itself in
 depth — follow the links as you go deeper.
 
-**Contents:** [Overview](#overview) · [Models](#models) ·
+**Contents:** [Overview](#overview) ·
+[Runs, rubrics and judges](#runs-rubrics-and-judges) · [Models](#models) ·
 [Scenarios](#scenarios) · [Folder structure](#folder-structure) ·
 [Running a lane](#running-a-lane) · [Troubleshooting](#troubleshooting) ·
 [The cell lifecycle](#the-cell-lifecycle) ·
@@ -30,9 +31,9 @@ One term used a lot below: an **arm** just means one model being compared —
 
 | Lane | Status | What it compares | Start here |
 |------|--------|-------------------|------------|
-| [`image/`](image/README.md) | **complete** | Text-to-image + image editing — Gemini 3 Pro / Flash vs GPT Image 2, blind-judged. 154 scenarios across the bank | [image/README.md](image/README.md) |
-| [`video/`](video/README.md) | **in progress** | Text-to-video, cinematic + physics families (20-scenario v1 bank; 60 extracted, 40 pending assets). Active arms: Omni Flash vs Seedance 2.5; Veo 3.1 / Sora 2 parked | [video/README.md](video/README.md) |
-| [`voice/`](voice/README.md) | **built, bank partial** | TTS / styled speech — Gemini 3.1 Flash TTS vs ElevenLabs v3 — deterministic audio gates, ASR-verified WER, blind-judged. 18 scenarios runnable, 11 blocked pending instrumentation | [voice/README.md](voice/README.md), [voice/HANDOFF.md](voice/HANDOFF.md) |
+| [`image/`](image/README.md) | **complete** | Text-to-image + image editing in three tiers — Nano Banana 2.1 vs GPT Image 2.5 (high), Gemini 3.1 Flash vs GPT Image 2 (medium), Gemini 3.1 Flash Lite vs GPT Image 2 (low); blind-judged. 332 scenarios across the three runs | [image/README.md](image/README.md) |
+| [`video/`](video/README.md) | **complete** | Image-to-video + video editing — Omni Flash vs Seedance 2.5, blind-judged. 43 scenarios (ecommerce & retail, gaming) | [video/README.md](video/README.md) |
+| [`voice/`](voice/README.md) | **runs complete** | TTS / styled speech — Gemini 3.8 Flash TTS vs ElevenLabs Eleven v4, 200 scripts in five languages (an earlier run compared Gemini 3.1 Flash TTS and ElevenLabs v3). Live speech-to-speech — Gemini 3.8 Live vs ElevenLabs Agents. The judging code for these two is not in this repo yet | [voice/README.md](voice/README.md), [voice/HANDOFF.md](voice/HANDOFF.md) |
 
 **`panel/` is not a fourth lane — it's the cross-lane tool that reads the
 other three.** It never generates or judges anything itself: it takes runs
@@ -66,6 +67,53 @@ Shared across the three lanes:
 - **Run folder shape**: every run is a self-contained, mostly-zippable
   folder at `<lane>/runs/<run-id>/` — see
   [What a run produces](#what-a-run-produces) below.
+
+## Runs, rubrics and judges
+
+What each comparison scored, which AI model judged it, and how a score is built.
+
+### How a rubric reaches the judge
+
+- **Each criterion is written in a rubric file**: a name, a weight, a plain description, and whether the judge or our code scores it.
+- **The judge gets the descriptions, never the weights.** It is sent the brief, the expected result or checklist, any input (source image or clip first), the output, and each criterion's name and description. The model name and file metadata are hidden.
+- **Reasoning first, then a score.** For each criterion the judge writes one or two sentences, then a score from 0 to 10, in a fixed JSON format. Temperature 0. One output per call, never two side by side.
+- **Our code does the maths.** It applies the weights (they always add up to 1.0). Things with a right answer — OCR text, pHash preservation, word error rate, clip length and resolution — are measured by code and given to the judge as facts. An output that fails a gate (does not open, too small, blank) is never judged and scores 0.
+- **Every record names its rubric.** A hash of the rubric file is stamped on every judge and score record.
+
+### Every comparison
+
+| Comparison | Models | Scenarios | Judge | Rubric |
+|---|---|---|---|---|
+| [Image High](image/README.md#runs-and-rubrics) | Nano Banana 2.1 vs GPT Image 2.5 (high) | 200 | `gemini-3.1-pro-preview`, temperature 0, thinking high | checklist + criteria, weights set per scenario |
+| [Image Medium](image/README.md#runs-and-rubrics) | Gemini 3.1 Flash vs GPT Image 2 (medium) | 83 | `gemini-3-flash-preview`, temperature 0 | `image/configs/rubrics/image.yaml`, `tasks/image_edit.yaml` |
+| [Image Low](image/README.md#runs-and-rubrics) | Gemini 3.1 Flash Lite vs GPT Image 2 (low) | 49 | `gemini-3-flash-preview`, temperature 0 | same as Image Medium |
+| [Video](video/README.md#runs-and-rubrics) | Omni Flash vs Seedance 2.5 | 43 | `gemini-3-flash-preview`, temperature 0 | `video/configs/rubrics/` (one file per task) |
+| [Voice TTS](voice/README.md#runs-and-rubrics) | Gemini 3.8 Flash TTS vs ElevenLabs Eleven v4 | 200 (each read twice) | Claude Sonnet + Gemini 3.1 Pro | error classes + delivery (code not in this repo yet) |
+| [Voice Live](voice/README.md#runs-and-rubrics) | Gemini 3.8 Live vs ElevenLabs Agents | 10 calls × 2 rounds | `gemini-2.5-flash`, temperature 0 | six criteria + call checks (code not in this repo yet) |
+
+Every judge is a Google model, so it shares a vendor with the Google model it scores.
+
+### Where the rubrics come from
+
+Each criterion follows a dimension from a published benchmark, as listed in the scenario workbook (`assets/genmedia_validation_rubrics_with_industry_mappings.xlsx`). We borrow the dimension and its definition; the score itself is the judge's 0–10 rating.
+
+| What we score | Benchmark |
+|---|---|
+| Image prompt adherence, edit fidelity | [GenEval](https://arxiv.org/abs/2310.11513), [DPG-Bench](https://arxiv.org/abs/2403.05135), [VIEScore](https://arxiv.org/abs/2312.14867), [ImgEdit-Bench](https://arxiv.org/abs/2505.20275), [GEdit-Bench](https://arxiv.org/abs/2504.17761) |
+| Image visual quality | [VIEScore](https://arxiv.org/abs/2312.14867) |
+| Image composition, style | [VBench](https://arxiv.org/abs/2311.17982) |
+| Text in the image | [TextDiffuser](https://arxiv.org/abs/2305.10855), [AnyText](https://arxiv.org/abs/2311.03054) |
+| Reference and identity consistency | [DreamBooth](https://arxiv.org/abs/2208.12242), [T2I-CompBench](https://arxiv.org/abs/2307.06350) |
+| Video prompt adherence, visual fidelity, temporal consistency, motion | [VBench](https://arxiv.org/abs/2311.17982) |
+| Physics | [VBench-2.0](https://arxiv.org/abs/2503.21755), [VideoPhy](https://arxiv.org/abs/2406.03520), [PhyGenBench](https://arxiv.org/abs/2410.05363) |
+| Video reference fidelity | [VBench++ (VBench-I2V)](https://arxiv.org/abs/2411.13503) |
+| Video edit fidelity | [V2V-Bench](https://arxiv.org/abs/2606.05665) |
+| Voice naturalness, delivery | [ITU-T P.800](https://www.itu.int/rec/T-REC-P.800), [P.808](https://www.itu.int/rec/T-REC-P.808) (MOS) |
+| Voice word accuracy (WER) | [Responsible Evaluation for TTS](https://arxiv.org/abs/2510.06927), transcribed with [Whisper](https://arxiv.org/abs/2212.04356) |
+| Live: keeping the caller's language | [FLEURS](https://arxiv.org/abs/2205.12446) |
+| Live: reply time, stopping when cut in on | [Voice-agent metrics guide](https://hamming.ai/resources/voice-agent-evaluation-metrics-guide) (vendor guide) |
+
+Our own rules, with no published standard: the file gates, video technical compliance, the Image High pass rule, the voice critical-error / minor-slip split, and Live's task completed, correct information and call checks.
 
 ## Models
 

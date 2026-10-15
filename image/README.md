@@ -70,6 +70,49 @@ twice. A missing API key or an over-budget pre-flight estimate rejects the run
    coverage. Equal means and equal wins is a declared tie, broken only by
    facts: check failures → reliability → cost → latency.
 
+## Runs and rubrics
+
+Three comparisons, one per quality tier. Each has its own scenarios, so scores are not comparable across tiers.
+
+| Tier | Google model | OpenAI model | Scenarios | Judge |
+|---|---|---|---|---|
+| High | Nano Banana 2.1 (`gemini-nano-banana-2-1-vertex`) | GPT Image 2.5 (high) (`gpt-image-2-5-sunburst-high`) | 200 | `gemini-3.1-pro-preview` |
+| Medium | Gemini 3.1 Flash (`gemini-3-1-flash-image-vertex`) | GPT Image 2 (medium) (`gpt-image-2-medium`) | 83 | `gemini-3-flash-preview` |
+| Low | Gemini 3.1 Flash Lite (`gemini-3-1-flash-lite-image-vertex`) | GPT Image 2 (low) (`gpt-image-2-low`) | 49 | `gemini-3-flash-preview` |
+
+All judges run on Vertex AI at temperature 0, score one output at a time, and never see the model name or the weights.
+
+### Image High
+
+- **Scenarios:** 200 — 67 text to image, 133 edits; 49 ask for a set of 3–6 images, judged together.
+- **Judge:** `gemini-3.1-pro-preview`, temperature 0, thinking high.
+- **How it scores:** first the scenario's yes/no checklist — one sentence of evidence, then yes or no for each question. Then each criterion from 0 to 10.
+- **Criteria** (each scenario uses some of these; weights set per scenario and add up to 1): prompt adherence, edit fidelity, text accuracy, set consistency, reference fidelity, preservation, visual quality, realism and style, composition, physical plausibility. All are judged; nothing is measured in code in this run.
+- **Pass:** every key checklist question is "yes" and the score is 8.0 or more.
+- **Gates (code):** opens; PNG, JPEG or WebP; at least 512 × 512; not blank.
+
+### Image Medium and Low
+
+Same judge, rubric and scoring for both.
+
+- **Scenarios:** Medium 83 (55 four-industry + 28 gaming); Low 49 (36 + 13).
+- **Judge:** `gemini-3-flash-preview`, temperature 0.
+
+| Criterion | Text to image | Edit | Scored by |
+|---|---|---|---|
+| Prompt adherence | 0.35 | — | Judge |
+| Edit fidelity | — | 0.35 | Judge |
+| Preservation | — | 0.25 | Code (pHash) |
+| Visual quality | 0.20 | 0.15 | Judge |
+| Composition | 0.15 | — | Judge |
+| Realism / style | 0.15 | 0.10 | Judge |
+| Text accuracy | 0.15 | 0.15 | Code (OCR) |
+
+- Base weights; some scenario families re-weight them. If a scenario has no required text or no preservation bound, that criterion is dropped and its weight shared out.
+- **Gates (code):** opens; allowed format; at least the size asked; not blank; an edit stays within its pHash bound.
+- **Pass:** no pass rule; scores and wins only.
+- **Files:** `configs/rubrics/image.yaml`, `configs/rubrics/tasks/image_edit.yaml`; prompt built in `runner/judge.py`, score in `runner/scoring.py`.
+
 ## The cell lifecycle
 
 The unit of work is the **cell**: one scenario × one model × one task.

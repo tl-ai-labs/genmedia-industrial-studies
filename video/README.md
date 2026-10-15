@@ -1,4 +1,4 @@
-# GenMedia video eval — Veo 3.1 vs Sora 2, text_to_video
+# GenMedia video eval — Omni Flash vs Seedance 2.5
 
 Sibling of [`../image`](../image): the same modality-agnostic engine
 (generate → deterministic checks → blind judge → score → report), with the
@@ -9,6 +9,27 @@ video lane in `runner/video/` instead of the image lane. Scenarios come from
 Reports (`report.html` + `report-client.html`) are presented by the shared kit
 in [`../shared/report_kit`](../shared/report_kit/RULES.md); this lane supplies
 only its data and the video player markup in `runner/templates/lane_hooks.j2`.
+
+## Runs and rubrics
+
+**Omni Flash (`gemini-omni-1.1-flash-preview`, Vertex AI) vs Seedance 2.5 (`seedance-2-5`, BytePlus ModelArk).** 43 scenarios in two sets: 18 ecommerce and retail, 25 gaming. One generation per model per scenario.
+
+- **Judge:** `gemini-3-flash-preview` on Vertex AI, temperature 0. One clip per call; clips are remuxed without metadata so the model name never shows.
+- **The judge is sent:** for an edit, the source clip first, then the edited clip; for image to video, the reference still first. Then the brief, the expected result, the measured facts (length, resolution) and each criterion's description. Never the weights.
+
+| Image to video | Weight | | Video edit | Ecommerce & retail | Gaming |
+|---|---|---|---|---|---|
+| Reference fidelity | 0.30 | | Edit fidelity | 0.40 | 0.50 |
+| Prompt adherence | 0.25 | | Temporal consistency | 0.20 | 0.25 |
+| Motion coherence | 0.15 | | Visual fidelity | 0.20 | 0.25 |
+| Temporal consistency | 0.10 | | Technical compliance (code) | 0.20 | — |
+| Visual fidelity | 0.10 | | | | |
+| Technical compliance (code) | 0.10 | | | | |
+
+- One scenario is text to video: prompt adherence 0.30, visual fidelity 0.15, temporal consistency 0.15, motion coherence 0.15, physics 0.15, technical compliance 0.10.
+- **Technical compliance** is scored by code from the file: clip length and resolution against what was asked.
+- **Gates (code):** a valid MP4; length inside the scenario's range; at least 1280 × 720; an edit keeps the source's aspect ratio. A clip that fails twice scores 0.
+- **Files:** `configs/rubrics/video.yaml` and `configs/rubrics/tasks/`; prompt in `runner/judge.py`, score in `runner/scoring.py`.
 
 ## Scope (v1)
 

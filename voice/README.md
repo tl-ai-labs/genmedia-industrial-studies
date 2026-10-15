@@ -41,6 +41,48 @@ image process and the two never touch each other's files.
 
 ---
 
+## Runs and rubrics
+
+### Voice TTS — Gemini 3.8 Flash TTS vs ElevenLabs Eleven v4
+
+*Judging code is not in this repo yet; described from the run's saved results.*
+
+- **Scripts:** 200 in English, Hinglish, Hindi, Telugu and Tenglish; each read twice (800 clips).
+- **Judges:** every clip is transcribed by Whisper large-v3 and GPT transcribe. Claude Sonnet lists where the script and transcripts differ; Gemini 3.1 Pro listens at each point; Sonnet classes it as a **critical error** (changes the meaning — a wrong number, name or amount) or a **minor slip** (meaning intact). Gemini 3.1 Pro also compares the two clips' **delivery** (accent, naturalness, pacing, emotion), blind and in both play orders.
+- **A scenario is won by:** fewer critical errors, then fewer minor slips, then better delivery; otherwise a tie.
+- **Score out of 100** (shown beside the verdict): accuracy 50, precision 20, delivery 30.
+
+### Earlier voice run — Gemini 3.1 Flash TTS vs ElevenLabs v3 vs Gemini 3.8 Flash TTS
+
+- **Scripts:** 23, each read twice. **Judge:** `gemini-2.5-flash` on Vertex AI, temperature 0.
+
+| Criterion | Plain speech | Styled speech | Scored by |
+|---|---|---|---|
+| Text accuracy | 0.30 | 0.25 | Code (word error rate) |
+| Pronunciation | 0.20 | 0.20 | Judge |
+| Naturalness | 0.20 | 0.15 | Judge |
+| Clarity | 0.15 | 0.10 | Judge |
+| Audio quality | 0.15 | 0.15 | Code and judge, half each |
+| Style adherence | — | 0.15 | Judge |
+
+- **Files:** `configs/rubrics/voice.yaml`, `configs/rubrics/tasks/styled_tts.yaml`; prompt in `runner/judge.py`.
+
+### Voice Live — Gemini 3.8 Live vs ElevenLabs Agents
+
+*Judging code is not in this repo yet; described from the run's saved results.*
+
+- **Calls:** 10 ecommerce customer-service scenarios (English, Hindi, Hinglish), each run twice — 40 calls.
+- **Judge:** `gemini-2.5-flash`, temperature 0. It hears each call on its own and scores it 0–10 per criterion:
+
+| Task completed | Correct information | Instructions and role | Conversation flow | Clear speech | Natural tone |
+|---|---|---|---|---|---|
+| 0.30 | 0.15 | 0.10 | 0.15 | 0.15 | 0.15 |
+
+- **Call checks (code):** call finished, every line answered, no reply slower than 5 s, stops within 1 s when cut in on, numbers and codes read back exactly, required facts said, forbidden ones not, caller's language kept.
+- **A scenario is decided by** the share of call checks passed over both rounds; the rubric score is reported beside it.
+
+---
+
 ## 0 · Human review, and where each model was served from
 
 `review/human-review.yaml` is the one hand-written file the boards read
