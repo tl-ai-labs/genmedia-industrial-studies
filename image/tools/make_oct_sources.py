@@ -217,17 +217,24 @@ def main() -> int:
     if args.dry_run or not todo:
         return 0
 
+    make_images(todo, model, OUT, args.workers)
+    return 0
+
+
+def make_images(todo: list[dict], model, out: Path, workers: int,
+                size: str = "1024x1024") -> None:
+    """Make each job's image in out/sources, appending to out/sources.jsonl."""
     adapter = build(model, timeout_s=300)
-    log = OUT / "sources.jsonl"
+    log = out / "sources.jsonl"
     lock = threading.Lock()
     spent = [0]
 
     def make(job: dict) -> str:
         if job.get("mirror_of"):
             from PIL import Image, ImageOps
-            src = OUT / "sources" / f"{job['mirror_of']}.png"
+            src = out / "sources" / f"{job['mirror_of']}.png"
             with Image.open(src) as im:
-                ImageOps.mirror(im).save(OUT / "sources" / f"{job['key']}.png", format="PNG")
+                ImageOps.mirror(im).save(out / "sources" / f"{job['key']}.png", format="PNG")
             with lock, log.open("a") as fh:
                 fh.write(json.dumps({"ts": datetime.now(timezone.utc).isoformat(),
                                      "key": job["key"], "scenarios": job["scenarios"],
@@ -237,7 +244,7 @@ def main() -> int:
         guide = ([Asset(role="reference", path=Path(job["guide"]), mime="image/png",
                         sha256="")] if job.get("guide") else [])
         req = GenRequest(task="text_to_image", text=job["prompt"], inputs=guide,
-                         params={"aspect_ratio": job["aspect"], "size": "1024x1024"})
+                         params={"aspect_ratio": job["aspect"], "size": size})
         for attempt in range(1, 6):
             try:
                 t0 = time.time()
@@ -248,7 +255,7 @@ def main() -> int:
                     blank = max(im.convert("L").getextrema()) - min(im.convert("L").getextrema()) < 8
                 if blank:
                     raise ValueError("blank image")
-                path = OUT / "sources" / f"{job['key']}.png"
+                path = out / "sources" / f"{job['key']}.png"
                 if res.mime != "image/png":
                     with Image.open(io.BytesIO(res.data)) as im:
                         buf = io.BytesIO()
@@ -280,11 +287,10 @@ def main() -> int:
                 time.sleep(5 * attempt)
         return f"FAIL {job['key']}: rate limited 5 times"
 
-    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+    with ThreadPoolExecutor(max_workers=workers) as pool:
         for i, fut in enumerate(as_completed([pool.submit(make, j) for j in todo]), 1):
             print(f"[{i}/{len(todo)}] {fut.result()}  (spent ${spent[0] / 1e6:.2f})",
                   flush=True)
-    return 0
 
 
 if __name__ == "__main__":

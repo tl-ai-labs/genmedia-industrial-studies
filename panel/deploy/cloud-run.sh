@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Host the blind panel on Cloud Run with its votes in a Cloud Storage bucket.
 #
-#   deploy/cloud-run.sh            first time and after a code change: build + deploy + sync
-#   deploy/cloud-run.sh --sync     after a re-export: copy items.json and the key up, no rebuild
+#   deploy/cloud-run.sh            first time and after a code change: build + deploy
+#                                  (+ sync, but only into a bucket that has no key yet)
+#   deploy/cloud-run.sh --sync     after a re-export: copy items.json and the key up, no rebuild;
+#                                  REPLACES the live key (a backup is kept beside it), so a
+#                                  dated round merged in with `merge-key` is dropped
 #   deploy/cloud-run.sh --votes    pull the hosted votes.jsonl down next to this script's repo copy
 #   deploy/cloud-run.sh --url      print the service URL (what VITE_PANEL_URL must be)
 #
@@ -26,14 +29,17 @@
 # script reports which one took.
 set -euo pipefail
 
-PROJECT="${PANEL_GCP_PROJECT:-ai-studies-console}"
+# The live panel runs in temp-genmedia-study (2026-11-04): ai-studies-console
+# is blocked for the study team, so the service and its bucket were deployed
+# here instead.
+PROJECT="${PANEL_GCP_PROJECT:-temp-genmedia-study}"
 REGION="${PANEL_REGION:-us-central1}"
 SERVICE="${PANEL_SERVICE:-genmedia-panel}"
 BUCKET="${PANEL_BUCKET:-genmedia-panel-${PROJECT}}"
 REPO="${PANEL_AR_REPO:-genmedia-panel}"
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT}/${REPO}/${SERVICE}"
 # Where the media is served from - the console's copy of dist/media.
-MEDIA_BASE="${PANEL_MEDIA_BASE:-https://studies-dev.adlc.tilicho.in/reports/genmedia-blind-panel/media}"
+MEDIA_BASE="${PANEL_MEDIA_BASE:-https://studies.adlc.tilicho.in/reports/genmedia-blind-panel/media}"
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # panel/
 cd "$HERE"
@@ -49,6 +55,12 @@ sync_data() {
   test -f dist/items.json || { echo "dist/items.json missing - run 'python -m runner.cli export' first" >&2; exit 1; }
   test -f private/key.json || { echo "private/key.json missing - run the export first" >&2; exit 1; }
   gcloud storage cp dist/items.json dist/index.html "gs://${BUCKET}/dist/" --project "$PROJECT"
+  # The live key may hold dated rounds this laptop's key does not: keep a copy before replacing it.
+  if gcloud storage ls "gs://${BUCKET}/private/key.json" --project "$PROJECT" >/dev/null 2>&1; then
+    backup="private/key.before-sync-$(date -u +%Y%m%dT%H%M%SZ).json"
+    gcloud storage cp "gs://${BUCKET}/private/key.json" "gs://${BUCKET}/${backup}" --project "$PROJECT"
+    echo "Live key backed up to gs://${BUCKET}/${backup}"
+  fi
   gcloud storage cp private/key.json "gs://${BUCKET}/private/key.json" --project "$PROJECT"
   # Seed an empty votes file once so the server's first read has something to open.
   if ! gcloud storage ls "gs://${BUCKET}/votes.jsonl" --project "$PROJECT" >/dev/null 2>&1; then
@@ -76,7 +88,14 @@ if ! gcloud storage buckets describe "gs://${BUCKET}" --project "$PROJECT" >/dev
   gcloud storage buckets create "gs://${BUCKET}" --project "$PROJECT" --location "$REGION" \
     --uniform-bucket-level-access --public-access-prevention
 fi
-sync_data
+# A code change must not put this laptop's key over the live one (it would
+# drop every dated round, and their votes would be refused): only a bucket
+# without a key gets one here. --sync is the deliberate replace.
+if gcloud storage ls "gs://${BUCKET}/private/key.json" --project "$PROJECT" >/dev/null 2>&1; then
+  say "gs://${BUCKET} already has a key: leaving items.json and the key as they are (--sync replaces them)"
+else
+  sync_data
+fi
 
 # The service runs as the project's default compute service account; the
 # bucket mount needs it to read the key and to rewrite votes.jsonl.
