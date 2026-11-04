@@ -62,6 +62,14 @@ def strip_image_metadata(path: Path) -> bytes:
         return buf.getvalue()
 
 
+def input_media(path: Path) -> tuple[bytes, str]:
+    """An input as the judge sees it. A .jpg is our own export with no metadata
+    to strip, so it goes as it is: re-encoding a 2K source to PNG makes it 5x larger."""
+    if path.suffix == ".jpg":
+        return path.read_bytes(), "image/jpeg"
+    return strip_image_metadata(path), "image/png"
+
+
 def blind_leaks(terms, authored: str, ocr_text: str = "") -> list:
     """Vendor names that would actually unblind the judge.
 
@@ -372,7 +380,7 @@ def judge_run(project_root: Path, run_dir: Path, models_path: Path,
             prompt = build_checklist_judge_prompt(
                 s, judge_crits, [_role_label(i["role"]) for i in ins], len(outs),
                 facts, measured_names)
-            media = [(strip_image_metadata(run_dir / i["path"]), "image/png") for i in ins]
+            media = [input_media(run_dir / i["path"]) for i in ins]
             media += [(strip_image_metadata(p), "image/png") for p in outs]
         else:
             prompt = build_judge_prompt(s, judge_crits, facts, measured_names)

@@ -1539,6 +1539,10 @@ def build(args) -> dict:
         else:
             audio_html = "".join(f'<script type="text/plain" id="au-{k}">{b}</script>' for k, b in vaudio.items())
     data["embed"] = bool(getattr(args, "embed", False))
+    data["siteLayout"] = bool(getattr(args, "site_layout", False))
+    data["noBank"] = bool(getattr(args, "no_bank_step", False)) or data["siteLayout"]
+    data["matchAny"] = getattr(args, "match", "all") == "any"
+    data["note"] = getattr(args, "note", None) or ""
     if getattr(args, "site_out", None):
         sdir = Path(args.site_out)
         (sdir / "img").mkdir(parents=True, exist_ok=True)
@@ -1556,7 +1560,13 @@ def build(args) -> dict:
         s = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
         return s.replace("</", "<\\/").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
 
-    data_s, img_s = blob(data), blob(imgs.data)
+    if getattr(args, "img_dir", None):
+        idir = Path(args.img_dir) / "img"
+        idir.mkdir(parents=True, exist_ok=True)
+        for iid, b in imgs.data.items():
+            (idir / f"{iid}.jpg").write_bytes(base64.b64decode(b))
+        data["imgBase"] = "img/"
+    data_s, img_s = blob(data), blob({} if getattr(args, "img_dir", None) else imgs.data)
     title = f"{media['title']} · GenMedia Study"
     html = (TEMPLATE
             .replace("__TITLE__", _esc(title))
@@ -1617,6 +1627,17 @@ def main(argv=None) -> int:
     ap.add_argument("--site-out", help="also write the report's data for the study site: <dir>/data.json, <dir>/img/<id>.jpg, <dir>/audio/<id>.mp3")
     ap.add_argument("--embed", action="store_true", help="for a host page's iframe: no own header or footer; ?media=<lane> opens that lane")
     ap.add_argument("--audio-out", help="write the voice clips as <id>.mp3 into this folder and load them by URL (audio/<id>.mp3 next to the page)")
+    ap.add_argument("--no-bank-step", action="store_true",
+                    help="open on the results: no 'Choose a scenario bank' step (one-lane reports)")
+    ap.add_argument("--site-layout", action="store_true",
+                    help="lay the page out like the study site's Compare Models page: Overall Metrics, then the "
+                         "Detailed Model Win Map with its own Pick categories / Observations steps (implies --no-bank-step)")
+    ap.add_argument("--match", choices=("all", "any"), default="all",
+                    help="how picks combine: all = every category must match (the bank's cascade); "
+                         "any = a scenario matching any pick is shown")
+    ap.add_argument("--note", help="one line under the title, e.g. how the scenarios were picked")
+    ap.add_argument("--img-dir", help="write the images to <dir>/img/<id>.jpg and load them from img/ beside the page, "
+                                      "so the page stays small (for hosts with a page size limit)")
     ap.add_argument("--voice-dashboard", help="the voice study's dashboard HTML (report-data + audio): adds the Voice (TTS) lane")
     args = ap.parse_args(argv)
     res = build(args)
@@ -1732,7 +1753,7 @@ p{margin:0}
 .strip h1{margin:0;font:600 1.5rem/1.25 var(--fd);letter-spacing:-.02em;color:var(--ink);text-wrap:balance}
 @media(max-width:639px){.strip h1{font-size:1.25rem}}
 .crumbs{margin-top:4px;font-size:14px;line-height:20px;display:flex;gap:6px;flex-wrap:wrap}
-.crumbs a{color:var(--mt)}.crumbs .sep{color:var(--mt)}.crumbs .cur{color:var(--ink);font-weight:500}
+.note-line{flex-basis:100%;color:var(--mt);font-size:13px;line-height:18px}.crumbs a{color:var(--mt)}.crumbs .sep{color:var(--mt)}.crumbs .cur{color:var(--ink);font-weight:500}
 .picker{position:relative;display:flex;flex-direction:column;flex:none;padding-bottom:6px}
 .picker .label{display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:var(--ink)}
 .picker-btn{display:flex;align-items:center;gap:10px;min-width:260px;border-radius:8px;border:1px solid var(--line);background:#fff;padding:4px 10px 4px 4px;font:600 14px/1.55 var(--fs);color:var(--ink);box-shadow:0 1px 2px rgba(17,17,17,.06);cursor:pointer;text-align:left;transition:background-color .15s}
@@ -1941,7 +1962,58 @@ p{margin:0}
 .mb-mix{display:flex;gap:2px;height:6px;border-radius:999px;overflow:hidden}.mb-mix i{display:block;height:100%}
 .mb-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mt)}.mb-leg .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
 .mb-go{font:500 11.5px/16px var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--b600)}
-.wm-sec{margin-top:28px}.wm-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0;font:600 18px/26px var(--fd);letter-spacing:-.01em;color:var(--ink)}
+.site-h{margin:0;font:600 32px/1.15 var(--fd);letter-spacing:-.02em;color:var(--ink)}.site-h3{margin:24px 0 8px;font:600 20px/1.3 var(--fd);color:var(--ink)}.site-sub{margin:4px 0 16px;font-size:13px;color:var(--mt)}
+#compare .h2h{max-width:560px}#compare{padding-bottom:28px;border-bottom:1px solid var(--line)}#winmap .bhead{margin-top:36px}
+.site-steps{display:flex;align-items:center;gap:14px;margin:20px 0 0;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.site-steps .ss{display:inline-flex;align-items:center;gap:10px;background:none;border:0;padding:0;font:500 15px var(--fb,inherit);color:var(--mt);cursor:pointer}
+.site-steps .ss.on{color:var(--ink);font-weight:600;cursor:default}.site-steps .ss.todo{cursor:default}.site-steps .ss.done{color:var(--ink)}
+.site-steps .sn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;border:1.5px solid currentColor;font-size:13px}
+.site-steps .sn.on{background:var(--b500);border-color:var(--b500);color:#fff;box-shadow:0 0 0 4px rgba(224,9,23,.12)}.site-steps .sn.done{background:var(--ink);border-color:var(--ink);color:#fff}
+.site-steps .ss-line{width:56px;height:1.5px;background:var(--ink);opacity:.8}.site-help{margin-top:14px}
+.lbl-adj{font-size:14px;font-weight:500;color:var(--ink)}
+.site .wmt tbody tr.pick{cursor:pointer}.site .wmt tbody tr.pick:hover td{background:rgba(245,245,245,.7)}
+.site .wmt tbody tr.pick.on td,.site .wmt tbody tr.pick.on:hover td{background:#FFF5F5}.site .wmt tbody tr.pick.on td:first-child{box-shadow:inset 3px 0 0 var(--b500)}
+.site .wmt .rowlink{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-align:left}.site .wmt tr.pick:hover .rowlink{text-decoration:none}
+.site .wmt .rowlink .cb{width:16px;height:16px;flex:none;border:1.5px solid #BDBDBD;border-radius:3px;background:#fff;display:inline-flex;align-items:center;justify-content:center}
+.site .wmt .rowlink .cb.on{background:var(--b500);border-color:var(--b500)}.site .wmt .rowlink .cb svg{width:10px;height:10px}
+.mh .minfo{position:relative;display:inline-flex;vertical-align:-3px;margin-left:4px}
+.mh .minfo button{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:0;border-radius:999px;background:none;color:var(--mt);cursor:help}
+.mh .minfo button:hover,.mh .minfo button:focus-visible{color:var(--ink);background:var(--muted);outline:none}
+.mh .minfo svg{width:15px;height:15px}
+.htip{position:absolute;z-index:80;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:260px;padding:9px 11px;border-radius:8px;background:#111827;color:#E5E7EB;font:400 12px/17px var(--fs);letter-spacing:0;text-transform:none;box-shadow:0 8px 24px rgba(15,23,42,.25);pointer-events:none;text-align:left;visibility:hidden;opacity:0;transition:opacity .12s}
+.minfo:hover .htip,.minfo:focus-within .htip{visibility:visible;opacity:1}
+.htip .ht-h{display:block;margin-bottom:5px;color:#fff;font-weight:600}.htip .ht-ul{margin:0;padding-left:16px;list-style:disc}.htip .ht-ul li+li{margin-top:4px}.sel-metrics{margin-top:8px}.site #evidence{margin-top:36px}
+/* the study site's floating bar: a clear shadow at rest and a deeper one on hover; the button lifts */
+.site .wm-bar{border-color:#D6D6D6;box-shadow:0 14px 40px rgba(15,23,42,.26),0 4px 12px rgba(15,23,42,.14);transition:box-shadow .15s,border-color .15s}
+.site .wm-bar:hover{border-color:#BDBDBD;box-shadow:0 20px 52px rgba(15,23,42,.32),0 6px 16px rgba(15,23,42,.16)}
+.site .wm-bar .wm-go{box-shadow:0 4px 14px rgba(224,9,23,.35),0 1px 3px rgba(15,23,42,.18);transition:background-color .15s,box-shadow .15s,transform .15s}
+.site .wm-bar .wm-go:hover:not([disabled]){background:var(--b600);transform:translateY(-1px);box-shadow:0 8px 22px rgba(224,9,23,.45),0 2px 6px rgba(15,23,42,.2)}
+.site .wm-bar .wm-go:active:not([disabled]){transform:translateY(0);box-shadow:0 2px 8px rgba(224,9,23,.45)}
+.site .wm-bar .wm-go:focus-visible{outline:2px solid var(--b500);outline-offset:2px}
+.site .wm-bar .wm-go[disabled]{box-shadow:none}
+@media(prefers-reduced-motion:reduce){.site .wm-bar,.site .wm-bar .wm-go,.site .wm-bar .wm-go:hover:not([disabled]){transition:none;transform:none}}
+/* the study site's card (genmediaOct.css, origin/main), its final cascade, scoped to this layout */
+.site .wtile::before{opacity:.45}
+.site .wt-x{display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:12px;row-gap:3px;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);font-size:12px;line-height:18px}
+.site .wt-xr{display:contents}
+.site .wt-x .xl{color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.site .wt-x .xv{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;justify-self:end;min-width:56px;padding:0 7px;border-radius:999px;box-sizing:border-box}
+.site .wt-x .xv.a{color:#1A56B8}.site .wt-x .xv.b{color:#8F4227}
+.site .wt-x .xv.lead{font-weight:600;border:0}
+.site .wt-x .xv.lead.a{background:rgba(66,133,244,.08);box-shadow:none}.site .wt-x .xv.lead.b{background:rgba(184,92,56,.08);box-shadow:none}
+.site .wt-x.wt-x1{margin-top:0;padding-top:0;border-top:0;font-size:13px;line-height:20px;grid-template-columns:minmax(min-content,1fr) minmax(56px,auto) minmax(56px,auto);column-gap:2px;row-gap:0}
+.site .wt-x .wt-xh .xh{min-width:0;max-width:none;white-space:nowrap;overflow:visible;justify-self:stretch;text-align:right;padding:0 5px 3px 4px;font:600 10.5px/14px var(--fs);letter-spacing:0;align-self:end}
+.site .wt-x .wt-xh .xh.a{color:var(--a-ink)}.site .wt-x .wt-xh .xh.b{color:var(--b-ink)}
+.site .wt-x.wt-x1 .xl{min-width:0;white-space:normal;overflow:visible;text-overflow:clip;line-height:15px;padding:3px 0;align-self:center;overflow-wrap:normal;word-break:normal}
+.site .wt-x.wt-x1 .xv{min-width:0;justify-self:stretch;align-self:center;text-align:right;padding:1px 5px;line-height:20px;border-radius:6px}
+.site .wtile .wt-body:has(.wt-x1){padding:10px 6px 8px 10px}
+.site .wt-x.wt-x1 > .wt-xr{display:grid;grid-column:1/-1;grid-template-columns:subgrid;align-items:center;padding:4px 0}
+.site .wt-x.wt-x1 > .wt-xr.wt-xh{padding:0 0 2px}
+.site .wt-x.wt-x1 > .wt-xr:not(.wt-xh) + .wt-xr{border-top:1px solid #E6EAF0}
+
+.st-c{font:600 14px var(--fb,inherit);text-align:right;padding:4px 8px;border-radius:6px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.st-c.lead.a{background:#E8F0FE;color:#1A56B8}.st-c.lead.b{background:#F6E7DF;color:#8F4227}
+.wm-help{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--mt)}.wm-sec{margin-top:28px}.wm-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0;font:600 18px/26px var(--fd);letter-spacing:-.01em;color:var(--ink)}
 .wm-more{margin-top:10px;font-size:13px}
 .wtile.zero{opacity:.45;cursor:not-allowed;padding-bottom:14px;background:#FAFAFA}
 .wm-bar{position:sticky;bottom:12px;z-index:6;margin-top:24px;display:flex;flex-wrap:nowrap;align-items:center;gap:10px 18px;padding:12px 16px;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.10)}
@@ -2118,6 +2190,7 @@ var D = JSON.parse(document.getElementById('report-data').textContent);
 var IMG = null;
 function imgSrc(id){
   if(!id) return '';
+  if(D.imgBase) return D.imgBase + id + '.jpg';
   if(!IMG){ try{ IMG = JSON.parse(document.getElementById('img-data').textContent); }catch(e){ IMG = {}; } }
   return IMG[id] ? 'data:image/jpeg;base64,' + IMG[id] : '';
 }
@@ -2150,9 +2223,16 @@ var INTERNAL = D.audience === 'internal';
 // embedded in a host page (the study site): no header or footer of our own, no bank step; ?media= names the lane
 var EMBED = !!D.embed;
 if(EMBED) document.documentElement.classList.add('embed');
-var STEPS = [['media', 'Choose a scenario bank'], ['narrow', 'Narrow it down'], ['scenarios', 'Scenarios']].filter(function(x){ return !EMBED || x[0] !== 'media'; });
-var STEP_IDS = (INTERNAL ? ['media', 'narrow', 'scenarios', 'method'] : ['media', 'narrow', 'scenarios']).filter(function(x){ return !EMBED || x !== 'media'; });
-(function(){ var mm = /[?&]media=([a-z]+)/.exec(location.search); if(mm && D.media[mm[1]]) st.media = mm[1]; if(EMBED) st.step = 'narrow'; })();
+// a one-lane report needs no bank step: it opens on the results
+var NOBANK = EMBED || !!D.noBank;
+// picks combine as a union: a scenario matching any pick, in any section, is shown
+var MATCH_ANY = !!D.matchAny;
+// laid out like the study site's Compare Models page (studies.adlc.tilicho.in …/models/image)
+var SITE = !!D.siteLayout;
+if(SITE) document.documentElement.classList.add('site');
+var STEPS = (D.noBank ? [['narrow', 'Results'], ['scenarios', 'Scenarios']] : [['media', 'Choose a scenario bank'], ['narrow', 'Narrow it down'], ['scenarios', 'Scenarios']]).filter(function(x){ return !NOBANK || x[0] !== 'media'; });
+var STEP_IDS = (INTERNAL ? ['media', 'narrow', 'scenarios', 'method'] : ['media', 'narrow', 'scenarios']).filter(function(x){ return !NOBANK || x !== 'media'; });
+(function(){ var mm = /[?&]media=([a-z]+)/.exec(location.search); if(mm && D.media[mm[1]]) st.media = mm[1]; if(NOBANK) st.step = 'narrow'; })();
 // URL hooks for screenshots and deep links: ?open=all|ID1,ID2 &wm=table &dim=usecase &sort=lat:a &dir=asc &res=none &f=industry:Gaming &only=details
 (function(){
   var q = function(k){ var m = new RegExp('[?&]' + k + '=([^&#]+)').exec(location.search); return m ? decodeURIComponent(m[1]) : null; };
@@ -2177,6 +2257,9 @@ function all(){ return M().scenarios; }
 function cur(){ return all(); }
 
 // ---------- numbers ----------
+function meanOf(v){ return v.length ? v.reduce(function(n, x){ return n + x; }, 0) / v.length : null; }
+// the nearest-rank percentile: the smallest value with at least q of the values at or below it (the study site's rule)
+function pctl(v, q){ if(!v.length) return null; var x = v.slice().sort(function(a, b){ return a - b; }); return x[Math.max(0, Math.ceil(q * x.length) - 1)]; }
 function median(v){ if(!v.length) return null; var x = v.slice().sort(function(a,b){return a-b;}); var n = x.length, h = n >> 1; return n % 2 ? x[h] : (x[h-1] + x[h]) / 2; }
 function tally(list){
   var r = { n: list.length, cmp: 0, a: 0, b: 0, tie: 0, none: 0, sa: 0, sb: 0, minA: null, minB: null,
@@ -2204,6 +2287,7 @@ function tally(list){
   r.passRateA = r.passN ? 100 * r.passA / r.passN : null; r.passRateB = r.passN ? 100 * r.passB / r.passN : null;
   r.cpiA = r.imgA ? r.costA / 1e6 / r.imgA : null; r.cpiB = r.imgB ? r.costB / 1e6 / r.imgB : null;
   r.p50A = median(r.latA); r.p50B = median(r.latB);
+  r.latMeanA = meanOf(r.latA); r.latMeanB = meanOf(r.latB); r.lat95A = pctl(r.latA, 0.95); r.lat95B = pctl(r.latB, 0.95);
   return r;
 }
 // wins / scenarios in the row both models completed, half to even (the study page's rule)
@@ -2243,13 +2327,13 @@ function renderStrip(){
   document.getElementById('strip').innerHTML =
     '<div class="tl-wrap strip-in"><div class="strip-row"><div' + (home && !INTERNAL ? ' class="home"' : '') + ' style="min-width:0;flex:1">' +
     '<h1>' + esc(home ? D.study.name : m.title) + '</h1>' +
-    (home && !INTERNAL ? '' : '<div class="crumbs">' + (home ? '' : '<a href="' + esc(D.study.href) + '">' + esc(D.study.name) + '</a><span class="sep">/</span><span class="cur">' + esc(m.label) + '</span>') + (INTERNAL ? '<span class="pill pill-warning" style="margin-left:6px">Internal</span>' : '') + '</div>') + '</div>' +
+    (home && !INTERNAL ? '' : '<div class="crumbs">' + (home ? '' : '<a href="' + esc(D.study.href) + '">' + esc(D.study.name) + '</a><span class="sep">/</span><span class="cur">' + esc(m.label) + '</span>') + (INTERNAL ? '<span class="pill pill-warning" style="margin-left:6px">Internal</span>' : '') + (D.note ? '<span class="note-line">' + esc(D.note) + '</span>' : '') + '</div>') + '</div>' +
     '</div>' +
-    '<nav class="tabs steps" aria-label="Steps">' + STEPS.map(function(t, i){
+    (SITE ? (INTERNAL ? '<nav class="tabs steps" aria-label="Pages"><button class="tab step" data-act="step" data-v="narrow"' + (st.step !== 'method' ? ' aria-current="step"' : '') + '>Compare Models</button>' : '') : '<nav class="tabs steps" aria-label="Steps">' + STEPS.map(function(t, i){
       var on = st.step === t[0], done = STEP_IDS.indexOf(st.step) > i && st.step !== 'method';
       return '<button class="tab step" data-act="step" data-v="' + t[0] + '"' + (on ? ' aria-current="step"' : '') + '><span class="sn' + (on ? ' on' : done ? ' done' : '') + '">' + (i + 1) + '</span>' + esc(t[1]) + '</button>';
-    }).join('') +
-    (INTERNAL ? '<span class="step-gap"></span><button class="tab step" data-act="step" data-v="method"' + (st.step === 'method' ? ' aria-current="step"' : '') + '>' + ICONS.book + 'Run details</button>' : '') + '</nav></div>';
+    }).join('')) +
+    (INTERNAL ? '<span class="step-gap"></span><button class="tab step" data-act="step" data-v="method"' + (st.step === 'method' ? ' aria-current="step"' : '') + '>' + ICONS.book + 'Run details</button>' : '') + (SITE && !INTERNAL ? '' : '</nav>') + '</div>';
   setChrome();
 }
 function setChrome(){ document.documentElement.style.setProperty('--chrome', (document.getElementById('strip').offsetHeight + (EMBED ? 0 : 64)) + 'px'); }
@@ -2268,12 +2352,19 @@ function markTab(id){
 
 // ---------- compare: head-to-head ----------
 function leadVal(v, side, lead){ return lead ? '<span class="lead ' + side + '">' + esc(v) + '</span>' : '<span class="trailv">' + esc(v) + '</span>'; }
-function measure(label, gloss, av, bv, fmt, higher){
+var INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>';
+// the definition behind the info icon: one sentence as it is, several as points (the site's TipPoints)
+function infoTip(label, info){
+  var pts = info.split(/(?<=\.)\s+(?=[A-Z0-9“])/);
+  return '<span class="minfo"><button type="button" aria-label="What ' + esc(label) + ' means">' + INFO_SVG + '</button><span class="htip" role="tooltip"><span class="ht-h">' + esc(label) + '</span>' +
+    (pts.length > 1 ? '<ul class="ht-ul">' + pts.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : esc(info)) + '</span></span>';
+}
+function measure(label, gloss, av, bv, fmt, higher, info){
   if(av == null && bv == null) return '';
   var lead = (av == null || bv == null || fmt(av) === fmt(bv)) ? null : (higher ? (av > bv ? 'a' : 'b') : (av < bv ? 'a' : 'b'));
   var max = Math.max(av || 0, bv || 0) || 1;
   var bar = function(v, side){ var w = v == null ? 0 : Math.max(0, Math.min(100, v / max * 100)); return '<span class="track"><span class="fill ' + side + (lead === side ? '' : ' trail') + '" style="width:' + w.toFixed(1) + '%"></span></span>'; };
-  return '<div class="mrow"><div class="mh"><span class="label">' + esc(label) + '</span><span class="gloss">' + esc(gloss) + '</span></div>' +
+  return '<div class="mrow"><div class="mh"><span class="label">' + esc(label) + '</span>' + (info ? infoTip(label, info) : '') + '<span class="gloss">' + esc(gloss) + '</span></div>' +
     '<div class="mgrid"><span>' + leadVal(fmt(av), 'a', lead === 'a') + '</span>' + bar(av, 'a') + bar(bv, 'b') + '<span>' + leadVal(fmt(bv), 'b', lead === 'b') + '</span></div></div>';
 }
 function tallyLegend(t){
@@ -2336,6 +2427,7 @@ function renderMediaStep(){
     '<div class="mbgrid">' + cards + '</div></div>';
 }
 function renderCompare(){
+  if(SITE && M().kind !== 'voice') return renderCompareSite();
   var m = M(), ar = m.arms, list = cur(), t = tally(list), allN = all().length, V = m.kind === 'voice';
   var h = '<div id="compare"><div class="lanehead"><div class="eyebrow">' + esc(m.label) + '</div>' +
     '<p class="sub">' + plural(allN, 'scenario') + (V ? ' · ' + plural(m.rounds, 'round') + ' each' : ' · one matched setting') + '</p></div>';
@@ -2464,7 +2556,7 @@ function optIcon(key, v, lg){
 }
 
 // ---------- win map ----------
-function dimOf(key){ return M().dims.filter(function(d){ return d.key === key; })[0]; }
+function dimOf(key){ var d = M().dims.filter(function(d){ return d.key === key; })[0]; return SITE && d && key === 'customer' ? Object.assign({}, d, { label: 'Targeted customer' }) : d; }
 function valuesOf(s, key){ var v = s.v[key]; return Array.isArray(v) ? v : (v == null ? [] : [v]); }
 function groups(key, list){
   var d = dimOf(key), map = {};
@@ -2480,7 +2572,7 @@ function mval(t, fam, side){
   if(fam === 'pass') return A ? t.passRateA : t.passRateB;
   if(fam === 'quality') return A ? t.meanA : t.meanB;
   if(fam === 'rel') return A ? t.minA : t.minB;
-  if(fam === 'lat') return A ? t.p50A : t.p50B;
+  if(fam === 'lat') return SITE ? (A ? t.latMeanA : t.latMeanB) : (A ? t.p50A : t.p50B);
   return null;
 }
 function mtxt(t, fam, side){ var v = mval(t, fam, side); if(v == null) return '—'; return fam === 'win' ? winPct(t[side], t.cmp) : fam === 'lat' ? secs(v) : p1(v); }
@@ -2539,6 +2631,43 @@ function wtlSegs(t){
 }
 var XLBL = { win: 'Win %', pass: 'Pass criteria', quality: 'Quality', rel: 'Reliability', lat: 'Latency p50' };
 function tileFams(fam){ return [fam].concat(FAMS.filter(function(f){ return f !== fam && st.wm.fields[f]; })); }
+// over every scenario (Overall Metrics), or over the picked ones on Observations, as on the study site
+function renderCompareSite(picked, title, sub){
+  var m = M(), ar = m.arms, list = picked || cur(), t = tally(list);
+  return '<div' + (picked ? ' class="sel-metrics"' : ' id="compare"') + '>' + (picked ? '<h3 class="site-h3">' + esc(title) + '</h3>' : '<h2 class="site-h">Overall Metrics</h2>') +
+    '<p class="site-sub">' + esc(sub || 'All ' + plural(list.length, 'scenario')) + '</p>' +
+    '<div class="card h2h"><div class="arms"><span style="color:' + A_INK + '">◆ ' + esc(ar.a.name) + '</span><span class="label">vs</span><span class="ra" style="color:' + B_INK + '">' + esc(ar.b.name) + ' ◆</span></div>' +
+    siteMeasures([
+      ['Cost per ' + m.unit, (t.est ? 'partly estimated · ' : '') + 'lower is better', t.cpiA, t.cpiB, money, false,
+        'Priced from the usage each provider returned, at its published price' + pricesTxt() + '. Lower is better.'],
+      ['Latency (mean)', (t.lat95A == null && t.lat95B == null ? '' : 'p95 ' + secs(t.lat95A) + ' vs ' + secs(t.lat95B) + ' · ') + 'lower is better', t.latMeanA, t.latMeanB, secs, false,
+        'The mean time of the request that returned each ' + m.unit + ', over every ' + m.unit + '. p95 is the time 95% of them came in under. Lower is better.'],
+      ['Quality', 'mean rating · higher is better', t.meanA, t.meanB, p1, true, 'The mean rubric rating, as a percentage. Higher is better.'],
+      t.passN ? ['Pass criteria met', plural(t.passN, 'scenario') + ' with pass criteria · higher is better', t.passRateA, t.passRateB, p1, true,
+        'The share of scenarios that meet their pass criteria, set per scenario in the scenario bank' + (m.passExample ? ', e.g. “' + m.passExample + '”' : '') + '. ' + t.passN + ' of the ' + t.cmp + ' decided scenarios have them. Higher is better.'] : null,
+      ['Reliability', 'lowest rating on any single scenario · higher is better', t.minA, t.minB, p1, true, 'The model’s lowest rating on any single scenario. Higher is better.']]) +
+    '<div class="tally"><div class="th">W–T–L<small>won, tied, lost across ' + t.cmp + ' decided scenarios</small></div>' + tallyBar(t) + '</div></div>' +
+    '</div>';
+}
+// the measures the Google model leads come first, then even ones, then the rival's (Sai, 2026-11-03);
+// the order is worked out per card, so the selected scenarios' card follows its own numbers
+function siteMeasures(ms){
+  var rank = function(x){ var av = x[2], bv = x[3], f = x[4];
+    if(av == null || bv == null || f(av) === f(bv)) return 1;
+    return (x[5] ? av > bv : av < bv) ? 0 : 2; };
+  return ms.filter(Boolean).map(function(x, i){ return { x: x, r: rank(x), i: i }; })
+    .sort(function(p, q){ return p.r - q.r || p.i - q.i; })
+    .map(function(o){ return measure.apply(null, o.x); }).join('');
+}
+// the two steps inside the Win Map, as on the study site: 1 Pick categories, 2 Observations
+function siteSteps(onObs){
+  return '<div class="site-steps" role="navigation" aria-label="Win Map steps">' +
+    (onObs ? '<button type="button" class="ss done" data-act="step" data-v="narrow" title="Back to Pick categories"><span class="sn done">✓</span>Pick categories</button>'
+           : '<span class="ss on" aria-current="step"><span class="sn on">1</span>Pick categories</span>') +
+    '<span class="ss-line" aria-hidden="true"></span>' +
+    (onObs ? '<span class="ss on" aria-current="step"><span class="sn on">2</span>Observations</span>'
+           : '<span class="ss todo" title="Pick categories, then use See detailed observations"><span class="sn">2</span>Observations</span>') + '</div>';
+}
 function wmTile(r, key, fam, leadSel){
   var ar = arms(), t = r.t, on = picked(key, r.v), zero = !t.n && !on, tc = optColor(key, r.v);
   var head = '<span class="wt-head">' + optIcon(key, r.v, true) + '<span class="wt-name">' + esc(r.v) + '</span>' +
@@ -2560,8 +2689,17 @@ function wmTile(r, key, fam, leadSel){
     return '<span class="wt-x">' +
       fs.map(function(f){ return '<span class="wt-xr"' + (f === 'pass' && !t.clips ? ' title="' + t.passN + ' with pass criteria"' : '') + '><span class="xl">' + esc(XLBL[f] || FAM[f]) + '</span>' + cell(f, 'a') + cell(f, 'b') + '</span>'; }).join('') + '</span>';
   };
+  // the study site's card body (NarrowStep WmTile): a header row with the two models, then one compact
+  // row per field shown: its label, then each model's value, the leader's lightly filled
+  var siteBody = function(){
+    var c = function(f, side){ var ld = leaderOf(t, f), txt = mtxt(t, f, side);
+      var tip = txt === '—' && f === 'pass' ? 'No scenario in this row has pass criteria' : ar[side].short;
+      return '<span class="xv ' + side + (ld === side ? ' lead' : '') + '" title="' + esc(tip) + '">' + esc(txt) + '</span>'; };
+    return '<span class="wt-body"><span class="wt-x wt-x1"><span class="wt-xr wt-xh" aria-hidden="true"><span class="xl"></span><span class="xh a">' + esc(ar.a.short) + '</span><span class="xh b">' + esc(ar.b.short) + '</span></span>' +
+      tileFams(fam).map(function(f){ return '<span class="wt-xr"' + (f === 'pass' && !t.clips ? ' title="' + t.passN + ' with pass criteria"' : '') + '><span class="xl">' + esc(FAM[f]) + '</span>' + c(f, 'a') + c(f, 'b') + '</span>'; }).join('') + '</span></span>';
+  };
   return '<button type="button" class="wtile" style="--tc:' + tc + '" data-act="wm-pick" data-k="' + key + '" data-v="' + esc(r.v) + '" aria-pressed="' + on + '" title="' + esc(plural(t.n, 'scenario')) + '">' +
-    head + '<span class="wt-body">' + block(fam, true) + extra(tileFams(fam).slice(1)) + '</span>' +
+    head + (SITE ? siteBody() : '<span class="wt-body">' + block(fam, true) + extra(tileFams(fam).slice(1)) + '</span>') +
     '<span class="wt-bar" title="' + esc(ar.a.short + ' won ' + t.a + ', tied ' + t.tie + ', ' + ar.b.short + ' won ' + t.b) + '">' + wtlSegs(t) + '</span>' +
     '<span class="wt-foot"><span><b style="color:' + A_INK + '">' + t.a + '</b> won · ' + t.tie + ' tied · <b style="color:' + B_INK + '">' + t.b + '</b> won</span><span>' + plural(t.n, 'scenario') + '</span></span>' +
     '</button>';
@@ -2583,6 +2721,8 @@ function wmTable(rows, key){
       };
       return c('a') + c('b');
     }).join('');
+    if(SITE) return '<tr class="pick' + (on ? ' on' : '') + '" data-act="wm-pick" data-k="' + key + '" data-v="' + esc(r.v) + '"><td><button type="button" class="rowlink" aria-pressed="' + on + '"><span class="cb' + (on ? ' on' : '') + '" aria-hidden="true">' + (on ? '<svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg>' : '') + '</span>' + esc(r.v) + '</button></td>' +
+      '<td class="r' + hs('n') + '">' + t.n + '</td><td class="r nowrap">' + t.a + '–' + t.tie + '–' + t.b + '</td>' + cells + '</tr>';
     return '<tr class="' + (on ? 'on' : '') + '"><td><button class="rowlink" data-act="wm-pick" data-k="' + key + '" data-v="' + esc(r.v) + '" aria-pressed="' + on + '">' + esc(r.v) + '<span class="pill pill-ink">shown below</span></button></td>' +
       '<td class="r' + hs('n') + '">' + t.cmp + '</td><td class="r nowrap">' + t.a + '–' + t.tie + '–' + t.b + '</td>' + cells + '</tr>';
   }).join('');
@@ -2593,10 +2733,18 @@ function wmTable(rows, key){
 // the picks in the sections above it allow (the bank's cascade); picks outside the map apply to all.
 var WM_SECTIONS = ['industry', 'customer', 'usecase', 'task', 'difficulty'];
 var WM_LABEL = { customer: 'Customers you can target', usecase: 'Use cases' };
+if(D.siteLayout){ WM_SECTIONS = ['customer', 'usecase', 'industry']; WM_LABEL.customer = 'Targeted Customers';
+  // latency as the study site gives it: the mean, not the median
+  FAM.lat = 'Latency (mean)'; XLBL.lat = 'Latency (mean)'; FAM.pass = 'Pass criteria'; GROUP_ICON['Latency (mean)'] = GROUP_ICON['Latency p50']; }   // as on the study site: no task type or difficulty
 var WM_CAP = 12;
 function picked(k, v){ var a = st.ev.f[k]; return !!(a && a.indexOf(v) >= 0); }
 function nPicks(){ return Object.keys(st.ev.f).reduce(function(n, k){ return n + (st.ev.f[k] || []).length; }, 0); }
 function passKeys(s, keys){
+  if(MATCH_ANY){
+    var any = false;
+    for(var j = 0; j < keys.length; j++){ var b = st.ev.f[keys[j]]; if(b && b.length){ any = true; if(valuesOf(s, keys[j]).some(function(v){ return b.indexOf(v) >= 0; })) return true; } }
+    return !any;
+  }
   for(var i = 0; i < keys.length; i++){ var a = st.ev.f[keys[i]]; if(a && a.length && !valuesOf(s, keys[i]).some(function(v){ return a.indexOf(v) >= 0; })) return false; }
   return true;
 }
@@ -2604,11 +2752,12 @@ function wmSections(){ var list = all(); return WM_SECTIONS.map(dimOf).filter(fu
 function sectionRows(d, secs){
   var above = secs.slice(0, secs.indexOf(d)).map(function(x){ return x.key; });
   var outside = Object.keys(st.ev.f).filter(function(k){ return WM_SECTIONS.indexOf(k) < 0; });
-  var base = all().filter(function(s){ return passKeys(s, above.concat(outside)); });
+  var base = MATCH_ANY ? all() : all().filter(function(s){ return passKeys(s, above.concat(outside)); });
   return d.order.map(function(v){ var l = base.filter(function(s){ return valuesOf(s, d.key).indexOf(v) >= 0; }); return { v: v, list: l, t: tally(l) }; });
 }
 // A pick the picks above it have ruled out is dropped, top-down, as in the bank.
 function prunePicks(){
+  if(MATCH_ANY) return;   // nothing rules a pick out when picks add up
   var secs = wmSections();
   secs.forEach(function(d){
     var a = st.ev.f[d.key]; if(!a || !a.length) return;
@@ -2626,6 +2775,7 @@ function miniTally(t){
 // What each card shows, in the study page's own words for each measure (the head-to-head card's glosses).
 var FAM_GLOSS = { win: 'wins out of the scenarios both models completed', pass: 'scenarios that met their pass criteria · higher is better',
   quality: 'mean rating · higher is better', rel: 'lowest rating on any single scenario · higher is better', lat: 'median time per image · lower is better' };
+if(D.siteLayout) FAM_GLOSS.lat = 'mean time per image · lower is better';
 function fieldsDropdown(fam){
   var shown = tileFams(fam), open = !!st.wm.fieldsOpen;
   var summary = shown.length === 1 ? FAM[shown[0]] : FAM[shown[0]] + ' + ' + (shown.length - 1) + ' more';
@@ -2665,7 +2815,8 @@ function renderWinMap(){
   var p = st.wm.sort.split(':'), fam = FAM[p[0]] ? p[0] : 'win', leadSel = p[1] === 'lead';
   var dl = dirLabels(st.wm.sort), first = defaultDir(st.wm.sort), dirs = first === 'asc' ? ['asc', 'desc'] : ['desc', 'asc'];
   var matched = all().filter(function(s){ return passKeys(s, Object.keys(st.ev.f)); }), mt = tally(matched), np = nPicks();
-  var h = '<div class="block" id="winmap"><div class="bhead"><div><div class="text-h4">Win Map</div>' +
+  var h = '<div class="block" id="winmap"><div class="bhead"><div>' + (SITE ? '<h2 class="site-h">Detailed Model Win Map</h2>' : '<div class="text-h4">Win Map</div>' +
+    (MATCH_ANY ? '<p class="wm-help">Pick any tiles to see their scenarios. Picks add up: a scenario is shown if it matches any of them.</p>' : '')) +
     '</div></div>' +
     '<div class="card ctrl"><div class="ctrl-row">' +
       (st.wm.view === 'map' ? fieldsDropdown(fam) : '') +
@@ -2673,7 +2824,8 @@ function renderWinMap(){
       sortMenu('wm-sort', st.wm.sort, wmSortGroups(ar), !!st.wm.sortOpen) +
       (dl ? '<div class="ctrl-g"><span class="ctrl-lbl">' + LICON.order + 'Order</span><div class="toggle" role="tablist" aria-label="Sort direction">' + dirs.map(function(x){ return '<button role="tab" data-act="wm-dir" data-v="' + x + '" aria-selected="' + (st.wm.dir === x) + '">' + esc(dl[x]) + '</button>'; }).join('') + '</div></div>' : '') +
     '</div>' +
-    '</div>';
+    '</div>' +
+    (SITE ? siteSteps(false) + '<p class="wm-help site-help">Pick specific categories to see detailed observations on those scenarios.' + (MATCH_ANY ? ' Picks add up: a scenario shows if it matches any of them.' : '') + '</p>' : '');
   secs.forEach(function(d){
     var rows = sortRows(sectionRows(d, secs), st.wm.sort, st.wm.dir, d.key), on = st.ev.f[d.key] || [];
     rows = rows.filter(function(r){ return r.t.n || on.indexOf(r.v) >= 0; }).concat(rows.filter(function(r){ return !r.t.n && on.indexOf(r.v) < 0; }));
@@ -2688,10 +2840,10 @@ function renderWinMap(){
   if(st.wm.view === 'map') h += '<div class="wm-legend"><span class="label" style="letter-spacing:.06em">W–T–L</span>' + [[A_FILL, ar.a.short + ' won'], [TIE, 'Tied'], [B_FILL, ar.b.short + ' won']].map(function(x){ return '<span><span class="sw" style="background:' + x[0] + '"></span>' + esc(x[1]) + '</span>'; }).join('') + '</div>';
   var multi = secs.filter(function(d){ return d.multi; }).map(function(d){ return d.label.toLowerCase(); });
   // the way on, always in reach: what matches, what is picked, and the scenarios themselves
-  h += '<div class="wm-bar"><span class="wm-count"><b class="tnum">' + matched.length + '</b>of ' + all().length + ' scenarios match</span>' + miniTally(mt) +
+  h += '<div class="wm-bar"><span class="wm-count"><b class="tnum">' + matched.length + '</b>' + (SITE && !np ? 'scenarios · pick categories to narrow them' : 'of ' + all().length + ' scenarios ' + (MATCH_ANY && np ? 'match a pick' : 'match')) + '</span>' + (SITE ? '' : miniTally(mt)) +
     pickSummary() +
     (np ? '<button class="btn btn-secondary btn-sm" data-act="wm-clear">Clear</button>' : '') +
-    '<button class="btn wm-go" data-act="wm-go"' + (matched.length ? '' : ' disabled') + '>See detailed observations →</button></div>';
+    '<button class="btn wm-go" data-act="wm-go"' + (matched.length ? '' : ' disabled') + '>' + (D.noBank && !SITE ? 'See ' + plural(matched.length, 'scenario') + ' →' : 'See detailed observations →') + '</button></div>';
   return h + '</div>';
 }
 function sortControl(act, val, opts, aria, label){
@@ -2710,7 +2862,8 @@ function textHit(s){
 function passes(s, skip){
   if(skip !== 'q' && !textHit(s)) return false;
   var f = st.ev.f;
-  for(var k in f){ var a = f[k]; if(k !== skip && a && a.length && !valuesOf(s, k).some(function(v){ return a.indexOf(v) >= 0; })) return false; }
+  if(MATCH_ANY){ if(!passKeys(s, Object.keys(f).filter(function(k){ return k !== skip; }))) return false; }
+  else for(var k in f){ var a = f[k]; if(k !== skip && a && a.length && !valuesOf(s, k).some(function(v){ return a.indexOf(v) >= 0; })) return false; }
   if(skip !== 'result' && st.ev.result !== 'all'){ var w = s.win || 'none'; if(w !== st.ev.result) return false; }
   if(skip !== 'confident' && st.ev.confident && !(s.win === 'a' && s.margin >= D.confidentPP)) return false;
   return true;
@@ -2806,8 +2959,12 @@ function activeChips(){
 function renderEvidence(){
   var m = M(), ar = m.arms, list = visible(), base = cur(), n = filterCount(), t = tally(list);
   return '<div class="block" id="evidence" style="margin-top:0">' +
-    '<div class="ev-hero"><span class="eyebrow">' + esc(m.label) + ' · scenarios</span><h2 class="ev-h tnum">' + list.length + ' of ' + base.length + ' scenarios</h2>' + miniTally(t) + '</div>' +
-    '<div class="lbar"><button class="btn btn-secondary fbtn" data-act="sheet-open" aria-haspopup="dialog">' + FILTER_ICON + 'Filters' + (n ? '<span class="fbadge">' + n + '</span>' : '') + '</button>' +
+    (SITE ? '<h2 class="site-h">Detailed Observations</h2>' + siteSteps(true) +
+      (list.length < base.length && t.cmp ? renderCompareSite(list, 'Metrics for the selected scenarios', list.length + ' of ' + base.length + (nPicks() ? ' scenarios picked' : ' scenarios match your filters')) : '') +
+      (list.length && list.length < base.length && !t.cmp ? '<p class="site-sub">None of these scenarios has a result from both models, so there are no metrics to compare.</p>' : '') +
+      '<h3 class="site-h3">Scenarios</h3>' :
+    '<div class="ev-hero"><span class="eyebrow">' + esc(m.label) + ' · scenarios</span><h2 class="ev-h tnum">' + list.length + ' of ' + base.length + ' scenarios</h2>' + miniTally(t) + '</div>') +
+    '<div class="lbar">' + (SITE ? '<span class="lbl-adj">Adjust filters</span>' : '') + '<button class="btn btn-secondary fbtn" data-act="sheet-open" aria-haspopup="dialog">' + FILTER_ICON + 'Filters' + (n ? '<span class="fbadge">' + n + '</span>' : '') + '</button>' +
       sortMenu('ev-sort', st.ev.sort, evSorts(), !!st.ev.sortOpen) +
       '<span class="lcount"><b class="tnum">' + list.length + '</b> of ' + base.length + ' scenarios</span></div>' +
     activeChips() +
@@ -3108,7 +3265,7 @@ function renderLane(){
   applyMedia();
   var html = st.only === 'details' && INTERNAL ? renderDetails()
     : st.step === 'narrow' ? renderCompare() + renderWinMap()
-    : st.step === 'scenarios' ? renderEvidence()
+    : st.step === 'scenarios' ? (SITE ? renderCompare() : '') + renderEvidence()
     : st.step === 'method' && INTERNAL ? renderDetails()
     : renderMediaStep();
   document.getElementById('lane').innerHTML = html;
@@ -3117,8 +3274,12 @@ function renderLane(){
 }
 function goStep(v, replace){
   st.step = v; st.sheet = false;
-  if(location.hash !== '#' + v) history[replace ? 'replaceState' : 'pushState'](null, '', location.pathname + location.search + '#' + v);
-  renderStrip(); renderLane(); window.scrollTo(0, 0);
+  if(location.hash !== '#' + v){ try{ history[replace ? 'replaceState' : 'pushState'](null, '', location.pathname + location.search + '#' + v); }catch(e){} }
+  renderStrip(); renderLane();
+  // on the site layout the page keeps Overall Metrics above the steps: scroll to the step's own heading
+  var hd = SITE && (v === 'narrow' || v === 'scenarios') ? document.querySelector(v === 'scenarios' ? '#evidence .site-h' : '#winmap .site-h') : null;
+  if(hd){ var top = hd.getBoundingClientRect().top + window.scrollY - (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--chrome')) || 120) - 8; window.scrollTo(0, Math.max(0, top)); }
+  else window.scrollTo(0, 0);
 }
 window.addEventListener('popstate', function(){ var h = location.hash.slice(1); st.step = STEP_IDS.indexOf(h) >= 0 ? h : STEP_IDS[0]; st.sheet = false; renderStrip(); renderLane(); });
 function renderBlock(id, html){
@@ -3275,7 +3436,7 @@ window.addEventListener('resize', function(){ setChrome(); fitLb(); });
 window.addEventListener('scroll', onScroll, { passive: true });
 
 renderStrip(); renderLane(); renderFoot(); onScroll();
-if(STEP_IDS.indexOf(location.hash.slice(1)) < 0) history.replaceState(null, '', location.pathname + location.search + '#' + st.step);
+if(STEP_IDS.indexOf(location.hash.slice(1)) < 0){ try{ history.replaceState(null, '', location.pathname + location.search + '#' + st.step); }catch(e){} }
 })();
 """
 
