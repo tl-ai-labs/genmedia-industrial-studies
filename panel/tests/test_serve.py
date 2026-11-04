@@ -199,7 +199,8 @@ def test_results_name_the_models_and_keep_the_last_vote_per_reviewer(served):
     assert st == 200 and body["total"] == 2 and len(body["votes"]) == 2
     mine = next(v for v in body["votes"] if v["reviewer"] == "r1")
     media = served["key"]["items"][a["id"]]["media"]
-    assert set(mine) == {"ts", "reviewer", "lane", "scenario_id", "picked", "over", "reason"}
+    assert set(mine) == {"ts", "reviewer", "lane", "run_id", "scenario_id", "picked", "over", "reason"}
+    assert mine["run_id"] == served["key"]["items"][a["id"]]["run_id"]          # a dated round is told apart by it
     assert mine["picked"] == media[a["pair"][1]] and mine["over"] == media[a["pair"][0]]
     assert mine["reason"] == "changed my mind" and mine["scenario_id"] == a["scenario_id"]
     tie = next(v for v in body["votes"] if v["reviewer"] == "r2")
