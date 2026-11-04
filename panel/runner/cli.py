@@ -7,6 +7,7 @@
     correlate [--out correlation.md] [--json correlation.json] [--html results.html]
               [--run lane:run_id=<dir>] [--tie-band lane=x]
     sheet-export [--out-key key.csv] [--out-votes votes.csv]   the two tabs for the Google Sheet
+    merge-key --base <live key.json> --add <round key.json> --out <merged.json>
 
 Free, offline, no API key. Nothing here can spend.
 """
@@ -128,6 +129,36 @@ def cmd_sheet_export(a: argparse.Namespace) -> int:
     return 0
 
 
+def merge_keys(base: dict, add: dict) -> dict:
+    """The live key with a dated round's items added (image/tools/export_panel_round.py).
+    The base keeps its salt; an item id already in the base must map the same
+    media to the same models, or the merge stops - two exports of one run with
+    different salts would otherwise leave votes resolving to the wrong file."""
+    items = dict(base["items"])
+    for iid, it in add["items"].items():
+        if iid in items and items[iid]["media"] != it["media"]:
+            raise SystemExit(f"item {iid} ({it['scenario_id']}) is in both keys with different media")
+        items[iid] = it
+    runs = {lane: dict(r) for lane, r in base.get("runs", {}).items()}
+    for lane, r in add.get("runs", {}).items():
+        runs.setdefault(lane, {}).update(r)
+    out = {k: v for k, v in base.items() if k not in ("items", "runs")}
+    rounds = dict(base.get("rounds", {}))
+    if add.get("round"):
+        rounds[add["round"]] = {"salt": add.get("salt"), "runs": add.get("runs", {})}
+    out.update(runs=runs, rounds=rounds, items=items)
+    return out
+
+
+def cmd_merge_key(a: argparse.Namespace) -> int:
+    base = json.loads(Path(a.base).read_text(encoding="utf-8"))
+    add = json.loads(Path(a.add).read_text(encoding="utf-8"))
+    merged = merge_keys(base, add)
+    Path(a.out).write_text(json.dumps(merged, indent=1), encoding="utf-8")
+    print(f"wrote {a.out}: {len(base['items'])} + {len(add['items'])} -> {len(merged['items'])} items")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="panel", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -175,6 +206,12 @@ def main(argv: list[str] | None = None) -> int:
     x.add_argument("--out-key", default="key.csv")
     x.add_argument("--out-votes", default="votes.csv")
     x.set_defaults(fn=cmd_sheet_export)
+
+    m = sub.add_parser("merge-key", help="add a dated round's items to the live key")
+    m.add_argument("--base", required=True, help="the vote store's current key.json")
+    m.add_argument("--add", required=True, help="the round's key (private/key-<date>.json)")
+    m.add_argument("--out", required=True)
+    m.set_defaults(fn=cmd_merge_key)
 
     a = p.parse_args(argv)
     return a.fn(a)

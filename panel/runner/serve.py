@@ -215,8 +215,11 @@ class VoteStore:
                 except json.JSONDecodeError:
                     continue
                 last[(str(r.get("reviewer") or ""), str(r.get("lane")), str(r.get("run_id")), str(r.get("scenario_id")))] = r
+        # run_id (2026-11-04): a dated round of the panel is a later run of a
+        # lane, and the studies console tells its votes apart by the run.
         out = [{
             "ts": r.get("ts"), "reviewer": r.get("reviewer"), "lane": r.get("lane"),
+            "run_id": r.get("run_id"),
             "scenario_id": r.get("scenario_id"), "picked": picked_of(r), "over": over_of(r),
             "reason": r.get("reason") or None,
         } for r in last.values()]

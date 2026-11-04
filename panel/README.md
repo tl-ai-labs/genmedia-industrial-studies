@@ -209,6 +209,36 @@ master copy and the committed `panel/votes.jsonl` is a snapshot: pull with
 `VITE_PANEL_URL=https://<service>-<hash>-uc.a.run.app` (Production) and
 redeploy the console; the value is baked in at build time.
 
+## Adding a dated round (a later run, its own pages)
+
+A later run of one lane is reviewed as a **dated round** on the studies site,
+at `…/blind-panel/<media>/<date>` (landing, `/review`, `/results`), apart from
+that lane's own pairs (the site's `lib/blindPanelReport.ts`,
+`BLIND_PANEL_ROUNDS`). For an image run:
+
+```bash
+cd ../image
+python tools/export_panel_round.py --run runs/<run-id> --date <YYYY-MM-DD> \
+    --out <site>/dashboard/public/reports/genmedia-blind-panel/<date> \
+    --key ../panel/private/key-<date>.json
+```
+
+The public half (`items.json` + `media/`) is committed in the site; the key
+stays here, under `private/`. The hosted server takes the round's votes only
+once its key has the round's items, so merge rather than replace it — **not**
+`--sync`, which would put this laptop's own `private/key.json` over the live
+one:
+
+```bash
+gcloud storage cp gs://<bucket>/private/key.json live-key.json
+.venv/bin/python -m runner.cli merge-key --base live-key.json --add private/key-<date>.json --out merged-key.json
+gcloud storage cp merged-key.json gs://<bucket>/private/key.json   # the server re-reads a changed key
+```
+
+`/api/results` names each vote's `run_id` (2026-11-04), which is how the site
+tells a round's votes apart; a server deployed before that does not, and the
+site falls back to the round's scenario ids.
+
 ## Storing votes in a Google Sheet (the no-server alternative)
 
 If a server is ever unwanted, the vote store can instead be a Google Sheet
