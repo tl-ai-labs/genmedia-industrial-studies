@@ -1,0 +1,624 @@
+# Banking & insurance — tool-heavy scenarios bank-101 … bank-108 (BANK-1 Cards, BANK-4 Fraud).
+code: bank
+scenarios:
+
+- id: bank-101
+  g: BANK-1
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Lost wallet — block three cards, dispute six charges, reissue, new controls"
+  basis: "A lost wallet means every card blocked, every unknown charge disputed one by one and new cards set up again."
+  caller: "M 26-45 · office worker who lost his wallet at a railway station, hurried but clear"
+  goal: "Block his two cards and his wife's add-on, dispute every charge made after the loss, get new cards and set limits on them."
+  role: "You handle cards. Block first, then look at the charges."
+  context: "Disputes for charges after a card is reported lost are raised one per transaction."
+  noise: {bed: street_traffic, snr_db: 12}
+  tasks:
+    - task: "Verify and find the cards"
+      calls:
+        - "verify_caller(name=Rahul Iyer, dob=12 Mar 1986) → verified"
+        - "get_accounts() → joint savings 1190 (Rahul Iyer, Lakshmi Iyer) with debit cards 8823 (Rahul) and 8840 (Lakshmi); credit card 4417 (Rahul)"
+        - "get_card(card_last4=4417) → Kosh Gold credit card, limit ₹2,50,000, add-on 4425 for Lakshmi Iyer"
+    - task: "Block the three cards that were in the wallet"
+      calls:
+        - "block_card(card_last4=4417, reason=lost) → blocked, BL 70311"
+        - "block_card(card_last4=8823, reason=lost) → blocked, BL 70312"
+        - "block_card(card_last4=4425, reason=lost) → blocked, BL 70313"
+    - task: "Charges since the loss"
+      calls:
+        - "get_transactions(card_last4=4417, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → Sun 4 Oct ₹1,240 Swiggy; today 9:12 am ₹18,450 Croma online, ref CC 7741 2001; 9:47 am ₹6,999 Zivame, ref CC 7741 2002; 10:05 am ₹1,180 Uber, ref CC 7741 2003; 10:20 am ₹2,400 BookMyShow, ref CC 7741 2004"
+        - "get_transactions(card_last4=8823, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → Sun 4 Oct ₹2,300 DMart; today 9:25 am ATM withdrawal ₹10,000 at Dadar, ref AT 5521 0091"
+        - "get_transactions(card_last4=4425, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → today 10:32 am ₹4,999 Myntra, ref CC 7745 3310"
+    - task: "Dispute the six charges after the loss"
+      calls:
+        - "raise_dispute(txn_ref=CC 7741 2001, reason=card lost, not made by customer) → dispute DS 40211, decision within 30 days"
+        - "raise_dispute(txn_ref=CC 7741 2002, reason=card lost, not made by customer) → dispute DS 40212, decision within 30 days"
+        - "raise_dispute(txn_ref=CC 7741 2003, reason=card lost, not made by customer) → dispute DS 40213, decision within 30 days"
+        - "raise_dispute(txn_ref=CC 7741 2004, reason=card lost, not made by customer) → dispute DS 40214, decision within 30 days"
+        - "raise_dispute(txn_ref=AT 5521 0091, reason=card lost, not made by customer) → dispute DS 40215, decision within 30 days"
+        - "raise_dispute(txn_ref=CC 7745 3310, reason=card lost, not made by customer) → dispute DS 40216, decision within 30 days"
+    - task: "New cards — his two to the office, hers home"
+      calls:
+        - "reissue_card(card_last4=4417, deliver_to=office) → error: no office address on the credit card account; home address is on file"
+        - "reissue_card(card_last4=4417, deliver_to=home) → new card ending 6630, dispatched Tue 6 Oct"
+        - "reissue_card(card_last4=8823, deliver_to=office) → new card ending 2291, dispatched Tue 6 Oct to the Powai office"
+        - "reissue_card(card_last4=4425, deliver_to=home) → new card ending 6648, dispatched Tue 6 Oct"
+    - task: "Controls on the new cards"
+      calls:
+        - "set_card_control(card_last4=6630, channel=international, enabled=no) → updated"
+        - "set_card_control(card_last4=6648, channel=international, enabled=no) → updated"
+        - "set_card_control(card_last4=6648, channel=online, enabled=yes, limit=₹10,000) → updated"
+        - "set_card_control(card_last4=2291, channel=ATM, enabled=yes, limit=₹10,000) → updated"
+        - "set_card_control(card_last4=2291, channel=contactless, enabled=no) → updated"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=block_and_reissue_summary) → sent"
+  forbid: ["block_card(card_last4=8840)", update_contact]
+  lines:
+    - [open, "Hi, I lost my wallet at Dadar station this morning, around eight thirty. All my cards were in it. Please block them."]
+    - [after, "Rahul Iyer. Date of birth twelfth March nineteen eighty-six."]
+    - [after, "My credit card, my debit card, and my wife's add-on card on my credit card. Her own debit card is at home with her — leave that one alone."]
+    - [after, "Are there any charges this morning? I haven't used a single card today."]
+    - [after, "None of those are mine. Not one. Dispute every charge from this morning."]
+    - [after, "How much is that altogether?"]
+    - [after, "Okay. Now the new cards. Send my two to my office in Powai, and my wife's to home. If the office address doesn't work for a card, send that one home."]
+    - [after, "What do the new cards end in?"]
+    - [after, "On the new cards, switch off international on both credit cards. And my wife's online limit — ten thousand."]
+    - [pause 1600, "And on my new debit card, ATM up to ten thousand a day, and turn off tap-to-pay."]
+    - [after, "When do they arrive?"]
+    - [after, "Should I do anything else? Police complaint or something?"]
+    - [after, "Send me a summary by SMS, please."]
+    - [after, "That's all. Thanks for the quick help."]
+  key:
+    - "Verifies Rahul before acting; blocks 4417, 8823 and add-on 4425, and leaves Lakshmi's 8840 alone"
+    - "Reads the morning charges and disputes all six, one dispute each (DS 40211 to DS 40216)"
+    - "States the disputed total ₹44,028"
+    - "When the office address fails for 4417, says so and sends it home (6630); 2291 goes to the Powai office, 6648 home"
+    - "Sets international off on 6630 and 6648, ₹10,000 online on 6648, ₹10,000 ATM and tap-to-pay off on 2291"
+    - "Suggests reporting it on 1930 and to the police; sends the summary"
+  checks: {digits: ["6630", "2291", "6648"], say: [["44,028", "forty-four thousand and twenty-eight", "forty four thousand twenty eight"]], tool_order: [block_card, raise_dispute]}
+  guard: "Which cards, which address and the fallback are given before any reissue; L4–L5 ask for every morning charge whatever the agent reads out; L9–L10 name each control on each new card by role, so any card numbers the agent quoted fit."
+
+- id: bank-102
+  g: BANK-1
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Add-on cards for the family — limits, controls per card, a card for a minor refused"
+  basis: "Customers add family members to a credit card and want a different limit and set of controls for each one."
+  caller: "M 46-60 · father of two, businessman, decisive"
+  goal: "Add-on cards for his wife, mother and son with their own limits and controls, a higher limit for himself and a purchase moved to EMI."
+  role: "You handle cards. Add-on cards are only for family members aged 18 or over."
+  context: "Add-on cards are free. Their limits come out of the primary card's limit."
+  tasks:
+    - task: "Verify and check the card"
+      calls:
+        - "verify_caller(name=Vikas Malhotra, dob=3 Aug 1974) → verified"
+        - "get_card(card_last4=5512) → Kosh Platinum credit card, limit ₹3,00,000, ₹1,12,000 used, no add-ons"
+    - task: "Three add-on cards"
+      calls:
+        - "request_addon_card(card_last4=5512, member=Sunita Malhotra, limit=₹1,00,000) → add-on ending 5520, dispatched Wed 7 Oct"
+        - "request_addon_card(card_last4=5512, member=Kamla Devi Malhotra, limit=₹25,000) → add-on ending 5538, dispatched Wed 7 Oct"
+        - "request_addon_card(card_last4=5512, member=Aarav Malhotra, limit=₹20,000) → add-on ending 5546, dispatched Wed 7 Oct"
+    - task: "Aarav's card: online only, no gaming"
+      calls:
+        - "set_card_control(card_last4=5546, channel=international, enabled=no) → updated"
+        - "set_card_control(card_last4=5546, channel=ATM, enabled=no) → updated"
+        - "set_card_control(card_last4=5546, channel=contactless, enabled=no) → updated"
+        - "set_card_control(card_last4=5546, channel=online, enabled=yes, limit=₹10,000) → updated"
+        - "block_merchant(card_last4=5546, merchant=Dream11) → blocked"
+        - "block_merchant(card_last4=5546, merchant=MPL) → blocked"
+    - task: "His mother's card: tap in shops only"
+      calls:
+        - "set_card_control(card_last4=5538, channel=online, enabled=no) → updated"
+        - "set_card_control(card_last4=5538, channel=ATM, enabled=no) → updated"
+        - "set_card_control(card_last4=5538, channel=contactless, enabled=yes, limit=₹2,000) → updated"
+    - task: "Sunita's card: international"
+      calls:
+        - "set_card_control(card_last4=5520, channel=international, enabled=yes, limit=₹50,000) → updated"
+    - task: "His own limit"
+      calls:
+        - "check_limit_offer(card_last4=5512) → pre-approved increase to ₹4,00,000"
+        - "set_credit_limit(card_last4=5512, limit=₹4,00,000) → limit changed"
+    - task: "Fridge purchase to EMI"
+      calls:
+        - "get_transactions(card_last4=5512, from_date=1 Sep, to_date=30 Sep) → Sat 26 Sep ₹48,900 Croma, ref CC 5512 0926; other purchases under ₹5,000"
+        - "get_emi_options(txn_ref=CC 5512 0926) → 6 months ₹8,511 a month; 12 months ₹4,414 a month; 15% a year; ₹499 processing fee"
+        - "convert_to_emi(txn_ref=CC 5512 0926, tenure_months=12) → ₹4,414 a month from the 18 Oct statement"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=addon_card_summary) → sent"
+  forbid: ["request_addon_card(card_last4=5512, member=Riya Malhotra)"]
+  lines:
+    - [open, "Hello, main Vikas Malhotra bol raha hoon. Mere credit card pe family ke liye add-on cards chahiye. Card ending five five one two.", "Hello, this is Vikas Malhotra. I want add-on cards for my family on my credit card. Card ending 5512."]
+    - [after, "Date of birth teen August unnees sau chauhattar.", "Date of birth third August 1974."]
+    - [after, "Teen log. Wife Sunita — ek lakh limit. Mummy, Kamla Devi — pachchees hazaar. Aur beta Aarav, unnees saal ka — bees hazaar.", "Three people. My wife Sunita — one lakh limit. My mother, Kamla Devi — twenty-five thousand. And my son Aarav, nineteen — twenty thousand."]
+    - [after, "Aur meri beti Riya ke liye bhi ek bana do. Woh solah saal ki hai.", "And make one for my daughter Riya too. She's sixteen."]
+    - [after, "Achha, theek hai, uska baad mein dekhenge. Aarav ke card pe international, ATM aur tap-to-pay band rakhna. Online chalu, par das hazaar tak.", "Okay, fine, we'll see about hers later. On Aarav's card keep international, ATM and tap-to-pay off. Online on, but up to ten thousand."]
+    - [after, "Aur uske card pe Dream11 aur MPL block kar do. Gaming wale.", "And block Dream11 and MPL on his card. The gaming ones."]
+    - [after, "Mummy ke card pe online band, ATM bhi band. Sirf dukaan pe tap karke chalaye, do hazaar tak.", "On my mother's card, online off, ATM off too. She should only tap in shops, up to two thousand."]
+    - [after, "Sunita ke card pe international chalu kar do, pachaas hazaar tak.", "Switch on international on Sunita's card, up to fifty thousand."]
+    - [after, "Ek aur baat — mera apna limit badh sakta hai kya?", "One more thing — can my own limit go up?"]
+    - [bc 1500 L9, "Haan haan.", "Yes, yes."]
+    - [after, "Theek hai, badha do.", "Okay, increase it."]
+    - [after, "Pichhle mahine Croma se fridge liya tha. Usko EMI mein kar sakte ho?", "Last month I bought a fridge from Croma. Can you put it on EMI?"]
+    - [after, "Baara mahine wala kar do.", "Do the twelve-month one."]
+    - [after, "Cards kab tak aayenge? Sab ka summary SMS kar dena.", "When will the cards arrive? SMS a summary of everything."]
+    - [after, "Bas, thank you ji.", "That's all, thank you."]
+  key:
+    - "Verifies Vikas; adds add-ons for Sunita (₹1,00,000, 5520), Kamla Devi (₹25,000, 5538) and Aarav (₹20,000, 5546)"
+    - "Explains Riya cannot have an add-on until she is 18 and does not request one"
+    - "On 5546: international, ATM and tap-to-pay off, online on up to ₹10,000; Dream11 and MPL blocked"
+    - "On 5538: online and ATM off, tap-to-pay on up to ₹2,000. On 5520: international on up to ₹50,000"
+    - "Raises 5512's limit to the pre-approved ₹4,00,000 once he agrees"
+    - "Converts the ₹48,900 Croma purchase to 12 months at ₹4,414 a month and mentions the ₹499 fee"
+    - "Gives the dispatch date and sends the summary"
+  checks: {lang: hg, digits: ["5520", "5538", "5546"], say: [["4,414", "chaar hazaar chaar sau chaudah", "four thousand four hundred fourteen"]], tool_order: [verify_caller, request_addon_card]}
+  guard: "Each line names whose card it is; L5 accepts the refusal whatever words it came in; L11 accepts any offer the agent quoted."
+
+- id: bank-103
+  g: BANK-1
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Daughter's wedding on the card — five purchases to EMI, one not eligible, fees, autopay"
+  basis: "Big family expenses go on a credit card and customers then convert each purchase to EMI separately."
+  caller: "M 46-60 · father planning his daughter's wedding, careful with money"
+  goal: "Move each big wedding purchase to EMI, get fees waived, raise his limit and pay the bill automatically."
+  role: "You handle cards. Give the monthly amount before converting anything."
+  context: "Jewellery purchases cannot be converted to EMI. A late fee can be reversed once in 12 months."
+  tasks:
+    - task: "Verify and read the statement"
+      calls:
+        - "verify_caller(name=Ramesh Chandra Gupta, dob=21 Jan 1968) → verified"
+        - "get_card_statement(card_last4=7781) → total due ₹5,32,600, minimum due ₹26,630, due 18 Oct; fees: late fee ₹1,000, cash withdrawal fee ₹500"
+    - task: "Find the wedding purchases"
+      calls:
+        - "get_transactions(card_last4=7781, from_date=1 Aug, to_date=31 Aug) → 15 Aug ₹1,85,000 Tanishq, ref CC 7781 0815; 22 Aug ₹48,000 Nalli Silks, ref CC 7781 0822"
+        - "get_transactions(card_last4=7781, from_date=1 Sep, to_date=30 Sep) → 2 Sep ₹1,20,000 Shree Caterers, ref CC 7781 0902; 5 Sep ₹65,000 Royal Tent House, ref CC 7781 0905; 12 Sep ₹92,000 Vijay Sales, ref CC 7781 0912"
+    - task: "EMI options for each"
+      calls:
+        - "get_emi_options(txn_ref=CC 7781 0815) → not eligible: jewellery purchases can't be converted to EMI"
+        - "get_emi_options(txn_ref=CC 7781 0822) → 6 months ₹8,354 a month; 12 months ₹4,332 a month; 15% a year; ₹199 fee"
+        - "get_emi_options(txn_ref=CC 7781 0902) → 6 months ₹20,884 a month; 12 months ₹10,831 a month; 15% a year; ₹199 fee"
+        - "get_emi_options(txn_ref=CC 7781 0905) → 6 months ₹11,312 a month; 12 months ₹5,867 a month; 15% a year; ₹199 fee"
+        - "get_emi_options(txn_ref=CC 7781 0912) → 6 months ₹16,011 a month; 12 months ₹8,304 a month; 15% a year; ₹199 fee"
+    - task: "Convert four: sarees over 6 months, the rest over 12"
+      calls:
+        - "convert_to_emi(txn_ref=CC 7781 0822, tenure_months=6) → ₹8,354 a month from the 18 Oct statement"
+        - "convert_to_emi(txn_ref=CC 7781 0902, tenure_months=12) → ₹10,831 a month from the 18 Oct statement"
+        - "convert_to_emi(txn_ref=CC 7781 0905, tenure_months=12) → ₹5,867 a month from the 18 Oct statement"
+        - "convert_to_emi(txn_ref=CC 7781 0912, tenure_months=12) → ₹8,304 a month from the 18 Oct statement"
+    - task: "Fees"
+      calls:
+        - "reverse_fee(card_last4=7781, fee=late fee) → reversed ₹1,000 (first in 12 months)"
+        - "reverse_fee(card_last4=7781, fee=cash withdrawal fee) → not eligible: cash withdrawal fees are not reversed"
+    - task: "Higher limit before the wedding"
+      calls:
+        - "check_limit_offer(card_last4=7781) → pre-approved increase from ₹6,00,000 to ₹8,00,000"
+        - "set_credit_limit(card_last4=7781, limit=₹8,00,000) → limit changed"
+    - task: "Pay the bill automatically, schedule by email, SMS"
+      calls:
+        - "set_standing_instruction(from_account_last4=3304, to=credit card 7781, amount=full amount due, day=15) → SI 66120, first on 15 Oct"
+        - "request_statement(card_last4=7781, kind=EMI schedule) → emailed"
+        - "send_sms(template=emi_summary) → sent"
+  forbid: ["convert_to_emi(txn_ref=CC 7781 0815)"]
+  lines:
+    - [open, "नमस्ते, मेरा नाम रमेश चंद्र गुप्ता है। बेटी की शादी है, सारा खर्च क्रेडिट कार्ड पर हुआ है। कार्ड सात सात आठ एक पर ख़त्म होता है।", "Hello, my name is Ramesh Chandra Gupta. My daughter is getting married and all the spending went on my credit card. The card ends 7781."]
+    - [after, "जन्मतिथि इक्कीस जनवरी उन्नीस सौ अड़सठ।", "Date of birth twenty-first January 1968."]
+    - [after, "अगस्त और सितंबर में जितनी बड़ी ख़रीदारी हुई — ज़ेवर, साड़ियाँ, कैटरर, टेंट, और टीवी-फ्रिज — सबको EMI में करना है।", "All the big purchases in August and September — jewellery, sarees, caterer, tent, and TV and fridge — I want all of them on EMI."]
+    - [after, "ज़ेवर वाला नहीं होगा? अच्छा। बाकी चारों की किश्त कितनी बनेगी?", "The jewellery one can't be done? Okay. What will the instalments be for the other four?"]
+    - [after, "साड़ियों वाला छह महीने में कर दीजिए, बाकी सब बारह महीने में।", "Do the sarees over six months, and all the rest over twelve months."]
+    - [after, "तो हर महीने कुल कितनी किश्त जाएगी?", "So how much will go in instalments every month in total?"]
+    - [after wait=7000, "माफ़ कीजिए, लिख रहा था। ठीक है।", "Sorry, I was writing it down. Okay."]
+    - [after, "बिल में लेट फ़ीस लगी है, और एक कैश निकालने की फ़ीस भी। दोनों हटा सकते हैं?", "There's a late fee on the bill, and a cash withdrawal fee too. Can you remove both?"]
+    - [after, "चलिए, जो हो सकता है वो कीजिए। शादी नवंबर में है, लिमिट थोड़ी बढ़ सकती है?", "Fine, do what you can. The wedding is in November — can the limit go up a bit?"]
+    - [after, "हाँ, बढ़ा दीजिए।", "Yes, increase it."]
+    - [after, "आगे से बिल अपने आप भरना चाहिए, मेरे बचत खाते तीन तीन शून्य चार से। पंद्रह तारीख़ को, पूरा बिल।", "From now on the bill should pay itself, from my savings account 3304. On the fifteenth, the full bill."]
+    - [after, "किश्तों की पूरी सूची ईमेल पर भेज दीजिए।", "Email me the full list of instalments."]
+    - [after, "और एक SMS भी।", "And an SMS as well."]
+    - [after, "बहुत धन्यवाद, आपने बड़ी मदद की।", "Thank you very much, you've been a great help."]
+  key:
+    - "Finds all five purchases; says the ₹1,85,000 Tanishq purchase cannot go on EMI and does not convert it"
+    - "Gives the monthly amounts before converting: sarees 6 months ₹8,354; caterer ₹10,831, tent ₹5,867 and Vijay Sales ₹8,304 over 12 months"
+    - "States the monthly total ₹33,356 and mentions the ₹199 fee on each"
+    - "Reverses the ₹1,000 late fee; explains the ₹500 cash withdrawal fee cannot be reversed"
+    - "Raises the limit to ₹8,00,000 once he agrees; sets the full-bill standing instruction from 3304 on the 15th"
+    - "Emails the EMI schedule and sends the SMS; patient while he writes"
+  checks: {lang: hi, reprompt_in_silence: L7, digits: ["66120"], say: [["33,356", "तैंतीस हज़ार तीन सौ छप्पन"], ["8,00,000", "आठ लाख"]], tool_order: [get_emi_options, convert_to_emi]}
+  guard: "L3 names every purchase, L5 every tenure; L4 reacts to the jewellery refusal the agent must give; L6 asks for the total whatever was said."
+
+- id: bank-104
+  g: BANK-1
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Family trip abroad — international on four cards, travel notices, fee reversal, flights to EMI"
+  basis: "Before a foreign trip, every card in the family needs international use, limits and a travel notice, card by card."
+  caller: "F 26-45 · software engineer in Hyderabad, organised; speaker b: M 26-45 · her husband Kiran"
+  goal: "Make every card work in Singapore and Malaysia with set limits, get the annual fee waived, put the flights on EMI, and set up her husband's own card."
+  role: "You handle cards. An add-on card's international limit cannot be above ₹40,000. Verify the husband before touching his own card."
+  context: "The annual fee is reversed when the year's spend is above ₹3,00,000."
+  tasks:
+    - task: "Verify and find her cards"
+      calls:
+        - "verify_caller(name=Swathi Reddy, dob=9 Feb 1990) → verified"
+        - "get_accounts() → credit card 6604 (Swathi) with add-on 6612 (Kiran Reddy); savings 7015 with debit card 2210 (Swathi)"
+    - task: "Her credit card abroad"
+      calls:
+        - "set_card_control(card_last4=6604, channel=international, enabled=yes, limit=₹1,50,000) → updated"
+        - "set_card_control(card_last4=6604, channel=contactless, enabled=yes) → updated"
+        - "set_travel_notice(card_last4=6604, countries=Singapore and Malaysia, from_date=Sat 17 Oct, to_date=Sun 25 Oct) → on file; international switches off after 25 Oct"
+    - task: "Kiran's add-on abroad"
+      calls:
+        - "set_card_control(card_last4=6612, channel=international, enabled=yes, limit=₹50,000) → error: an add-on card's international limit can't be above ₹40,000"
+        - "set_card_control(card_last4=6612, channel=international, enabled=yes, limit=₹40,000) → updated"
+        - "set_travel_notice(card_last4=6612, countries=Singapore and Malaysia, from_date=Sat 17 Oct, to_date=Sun 25 Oct) → on file; international switches off after 25 Oct"
+    - task: "Her debit card abroad, with ATM"
+      calls:
+        - "set_card_control(card_last4=2210, channel=international, enabled=yes) → updated"
+        - "set_card_control(card_last4=2210, channel=ATM, enabled=yes, limit=₹40,000) → updated, international ATM allowed"
+        - "set_travel_notice(card_last4=2210, countries=Singapore and Malaysia, from_date=Sat 17 Oct, to_date=Sun 25 Oct) → on file; international switches off after 25 Oct"
+    - task: "Annual fee"
+      calls:
+        - "get_card_statement(card_last4=6604) → total due ₹1,61,300, due 22 Oct; annual fee ₹2,999 + GST charged 28 Sep; spend in the last 12 months ₹4,12,000"
+        - "reverse_fee(card_last4=6604, fee=annual fee) → reversed ₹3,539 (₹2,999 + GST)"
+    - task: "Flights to EMI, not the hotel"
+      calls:
+        - "get_transactions(card_last4=6604, from_date=1 Sep, to_date=4 Oct) → Tue 22 Sep ₹1,12,400 MakeMyTrip flights, ref CC 6604 0922; Tue 29 Sep ₹38,000 Agoda hotel, ref CC 6604 0929"
+        - "get_emi_options(txn_ref=CC 6604 0922) → 3 months ₹38,345 a month; 6 months ₹19,506 a month; 14% a year; ₹299 fee"
+        - "convert_to_emi(txn_ref=CC 6604 0922, tenure_months=6) → ₹19,506 a month from the 22 Oct statement"
+    - task: "Kiran's own debit card"
+      calls:
+        - "verify_caller(name=Kiran Reddy, dob=30 Nov 1987) → verified"
+        - "set_card_control(card_last4=2218, channel=international, enabled=yes, limit=₹50,000) → updated"
+        - "set_travel_notice(card_last4=2218, countries=Singapore and Malaysia, from_date=Sat 17 Oct, to_date=Sun 25 Oct) → on file; international switches off after 25 Oct"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=travel_ready_summary) → sent"
+  forbid: ["convert_to_emi(txn_ref=CC 6604 0929)"]
+  lines:
+    - [open, "హలో, మేము వచ్చే వారం Singapore, Malaysia వెళ్తున్నాం. నా cards అన్నీ abroad లో పనిచేసేలా చేయాలి.", "Hello, we're going to Singapore and Malaysia next week. I need all my cards to work abroad."]
+    - [after, "నా పేరు Swathi Reddy. Date of birth తొమ్మిది February, పంతొమ్మిది వందల తొంభై.", "My name is Swathi Reddy. Date of birth ninth February 1990."]
+    - [after, "పదిహేడో తేదీ Saturday వెళ్ళి, ఇరవై అయిదో తేదీ Sunday తిరిగి వస్తాం. నా credit card కి international ఒకటిన్నర లక్ష వరకు, tap-to-pay కూడా on చేయండి.", "We leave on Saturday the seventeenth and come back on Sunday the twenty-fifth. On my credit card, international up to one and a half lakh, and switch on tap-to-pay too."]
+    - [after, "నా husband Kiran add-on card కి యాభై వేలు international. అంత కుదరకపోతే, maximum ఎంత ఉంటే అంత పెట్టండి.", "Fifty thousand international on my husband Kiran's add-on card. If that isn't allowed, put whatever the maximum is."]
+    - [after, "నా debit card కి కూడా international on చేయండి. అక్కడ ATM లో రోజుకు నలభై వేల వరకు తీసుకునేలా.", "Switch on international on my debit card too. So I can take out up to forty thousand a day at ATMs there."]
+    - [after, "ఇంకో విషయం — ఈ నెల annual fee వేశారు. నేను ఈ year చాలా spend చేశాను. దాన్ని తీసేయగలరా?", "Another thing — you charged the annual fee this month. I've spent a lot this year. Can you remove it?"]
+    - [after, "Flight tickets కి లక్షా పన్నెండు వేలు అయింది. దాన్ని EMI లోకి మార్చగలరా? Hotel booking refundable, దాన్ని వదిలేయండి.", "The flight tickets came to one lakh twelve thousand. Can you move that to EMI? The hotel booking is refundable, leave that one."]
+    - [after, "ఆరు నెలలది పెట్టండి.", "Do the six-month one."]
+    - [after b, "Hi, నేను Kiran. నా date of birth ముప్పై November, పంతొమ్మిది వందల ఎనభై ఏడు.", "Hi, I'm Kiran. My date of birth is thirtieth November 1987."]
+    - [after b, "నా own debit card, ending two two one eight — దానికి కూడా international యాభై వేల వరకు on చేయండి. Same dates.", "My own debit card, ending 2218 — switch on international up to fifty thousand on that too. Same dates."]
+    - [after b, "Thanks. Phone మళ్ళీ Swathi కి ఇస్తున్నా.", "Thanks. I'm handing the phone back to Swathi."]
+    - [after, "మేము తిరిగి వచ్చాక international దానంతట అదే off అవుతుందా?", "Will international switch off by itself after we come back?"]
+    - [after, "అన్నీ ఒకసారి summary చెప్పండి, SMS కూడా పంపండి.", "Give me a summary of everything once, and send an SMS too."]
+    - [after, "సరే, thank you అండి.", "Okay, thank you."]
+  key:
+    - "On 6604: international up to ₹1,50,000, tap-to-pay on, travel notice 17–25 October"
+    - "When ₹50,000 fails on add-on 6612, says the cap and sets ₹40,000, as she asked"
+    - "On 2210: international on and ₹40,000 a day at ATMs abroad, with a travel notice"
+    - "Reverses the annual fee (₹3,539 including GST) because her spend was above ₹3,00,000"
+    - "Converts only the ₹1,12,400 flights to 6 months at ₹19,506 a month; leaves the hotel"
+    - "Verifies Kiran before touching his card 2218; sets ₹50,000 international and a travel notice on it"
+    - "Says international switches off after 25 October; speaks Telugu, keeping her English words"
+  checks: {lang: te, digits: ["3,539", "2218"], say: [["19,506", "పంతొమ్మిది వేల ఐదు వందల ఆరు"]], tool_order: [verify_caller, set_card_control]}
+  guard: "The add-on fallback comes with the request in L4; Kiran gives his own date of birth before asking for anything; L12–L13 make sense after any reply."
+
+- id: bank-105
+  g: BANK-1
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Daughter's add-on card declined in Germany — limits, controls, a double charge, her allowance"
+  basis: "Parents with children studying abroad sort out add-on cards, duplicate charges and monthly transfers in one call."
+  caller: "M 46-60 · father in Chennai, worried, speaks Tamil with English banking words"
+  goal: "Get his daughter's add-on working in Germany with set limits, dispute a double charge, stop her old subscriptions, raise his own limit, EMI on a fee and a monthly allowance."
+  role: "You handle cards. Do not block a card that is only being declined."
+  context: "Foreign currency mark-up of 3.5% is not reversed."
+  tasks:
+    - task: "Verify and look at both cards"
+      calls:
+        - "verify_caller(name=Senthil Kumar, dob=14 Jun 1971) → verified"
+        - "get_card(card_last4=3409) → add-on of 3391 for Nila Senthil; limit ₹30,000; international off; two declines today at 2:10 am and 2:14 am (international off)"
+        - "get_card(card_last4=3391) → Kosh Platinum credit card, limit ₹2,50,000, ₹60,000 used"
+    - task: "Her limit and controls"
+      calls:
+        - "set_credit_limit(card_last4=3409, limit=₹1,00,000) → error: card system busy, please try again"
+        - "set_credit_limit(card_last4=3409, limit=₹1,00,000) → limit changed"
+        - "set_card_control(card_last4=3409, channel=international, enabled=yes, limit=₹1,00,000) → updated"
+        - "set_card_control(card_last4=3409, channel=contactless, enabled=yes) → updated"
+        - "set_card_control(card_last4=3409, channel=ATM, enabled=yes, limit=₹20,000) → updated"
+        - "set_card_control(card_last4=3409, channel=online, enabled=yes, limit=₹50,000) → updated"
+        - "set_travel_notice(card_last4=3409, countries=Germany, from_date=Mon 5 Oct, to_date=30 Jun 2027) → on file"
+    - task: "The double flight charge"
+      calls:
+        - "get_transactions(card_last4=3409, from_date=Fri 25 Sep, to_date=Mon 5 Oct) → Fri 25 Sep ₹48,200 Lufthansa via Cleartrip, ref CC 3409 0925A; Fri 25 Sep ₹48,200 Lufthansa via Cleartrip, ref CC 3409 0925B, one minute later"
+        - "raise_dispute(txn_ref=CC 3409 0925B, reason=charged twice) → dispute DS 51180, decision within 30 days"
+    - task: "Stop her old subscriptions"
+      calls:
+        - "block_merchant(card_last4=3409, merchant=Cult.fit) → blocked"
+        - "block_merchant(card_last4=3409, merchant=Airtel postpaid) → blocked"
+        - "block_merchant(card_last4=3409, merchant=Spotify) → blocked"
+    - task: "His own limit"
+      calls:
+        - "check_limit_offer(card_last4=3391) → pre-approved increase to ₹3,50,000"
+        - "set_credit_limit(card_last4=3391, limit=₹3,50,000) → limit changed"
+    - task: "University fee to EMI, and the mark-up"
+      calls:
+        - "get_transactions(card_last4=3391, from_date=20 Sep, to_date=4 Oct) → Mon 28 Sep ₹84,000 Munich university semester fee, ref CC 3391 0928; ₹2,940 foreign currency mark-up on it"
+        - "get_emi_options(txn_ref=CC 3391 0928) → 6 months ₹14,619 a month; 12 months ₹7,582 a month; 15% a year; ₹199 fee"
+        - "convert_to_emi(txn_ref=CC 3391 0928, tenure_months=12) → ₹7,582 a month from the 20 Oct statement"
+        - "reverse_fee(card_last4=3391, fee=foreign currency mark-up) → not eligible: mark-up is not reversed"
+    - task: "Her monthly allowance"
+      calls:
+        - "get_beneficiaries(account_last4=7720) → Nila Senthil, Kosh Bank savings ending 5126, added 2024"
+        - "set_standing_instruction(from_account_last4=7720, to=Nila Senthil 5126, amount=₹25,000, day=1) → SI 70214, first on 1 Nov"
+    - task: "Call back on the dispute, summary"
+      calls:
+        - "schedule_callback(date=Mon 12 Oct, slot=6-7 pm, topic=dispute DS 51180) → booked"
+        - "send_sms(template=card_summary) → sent"
+  forbid: ["block_card(card_last4=3409)"]
+  lines:
+    - [open, "வணக்கம். என் பொண்ணு Germany ல படிக்கிறா. அவளோட add-on card அங்க decline ஆகுது. Card ending three four zero nine.", "Hello. My daughter studies in Germany. Her add-on card is being declined there. Card ending 3409."]
+    - [after, "நான் Senthil Kumar. Date of birth பதினாலு June, ஆயிரத்து தொள்ளாயிரத்து எழுபத்தி ஒண்ணு.", "I'm Senthil Kumar. Date of birth fourteenth June 1971."]
+    - [after, "அவ card limit ஐ ஒரு லட்சமா ஏத்துங்க. International on பண்ணுங்க, அதுவும் ஒரு லட்சம் வரைக்கும்.", "Raise her card limit to one lakh. Switch on international, also up to one lakh."]
+    - [after, "அங்க எல்லாமே tap பண்ணி தான் pay பண்றாங்க, அதையும் on பண்ணுங்க. ATM ல ஒரு நாளைக்கு இருபதாயிரம் வரைக்கும். Online purchase ஐம்பதாயிரம் வரைக்கும்.", "Everything there is paid by tapping, so switch that on too. ATM up to twenty thousand a day. Online purchases up to fifty thousand."]
+    - [after, "அவ அங்க அடுத்த வருஷம் June வரைக்கும் இருப்பா. அது bank க்கு தெரியணும், இல்லன்னா மறுபடியும் block ஆகும்.", "She'll be there until June next year. The bank should know, or it will get blocked again."]
+    - [after, "இன்னொன்னு — அவ flight ticket க்கு ரெண்டு தடவை பணம் போயிருக்கு. பாருங்க.", "Another thing — her flight ticket was charged twice. Please check."]
+    - [after, "ஆமா, ஒன்னு தான் எங்களோடது. இன்னொன்னுக்கு dispute போடுங்க.", "Yes, only one is ours. Raise a dispute for the other."]
+    - [after, "அவ இங்க இருந்தப்போ gym, mobile postpaid, Spotify எல்லாம் அவ card ல இருந்தது. அந்த மூணையும் நிறுத்துங்க.", "When she was here, the gym, mobile postpaid and Spotify were all on her card. Stop all three."]
+    - [after, "என் card limit கூட கொஞ்சம் ஏத்த முடியுமா?", "Can my own card limit go up a bit too?"]
+    - [after, "சரி, ஏத்துங்க.", "Okay, raise it."]
+    - [after, "University fee எண்பத்தி நாலாயிரம் என் card ல கட்டினேன். அதை பன்னிரண்டு மாசம் EMI ஆக்குங்க.", "I paid the university fee of eighty-four thousand on my card. Make it twelve months' EMI."]
+    - [after, "அந்த fee க்கு foreign currency charge போட்டிருக்காங்க. அதை waive பண்ண முடியுமா?", "There's a foreign currency charge on that fee. Can you waive it?"]
+    - [after, "சரி. இன்னொன்னு — மாசா மாசம் ஒன்னாம் தேதி அவ account க்கு இருபத்தஞ்சாயிரம் போகணும். என் savings ல இருந்து.", "Okay. One more — twenty-five thousand should go to her account on the first of every month. From my savings."]
+    - [after, "Dispute என்ன ஆச்சுன்னு ஒரு வாரத்துல எனக்கு call பண்ணுங்க. சாயங்காலம் ஆறு மணிக்கு மேல.", "Call me in a week about the dispute. After six in the evening."]
+    - [after, "எல்லாத்தையும் SMS ல அனுப்புங்க. ரொம்ப நன்றி.", "Send everything by SMS. Thank you very much."]
+  key:
+    - "Explains the declines were because international was off; does not block 3409"
+    - "When the limit change fails, says so and retries; sets 3409 to ₹1,00,000 with international ₹1,00,000, tap-to-pay, ATM ₹20,000, online ₹50,000"
+    - "Puts a travel notice for Germany until 30 June 2027"
+    - "Disputes only the second ₹48,200 charge (DS 51180) and stops Cult.fit, Airtel postpaid and Spotify on her card"
+    - "Raises 3391 to ₹3,50,000; converts the ₹84,000 fee to 12 months at ₹7,582; says the mark-up cannot be reversed"
+    - "Sets ₹25,000 to Nila's 5126 on the 1st (SI 70214, first 1 Nov) and books the call-back on 12 October, 6–7 pm"
+    - "Speaks Tamil, keeping his English words"
+  checks: {lang: ta, digits: ["DS 51180", "70214", "7,582"], tool_order: [set_credit_limit, set_card_control]}
+  guard: "Every amount and control is given with its request; L7 is true once the agent reports two charges; L10 accepts any offer the agent quoted."
+
+- id: bank-106
+  g: BANK-1
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Card security call — five charges to confirm or reject, new card, son's own add-on"
+  basis: "Banks call when a card shows unusual charges; the customer confirms or rejects each, and the card is replaced."
+  caller: "M 46-60 · father woken by the alert SMS, alert but polite"
+  goal: "Sort the genuine charges from the fraud, replace the card, stop an unknown subscription and give his son his own card."
+  role: "You are calling from Kosh Bank's card security team about two held transactions on card 9034. Open the call: greet, name Kosh Bank, say why you are calling, and verify the customer before giving any detail."
+  context: ""
+  tasks:
+    - task: "Verify and read the charges"
+      calls:
+        - "verify_caller(name=Anil Joseph, dob=5 May 1979) → verified"
+        - "get_card(card_last4=9034) → Kosh Signature credit card, limit ₹2,00,000, international on, two transactions held"
+        - "get_transactions(card_last4=9034, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → today 2:14 am ₹38,900 Apple.com Singapore, ref CC 9034 7701 (held); 2:20 am ₹41,200 Apple.com Singapore, ref CC 9034 7702 (held); 8:40 am ₹1,299 Steam games, ref CC 9034 7703; 9:05 am ₹2,450 Amazon, ref CC 9034 7704; 10:10 am ₹899 Zeta Cloud, ref CC 9034 7705. The same ₹899 Zeta Cloud charge on 5 Sep (ref CC 9034 0905) and 5 Aug (ref CC 9034 0805)"
+    - task: "Confirm or reject each of today's charges"
+      calls:
+        - "confirm_transaction(txn_ref=CC 9034 7701, genuine=no) → declined, not charged"
+        - "confirm_transaction(txn_ref=CC 9034 7702, genuine=no) → declined, not charged"
+        - "confirm_transaction(txn_ref=CC 9034 7703, genuine=yes) → marked genuine"
+        - "confirm_transaction(txn_ref=CC 9034 7704, genuine=yes) → marked genuine"
+        - "confirm_transaction(txn_ref=CC 9034 7705, genuine=no) → marked not genuine"
+    - task: "Dispute the three Zeta Cloud charges"
+      calls:
+        - "raise_dispute(txn_ref=CC 9034 7705, reason=unknown subscription) → dispute DS 61405"
+        - "raise_dispute(txn_ref=CC 9034 0905, reason=unknown subscription) → dispute DS 61406"
+        - "raise_dispute(txn_ref=CC 9034 0805, reason=unknown subscription) → dispute DS 61407"
+    - task: "Block and replace the card"
+      calls:
+        - "block_card(card_last4=9034, reason=card details stolen) → blocked, BL 81102"
+        - "reissue_card(card_last4=9034, deliver_to=home) → new card ending 9058, dispatched Wed 7 Oct"
+    - task: "Controls on the new card"
+      calls:
+        - "set_card_control(card_last4=9058, channel=international, enabled=no) → updated"
+        - "set_card_control(card_last4=9058, channel=online, enabled=yes, limit=₹25,000) → updated"
+        - "block_merchant(card_last4=9058, merchant=Zeta Cloud) → blocked"
+    - task: "Kevin's own add-on card"
+      calls:
+        - "request_addon_card(card_last4=9058, member=Kevin Joseph, limit=₹15,000) → add-on ending 9066, dispatched Wed 7 Oct"
+        - "set_card_control(card_last4=9066, channel=international, enabled=no) → updated"
+        - "set_card_control(card_last4=9066, channel=online, enabled=yes, limit=₹5,000) → updated"
+        - "block_merchant(card_last4=9066, merchant=Steam) → blocked"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=card_security_summary) → sent"
+  forbid: ["confirm_transaction(txn_ref=CC 9034 7704, genuine=no)", "raise_dispute(txn_ref=CC 9034 7703)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Yes, this is Anil. Which transactions?"]
+    - [after, "Fifth May, nineteen seventy-nine."]
+    - [after, "Apple? At two in the morning? No, I was asleep. Those aren't mine."]
+    - [after, "The games one and Amazon are my son Kevin's — he uses my card. What else is there?"]
+    - [after, "Zeta Cloud? Never heard of it. Not mine. Has it charged me before?"]
+    - [after, "Then dispute all of them, every Zeta Cloud charge."]
+    - [after, "Should I get a new card? Block this one and send a new one home."]
+    - [after, "On the new card — international off, and online up to twenty-five thousand. And make sure Zeta Cloud can't charge it again."]
+    - [after, "Kevin should have his own card instead of using mine. Can you give him an add-on? Fifteen thousand limit."]
+    - [cut 1300 L10, "Actually — no international on his, online only up to five thousand, and block Steam on it."]
+    - [after, "When will the cards come?"]
+    - [after, "Send me all of this on SMS."]
+    - [after, "Thanks for calling, really."]
+  key:
+    - "Opens naming Kosh Bank and the held charges; verifies Anil before reading any detail"
+    - "Rejects the two Apple charges (declined, not charged), confirms Steam and Amazon as genuine, rejects today's Zeta Cloud"
+    - "Disputes all three Zeta Cloud charges (DS 61405, 61406, 61407)"
+    - "Blocks 9034 and reissues as 9058, with international off, ₹25,000 online and Zeta Cloud blocked"
+    - "Adds Kevin's add-on 9066 at ₹15,000 with international off, ₹5,000 online and Steam blocked"
+    - "Gives the dispatch date and sends the SMS"
+  checks: {digits: ["9058", "9066", "DS 61405"], tool_order: [verify_caller, get_transactions]}
+  guard: "Every line reacts to charges the agent must read out; L6 asks about earlier charges whether or not the agent mentioned them; Kevin's controls come in the cut-in, before any add-on control is set."
+
+- id: bank-107
+  g: BANK-1
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Freelancer cleans up two cards — six subscriptions, three disputes, two EMIs, fees, autopay"
+  basis: "Freelancers run work tools on personal cards and periodically clean up subscriptions, disputes and fees card by card."
+  caller: "F 26-45 · freelance designer in Delhi, quick, has her statements open"
+  goal: "Stop six subscriptions, dispute three charges, move two purchases to EMI, deal with fees, block an old add-on, raise a limit and pay both bills automatically."
+  role: "You handle cards. Give EMI amounts before converting."
+  context: "A late fee can be reversed once in 12 months. The annual fee is waived only when the card year's spend is above ₹1,50,000."
+  tasks:
+    - task: "Verify and read both cards"
+      calls:
+        - "verify_caller(name=Neha Arora, dob=17 Dec 1992) → verified"
+        - "get_accounts() → savings 4410; credit cards 2207 and 2215; add-on 2231 on 2215 for Pooja Rawat"
+        - "get_transactions(card_last4=2207, from_date=1 Sep, to_date=4 Oct) → Canva Pro ₹499 monthly; Zoom ₹1,499 on 12 Sep, ref CC 2207 0912; Hotstar ₹299 monthly; Audible ₹199 on 20 Sep, ref CC 2207 0920; MacBook ₹1,64,900 on 15 Sep, ref CC 2207 0915"
+        - "get_transactions(card_last4=2215, from_date=1 Sep, to_date=4 Oct) → Notion ₹800 monthly; Cult.fit ₹2,999 twice on 3 Sep, refs CC 2215 0903A and CC 2215 0903B; Spotify ₹119 monthly; LinkedIn Premium ₹2,050 monthly; office chair ₹28,500 on 18 Sep, ref CC 2215 0918"
+    - task: "Stop six subscriptions, keep Canva and Notion"
+      calls:
+        - "block_merchant(card_last4=2207, merchant=Zoom) → blocked"
+        - "block_merchant(card_last4=2207, merchant=Hotstar) → blocked"
+        - "block_merchant(card_last4=2207, merchant=Audible) → blocked"
+        - "block_merchant(card_last4=2215, merchant=Cult.fit) → blocked"
+        - "block_merchant(card_last4=2215, merchant=Spotify) → blocked"
+        - "block_merchant(card_last4=2215, merchant=LinkedIn Premium) → blocked"
+    - task: "Three disputes"
+      calls:
+        - "raise_dispute(txn_ref=CC 2207 0912, reason=charged after cancellation) → dispute DS 72031"
+        - "raise_dispute(txn_ref=CC 2207 0920, reason=charged after cancellation) → dispute DS 72032"
+        - "raise_dispute(txn_ref=CC 2215 0903B, reason=charged twice) → dispute DS 72033"
+    - task: "Two purchases to EMI"
+      calls:
+        - "get_emi_options(txn_ref=CC 2207 0915) → 6 months ₹28,698 a month; 12 months ₹14,884 a month; 15% a year; ₹499 fee"
+        - "convert_to_emi(txn_ref=CC 2207 0915, tenure_months=12) → ₹14,884 a month from the 25 Oct statement"
+        - "get_emi_options(txn_ref=CC 2215 0918) → 6 months ₹4,960 a month; 12 months ₹2,572 a month; 15% a year; ₹199 fee"
+        - "convert_to_emi(txn_ref=CC 2215 0918, tenure_months=6) → ₹4,960 a month from the 28 Oct statement"
+    - task: "Fees"
+      calls:
+        - "get_card_statement(card_last4=2207) → total due ₹2,08,400, due 25 Oct; late fee ₹1,300 charged 8 Sep"
+        - "reverse_fee(card_last4=2207, fee=late fee) → reversed ₹1,300 (first in 12 months)"
+        - "get_card_statement(card_last4=2215) → total due ₹46,900, due 28 Oct; annual fee ₹1,499 + GST charged 1 Oct; card-year spend ₹1,18,000"
+        - "reverse_fee(card_last4=2215, fee=annual fee) → error: fee service timed out, please try again"
+        - "reverse_fee(card_last4=2215, fee=annual fee) → not eligible: card-year spend below ₹1,50,000"
+    - task: "Block the old assistant's add-on"
+      calls:
+        - "block_card(card_last4=2231, reason=add-on holder no longer working with the customer) → blocked, BL 90442"
+    - task: "Limit and international on 2207"
+      calls:
+        - "check_limit_offer(card_last4=2207) → pre-approved increase from ₹4,00,000 to ₹5,00,000"
+        - "set_credit_limit(card_last4=2207, limit=₹5,00,000) → limit changed"
+        - "set_card_control(card_last4=2207, channel=international, enabled=yes, limit=₹1,00,000) → updated"
+    - task: "Both bills from savings, statements for her CA"
+      calls:
+        - "set_standing_instruction(from_account_last4=4410, to=credit card 2207, amount=full amount due, day=22) → SI 77310, first on 22 Oct"
+        - "set_standing_instruction(from_account_last4=4410, to=credit card 2215, amount=full amount due, day=25) → SI 77311, first on 25 Oct"
+        - "request_statement(card_last4=2207, kind=last 12 months) → emailed"
+        - "request_statement(card_last4=2215, kind=last 12 months) → emailed"
+        - "send_sms(template=card_cleanup_summary) → sent"
+  forbid: ["block_merchant(card_last4=2207, merchant=Canva)", "block_merchant(card_last4=2215, merchant=Notion)"]
+  lines:
+    - [open, "Hi, main Neha Arora. Mere do credit cards hain, dono ki safai karni hai — subscriptions, galat charges, sab kuch.", "Hi, I'm Neha Arora. I have two credit cards and need to clean up both — subscriptions, wrong charges, everything."]
+    - [after, "Date of birth satrah December unnees sau baanve.", "Date of birth seventeenth December 1992."]
+    - [after, "Pehle subscriptions. Canva aur Notion kaam ke hain, woh rakhna. Baaki sab band — Zoom, Hotstar, Audible, Cult.fit, Spotify, LinkedIn.", "Subscriptions first. Canva and Notion are for work, keep them. Stop all the rest — Zoom, Hotstar, Audible, Cult.fit, Spotify, LinkedIn."]
+    - [after, "Zoom aur Audible maine August mein hi cancel kar diye the, phir bhi September mein paise kate. Aur Cult.fit ne ek hi din do baar kaata.", "I cancelled Zoom and Audible back in August, but they still charged in September. And Cult.fit charged twice on the same day."]
+    - [after, "Haan, teenon pe dispute daal do.", "Yes, raise disputes on all three."]
+    - [after, "Ab EMI. MacBook wala baara mahine mein, aur office chair wala chhe mahine mein. Pehle kisht bata dena.", "Now EMI. The MacBook over twelve months, and the office chair over six. Tell me the instalments first."]
+    - [after, "Theek hai, dono kar do.", "Okay, do both."]
+    - [after, "Ek card pe late fee lagi hai, doosre pe annual fee. Dono hata sakte ho?", "One card has a late fee and the other an annual fee. Can you remove both?"]
+    - [after, "Hmm, chalo. Aur doosre card pe Pooja ka add-on hai, woh ab mere saath kaam nahi karti. Woh card band kar do.", "Hmm, okay. And there's an add-on for Pooja on the second card; she doesn't work with me any more. Shut that card."]
+    - [after, "Pehle wale card ka limit badh sakta hai? MacBook ke baad thoda tight hai.", "Can the first card's limit go up? It's a bit tight after the MacBook."]
+    - [after, "Haan, kar do. Aur us card pe international bhi chalu kar do, ek lakh tak — foreign clients ke tools ke liye.", "Yes, do it. And switch on international on that card too, up to one lakh — for foreign clients' tools."]
+    - [after, "Aur dono bills mere savings se apne aap katne chahiye, poora amount, due date se teen din pehle.", "And both bills should be paid automatically from my savings, the full amount, three days before the due date."]
+    - [after, "Mere CA ko dono cards ka pichhle saal ka statement chahiye. Email kar doge?", "My CA needs last year's statement for both cards. Can you email them?"]
+    - [after, "Aur ek summary SMS. Bas, thanks!", "And a summary SMS. That's all, thanks!"]
+  key:
+    - "Stops Zoom, Hotstar and Audible on 2207 and Cult.fit, Spotify and LinkedIn Premium on 2215; keeps Canva and Notion"
+    - "Disputes the Zoom and Audible charges and the second Cult.fit charge (DS 72031, 72032, 72033)"
+    - "Gives the instalments before converting: MacBook ₹14,884 over 12 months, chair ₹4,960 over 6"
+    - "Reverses the ₹1,300 late fee; when the annual-fee reversal times out, says so, retries and explains it is not eligible (spend ₹1,18,000)"
+    - "Blocks Pooja's add-on 2231; raises 2207 to ₹5,00,000 and sets international up to ₹1,00,000"
+    - "Sets full-bill SIs from 4410 three days before each due date: 22 Oct for 2207, 25 Oct for 2215"
+    - "Emails both 12-month statements and sends the summary"
+  checks: {lang: hg, digits: ["DS 72031", "DS 72033", "14,884", "4,960"], tool_order: [get_emi_options, convert_to_emi]}
+  guard: "Each line names the cards or merchants it means; the instalments are asked for before L7's go-ahead; L12 gives the rule ('three days before the due date'), so the agent works out each day from the statements."
+
+- id: bank-108
+  g: BANK-4
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Phishing link — freeze, two unknown devices, three transfers and a card charge disputed, payees removed"
+  basis: "Fake electricity-bill SMS links steal netbanking logins; the fraudster adds payees, moves money and sets up repeat transfers."
+  caller: "F 26-45 · teacher in Kochi, shaken, speaks quickly"
+  goal: "Stop the fraud everywhere, dispute every transfer and charge, remove what the fraudster added and know what happens next."
+  role: "You handle fraud. Freeze first, then dispute. On a fraud call, contact details are changed only at a branch."
+  context: ""
+  tasks:
+    - task: "Verify and see what happened"
+      calls:
+        - "verify_caller(name=Priya Nair, dob=2 Oct 1988) → verified"
+        - "get_login_activity() → Sun 4 Oct 11:42 pm new device Redmi Note in Kolkata; 11:46 pm Windows PC in Kolkata; payees R Kumar (11:50 pm) and Sunil Traders (11:52 pm) added; email changed 11:55 pm; standing instruction SI 88310 for ₹9,999 monthly created 11:58 pm. Her own iPhone in Kochi"
+        - "get_account(account_last4=1182) → savings, balance ₹12,430"
+    - task: "Freeze"
+      calls:
+        - "block_netbanking(reason=phishing) → frozen, NB 30917"
+        - "logout_device(device=Redmi Note, Kolkata) → session ended, device removed"
+        - "logout_device(device=Windows PC, Kolkata) → session ended, device removed"
+        - "set_upi_status(account_last4=1182, enabled=no) → UPI off"
+    - task: "Dispute the three transfers"
+      calls:
+        - "get_transactions(account_last4=1182, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → today 12:05 am IMPS ₹49,000 to R Kumar, ref IM 4410 2201; 12:09 am IMPS ₹48,500 to Sunil Traders, ref IM 4410 2202; 6:30 am IMPS ₹25,000 to R Kumar, ref IM 4410 2203"
+        - "raise_dispute(txn_ref=IM 4410 2201, reason=fraud, account taken over) → dispute DS 93101, receiving bank asked to hold funds"
+        - "raise_dispute(txn_ref=IM 4410 2202, reason=fraud, account taken over) → error: dispute system timed out"
+        - "raise_dispute(txn_ref=IM 4410 2202, reason=fraud, account taken over) → dispute DS 93102, receiving bank asked to hold funds"
+        - "raise_dispute(txn_ref=IM 4410 2203, reason=fraud, account taken over) → dispute DS 93103, receiving bank asked to hold funds"
+    - task: "Remove what the fraudster added"
+      calls:
+        - "get_beneficiaries(account_last4=1182) → R Kumar (added Sun 4 Oct), Sunil Traders (added Sun 4 Oct), Amma (2021), Electricity board (2022)"
+        - "delete_beneficiary(account_last4=1182, name=R Kumar) → removed"
+        - "delete_beneficiary(account_last4=1182, name=Sunil Traders) → removed"
+        - "cancel_standing_instruction(si_no=SI 88310) → cancelled"
+    - task: "Her credit card"
+      calls:
+        - "get_card(card_last4=4471) → Kosh credit card, active"
+        - "block_card(card_last4=4471, reason=card details entered on a phishing site) → blocked, BL 93120"
+        - "get_transactions(card_last4=4471, from_date=Sun 4 Oct, to_date=Mon 5 Oct) → today 12:30 am ₹19,999 Flipkart, ref CC 4471 0005"
+        - "raise_dispute(txn_ref=CC 4471 0005, reason=fraud, card details stolen) → dispute DS 93104"
+        - "reissue_card(card_last4=4471, deliver_to=home) → new card ending 4497, dispatched Wed 7 Oct"
+    - task: "Report, branch visit for the email, follow-up"
+      calls:
+        - "raise_ticket(category=cyber fraud, summary=phishing; three IMPS and one card charge disputed) → ticket FR 55210"
+        - "find_branch(area=Kakkanad, Kochi) → Kosh Bank Kakkanad, KB-0412, 9:30 am-4:30 pm"
+        - "book_branch_visit(branch_id=KB-0412, date=Tue 6 Oct, slot=10:00 am, purpose=restore email and reopen netbanking) → appointment BV 20716"
+        - "schedule_callback(date=Thu 8 Oct, slot=4-5 pm, topic=fraud disputes DS 93101-93104) → booked"
+        - "send_sms(template=fraud_case_summary) → sent"
+  forbid: [update_contact, transfer_funds]
+  lines:
+    - [open, "Hello, I think I've been hacked. I clicked a link in an electricity bill SMS last night and money has gone from my account!"]
+    - [after, "Priya Nair, second October nineteen eighty-eight. Please hurry."]
+    - [after, "I typed my netbanking login and my credit card number on that page. I didn't give any OTP, I swear."]
+    - [after, "Kolkata? I've never been there. Please stop everything — netbanking, UPI, all of it."]
+    - [after, "How much has gone? I see messages for three transfers."]
+    - [after, "Dispute all three. Can I get it back?"]
+    - [after, "They added people to my payees, the SMS said. Remove anyone I didn't add. My mother and the electricity board are mine."]
+    - [after, "There's also something about a standing instruction for nine thousand nine hundred and ninety-nine. That's not me either."]
+    - [after, "And my credit card — I typed it on that page too. Block it. Is there any charge on it?"]
+    - [after, "Dispute that one too and send me a new card at home."]
+    - [after, "They changed my email as well. Can you change it back right now? It's priya dot nair eighty-eight at gmail."]
+    - [after, "Okay, the branch then. Kakkanad is closest. Tomorrow morning, ten o'clock?"]
+    - [after, "What else should I do?"]
+    - [after, "Will someone call me about the disputes?"]
+    - [after, "Send me everything by SMS. Thank you, I was so scared."]
+  key:
+    - "Verifies, then freezes netbanking, logs out both Kolkata devices and turns off UPI before disputing"
+    - "Disputes all three IMPS transfers (₹1,22,500); when the second times out, says so and retries (DS 93101-93103)"
+    - "Removes R Kumar and Sunil Traders, keeps Amma and the electricity board, cancels SI 88310"
+    - "Blocks 4471, disputes the ₹19,999 Flipkart charge (DS 93104) and reissues as 4497"
+    - "Does not change the email on the call; books the Kakkanad branch for Tue 6 Oct at 10:00 am (BV 20716)"
+    - "Tells her to report it on 1930 and with the police, raises ticket FR 55210, books the call-back and sends the summary; never asks for an OTP"
+  checks: {digits: ["DS 93102", "4497", "BV 20716"], say: [["1930", "nineteen thirty", "one nine three zero"], ["1,22,500", "one lakh twenty-two thousand five hundred"]], not_say: ["tell me the OTP", "share the OTP"], tool_order: [block_netbanking, raise_dispute]}
+  guard: "Each line is a new request that holds whatever the agent said before; L11's request has to be refused whatever the agent offered; L12 accepts a branch whether or not the agent named one."

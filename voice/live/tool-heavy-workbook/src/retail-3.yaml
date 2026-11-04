@@ -1,0 +1,602 @@
+# Ecommerce & Retail — tool-heavy scenarios ret-117 … ret-124 (RET-3 Returns, RET-4 Installation & warranty, RET-5 Kartly Fresh).
+code: ret
+scenarios:
+
+- id: ret-117
+  g: RET-3
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Moving to Dubai on Saturday — five returns, three cancellations, one not returnable, membership, balance spent"
+  basis: "Customers relocating abroad unwind everything open on their account before they fly, item by item."
+  caller: "M 26-45 · engineer in Bengaluru relocating to Dubai on Saturday, efficient, a little stressed"
+  goal: "Get money back for everything he can before he flies, cancel what hasn't shipped, stop his membership, and spend his Kartly balance on things for the move."
+  role: "You handle returns and orders. Large items need a large-item pickup slot. Kartly balance can't be withdrawn to a bank."
+  context: "He flies on Sat 10 Oct and keeps his Indian card and UPI."
+  tasks:
+    - task: "Find everything open"
+      calls:
+        - "list_orders() → KT-75010 (delivered Sat 26 Sep), KT-75033 (delivered Tue 29 Sep), KT-75060 (packing), KT-75071 (dispatched)"
+        - "get_order(order_id=KT-75010) → bookshelf ₹6,499; office chair ₹8,999; air fryer ₹5,499; paid by card"
+        - "get_order(order_id=KT-75033) → winter jacket ₹4,299; trekking shoes ₹5,999; electric kettle ₹1,499; paid by UPI"
+        - "get_order(order_id=KT-75060) → curtains ₹2,199; bedside lamp ₹1,299; plant pots set ₹899; laptop stand ₹1,599; paid by card"
+    - task: "Eligibility for the delivered items"
+      calls:
+        - "check_return_eligibility(order_id=KT-75010, item_id=bookshelf) → returnable until Tue 6 Oct"
+        - "check_return_eligibility(order_id=KT-75010, item_id=office chair) → returnable until Tue 6 Oct"
+        - "check_return_eligibility(order_id=KT-75010, item_id=air fryer) → not returnable: used appliance, 7-day window ended Sat 3 Oct"
+        - "check_return_eligibility(order_id=KT-75033, item_id=winter jacket) → returnable until Fri 9 Oct"
+        - "check_return_eligibility(order_id=KT-75033, item_id=trekking shoes) → returnable until Fri 9 Oct"
+        - "check_return_eligibility(order_id=KT-75033, item_id=electric kettle) → returnable until Tue 6 Oct"
+    - task: "Five returns"
+      calls:
+        - "create_return(order_id=KT-75010, item_id=bookshelf, reason=relocating abroad, pickup_date=Wed 7 Oct) → error: large-item pickups for 560034 are full on Wed 7 Oct"
+        - "create_return(order_id=KT-75010, item_id=bookshelf, reason=relocating abroad, pickup_date=Thu 8 Oct) → return RT-75101; large-item pickup Thu 8 Oct, 9 am-12 pm; refund ₹6,499"
+        - "create_return(order_id=KT-75010, item_id=office chair, reason=relocating abroad, pickup_date=Thu 8 Oct) → return RT-75102; large-item pickup Thu 8 Oct, 9 am-12 pm; refund ₹8,999"
+        - "create_return(order_id=KT-75033, item_id=winter jacket, reason=relocating abroad, pickup_date=Wed 7 Oct) → return RT-75103; pickup Wed 7 Oct; refund ₹4,299"
+        - "create_return(order_id=KT-75033, item_id=trekking shoes, reason=relocating abroad, pickup_date=Wed 7 Oct) → return RT-75104; pickup Wed 7 Oct; refund ₹5,999"
+        - "create_return(order_id=KT-75033, item_id=electric kettle, reason=relocating abroad, pickup_date=Wed 7 Oct) → return RT-75105; pickup Wed 7 Oct; refund ₹1,499"
+    - task: "All refunds to the original payment"
+      calls:
+        - "set_refund_route(return_id=RT-75101, route=original payment) → card, 5-7 days after pickup"
+        - "set_refund_route(return_id=RT-75102, route=original payment) → card, 5-7 days after pickup"
+        - "set_refund_route(return_id=RT-75103, route=original payment) → UPI, 2-3 days after pickup"
+        - "set_refund_route(return_id=RT-75104, route=original payment) → UPI, 2-3 days after pickup"
+        - "set_refund_route(return_id=RT-75105, route=original payment) → UPI, 2-3 days after pickup"
+    - task: "Cancel three of the packing order, keep the laptop stand"
+      calls:
+        - "cancel_item(order_id=KT-75060, item_id=curtains, reason=relocating abroad, refund_to=original payment) → cancelled; ₹2,199 to card in 5-7 days"
+        - "cancel_item(order_id=KT-75060, item_id=bedside lamp, reason=relocating abroad, refund_to=original payment) → cancelled; ₹1,299 to card in 5-7 days"
+        - "cancel_item(order_id=KT-75060, item_id=plant pots set, reason=relocating abroad, refund_to=original payment) → cancelled; ₹899 to card in 5-7 days"
+    - task: "The suitcases before he flies"
+      calls:
+        - "track_shipment(awb=EK 7507 1101) → Ekart, at Bengaluru hub, delivery Fri 9 Oct"
+        - "reschedule_delivery(awb=EK 7507 1101, date=Wed 7 Oct, slot=9 am-12 pm) → rescheduled"
+    - task: "Membership"
+      calls:
+        - "get_membership() → Kartly Plus yearly, renews Sun 3 Jan 2027, ₹799; benefits used"
+        - "cancel_membership_autorenew() → auto-renew off; benefits until 3 Jan 2027"
+        - "refund_membership(reason=relocating abroad) → not refundable: benefits already used this year"
+    - task: "Spend the Kartly balance on the move"
+      calls:
+        - "get_wallet() → Kartly balance ₹1,840 (can't be withdrawn)"
+        - "check_stock(sku=universal travel adapter, pincode=560034) → in stock"
+        - "check_stock(sku=digital luggage scale, pincode=560034) → in stock"
+        - "add_to_cart(sku=universal travel adapter, qty=2) → added, ₹1,198"
+        - "add_to_cart(sku=digital luggage scale, qty=1) → added, ₹599"
+        - "place_order(address=Flat 3C, 14th Main, Koramangala, Bengaluru 560034, payment_mode=Kartly balance) → order KT-75180, ₹1,797 from Kartly balance; delivery Wed 7 Oct"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=relocation_summary) → sent"
+  forbid: ["cancel_order(order_id=KT-75060)", "create_return(order_id=KT-75010, item_id=air fryer)"]
+  lines:
+    - [open, "Hi, I'm moving to Dubai on Saturday and I need to sort out everything on my Kartly account before I fly. Can you pull up all my orders?"]
+    - [after, "Right. Everything that's been delivered and can go back — I want to return it. Check each one."]
+    - [after, "The air fryer can't go back? Fine, I'll give it to a friend."]
+    - [after, "Pick the small things up on Wednesday. The bookshelf and chair also Wednesday — if that's full, Thursday is the last day I can do."]
+    - [after, "All refunds to wherever I paid from, please. Not Kartly balance — I can't use it from Dubai."]
+    - [after, "The order that's still packing — cancel the curtains, the lamp and the plant pots. Keep the laptop stand, I'm taking it with me."]
+    - [after, "There's also a suitcase set coming. I need it before Saturday — can it come Wednesday morning?"]
+    - [after, "I have Kartly Plus. Stop it renewing. Can I get money back for it?"]
+    - [after, "Okay. How much Kartly balance do I have?"]
+    - [after, "Then let me spend it. Two universal travel adapters and a luggage scale, Wednesday delivery if possible."]
+    - [after, "How much is coming back to my card and UPI in total?"]
+    - [after, "And when exactly is each pickup?"]
+    - [after, "Send me everything by SMS. Thanks — that's a big weight off."]
+  key:
+    - "Checks all six delivered items; says the air fryer can't be returned"
+    - "Books the jacket, shoes and kettle for Wed 7 Oct; when large-item Wednesday is full, says so and books the bookshelf and chair for Thu 8 Oct"
+    - "Sets every refund to the original payment, not Kartly balance"
+    - "Cancels curtains, lamp and plant pots one by one; keeps the laptop stand; does not cancel the whole order"
+    - "Moves the suitcases to Wed 7 Oct; turns off Kartly Plus renewal and says it is not refundable"
+    - "Spends the ₹1,840 balance on two adapters and a scale (KT-75180, ₹1,797)"
+    - "States ₹31,692 back: ₹19,895 to card and ₹11,797 to UPI"
+  checks: {digits: ["RT-75101", "KT-75180", "Thu 8 Oct"], say: [["31,692", "thirty-one thousand six hundred ninety-two", "thirty one thousand six hundred and ninety two"]], tool_order: [check_return_eligibility, create_return]}
+  guard: "Each request names items by what they are; the Thursday fallback comes with the pickup request; L9–L11 ask for amounts whatever the agent already said."
+
+- id: ret-118
+  g: RET-3
+  lang: hg
+  diff: Medium
+  dir: out
+  title: "Returns team calls — two of five returns failed the check: wrong speaker in the box, tablet charger missing"
+  basis: "Returns that fail the quality check are held; the customer is called to sort them out item by item."
+  caller: "F 26-45 · interior designer in Chandigarh, surprised then embarrassed"
+  goal: "Get the right items picked up for the two failed returns, send refunds where she wants for the three that passed, and re-buy two things in different sizes."
+  role: "You are calling from Kartly's returns team because two of the customer's five returns failed the quality check: RT-76003 (a different speaker was in the box) and RT-76004 (charger missing). Open the call: greet, name Kartly, say why you are calling."
+  context: "Refunds for returns that failed the check are released only after the correct item is collected."
+  tasks:
+    - task: "All five returns"
+      calls:
+        - "get_return(return_id=RT-76001) → smartwatch, check passed"
+        - "get_return(return_id=RT-76002) → running shoes size 6, check passed"
+        - "get_return(return_id=RT-76003) → bluetooth speaker, check failed: a different brand's used speaker was in the box"
+        - "get_return(return_id=RT-76004) → tablet, check failed: charger missing"
+        - "get_return(return_id=RT-76005) → kurta, check passed"
+    - task: "Refunds for the three that passed"
+      calls:
+        - "check_refund(order_id=KT-75801, item_id=smartwatch) → ₹3,999 ready; route not chosen"
+        - "check_refund(order_id=KT-75801, item_id=running shoes) → ₹3,299 ready; route not chosen"
+        - "check_refund(order_id=KT-75822, item_id=kurta) → ₹1,299 ready; route not chosen"
+        - "set_refund_route(return_id=RT-76001, route=Kartly balance) → ₹3,999 credited now"
+        - "set_refund_route(return_id=RT-76002, route=Kartly balance) → ₹3,299 credited now"
+        - "set_refund_route(return_id=RT-76005, route=original payment) → UPI, 2-3 days"
+    - task: "The two that failed"
+      calls:
+        - "check_refund(order_id=KT-75810, item_id=bluetooth speaker) → ₹4,499 on hold until the correct item is collected"
+        - "check_refund(order_id=KT-75810, item_id=tablet) → ₹18,999 on hold until the charger is collected"
+        - "reschedule_pickup(return_id=RT-76003, date=Wed 7 Oct) → pickup Wed 7 Oct, 10 am-1 pm, for the correct speaker"
+        - "raise_ticket(category=wrong item returned, summary=RT-76003: customer's brother's old speaker sent by mistake; send it back to her) → ticket WR 76031"
+        - "reschedule_pickup(return_id=RT-76004, date=Wed 7 Oct) → pickup Wed 7 Oct, 10 am-1 pm, for the charger"
+    - task: "Re-buy in different sizes"
+      calls:
+        - "check_stock(sku=running shoes size 7, pincode=160022) → in stock"
+        - "add_to_cart(sku=running shoes size 7, qty=1) → added, ₹3,299"
+        - "find_alternatives(sku=smartwatch) → smartwatch 41 mm ₹3,799, in stock; smartwatch 45 mm ₹4,299, in stock"
+        - "check_stock(sku=smartwatch 41 mm, pincode=160022) → in stock"
+        - "add_to_cart(sku=smartwatch 41 mm, qty=1) → added, ₹3,799"
+        - "get_wallet() → Kartly balance ₹7,298"
+        - "place_order(address=House 112, Sector 22, Chandigarh 160022, payment_mode=Kartly balance) → order KT-76140, ₹7,098 from Kartly balance; delivery Thu 8 Oct"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Wed 7 Oct, slot=5-6 pm, topic=RT-76003 and RT-76004 collected, refunds released) → booked"
+        - "send_sms(template=returns_qc_summary) → sent"
+  forbid: ["set_refund_route(return_id=RT-76003, route=Kartly balance)", "cancel_return(return_id=RT-76004)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Haan, Ritika bol rahi hoon. Kya hua returns mein?", "Yes, Ritika speaking. What happened with the returns?"]
+    - [after, "Speaker alag tha? Oh no... woh mere bhai ka purana speaker hoga, dono same box mein the. Asli wala ghar pe hai.", "A different speaker? Oh no... that must be my brother's old speaker, both were in the same box. The real one is at home."]
+    - [after, "Tablet ka charger bhi mil gaya, drawer mein tha. Sorry!", "I've found the tablet charger too, it was in a drawer. Sorry!"]
+    - [after, "Dono ko Wednesday subah utha lo. Aur bhai ka speaker wapas bhej dena.", "Pick both up on Wednesday morning. And send my brother's speaker back."]
+    - [after, "Baaki teen ka paisa — watch aur shoes ka Kartly balance mein, kurta ka UPI pe.", "The money for the other three — the watch and shoes into Kartly balance, the kurta to UPI."]
+    - [after, "Shoes ka size chhota tha, saat number mein mil jayega?", "The shoes were too small — can I get them in size seven?"]
+    - [after, "Aur watch bada tha. Chhota wala hai kya?", "And the watch was too big. Is there a smaller one?"]
+    - [after, "Forty-one wala. Dono order kar do, balance se.", "The 41 mm one. Order both, from the balance."]
+    - [after, "Speaker aur tablet ka paisa kab aayega?", "When will the money for the speaker and tablet come?"]
+    - [after, "Wednesday shaam ko confirm kar dena ki dono utha liye.", "Confirm on Wednesday evening that both were collected."]
+    - [after, "SMS bhej do. Thanks for calling, aur sorry for the mess!", "Send an SMS. Thanks for calling, and sorry for the mess!"]
+  key:
+    - "Opens naming Kartly and the two failed checks; explains each"
+    - "Sets Kartly balance for the watch and shoes (₹7,298) and UPI for the kurta"
+    - "Explains the speaker (₹4,499) and tablet (₹18,999) refunds are held until collection; books both pickups for Wed 7 Oct, 10 am-1 pm; raises WR 76031 to send the old speaker back"
+    - "Orders size 7 shoes and the 41 mm watch from balance (KT-76140, ₹7,098)"
+    - "Books Wednesday's call-back and sends the SMS"
+  checks: {lang: hg, digits: ["KT-76140", "WR 76031", "7,298"], tool_order: [set_refund_route, place_order]}
+  guard: "Every line reacts to the check results the agent must give; she names each item by what it is; L9 picks a size from the alternatives the agent must offer."
+
+- id: ret-119
+  g: RET-4
+  lang: en
+  diff: Medium
+  dir: in
+  title: "New flat — six installations booked, one slot full, warranties, a missed geyser visit, an old microwave claim"
+  basis: "A new home brings several appliances, each with its own technician visit and warranty."
+  caller: "F 26-45 · doctor in Kochi, short on time, wants everything in two days"
+  goal: "Get every new appliance installed this week, extended warranty on the big ones, the missed geyser visit redone and an old microwave fixed."
+  role: "You handle installation and warranty. Book one visit per appliance."
+  context: "The chimney needs a ducting kit, sold separately."
+  tasks:
+    - task: "Read both orders"
+      calls:
+        - "get_order(order_id=KT-77010) → bedroom split AC; living-room split AC; washing machine; kitchen chimney; delivered Sat 3 Oct"
+        - "get_order(order_id=KT-77024) → 55-inch TV with wall mount; water purifier; delivered Sun 4 Oct"
+    - task: "One visit per appliance"
+      calls:
+        - "book_installation(order_id=KT-77010, item_id=bedroom split AC, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-77010, item_id=living-room split AC, date=Tue 6 Oct, slot=2-5 pm) → technician visit booked"
+        - "book_installation(order_id=KT-77010, item_id=washing machine, date=Wed 7 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-77010, item_id=kitchen chimney, date=Wed 7 Oct, slot=2-5 pm) → error: slot full"
+        - "book_installation(order_id=KT-77010, item_id=kitchen chimney, date=Thu 8 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-77024, item_id=55-inch TV, date=Wed 7 Oct, slot=2-5 pm) → wall-mount visit booked"
+        - "book_installation(order_id=KT-77024, item_id=water purifier, date=Wed 7 Oct, slot=2-5 pm) → technician visit booked"
+    - task: "Ducting kit for the chimney"
+      calls:
+        - "check_stock(sku=chimney ducting kit, pincode=682020) → in stock"
+        - "add_to_cart(sku=chimney ducting kit, qty=1) → added, ₹1,450"
+        - "place_order(address=Flat 9A, Marine Drive, Kochi 682020, payment_mode=UPI) → order KT-77140, ₹1,450; delivery Wed 7 Oct"
+    - task: "Extended warranty on the big ones"
+      calls:
+        - "add_extended_warranty(order_id=KT-77010, item_id=bedroom split AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-77010, item_id=living-room split AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-77024, item_id=55-inch TV, years=2) → plan added, ₹3,499"
+    - task: "The geyser that was never installed"
+      calls:
+        - "get_installation(order_id=KT-76890, item_id=geyser) → visit on Sat 3 Oct not done; technician did not turn up"
+        - "book_installation(order_id=KT-76890, item_id=geyser, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+    - task: "Old microwave"
+      calls:
+        - "register_warranty_claim(order_id=KT-74001, item_id=microwave, serial=MW23K0981, issue=not heating) → claim WC 77210; visit Fri 9 Oct"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Thu 8 Oct, slot=6-7 pm, topic=all installations done) → booked"
+        - "send_sms(template=installations_summary) → sent"
+  forbid: ["add_extended_warranty(order_id=KT-77010, item_id=washing machine)"]
+  lines:
+    - [open, "Hi, I've just moved into a new flat in Kochi and I have six appliances waiting to be installed. I want them all done this week."]
+    - [after, "Two ACs on Tuesday — bedroom in the morning, living room in the afternoon."]
+    - [after, "Wednesday — washing machine in the morning, chimney in the afternoon. If any slot's full, take the next morning."]
+    - [after, "The TV wall mount and the water purifier — Wednesday afternoon too, both."]
+    - [after, "Oh, the chimney needs a ducting kit? Order it — UPI. It should come before they install."]
+    - [after, "Add three years' extended warranty on both ACs and two on the TV. Not the washing machine."]
+    - [after, "Also — my geyser from last week. Nobody came on Saturday. Can you check?"]
+    - [after, "Put the geyser on Tuesday morning too, with the bedroom AC."]
+    - [after, "And my old microwave has stopped heating. Serial M W two three K zero nine eight one. It's still under warranty."]
+    - [after, "What do the warranties cost altogether?"]
+    - [after, "Can someone call me Thursday evening to check everything's done?"]
+    - [after, "Send me the full schedule by SMS. Thanks!"]
+  key:
+    - "Books one visit per appliance: ACs Tue 6 Oct morning and afternoon; washing machine Wed 7 Oct morning"
+    - "When the chimney's Wednesday afternoon slot is full, says so and books Thu 8 Oct morning"
+    - "Books the TV wall mount and purifier for Wed 7 Oct afternoon; orders the ducting kit (KT-77140) to arrive Wed 7 Oct"
+    - "Adds 3-year plans on both ACs and 2-year on the TV, not the washing machine; states ₹9,497"
+    - "Finds the geyser visit missed and rebooks it Tue 6 Oct morning; registers the microwave claim WC 77210 (Fri 9 Oct)"
+  checks: {digits: ["KT-77140", "WC 77210", "Thu 8 Oct"], say: [["9,497", "nine thousand four hundred ninety-seven", "nine thousand four hundred and ninety seven"]], tool_order: [get_installation, book_installation]}
+  guard: "Each appliance's day and slot, and the full-slot fallback, come before booking; L5 reacts to the ducting note the agent must give; L10 asks for the total whatever was said."
+
+- id: ret-120
+  g: RET-4
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "Power surge — five appliances: four warranty claims, one out of warranty, stabilisers bought and fitted"
+  basis: "Voltage surges damage several appliances at once; each has its own purchase, warranty and claim."
+  caller: "M 46-60 · government officer in Lucknow, upset after a storm, serials ready"
+  goal: "Get every damaged appliance looked at, a paid repair or replacement for the one out of warranty, and protection so it does not happen again."
+  role: "You handle warranty and service. Surge damage is covered under the standard warranty for the first year only."
+  context: ""
+  tasks:
+    - task: "Find each appliance's order"
+      calls:
+        - "list_orders() → KT-70221 TV (Mar 2026), KT-68810 fridge (Dec 2025), KT-71500 AC (Apr 2026), KT-66104 washing machine (Jul 2025), KT-55210 microwave (Feb 2023)"
+        - "get_order(order_id=KT-70221) → 43-inch TV, warranty until Mar 2027"
+        - "get_order(order_id=KT-68810) → double-door fridge, warranty until Dec 2026"
+        - "get_order(order_id=KT-71500) → 1.5-ton split AC, warranty until Apr 2027"
+        - "get_order(order_id=KT-66104) → front-load washing machine, warranty until Jul 2027 (2 years)"
+        - "get_order(order_id=KT-55210) → microwave, warranty ended Feb 2024"
+    - task: "Four warranty claims"
+      calls:
+        - "register_warranty_claim(order_id=KT-70221, item_id=43-inch TV, serial=TV43A7712, issue=no power after surge) → claim WC 78101; visit Wed 7 Oct"
+        - "register_warranty_claim(order_id=KT-68810, item_id=double-door fridge, serial=RF34K2208, issue=not cooling after surge) → claim WC 78102; visit Tue 6 Oct"
+        - "register_warranty_claim(order_id=KT-71500, item_id=1.5-ton split AC, serial=AC15S9031, issue=PCB burnt after surge) → claim WC 78103; visit Wed 7 Oct"
+        - "register_warranty_claim(order_id=KT-66104, item_id=front-load washing machine, serial=WM70F4410, issue=display dead after surge) → claim WC 78104; visit Thu 8 Oct; surge damage in year 2 is a paid repair, estimate after inspection"
+    - task: "Microwave out of warranty — replace"
+      calls:
+        - "raise_ticket(category=paid repair quote, summary=KT-55210 microwave out of warranty, surge damage) → ticket PR 78110"
+        - "find_alternatives(sku=microwave 25 L) → convection microwave 25 L ₹10,490; solo microwave 20 L ₹5,990"
+    - task: "Protection"
+      calls:
+        - "check_stock(sku=AC voltage stabiliser, pincode=226010) → in stock"
+        - "check_stock(sku=fridge voltage stabiliser, pincode=226010) → in stock"
+        - "check_stock(sku=surge-protected extension board, pincode=226010) → in stock"
+        - "add_to_cart(sku=AC voltage stabiliser, qty=1) → added, ₹3,299"
+        - "add_to_cart(sku=fridge voltage stabiliser, qty=1) → added, ₹1,899"
+        - "add_to_cart(sku=surge-protected extension board, qty=2) → added, ₹1,598"
+        - "add_to_cart(sku=solo microwave 20 L, qty=1) → added, ₹5,990"
+        - "place_order(address=B-17, Gomti Nagar, Lucknow 226010, payment_mode=card) → order KT-78150, ₹12,786; delivery Wed 7 Oct"
+        - "book_installation(order_id=KT-78150, item_id=AC voltage stabiliser, date=Wed 7 Oct, slot=2-5 pm) → technician visit booked"
+    - task: "Extended warranty on the two newest"
+      calls:
+        - "add_extended_warranty(order_id=KT-70221, item_id=43-inch TV, years=2) → plan added, ₹2,199; covers surge"
+        - "add_extended_warranty(order_id=KT-71500, item_id=1.5-ton split AC, years=3) → plan added, ₹2,999; covers surge"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Thu 8 Oct, slot=5-6 pm, topic=claims WC 78101-78104 and repair quote PR 78110) → booked"
+        - "send_sms(template=warranty_claims_summary) → sent"
+  forbid: ["register_warranty_claim(order_id=KT-55210, item_id=microwave)"]
+  lines:
+    - [open, "नमस्ते, कल रात आँधी में बिजली का बड़ा झटका आया और घर के पाँच उपकरण ख़राब हो गए। सब Kartly से ख़रीदे थे।", "Hello, last night in the storm there was a big power surge and five appliances at home broke. All were bought from Kartly."]
+    - [after, "टीवी, फ़्रिज, एसी, वॉशिंग मशीन और माइक्रोवेव।", "The TV, the fridge, the AC, the washing machine and the microwave."]
+    - [after, "सीरियल नंबर पढ़ता हूँ। टीवी — टी वी चार तीन ए सात सात एक दो। फ़्रिज — आर एफ़ तीन चार के दो दो शून्य आठ।", "I'll read the serial numbers. TV — TV43A7712. Fridge — RF34K2208."]
+    - [pause 1800, "एसी — ए सी एक पाँच एस नौ शून्य तीन एक। वॉशिंग मशीन — डब्ल्यू एम सात शून्य एफ़ चार चार एक शून्य।", "AC — AC15S9031. Washing machine — WM70F4410."]
+    - [after, "वॉशिंग मशीन की मरम्मत के पैसे लगेंगे? ठीक है, देख लेंगे।", "The washing machine repair will cost money? Fine, we'll see."]
+    - [after, "माइक्रोवेव तो पुराना है। उसकी मरम्मत का अंदाज़ा भी बता दीजिए, पर उसकी जगह नया भी दिखाइए।", "The microwave is old. Get me a repair estimate for it too, but also show me a new one in its place."]
+    - [after, "सस्ता वाला, बीस लीटर का।", "The cheaper one, the twenty-litre."]
+    - [after, "आगे ऐसा न हो — एसी और फ़्रिज के लिए स्टेबलाइज़र, और दो सर्ज वाले एक्सटेंशन बोर्ड। माइक्रोवेव के साथ एक ही ऑर्डर में, कार्ड से।", "So this doesn't happen again — stabilisers for the AC and the fridge, and two surge-protected extension boards. In the same order as the microwave, by card."]
+    - [after, "एसी का स्टेबलाइज़र कोई लगा भी दे, बुधवार दोपहर।", "Have someone fit the AC stabiliser too, Wednesday afternoon."]
+    - [after, "टीवी और एसी पर बढ़ी हुई वारंटी ले लेता हूँ, जिसमें बिजली का झटका भी आए।", "I'll take extended warranty on the TV and AC, one that covers surges."]
+    - [after, "कौन-सा मिस्त्री कब आएगा, एक बार बता दीजिए।", "Tell me once which technician comes when."]
+    - [after, "गुरुवार शाम को फ़ोन करके बताइए क्या हुआ। SMS भी भेज दीजिए।", "Call me Thursday evening to tell me how it went. Send an SMS as well."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Finds each appliance's order and warranty; registers four claims with the serials read (WC 78101-78104)"
+    - "Says the washing machine is in year 2, so surge repair is paid, estimate after inspection"
+    - "Says the microwave is out of warranty, raises a repair quote PR 78110 and offers replacements; adds the ₹5,990 solo microwave"
+    - "Orders both stabilisers, two extension boards and the microwave by card (KT-78150, ₹12,786) and books the AC stabiliser fitting Wed 7 Oct, 2-5 pm"
+    - "Adds surge-covering plans on the TV (₹2,199) and AC (₹2,999)"
+    - "Reads visits: fridge Tue 6 Oct, TV and AC Wed 7 Oct, washing machine Thu 8 Oct"
+  checks: {lang: hi, digits: ["WC 78103", "KT-78150", "12,786"], tool_order: [register_warranty_claim, add_extended_warranty]}
+  guard: "All serials come in L3–L4 before any claim; L5 and L6 react to warranty results the agent must give; L8 names every item for the one order."
+
+- id: ret-121
+  g: RET-4
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "New house fit-out with the electrician on the line — eight visits, one waits for a battery, one for wiring, add-ons ordered"
+  basis: "Installations depend on site readiness; the electrician at home often joins the call to say what is ready."
+  caller: "F 26-45 · homeowner in Hyderabad supervising work, decisive; speaker b: M 26-45 · her electrician Ramesh"
+  goal: "Book a visit for each fan, geyser, AC and the inverter on days the house is ready, and order the parts the electrician says are missing."
+  role: "You handle installation and warranty. Book one visit per item. Take site details from whoever is on the line, but changes to the order need the customer's go-ahead."
+  context: "Inverter installation needs the battery delivered first."
+  tasks:
+    - task: "Read the order"
+      calls:
+        - "get_order(order_id=KT-79210) → 4 ceiling fans (hall, bedroom 1, bedroom 2, kitchen); 2 geysers (bathroom 1, bathroom 2); 2 split ACs (bedroom 1, hall); inverter; inverter battery (AWB DL 7921 0044, not delivered); delivered Sun 4 Oct except the battery"
+    - task: "Fans and geysers"
+      calls:
+        - "book_installation(order_id=KT-79210, item_id=hall ceiling fan, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-79210, item_id=bedroom 1 ceiling fan, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-79210, item_id=bedroom 2 ceiling fan, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-79210, item_id=kitchen ceiling fan, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-79210, item_id=bathroom 1 geyser, date=Tue 6 Oct, slot=2-5 pm) → technician visit booked"
+        - "book_installation(order_id=KT-79210, item_id=bathroom 2 geyser, date=Tue 6 Oct, slot=2-5 pm) → technician visit booked"
+    - task: "ACs — the hall point isn't ready"
+      calls:
+        - "book_installation(order_id=KT-79210, item_id=bedroom 1 split AC, date=Wed 7 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-79210, item_id=hall split AC, date=Sat 17 Oct, slot=10 am-1 pm) → technician visit booked"
+    - task: "Inverter after the battery"
+      calls:
+        - "track_shipment(awb=DL 7921 0044) → Delhivery, delivery Thu 8 Oct"
+        - "book_installation(order_id=KT-79210, item_id=inverter, date=Wed 7 Oct, slot=2-5 pm) → error: battery not delivered yet; inverter can be installed from Thu 8 Oct"
+        - "book_installation(order_id=KT-79210, item_id=inverter, date=Fri 9 Oct, slot=10 am-1 pm) → technician visit booked"
+    - task: "Parts the electrician asks for"
+      calls:
+        - "check_stock(sku=AC outdoor unit wall stand, pincode=500081) → in stock"
+        - "check_stock(sku=AC copper pipe extension 3 m, pincode=500081) → in stock"
+        - "check_stock(sku=geyser pressure relief valve, pincode=500081) → in stock"
+        - "add_to_cart(sku=AC outdoor unit wall stand, qty=2) → added, ₹1,798"
+        - "add_to_cart(sku=AC copper pipe extension 3 m, qty=1) → added, ₹2,250"
+        - "add_to_cart(sku=geyser pressure relief valve, qty=2) → added, ₹598"
+        - "check_stock(sku=fan regulator, pincode=500081) → in stock"
+        - "add_to_cart(sku=fan regulator, qty=4) → added, ₹1,396"
+        - "place_order(address=Villa 18, Gachibowli, Hyderabad 500081, payment_mode=UPI) → order KT-79330, ₹6,042; delivery Tue 6 Oct"
+    - task: "Warranty"
+      calls:
+        - "add_extended_warranty(order_id=KT-79210, item_id=bedroom 1 split AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-79210, item_id=hall split AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-79210, item_id=inverter, years=2) → plan added, ₹1,299"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=installations_summary) → sent"
+  forbid: ["book_installation(order_id=KT-79210, item_id=hall split AC, date=Wed 7 Oct)"]
+  lines:
+    - [open, "హలో, మా కొత్త ఇంటికి fans, geysers, ACs, inverter అన్నీ వచ్చాయి. అన్నిటికీ installation book చేయాలి. మా electrician కూడా ఇక్కడే ఉన్నాడు.", "Hello, the fans, geysers, ACs and inverter have all come to our new house. I need installation booked for everything. Our electrician is here too."]
+    - [after, "నాలుగు fans రేపు పొద్దున. రెండు geysers రేపు మధ్యాహ్నం.", "The four fans tomorrow morning. The two geysers tomorrow afternoon."]
+    - [after, "ACs గురించి Ramesh చెప్తాడు.", "Ramesh will tell you about the ACs."]
+    - [after b, "Madam, bedroom AC point ready. Hall లో wiring ఇంకా అవ్వలేదు, పదిహేడో తేదీ కి అవుతుంది.", "Madam, the bedroom AC point is ready. The hall wiring isn't done yet; it'll be done by the seventeenth."]
+    - [after b, "రెండు AC outdoor units కి wall stands కావాలి. Hall AC కి pipe మూడు meters ఎక్కువ కావాలి. Geysers కి pressure valve లు లేవు, రెండు కావాలి. నాలుగు fans కి regulators కూడా లేవు.", "We need wall stands for the two AC outdoor units. The hall AC needs three metres more pipe. The geysers have no pressure valves; we need two. And there are no regulators for the four fans."]
+    - [after, "Ramesh చెప్పినవి అన్నీ order చేయండి, UPI తో. రేపు వచ్చేస్తే బాగుంటుంది.", "Order everything Ramesh said, by UPI. It would be good if it comes tomorrow."]
+    - [after, "Bedroom AC ఎల్లుండి పొద్దున. Hall AC పదిహేడో తేదీ పొద్దున.", "The bedroom AC the day after tomorrow, morning. The hall AC on the seventeenth, morning."]
+    - [after, "Inverter ఎల్లుండి మధ్యాహ్నం. అప్పుడు కుదరకపోతే శుక్రవారం పొద్దున.", "The inverter the day after tomorrow, afternoon. If that's not possible, Friday morning."]
+    - [after b, "Madam, battery ఇంకా రాలేదు కదా — అది ఎప్పుడు వస్తుందో అడగండి.", "Madam, the battery hasn't come yet — ask when it's coming."]
+    - [after, "రెండు ACs కి మూడేళ్ళు, inverter కి రెండేళ్ళు extended warranty పెట్టండి.", "Put three years' extended warranty on both ACs and two years on the inverter."]
+    - [after, "ఏ రోజు ఎవరు వస్తారో ఒకసారి చెప్పండి.", "Tell me once who comes on which day."]
+    - [after, "SMS పంపండి. Thank you.", "Send an SMS. Thank you."]
+  key:
+    - "Books one visit per item: four fans Tue 6 Oct morning, two geysers Tue 6 Oct afternoon, bedroom AC Wed 7 Oct morning"
+    - "Books the hall AC for Sat 17 Oct, after the wiring, not earlier"
+    - "When the inverter fails for Wednesday (battery not delivered), says so, gives the battery date Thu 8 Oct and books Fri 9 Oct morning"
+    - "Orders what the electrician listed only after the customer's go-ahead: two wall stands, 3 m pipe, two valves, four fan regulators (KT-79330, ₹6,042)"
+    - "Adds 3-year plans on both ACs and 2-year on the inverter"
+    - "Speaks Telugu with both, keeping their English words"
+  checks: {lang: te, digits: ["KT-79330", "Sat 17 Oct", "Fri 9 Oct"], tool_order: [track_shipment, book_installation]}
+  guard: "The electrician's site facts come before the AC and parts requests; the inverter fallback comes with it; the customer authorises the parts order in L6."
+
+- id: ret-122
+  g: RET-4
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Coaching centre fit-out — six classroom ACs, coolers, projector, inverter: ten visits, nine warranties, stabilisers"
+  basis: "Small institutions buy appliances in bulk and need each unit installed and covered separately."
+  caller: "M 46-60 · coaching centre owner in Kota, businesslike, classes start Monday"
+  goal: "Have every unit installed before classes restart on Mon 12 Oct, extended warranty on each, stabilisers for the ACs and an old AC repaired."
+  role: "You handle installation and warranty for business buyers. Book one visit per unit."
+  context: ""
+  tasks:
+    - task: "Order and shipments"
+      calls:
+        - "get_order(order_id=KT-80010) → six 1.5-ton split ACs (classrooms 1-6); two water coolers; projector; inverter; shipments EK 8001 0001 (ACs 1-3, delivered), EK 8001 0002 (ACs 4-6, coolers, projector, inverter, delivery Thu 8 Oct)"
+        - "track_shipment(awb=EK 8001 0002) → Ekart, at Kota hub, delivery Thu 8 Oct"
+        - "reschedule_delivery(awb=EK 8001 0002, date=Wed 7 Oct, slot=9 am-1 pm) → rescheduled"
+    - task: "Installations — first three ACs now, the rest after delivery"
+      calls:
+        - "book_installation(order_id=KT-80010, item_id=classroom 1 AC, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=classroom 2 AC, date=Tue 6 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=classroom 3 AC, date=Tue 6 Oct, slot=2-5 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=classroom 4 AC, date=Thu 8 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=classroom 5 AC, date=Thu 8 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=classroom 6 AC, date=Thu 8 Oct, slot=2-5 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=water cooler 1, date=Fri 9 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=water cooler 2, date=Fri 9 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-80010, item_id=projector, date=Fri 9 Oct, slot=2-5 pm) → ceiling-mount visit booked"
+        - "book_installation(order_id=KT-80010, item_id=inverter, date=Fri 9 Oct, slot=2-5 pm) → technician visit booked"
+    - task: "Extended warranty on each AC and the inverter and projector"
+      calls:
+        - "add_extended_warranty(order_id=KT-80010, item_id=classroom 1 AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-80010, item_id=classroom 2 AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-80010, item_id=classroom 3 AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-80010, item_id=classroom 4 AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-80010, item_id=classroom 5 AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-80010, item_id=classroom 6 AC, years=3) → plan added, ₹2,999"
+        - "add_extended_warranty(order_id=KT-80010, item_id=inverter, years=2) → plan added, ₹1,299"
+        - "add_extended_warranty(order_id=KT-80010, item_id=projector, years=2) → plan added, ₹1,999"
+    - task: "Stabilisers for the six ACs"
+      calls:
+        - "check_stock(sku=AC voltage stabiliser, pincode=324005) → in stock, 6 available"
+        - "add_to_cart(sku=AC voltage stabiliser, qty=6) → added, ₹19,794"
+        - "check_stock(sku=projector screen 100 inch, pincode=324005) → in stock"
+        - "add_to_cart(sku=projector screen 100 inch, qty=1) → added, ₹4,999"
+        - "place_order(address=Vidya Coaching, Rajeev Gandhi Nagar, Kota 324005, payment_mode=company card) → order KT-80144, ₹24,793; delivery Wed 7 Oct"
+    - task: "The old AC in the office"
+      calls:
+        - "register_warranty_claim(order_id=KT-72210, item_id=office split AC, serial=AC15T5520, issue=gas leak, not cooling) → claim WC 80150; visit Wed 7 Oct"
+    - task: "Invoice, follow-up, summary"
+      calls:
+        - "raise_ticket(category=GST invoice, summary=KT-80010 and KT-80144 invoices with GSTIN 08AAACV4410K1Z2) → ticket GT 80160"
+        - "schedule_callback(date=Fri 9 Oct, slot=6-7 pm, topic=all installations done before Mon 12 Oct) → booked"
+        - "send_sms(template=installations_summary) → sent"
+  forbid: ["add_extended_warranty(order_id=KT-80010, item_id=water cooler 1)", "add_extended_warranty(order_id=KT-80010, item_id=water cooler 2)"]
+  lines:
+    - [open, "Namaste, main Rajeev Mehta, Kota mein coaching chalata hoon. Chhe classroom ACs, do water coolers, projector aur inverter mangwaye hain. Monday se classes hain, sab lagna chahiye.", "Hello, I'm Rajeev Mehta; I run a coaching centre in Kota. I've ordered six classroom ACs, two water coolers, a projector and an inverter. Classes start Monday, everything has to be fitted."]
+    - [after, "Baaki saaman Thursday ko aa raha hai? Wednesday ko mangwa lo, subah.", "The rest is coming Thursday? Get it on Wednesday, morning."]
+    - [after, "Pehle teen AC aa chuke hain. Kal lagwa do — do subah, ek dopahar.", "The first three ACs have arrived. Get them fitted tomorrow — two in the morning, one in the afternoon."]
+    - [after, "Baaki teen AC Thursday ko, isi tarah. Coolers Friday subah, projector aur inverter Friday dopahar.", "The other three ACs on Thursday, the same way. Coolers Friday morning, projector and inverter Friday afternoon."]
+    - [after, "Har AC pe teen saal ki extended warranty. Inverter aur projector pe do saal. Coolers pe nahi chahiye.", "Three years' extended warranty on every AC. Two years on the inverter and projector. Not on the coolers."]
+    - [after, "Warranty ka total kitna hua?", "What's the total for the warranties?"]
+    - [after, "Har AC ke liye ek stabiliser bhi chahiye. Chhe. Aur projector ke liye ek sau inch ki screen. Company card se.", "I need a stabiliser for each AC too. Six. And a hundred-inch screen for the projector. On the company card."]
+    - [after, "Aur office mein ek purana AC hai, Kartly ka hi. Gas leak ho gayi lagti hai. Serial A C one five T five five two zero.", "And there's an old AC in the office, also from Kartly. Looks like a gas leak. Serial AC15T5520."]
+    - [after, "GST invoice chahiye dono orders ka. GSTIN zero eight A A A C V four four one zero K one Z two.", "I need GST invoices for both orders. GSTIN 08AAACV4410K1Z2."]
+    - [after, "Friday shaam ko confirm kar dena ki sab lag gaya.", "Confirm on Friday evening that everything's fitted."]
+    - [after, "Poora schedule ek baar bata do.", "Tell me the full schedule once."]
+    - [after, "Theek hai, SMS bhej do. Dhanyavaad.", "Okay, send an SMS. Thank you."]
+  key:
+    - "Moves the second shipment to Wed 7 Oct morning"
+    - "Books one visit per unit: ACs 1-2 Tue morning, AC 3 Tue afternoon, ACs 4-5 Thu morning, AC 6 Thu afternoon, coolers Fri morning, projector and inverter Fri afternoon"
+    - "Adds 3-year plans on all six ACs and 2-year on the inverter and projector, none on the coolers; states ₹21,292"
+    - "Orders six stabilisers and a 100-inch screen on the company card (KT-80144, ₹24,793)"
+    - "Registers the office AC claim WC 80150 (Wed 7 Oct) and raises GT 80160 for GST invoices"
+  checks: {lang: hg, digits: ["KT-80144", "WC 80150", "GT 80160"], say: [["21,292", "ikkees hazaar do sau baanve", "twenty-one thousand two hundred ninety-two"]], tool_order: [reschedule_delivery, book_installation]}
+  guard: "Every unit's day and slot come in L3–L4; L5 names which units get warranty; L6 asks for the total whatever was said."
+
+- id: ret-123
+  g: RET-4
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Technicians who never came — four visits checked, two rebooked (one day full), two claims, new items timed"
+  basis: "Missed installation visits pile up; customers want each visit traced and rebooked and new deliveries timed around them."
+  caller: "F 46-60 · retired teacher in Chennai, polite but fed up"
+  goal: "Get the two missed visits done this week, register claims for two faulty appliances, and have the new items delivered and fitted on days she is home."
+  role: "You handle installation and warranty."
+  context: ""
+  tasks:
+    - task: "Find the visits"
+      calls:
+        - "list_orders() → KT-81010 (dishwasher, RO purifier), KT-81022 (chimney, hob), KT-81040 (microwave, mixer grinder; shipping)"
+        - "get_installation(order_id=KT-81010, item_id=dishwasher) → installed Mon 28 Sep"
+        - "get_installation(order_id=KT-81010, item_id=RO purifier) → installed Mon 28 Sep"
+        - "get_installation(order_id=KT-81022, item_id=chimney) → visit Thu 1 Oct missed; technician did not turn up"
+        - "get_installation(order_id=KT-81022, item_id=hob) → visit Sat 3 Oct missed; technician did not turn up"
+    - task: "Rebook the two missed visits"
+      calls:
+        - "book_installation(order_id=KT-81022, item_id=chimney, date=Wed 7 Oct, slot=10 am-1 pm) → error: slot full"
+        - "book_installation(order_id=KT-81022, item_id=chimney, date=Thu 8 Oct, slot=10 am-1 pm) → technician visit booked"
+        - "book_installation(order_id=KT-81022, item_id=hob, date=Thu 8 Oct, slot=10 am-1 pm) → technician visit booked"
+    - task: "Claims for two faulty ones"
+      calls:
+        - "get_order(order_id=KT-81010) → dishwasher serial DW60E2207; RO purifier serial RO8U5531; warranty 1 year"
+        - "register_warranty_claim(order_id=KT-81010, item_id=dishwasher, serial=DW60E2207, issue=leaking from the door) → claim WC 81101; visit Thu 8 Oct"
+        - "register_warranty_claim(order_id=KT-81010, item_id=RO purifier, serial=RO8U5531, issue=water tastes salty) → claim WC 81102; visit Thu 8 Oct"
+    - task: "New items on a day she's home"
+      calls:
+        - "get_order(order_id=KT-81040) → microwave (AWB DL 8104 0001), mixer grinder (AWB DL 8104 0002)"
+        - "track_shipment(awb=DL 8104 0001) → Delhivery, delivery Wed 7 Oct"
+        - "track_shipment(awb=DL 8104 0002) → Delhivery, delivery Wed 7 Oct"
+        - "reschedule_delivery(awb=DL 8104 0001, date=Thu 8 Oct, slot=10 am-1 pm) → rescheduled"
+        - "reschedule_delivery(awb=DL 8104 0002, date=Thu 8 Oct, slot=10 am-1 pm) → rescheduled"
+        - "book_installation(order_id=KT-81040, item_id=microwave, date=Thu 8 Oct, slot=2-5 pm) → demo visit booked"
+    - task: "Warranty on the new ones"
+      calls:
+        - "add_extended_warranty(order_id=KT-81022, item_id=chimney, years=2) → plan added, ₹1,499"
+        - "add_extended_warranty(order_id=KT-81040, item_id=microwave, years=2) → plan added, ₹999"
+    - task: "Complaint, goodwill, follow-up"
+      calls:
+        - "raise_ticket(category=missed installation, summary=KT-81022 chimney (1 Oct) and hob (3 Oct) visits missed) → ticket MI 81130"
+        - "credit_goodwill(order_id=KT-81022, amount=₹300, reason=two missed visits) → ₹300 added to Kartly balance"
+        - "schedule_callback(date=Thu 8 Oct, slot=6-7 pm, topic=all Thursday visits done) → booked"
+        - "send_sms(template=installations_summary) → sent"
+  forbid: ["book_installation(order_id=KT-81022, item_id=chimney, date=Wed 7 Oct, slot=2-5 pm)"]
+  lines:
+    - [open, "வணக்கம். உங்க technicians ரெண்டு தடவை வரேன்னு சொல்லிட்டு வரவே இல்லை. என் எல்லா installation ஐயும் பாருங்க.", "Hello. Your technicians said twice they'd come and never came. Check all my installations."]
+    - [after, "Chimney உம் hob உம் தான் இன்னும் போடலை. புதன்கிழமை காலைல ரெண்டையும் போடுங்க. புதன் முடியலைன்னா, வியாழன் காலைல ரெண்டும்.", "Only the chimney and hob haven't been fitted. Fit both on Wednesday morning. If Wednesday isn't possible, both on Thursday morning."]
+    - [after, "போட்ட dishwasher கதவு வழியா தண்ணி ஒழுகுது. RO தண்ணி உப்பா இருக்கு. ரெண்டுக்கும் complaint போடுங்க.", "The dishwasher they fitted leaks from the door. The RO water tastes salty. Raise complaints for both."]
+    - [after, "Serial number எல்லாம் உங்க கிட்டயே இருக்கும்னு நினைக்கிறேன், பாருங்க.", "I think you'll have the serial numbers yourselves — please check."]
+    - [after, "எல்லா technician உம் ஒரே நாள் வந்தா நல்லது.", "It would be good if all the technicians came on the same day."]
+    - [after, "புது microwave உம் mixer உம் புதன் வருதா? நான் புதன் இருக்க மாட்டேன். வியாழன் காலைல அனுப்புங்க.", "The new microwave and mixer come on Wednesday? I won't be home on Wednesday. Send them Thursday morning."]
+    - [after, "Microwave வந்ததும் demo காட்ட யாராவது வரணும், அதே நாள் மதியம்.", "Someone should come to demo the microwave once it arrives, the same afternoon."]
+    - [after, "Chimney க்கும் microwave க்கும் ரெண்டு வருஷம் extended warranty போடுங்க.", "Put two years' extended warranty on the chimney and the microwave."]
+    - [after, "ரெண்டு தடவை வராம போனதுக்கு complaint போடுங்க. எதாவது compensation உண்டா?", "File a complaint about the two missed visits. Any compensation?"]
+    - [after, "வியாழன் சாயங்காலம் எல்லாம் முடிஞ்சதான்னு call பண்ணுங்க.", "Call Thursday evening to check it's all done."]
+    - [after, "வியாழன் யார் யார் எப்போ வருவாங்கன்னு ஒரு தடவை சொல்லுங்க.", "Tell me once who comes when on Thursday."]
+    - [after, "SMS அனுப்புங்க. நன்றி.", "Send an SMS. Thank you."]
+  key:
+    - "Traces all four visits: dishwasher and RO done 28 Sep; chimney (1 Oct) and hob (3 Oct) missed"
+    - "When Wednesday is full, says so and books both for Thu 8 Oct morning"
+    - "Finds the serials and registers WC 81101 (dishwasher) and WC 81102 (RO), both Thu 8 Oct"
+    - "Moves the microwave and mixer to Thu 8 Oct morning and books the microwave demo that afternoon"
+    - "Adds 2-year plans on the chimney and microwave; raises MI 81130 and credits ₹300"
+    - "Reads Thursday's schedule; speaks Tamil, keeping her English words"
+  checks: {lang: ta, digits: ["WC 81101", "WC 81102", "MI 81130"], tool_order: [get_installation, book_installation]}
+  guard: "The Thursday fallback comes with the request; L4 asks the agent to find the serials itself; L6 reacts to the Wednesday date the agent must report."
+
+- id: ret-124
+  g: RET-5
+  lang: en
+  diff: Medium
+  dir: in
+  title: "Grocery order arrived short — four missing, three bad, one wrong substitute, replacements in the evening slot"
+  basis: "Grocery deliveries arrive with missing, damaged or wrongly substituted items, each refunded or replaced on its own."
+  caller: "F 26-45 · working mother in Gurugram, unpacking groceries on the phone"
+  goal: "Get every missing or bad item refunded or replaced tonight, reject a wrong substitute and add two things she forgot."
+  role: "You handle Kartly Fresh. Refunds for missing items go to Kartly balance."
+  context: ""
+  tasks:
+    - task: "Read the order"
+      calls:
+        - "get_fresh_order(order_id=FR-80110) → delivered today 8:40 am; 22 items; missing: atta 5 kg, paneer 200 g, coriander, lemons; substituted: Amul butter 500 g → store-brand butter 500 g; eggs (12), tomatoes 1 kg, curd 400 g delivered"
+    - task: "Missing items"
+      calls:
+        - "report_missing_item(order_id=FR-80110, item_id=atta 5 kg) → ₹289 to Kartly balance"
+        - "report_missing_item(order_id=FR-80110, item_id=paneer 200 g) → ₹95 to Kartly balance"
+        - "report_missing_item(order_id=FR-80110, item_id=coriander) → ₹20 to Kartly balance"
+        - "report_missing_item(order_id=FR-80110, item_id=lemons) → ₹40 to Kartly balance"
+    - task: "Bad items"
+      calls:
+        - "report_quality_issue(order_id=FR-80110, item_id=eggs (12), issue=five broken) → replacement in the next slot"
+        - "report_quality_issue(order_id=FR-80110, item_id=tomatoes 1 kg, issue=crushed) → replacement in the next slot"
+        - "report_quality_issue(order_id=FR-80110, item_id=curd 400 g, issue=past expiry date) → ₹45 refund to Kartly balance"
+    - task: "Reject the wrong substitute"
+      calls:
+        - "approve_substitution(order_id=FR-80110, item_id=Amul butter 500 g, accept=no) → substitute removed; ₹275 to Kartly balance; pick up at the evening delivery"
+    - task: "Evening slot with replacements, re-adds and extras"
+      calls:
+        - "add_fresh_item(order_id=FR-80110, sku=atta 5 kg, qty=1) → added, ₹289"
+        - "add_fresh_item(order_id=FR-80110, sku=paneer 200 g, qty=1) → added, ₹95"
+        - "add_fresh_item(order_id=FR-80110, sku=Amul butter 500 g, qty=1) → added, ₹275"
+        - "add_fresh_item(order_id=FR-80110, sku=curd 400 g, qty=1) → added, ₹45"
+        - "add_fresh_item(order_id=FR-80110, sku=milk 1 L, qty=2) → added, ₹136"
+        - "add_fresh_item(order_id=FR-80110, sku=brown bread, qty=1) → added, ₹55"
+        - "book_fresh_slot(order_id=FR-80110, date=Mon 5 Oct, slot=6-8 pm) → evening slot booked"
+    - task: "Goodwill, record, summary"
+      calls:
+        - "credit_goodwill(order_id=FR-80110, amount=₹100, reason=several items missing or damaged) → ₹100 added to Kartly balance"
+        - "get_wallet() → Kartly balance ₹864"
+        - "raise_ticket(category=Fresh packing quality, summary=FR-80110 four missing, three bad, wrong substitute) → ticket FQ 80130"
+        - "send_sms(template=fresh_order_summary) → sent"
+  forbid: ["approve_substitution(order_id=FR-80110, item_id=Amul butter 500 g, accept=yes)"]
+  noise: {bed: kids_home, snr_db: 15}
+  lines:
+    - [open, "Hi, my Kartly Fresh order came this morning and it's a mess. Half the things are missing and some are spoiled."]
+    - [after, "Can you go through what was missing and what was swapped?"]
+    - [after, "Right — atta, paneer, coriander and lemons, none of those came."]
+    - [after, "Five eggs are broken, the tomatoes are crushed, and the curd's expiry date was yesterday."]
+    - [after, "And they sent some local butter instead of Amul. I don't want it. Take it back."]
+    - [after, "I need the atta, paneer, butter and curd tonight — can they come in the evening slot? Coriander and lemons I'll get downstairs."]
+    - [after, "Since it's coming anyway, add two litres of milk and a brown bread."]
+    - [after, "Six to eight is fine."]
+    - [after, "Is there anything for all this trouble?"]
+    - [after, "So what's in my Kartly balance now?"]
+    - [after, "Will the evening delivery need me to pay anything extra?"]
+    - [after, "Okay. Please make sure the packing is checked next time. Send me the details."]
+  key:
+    - "Reports each missing item (atta, paneer, coriander, lemons) and refunds ₹444 to Kartly balance"
+    - "Replaces the eggs and tomatoes in the next slot and refunds the expired curd (₹45)"
+    - "Rejects the butter substitute (₹275 back) and does not keep it"
+    - "Adds atta, paneer, Amul butter, curd, two litres of milk and brown bread to the 6-8 pm slot; does not re-add coriander or lemons"
+    - "Credits ₹100, gives the ₹864 balance, raises FQ 80130"
+    - "Says the evening items cost ₹895, which the ₹864 balance mostly covers"
+  checks: {digits: ["FQ 80130", "864"], say: [["895", "eight hundred ninety-five", "eight ninety-five"]], tool_order: [report_missing_item, add_fresh_item]}
+  guard: "Each problem item is named in L3–L5; L6 lists what to re-add and what not; L8 accepts the slot whatever the agent offered."

@@ -1,0 +1,568 @@
+# Telecom — tool-heavy scenarios tel-101 … tel-108 (TEL-1 Recharge & plans, TEL-2 Postpaid & family).
+code: tel
+scenarios:
+
+- id: tel-101
+  g: TEL-1
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Five prepaid numbers expiring this week — a plan for each, card limit hit, packs, the mother's hidden charges"
+  basis: "Heads of family recharge everyone's prepaid numbers together and pick a different plan for each."
+  caller: "M 46-60 · father in Kochi who pays for the whole family's phones, careful with money"
+  goal: "Recharge all five numbers with the right plan for each person, add a data pack and an ISD pack, and stop charges on his mother's phone."
+  role: "You handle recharges. Give the price and validity before each recharge."
+  context: "Plans: P299 ₹299, 28 days, 2 GB a day. P349 ₹349, 28 days, 2.5 GB a day with OTT. P859 ₹859, 84 days, 2 GB a day. P1799 ₹1,799, 365 days, 24 GB in all, unlimited calls."
+  tasks:
+    - task: "Read the five numbers"
+      calls:
+        - "list_connections() → prepaid: Arun 98470 11201, Susan 98470 11202, Anna 98470 11203, Joel 98470 11204, Mariamma 98470 11205"
+        - "get_plans(type=prepaid) → P299 ₹299 28 days 2 GB/day; P349 ₹349 28 days 2.5 GB/day + OTT; P859 ₹859 84 days 2 GB/day; P1799 ₹1,799 365 days 24 GB"
+        - "get_account(mobile=98470 11201) → P299, valid until today"
+        - "get_account(mobile=98470 11202) → P299, valid until Tue 6 Oct"
+        - "get_account(mobile=98470 11203) → P299, valid until Wed 7 Oct"
+        - "get_account(mobile=98470 11204) → P299, valid until Thu 8 Oct"
+        - "get_account(mobile=98470 11205) → expired Sat 3 Oct; incoming stopped"
+        - "get_data_usage(mobile=98470 11203) → 2 GB a day used up by noon most days"
+        - "get_data_usage(mobile=98470 11204) → under 1 GB a day"
+    - task: "Recharge each — card first, UPI if the card fails"
+      calls:
+        - "recharge(mobile=98470 11201, plan_id=P859, payment=saved card) → recharged, valid until Sun 27 Dec"
+        - "recharge(mobile=98470 11202, plan_id=P859, payment=saved card) → recharged, valid until Mon 28 Dec"
+        - "recharge(mobile=98470 11205, plan_id=P1799, payment=saved card) → error: card declined, daily online limit reached"
+        - "recharge(mobile=98470 11205, plan_id=P1799, payment=saved UPI) → recharged, valid until 4 Oct 2027"
+        - "recharge(mobile=98470 11203, plan_id=P349, payment=saved UPI) → recharged, valid until Tue 3 Nov"
+        - "recharge(mobile=98470 11204, plan_id=P299, payment=saved UPI) → recharged, valid until Wed 4 Nov"
+    - task: "Packs"
+      calls:
+        - "activate_pack(mobile=98470 11203, pack_id=D101 10 GB) → active until Tue 3 Nov, ₹101"
+        - "activate_pack(mobile=98470 11202, pack_id=IS149 ISD UAE 60 minutes) → active 28 days, ₹149"
+    - task: "Hidden charges"
+      calls:
+        - "get_vas(mobile=98470 11201) → none"
+        - "get_vas(mobile=98470 11202) → none"
+        - "get_vas(mobile=98470 11203) → none"
+        - "get_vas(mobile=98470 11204) → none"
+        - "get_vas(mobile=98470 11205) → caller tune ₹49 a month (started Thu 1 Oct); astrology alerts ₹30 a week (since August)"
+        - "deactivate_vas(mobile=98470 11205, service=caller tune) → stopped; ₹49 refunded"
+        - "deactivate_vas(mobile=98470 11205, service=astrology alerts) → stopped; no refund (older than 7 days)"
+        - "set_dnd(mobile=98470 11205, categories=all promotional) → set, effective in 24 hours"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=recharges_summary) → sent"
+  forbid: ["recharge(mobile=98470 11205, plan_id=P299)", "activate_pack(mobile=98470 11204, pack_id=D101 10 GB)"]
+  lines:
+    - [open, "Hi, all five of our family's numbers are running out this week and I want to sort them in one go."]
+    - [after, "Read me the numbers and when each one expires."]
+    - [after, "My mother's has already stopped? Okay, she's first priority. What plans do you have?"]
+    - [after, "My wife and I — the eighty-four day one. My mother — the yearly one, she hardly uses data."]
+    - [after, "My daughter is always running out of data. Check her usage and my son's, then suggest something."]
+    - [after, "Okay, the OTT one for Anna and the basic one for Joel. Use my saved card — if it fails, my UPI for that one and the rest."]
+    - [after, "Anna also needs an extra ten GB pack. And Susan needs an ISD pack — her sister is in Dubai."]
+    - [after, "My mother keeps getting charged for something. Check all five numbers for anything like that."]
+    - [after, "Stop both on her number. And stop the promotional calls on hers too, she gets confused."]
+    - [after, "What's the total I've paid today?"]
+    - [after, "And everyone's new expiry dates, please."]
+    - [after, "Send me the summary. Thank you."]
+  key:
+    - "Reads all five numbers with their expiry; says Mariamma's has expired"
+    - "Gives price and validity before each recharge: P859 for Arun and Susan, P1799 for Mariamma, P349 for Anna, P299 for Joel"
+    - "When the card hits its daily limit on Mariamma's recharge, says so and uses UPI for it and the rest"
+    - "Adds 10 GB for Anna and the UAE ISD pack for Susan"
+    - "Checks all five for VAS; stops both on Mariamma's number (₹49 refunded, astrology not refundable) and sets DND"
+    - "States ₹4,415 paid today and reads each new expiry date"
+  checks: {digits: ["4 Oct 2027", "Tue 3 Nov"], say: [["4,415", "four thousand four hundred fifteen", "four thousand four hundred and fifteen"]], tool_order: [get_plans, recharge]}
+  guard: "Each person's plan comes in their own line; the card fallback comes before any recharge; L8 asks for all five to be checked whatever the agent offered."
+
+- id: tel-102
+  g: TEL-1
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Son sorts his parents' and grandmother's phones — charges stopped, yearly recharges, DND, two spam numbers"
+  basis: "Children manage elderly relatives' prepaid numbers from their own profile, number by number."
+  caller: "M 26-45 · son in Delhi managing his family's numbers in Jaipur, patient"
+  goal: "Stop every unwanted charge on three elderly relatives' numbers, recharge each for a long time, and stop the spam calls."
+  role: "You handle recharges and services."
+  context: "These numbers are on his profile; he is the account owner."
+  tasks:
+    - task: "Read the three numbers"
+      calls:
+        - "list_connections() → prepaid on his profile: father 94140 22301, mother 94140 22302, grandmother 94140 22303"
+        - "get_account(mobile=94140 22301) → P299, valid until Fri 9 Oct"
+        - "get_account(mobile=94140 22302) → P299, valid until Fri 9 Oct"
+        - "get_account(mobile=94140 22303) → P155 ₹155 28 days, valid until Wed 7 Oct"
+    - task: "Charges on each"
+      calls:
+        - "get_vas(mobile=94140 22301) → cricket score alerts ₹2 a day; caller tune ₹49 a month"
+        - "get_vas(mobile=94140 22302) → bhakti songs ₹30 a week"
+        - "get_vas(mobile=94140 22303) → games portal ₹99 a month (started Sat 3 Oct)"
+        - "deactivate_vas(mobile=94140 22301, service=cricket score alerts) → stopped; no refund"
+        - "deactivate_vas(mobile=94140 22301, service=caller tune) → stopped; no refund"
+        - "deactivate_vas(mobile=94140 22302, service=bhakti songs) → stopped; no refund"
+        - "deactivate_vas(mobile=94140 22303, service=games portal) → stopped; ₹99 refunded"
+    - task: "Long recharges"
+      calls:
+        - "get_plans(type=prepaid) → P1799 ₹1,799 365 days 24 GB; P859 ₹859 84 days 2 GB/day; P479 ₹479 84 days 6 GB, calls"
+        - "recharge(mobile=94140 22301, plan_id=P1799, payment=saved UPI) → recharged, valid until 8 Oct 2027"
+        - "recharge(mobile=94140 22302, plan_id=P1799, payment=saved UPI) → recharged, valid until 8 Oct 2027"
+        - "recharge(mobile=94140 22303, plan_id=P479, payment=saved UPI) → recharged, valid until Wed 30 Dec"
+    - task: "Spam and DND"
+      calls:
+        - "set_dnd(mobile=94140 22301, categories=all promotional) → set, effective in 24 hours"
+        - "set_dnd(mobile=94140 22302, categories=all promotional) → set, effective in 24 hours"
+        - "set_dnd(mobile=94140 22303, categories=all promotional) → set, effective in 24 hours"
+        - "report_spam(mobile=94140 22302, spam_number=70141 88213) → reported and blocked"
+        - "report_spam(mobile=94140 22302, spam_number=85120 44190) → reported and blocked"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=family_numbers_summary) → sent"
+  forbid: ["recharge(mobile=94140 22303, plan_id=P1799)"]
+  lines:
+    - [open, "Hello, main Manish. Mere mummy-papa aur dadi ke numbers mere profile pe hain, Jaipur mein. Teeno ka kuch karna hai.", "Hello, I'm Manish. My parents' and grandmother's numbers are on my profile, in Jaipur. I need to sort out all three."]
+    - [after, "Teeno ka plan aur kab tak chalega, bata do.", "Tell me each one's plan and how long it runs."]
+    - [after, "Papa keh rahe the paise kat-te rehte hain. Teeno numbers pe check karo kya-kya chalu hai.", "Papa was saying money keeps getting deducted. Check what's active on all three numbers."]
+    - [after, "Sab band kar do. Kisi ne bhi kuch nahi maanga tha.", "Stop all of them. None of them asked for anything."]
+    - [after, "Ab recharge. Mummy-papa ka saal bhar wala.", "Now the recharge. A full-year one for Mummy and Papa."]
+    - [after, "Dadi ko bas calls chahiye, data nahi. Unke liye koi sasta lamba wala?", "Grandma only needs calls, no data. Something cheap and long for her?"]
+    - [after, "Haan, woh chaurasi din wala theek hai. Teeno UPI se.", "Yes, that 84-day one is fine. All three by UPI."]
+    - [after, "Teeno pe promotional calls band kar do.", "Stop promotional calls on all three."]
+    - [after, "Aur mummy ko do number se roz pareshan karne wale calls aate hain. Saat shunya ek chaar ek, aath aath do ek teen. Aur aath paanch ek do shunya, chaar chaar ek nau shunya.", "And two numbers harass my mother every day. 70141 88213. And 85120 44190."]
+    - [after, "Kitna paisa laga aur kitna wapas aaya?", "How much did it cost and how much came back?"]
+    - [after, "SMS kar do sab, main papa ko forward kar doonga.", "SMS it all, I'll forward it to Papa."]
+    - [after, "Thanks, bhai.", "Thanks."]
+  key:
+    - "Reads all three numbers and their validity"
+    - "Finds the four services and stops each (₹99 refunded on the games portal, the others too old)"
+    - "Recharges both parents on P1799 and the grandmother on the cheaper long P479, not P1799"
+    - "Sets DND on all three and reports and blocks both numbers on the mother's line"
+    - "States ₹4,077 paid and ₹99 refunded"
+  checks: {lang: hg, digits: ["8 Oct 2027", "Wed 30 Dec"], say: [["4,077", "chaar hazaar sattattar", "four thousand seventy-seven"]], tool_order: [get_vas, deactivate_vas]}
+  guard: "L3 asks for all three numbers checked; L6 states her need, so the agent must choose P479; L9 reads both spam numbers in one line."
+
+- id: tel-103
+  g: TEL-1
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Family moves to yearly plans before a price rise — three numbers, son's data, two TV boxes repacked"
+  basis: "Ahead of tariff hikes, households lock in yearly plans for every number and tidy their TV packs at the same time."
+  caller: "M 46-60 · shopkeeper in Patna, practical, wants the best price"
+  goal: "Put all three numbers on yearly plans before the price rise, add data for his son's studies, and recharge and rearrange both TV boxes."
+  role: "You handle recharges and TV packs."
+  context: "Prices rise on Thu 15 Oct."
+  tasks:
+    - task: "Numbers and plans"
+      calls:
+        - "list_connections() → prepaid: Rajesh 99340 51201, Anita 99340 51202, Rohit (in Kota) 99340 51203; Tarang TV boxes TV-5501 (hall), TV-5502 (bedroom)"
+        - "get_plans(type=prepaid yearly) → P1799 ₹1,799 365 days 24 GB; P2999 ₹2,999 365 days 2.5 GB/day"
+        - "get_account(mobile=99340 51201) → P299, valid until Sat 10 Oct"
+        - "get_account(mobile=99340 51202) → P299, valid until Sat 10 Oct"
+        - "get_account(mobile=99340 51203) → P349, valid until Tue 13 Oct"
+        - "get_data_usage(mobile=99340 51203) → 2.5 GB a day used up most days"
+    - task: "Yearly recharges"
+      calls:
+        - "recharge(mobile=99340 51201, plan_id=P1799, payment=saved UPI) → recharged, valid until 9 Oct 2027"
+        - "recharge(mobile=99340 51202, plan_id=P1799, payment=saved UPI) → error: payment timed out, not debited"
+        - "recharge(mobile=99340 51202, plan_id=P1799, payment=saved UPI) → recharged, valid until 9 Oct 2027"
+        - "recharge(mobile=99340 51203, plan_id=P2999, payment=saved UPI) → recharged, valid until 12 Oct 2027"
+        - "activate_pack(mobile=99340 51203, pack_id=D181 30 GB) → active 30 days, ₹181"
+    - task: "His wife's number"
+      calls:
+        - "get_vas(mobile=99340 51202) → recipe tips ₹20 a week"
+        - "deactivate_vas(mobile=99340 51202, service=recipe tips) → stopped; no refund"
+    - task: "Two TV boxes"
+      calls:
+        - "get_dth(box_id=TV-5501) → Hindi Super pack ₹399 a month; balance ₹80; next debit Thu 8 Oct"
+        - "get_dth(box_id=TV-5502) → Hindi Super pack ₹399 a month; balance ₹40; next debit Thu 8 Oct"
+        - "recharge_dth(box_id=TV-5501, amount=₹1,200, payment=saved UPI) → recharged, balance ₹1,280"
+        - "change_dth_pack(box_id=TV-5502, pack=Hindi Basic) → from Thu 8 Oct, ₹249 a month"
+        - "add_channel(box_id=TV-5502, channel=Star Sports 1 Hindi) → added, ₹19 a month"
+        - "add_channel(box_id=TV-5501, channel=Aastha Bhajan) → added, ₹0"
+        - "recharge_dth(box_id=TV-5502, amount=₹600, payment=saved UPI) → recharged, balance ₹640"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=recharges_summary) → sent"
+  forbid: ["recharge(mobile=99340 51203, plan_id=P1799)", "change_dth_pack(box_id=TV-5501, pack=Hindi Basic)"]
+  lines:
+    - [open, "नमस्ते। सुना है पंद्रह तारीख़ से दाम बढ़ रहे हैं। घर के तीनों नंबर अभी सालभर के लिए रिचार्ज करने हैं।", "Hello. I hear prices are going up from the fifteenth. I want to recharge all three numbers at home for a full year now."]
+    - [after, "सालभर वाले कौन-से प्लान हैं?", "What are the yearly plans?"]
+    - [after, "मेरा और पत्नी का सस्ता वाला। बेटा रोहित कोटा में पढ़ता है, उसका डेटा देखकर बताइए।", "The cheaper one for me and my wife. My son Rohit studies in Kota — look at his data and tell me."]
+    - [after, "तो उसे रोज़ वाला ढाई जीबी दीजिए। ऊपर से तीस जीबी का पैक भी, परीक्षा है।", "Then give him the 2.5 GB a day one. And a 30 GB pack on top, he has exams."]
+    - [after, "सब UPI से।", "All by UPI."]
+    - [after, "पत्नी के नंबर पर कुछ कटता रहता है, देखिए।", "Something keeps getting deducted on my wife's number — please check."]
+    - [after, "बंद कीजिए। अब टीवी। दोनों बॉक्स देखिए।", "Stop it. Now the TV. Check both boxes."]
+    - [after, "हॉल वाले में बारह सौ डाल दीजिए, और आस्था भजन चैनल जोड़ दीजिए, माँ के लिए।", "Put twelve hundred into the hall one, and add the Aastha Bhajan channel, for my mother."]
+    - [after, "बेडरूम वाले में इतना महँगा पैक नहीं चाहिए, बेसिक कर दीजिए। बस स्टार स्पोर्ट्स हिंदी जोड़ दीजिए। और छह सौ डाल दीजिए।", "The bedroom one doesn't need such an expensive pack — make it basic. Just add Star Sports Hindi. And put in six hundred."]
+    - [after, "आज कुल कितना ख़र्च हुआ?", "How much was spent in total today?"]
+    - [after, "SMS कर दीजिए।", "SMS it."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Gives both yearly plans; recharges Rajesh and Anita on P1799 (after Anita's timeout, says so and retries) and Rohit on P2999"
+    - "Checks Rohit's usage before suggesting; adds the 30 GB pack (₹181)"
+    - "Stops the recipe-tips service on Anita's number"
+    - "Hall box: ₹1,200 recharge and Aastha Bhajan; bedroom box: Hindi Basic ₹249, Star Sports 1 Hindi ₹19, ₹600 recharge"
+    - "States ₹8,578 spent today"
+  checks: {lang: hi, digits: ["9 Oct 2027", "12 Oct 2027"], say: [["8,578", "आठ हज़ार पाँच सौ अठहत्तर"]], tool_order: [get_plans, recharge]}
+  guard: "Each person's plan and each box's change come in their own line; L3 asks for Rohit's usage before choosing; L10 asks for the total whatever was said."
+
+- id: tel-104
+  g: TEL-1
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Seven numbers on the father's ID — three he never took blocked, two closed, two kept and cleaned"
+  basis: "People find SIMs issued on their ID that they never took; each number has to be checked, blocked, closed or kept."
+  caller: "M 26-45 · son in Hyderabad calling from his father's number with his father beside him, alarmed"
+  goal: "Find every number on his father's ID, block the ones they don't know, close the unused ones, and keep and tidy the two in use."
+  role: "You handle numbers on a customer's ID. Numbers the customer didn't take are blocked and reported; verifying the ID happens at a store."
+  context: "The profile belongs to the father, Ramakrishna Rao, whose number is calling."
+  tasks:
+    - task: "Every number on the ID"
+      calls:
+        - "list_connections() → on Ramakrishna Rao's ID: 98490 30101, 98490 30102, 98490 30103, 70130 88411, 70130 88412, 70130 88413, 63000 52177"
+        - "get_account(mobile=98490 30101) → prepaid, active, used daily (this phone)"
+        - "get_account(mobile=98490 30102) → prepaid, active, used daily"
+        - "get_account(mobile=98490 30103) → prepaid, validity ended June, unused since"
+        - "get_account(mobile=70130 88411) → prepaid, activated Mon 14 Sep in Kolkata"
+        - "get_account(mobile=70130 88412) → prepaid, activated Mon 14 Sep in Kolkata"
+        - "get_account(mobile=70130 88413) → prepaid, activated Mon 14 Sep in Kolkata"
+        - "get_account(mobile=63000 52177) → prepaid, balance ₹42, unused since March"
+    - task: "Block the three they never took"
+      calls:
+        - "block_sim(mobile=70130 88411, reason=not taken by ID holder) → blocked, BS 30411"
+        - "block_sim(mobile=70130 88412, reason=not taken by ID holder) → blocked, BS 30412"
+        - "block_sim(mobile=70130 88413, reason=not taken by ID holder) → blocked, BS 30413"
+        - "raise_ticket(category=SIMs issued without consent, summary=three numbers activated 14 Sep in Kolkata on Ramakrishna Rao's ID) → ticket ID 30420"
+    - task: "Close the two unused ones"
+      calls:
+        - "disconnect_number(mobile=98490 30103, reason=not needed) → closed"
+        - "disconnect_number(mobile=63000 52177, reason=not needed) → closed; ₹42 balance refunded"
+    - task: "Keep and tidy the two in use"
+      calls:
+        - "get_vas(mobile=98490 30101) → devotional songs ₹30 a week"
+        - "get_vas(mobile=98490 30102) → none"
+        - "deactivate_vas(mobile=98490 30101, service=devotional songs) → stopped; no refund"
+        - "recharge(mobile=98490 30101, plan_id=P859, payment=saved UPI) → recharged, valid until Mon 28 Dec"
+        - "recharge(mobile=98490 30102, plan_id=P859, payment=saved UPI) → recharged, valid until Mon 28 Dec"
+        - "set_dnd(mobile=98490 30101, categories=all promotional) → set, effective in 24 hours"
+        - "set_dnd(mobile=98490 30102, categories=all promotional) → set, effective in 24 hours"
+    - task: "ID check at a store"
+      calls:
+        - "find_store(pincode=500038) → Tarang store Ameerpet, ST-0381, 10 am-8 pm"
+        - "book_store_visit(store_id=ST-0381, date=Tue 6 Oct, slot=11:00 am, purpose=ID verification for SIMs issued without consent) → appointment SV 30430"
+        - "schedule_callback(date=Tue 6 Oct, slot=4-5 pm, topic=outcome of the ID check and ticket ID 30420) → booked"
+        - "send_sms(template=id_numbers_summary) → sent"
+  forbid: ["disconnect_number(mobile=98490 30102)", "recharge(mobile=70130 88411)"]
+  lines:
+    - [open, "హలో, మా నాన్నగారి ID మీద ఎన్ని numbers ఉన్నాయో చూడాలి. Government site లో ఏడు numbers చూపిస్తోంది, మాకు రెండే తెలుసు!", "Hello, I need to check how many numbers are on my father's ID. The government site shows seven numbers, and we only know of two!"]
+    - [after, "నాన్నగారు నా పక్కనే ఉన్నారు, ఈ phone ఆయనదే. ఏడూ చదివి, ఒక్కొక్కటి ఎప్పుడు, ఎక్కడ activate అయిందో చెప్పండి.", "My father is right beside me; this phone is his. Read all seven and tell me when and where each one was activated."]
+    - [after, "Kolkata? మేము ఎప్పుడూ వెళ్ళలేదు. ఆ మూడూ వెంటనే block చేయండి.", "Kolkata? We've never been there. Block those three immediately."]
+    - [after, "దీని మీద complaint కూడా పెట్టండి.", "File a complaint about it too."]
+    - [after, "June నుంచి వాడని number, March నుంచి వాడని number — ఆ రెండూ పాతవి, మూసేయండి.", "The number unused since June and the one unused since March — those two are old, close them."]
+    - [after, "మిగతా రెండూ మావే — ఈ phone, అమ్మ phone. వాటి మీద ఏమైనా charges ఉన్నాయేమో చూడండి.", "The other two are ours — this phone and my mother's phone. Check whether there are any charges on them."]
+    - [after, "అది ఆపేయండి. రెండిటికీ ఎనభై నాలుగు రోజుల plan వేయండి, UPI తో.", "Stop that. Put the eighty-four-day plan on both, by UPI."]
+    - [after, "రెండిటికీ promotional calls ఆపేయండి.", "Stop promotional calls on both."]
+    - [after, "ID check కోసం store కి వెళ్ళాలా? Ameerpet దగ్గర. రేపు పొద్దున పదకొండు.", "Do we have to go to a store for the ID check? Ameerpet is close. Tomorrow at eleven in the morning."]
+    - [after, "ఇంకా ఏం చేయాలి? Police కి చెప్పాలా?", "What else should we do? Should we tell the police?"]
+    - [after, "Store కి వెళ్ళొచ్చాక సాయంత్రం ఒకసారి call చేయండి.", "Call once in the evening after we've been to the store."]
+    - [after, "అన్నీ SMS లో పంపండి.", "Send everything by SMS."]
+    - [after, "చాలా thanks అండి.", "Thank you very much."]
+  key:
+    - "Reads all seven numbers with status; the three Kolkata numbers were activated on 14 September"
+    - "Blocks all three (BS 30411-30413) and raises ID 30420"
+    - "Closes the two unused numbers, refunding the ₹42 balance"
+    - "Stops the devotional-songs service, recharges both numbers in use on P859, sets DND on both"
+    - "Books Ameerpet store ST-0381 for Tue 6 Oct at 11:00 am (SV 30430); suggests reporting it to the police or the cyber-crime portal"
+    - "Speaks Telugu, keeping his English words"
+  checks: {lang: te, digits: ["BS 30413", "ID 30420", "SV 30430"], tool_order: [list_connections, block_sim]}
+  guard: "Each instruction names numbers by what the agent must report about them (Kolkata, unused since June or March, ours), so it holds whatever order they were read in."
+
+- id: tel-105
+  g: TEL-1
+  lang: ta
+  script: ta-mix
+  diff: Medium
+  dir: in
+  title: "Exam month — data for three children and the mother, one pack not allowed on a plan, TV channels cut"
+  basis: "Families with children studying online add data number by number and cut TV during exams."
+  caller: "F 46-60 · mother in Madurai with three school and college children, firm"
+  goal: "Make sure each child has enough data for online classes, top up her own, and switch off entertainment channels till exams end."
+  role: "You handle recharges, packs and TV."
+  context: "Pack D251 (50 GB) works only on plans of ₹299 or more."
+  tasks:
+    - task: "Who uses what"
+      calls:
+        - "list_connections() → prepaid: Meenakshi 94430 71101, Karthik 94430 71102, Priya 94430 71103, Arjun 94430 71104; Tarang TV box TV-7101"
+        - "get_data_usage(mobile=94430 71102) → 1.5 GB a day plan; used up by 2 pm daily"
+        - "get_data_usage(mobile=94430 71103) → 1.5 GB a day plan; used up by evening"
+        - "get_data_usage(mobile=94430 71104) → 1 GB a day plan (P199); used up by noon"
+        - "get_data_usage(mobile=94430 71101) → 1 GB a day; usually left over"
+        - "get_plans(type=data packs) → D251 50 GB 30 days ₹251 (plans ₹299+); D121 12 GB valid with plan ₹121; D61 6 GB ₹61"
+    - task: "Packs and a plan change"
+      calls:
+        - "activate_pack(mobile=94430 71102, pack_id=D251) → active 30 days, ₹251"
+        - "activate_pack(mobile=94430 71103, pack_id=D251) → active 30 days, ₹251"
+        - "activate_pack(mobile=94430 71104, pack_id=D251) → error: D251 needs a plan of ₹299 or more"
+        - "activate_pack(mobile=94430 71104, pack_id=D121) → active with the plan, ₹121"
+        - "activate_pack(mobile=94430 71101, pack_id=D61) → active with the plan, ₹61"
+        - "get_account(mobile=94430 71102) → P299, valid until Sat 17 Oct"
+        - "change_plan(mobile=94430 71102, plan_id=P399 3 GB/day) → from Sun 18 Oct, ₹399"
+    - task: "Cut TV till exams end"
+      calls:
+        - "get_dth(box_id=TV-7101) → Tamil Mega pack with Sun Movies, Star Vijay Super, Cartoon Network; balance ₹620"
+        - "remove_channel(box_id=TV-7101, channel=Sun Movies) → removed from next cycle"
+        - "remove_channel(box_id=TV-7101, channel=Star Vijay Super) → removed from next cycle"
+        - "remove_channel(box_id=TV-7101, channel=Cartoon Network) → removed from next cycle"
+        - "get_account(mobile=94430 71104) → P199, valid until Fri 23 Oct"
+        - "get_account(mobile=94430 71103) → P299, valid until Sun 25 Oct"
+    - task: "Summary"
+      calls:
+        - "send_sms(template=packs_summary) → sent"
+  forbid: ["remove_channel(box_id=TV-7101, channel=Sun News)", "change_plan(mobile=94430 71103, plan_id=P399 3 GB/day)"]
+  lines:
+    - [open, "வணக்கம். என் மூணு பசங்களுக்கும் online class, exam. Data பத்தவே மாட்டேங்குது. நாலு number ம் என் profile ல தான்.", "Hello. My three children have online classes and exams. The data is never enough. All four numbers are on my profile."]
+    - [after, "ஒவ்வொருத்தருக்கும் data எப்போ தீர்ந்து போகுதுன்னு பாருங்க. என்னோடதும்.", "Check when each one's data runs out. Mine too."]
+    - [after, "என்ன pack இருக்கு?", "What packs are there?"]
+    - [after, "மூணு பசங்களுக்கும் அந்த ஐம்பது GB pack போடுங்க. எந்த number க்காவது முடியலைன்னா, அடுத்த பெரிய pack.", "Put that 50 GB pack on all three children. If it doesn't work on any number, the next biggest pack."]
+    - [after, "எனக்கு சின்ன pack போதும், ஆறு GB.", "A small pack is enough for me, six GB."]
+    - [after, "Karthik க்கு daily data யே பத்தலை. அவனோட plan முடிஞ்சதும் பெரிய plan க்கு மாத்துங்க.", "Even the daily data isn't enough for Karthik. When his plan ends, move him to a bigger plan."]
+    - [after, "Arjun, Priya ரெண்டு பேரோட plan எப்போ முடியுது?", "When do Arjun's and Priya's plans end?"]
+    - [after, "இப்போ TV. Exam முடியற வரைக்கும் movies, Vijay Super, cartoon மூணும் எடுத்துடுங்க. News இருக்கட்டும்.", "Now the TV. Until the exams are over, take off the movies, Vijay Super and cartoons. Keep the news."]
+    - [after, "மொத்தம் இன்னைக்கு எவ்வளவு?", "How much is it in total today?"]
+    - [after, "Exam முடிஞ்சதும் channels திரும்ப வேணும்னா என்ன பண்ணணும்?", "What do I do to get the channels back when exams are over?"]
+    - [after, "சரி, SMS அனுப்புங்க.", "Okay, send an SMS."]
+    - [after, "நன்றி.", "Thank you."]
+  key:
+    - "Checks all four numbers' data use"
+    - "Adds D251 for Karthik and Priya; when it fails on Arjun's ₹199 plan, says so and adds D121 instead"
+    - "Adds D61 for Meenakshi; moves Karthik to P399 from Sun 18 Oct, when his plan ends"
+    - "Removes Sun Movies, Star Vijay Super and Cartoon Network from next cycle; keeps the news"
+    - "States ₹684 for today's packs; explains channels can be added back by call or app"
+  checks: {lang: ta, digits: ["Sun 18 Oct", "Fri 23 Oct"], say: [["684", "அறுநூற்று எண்பத்தி நாலு", "six hundred eighty-four"]], tool_order: [get_data_usage, activate_pack]}
+  guard: "The pack fallback comes with the request; each child is named; L8 names the channels to cut and to keep, true whatever the agent read out."
+
+- id: tel-106
+  g: TEL-1
+  lang: tx
+  script: en → te-mix
+  diff: Hard
+  dir: in
+  switch: "L5: English → Telugu (her father takes the phone)"
+  title: "Father tricked into five subscriptions — daughter starts in English, father lists them in Telugu"
+  basis: "Older users are pushed into paid services by calls and pop-ups; the family has to stop each one and block the source."
+  caller: "F 26-45 · daughter in Bengaluru, angry on her father's behalf; speaker b: M 60+ · her father in Warangal, Telugu only"
+  goal: "Stop every paid service on her father's number, get back what can be refunded, block premium numbers and the callers, and recharge him."
+  role: "You handle services. Act on the father's number for him; he is the account holder and is on the call."
+  context: "Services started in the last 7 days are refunded."
+  tasks:
+    - task: "What is running"
+      calls:
+        - "get_account(mobile=94400 61201) → prepaid P299, valid until Wed 7 Oct; balance ₹12"
+        - "get_vas(mobile=94400 61201) → news alerts ₹5 a day (since Fri 2 Oct); devotional caller tune ₹49 (Sat 3 Oct); quiz contest ₹99 a week (Sat 3 Oct); jokes portal ₹30 a week (August); health tips ₹2 a day (July)"
+    - task: "Stop each"
+      calls:
+        - "deactivate_vas(mobile=94400 61201, service=news alerts) → stopped; ₹20 refunded"
+        - "deactivate_vas(mobile=94400 61201, service=devotional caller tune) → stopped; ₹49 refunded"
+        - "deactivate_vas(mobile=94400 61201, service=quiz contest) → error: service system timed out"
+        - "deactivate_vas(mobile=94400 61201, service=quiz contest) → stopped; ₹99 refunded"
+        - "deactivate_vas(mobile=94400 61201, service=jokes portal) → stopped; no refund"
+        - "deactivate_vas(mobile=94400 61201, service=health tips) → stopped; no refund"
+        - "raise_ticket(category=VAS without consent, summary=jokes portal and health tips started without consent; refund review) → ticket VA 61210"
+    - task: "His wife's number too"
+      calls:
+        - "get_vas(mobile=94400 61202) → devotional caller tune ₹49 (since August)"
+        - "deactivate_vas(mobile=94400 61202, service=devotional caller tune) → stopped; no refund"
+        - "set_dnd(mobile=94400 61202, categories=all promotional) → set, effective in 24 hours"
+    - task: "Block the sources"
+      calls:
+        - "set_call_barring(mobile=94400 61201, type=premium-rate, enabled=yes) → barring on"
+        - "set_dnd(mobile=94400 61201, categories=all promotional) → set, effective in 24 hours"
+        - "report_spam(mobile=94400 61201, spam_number=140 66 21 7750) → reported and blocked"
+        - "report_spam(mobile=94400 61201, spam_number=91770 35514) → reported and blocked"
+    - task: "Recharge him"
+      calls:
+        - "get_plans(type=prepaid) → P479 ₹479 84 days 6 GB; P859 ₹859 84 days 2 GB/day"
+        - "recharge(mobile=94400 61201, plan_id=P479, payment=daughter's UPI) → recharged, valid until Wed 30 Dec"
+        - "get_data_usage(mobile=94400 61201) → about 100 MB a day"
+    - task: "Summary to the daughter's number"
+      calls:
+        - "send_sms(template=vas_cleanup_summary) → sent"
+  forbid: ["recharge(mobile=94400 61201, plan_id=P859)"]
+  lines:
+    - [open, "Hi, I'm calling about my father's number. He's been signed up for a bunch of paid services he never wanted. He's here with me on speaker."]
+    - [after, "I'll pay for his recharge after this, by my UPI. He hardly uses data — just WhatsApp."]
+    - [after, "He doesn't speak English well. Is it okay if he tells you in Telugu what he's been getting?"]
+    - [after, "Great, here he is. Nanna, matladandi."]
+    - [after b, "నమస్కారం. రోజూ ఏదో news messages, ఏదో quiz, joke messages వస్తున్నాయి. Phone చేస్తే పాట వస్తోంది. డబ్బులు కట్ అవుతున్నాయి.", "Hello. Every day some news messages, some quiz, joke messages come. When someone calls me a song plays. Money is getting cut."]
+    - [after b, "అన్నీ ఆపేయండమ్మా. ఏదీ నేను అడగలేదు.", "Stop all of it. I didn't ask for any of it."]
+    - [after b, "డబ్బులు తిరిగి వస్తాయా?", "Will the money come back?"]
+    - [after b, "పాతవాటికి కూడా complaint పెట్టండి. నా భార్య number కూడా చూడండి — nine four four zero zero, six one two zero two. దానికీ promotional calls ఆపేయండి.", "File a complaint for the old ones too. Check my wife's number as well — 94400 61202. Stop promotional calls on hers too."]
+    - [after b, "ఇవి ఎక్కడ నుంచి వస్తున్నాయి? ఆ numbers ఆపేయండి. ఒకటి one four zero six six two one seven seven five zero. ఇంకోటి nine one seven seven zero, three five five one four.", "Where are these coming from? Block those numbers. One is 140 66 21 7750. The other is 91770 35514."]
+    - [after b, "అమ్మాయి recharge చేస్తుందన్నది. తక్కువ data, ఎక్కువ రోజులు ఉండేది వేయండి.", "My daughter said she'd recharge. Put one with little data and lots of days."]
+    - [after b, "సరే. Message అమ్మాయికి పంపండి.", "Okay. Send the message to my daughter."]
+    - [after b, "చాలా thanks అమ్మా.", "Thank you so much."]
+  key:
+    - "Replies in Telugu from L5, slowly and simply"
+    - "Lists all five services and stops each; when the quiz contest times out, says so and retries"
+    - "Refunds ₹168 for the three recent ones; explains the older two aren't refundable and raises VA 61210"
+    - "Stops the caller tune on his wife's number and sets DND there too"
+    - "Turns on premium-rate barring and DND and blocks both numbers"
+    - "Recharges P479 (84 days, 6 GB) with the daughter's UPI, not P859"
+    - "Explains the SMS goes to the father's number, not the daughter's"
+  checks: {lang_from: {L5: te}, digits: ["VA 61210", "Wed 30 Dec"], say: [["168", "నూట అరవై ఎనిమిది", "one sixty-eight"]], tool_order: [get_vas, deactivate_vas]}
+  guard: "The daughter's English lines set payment and need before the handover; the father's lines name the services by what they do; L11 asks for the SMS to the daughter, which the agent must correct."
+
+- id: tel-107
+  g: TEL-2
+  lang: en
+  diff: Hard
+  dir: in
+  title: "₹18,940 family bill — roaming without a pack, VAS on three lines, premium calls: eight disputes, limits and barring on five lines"
+  basis: "Family postpaid bill shock usually comes from several lines at once; each item is disputed and each line is capped."
+  caller: "F 46-60 · school principal in Pune, account owner of a five-line family plan, controlled anger"
+  goal: "Dispute every wrong item, stop it happening again on every line, cover her daughter abroad properly, and pay only what is fair."
+  role: "You handle postpaid bills. One dispute per item; give the provisional credit."
+  context: "Family account TF-55210. September bill ₹18,940, due Thu 15 Oct."
+  tasks:
+    - task: "Read the bill"
+      calls:
+        - "get_bill(account=TF-55210, month=September) → ₹18,940: plan ₹1,499; Ira's roaming in the UK without a pack ₹9,820; VAS on Meera ₹180, Kabir ₹297, Dadi ₹120; premium-rate calls on Kabir ₹1,450; Ira's international SMS ₹640; late fee ₹300; GST ₹2,889; extra data on Kabir ₹1,745"
+        - "get_account(mobile=98220 40101) → Shalini (owner), postpaid, on TF-55210"
+        - "get_account(mobile=98220 40102) → Meera, postpaid, on TF-55210"
+        - "get_account(mobile=98220 40103) → Kabir (16), postpaid, on TF-55210"
+        - "get_account(mobile=98220 40104) → Ira, postpaid, on TF-55210, roaming in the UK since Mon 14 Sep"
+        - "get_account(mobile=98220 40105) → Dadi, postpaid, on TF-55210"
+    - task: "Dispute each wrong item"
+      calls:
+        - "raise_bill_dispute(account=TF-55210, item=Ira roaming without a pack, reason=no pack offered on arrival) → dispute BD 55301; provisional credit ₹7,000; decision by Thu 15 Oct"
+        - "raise_bill_dispute(account=TF-55210, item=Ira international SMS, reason=sent automatically by apps) → dispute BD 55302; provisional credit ₹640"
+        - "raise_bill_dispute(account=TF-55210, item=VAS on Meera, reason=not subscribed) → dispute BD 55303; provisional credit ₹180"
+        - "raise_bill_dispute(account=TF-55210, item=VAS on Kabir, reason=not subscribed) → error: dispute system timed out"
+        - "raise_bill_dispute(account=TF-55210, item=VAS on Kabir, reason=not subscribed) → dispute BD 55304; provisional credit ₹297"
+        - "raise_bill_dispute(account=TF-55210, item=VAS on Dadi, reason=not subscribed) → dispute BD 55305; provisional credit ₹120"
+        - "raise_bill_dispute(account=TF-55210, item=premium-rate calls on Kabir, reason=minor's line, premium-rate should be barred) → dispute BD 55306; provisional credit ₹1,450"
+        - "raise_bill_dispute(account=TF-55210, item=late fee, reason=bill delivered late) → dispute BD 55307; provisional credit ₹300"
+    - task: "Cover Ira properly in the UK"
+      calls:
+        - "get_roaming_packs(country=UK) → IR30 ₹2,999 30 days 10 GB 200 min; IR10 ₹1,499 10 days 3 GB"
+        - "activate_roaming_pack(mobile=98220 40104, pack_id=IR30, start_date=Mon 5 Oct) → active until Tue 3 Nov, ₹2,999"
+    - task: "Stop VAS and premium calls on every line"
+      calls:
+        - "deactivate_vas(mobile=98220 40102, service=all) → stopped"
+        - "deactivate_vas(mobile=98220 40103, service=all) → stopped"
+        - "deactivate_vas(mobile=98220 40105, service=all) → stopped"
+        - "set_call_barring(mobile=98220 40103, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98220 40105, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98220 40102, type=premium-rate, enabled=yes) → barring on"
+    - task: "A limit on each line"
+      calls:
+        - "set_usage_limit(mobile=98220 40101, limit=₹3,000) → set"
+        - "set_usage_limit(mobile=98220 40102, limit=₹1,000) → set"
+        - "set_usage_limit(mobile=98220 40103, limit=₹500) → set"
+        - "set_usage_limit(mobile=98220 40104, limit=₹4,000) → set"
+        - "set_usage_limit(mobile=98220 40105, limit=₹500) → set"
+    - task: "Pay the rest, autopay, summary"
+      calls:
+        - "send_payment_link(account=TF-55210, amount=₹8,953) → link sent by SMS"
+        - "set_autopay(account=TF-55210, method=saved card) → autopay from the October bill"
+        - "send_sms(template=bill_disputes_summary) → sent"
+  forbid: ["raise_bill_dispute(account=TF-55210, item=plan)", "raise_bill_dispute(account=TF-55210, item=extra data on Kabir)"]
+  lines:
+    - [open, "Hello. My family's postpaid bill is eighteen thousand nine hundred and forty rupees. It's usually two thousand. I want every item explained."]
+    - [after, "Ira went to the UK for her master's. Nobody told her she needed a pack. Dispute that, and the international SMS too."]
+    - [after, "These services on Meera's, Kabir's and my mother-in-law's lines — nobody asked for them. Dispute all three."]
+    - [after, "Kabir is sixteen. Premium-rate calls? That should never have been allowed. Dispute it."]
+    - [after, "And the late fee — the bill came by email after the due date. Dispute that too."]
+    - [after, "The extra data on Kabir — fine, that's him, we'll pay it."]
+    - [after, "Ira is in the UK till early November. Put a proper pack on her from today."]
+    - [after, "Stop all those services on the three lines, and block premium-rate numbers on them."]
+    - [after, "And put a spending limit on every line. Mine three thousand, Meera one thousand, Kabir five hundred, Ira four thousand, Dadi five hundred."]
+    - [pause 1700, "Kabir especially. Five hundred, not a rupee more."]
+    - [after, "So what do I actually have to pay now?"]
+    - [after, "Send me the link. And set autopay on my card from next month."]
+    - [after, "Send the dispute numbers by SMS."]
+    - [after, "Thank you. I hope the disputes go through."]
+  key:
+    - "Reads every bill item; disputes the seven she names, one each (BD 55301-55307); when Kabir's VAS dispute times out, says so and retries"
+    - "Does not dispute the plan or Kabir's extra data"
+    - "States provisional credits of ₹9,987 and ₹8,953 left to pay"
+    - "Activates the UK pack IR30 for Ira from today (₹2,999, until 3 Nov)"
+    - "Stops VAS and bars premium-rate numbers on Meera's, Kabir's and Dadi's lines"
+    - "Sets each limit: ₹3,000, ₹1,000, ₹500, ₹4,000, ₹500; sends the link and sets autopay"
+  checks: {digits: ["BD 55306", "8,953"], say: [["9,987", "nine thousand nine hundred eighty-seven", "nine thousand nine hundred and eighty-seven"]], tool_order: [get_bill, raise_bill_dispute]}
+  guard: "Each dispute line names its item; L6 accepts the data charge whatever the agent said; L9 gives every limit with its person."
+
+- id: tel-108
+  g: TEL-2
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Family plan reshuffle — two members out, three in (two converted, one ported), bigger plan, a limit per line"
+  basis: "Family plans change as people move in and out; each member is added, removed or converted on their own."
+  caller: "M 26-45 · IT manager in Noida, owner of a family postpaid account, crisp"
+  goal: "Take his brother and the old driver off, bring his in-laws and new maid on, move to a bigger plan, and limit each line."
+  role: "You handle family plans. A number from another operator joins only after porting in with its UPC; the customer gets the UPC by SMS from their operator."
+  context: "Family account TF-61040."
+  tasks:
+    - task: "Read the account"
+      calls:
+        - "get_account(mobile=98110 61001) → Vivek (owner), postpaid Family 3 (₹999, 3 members) on TF-61040"
+        - "list_connections() → on TF-61040: Vivek 98110 61001, Shruti 98110 61002, Akash (brother) 98110 61003, Raju (old driver) 98110 61004 (extra member ₹299)"
+        - "get_plans(type=postpaid family) → Family 4 ₹1,399 (4 members); Family 6 ₹1,799 (6 members, 300 GB shared)"
+    - task: "Two out"
+      calls:
+        - "remove_family_member(account=TF-61040, mobile=98110 61003) → removed from Sun 1 Nov; becomes his own postpaid account"
+        - "remove_family_member(account=TF-61040, mobile=98110 61004) → removed from Sun 1 Nov; becomes prepaid"
+    - task: "Three in"
+      calls:
+        - "get_account(mobile=98110 72201) → Ramesh Gupta (father-in-law), Tarang prepaid"
+        - "get_account(mobile=98110 72202) → Sunita Gupta (mother-in-law), Tarang prepaid"
+        - "convert_to_postpaid(mobile=98110 72201, account=TF-61040) → postpaid from Sun 1 Nov"
+        - "convert_to_postpaid(mobile=98110 72202, account=TF-61040) → postpaid from Sun 1 Nov"
+        - "add_family_member(account=TF-61040, mobile=98110 72201) → added from Sun 1 Nov"
+        - "add_family_member(account=TF-61040, mobile=98110 72202) → added from Sun 1 Nov"
+        - "request_port_in(mobile=88260 13390, from_operator=Jio, upc=JA448201) → port-in request; Tarang SIM active Thu 8 Oct"
+        - "add_family_member(account=TF-61040, mobile=88260 13390) → added from Sun 1 Nov"
+    - task: "Bigger plan"
+      calls:
+        - "change_plan(mobile=98110 61001, plan_id=Family 6) → ₹1,799 from Sun 1 Nov, covers 5 members"
+    - task: "Limits and barring per line"
+      calls:
+        - "set_usage_limit(mobile=98110 61001, limit=₹2,500) → set"
+        - "set_usage_limit(mobile=98110 61002, limit=₹1,500) → set"
+        - "set_usage_limit(mobile=98110 72201, limit=₹800) → set"
+        - "set_usage_limit(mobile=98110 72202, limit=₹800) → set"
+        - "set_usage_limit(mobile=88260 13390, limit=₹300) → set"
+        - "set_call_barring(mobile=88260 13390, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=88260 13390, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98110 72201, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=98110 72202, type=premium-rate, enabled=yes) → barring on"
+    - task: "Autopay and summary"
+      calls:
+        - "set_autopay(account=TF-61040, method=saved card) → autopay on"
+        - "send_sms(template=family_plan_summary) → sent"
+  forbid: ["disconnect_number(mobile=98110 61004)", "change_plan(mobile=98110 61001, plan_id=Family 4)"]
+  lines:
+    - [open, "Hi, main Vivek. Mere family postpaid mein bade badlaav karne hain. Pehle bata do abhi kaun-kaun hai aur kya plan hai.", "Hi, I'm Vivek. I need to make big changes to my family postpaid. First tell me who's on it now and what the plan is."]
+    - [after, "Akash, mera bhai, ab alag rehta hai — usko nikaal do, uska number band mat karna. Raju driver ne kaam chhod diya — usko bhi nikaal do, number uska rahega.", "Akash, my brother, lives separately now — take him off, but don't shut his number. Raju the driver has left — take him off too, the number stays his."]
+    - [after, "Ab teen naye. Mere saas-sasur — dono Tarang prepaid pe hain. Nau aath ek ek zero, saat do do zero ek, aur saat do do zero do.", "Now three new ones. My in-laws — both are on Tarang prepaid. 98110 72201 and 72202."]
+    - [after, "Aur nayi maid, Kamla. Uska number Jio pe hai — aath aath do chhe zero, ek teen teen nau zero. Usne port ke liye UPC mangwa liya hai — J A chaar chaar aath do zero ek.", "And the new maid, Kamla. Her number is on Jio — 88260 13390. She has got her UPC for porting — JA448201."]
+    - [after, "Itne log ho gaye toh kaunsa plan sahi rahega?", "With this many people, which plan is right?"]
+    - [after, "Chhe wala kar do.", "Do the six one."]
+    - [after, "Har line pe limit — meri pachchees sau, Shruti ki pandrah sau, saas-sasur dono aath sau, Kamla teen sau.", "A limit on every line — mine twenty-five hundred, Shruti's fifteen hundred, both in-laws eight hundred, Kamla three hundred."]
+    - [after, "Kamla ke number pe international aur premium calls band kar do. Saas-sasur ke numbers pe bhi premium calls band.", "Block international and premium calls on Kamla's number. Premium calls off on the in-laws' numbers too."]
+    - [after, "Ye sab kab se lagega?", "From when does all this apply?"]
+    - [after, "Autopay mere card pe laga do.", "Put autopay on my card."]
+    - [after, "SMS bhej do summary ka.", "Send a summary SMS."]
+    - [after, "Thanks.", "Thanks."]
+  key:
+    - "Reads the current plan and four members"
+    - "Removes Akash (own postpaid account) and Raju (prepaid) from 1 Nov without closing either number"
+    - "Converts both in-laws to postpaid and adds them; ports Kamla in with JA448201 (SIM active 8 Oct) and adds her"
+    - "Suggests Family 6 (₹1,799) for five members and changes to it from 1 Nov"
+    - "Sets each limit as given and bars international and premium-rate calls on Kamla's line"
+    - "Sets autopay and says changes take effect on Sun 1 Nov"
+  checks: {lang: hg, digits: ["Sun 1 Nov", "1,799"], tool_order: [convert_to_postpaid, add_family_member]}
+  guard: "Removals, additions, the UPC and every limit are given with names; L5 asks for the plan advice whatever the agent said; L9 asks for timing whatever was said."

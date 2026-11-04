@@ -1,0 +1,82 @@
+# Telecom — tool-heavy live-call scenarios (header). Scenarios: telecom-*.yaml.
+# Shape and cue grammar: ../README.md.
+
+industry: Telecom
+code: tel
+brand: "Tarang Mobile · Tarang Fiber · Tarang TV (DTH)"
+agent_role_base: |
+  You are the phone support agent for Tarang, an Indian operator with mobile (prepaid
+  and postpaid), Tarang Fiber broadband and Tarang TV (DTH). The caller is matched by
+  caller ID to their profile; numbers on the same family or business account can be
+  changed by the account owner. Every tool acts on one number, one connection, one set-top
+  box, one bill item or one complaint, so recharging four numbers is four calls. Read
+  plan prices, validity and data exactly as the tool gives them, and confirm before
+  anything that costs money. You cannot generate a porting code (UPC): explain the SMS
+  route. A replacement SIM needs ID at a store. A retention offer may be made once.
+
+tools:
+  # profile, plans, recharge
+  list_connections: "() → numbers, fibre and TV boxes on the caller's profile, with owner and type"
+  get_account: "(mobile) → plan, validity, balance, prepaid or postpaid, family or business account"
+  get_plans: "(type) → plans with id, price, validity, data, calls, OTT"
+  recharge: "(mobile, plan_id, payment) → recharged, valid until; or payment failed"
+  get_data_usage: "(mobile) → data used and left today and this cycle"
+  activate_pack: "(mobile, pack_id, start_date?) → active from and until, price"
+  get_vas: "(mobile) → value-added services active on the number, with charges"
+  deactivate_vas: "(mobile, service) → stopped, refund if within 7 days"
+  # postpaid and family
+  get_bill: "(account, month) → total, items with GST, due date"
+  raise_bill_dispute: "(account, item, reason) → dispute number, decision date, provisional credit"
+  change_plan: "(mobile, plan_id) → new plan from date, prorated charge"
+  add_family_member: "(account, mobile) → added from next cycle, extra charge"
+  remove_family_member: "(account, mobile) → removed from next cycle; number becomes prepaid or independent"
+  set_usage_limit: "(mobile, limit) → monthly credit limit set"
+  convert_to_postpaid: "(mobile, account) → moves to postpaid on the account from date"
+  request_port_in: "(mobile, from_operator, upc) → port-in request, activation date"
+  set_autopay: "(account, method) → autopay set"
+  send_payment_link: "(account, amount) → link sent by SMS"
+  # network and fibre
+  check_outage: "(pincode) → outage yes/no, cause, restore time"
+  run_line_test: "(fibre_id) → line and router status, speed"
+  remote_reboot: "(fibre_id) → router restarted, status after restart"
+  enable_wifi_calling: "(mobile) → Wi-Fi calling on"
+  raise_complaint: "(type, mobile_or_fibre, pincode, details) → complaint number, target time"
+  get_complaint: "(complaint_id) → status, history"
+  schedule_technician: "(complaint_id, date, slot) → visit booked, or slot full"
+  change_fibre_plan: "(fibre_id, plan_id) → new plan from date, prorated charge"
+  order_fibre_addon: "(fibre_id, addon) → mesh extender, static IP or OTT pack added, price, install date"
+  shift_connection: "(fibre_id, new_address, date) → feasibility, shifting request, charge"
+  apply_service_credit: "(account_or_fibre, amount, reason) → credit on next bill"
+  # TV (DTH)
+  get_dth: "(box_id) → pack, channels, balance, next debit"
+  change_dth_pack: "(box_id, pack) → new pack from date, monthly price"
+  add_channel: "(box_id, channel) → added, monthly price"
+  remove_channel: "(box_id, channel) → removed from next cycle"
+  recharge_dth: "(box_id, amount, payment) → recharged, balance"
+  # SIM, roaming, security
+  block_sim: "(mobile, reason) → SIM blocked, reference"
+  disconnect_number: "(mobile, reason) → number closed, remaining balance refunded"
+  request_sim_replacement: "(mobile, store_id) → replacement ready at the store; ID needed"
+  convert_esim: "(mobile, device) → eSIM QR sent by email after SMS confirmation"
+  get_roaming_packs: "(country) → packs with id, price, days, data, calls"
+  activate_roaming_pack: "(mobile, pack_id, start_date) → active from and until, price"
+  set_call_barring: "(mobile, type, enabled) → barring for international, premium-rate or roaming calls on/off"
+  set_dnd: "(mobile, categories) → DND preference set, effective in 24 hours"
+  report_spam: "(mobile, spam_number) → reported and blocked for this number"
+  find_store: "(pincode) → nearest Tarang stores with id and hours"
+  book_store_visit: "(store_id, date, slot, purpose) → appointment"
+  # service
+  retention_offer: "(mobile) → offer the customer may be given once"
+  send_sms: "(template) → SMS sent to the caller's number"
+  schedule_callback: "(date, slot, topic) → callback booked"
+  raise_ticket: "(category, summary) → ticket number"
+  transfer_to_human: "(reason) → queued for a specialist"
+
+groups:
+  TEL-1: {stage: "Recharge & plans — several prepaid numbers, packs, unwanted value-added services", accounts: "Jio, Airtel, Vi, BSNL", tests: "one recharge or pack per number, plan prices and validity, VAS refunds"}
+  TEL-2: {stage: "Postpaid & family plans — bills, disputes per item, members added and removed, migrations", accounts: "Airtel Black, Jio Postpaid, Vi Max", tests: "bill items with GST, one dispute per item, member changes, limits per line"}
+  TEL-3: {stage: "Network, fibre & TV complaints — outages, slow Wi-Fi, call drops, technicians, shifting", accounts: "JioFiber, Airtel Xstream Fiber, ACT, BSNL, Tata Play", tests: "outage and line checks before complaints, technician slots, one complaint per service, silences while restarting"}
+  TEL-4: {stage: "SIM, roaming & security — lost phones, eSIM, roaming per traveller, spam and DND", accounts: "Jio, Airtel, Vi", tests: "one roaming pack per traveller with dates, SIM blocks, refusing a SIM swap on the phone, UPC by SMS"}
+  TEL-5: {stage: "Small business — shop and office lines, fibre for branches", accounts: "Airtel Business, Jio Business, Vi Business, Tata Tele", tests: "many connections, one change per line, limits and barring per user"}
+
+scenarios: []

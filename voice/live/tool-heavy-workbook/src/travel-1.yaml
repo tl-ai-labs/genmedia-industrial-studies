@@ -1,0 +1,600 @@
+# Travel — tool-heavy scenarios trv-101 … trv-108 (TRV-1 Flights).
+code: trv
+scenarios:
+
+- id: trv-101
+  g: TRV-1
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Family of four — move the whole trip by a day, seats, meals, bag"
+  basis: "Family date changes are one booking but every change, seat and meal is per passenger."
+  caller: "M 26-45 · father booking for his family, organised, has the PNR ready"
+  goal: "Move the Goa trip to Saturday and back a day later, four seats together, kids' meals, one extra bag, pay once."
+  role: "You handle bookings. State the fare difference before changing anything."
+  context: "Flexi fare: date changes are free; the passenger pays only the fare difference."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT5H2N) → Arjun Mehta, Neha Mehta, Kabir Mehta (child, 9), Ira Mehta (child, 6); YA 211 Delhi-Goa Fri 9 Oct 6:20 am; YA 214 Goa-Delhi Fri 16 Oct 4:50 pm; Flexi fare"
+    - task: "Move all four to Saturday 10 October"
+      calls:
+        - "search_flights(from=DEL, to=GOI, date=Sat 10 Oct) → YA 211 6:20 am, 9 seats left, +₹900 per person; YA 215 2:05 pm, +₹2,300 per person"
+        - "change_flight(pnr=YT5H2N, passenger=Arjun Mehta, new_flight=YA 211 Sat 10 Oct) → changed, +₹900"
+        - "change_flight(pnr=YT5H2N, passenger=Neha Mehta, new_flight=YA 211 Sat 10 Oct) → changed, +₹900"
+        - "change_flight(pnr=YT5H2N, passenger=Kabir Mehta, new_flight=YA 211 Sat 10 Oct) → changed, +₹900"
+        - "change_flight(pnr=YT5H2N, passenger=Ira Mehta, new_flight=YA 211 Sat 10 Oct) → changed, +₹900"
+    - task: "Move all four returns to Saturday 17 October"
+      calls:
+        - "search_flights(from=GOI, to=DEL, date=Sat 17 Oct) → YA 214 4:50 pm, no fare difference; YA 218 9:30 pm, +₹600 per person"
+        - "change_flight(pnr=YT5H2N, passenger=Arjun Mehta, new_flight=YA 214 Sat 17 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT5H2N, passenger=Neha Mehta, new_flight=YA 214 Sat 17 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT5H2N, passenger=Kabir Mehta, new_flight=YA 214 Sat 17 Oct) → changed, ₹0"
+        - "change_flight(pnr=YT5H2N, passenger=Ira Mehta, new_flight=YA 214 Sat 17 Oct) → changed, ₹0"
+    - task: "Four seats together on the Saturday flight"
+      calls:
+        - "get_seat_map(flight_no=YA 211, date=Sat 10 Oct) → row 18 A-F free (the only row with four together); 18A window"
+        - "assign_seat(pnr=YT5H2N, passenger=Ira Mehta, flight_no=YA 211, seat=18A) → assigned, ₹0"
+        - "assign_seat(pnr=YT5H2N, passenger=Kabir Mehta, flight_no=YA 211, seat=18B) → assigned, ₹0"
+        - "assign_seat(pnr=YT5H2N, passenger=Neha Mehta, flight_no=YA 211, seat=18C) → assigned, ₹0"
+        - "assign_seat(pnr=YT5H2N, passenger=Arjun Mehta, flight_no=YA 211, seat=18D) → error: 18D was taken a moment ago; 18E is still free"
+        - "assign_seat(pnr=YT5H2N, passenger=Arjun Mehta, flight_no=YA 211, seat=18E) → assigned, ₹0"
+    - task: "Kids' veg meals on the way out"
+      calls:
+        - "add_meal(pnr=YT5H2N, passenger=Kabir Mehta, flight_no=YA 211, meal=kids veg) → added, ₹350"
+        - "add_meal(pnr=YT5H2N, passenger=Ira Mehta, flight_no=YA 211, meal=kids veg) → added, ₹350"
+    - task: "15 kg extra for Arjun on the way out"
+      calls:
+        - "add_baggage(pnr=YT5H2N, passenger=Arjun Mehta, flight_no=YA 211, kg=15) → added, ₹1,800"
+    - task: "Pay once, then the itinerary"
+      calls:
+        - "send_payment_link(pnr=YT5H2N, amount=₹6,100) → link sent by SMS, valid 2 hours"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [cancel_booking, "change_flight(pnr=YT5H2N, passenger=Arjun Mehta, new_flight=YA 215 Sat 10 Oct)"]
+  lines:
+    - [open, "Hi, I need to move my family's Goa trip by one day. P N R Y T five H two N. There are four of us."]
+    - [after, "We're on the Friday morning flight to Goa. Can all four of us go on Saturday instead, same time if possible?"]
+    - [after, "And push the return by a day too, to Saturday the seventeenth. All four of us."]
+    - [after, "Okay. What's the extra for all that?"]
+    - [after, "Fine, go ahead and change both flights for all four."]
+    - [after, "Now seats. All four of us together in one row on the Saturday flight."]
+    - [cut 1500 L6, "Wait — Ira by the window, Kabir next to her, then my wife, then me. And if a seat goes while you're booking, take the next free one in that row."]
+    - [after, "Great. The kids eat vegetarian. Can you add kids' veg meals for both of them on the way out?"]
+    - [after, "And one extra bag for me, fifteen kilos, on the way out only."]
+    - [after, "How much is it altogether, and how do I pay?"]
+    - [after, "Send the link, I'll pay right away. And the new itinerary to my phone as well."]
+    - [after, "That's everything. Thanks a lot."]
+  key:
+    - "Finds YT5H2N: four passengers on YA 211 Friday 9 October and YA 214 Friday 16 October"
+    - "Gives the Saturday options (YA 211 +₹900 a person, YA 215 +₹2,300) and moves all four to YA 211 Saturday 10 October"
+    - "Moves all four returns to YA 214 Saturday 17 October at no extra fare"
+    - "After the cut-in: seats Ira 18A, Kabir 18B, Neha 18C; when 18D fails, says so and gives Arjun 18E"
+    - "Adds kids' veg meals for Kabir and Ira and 15 kg for Arjun, all on YA 211"
+    - "States the total ₹6,100 (₹3,600 fares, ₹700 meals, ₹1,800 bag) and sends one payment link"
+    - "Sends the updated itinerary; cancels nothing"
+  checks: {digits: ["6,100", "18E"], say: [["6,100", "six thousand one hundred", "sixty-one hundred"]], tool_order: [search_flights, change_flight]}
+  guard: "The caller gives every name, the seat order and the fallback before the seats are booked; L4–L5 accept whatever total is quoted; L10–L11 ask for the total and link whether or not the agent offered them."
+
+- id: trv-102
+  g: TRV-1
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Wedding group of six — names, bags, seats in one row, web check-in"
+  basis: "Group bookings for weddings: name typos, extra baggage for outfits and everyone checked in together."
+  caller: "M 26-45 · organising a wedding trip for his cousins, cheerful; speaker b: F 18-25 · his cousin Tanya"
+  goal: "Fix two names, add bags for three, seat all six in one row, pay once and check everyone in."
+  role: "You handle bookings. Name corrections of up to 3 letters are free. Check in only after names and seats are done."
+  context: "Web check-in for YA 731 is open (it opens 48 hours before departure)."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT9W4B) → Rohan Kapoor, Simran Kapor, Karan Malhotra, Tanya Malhotra, Aditya Sethee, Meher Sethi; YA 731 Mumbai-Udaipur Wed 7 Oct 10:15 am; Saver fare, 15 kg each"
+    - task: "Correct two names"
+      calls:
+        - "update_name(pnr=YT9W4B, passenger=Simran Kapor, corrected_name=Simran Kapoor) → corrected, ₹0"
+        - "update_name(pnr=YT9W4B, passenger=Aditya Sethee, corrected_name=Aditya Sethi) → corrected, ₹0"
+    - task: "10 kg extra for Simran, Tanya and Meher"
+      calls:
+        - "add_baggage(pnr=YT9W4B, passenger=Simran Kapoor, flight_no=YA 731, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT9W4B, passenger=Tanya Malhotra, flight_no=YA 731, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT9W4B, passenger=Meher Sethi, flight_no=YA 731, kg=10) → added, ₹1,200"
+    - task: "All six in one row"
+      calls:
+        - "get_seat_map(flight_no=YA 731, date=Wed 7 Oct) → row 24 A-F free (the only full row free); row 25 A, B, C, E free"
+        - "assign_seat(pnr=YT9W4B, passenger=Simran Kapoor, flight_no=YA 731, seat=24A) → assigned, ₹250"
+        - "assign_seat(pnr=YT9W4B, passenger=Tanya Malhotra, flight_no=YA 731, seat=24B) → assigned, ₹250"
+        - "assign_seat(pnr=YT9W4B, passenger=Meher Sethi, flight_no=YA 731, seat=24C) → error: 24C was taken a moment ago"
+        - "assign_seat(pnr=YT9W4B, passenger=Meher Sethi, flight_no=YA 731, seat=25C) → assigned, ₹250"
+        - "assign_seat(pnr=YT9W4B, passenger=Rohan Kapoor, flight_no=YA 731, seat=24D) → assigned, ₹250"
+        - "assign_seat(pnr=YT9W4B, passenger=Karan Malhotra, flight_no=YA 731, seat=24E) → assigned, ₹250"
+        - "assign_seat(pnr=YT9W4B, passenger=Aditya Sethi, flight_no=YA 731, seat=24F) → assigned, ₹250"
+    - task: "Pay for bags and seats"
+      calls:
+        - "send_payment_link(pnr=YT9W4B, amount=₹5,100) → link sent by SMS"
+    - task: "Check all six in"
+      calls:
+        - "web_check_in(pnr=YT9W4B, passenger=Rohan Kapoor, flight_no=YA 731) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT9W4B, passenger=Simran Kapoor, flight_no=YA 731) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT9W4B, passenger=Karan Malhotra, flight_no=YA 731) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT9W4B, passenger=Tanya Malhotra, flight_no=YA 731) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT9W4B, passenger=Aditya Sethi, flight_no=YA 731) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT9W4B, passenger=Meher Sethi, flight_no=YA 731) → checked in, boarding pass sent by SMS"
+    - task: "Send the itinerary"
+      calls:
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [cancel_booking, add_travel_insurance]
+  lines:
+    - [open, "Hello, main Rohan bol raha hoon. Hum chhe log Udaipur ja rahe hain shaadi ke liye. PNR hai Y T nine W four B.", "Hello, this is Rohan. Six of us are going to Udaipur for a wedding. The PNR is YT9W4B."]
+    - [after, "Pehle do naam theek karne hain. Simran ka surname 'Kapor' likha hai, sahi hai K A P O O R. Aur Aditya ka 'Sethee' likha hai, sahi hai S E T H I.", "First, two names need fixing. Simran's surname says 'Kapor', it should be K-A-P-O-O-R. And Aditya's says 'Sethee', it should be S-E-T-H-I."]
+    - [after, "Iska koi charge lagega kya?", "Is there any charge for that?"]
+    - [after, "Achha. Teeno ladkiyon ke liye das-das kilo extra baggage chahiye — Simran, Tanya aur Meher.", "Okay. The three girls need ten kilos extra each — Simran, Tanya and Meher."]
+    - [after, "Ab seats. Sab ek hi row mein. Ladkiyaan A, B, C — Simran, Tanya, Meher. Ladke D, E, F — main, Karan, Aditya. Agar beech mein koi seat chali jaaye, toh us bande ko peeche wali row mein same letter de dena.", "Now seats. All in one row. Girls in A, B, C — Simran, Tanya, Meher. Boys in D, E, F — me, Karan, Aditya. If a seat goes while you book, give that person the same letter in the row behind."]
+    - [after, "Total kitna hua?", "What's the total?"]
+    - [after, "Theek hai, link bhej do, main abhi pay kar deta hoon.", "Fine, send the link, I'll pay now."]
+    - [after, "Aur sab ka web check-in bhi kar do, airport pe line nahi chahiye.", "And do everyone's web check-in too, we don't want the queue at the airport."]
+    - [after b, "Hi, main Tanya. Mera das kilo wala bag add ho gaya na?", "Hi, I'm Tanya. My ten-kilo bag has been added, right?"]
+    - [after b, "Perfect. Main phone wapas Rohan ko de rahi hoon.", "Perfect. I'm giving the phone back to Rohan."]
+    - [after, "Haan, main wapas. Boarding pass sab ke phone pe aayenge?", "Yes, I'm back. Will everyone get the boarding passes on their phones?"]
+    - [after, "Aur poori itinerary mere number pe bhej dena.", "And send the full itinerary to my number."]
+    - [after, "Bas itna hi. Thank you!", "That's all. Thank you!"]
+  key:
+    - "Corrects Simran Kapoor and Aditya Sethi at no charge"
+    - "Adds 10 kg for Simran, Tanya and Meher (₹1,200 each)"
+    - "Seats Simran 24A, Tanya 24B, Rohan 24D, Karan 24E, Aditya 24F; when 24C fails, says so and gives Meher 25C"
+    - "States the total ₹5,100 and sends the payment link"
+    - "Checks in all six only after the names and seats are done"
+    - "Answers Tanya directly: her 10 kg is added"
+    - "Sends the itinerary; adds nothing unasked"
+  checks: {lang: hg, digits: ["5,100", "25C"], say: [["5,100", "paanch hazaar ek sau", "fifty-one hundred"]], tool_order: [update_name, web_check_in]}
+  guard: "Every name, seat letter and the fallback come in L2 and L5, before any seat is booked; Tanya's question is true whatever was said; L11–L12 make sense after any check-in reply."
+
+- id: trv-103
+  g: TRV-1
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Elderly parents on a connecting trip — wheelchairs, assistance, seats, meals"
+  basis: "Children book special assistance for older parents; every service is per passenger and per flight."
+  caller: "M 26-45 · son booking for his parents, calm and thorough"
+  goal: "Wheelchairs and help at the Delhi transfer for both parents, front aisle seats, diabetic meals, frequent-flyer numbers, and his own number on the booking."
+  role: "You handle bookings and special assistance."
+  context: "Wheelchairs, meet-and-assist, seats and special meals are free for passengers over 60."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT4L8D) → Ramesh Tiwari (72), Kamla Tiwari (68); YA 402 Lucknow-Delhi Thu 8 Oct 7:00 am, lands 8:20 am; YA 515 Delhi-Bengaluru Thu 8 Oct 11:30 am"
+    - task: "Wheelchairs on both flights for both"
+      calls:
+        - "request_wheelchair(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 402) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 402) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 515) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 515) → booked at departure and arrival"
+    - task: "Help at the Delhi transfer"
+      calls:
+        - "add_special_service(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 515, service=meet-and-assist) → booked"
+        - "add_special_service(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 515, service=meet-and-assist) → booked"
+    - task: "Front aisle seats side by side"
+      calls:
+        - "get_seat_map(flight_no=YA 402, date=Thu 8 Oct) → 3C and 3D free (aisle seats across the aisle, front-most pair)"
+        - "assign_seat(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 402, seat=3C) → assigned, ₹0"
+        - "assign_seat(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 402, seat=3D) → assigned, ₹0"
+        - "get_seat_map(flight_no=YA 515, date=Thu 8 Oct) → 5C and 5D free (aisle seats across the aisle, front-most pair)"
+        - "assign_seat(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 515, seat=5C) → assigned, ₹0"
+        - "assign_seat(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 515, seat=5D) → assigned, ₹0"
+    - task: "Diabetic meals on both flights"
+      calls:
+        - "add_meal(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 402, meal=diabetic) → added, ₹0"
+        - "add_meal(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 402, meal=diabetic) → added, ₹0"
+        - "add_meal(pnr=YT4L8D, passenger=Ramesh Tiwari, flight_no=YA 515, meal=diabetic) → added, ₹0"
+        - "add_meal(pnr=YT4L8D, passenger=Kamla Tiwari, flight_no=YA 515, meal=diabetic) → added, ₹0"
+    - task: "Frequent-flyer numbers"
+      calls:
+        - "add_frequent_flyer(pnr=YT4L8D, passenger=Ramesh Tiwari, ff_no=YF 3381 0027) → added"
+        - "add_frequent_flyer(pnr=YT4L8D, passenger=Kamla Tiwari, ff_no=YF 3381 0035) → added"
+    - task: "Son's number for messages, then the summary"
+      calls:
+        - "update_contact(pnr=YT4L8D, mobile=98390 44120) → contact updated"
+        - "send_sms(template=updated_itinerary) → sent to 98390 44120"
+  forbid: [add_travel_insurance, cancel_booking]
+  lines:
+    - [open, "नमस्ते, मुझे अपने माता-पिता की फ़्लाइट के बारे में बात करनी है। पीएनआर है वाई टी चार एल आठ डी।", "Hello, I need to talk about my parents' flight. The PNR is YT4L8D."]
+    - [after, "दोनों की उम्र सत्तर के आसपास है। दोनों फ़्लाइट में, लखनऊ में भी और दिल्ली में भी, दोनों के लिए व्हीलचेयर चाहिए।", "Both are around seventy. They need wheelchairs on both flights, in Lucknow and in Delhi, for both of them."]
+    - [after, "दिल्ली में फ़्लाइट बदलनी है। वहाँ कोई उन्हें अगली फ़्लाइट तक ले जाने वाला मिल जाएगा क्या? दोनों के लिए।", "They change flights in Delhi. Can someone take them to the next flight there? For both."]
+    - [after, "सीट आगे की तरफ़ चाहिए, रास्ते वाली, दोनों पास-पास। बीच में रास्ता हो तो भी चलेगा। दोनों फ़्लाइट में।", "Seats near the front, on the aisle, close together. Across the aisle is fine. On both flights."]
+    - [after, "दोनों को शुगर है, तो दोनों फ़्लाइट में डायबिटिक खाना लगा दीजिए।", "Both are diabetic, so please put diabetic meals on both flights."]
+    - [after, "उनके फ़्रीक्वेंट फ़्लायर नंबर भी जोड़ दीजिए। पापा का है वाई एफ तीन तीन आठ एक,", "Add their frequent-flyer numbers too. Papa's is YF 3381,"]
+    - [pause 1900, "शून्य शून्य दो सात। और मम्मी का वाई एफ तीन तीन आठ एक, शून्य शून्य तीन पाँच।", "zero zero two seven. And Mummy's is YF 3381, zero zero three five."]
+    - [after, "संपर्क नंबर मेरा डाल दीजिए, ताकि सारे मैसेज मुझे आएँ। नौ आठ तीन नौ शून्य, चार चार एक दो शून्य।", "Put my contact number on it so all messages come to me. 98390 44120."]
+    - [after, "इन सब का कोई पैसा लगेगा क्या?", "Will any of this cost money?"]
+    - [after, "ठीक है। दिल्ली में उन्हें अगली फ़्लाइट के लिए कितना समय मिलेगा?", "Okay. How much time will they have in Delhi for the next flight?"]
+    - [after, "पूरी जानकारी मेरे नंबर पर भेज दीजिए।", "Send all the details to my number."]
+    - [after, "बहुत-बहुत धन्यवाद, आपने बड़ी मदद की।", "Thank you very much, you've been a great help."]
+  key:
+    - "Books wheelchairs for both parents on YA 402 and YA 515"
+    - "Books meet-and-assist for both at the Delhi transfer"
+    - "Seats 3C and 3D on YA 402, 5C and 5D on YA 515"
+    - "Adds diabetic meals for both on both flights"
+    - "Adds YF 3381 0027 for Ramesh and YF 3381 0035 for Kamla, read back exactly"
+    - "Puts 98390 44120 on the booking"
+    - "Says none of it costs anything"
+    - "Gives the Delhi gap: lands 8:20 am, next flight 11:30 am, about 3 hours 10 minutes"
+  checks: {lang: hi, no_jump_in: L7, digits: ["3381 0027", "3381 0035", "98390 44120"]}
+  guard: "The son lists every service in his own words, one per line; L9 and L10 are questions that fit any earlier reply."
+
+- id: trv-104
+  g: TRV-1
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "Friends' trip — one drops out, two fly a day later on a split booking"
+  basis: "Group plans change: one traveller cancels, some move dates, so the booking is split."
+  caller: "M 18-25 · organising a friends' trip, quick talker"
+  goal: "Cancel Divya, move Praveen and Harsha to Saturday on their own booking, seat himself with Lahari, meals, bags, FF numbers, and one payment link per booking."
+  role: "You handle bookings. State refunds and charges before cancelling or changing."
+  context: "Saver fare: change fee ₹2,250 per passenger per flight plus any fare difference; cancellation ₹3,000 per passenger per flight. Seats and pre-booked meals cost nothing on this fare."
+  tasks:
+    - task: "Find the booking and the fare rules"
+      calls:
+        - "get_booking(pnr=YT2K7P) → Sai Kiran Reddy, Praveen Kumar, Harsha Vardhan, Divya Sri, Lahari Rao; YA 622 Hyderabad-Goa Fri 9 Oct 9:05 am; YA 627 Goa-Hyderabad Mon 12 Oct 8:10 pm; Saver"
+        - "get_fare_rules(pnr=YT2K7P) → change ₹2,250 per passenger per flight plus fare difference; cancellation ₹3,000 per passenger per flight"
+    - task: "Cancel Divya, both ways"
+      calls:
+        - "cancel_passenger(pnr=YT2K7P, passenger=Divya Sri) → cancelled on both flights; refund ₹2,840 to the original card in 5-7 working days"
+    - task: "Praveen and Harsha to Saturday, on their own booking"
+      calls:
+        - "split_pnr(pnr=YT2K7P, passengers=Praveen Kumar, Harsha Vardhan) → moved to new PNR YT2K9M; return YA 627 unchanged"
+        - "search_flights(from=HYD, to=GOI, date=Sat 10 Oct) → YA 624 7:40 am, +₹1,100 per person; YA 626 6:15 pm, +₹400 per person"
+        - "change_flight(pnr=YT2K9M, passenger=Praveen Kumar, new_flight=YA 626 Sat 10 Oct) → changed, ₹2,650 (₹2,250 fee + ₹400)"
+        - "change_flight(pnr=YT2K9M, passenger=Harsha Vardhan, new_flight=YA 626 Sat 10 Oct) → changed, ₹2,650 (₹2,250 fee + ₹400)"
+    - task: "Sai Kiran and Lahari together on Friday"
+      calls:
+        - "get_seat_map(flight_no=YA 622, date=Fri 9 Oct) → 12B-12C free together; 15A-15B free together"
+        - "assign_seat(pnr=YT2K7P, passenger=Sai Kiran Reddy, flight_no=YA 622, seat=12B) → error: 12B was taken a moment ago; 15A-15B still free together"
+        - "assign_seat(pnr=YT2K7P, passenger=Sai Kiran Reddy, flight_no=YA 622, seat=15A) → assigned, ₹0"
+        - "assign_seat(pnr=YT2K7P, passenger=Lahari Rao, flight_no=YA 622, seat=15B) → assigned, ₹0"
+    - task: "Veg meals for the four flying out"
+      calls:
+        - "add_meal(pnr=YT2K7P, passenger=Sai Kiran Reddy, flight_no=YA 622, meal=veg) → added, ₹0"
+        - "add_meal(pnr=YT2K7P, passenger=Lahari Rao, flight_no=YA 622, meal=veg) → added, ₹0"
+        - "add_meal(pnr=YT2K9M, passenger=Praveen Kumar, flight_no=YA 626, meal=veg) → added, ₹0"
+        - "add_meal(pnr=YT2K9M, passenger=Harsha Vardhan, flight_no=YA 626, meal=veg) → added, ₹0"
+    - task: "5 kg extra for Lahari and Praveen on the way out"
+      calls:
+        - "add_baggage(pnr=YT2K7P, passenger=Lahari Rao, flight_no=YA 622, kg=5) → added, ₹750"
+        - "add_baggage(pnr=YT2K9M, passenger=Praveen Kumar, flight_no=YA 626, kg=5) → added, ₹750"
+    - task: "Frequent-flyer numbers"
+      calls:
+        - "add_frequent_flyer(pnr=YT2K7P, passenger=Sai Kiran Reddy, ff_no=YF 2240 1186) → added"
+        - "add_frequent_flyer(pnr=YT2K7P, passenger=Lahari Rao, ff_no=YF 2240 1191) → added"
+    - task: "One payment link per booking, then the itinerary"
+      calls:
+        - "send_payment_link(pnr=YT2K9M, amount=₹6,050) → link sent by SMS"
+        - "send_payment_link(pnr=YT2K7P, amount=₹750) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent for both bookings"
+  forbid: [cancel_booking, "cancel_passenger(pnr=YT2K7P, passenger=Lahari Rao)"]
+  lines:
+    - [open, "హలో, మా గ్రూప్ Goa trip గురించి మాట్లాడాలి. PNR Y T two K seven P. మేము ఐదుగురం.", "Hello, I need to talk about our group's Goa trip. PNR YT2K7P. We're five people."]
+    - [after, "Divya రావట్లేదు. ఆమె ticket మొత్తం cancel చేయాలి, వెళ్ళేది, వచ్చేది రెండూ. Refund ఎంత వస్తుంది?", "Divya isn't coming. Her ticket has to be cancelled completely, both ways. How much refund will she get?"]
+    - [after, "సరే, cancel చేయండి.", "Okay, cancel it."]
+    - [after, "ఇంకా Praveen, Harsha ఒక రోజు late గా, Saturday వెళ్తారు. వాళ్ళిద్దరినీ వేరే booking లోకి మార్చి Saturday flight కి మార్చండి. Return మాత్రం మాతోనే.", "Also, Praveen and Harsha will go a day later, on Saturday. Move the two of them to a separate booking and onto a Saturday flight. Their return stays with us."]
+    - [after, "Saturday cheap గా ఉండేది ఏది? Evening అయినా పర్లేదు.", "Which one is cheapest on Saturday? Evening is fine."]
+    - [after, "సరే, evening దే ఇద్దరికీ పెట్టండి.", "Okay, put both of them on the evening one."]
+    - [after, "Friday flight లో నేను, Lahari పక్కపక్కనే కూర్చోవాలి. అక్కడ కుదరకపోతే, ఎక్కడైనా రెండు seats పక్కపక్కన చాలు.", "On the Friday flight, Lahari and I need to sit together. If that doesn't work, any two seats side by side are enough."]
+    - [after, "నలుగురికీ veg meal పెట్టండి — మా ఇద్దరికీ Friday, వాళ్ళిద్దరికీ Saturday.", "Put veg meals for all four — the two of us on Friday, the two of them on Saturday."]
+    - [after, "Lahari కి, Praveen కి వెళ్ళే flight లో ఐదు కిలోలు extra baggage కావాలి.", "Lahari and Praveen need five kilos of extra baggage on the outbound flight."]
+    - [after, "నా frequent flyer number Y F two two four zero, one one eight six. Lahari ది Y F two two four zero, one one nine one.", "My frequent-flyer number is YF 2240 1186. Lahari's is YF 2240 1191."]
+    - [after, "మొత్తం ఎంత అయింది? రెండు bookings కి వేరువేరుగా చెప్పండి.", "What's the total? Tell me separately for the two bookings."]
+    - [after, "రెండు payment links పంపండి, ఇప్పుడే pay చేస్తాను.", "Send both payment links, I'll pay right now."]
+    - [after, "Updated itinerary కూడా పంపండి.", "Send the updated itinerary too."]
+    - [after, "Thanks అండి, bye.", "Thank you, bye."]
+  key:
+    - "States Divya's refund of ₹2,840 before cancelling; cancels only Divya, on both flights"
+    - "Splits Praveen and Harsha to new PNR YT2K9M and gives that number"
+    - "Gives both Saturday options and moves both to YA 626, 6:15 pm, at ₹2,650 each"
+    - "When 12B fails, says so and seats Sai Kiran 15A and Lahari 15B"
+    - "Adds veg meals for all four on their own flights, and 5 kg for Lahari (YA 622) and Praveen (YA 626)"
+    - "Adds YF 2240 1186 and YF 2240 1191"
+    - "Gives totals per booking — ₹6,050 on YT2K9M and ₹750 on YT2K7P — and sends both links"
+    - "Speaks Telugu, keeping the caller's English words"
+  checks: {lang: te, digits: ["2,840", "6,050", "YT2K9M"], say: [["6,050", "ఆరు వేల యాభై"]], tool_order: [split_pnr, change_flight]}
+  guard: "Each request names the people it is for; the seat fallback is given with the request; L11 asks for totals whatever the agent already said."
+
+- id: trv-105
+  g: TRV-1
+  lang: en
+  diff: Medium
+  dir: in
+  title: "Team offsite — five frequent-flyer numbers, a row of seats, meals, one return moved"
+  basis: "Corporate travel desks book teams and add loyalty numbers, seats and meals person by person."
+  caller: "F 26-45 · office admin booking for her team, brisk"
+  goal: "Add five FF numbers, seat the team in one row, meals, a 20 kg bag, move one return, add the travel desk email, pay once."
+  role: "You handle bookings. State the fare difference before changing."
+  context: "Corporate fare: changes are free; the passenger pays only the fare difference. Seats ₹300, meals ₹400."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT8C3V) → Meera Iyer, Vikram Shah, Ananya Rao, Rahul Menon, Farhan Ali; YA 845 Bengaluru-Delhi Tue 13 Oct 7:30 am; YA 848 Delhi-Bengaluru Thu 15 Oct 6:45 pm; Corporate fare"
+    - task: "Five frequent-flyer numbers"
+      calls:
+        - "add_frequent_flyer(pnr=YT8C3V, passenger=Meera Iyer, ff_no=YF 5501 2001) → added"
+        - "add_frequent_flyer(pnr=YT8C3V, passenger=Vikram Shah, ff_no=YF 5501 2002) → added"
+        - "add_frequent_flyer(pnr=YT8C3V, passenger=Ananya Rao, ff_no=YF 5501 2003) → added"
+        - "add_frequent_flyer(pnr=YT8C3V, passenger=Rahul Menon, ff_no=YF 5501 2004) → added"
+        - "add_frequent_flyer(pnr=YT8C3V, passenger=Farhan Ali, ff_no=YF 5501 2005) → added"
+    - task: "All five in one row on Tuesday"
+      calls:
+        - "get_seat_map(flight_no=YA 845, date=Tue 13 Oct) → row 7 A-F free (the only row with five together); 7A window"
+        - "assign_seat(pnr=YT8C3V, passenger=Meera Iyer, flight_no=YA 845, seat=7A) → assigned, ₹300"
+        - "assign_seat(pnr=YT8C3V, passenger=Vikram Shah, flight_no=YA 845, seat=7B) → assigned, ₹300"
+        - "assign_seat(pnr=YT8C3V, passenger=Ananya Rao, flight_no=YA 845, seat=7C) → assigned, ₹300"
+        - "assign_seat(pnr=YT8C3V, passenger=Rahul Menon, flight_no=YA 845, seat=7D) → assigned, ₹300"
+        - "assign_seat(pnr=YT8C3V, passenger=Farhan Ali, flight_no=YA 845, seat=7E) → assigned, ₹300"
+    - task: "Meals on the way out"
+      calls:
+        - "add_meal(pnr=YT8C3V, passenger=Meera Iyer, flight_no=YA 845, meal=veg) → added, ₹400"
+        - "add_meal(pnr=YT8C3V, passenger=Vikram Shah, flight_no=YA 845, meal=veg) → added, ₹400"
+        - "add_meal(pnr=YT8C3V, passenger=Ananya Rao, flight_no=YA 845, meal=veg) → added, ₹400"
+        - "add_meal(pnr=YT8C3V, passenger=Rahul Menon, flight_no=YA 845, meal=chicken) → added, ₹400"
+        - "add_meal(pnr=YT8C3V, passenger=Farhan Ali, flight_no=YA 845, meal=chicken) → added, ₹400"
+    - task: "20 kg for Meera's equipment"
+      calls:
+        - "add_baggage(pnr=YT8C3V, passenger=Meera Iyer, flight_no=YA 845, kg=20) → added, ₹2,400"
+    - task: "Move Vikram's return to Friday evening"
+      calls:
+        - "search_flights(from=DEL, to=BLR, date=Fri 16 Oct) → YA 848 6:45 pm, +₹1,350; YA 852 9:20 pm, +₹600"
+        - "change_flight(pnr=YT8C3V, passenger=Vikram Shah, new_flight=YA 852 Fri 16 Oct) → changed, +₹600"
+    - task: "Travel desk email, payment and itinerary"
+      calls:
+        - "update_contact(pnr=YT8C3V, email=travel@pinecrest.in) → contact updated"
+        - "send_payment_link(pnr=YT8C3V, amount=₹6,500) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: ["change_flight(pnr=YT8C3V, passenger=Meera Iyer, new_flight=YA 852 Fri 16 Oct)", cancel_passenger]
+  lines:
+    - [open, "Hi, I handle travel for my team. Booking Y T eight C three V, five people to Delhi next Tuesday."]
+    - [after, "First, frequent-flyer numbers. They're all on our company programme: Y F five five zero one, then two zero zero one for Meera, two zero zero two for Vikram, two zero zero three for Ananya, two zero zero four for Rahul and two zero zero five for Farhan."]
+    - [after, "Seats on the Tuesday flight: all five together in one row, from the window in this order — Meera, Vikram, Ananya, Rahul, Farhan."]
+    - [after, "Meals on the way out: vegetarian for Meera, Vikram and Ananya, chicken for Rahul and Farhan."]
+    - [after, "Meera is carrying a projector and stands. Add twenty kilos for her on the way out."]
+    - [after, "And Vikram is staying back a day. Move only his return to Friday evening."]
+    - [after, "What are the Friday evening options?"]
+    - [after, "The later one, it's cheaper. Go ahead."]
+    - [after, "Can you also put our travel desk email on the booking? It's travel at pinecrest dot in."]
+    - [after, "What's the total I need to pay?"]
+    - [after, "Send the link to my number please, I'll pay now. And the updated itinerary."]
+    - [after, "That's all. Thanks!"]
+  key:
+    - "Adds YF 5501 2001 to 2005 to the right five people"
+    - "Seats Meera 7A, Vikram 7B, Ananya 7C, Rahul 7D, Farhan 7E"
+    - "Adds veg meals for Meera, Vikram and Ananya and chicken for Rahul and Farhan, on YA 845"
+    - "Adds 20 kg for Meera"
+    - "Gives both Friday options and moves only Vikram's return to YA 852, 9:20 pm, +₹600"
+    - "Adds travel@pinecrest.in"
+    - "States ₹6,500 (seats ₹1,500, meals ₹2,000, bag ₹2,400, fare ₹600) and sends one link"
+  checks: {digits: ["6,500", "YA 852"], say: [["6,500", "six thousand five hundred", "sixty-five hundred"]], tool_order: [search_flights, change_flight]}
+  guard: "Every person, number and choice is given before the agent needs it; L7 asks for options even if the agent already listed them, which still reads naturally."
+
+- id: trv-106
+  g: TRV-1
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Pilgrimage with elderly parents — two flights, wheelchairs, transfer help, seats, meals"
+  basis: "Families book assistance for older parents on connecting pilgrimage trips; the father often joins the call."
+  caller: "F 46-60 · daughter travelling with her parents, careful; speaker b: M 60+ · her father, slow"
+  goal: "Wheelchairs and Delhi transfer help for both parents, three seats together on each flight, South Indian veg meals, pay and get the details."
+  role: "You handle bookings and special assistance."
+  context: "Wheelchairs and meet-and-assist are free. Seats are free for a group travelling with passengers over 60. Meals ₹350."
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT6T1S) → Sundaram K (74), Valli S (70), Lakshmi S; YA 120 Chennai-Delhi Sat 17 Oct 6:00 am, lands 8:50 am; YA 377 Delhi-Varanasi Sat 17 Oct 12:10 pm"
+    - task: "Wheelchairs for both parents on both flights"
+      calls:
+        - "request_wheelchair(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 120) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT6T1S, passenger=Valli S, flight_no=YA 120) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 377) → booked at departure and arrival"
+        - "request_wheelchair(pnr=YT6T1S, passenger=Valli S, flight_no=YA 377) → booked at departure and arrival"
+    - task: "Help at the Delhi transfer"
+      calls:
+        - "add_special_service(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 377, service=meet-and-assist) → booked"
+        - "add_special_service(pnr=YT6T1S, passenger=Valli S, flight_no=YA 377, service=meet-and-assist) → booked"
+    - task: "Three seats together near the front, both flights"
+      calls:
+        - "get_seat_map(flight_no=YA 120, date=Sat 17 Oct) → 4A-4C free (the only three together in rows 1-10); 4C aisle"
+        - "assign_seat(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 120, seat=4C) → assigned, ₹0"
+        - "assign_seat(pnr=YT6T1S, passenger=Valli S, flight_no=YA 120, seat=4B) → assigned, ₹0"
+        - "assign_seat(pnr=YT6T1S, passenger=Lakshmi S, flight_no=YA 120, seat=4A) → assigned, ₹0"
+        - "get_seat_map(flight_no=YA 377, date=Sat 17 Oct) → 3D-3F free (the only three together in rows 1-10); 3D aisle; nearest other free seat 5A"
+        - "assign_seat(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 377, seat=3D) → assigned, ₹0"
+        - "assign_seat(pnr=YT6T1S, passenger=Valli S, flight_no=YA 377, seat=3E) → assigned, ₹0"
+        - "assign_seat(pnr=YT6T1S, passenger=Lakshmi S, flight_no=YA 377, seat=3F) → error: 3F was taken a moment ago; 5A is the nearest free seat"
+        - "assign_seat(pnr=YT6T1S, passenger=Lakshmi S, flight_no=YA 377, seat=5A) → assigned, ₹0"
+    - task: "South Indian veg meals for all three, both flights"
+      calls:
+        - "add_meal(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 120, meal=South Indian veg) → added, ₹350"
+        - "add_meal(pnr=YT6T1S, passenger=Valli S, flight_no=YA 120, meal=South Indian veg) → added, ₹350"
+        - "add_meal(pnr=YT6T1S, passenger=Lakshmi S, flight_no=YA 120, meal=South Indian veg) → added, ₹350"
+        - "add_meal(pnr=YT6T1S, passenger=Sundaram K, flight_no=YA 377, meal=South Indian veg) → added, ₹350"
+        - "add_meal(pnr=YT6T1S, passenger=Valli S, flight_no=YA 377, meal=South Indian veg) → added, ₹350"
+        - "add_meal(pnr=YT6T1S, passenger=Lakshmi S, flight_no=YA 377, meal=South Indian veg) → added, ₹350"
+    - task: "Pay and send the details"
+      calls:
+        - "send_payment_link(pnr=YT6T1S, amount=₹2,100) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [add_travel_insurance, cancel_booking]
+  lines:
+    - [open, "வணக்கம், என் அப்பா அம்மாவோட Varanasi trip பத்தி பேசணும். PNR Y T six T one S.", "Hello, I need to talk about my parents' Varanasi trip. PNR YT6T1S."]
+    - [after, "ரெண்டு பேருக்கும் எழுபது வயசுக்கு மேல. ரெண்டு flight-லயும் ரெண்டு பேருக்கும் wheelchair வேணும்.", "Both are over seventy. They both need wheelchairs on both flights."]
+    - [after, "Delhi-ல flight மாறணும். அங்க யாராவது கூட வந்து அடுத்த flight-க்கு கூட்டிட்டுப் போவாங்களா? ரெண்டு பேருக்கும்.", "We change flights in Delhi. Will someone take them to the next flight there? For both of them."]
+    - [after, "Seats முன்னாடி வேணும், மூணு பேரும் சேர்ந்து. அப்பாவுக்கு aisle, அம்மா நடுவுல, நான் window. ரெண்டு flight-லயும் அப்படியே. என் seat கிடைக்கலைன்னா பரவாயில்ல, பக்கத்துல எங்கயாவது போடுங்க.", "Seats near the front, all three together. Appa on the aisle, Amma in the middle, me at the window. The same on both flights. If my seat isn't available, that's fine, put me anywhere close by."]
+    - [after, "மூணு பேருக்கும் South Indian veg சாப்பாடு போடுங்க, ரெண்டு flight-லயும்.", "Put South Indian veg meals for all three, on both flights."]
+    - [after, "இதுக்கெல்லாம் எவ்வளவு ஆகும்?", "How much will all this cost?"]
+    - [after b, "ஹலோ, நான் சுந்தரம் பேசறேன். Varanasi-ல இறங்கும்போதும் wheelchair இருக்குமா?", "Hello, this is Sundaram. Will there be a wheelchair when we land in Varanasi too?"]
+    - [after b, "சரிம்மா. Delhi-ல அடுத்த flight-க்கு எவ்வளவு நேரம் இருக்கு?", "Alright. How much time is there in Delhi for the next flight?"]
+    - [after b, "நல்லது. இந்தாங்க, என் பொண்ணுகிட்ட கொடுக்கறேன்.", "Good. Here, I'll hand you back to my daughter."]
+    - [after, "சரி, நான் தான். Seats எல்லாம் ஒரு தடவை சொல்லுங்க.", "Okay, it's me. Tell me all the seats once."]
+    - [after, "Payment link-உம் details-உம் SMS-ல அனுப்புங்க.", "Send the payment link and the details by SMS."]
+    - [after, "ரொம்ப நன்றி.", "Thank you very much."]
+  key:
+    - "Books wheelchairs for both parents on YA 120 and YA 377, and meet-and-assist at Delhi"
+    - "YA 120: Sundaram 4C, Valli 4B, Lakshmi 4A"
+    - "YA 377: Sundaram 3D, Valli 3E; when 3F fails, says so and gives Lakshmi 5A"
+    - "Adds South Indian veg meals for all three on both flights"
+    - "States ₹2,100 (meals only; everything else free) and sends the link"
+    - "Answers the father directly: wheelchair at Varanasi arrival too; about 3 hours 20 minutes in Delhi"
+    - "Plain, respectful Tamil with the father"
+  checks: {lang: ta, digits: ["2,100", "5A"], say: [["2,100", "ரெண்டாயிரத்து நூறு", "இரண்டாயிரத்து நூறு"]]}
+  guard: "The daughter gives the seat order and her fallback in L4; the father's questions are true whatever was booked; L10 asks for a read-back."
+
+- id: trv-107
+  g: TRV-1
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "Add a baby — infant, bassinets, bassinet-row seats, meals, bags, both ways"
+  basis: "New parents add an infant and want bassinets and seats in that row on every flight."
+  caller: "M 26-45 · new father, baby crying at home"
+  goal: "Add baby Myra, bassinets and bassinet-row seats both ways, meals, baby baggage, FF numbers, one payment."
+  role: "You handle bookings and special services."
+  context: "Infant fee ₹1,750 for the whole trip. Bassinet-row seats ₹450 each. Meals ₹350. 10 kg extra ₹1,200."
+  noise: {bed: kids_home, snr_db: 14}
+  tasks:
+    - task: "Find the booking"
+      calls:
+        - "get_booking(pnr=YT1N5K) → Aman Verma, Pooja Verma; YA 902 Delhi-Kochi Sun 11 Oct 9:40 am; YA 905 Kochi-Delhi Sun 25 Oct 3:15 pm"
+    - task: "Add baby Myra"
+      calls:
+        - "add_infant(pnr=YT1N5K, infant_name=Myra Verma, dob=14 Jun 2026, with_passenger=Pooja Verma) → infant added on both flights, ₹1,750"
+    - task: "Bassinets both ways"
+      calls:
+        - "add_special_service(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 902, service=bassinet) → booked"
+        - "add_special_service(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 905, service=bassinet) → booked"
+    - task: "Bassinet-row seats both ways"
+      calls:
+        - "get_seat_map(flight_no=YA 902, date=Sun 11 Oct) → bassinet row 11: 11A, 11B, 11C free; 11A window"
+        - "assign_seat(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 902, seat=11A) → assigned, ₹450"
+        - "assign_seat(pnr=YT1N5K, passenger=Aman Verma, flight_no=YA 902, seat=11B) → assigned, ₹450"
+        - "get_seat_map(flight_no=YA 905, date=Sun 25 Oct) → bassinet row 11: 11D, 11E, 11F free; 11F window; 12F free"
+        - "assign_seat(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 905, seat=11F) → assigned, ₹450"
+        - "assign_seat(pnr=YT1N5K, passenger=Aman Verma, flight_no=YA 905, seat=11E) → error: 11E was taken a moment ago; 12F (behind 11F) is free"
+        - "assign_seat(pnr=YT1N5K, passenger=Aman Verma, flight_no=YA 905, seat=12F) → assigned, ₹450"
+    - task: "Veg meals for both, both ways"
+      calls:
+        - "add_meal(pnr=YT1N5K, passenger=Aman Verma, flight_no=YA 902, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 902, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT1N5K, passenger=Aman Verma, flight_no=YA 905, meal=veg) → added, ₹350"
+        - "add_meal(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 905, meal=veg) → added, ₹350"
+    - task: "10 kg for the baby's things, both ways"
+      calls:
+        - "add_baggage(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 902, kg=10) → added, ₹1,200"
+        - "add_baggage(pnr=YT1N5K, passenger=Pooja Verma, flight_no=YA 905, kg=10) → added, ₹1,200"
+    - task: "Frequent-flyer numbers"
+      calls:
+        - "add_frequent_flyer(pnr=YT1N5K, passenger=Aman Verma, ff_no=YF 7712 0448) → added"
+        - "add_frequent_flyer(pnr=YT1N5K, passenger=Pooja Verma, ff_no=YF 7712 0453) → added"
+    - task: "Pay once, then the ticket"
+      calls:
+        - "send_payment_link(pnr=YT1N5K, amount=₹7,350) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: [add_travel_insurance, "add_infant(pnr=YT1N5K, infant_name=Myra Verma, dob=14 Jun 2026, with_passenger=Aman Verma)"]
+  lines:
+    - [open, "Hi, meri booking mein baby add karna hai. PNR Y T one N five K.", "Hi, I need to add a baby to my booking. PNR YT1N5K."]
+    - [after, "Baby ka naam Myra Verma, M Y R A. Date of birth fourteen June twenty twenty-six. Woh meri wife Pooja ki god mein travel karegi.", "The baby's name is Myra Verma, M-Y-R-A. Date of birth 14 June 2026. She'll travel on my wife Pooja's lap."]
+    - [after, "Dono flights mein bassinet chahiye, jaate waqt bhi aur aate waqt bhi.", "We need a bassinet on both flights, going and coming back."]
+    - [after, "Seats bassinet wali row mein chahiye. Pooja window pe aur main uske bagal mein. Agar bagal wali na mile toh mujhe theek uske peeche de dena. Dono flights mein.", "Seats in the bassinet row. Pooja at the window and me next to her. If the one next to her isn't available, put me right behind her. On both flights."]
+    - [after, "Hum dono ke liye veg meal, dono flights mein.", "Veg meals for both of us, on both flights."]
+    - [after, "Baby ka saamaan bahut hai. Pooja ke naam pe das kilo extra, dono taraf.", "The baby has a lot of stuff. Ten kilos extra in Pooja's name, both ways."]
+    - [after, "Frequent flyer numbers bhi daal do. Mera Y F seven seven one two, zero four four eight. Pooja ka Y F seven seven one two, zero four five three.", "Add the frequent-flyer numbers too. Mine is YF 7712 0448. Pooja's is YF 7712 0453."]
+    - [after, "Sab milake total kitna hua?", "What's the total altogether?"]
+    - [after, "Theek hai, payment link bhej do.", "Okay, send the payment link."]
+    - [after, "Aur Kochi wali flight ka time ek baar confirm kar do.", "And confirm the time of the Kochi flight once."]
+    - [after, "Updated ticket SMS kar dena.", "SMS the updated ticket."]
+    - [after, "Thank you so much!", "Thank you so much!"]
+  key:
+    - "Adds Myra Verma, born 14 June 2026, on Pooja's lap, ₹1,750"
+    - "Books bassinets on YA 902 and YA 905"
+    - "YA 902: Pooja 11A, Aman 11B. YA 905: Pooja 11F; when 11E fails, says so and gives Aman 12F, behind her"
+    - "Adds veg meals for both on both flights and 10 kg for Pooja both ways"
+    - "Adds YF 7712 0448 and YF 7712 0453"
+    - "States ₹7,350 (infant ₹1,750, seats ₹1,800, meals ₹1,400, bags ₹2,400) and sends one link"
+    - "Confirms YA 902 leaves Sunday 11 October at 9:40 am"
+  checks: {lang: hg, digits: ["7,350", "12F"], say: [["7,350", "saat hazaar teen sau pachaas", "seventy-three fifty"]]}
+  guard: "The fallback for the second seat is given with the seat request; L8–L11 are questions that fit any earlier reply."
+
+- id: trv-108
+  g: TRV-1
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Three colleagues flying tomorrow — name fix, seats, check-in, earlier return for two"
+  basis: "Next-day business trips: a name typo blocks check-in, and plans change for part of the group."
+  caller: "M 26-45 · team lead, in a hurry"
+  goal: "Fix a name, seat the three together, bag and breakfast, check in, and bring two back earlier with seats."
+  role: "You handle bookings. Check in only after the name is right and seats are set. State the fare difference before changing."
+  context: "Corporate fare: changes free, fare difference only. Seats free. Breakfast ₹300. Web check-in for YA 517 is open."
+  tasks:
+    - task: "Find the booking and fix Deepak's surname"
+      calls:
+        - "get_booking(pnr=YT3P6J) → Nikhil Jain, Sana Qureshi, Deepak Pilai; YA 517 Pune-Bengaluru Tue 6 Oct 8:05 am; YA 520 Bengaluru-Pune Wed 7 Oct 7:30 pm; Corporate fare"
+        - "update_name(pnr=YT3P6J, passenger=Deepak Pilai, corrected_name=Deepak Pillai) → corrected, ₹0"
+    - task: "Three seats in row 10 tomorrow"
+      calls:
+        - "get_seat_map(flight_no=YA 517, date=Tue 6 Oct) → row 10 A-C free; 14D (aisle) free"
+        - "assign_seat(pnr=YT3P6J, passenger=Sana Qureshi, flight_no=YA 517, seat=10A) → assigned, ₹0"
+        - "assign_seat(pnr=YT3P6J, passenger=Nikhil Jain, flight_no=YA 517, seat=10B) → assigned, ₹0"
+        - "assign_seat(pnr=YT3P6J, passenger=Deepak Pillai, flight_no=YA 517, seat=10C) → error: 10C was taken a moment ago"
+        - "assign_seat(pnr=YT3P6J, passenger=Deepak Pillai, flight_no=YA 517, seat=14D) → assigned, ₹0"
+    - task: "15 kg for Nikhil, breakfast for all three"
+      calls:
+        - "add_baggage(pnr=YT3P6J, passenger=Nikhil Jain, flight_no=YA 517, kg=15) → added, ₹1,800"
+        - "add_meal(pnr=YT3P6J, passenger=Nikhil Jain, flight_no=YA 517, meal=breakfast) → added, ₹300"
+        - "add_meal(pnr=YT3P6J, passenger=Sana Qureshi, flight_no=YA 517, meal=breakfast) → added, ₹300"
+        - "add_meal(pnr=YT3P6J, passenger=Deepak Pillai, flight_no=YA 517, meal=breakfast) → added, ₹300"
+    - task: "Check all three in"
+      calls:
+        - "web_check_in(pnr=YT3P6J, passenger=Nikhil Jain, flight_no=YA 517) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT3P6J, passenger=Sana Qureshi, flight_no=YA 517) → checked in, boarding pass sent by SMS"
+        - "web_check_in(pnr=YT3P6J, passenger=Deepak Pillai, flight_no=YA 517) → checked in, boarding pass sent by SMS"
+    - task: "Sana and Nikhil back earlier on Wednesday"
+      calls:
+        - "search_flights(from=BLR, to=PNQ, date=Wed 7 Oct) → YA 518 4:15 pm, +₹750 per person; YA 520 7:30 pm (current)"
+        - "change_flight(pnr=YT3P6J, passenger=Sana Qureshi, new_flight=YA 518 Wed 7 Oct) → changed, +₹750"
+        - "change_flight(pnr=YT3P6J, passenger=Nikhil Jain, new_flight=YA 518 Wed 7 Oct) → changed, +₹750"
+    - task: "Seats together on the earlier flight"
+      calls:
+        - "get_seat_map(flight_no=YA 518, date=Wed 7 Oct) → 6A-6B free together; 6A window"
+        - "assign_seat(pnr=YT3P6J, passenger=Sana Qureshi, flight_no=YA 518, seat=6A) → assigned, ₹0"
+        - "assign_seat(pnr=YT3P6J, passenger=Nikhil Jain, flight_no=YA 518, seat=6B) → assigned, ₹0"
+    - task: "Pay and send the itinerary"
+      calls:
+        - "send_payment_link(pnr=YT3P6J, amount=₹4,200) → link sent by SMS"
+        - "send_sms(template=updated_itinerary) → sent"
+  forbid: ["change_flight(pnr=YT3P6J, passenger=Deepak Pillai, new_flight=YA 518 Wed 7 Oct)", cancel_booking]
+  lines:
+    - [open, "Hi, three of us fly to Bengaluru tomorrow morning. Booking Y T three P,"]
+    - [pause 1700, "six J."]
+    - [after, "First, Deepak's surname is wrong. It should be P I L L A I, double L."]
+    - [after, "Then seats for tomorrow. All three in row ten: Sana by the window, me in the middle, Deepak on the aisle. If any seat goes, put that person on the aisle in row fourteen."]
+    - [after, "Add fifteen kilos for me, Nikhil, tomorrow. I'm carrying samples."]
+    - [after, "Breakfast for all three tomorrow, please."]
+    - [after, "And check all three of us in, so we have the boarding passes tonight."]
+    - [after, "Now the return on Wednesday. Sana and I want to come back earlier, around four. Deepak stays on the evening flight."]
+    - [after, "The four fifteen is fine. Move both of us."]
+    - [after, "Seats for us on that one too, together. Sana by the window again."]
+    - [after, "What do I owe in total?"]
+    - [after, "Send me the link and the new itinerary."]
+    - [after, "Perfect, thanks."]
+  key:
+    - "Waits through the pause in the PNR"
+    - "Corrects Deepak Pillai before check-in"
+    - "Seats Sana 10A and Nikhil 10B; when 10C fails, says so and gives Deepak 14D"
+    - "Adds 15 kg for Nikhil and breakfast for all three"
+    - "Checks in all three after the name and seats"
+    - "Moves only Sana and Nikhil to YA 518, 4:15 pm, +₹750 each; Deepak stays on YA 520"
+    - "Seats Sana 6A and Nikhil 6B on YA 518"
+    - "States ₹4,200 (bag ₹1,800, breakfasts ₹900, fares ₹1,500) and sends the link"
+  checks: {no_jump_in: L2, digits: ["4,200", "14D", "YA 518"], say: [["4,200", "four thousand two hundred", "forty-two hundred"]], tool_order: [update_name, web_check_in]}
+  guard: "The fallback seat rule is given with the seat request; L9 accepts the 4:15 flight, which is the only one around four."

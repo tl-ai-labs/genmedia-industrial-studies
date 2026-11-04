@@ -1,0 +1,478 @@
+# Healthcare — tool-heavy scenarios hlt-101 … hlt-107 (HLT-1 Appointments & teleconsults).
+code: hlt
+scenarios:
+
+- id: hlt-101
+  g: HLT-1
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Parents' follow-ups on one Saturday — five doctors, one slot gone, a teleconsult, a pre-visit test, wheelchair cab both ways"
+  basis: "Adult children cluster their elderly parents' many follow-ups on one hospital day, booking each doctor separately."
+  caller: "F 26-45 · daughter in Bengaluru managing both parents' care, organised, short on time"
+  goal: "Get all five follow-ups done in one Saturday morning, the diabetes review as a video call, the blood test before it, and transport for her father."
+  role: "You handle appointments at Nirmaya Jayanagar. Book one appointment per patient per doctor."
+  context: ""
+  tasks:
+    - task: "Patients"
+      calls:
+        - "get_patient(patient=Raman K) → UHID NJ-447120, 72, wheelchair user; linked to the caller"
+        - "get_patient(patient=Saroja R) → UHID NJ-447121, 66; linked to the caller"
+    - task: "Find each doctor"
+      calls:
+        - "find_doctor(speciality=cardiology, branch=Jayanagar, date=Sat 10 Oct) → Dr Arvind Rao (D-2201), free Sat 10 Oct"
+        - "find_doctor(speciality=ophthalmology, branch=Jayanagar, date=Sat 10 Oct) → Dr Leela Menon (D-2207), free Sat 10 Oct"
+        - "find_doctor(speciality=orthopaedics, branch=Jayanagar, date=Sat 10 Oct) → Dr Sanjay Gowda (D-2212), free Sat 10 Oct"
+        - "find_doctor(speciality=dermatology, branch=Jayanagar, date=Sat 10 Oct) → Dr Nisha Kapoor (D-2219), free Sat 10 Oct"
+        - "find_doctor(speciality=endocrinology, branch=Jayanagar) → Dr Farhan Ali (D-2225), video consults Fri 9 Oct evening"
+    - task: "Slots and bookings"
+      calls:
+        - "get_slots(doctor_id=D-2201, date=Sat 10 Oct) → 9:30 am, 10:00 am, 12:30 pm"
+        - "get_slots(doctor_id=D-2207, date=Sat 10 Oct) → 10:30 am, 11:00 am"
+        - "get_slots(doctor_id=D-2212, date=Sat 10 Oct) → 11:00 am, 11:30 am"
+        - "get_slots(doctor_id=D-2219, date=Sat 10 Oct) → 12:00 pm, 12:30 pm"
+        - "get_slots(doctor_id=D-2225, date=Fri 9 Oct) → 6:00 pm, 6:30 pm"
+        - "book_appointment(doctor_id=D-2201, date=Sat 10 Oct, slot=9:30 am, patient=Raman K) → AP 81201, fee ₹900"
+        - "book_appointment(doctor_id=D-2207, date=Sat 10 Oct, slot=10:30 am, patient=Raman K) → AP 81202, fee ₹700"
+        - "book_appointment(doctor_id=D-2212, date=Sat 10 Oct, slot=11:00 am, patient=Saroja R) → error: slot just taken"
+        - "book_appointment(doctor_id=D-2212, date=Sat 10 Oct, slot=11:30 am, patient=Saroja R) → AP 81203, fee ₹800"
+        - "book_appointment(doctor_id=D-2219, date=Sat 10 Oct, slot=12:00 pm, patient=Saroja R) → AP 81204, fee ₹700"
+        - "book_appointment(doctor_id=D-2225, date=Fri 9 Oct, slot=6:00 pm, patient=Raman K, mode=video) → AP 81205, fee ₹800"
+        - "send_teleconsult_link(appointment_id=AP 81205) → link sent by SMS"
+    - task: "Test before the diabetes review"
+      calls:
+        - "book_home_collection(tests=HbA1c, fasting glucose, lipid profile, pincode=560041, date=Thu 8 Oct, slot=7-8 am, patient=Raman K) → collection HC 81210; 10-12 hours fasting"
+    - task: "The old duplicate booking"
+      calls:
+        - "get_appointment(appointment_id=AP 80977) → Raman K, Dr Arvind Rao, Mon 12 Oct 10:00 am"
+        - "cancel_appointment(appointment_id=AP 80977) → cancelled, ₹900 refunded"
+    - task: "Wheelchair cab both ways"
+      calls:
+        - "book_ambulance(pickup=14 3rd Cross, Jayanagar 4th Block, drop=Nirmaya Jayanagar, date=Sat 10 Oct, time=8:45 am, type=wheelchair cab) → booking AM 81220"
+        - "book_ambulance(pickup=Nirmaya Jayanagar, drop=14 3rd Cross, Jayanagar 4th Block, date=Sat 10 Oct, time=1:00 pm, type=wheelchair cab) → booking AM 81221"
+        - "send_sms(template=appointments_summary) → sent"
+  forbid: ["book_appointment(doctor_id=D-2212, date=Sat 10 Oct, slot=11:00 am, patient=Raman K)", "cancel_appointment(appointment_id=AP 81201)"]
+  lines:
+    - [open, "Hi, I need to book a bunch of follow-ups for my parents, ideally all on one Saturday morning. Both are registered under my number."]
+    - [after, "My father needs cardiology and eye. My mother needs orthopaedics and skin. This Saturday, the tenth, if possible."]
+    - [after, "Start at nine thirty with cardiology for Dad, then his eye check. Mum's ortho around eleven and skin after that. If a slot's gone, take the next one for the same doctor."]
+    - [after, "He also has a diabetes review. Can that one be a video call instead? Friday evening is fine."]
+    - [after, "The diabetes doctor always wants fresh blood tests. Can someone collect at home before Friday? Early morning, he'll be fasting."]
+    - [after, "Oh, and I think I booked cardiology for him on the twelfth by mistake last week. Cancel that one."]
+    - [after, "He's in a wheelchair. Can you send a wheelchair cab to bring them and take them back? Fourteen Third Cross, Jayanagar Fourth Block."]
+    - [after, "Pick them up at quarter to nine. Back home at one."]
+    - [after, "Read me the whole day once, in order."]
+    - [after, "What are the consultation fees altogether?"]
+    - [after, "Send me everything on SMS. Thanks!"]
+    - [after, "Bye."]
+  key:
+    - "Books one appointment per patient and doctor: Raman cardiology 9:30 (AP 81201) and eye 10:30 (AP 81202); Saroja skin 12:00 (AP 81204)"
+    - "When Saroja's 11:00 ortho slot is taken, says so and books 11:30 (AP 81203)"
+    - "Books the endocrinology video consult Fri 9 Oct 6:00 pm (AP 81205) and sends the link"
+    - "Books the fasting home collection Thu 8 Oct 7-8 am (HC 81210)"
+    - "Cancels only the duplicate AP 80977 (₹900 refunded)"
+    - "Books both wheelchair cabs (8:45 am and 1:00 pm); reads the day in order; states ₹3,900 in fees"
+  checks: {digits: ["AP 81203", "HC 81210", "AM 81221"], say: [["3,900", "three thousand nine hundred"]], tool_order: [get_slots, book_appointment]}
+  guard: "The order of visits and the slot fallback come in L3 before any booking; L6 identifies the duplicate by date; L9–L10 ask for the read-back and fees whatever was said."
+
+- id: hlt-102
+  g: HLT-1
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Pregnancy at 14 weeks — four monthly check-ups, a scan, blood tests with an add-on, a dietitian, all booked at once"
+  basis: "Expecting mothers book the whole antenatal series ahead; each visit and test is its own booking."
+  caller: "F 26-45 · first-time mother in Delhi, 14 weeks pregnant, excited and a little anxious"
+  goal: "Book every check-up till January with the same doctor, plus the scan, the blood tests and a dietitian."
+  role: "You handle appointments. Never comment on test results or pregnancy symptoms; offer the nurse."
+  context: ""
+  tasks:
+    - task: "Patient and doctor"
+      calls:
+        - "get_patient(patient=Ritu Sharma) → UHID ND-552301, 29"
+        - "find_doctor(speciality=obstetrics, branch=Saket) → Dr Anjali Bhatia (D-3104), Mondays"
+    - task: "Four monthly check-ups"
+      calls:
+        - "get_slots(doctor_id=D-3104, date=Mon 12 Oct) → 10:00 am, 11:30 am"
+        - "get_slots(doctor_id=D-3104, date=Mon 9 Nov) → 10:00 am, 12:00 pm"
+        - "get_slots(doctor_id=D-3104, date=Mon 7 Dec) → 10:00 am"
+        - "get_slots(doctor_id=D-3104, date=Mon 4 Jan) → 10:30 am, 11:00 am"
+        - "book_appointment(doctor_id=D-3104, date=Mon 12 Oct, slot=10:00 am, patient=Ritu Sharma) → AP 31201, fee ₹1,000"
+        - "book_appointment(doctor_id=D-3104, date=Mon 9 Nov, slot=10:00 am, patient=Ritu Sharma) → AP 31202, fee ₹1,000"
+        - "book_appointment(doctor_id=D-3104, date=Mon 7 Dec, slot=10:00 am, patient=Ritu Sharma) → AP 31203, fee ₹1,000"
+        - "book_appointment(doctor_id=D-3104, date=Mon 4 Jan, slot=10:30 am, patient=Ritu Sharma) → AP 31204, fee ₹1,000"
+    - task: "The scan"
+      calls:
+        - "find_doctor(speciality=fetal medicine, branch=Saket) → Dr Kavita Rao (D-3110), anomaly scans"
+        - "get_slots(doctor_id=D-3110, date=Mon 9 Nov) → 8:30 am, 9:00 am"
+        - "book_appointment(doctor_id=D-3110, date=Mon 9 Nov, slot=9:00 am, patient=Ritu Sharma) → AP 31210, fee ₹3,500"
+    - task: "Blood tests"
+      calls:
+        - "get_collection_slots(pincode=110017, date=Thu 8 Oct) → 7-8 am, 8-9 am, 9-10 am"
+        - "book_home_collection(tests=quadruple marker, CBC, pincode=110017, date=Thu 8 Oct, slot=8-9 am, patient=Ritu Sharma) → collection HC 31220; no fasting needed"
+        - "add_test(collection_id=HC 31220, test=TSH) → added, ₹450"
+    - task: "Dietitian"
+      calls:
+        - "find_doctor(speciality=dietetics, branch=Saket) → Ms Pooja Arora (D-3122)"
+        - "get_slots(doctor_id=D-3122, date=Mon 12 Oct) → 11:00 am, 12:00 pm"
+        - "book_appointment(doctor_id=D-3122, date=Mon 12 Oct, slot=11:00 am, patient=Ritu Sharma) → AP 31230, fee ₹600"
+        - "send_sms(template=antenatal_schedule) → sent"
+  forbid: ["book_appointment(doctor_id=D-3104, date=Mon 9 Nov, slot=12:00 pm, patient=Ritu Sharma)"]
+  lines:
+    - [open, "Hi! Main chaudah hafte pregnant hoon. Saket mein Dr Anjali Bhatia ke paas saare check-ups ek saath book karne hain.", "Hi! I'm fourteen weeks pregnant. I want to book all my check-ups with Dr Anjali Bhatia at Saket at once."]
+    - [after, "Har mahine ek — is mahine se January tak. Subah jaldi wala slot, office hai.", "One every month — from this month to January. An early-morning slot, I have office."]
+    - [after, "Anomaly scan bhi November mein karwana hai, doctor ne kaha tha. Usi din ho sake toh, check-up se pehle.", "I also need the anomaly scan in November, the doctor said. On the same day if possible, before the check-up."]
+    - [after, "Haan, nau baje theek hai. Phir check-up das baje.", "Yes, nine is fine. Then the check-up at ten."]
+    - [after, "Blood test bhi hain — quadruple marker aur CBC. Ghar se sample le lo, Thursday subah.", "There are blood tests too — quadruple marker and CBC. Collect the sample at home, Thursday morning."]
+    - [after, "Aur thyroid bhi add kar do, mujhe pehle se thyroid hai.", "And add thyroid too, I already have a thyroid condition."]
+    - [after, "Ek dietitian se bhi milna hai. Is Monday ko check-up ke baad.", "I also want to see a dietitian. This Monday after the check-up."]
+    - [after, "Kabhi kabhi chakkar aate hain — normal hai na?", "Sometimes I feel dizzy — that's normal, right?"]
+    - [after, "Theek hai, Monday ko doctor se pooch loongi.", "Okay, I'll ask the doctor on Monday."]
+    - [after, "Saari dates ek baar bata do.", "Tell me all the dates once."]
+    - [after, "Sab SMS kar do. Thank you!", "SMS it all. Thank you!"]
+    - [after, "Bye!", "Bye!"]
+  key:
+    - "Books four check-ups with D-3104: Mon 12 Oct 10:00, Mon 9 Nov 10:00, Mon 7 Dec 10:00, Mon 4 Jan 10:30"
+    - "Books the anomaly scan Mon 9 Nov 9:00 am, before the 10:00 check-up"
+    - "Books the home collection Thu 8 Oct 8-9 am (HC 31220) and adds TSH"
+    - "Books the dietitian Mon 12 Oct 11:00 am after the check-up"
+    - "Does not comment on the dizziness; suggests the doctor or offers the nurse, and says to seek urgent care if it is severe"
+    - "Reads all dates back"
+  checks: {lang: hg, digits: ["AP 31210", "HC 31220", "Mon 4 Jan"], tool_order: [get_slots, book_appointment]}
+  guard: "Each booking's timing rule comes before it; L8 asks a medical question the agent must not answer; L10 asks for the read-back whatever was said."
+
+- id: hlt-103
+  g: HLT-1
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Family away for two weeks — five appointments for three people moved, one to video, one cancelled, a test moved"
+  basis: "Travel forces whole families to move their medical appointments one by one."
+  caller: "M 46-60 · government teacher in Bhopal going to his village for two weeks, systematic"
+  goal: "Move every family appointment in the next two weeks to after he returns, do one by video from the village, drop one, and move a blood test."
+  role: "You handle appointments."
+  context: "Away Tue 6 Oct to Mon 19 Oct."
+  tasks:
+    - task: "Patients and their bookings"
+      calls:
+        - "get_patient(patient=Ramesh Tiwari) → UHID BP-210401; linked: Suman Tiwari, Ankit Tiwari"
+        - "get_patient(patient=Suman Tiwari) → UHID BP-210402"
+        - "get_patient(patient=Ankit Tiwari) → UHID BP-210403"
+        - "get_appointment(appointment_id=AP 41101) → Ramesh, cardiology Dr Verma (D-4102), Thu 8 Oct 10:00 am"
+        - "get_appointment(appointment_id=AP 41102) → Suman, gynaecology Dr Saxena (D-4108), Fri 9 Oct 11:00 am"
+        - "get_appointment(appointment_id=AP 41103) → Suman, physiotherapy (D-4115), Mon 12 Oct 5:00 pm"
+        - "get_appointment(appointment_id=AP 41104) → Ankit, dermatology Dr Jain (D-4120), Wed 14 Oct 4:00 pm"
+        - "get_appointment(appointment_id=AP 41105) → Ramesh, diabetes review Dr Khan (D-4126), Sat 17 Oct 10:00 am"
+    - task: "Move three after he's back"
+      calls:
+        - "get_slots(doctor_id=D-4102, date=Tue 20 Oct) → 10:00 am, 11:00 am"
+        - "reschedule_appointment(appointment_id=AP 41101, date=Tue 20 Oct, slot=10:00 am) → moved"
+        - "get_slots(doctor_id=D-4108, date=Wed 21 Oct) → 11:00 am"
+        - "reschedule_appointment(appointment_id=AP 41102, date=Wed 21 Oct, slot=11:00 am) → moved"
+        - "get_slots(doctor_id=D-4120, date=Wed 21 Oct) → 4:00 pm, 4:30 pm"
+        - "reschedule_appointment(appointment_id=AP 41104, date=Wed 21 Oct, slot=4:30 pm) → moved"
+    - task: "Diabetes review by video, physio dropped"
+      calls:
+        - "cancel_appointment(appointment_id=AP 41105) → cancelled, ₹700 refunded"
+        - "book_appointment(doctor_id=D-4126, date=Sat 17 Oct, slot=10:00 am, patient=Ramesh Tiwari, mode=video) → AP 41130, fee ₹700"
+        - "send_teleconsult_link(appointment_id=AP 41130) → link sent by SMS"
+        - "cancel_appointment(appointment_id=AP 41103) → cancelled, ₹500 refunded"
+    - task: "The blood test"
+      calls:
+        - "get_lab_order(order_id=LB 41140) → Ramesh: HbA1c, kidney function; collection Wed 7 Oct"
+        - "reschedule_collection(collection_id=LB 41140, date=Tue 20 Oct, slot=7-8 am) → moved"
+        - "send_sms(template=appointments_summary) → sent"
+  forbid: ["cancel_appointment(appointment_id=AP 41101)", "cancel_appointment(appointment_id=AP 41104)"]
+  lines:
+    - [open, "नमस्ते। हम परिवार के साथ दो हफ़्ते गाँव जा रहे हैं, कल से उन्नीस तारीख़ तक। अस्पताल की सारी बुकिंग आगे करनी हैं।", "Hello. We're going to our village with the family for two weeks, from tomorrow until the nineteenth. All the hospital bookings need to be moved."]
+    - [after, "हम तीनों की — मेरी, पत्नी सुमन की और बेटे अंकित की। कितनी बुकिंग हैं, पढ़िए।", "For all three of us — mine, my wife Suman's and my son Ankit's. Read out how many bookings there are."]
+    - [after, "मेरा दिल वाला बीस तारीख़ सुबह, सुमन का स्त्री रोग वाला इक्कीस को।", "My heart one on the twentieth in the morning, Suman's gynaecology one on the twenty-first."]
+    - [after, "अंकित का त्वचा वाला भी इक्कीस को, शाम का, साढ़े चार।", "Ankit's skin one also on the twenty-first, evening, four-thirty."]
+    - [after, "मेरा शुगर वाला सत्रह तारीख़ का है, तब मैं गाँव में रहूँगा। उसे वीडियो पर कर दीजिए, उसी समय।", "My sugar one is on the seventeenth; I'll be in the village then. Make it a video call, at the same time."]
+    - [after, "सुमन की फ़िज़ियोथेरेपी रद्द कर दीजिए, वो अब ठीक है।", "Cancel Suman's physiotherapy; she's fine now."]
+    - [after, "मेरा ख़ून का टेस्ट भी परसों था। उसे बीस तारीख़ सुबह कर दीजिए, डॉक्टर से पहले।", "My blood test was day after tomorrow too. Make it the twentieth in the morning, before the doctor."]
+    - [after, "पैसे कितने वापस आएँगे?", "How much money will come back?"]
+    - [after, "सब तारीख़ें एक बार दोहरा दीजिए।", "Repeat all the dates once."]
+    - [after, "SMS भेज दीजिए।", "Send an SMS."]
+    - [after, "धन्यवाद।", "Thank you."]
+    - [after, "नमस्ते।", "Goodbye."]
+  key:
+    - "Reads all five bookings for the three patients"
+    - "Moves cardiology to Tue 20 Oct 10:00, gynaecology to Wed 21 Oct 11:00, dermatology to Wed 21 Oct 4:30 pm"
+    - "Makes the 17 Oct diabetes review a video call (AP 41130) and sends the link; cancels the physiotherapy"
+    - "Moves the blood test to Tue 20 Oct 7-8 am, before the cardiology visit"
+    - "Says the physio refund is ₹500; the ₹700 diabetes fee is refunded and the video consult costs the same ₹700"
+  checks: {lang: hi, digits: ["AP 41130", "Tue 20 Oct"], tool_order: [get_slots, reschedule_appointment]}
+  guard: "Each booking is named by patient and speciality, fitting any read-out order; L5 gives the mode change; L8 asks about refunds whatever was said."
+
+- id: hlt-104
+  g: HLT-1
+  lang: te
+  script: te-mix
+  diff: Hard
+  dir: in
+  title: "After a knee replacement — six physio sessions, the surgeon's follow-up, a blood test, medicines, a wound question for the nurse"
+  basis: "Post-surgery recovery means a series of visits and orders, and questions only a nurse can answer."
+  caller: "M 26-45 · son in Vijayawada looking after his father after knee surgery, attentive"
+  goal: "Book the full physio course and the surgeon's review, arrange the blood test and medicines at home, and get the wound question answered properly."
+  role: "You handle appointments and orders. Wound and medicine questions go to the nurse or pharmacist."
+  context: "Discharged Fri 2 Oct after a knee replacement."
+  tasks:
+    - task: "Patient"
+      calls:
+        - "get_patient(patient=Venkata Rao) → UHID VJ-330912, 68; knee replacement Tue 29 Sep, discharged Fri 2 Oct"
+    - task: "Physiotherapy — three a week for two weeks"
+      calls:
+        - "find_doctor(speciality=physiotherapy, branch=Benz Circle) → Mr Kiran Kumar (D-5203), home visits"
+        - "get_slots(doctor_id=D-5203, date=Tue 6 Oct) → 9:00 am, 5:00 pm"
+        - "book_appointment(doctor_id=D-5203, date=Tue 6 Oct, slot=9:00 am, patient=Venkata Rao, mode=home) → AP 52301, ₹800"
+        - "book_appointment(doctor_id=D-5203, date=Thu 8 Oct, slot=9:00 am, patient=Venkata Rao, mode=home) → AP 52302, ₹800"
+        - "book_appointment(doctor_id=D-5203, date=Sat 10 Oct, slot=9:00 am, patient=Venkata Rao, mode=home) → AP 52303, ₹800"
+        - "get_slots(doctor_id=D-5203, date=Tue 13 Oct) → 9:00 am, 10:00 am"
+        - "book_appointment(doctor_id=D-5203, date=Tue 13 Oct, slot=9:00 am, patient=Venkata Rao, mode=home) → AP 52304, ₹800"
+        - "book_appointment(doctor_id=D-5203, date=Thu 15 Oct, slot=9:00 am, patient=Venkata Rao, mode=home) → AP 52305, ₹800"
+        - "book_appointment(doctor_id=D-5203, date=Sat 17 Oct, slot=9:00 am, patient=Venkata Rao, mode=home) → AP 52306, ₹800"
+    - task: "Surgeon's follow-up and the blood test"
+      calls:
+        - "find_doctor(speciality=orthopaedics, branch=Benz Circle) → Dr Prasad Reddy (D-5210), the surgeon"
+        - "get_slots(doctor_id=D-5210, date=Tue 13 Oct) → 11:00 am, 12:00 pm"
+        - "book_appointment(doctor_id=D-5210, date=Tue 13 Oct, slot=11:00 am, patient=Venkata Rao) → AP 52310, ₹1,000"
+        - "book_home_collection(tests=CBC, ESR, CRP, pincode=520010, date=Mon 12 Oct, slot=7-8 am, patient=Venkata Rao) → collection HC 52320"
+        - "book_ambulance(pickup=12-4 Labbipet, Vijayawada, drop=Nirmaya Benz Circle, date=Tue 13 Oct, time=10:15 am, type=wheelchair cab) → booking AM 52330"
+    - task: "Medicines"
+      calls:
+        - "get_prescription(rx_id=RX 52340) → paracetamol 650 mg twice a day; pantoprazole 40 mg once a day; enoxaparin 40 mg injection once a day for 10 days; refills left 1"
+        - "order_medicine(rx_id=RX 52340, medicine=paracetamol 650 mg, qty=20) → added, ₹60"
+        - "order_medicine(rx_id=RX 52340, medicine=pantoprazole 40 mg, qty=10, order_id=PH 52350) → added, ₹110"
+        - "place_pharmacy_order(order_id=PH 52350, address=12-4 Labbipet, Vijayawada, slot=today 4-6 pm) → order placed, ₹170, delivery today 4-6 pm"
+    - task: "The wound"
+      calls:
+        - "transfer_to_nurse(reason=knee replacement wound: slight redness around stitches, day 6) → nurse joins"
+        - "send_sms(template=recovery_schedule) → sent"
+  forbid: ["order_medicine(rx_id=RX 52340, medicine=enoxaparin 40 mg)"]
+  lines:
+    - [open, "నమస్కారం. మా నాన్నగారికి సెప్టెంబర్ ఇరవై తొమ్మిదిన knee replacement అయింది. ఇప్పుడు ఇంట్లో ఉన్నారు. Physio, follow-up అన్నీ book చేయాలి.", "Hello. My father had a knee replacement on the twenty-ninth of September. He's home now. I need to book physio, the follow-up, everything."]
+    - [after, "Physio ఇంటికే రావాలి, వారానికి మూడు సార్లు, రెండు వారాలు. మంగళ, గురు, శని — పొద్దున తొమ్మిదికి.", "Physio should come home — three times a week for two weeks. Tuesday, Thursday, Saturday — at nine in the morning."]
+    - [after, "Surgeon Dr Prasad Reddy దగ్గర follow-up, వచ్చే మంగళవారం. Physio అయ్యాక.", "A follow-up with the surgeon Dr Prasad Reddy, next Tuesday. After the physio."]
+    - [after, "ఆ రోజుకి ముందు blood test చేయాలన్నారు. ముందు రోజు పొద్దున ఇంటికి వచ్చి తీసుకోండి.", "They said a blood test is needed before that day. Come home and collect it the morning before."]
+    - [after, "Hospital కి వెళ్ళడానికి wheelchair cab కావాలి. Address పన్నెండు డాష్ నాలుగు, Labbipet.", "We need a wheelchair cab to go to the hospital. The address is 12-4, Labbipet."]
+    - [after, "మందులు అయిపోతున్నాయి. Paracetamol, pantoprazole పంపండి. Injection ఇంకా ఉంది.", "The medicines are running out. Send the paracetamol and pantoprazole. We still have the injection."]
+    - [after, "ఈరోజే సాయంత్రం పంపగలరా?", "Can you send them this evening itself?"]
+    - [after, "ఇంకో విషయం — కుట్ల దగ్గర కొంచెం ఎర్రగా ఉంది. ఏమైనా cream రాయాలా?", "One more thing — there's a little redness near the stitches. Should we apply some cream?"]
+    - [after, "సరే, nurse తో మాట్లాడతాను. ముందు అన్ని dates ఒకసారి చెప్పండి.", "Okay, I'll talk to the nurse. First tell me all the dates once."]
+    - [after, "మొత్తం ఎంత అవుతుంది?", "How much will it all cost?"]
+    - [after, "సరే, nurse ని connect చేయండి.", "Okay, connect the nurse."]
+    - [after, "Thanks అండి.", "Thank you."]
+  key:
+    - "Books six home physio sessions at 9:00 am: Tue 6, Thu 8, Sat 10, Tue 13, Thu 15, Sat 17 Oct"
+    - "Books Dr Prasad Reddy Tue 13 Oct 11:00 am, after that day's physio, with a wheelchair cab at 10:15"
+    - "Books the blood test Mon 12 Oct 7-8 am"
+    - "Orders only paracetamol 650 mg and pantoprazole 40 mg for delivery today 4-6 pm; not the injection"
+    - "Does not advise on the wound; connects the nurse; reads every date"
+    - "States ₹5,970: ₹4,800 physio, ₹1,000 surgeon, ₹170 medicines (test and cab billed separately)"
+  checks: {lang: te, digits: ["AP 52310", "HC 52320", "PH 52350"], say: [["5,970", "ఐదు వేల తొమ్మిది వందల డెబ్బై"]], tool_order: [find_doctor, book_appointment]}
+  guard: "The physio rule (days, time) comes in L2; L8 asks a wound question the agent must hand to the nurse; L11 asks for the transfer after the read-back."
+
+- id: hlt-105
+  g: HLT-1
+  lang: ta
+  script: ta-mix
+  diff: Medium
+  dir: in
+  title: "Two children's vaccines, the mother's check-up, an ear problem, a lactation video call — all in one call"
+  basis: "Young families book vaccines, check-ups and specialists for several members at once."
+  caller: "F 26-45 · mother in Chennai with a 6-month-old and an 18-month-old, juggling both"
+  goal: "Get both children's due vaccines booked, her own postnatal check-up, the toddler's ear seen, and a lactation consultant by video."
+  role: "You handle appointments. Vaccine schedules are the paediatrician's call; book what the doctor's schedule shows as due."
+  context: ""
+  noise: {bed: kids_home, snr_db: 13}
+  tasks:
+    - task: "Children"
+      calls:
+        - "get_patient(patient=Aadhya) → UHID CH-881201, 6 months; due: 6-month vaccines now, MR at 9 months (Tue 5 Jan)"
+        - "get_patient(patient=Vihaan) → UHID CH-881202, 18 months; due: 18-month booster now, typhoid conjugate"
+        - "find_doctor(speciality=paediatrics, branch=Adyar) → Dr Lakshmi Narayanan (D-6101)"
+        - "get_slots(doctor_id=D-6101, date=Sat 10 Oct) → 10:00 am, 10:30 am, 11:00 am"
+        - "book_appointment(doctor_id=D-6101, date=Sat 10 Oct, slot=10:00 am, patient=Aadhya) → AP 61201, vaccine visit, ₹2,400"
+        - "book_appointment(doctor_id=D-6101, date=Sat 10 Oct, slot=10:30 am, patient=Vihaan) → AP 61202, vaccine visit, ₹3,100"
+        - "get_slots(doctor_id=D-6101, date=Tue 5 Jan) → 10:00 am, 11:00 am"
+        - "book_appointment(doctor_id=D-6101, date=Tue 5 Jan, slot=10:00 am, patient=Aadhya) → AP 61203, MR vaccine, ₹900"
+    - task: "Vihaan's ear"
+      calls:
+        - "find_doctor(speciality=ENT, branch=Adyar, date=Sat 10 Oct) → Dr Suresh Babu (D-6110), free Sat 10 Oct"
+        - "get_slots(doctor_id=D-6110, date=Sat 10 Oct) → 11:30 am, 12:00 pm"
+        - "book_appointment(doctor_id=D-6110, date=Sat 10 Oct, slot=11:30 am, patient=Vihaan) → AP 61210, ₹800"
+    - task: "Her own check-up"
+      calls:
+        - "get_patient(patient=Divya Krishnan) → UHID CH-881200, 31"
+        - "find_doctor(speciality=gynaecology, branch=Adyar, date=Sat 10 Oct) → Dr Meena Iyer (D-6115)"
+        - "get_slots(doctor_id=D-6115, date=Sat 10 Oct) → 11:00 am, 12:30 pm"
+        - "book_appointment(doctor_id=D-6115, date=Sat 10 Oct, slot=12:30 pm, patient=Divya Krishnan) → AP 61220, ₹900"
+    - task: "Lactation consultant by video, a test for Vihaan"
+      calls:
+        - "find_doctor(speciality=lactation, branch=Adyar) → Ms Rekha Thomas (D-6120), video consults"
+        - "book_appointment(doctor_id=D-6120, date=Wed 7 Oct, slot=8:00 pm, patient=Divya Krishnan, mode=video) → AP 61230, ₹600"
+        - "send_teleconsult_link(appointment_id=AP 61230) → link sent by SMS"
+        - "book_home_collection(tests=haemoglobin, pincode=600020, date=Thu 8 Oct, slot=8-9 am, patient=Vihaan) → collection HC 61240"
+        - "send_sms(template=appointments_summary) → sent"
+  forbid: ["book_appointment(doctor_id=D-6101, date=Sat 10 Oct, slot=10:00 am, patient=Vihaan)"]
+  lines:
+    - [open, "வணக்கம். என் ரெண்டு குழந்தைகளுக்கும் vaccine போடணும். ஒண்ணுக்கு ஆறு மாசம், இன்னொண்ணுக்கு ஒண்ணரை வயசு.", "Hello. Both my children need vaccines. One is six months, the other one and a half years."]
+    - [after, "ரெண்டு பேருக்கும் இப்போ என்ன due ன்னு பாருங்க.", "Check what's due now for both."]
+    - [after, "சனிக்கிழமை காலைல ரெண்டு பேருக்கும், Aadhya முதல்ல, அப்புறம் Vihaan.", "Saturday morning for both, Aadhya first, then Vihaan."]
+    - [after, "Aadhya க்கு ஒன்பது மாச vaccine உம் இப்பவே book பண்ணிடுங்க.", "Book Aadhya's nine-month vaccine now as well."]
+    - [after, "Vihaan க்கு காதுல வலின்னு அழறான். அதே நாள் ENT doctor பாக்க முடியுமா?", "Vihaan cries about ear pain. Can an ENT doctor see him the same day?"]
+    - [after, "எனக்கும் delivery க்கு அப்புறம் check-up பண்ணவே இல்ல. அதே சனிக்கிழமை, கடைசியா.", "I haven't had my own post-delivery check-up either. The same Saturday, last."]
+    - [after, "Breastfeeding பத்தி ஒருத்தர் கிட்ட பேசணும். Video ல, ராத்திரி எட்டு மணிக்கு மேல, இந்த வாரம்.", "I want to talk to someone about breastfeeding. By video, after eight at night, this week."]
+    - [after, "Vihaan க்கு blood test பண்ண சொன்னாங்க, haemoglobin. வீட்டுக்கு வந்து எடுக்க முடியுமா?", "They said Vihaan needs a blood test, haemoglobin. Can someone come home to take it?"]
+    - [after, "சனிக்கிழமை எல்லாம் ஒரு தடவை வரிசையா சொல்லுங்க.", "Tell me Saturday's whole list once, in order."]
+    - [after, "மொத்தம் எவ்வளவு?", "How much in total?"]
+    - [after, "SMS அனுப்புங்க. நன்றி.", "Send an SMS. Thank you."]
+    - [after, "Bye.", "Bye."]
+  key:
+    - "Reads what is due for each child; books Aadhya 10:00 and Vihaan 10:30 on Sat 10 Oct with D-6101"
+    - "Books Aadhya's MR vaccine on Tue 5 Jan"
+    - "Books ENT for Vihaan 11:30 and Divya's check-up 12:30 the same Saturday"
+    - "Books the lactation video consult Wed 7 Oct 8:00 pm and sends the link; books Vihaan's haemoglobin test at home"
+    - "Reads Saturday in order; states ₹8,700; speaks Tamil, keeping her English words"
+  checks: {lang: ta, digits: ["AP 61203", "AP 61230", "Tue 5 Jan"], say: [["8,700", "எட்டாயிரத்து எழுநூறு"]], tool_order: [get_patient, book_appointment]}
+  guard: "The order for Saturday comes before booking; each later line adds one booking with its own timing; L10 asks for the total whatever was said."
+
+- id: hlt-106
+  g: HLT-1
+  lang: tx
+  script: en → te-mix
+  diff: Hard
+  dir: in
+  switch: "L5: English → Telugu (her father takes the phone)"
+  title: "Hernia surgery workup — tests, four specialists, a slot gone, admission, cashless, deposit; father asks about his blood thinner"
+  basis: "Before planned surgery, patients need several clearances, tests and an admission, each booked separately."
+  caller: "F 26-45 · daughter in Hyderabad organising her father's surgery, efficient; speaker b: M 60+ · her father, Telugu only"
+  goal: "Get every pre-surgery test and clearance done this week, the admission booked with cashless, and his medicine question answered by the right person."
+  role: "You handle appointments and admissions. Do not advise on stopping or continuing medicines; transfer to the nurse."
+  context: "Surgery planned Mon 12 Oct with Dr Mahesh Varma (D-7101), Banjara Hills."
+  tasks:
+    - task: "Patient and prescription"
+      calls:
+        - "get_patient(patient=Subrahmanyam P) → UHID HB-602210, 64; linked to the caller"
+        - "get_prescription(rx_id=RX 71120) → clopidogrel 75 mg once a day; metformin 500 mg twice a day; amlodipine 5 mg once a day"
+    - task: "Pre-op tests at home"
+      calls:
+        - "book_home_collection(tests=CBC, coagulation profile, fasting glucose, pincode=500034, date=Tue 6 Oct, slot=7-8 am, patient=Subrahmanyam P) → collection HC 71130; 10-12 hours fasting"
+        - "add_test(collection_id=HC 71130, test=HbA1c) → added, ₹500"
+        - "add_test(collection_id=HC 71130, test=creatinine) → added, ₹250"
+    - task: "Four clearances"
+      calls:
+        - "find_doctor(speciality=cardiology, branch=Banjara Hills, date=Wed 7 Oct) → Dr Rao (D-7110)"
+        - "get_slots(doctor_id=D-7110, date=Wed 7 Oct) → 10:00 am, 10:30 am"
+        - "book_appointment(doctor_id=D-7110, date=Wed 7 Oct, slot=10:00 am, patient=Subrahmanyam P) → error: slot just taken"
+        - "book_appointment(doctor_id=D-7110, date=Wed 7 Oct, slot=10:30 am, patient=Subrahmanyam P) → AP 71141, ₹900; ECG at the visit"
+        - "find_doctor(speciality=radiology, branch=Banjara Hills, date=Wed 7 Oct) → chest X-ray desk (D-7115)"
+        - "get_slots(doctor_id=D-7115, date=Wed 7 Oct) → 11:00 am, 11:30 am"
+        - "book_appointment(doctor_id=D-7115, date=Wed 7 Oct, slot=11:30 am, patient=Subrahmanyam P) → AP 71142, ₹600"
+        - "find_doctor(speciality=internal medicine, branch=Banjara Hills, date=Wed 7 Oct) → Dr Fatima (D-7120)"
+        - "get_slots(doctor_id=D-7120, date=Wed 7 Oct) → 12:00 pm"
+        - "book_appointment(doctor_id=D-7120, date=Wed 7 Oct, slot=12:00 pm, patient=Subrahmanyam P) → AP 71143, ₹800; diabetes clearance"
+        - "find_doctor(speciality=anaesthesia, branch=Banjara Hills, date=Thu 8 Oct) → Dr Kiran (D-7125)"
+        - "get_slots(doctor_id=D-7125, date=Thu 8 Oct) → 11:00 am, 3:00 pm"
+        - "book_appointment(doctor_id=D-7125, date=Thu 8 Oct, slot=11:00 am, patient=Subrahmanyam P) → AP 71144, ₹700"
+    - task: "Admission"
+      calls:
+        - "check_room_availability(branch=Banjara Hills, room_type=twin sharing, date=Sun 11 Oct) → available, ₹4,500 a day"
+        - "book_admission(patient=Subrahmanyam P, doctor_id=D-7101, date=Sun 11 Oct, room_type=twin sharing) → admission AD 71150; estimate ₹1,40,000; deposit ₹25,000, or the uncovered share if cashless is approved"
+        - "request_cashless(admission_id=AD 71150, insurer=Kavach Insurance, policy_no=KV-H-660218) → pre-authorisation sent; ₹1,20,000 approved"
+        - "get_admission(admission_id=AD 71150) → twin sharing, Sun 11 Oct; cashless ₹1,20,000 approved; family share ₹20,000"
+        - "pay_deposit_link(admission_id=AD 71150, amount=₹20,000) → link sent by SMS"
+    - task: "His medicine question"
+      calls:
+        - "transfer_to_nurse(reason=patient asks whether to stop clopidogrel before hernia surgery on 12 Oct) → nurse joins"
+        - "send_sms(template=pre_op_schedule) → sent"
+  forbid: [cancel_appointment, "order_medicine(rx_id=RX 71120, medicine=clopidogrel 75 mg)"]
+  lines:
+    - [open, "Hi, my father has hernia surgery on the twelfth with Dr Mahesh Varma at Banjara Hills. I need to book everything before it."]
+    - [after, "The surgeon's list says blood tests, cardiology with an ECG, chest X-ray, a diabetes check and anaesthesia. Tests at home tomorrow morning — he can fast."]
+    - [after, "Add HbA1c and creatinine to the tests too. The doctors on Wednesday, one after another, starting at ten. If a slot's gone, the next one with the same doctor. Anaesthesia on Thursday morning."]
+    - [after, "He'll be admitted on the eleventh. Twin sharing is fine. He has Kavach Insurance, policy K V H six six zero two one eight. I'll hand you to him now — he has a question, in Telugu."]
+    - [after b, "నమస్కారం అమ్మా. నేను రక్తం పలచబడే మాత్ర వేసుకుంటాను. Operation ముందు ఆపేయాలా?", "Hello. I take a blood-thinning tablet. Should I stop it before the operation?"]
+    - [after b, "సరే. Hospital లో గది ఉందా? ఎంత అవుతుంది?", "Okay. Is there a room in the hospital? How much will it be?"]
+    - [after b, "Insurance ఎంత ఇస్తుంది? మిగతా ఎంత కట్టాలి?", "How much will the insurance give? How much do we pay?"]
+    - [after b, "Deposit link అమ్మాయికి పంపండి.", "Send the deposit link to my daughter."]
+    - [after b, "ఈ వారం ఏ రోజు ఎక్కడికి వెళ్ళాలో ఒకసారి చెప్పండి.", "Tell me once which day I go where this week."]
+    - [after b, "సరే, ఆ మాత్ర గురించి nurse తో మాట్లాడిస్తారా?", "Okay, will you let me talk to the nurse about that tablet?"]
+    - [after b, "చాలా thanks అమ్మా.", "Thank you so much."]
+    - [after b, "సరే.", "Okay."]
+  key:
+    - "Books the fasting home collection Tue 6 Oct 7-8 am and adds HbA1c and creatinine"
+    - "Books Wednesday's clearances in a row; when cardiology 10:00 is taken, says so and books 10:30; X-ray 11:30, internal medicine 12:00; anaesthesia Thu 11:00"
+    - "Books admission AD 71150 for Sun 11 Oct (twin sharing, estimate ₹1,40,000) and requests cashless: ₹1,20,000 approved"
+    - "Replies in Telugu from L5; does not say whether to stop clopidogrel; connects the nurse"
+    - "Explains ₹20,000 is the family's share and sends a ₹20,000 deposit link to the caller's (the daughter's) number"
+    - "Reads the week's schedule"
+  checks: {lang_from: {L5: te}, digits: ["AD 71150", "AP 71141", "1,20,000"], tool_order: [book_home_collection, book_admission]}
+  guard: "The daughter sets every booking rule and the policy number before the handover; the father's first question must not be answered with advice."
+
+- id: hlt-107
+  g: HLT-1
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Doctor on leave — four family appointments and two tests moved: same doctor later, a colleague, or video"
+  basis: "Hospitals call patients when a doctor goes on leave; each booking is moved the way the family chooses."
+  caller: "F 46-60 · homemaker in Kolkata who manages the family's appointments, friendly"
+  goal: "Decide for each of four appointments whether to wait for Dr Sen, see a colleague or switch to video, and keep the linked tests in step."
+  role: "You are calling from Nirmaya Salt Lake because Dr Amitava Sen (D-8101) is on leave from Thu 8 Oct to Thu 15 Oct, and four appointments on the caller's family account fall in that week. Open the call: greet, name Nirmaya, say why you are calling."
+  context: ""
+  tasks:
+    - task: "The four appointments"
+      calls:
+        - "get_patient(patient=Rina Das) → UHID SL-120330; linked: Ashok Das, Mili Das"
+        - "get_appointment(appointment_id=AP 81001) → Ashok Das, Dr Sen, Thu 8 Oct 10:00 am, diabetes"
+        - "get_appointment(appointment_id=AP 81002) → Rina Das, Dr Sen, Thu 8 Oct 10:30 am, thyroid"
+        - "get_appointment(appointment_id=AP 81003) → Mili Das, Dr Sen, Mon 12 Oct 5:00 pm, PCOS follow-up"
+        - "get_appointment(appointment_id=AP 81004) → Ashok Das, Dr Sen, Wed 14 Oct 6:00 pm, review of reports"
+    - task: "Ashok: wait for Dr Sen; report review by video"
+      calls:
+        - "get_slots(doctor_id=D-8101, date=Fri 16 Oct) → 10:00 am, 10:30 am, 11:00 am"
+        - "reschedule_appointment(appointment_id=AP 81001, date=Fri 16 Oct, slot=10:00 am) → moved"
+        - "reschedule_appointment(appointment_id=AP 81004, date=Fri 16 Oct, slot=10:00 am) → merged into AP 81001; ₹700 refunded"
+    - task: "Rina: a colleague this week"
+      calls:
+        - "find_doctor(speciality=endocrinology, branch=Salt Lake, date=Thu 8 Oct) → Dr Paromita Ghosh (D-8105), free Thu 8 Oct"
+        - "get_slots(doctor_id=D-8105, date=Thu 8 Oct) → 10:30 am, 11:00 am"
+        - "cancel_appointment(appointment_id=AP 81002) → cancelled, ₹800 refunded"
+        - "book_appointment(doctor_id=D-8105, date=Thu 8 Oct, slot=10:30 am, patient=Rina Das) → AP 81020, ₹800"
+    - task: "Mili: video with Dr Sen after leave"
+      calls:
+        - "cancel_appointment(appointment_id=AP 81003) → cancelled, ₹800 refunded"
+        - "book_appointment(doctor_id=D-8101, date=Fri 16 Oct, slot=7:00 pm, patient=Mili Das, mode=video) → AP 81030, ₹800"
+        - "send_teleconsult_link(appointment_id=AP 81030) → link sent by SMS"
+    - task: "Tests linked to the visits"
+      calls:
+        - "get_lab_order(order_id=LB 81040) → Ashok: HbA1c, lipid profile; collection Wed 7 Oct"
+        - "reschedule_collection(collection_id=LB 81040, date=Wed 14 Oct, slot=7-8 am) → moved"
+        - "get_lab_order(order_id=LB 81041) → Rina: TSH, free T4; collection Wed 7 Oct (still right for Thu 8 Oct)"
+        - "send_sms(template=appointments_summary) → sent"
+        - "schedule_callback(date=Thu 15 Oct, slot=5-6 pm, topic=confirm Fri 16 Oct appointments) → booked"
+  forbid: ["reschedule_collection(collection_id=LB 81041)", "cancel_appointment(appointment_id=AP 81001)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Oh, Dr Sen is on leave? We have so many appointments with him. Tell me which ones."]
+    - [after, "My husband will wait for Dr Sen — his diabetes, he trusts only him. The first day he's back, morning."]
+    - [after, "His report review on the fourteenth — can it just be done in the same visit?"]
+    - [after, "For me, the thyroid one — I can't wait, my medicine is running out. Someone else this Thursday, same time if possible."]
+    - [after, "My daughter Mili — she's in Delhi for college now. Can her follow-up be a video call with Dr Sen when he's back? Evening."]
+    - [after, "Seven in the evening works."]
+    - [after, "My husband's blood test was on Wednesday for the Thursday visit. Move it so it's fresh for the new date."]
+    - [after, "And my own test is still fine for Thursday?"]
+    - [after, "How much is coming back to us?"]
+    - [after, "Call me on the fifteenth to remind me about Friday."]
+    - [after, "Thank you for calling, very helpful."]
+  key:
+    - "Opens naming Nirmaya Salt Lake and Dr Sen's leave (8–15 Oct); reads all four appointments"
+    - "Moves Ashok to Fri 16 Oct 10:00 with Dr Sen and folds the report review into it"
+    - "Books Rina with Dr Paromita Ghosh Thu 8 Oct 10:30 (AP 81020)"
+    - "Books Mili's video consult with Dr Sen Fri 16 Oct 7:00 pm (AP 81030) and sends the link"
+    - "Moves Ashok's test to Wed 14 Oct 7-8 am; leaves Rina's test as it is"
+    - "States ₹2,300 refunded and books the 15 October call-back"
+  checks: {digits: ["AP 81020", "AP 81030", "Fri 16 Oct"], say: [["2,300", "two thousand three hundred"]], tool_order: [get_appointment, reschedule_appointment]}
+  guard: "Each line decides one patient's appointment by name and kind; L4 proposes merging whatever the agent offered; L10 asks for refunds whatever was said."

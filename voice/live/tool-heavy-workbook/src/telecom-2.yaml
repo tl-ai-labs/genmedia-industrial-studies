@@ -1,0 +1,539 @@
+# Telecom — tool-heavy scenarios tel-109 … tel-116 (TEL-2 Postpaid & family, TEL-3 Network, fibre & TV).
+code: tel
+scenarios:
+
+- id: tel-109
+  g: TEL-2
+  lang: hi
+  diff: Medium
+  dir: in
+  title: "Retired couple's postpaid bill — seven items over two months disputed one by one, a cheaper plan, international calls barred"
+  basis: "Older postpaid customers find charges they did not expect on more than one bill and dispute each."
+  caller: "M 60+ · retired bank officer in Lucknow, methodical, has both bills printed"
+  goal: "Dispute every wrong item on the August and September bills, stop each cause, move to a cheaper plan and pay only what is fair."
+  role: "You handle postpaid bills. One dispute per item; give the provisional credit."
+  context: "Account TP-30551, one line 94150 30551 plus his wife's 94150 30552."
+  tasks:
+    - task: "Both bills"
+      calls:
+        - "get_bill(account=TP-30551, month=September) → ₹4,870: plan ₹999; OTT bundle ₹299 charged twice; caller tune ₹49; handset EMI ₹1,250 (EMI was paid off in July); international call to +224 ₹620; late fee ₹200; GST ₹1,154"
+        - "get_bill(account=TP-30551, month=August) → ₹2,180 paid: caller tune ₹49; handset EMI ₹1,250 (paid off in July)"
+    - task: "Dispute each wrong item"
+      calls:
+        - "raise_bill_dispute(account=TP-30551, item=September OTT bundle second charge, reason=charged twice) → dispute BD 30601; provisional credit ₹299"
+        - "raise_bill_dispute(account=TP-30551, item=September caller tune, reason=never subscribed) → dispute BD 30602; provisional credit ₹49"
+        - "raise_bill_dispute(account=TP-30551, item=September handset EMI, reason=EMI paid off in July) → error: dispute system timed out"
+        - "raise_bill_dispute(account=TP-30551, item=September handset EMI, reason=EMI paid off in July) → dispute BD 30603; provisional credit ₹1,250"
+        - "raise_bill_dispute(account=TP-30551, item=September international call to +224, reason=missed-call scam, never called back knowingly) → dispute BD 30604; provisional credit ₹620"
+        - "raise_bill_dispute(account=TP-30551, item=September late fee, reason=autopay failed on Tarang's side) → dispute BD 30605; provisional credit ₹200"
+        - "raise_bill_dispute(account=TP-30551, item=August caller tune, reason=never subscribed) → dispute BD 30606; credit ₹49 on the next bill"
+        - "raise_bill_dispute(account=TP-30551, item=August handset EMI, reason=EMI paid off in July) → dispute BD 30607; credit ₹1,250 on the next bill"
+    - task: "Stop the causes"
+      calls:
+        - "deactivate_vas(mobile=94150 30551, service=caller tune) → stopped"
+        - "set_call_barring(mobile=94150 30551, type=international, enabled=yes) → barring on"
+        - "set_call_barring(mobile=94150 30552, type=international, enabled=yes) → barring on"
+        - "report_spam(mobile=94150 30551, spam_number=+224 62 118 4410) → reported and blocked"
+    - task: "A cheaper plan, pay, autopay"
+      calls:
+        - "get_plans(type=postpaid) → P599 ₹599 (2 lines, 60 GB, calls); P999 ₹999 (2 lines, 150 GB, OTT)"
+        - "change_plan(mobile=94150 30551, plan_id=P599) → from Sun 1 Nov"
+        - "send_payment_link(account=TP-30551, amount=₹2,452) → link sent by SMS"
+        - "set_autopay(account=TP-30551, method=savings account e-mandate) → autopay re-set from October"
+        - "schedule_callback(date=Thu 15 Oct, slot=11 am-12 pm, topic=disputes BD 30601-30607) → booked"
+        - "send_sms(template=bill_disputes_summary) → sent"
+  forbid: ["raise_bill_dispute(account=TP-30551, item=September plan)", "set_call_barring(mobile=94150 30551, type=roaming, enabled=yes)"]
+  lines:
+    - [open, "नमस्कार। मेरे पोस्टपेड बिल में गड़बड़ है, सितंबर का भी और अगस्त का भी। दोनों बिल मेरे सामने हैं।", "Good day. There's something wrong with my postpaid bill — September's and August's too. I have both bills in front of me."]
+    - [after, "पहले सितंबर का हर हिस्सा पढ़िए।", "First read out each part of September's bill."]
+    - [after, "OTT दो बार? एक ही चाहिए था। कॉलर ट्यून मैंने कभी नहीं ली।", "OTT twice? Only one was needed. I never took a caller tune."]
+    - [after, "फ़ोन की किश्त तो जुलाई में ख़त्म हो गई थी। ये फिर क्यों?", "The phone instalments ended in July. Why again?"]
+    - [after, "और ये प्लस दो दो चार कहाँ है? एक मिस्ड कॉल आई थी, मैंने वापस कर दिया था बस।", "And where is this +224? A missed call came, I just called back."]
+    - [after, "लेट फ़ीस भी ग़लत है, ऑटोपे आपकी तरफ़ से फ़ेल हुआ था। इन सब पर शिकायत दर्ज कीजिए।", "The late fee is wrong too — the autopay failed on your side. Register disputes on all of these."]
+    - [after, "अगस्त में भी कॉलर ट्यून और किश्त लगी थी। उनकी भी।", "In August too the caller tune and the instalment were charged. Those as well."]
+    - [after, "कॉलर ट्यून बंद कीजिए, और हम दोनों के नंबर पर विदेशी कॉल बंद कर दीजिए। उस नंबर को भी ब्लॉक कीजिए।", "Stop the caller tune, and block international calls on both our numbers. Block that number too."]
+    - [after, "हम दोनों को इतना डेटा नहीं चाहिए। कोई सस्ता प्लान है?", "The two of us don't need so much data. Is there a cheaper plan?"]
+    - [after, "छह सौ वाला कर दीजिए। अब सितंबर में कितना देना है?", "Do the six-hundred one. Now how much do I pay for September?"]
+    - [after, "लिंक भेजिए। ऑटोपे फिर से लगा दीजिए, बचत खाते से।", "Send the link. Set the autopay again, from my savings account."]
+    - [after, "पंद्रह तारीख़ को फ़ोन करके बताइए शिकायतों का क्या हुआ।", "Call me on the fifteenth to tell me what happened with the disputes."]
+    - [after, "धन्यवाद। SMS भी भेज दीजिए।", "Thank you. Send an SMS too."]
+  key:
+    - "Reads every September item, then August's"
+    - "Raises one dispute per wrong item, seven in all (BD 30601-30607); when the EMI dispute times out, says so and retries"
+    - "States ₹2,418 provisional credit on September and ₹2,452 to pay; August's ₹1,299 comes on the next bill"
+    - "Stops the caller tune, bars international calls on both lines and blocks +224 62 118 4410"
+    - "Moves to P599 from 1 Nov, sends the link, re-sets autopay and books the 15 October call-back"
+  checks: {lang: hi, digits: ["BD 30607", "2,452"], say: [["2,418", "दो हज़ार चार सौ अठारह"]], tool_order: [get_bill, raise_bill_dispute]}
+  guard: "Each objection names its item; L6 asks for disputes on all items raised so far; L10 asks for the amount whatever was said."
+
+- id: tel-110
+  g: TEL-2
+  lang: ta
+  script: ta-mix
+  diff: Hard
+  dir: in
+  title: "Four prepaid numbers into one family postpaid — services cleaned, members added, limits, fibre bundled"
+  basis: "Families move scattered prepaid numbers into one postpaid plan, number by number."
+  caller: "M 46-60 · textile trader in Coimbatore, likes one bill for everything"
+  goal: "Turn his family's four prepaid numbers into one family postpaid account with limits, clear hidden charges first, and put the fibre on the same bill."
+  role: "You handle family plans. Clear value-added services before moving a number to postpaid."
+  context: ""
+  tasks:
+    - task: "The four numbers and their charges"
+      calls:
+        - "list_connections() → prepaid: Ganesan 94420 18801, Lakshmi 94420 18802, Divya 94420 18803, Hari 94420 18804; Tarang Fiber FB-18800"
+        - "get_account(mobile=94420 18801) → P859, valid until Sun 20 Dec"
+        - "get_account(mobile=94420 18802) → P299, valid until Fri 9 Oct"
+        - "get_account(mobile=94420 18803) → P349, valid until Thu 15 Oct"
+        - "get_account(mobile=94420 18804) → P299, valid until Sun 11 Oct"
+        - "get_vas(mobile=94420 18801) → none"
+        - "get_vas(mobile=94420 18802) → devotional songs ₹30 a week"
+        - "get_vas(mobile=94420 18803) → none"
+        - "get_vas(mobile=94420 18804) → games portal ₹99 a month"
+        - "deactivate_vas(mobile=94420 18802, service=devotional songs) → stopped"
+        - "deactivate_vas(mobile=94420 18804, service=games portal) → stopped"
+    - task: "One family postpaid"
+      calls:
+        - "get_plans(type=postpaid family) → Family 4 ₹1,399 (4 members, 200 GB shared); Family 4 Plus ₹1,699 (4 members, 300 GB, OTT)"
+        - "convert_to_postpaid(mobile=94420 18801, account=new) → postpaid account TF-18800 from Fri 9 Oct; unused prepaid validity credited as ₹590"
+        - "convert_to_postpaid(mobile=94420 18802, account=TF-18800) → postpaid from Fri 9 Oct"
+        - "convert_to_postpaid(mobile=94420 18803, account=TF-18800) → postpaid from Fri 9 Oct"
+        - "convert_to_postpaid(mobile=94420 18804, account=TF-18800) → postpaid from Fri 9 Oct"
+        - "change_plan(mobile=94420 18801, plan_id=Family 4) → ₹1,399 from Fri 9 Oct"
+        - "add_family_member(account=TF-18800, mobile=94420 18802) → added from Fri 9 Oct"
+        - "add_family_member(account=TF-18800, mobile=94420 18803) → added from Fri 9 Oct"
+        - "add_family_member(account=TF-18800, mobile=94420 18804) → added from Fri 9 Oct"
+    - task: "A limit on each line"
+      calls:
+        - "set_usage_limit(mobile=94420 18801, limit=₹2,000) → set"
+        - "set_usage_limit(mobile=94420 18802, limit=₹500) → set"
+        - "set_usage_limit(mobile=94420 18803, limit=₹1,000) → set"
+        - "set_usage_limit(mobile=94420 18804, limit=₹500) → set"
+    - task: "Fibre on the same bill, autopay"
+      calls:
+        - "change_fibre_plan(fibre_id=FB-18800, plan_id=Fiber 200 bundled with TF-18800) → from Sun 1 Nov, ₹699, on the same bill"
+        - "set_autopay(account=TF-18800, method=current account e-mandate) → autopay on"
+        - "send_sms(template=family_plan_summary) → sent"
+  forbid: ["change_plan(mobile=94420 18801, plan_id=Family 4 Plus)"]
+  lines:
+    - [open, "வணக்கம். எங்க வீட்டுல நாலு prepaid number இருக்கு. எல்லாத்தையும் ஒரே postpaid family plan ல போடணும். ஒரே bill.", "Hello. We have four prepaid numbers at home. I want them all on one postpaid family plan. One bill."]
+    - [after, "நாலு number ஐயும் படிங்க, ஒவ்வொண்ணும் எப்போ முடியுதுன்னு.", "Read all four numbers and when each one ends."]
+    - [after, "முதல்ல ஏதாவது தேவையில்லாத charges இருக்கா பாருங்க, நாலுலயும்.", "First check whether there are any unwanted charges, on all four."]
+    - [after, "ரெண்டையும் நிறுத்துங்க.", "Stop both."]
+    - [after, "Family plan எது இருக்கு? OTT எங்களுக்கு வேண்டாம்.", "Which family plans are there? We don't want OTT."]
+    - [after, "அப்போ சாதாரண family 4. என் number தான் main. மத்த மூணும் அதுல சேரட்டும்.", "Then the regular Family 4. My number is the main one. Let the other three join it."]
+    - [after, "என் prepaid ல இன்னும் days இருக்கே, அது வீணாப் போகுமா?", "My prepaid still has days left — will that be wasted?"]
+    - [after, "Limit போடுங்க — எனக்கு ரெண்டாயிரம், Lakshmi க்கு ஐநூறு, Divya க்கு ஆயிரம், Hari க்கு ஐநூறு.", "Put limits — two thousand for me, five hundred for Lakshmi, one thousand for Divya, five hundred for Hari."]
+    - [after, "வீட்டு fibre உம் இதே bill ல வரணும்.", "The home fibre should come on the same bill too."]
+    - [after, "Autopay என் current account ல இருந்து.", "Autopay from my current account."]
+    - [after, "மாசம் மொத்தம் எவ்வளவு வரும்?", "How much will it come to every month in total?"]
+    - [after, "சரி, SMS அனுப்புங்க. நன்றி.", "Okay, send an SMS. Thank you."]
+  key:
+    - "Reads all four numbers; finds and stops the devotional-songs and games-portal services before converting"
+    - "Converts all four to postpaid on new account TF-18800 from 9 Oct; says his unused validity is credited (₹590)"
+    - "Puts the account on Family 4 (₹1,399), not the OTT plan, and adds the other three"
+    - "Sets each limit as given; moves the fibre onto the same bill (₹699 from 1 Nov) and sets autopay"
+    - "States ₹2,098 a month before GST"
+  checks: {lang: ta, digits: ["TF-18800", "590"], say: [["2,098", "ரெண்டாயிரத்து தொண்ணூத்தி எட்டு", "two thousand ninety-eight"]], tool_order: [deactivate_vas, convert_to_postpaid]}
+  guard: "L3 asks for the charges check before any move; L6 sets the main number; each limit is named with its person; L11 asks for the monthly total whatever was said."
+
+- id: tel-111
+  g: TEL-2
+  lang: en
+  diff: Medium
+  dir: out
+  title: "Retention call after porting codes were requested — weak signal fixed with Wi-Fi calling, one offer, son lets go"
+  basis: "Operators call when customers request porting codes; the fix is usually a network problem at home."
+  caller: "M 46-60 · architect in Chennai who requested porting codes for three lines, sceptical"
+  goal: "Hear what Tarang will do about poor signal at home, keep the lines that make sense, and let his son's line go cleanly."
+  role: "You are calling from Tarang because porting codes were requested for three lines on family account TF-44120. Open the call: greet, name Tarang, say why you are calling. Make the retention offer only once. Never pressure; explain the UPC route if he still wants to port."
+  context: ""
+  tasks:
+    - task: "The account and the reason"
+      calls:
+        - "list_connections() → TF-44120: Ravi 98400 44121 (owner), Uma 98400 44122, Karthik 98400 44123; Tarang Fiber FB-44120"
+        - "get_account(mobile=98400 44121) → Family 3 ₹1,199; UPC requested Sat 3 Oct"
+        - "get_account(mobile=98400 44122) → on TF-44120; UPC requested Sat 3 Oct"
+        - "get_account(mobile=98400 44123) → on TF-44120; UPC requested Sat 3 Oct"
+        - "check_outage(pincode=600041) → no outage; indoor coverage weak in some high-rise blocks"
+        - "raise_complaint(type=indoor coverage, mobile_or_fibre=98400 44121, pincode=600041, details=weak signal inside the flat) → complaint NC 44130; survey in 7 days"
+    - task: "Wi-Fi calling on each line"
+      calls:
+        - "run_line_test(fibre_id=FB-44120) → line up, 150 Mbps"
+        - "enable_wifi_calling(mobile=98400 44121) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98400 44122) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98400 44123) → Wi-Fi calling on"
+        - "order_fibre_addon(fibre_id=FB-44120, addon=mesh extender) → ₹99 a month, install Thu 8 Oct"
+    - task: "One offer"
+      calls:
+        - "retention_offer(mobile=98400 44121) → ₹200 off a month for 6 months and 100 GB extra"
+        - "change_plan(mobile=98400 44121, plan_id=Family 3 with retention discount) → ₹999 a month from Sun 1 Nov for 6 months"
+        - "apply_service_credit(account_or_fibre=TF-44120, amount=₹300, reason=weak indoor signal) → ₹300 credit on the next bill"
+    - task: "His son's line goes"
+      calls:
+        - "remove_family_member(account=TF-44120, mobile=98400 44123) → removed from Sun 1 Nov; becomes independent for porting"
+        - "set_usage_limit(mobile=98400 44121, limit=₹2,000) → set"
+        - "set_usage_limit(mobile=98400 44122, limit=₹1,000) → set"
+        - "set_autopay(account=TF-44120, method=saved card) → autopay on"
+        - "schedule_callback(date=Mon 12 Oct, slot=6-7 pm, topic=Wi-Fi calling working and survey NC 44130) → booked"
+        - "send_sms(template=retention_summary) → sent"
+  forbid: ["retention_offer(mobile=98400 44122)", "retention_offer(mobile=98400 44123)"]
+  lines:
+    - [open, "Hello?"]
+    - [after, "Yes, I requested the codes. The signal in our flat is terrible. Calls drop in every room."]
+    - [after, "We have your fibre at home. Does that help?"]
+    - [after, "Switch it on for all three of us, then. Though the Wi-Fi is weak in the bedrooms too."]
+    - [after, "And what are you offering to make us stay?"]
+    - [after, "Hmm. Okay — for my wife and me, I'll take that and stay."]
+    - [after, "But my son is moving to Hyderabad and joining his company's plan elsewhere. Let his line go properly."]
+    - [after, "Put limits on our two lines — two thousand for me, one thousand for my wife."]
+    - [after, "What happens with the codes we requested?"]
+    - [after, "Set autopay on my card."]
+    - [after, "Call me next Monday evening to see if the Wi-Fi calling is working."]
+    - [after, "Send me the details. Thanks for calling, actually."]
+  key:
+    - "Opens naming Tarang and the porting codes for three lines on TF-44120"
+    - "Checks for an outage, raises indoor-coverage complaint NC 44130 and turns on Wi-Fi calling for all three after checking the fibre"
+    - "Makes the retention offer once (₹200 off a month for 6 months, 100 GB extra) and applies it from 1 Nov: ₹999"
+    - "Adds a mesh extender for the bedrooms (₹99 a month, Thu 8 Oct)"
+    - "Credits ₹300 for the weak signal"
+    - "Removes Karthik's line from 1 Nov so he can port; explains the UPC is simply not used for the two staying"
+    - "Sets ₹2,000 and ₹1,000 limits, autopay and Monday's call-back"
+  checks: {digits: ["NC 44130", "999"], tool_order: [check_outage, raise_complaint]}
+  guard: "Each line reacts to the call's purpose the agent must state; L5 asks for the offer whatever the agent said; L7 asks to release the son's line."
+
+- id: tel-112
+  g: TEL-2
+  lang: hg
+  diff: Hard
+  dir: in
+  title: "One bill for everything — fibre, two TV boxes and four mobiles merged, packs trimmed, a TV change refused for a box"
+  basis: "Households with mobile, fibre and DTH on separate bills consolidate them, connection by connection."
+  caller: "F 26-45 · finance professional in Gurugram who wants one bill and no waste"
+  goal: "Bring fibre, both TV boxes and all four mobiles onto one account and bill, trim what nobody watches, and set limits and autopay."
+  role: "You handle accounts and plans. Change TV packs one box at a time."
+  context: "Family account TF-90210 has two mobiles today. Fibre FB-90200 and TV boxes TV-9201 and TV-9202 bill separately."
+  tasks:
+    - task: "Everything on her profile"
+      calls:
+        - "list_connections() → TF-90210 postpaid: Neha 99100 90211, Arjun 99100 90212; prepaid: Kavya 99100 90213, Dadi 99100 90214; Fiber FB-90200 (₹999, own bill); TV boxes TV-9201 (hall), TV-9202 (Dadi's room) (own bill)"
+        - "get_bill(account=TF-90210, month=September) → ₹1,799 + GST"
+        - "get_plans(type=postpaid family) → Family 4 ₹1,399; Family 4 + Fiber 300 ₹2,299 (includes 300 Mbps fibre, 4 lines)"
+    - task: "Mobiles onto the family account"
+      calls:
+        - "get_account(mobile=99100 90213) → prepaid P349, valid until Mon 12 Oct"
+        - "get_account(mobile=99100 90214) → prepaid P155, valid until Thu 22 Oct"
+        - "get_vas(mobile=99100 90213) → music streaming ₹99 a month"
+        - "deactivate_vas(mobile=99100 90213, service=music streaming) → stopped"
+        - "convert_to_postpaid(mobile=99100 90213, account=TF-90210) → postpaid from Sun 1 Nov"
+        - "convert_to_postpaid(mobile=99100 90214, account=TF-90210) → postpaid from Sun 1 Nov"
+        - "add_family_member(account=TF-90210, mobile=99100 90213) → added from Sun 1 Nov"
+        - "add_family_member(account=TF-90210, mobile=99100 90214) → added from Sun 1 Nov"
+        - "change_plan(mobile=99100 90211, plan_id=Family 4 + Fiber 300) → ₹2,299 from Sun 1 Nov"
+        - "change_fibre_plan(fibre_id=FB-90200, plan_id=Fiber 300 bundled with TF-90210) → from Sun 1 Nov; separate fibre bill ends"
+    - task: "TV boxes onto the same bill, packs trimmed"
+      calls:
+        - "get_dth(box_id=TV-9201) → Hindi Mega ₹549 a month with English movies, sports, kids"
+        - "get_dth(box_id=TV-9202) → Hindi Mega ₹549 a month"
+        - "change_dth_pack(box_id=TV-9201, pack=Hindi Value with sports) → from Sun 1 Nov, ₹379 a month, on TF-90210"
+        - "add_channel(box_id=TV-9201, channel=Cartoon Network) → added, ₹25 a month"
+        - "change_dth_pack(box_id=TV-9202, pack=Hindi Basic with devotional) → error: box TV-9202 has an older set-top box that can't take this pack"
+        - "change_dth_pack(box_id=TV-9202, pack=Hindi Basic) → from Sun 1 Nov, ₹249 a month, on TF-90210"
+        - "add_channel(box_id=TV-9202, channel=Aastha) → added, ₹0"
+        - "add_channel(box_id=TV-9202, channel=Sanskar) → added, ₹0"
+        - "raise_ticket(category=set-top box upgrade, summary=TV-9202 older box; upgrade quote) → ticket SB 90230"
+    - task: "Limits, barring, autopay"
+      calls:
+        - "set_usage_limit(mobile=99100 90211, limit=₹2,500) → set"
+        - "set_usage_limit(mobile=99100 90212, limit=₹2,500) → set"
+        - "set_usage_limit(mobile=99100 90213, limit=₹700) → set"
+        - "set_usage_limit(mobile=99100 90214, limit=₹300) → set"
+        - "set_call_barring(mobile=99100 90213, type=premium-rate, enabled=yes) → barring on"
+        - "set_call_barring(mobile=99100 90214, type=premium-rate, enabled=yes) → barring on"
+        - "set_autopay(account=TF-90210, method=saved card) → autopay on"
+        - "send_sms(template=consolidation_summary) → sent"
+  forbid: ["change_dth_pack(box_id=TV-9202, pack=Hindi Mega)", "remove_family_member(account=TF-90210, mobile=99100 90212)"]
+  lines:
+    - [open, "Hi, mere ghar ke chaar bill aate hain — mobile, fibre, aur do TV. Mujhe sab ek hi bill mein chahiye.", "Hi, my house gets four bills — mobile, fibre and two TVs. I want everything on one bill."]
+    - [after, "Mere profile pe jo kuch hai, sab padh do.", "Read out everything on my profile."]
+    - [after, "Kavya aur Dadi abhi prepaid pe hain. Unko bhi family postpaid mein le aao. Kavya ke number pe koi faltu charge ho toh band kar dena.", "Kavya and Dadi are on prepaid now. Bring them onto the family postpaid too. If there's any pointless charge on Kavya's number, stop it."]
+    - [after, "Fibre wala combo plan theek lag raha hai. Wahi kar do.", "The combo plan with fibre looks good. Do that one."]
+    - [after, "Ab TV. Dono boxes ka pack padh do.", "Now the TV. Read both boxes' packs."]
+    - [after, "Hall wale mein English movies koi nahi dekhta. Sports rakhna, aur bachchon ke liye Cartoon Network.", "Nobody watches English movies on the hall one. Keep sports, and Cartoon Network for the kids."]
+    - [after, "Dadi ke room mein sirf basic Hindi aur bhajan channels — Aastha aur Sanskar. Devotional wala pack ho toh woh.", "In Dadi's room just basic Hindi and the bhajan channels — Aastha and Sanskar. If there's a devotional pack, that one."]
+    - [after, "Purana box hai? Theek hai, basic mein dono channels alag se daal do. Box badalne ka quote bhi bata dena baad mein.", "It's an old box? Fine, put both channels separately on basic. And tell me later what changing the box would cost."]
+    - [after, "Limits — mera aur Arjun ka pachchees sau, Kavya saat sau, Dadi teen sau. Kavya aur Dadi pe premium calls band.", "Limits — mine and Arjun's twenty-five hundred, Kavya seven hundred, Dadi three hundred. Premium calls off for Kavya and Dadi."]
+    - [after, "November se mahine ka total kitna aayega?", "From November, what will the monthly total be?"]
+    - [after, "Autopay card pe.", "Autopay on the card."]
+    - [after, "SMS kar do. Thanks!", "SMS it. Thanks!"]
+  key:
+    - "Reads every connection and the current bill"
+    - "Converts Kavya and Dadi to postpaid and adds them; moves the account to Family 4 + Fiber 300 (₹2,299) with the fibre bundled from 1 Nov"
+    - "Hall box: Hindi Value with sports (₹379) plus Cartoon Network (₹25)"
+    - "When the devotional pack fails on Dadi's older box, says so, sets Hindi Basic (₹249) with Aastha and Sanskar, and raises SB 90230 for an upgrade quote"
+    - "Sets each limit and premium-rate barring on Kavya and Dadi; sets autopay"
+    - "States ₹2,952 a month from November before GST"
+  checks: {lang: hg, digits: ["SB 90230", "2,299"], say: [["2,952", "do hazaar nau sau baavan", "two thousand nine hundred fifty-two"]], tool_order: [convert_to_postpaid, add_family_member]}
+  guard: "Each box's wish comes before its change; L8 reacts to the old-box refusal the agent must report; L10 asks for the total whatever was said."
+
+- id: tel-113
+  g: TEL-3
+  lang: en
+  diff: Hard
+  dir: in
+  title: "Fibre down on a work-from-home day — tests, reboot, complaint, technician slot full, data for both phones, repeat-fault escalation"
+  basis: "Fibre outages hit couples working from home; the agent tests, books a visit and keeps both of them online meanwhile."
+  caller: "F 26-45 · software engineer in Bengaluru with a client call in an hour, stressed but cooperative"
+  goal: "Get the fibre fixed today or tomorrow, stay online on mobile data meanwhile, and get credit and an escalation because it keeps happening."
+  role: "You handle fibre faults. Check for an outage and test the line before raising a complaint."
+  context: "Fibre FB-55120; mobiles 99860 55121 (Anjali) and 99860 55122 (Rohan)."
+  tasks:
+    - task: "Diagnose"
+      calls:
+        - "check_outage(pincode=560102) → no area outage"
+        - "run_line_test(fibre_id=FB-55120) → router online, no signal on the fibre line (LOS)"
+        - "remote_reboot(fibre_id=FB-55120) → router restarted; still no signal on the line"
+        - "run_line_test(fibre_id=FB-55120) → LOS persists; likely fibre cut between pole and flat"
+        - "get_complaint(complaint_id=CF 50880) → same fault on Mon 7 Sep, fixed Wed 9 Sep"
+    - task: "Complaint and visit"
+      calls:
+        - "raise_complaint(type=fibre down, mobile_or_fibre=FB-55120, pincode=560102, details=LOS after reboot; repeat of CF 50880) → complaint CF 55130; target 24 hours"
+        - "schedule_technician(complaint_id=CF 55130, date=Mon 5 Oct, slot=2-5 pm) → error: slot full"
+        - "schedule_technician(complaint_id=CF 55130, date=Tue 6 Oct, slot=8-11 am) → visit booked"
+        - "raise_ticket(category=repeat fibre fault, summary=FB-55120 second fibre cut in a month; CF 50880, CF 55130) → ticket RF 55140"
+    - task: "Data for both phones meanwhile"
+      calls:
+        - "get_data_usage(mobile=99860 55121) → 1.2 GB left today"
+        - "get_data_usage(mobile=99860 55122) → 0.4 GB left today"
+        - "get_account(mobile=99860 55122) → prepaid P299, valid until Sat 10 Oct"
+        - "activate_pack(mobile=99860 55121, pack_id=D99 20 GB 2 days) → active until Wed 7 Oct, ₹99"
+        - "activate_pack(mobile=99860 55122, pack_id=D99 20 GB 2 days) → active until Wed 7 Oct, ₹99"
+        - "enable_wifi_calling(mobile=99860 55121) → Wi-Fi calling on (for when the fibre is back)"
+        - "enable_wifi_calling(mobile=99860 55122) → Wi-Fi calling on (for when the fibre is back)"
+    - task: "Credit and a backup"
+      calls:
+        - "apply_service_credit(account_or_fibre=FB-55120, amount=₹250, reason=repeat outage) → ₹250 credit on the next bill"
+        - "order_fibre_addon(fibre_id=FB-55120, addon=4G backup router) → added, ₹199 a month, delivered Tue 6 Oct"
+    - task: "Follow-up and summary"
+      calls:
+        - "schedule_callback(date=Tue 6 Oct, slot=12-1 pm, topic=fibre restored after visit) → booked"
+        - "send_sms(template=fibre_fault_summary) → sent"
+  forbid: ["schedule_technician(complaint_id=CF 55130, date=Wed 7 Oct)", "shift_connection"]
+  lines:
+    - [open, "Hi, our fibre is completely down and both of us work from home. I have a client call in an hour."]
+    - [after, "Yes, the router lights are on but there's a red light on one. Is there an outage?"]
+    - [after, "Can you restart it from your side? I'll wait."]
+    - [after wait=8000, "Okay, it rebooted. Still the red light. It happened last month too, you know."]
+    - [after, "Please raise it. I want someone today, this afternoon. If there's nothing today, first thing tomorrow."]
+    - [after, "This is the second time in a month. I want this escalated, not just fixed."]
+    - [after, "Meanwhile we'll use mobile data. Check how much both of us have left."]
+    - [after, "Put a big pack on both, enough for two days. And our calls drop at home — once the fibre's back, can calls go over Wi-Fi on both phones?"]
+    - [after, "Can I get something for losing two working days in a month?"]
+    - [after, "Is there anything so this doesn't stop our work next time? Some backup?"]
+    - [after, "Fine, add it. Call me tomorrow after the technician's been."]
+    - [after, "Send it all by SMS. Thanks."]
+  key:
+    - "Checks for an outage, tests the line, reboots and tests again before raising complaint CF 55130"
+    - "Notes the repeat of CF 50880 and raises RF 55140"
+    - "When this afternoon's slot is full, says so and books Tue 6 Oct, 8-11 am"
+    - "Checks both phones' data and adds a 20 GB, 2-day pack to each (₹99)"
+    - "Credits ₹250; adds the 4G backup router (₹199 a month, Tue 6 Oct); books the call-back"
+    - "Waits while the router restarts"
+  checks: {digits: ["CF 55130", "RF 55140", "Tue 6 Oct"], reprompt_in_silence: L4, tool_order: [run_line_test, raise_complaint]}
+  guard: "The visit fallback comes with the request; L4 follows the reboot silence; L7 asks for both phones' data whatever the agent offered."
+
+- id: tel-114
+  g: TEL-3
+  lang: hg
+  diff: Medium
+  dir: in
+  title: "Three-floor house, Wi-Fi only on one — line test, faster plan, a mesh unit per floor, Wi-Fi calling for four phones"
+  basis: "Bigger homes outgrow one router; the fix is a plan change plus one extender per floor and Wi-Fi calling per phone."
+  caller: "M 46-60 · businessman in Ludhiana with a three-storey house, wants it fixed properly"
+  goal: "Get good Wi-Fi on all three floors, mobile calls that don't drop indoors, and OTT for the family TV."
+  role: "You handle fibre and mobile. Test the line before recommending changes."
+  context: "Fibre FB-14120 on Fiber 100 (₹699)."
+  tasks:
+    - task: "Test"
+      calls:
+        - "check_outage(pincode=141001) → no outage"
+        - "run_line_test(fibre_id=FB-14120) → line fine; 100 Mbps at the router; 12 devices connected"
+        - "remote_reboot(fibre_id=FB-14120) → restarted"
+        - "run_line_test(fibre_id=FB-14120) → 100 Mbps at the router; weak signal reported by devices on floors 2 and 3"
+    - task: "Plan and mesh"
+      calls:
+        - "get_plans(type=fibre) → Fiber 100 ₹699; Fiber 300 ₹999; Fiber 500 ₹1,299"
+        - "change_fibre_plan(fibre_id=FB-14120, plan_id=Fiber 300) → from Tue 6 Oct, ₹999; ₹78 prorated"
+        - "order_fibre_addon(fibre_id=FB-14120, addon=mesh extender ground floor) → ₹99 a month, install Wed 7 Oct"
+        - "order_fibre_addon(fibre_id=FB-14120, addon=mesh extender first floor) → ₹99 a month, install Wed 7 Oct"
+        - "order_fibre_addon(fibre_id=FB-14120, addon=mesh extender second floor) → ₹99 a month, install Wed 7 Oct"
+        - "order_fibre_addon(fibre_id=FB-14120, addon=OTT pack Family) → ₹149 a month, active today"
+    - task: "Indoor calls"
+      calls:
+        - "list_connections() → mobiles 98140 14121 (Harjit), 98140 14122 (Simran), 98140 14123 (Jaspreet), 98140 14124 (Biji)"
+        - "enable_wifi_calling(mobile=98140 14121) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98140 14122) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98140 14123) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98140 14124) → Wi-Fi calling on"
+        - "raise_complaint(type=indoor coverage, mobile_or_fibre=98140 14121, pincode=141001, details=calls drop indoors on upper floors) → complaint NC 14130; survey in 7 days"
+    - task: "Router move, follow-up, summary"
+      calls:
+        - "raise_complaint(type=router relocation, mobile_or_fibre=FB-14120, pincode=141001, details=move router from the shop floor to the first floor) → complaint CF 14131"
+        - "schedule_technician(complaint_id=CF 14131, date=Wed 7 Oct, slot=10 am-1 pm) → visit booked, same visit as the mesh install"
+        - "schedule_callback(date=Thu 8 Oct, slot=6-7 pm, topic=Wi-Fi on all floors after the install) → booked"
+        - "send_sms(template=wifi_upgrade_summary) → sent"
+  forbid: ["change_fibre_plan(fibre_id=FB-14120, plan_id=Fiber 500)"]
+  lines:
+    - [open, "Sat Sri Akal ji. Mera teen manzil ka ghar hai, Wi-Fi sirf neeche chalta hai. Upar bachche pareshan hain.", "Hello. My house is three floors; the Wi-Fi only works downstairs. The kids upstairs are frustrated."]
+    - [after, "Line check kar lo pehle, kahin kharab toh nahi.", "Check the line first, in case it's faulty."]
+    - [after, "Restart karke ek baar aur dekh lo.", "Restart it and check once more."]
+    - [after, "Toh kya karna chahiye? Plan bada karein?", "So what should we do? A bigger plan?"]
+    - [after, "Teen sau wala kar do, paanch sau ki zaroorat nahi. Aur har floor pe ek extender.", "Make it the three-hundred one, we don't need five hundred. And an extender on every floor."]
+    - [after, "Router abhi neeche dukaan wale hisse mein hai. Use beech wale floor pe shift karwa do, extender wale din hi.", "The router is in the shop part downstairs right now. Have it moved to the middle floor, on the same day as the extenders."]
+    - [after, "Ghar mein mobile pe bhi call kat jaati hai. Charon numbers pe kuch karo.", "Calls drop on mobiles inside the house too. Do something for all four numbers."]
+    - [after, "Aur TV pe OTT chahiye family ke liye.", "And we want OTT for the family on the TV."]
+    - [after, "Mahine ka naya total kitna hoga?", "What will the new monthly total be?"]
+    - [after, "Install ke baad Thursday shaam ko call karke poochh lena.", "Call on Thursday evening after the install to ask how it is."]
+    - [after, "SMS kar do. Dhanyavaad ji.", "SMS it. Thank you."]
+    - [after, "Theek hai, bye.", "Okay, bye."]
+  key:
+    - "Checks for an outage, tests, reboots and tests again; finds the line fine and weak coverage upstairs"
+    - "Moves to Fiber 300 (₹999), not 500; orders one mesh extender per floor and the OTT Family pack"
+    - "Raises the router-move complaint CF 14131 with a visit on the same day as the mesh install (Wed 7 Oct, 10 am-1 pm)"
+    - "Turns on Wi-Fi calling on all four phones and raises indoor-coverage complaint NC 14130"
+    - "States ₹1,445 a month before GST"
+  checks: {lang: hg, digits: ["CF 14131", "Wed 7 Oct"], say: [["1,445", "chaudah sau paintaalis", "one thousand four hundred forty-five"]], tool_order: [run_line_test, change_fibre_plan]}
+  guard: "L5 chooses the plan and the extenders after the advice the agent must give; L6 ties the router move to the install day; L9 asks for the total whatever was said."
+
+- id: tel-115
+  g: TEL-3
+  lang: hi
+  diff: Hard
+  dir: in
+  title: "Call drops across an apartment block — five family numbers: a complaint each, Wi-Fi calling each, credit on the postpaid ones"
+  basis: "When a tower or building blocks signal, every affected number needs its own complaint and workaround."
+  caller: "M 46-60 · RWA secretary in Ghaziabad, speaking for his family, organised and insistent"
+  goal: "Get every family number's call drops logged and worked around, credit on the postpaid lines, and the building problem escalated."
+  role: "You handle network complaints. One complaint per number."
+  context: "His family's numbers: two postpaid on TF-20110, three prepaid."
+  tasks:
+    - task: "Numbers and outage"
+      calls:
+        - "list_connections() → postpaid TF-20110: Sudhir 98710 20111, Rekha 98710 20112; prepaid: Ankit 98710 20113, Pooja 98710 20114, Amma 98710 20115; Fiber FB-20110"
+        - "check_outage(pincode=201014) → partial: tower ST-2041 under maintenance until Fri 9 Oct; indoor coverage weak in towers C and D"
+        - "get_complaint(complaint_id=NC 19880) → indoor coverage, Tower C, closed Sat 26 Sep without visit"
+    - task: "One complaint per number"
+      calls:
+        - "raise_complaint(type=call drops, mobile_or_fibre=98710 20111, pincode=201014, details=Tower C flat 1204, drops indoors) → complaint NC 20121"
+        - "raise_complaint(type=call drops, mobile_or_fibre=98710 20112, pincode=201014, details=Tower C flat 1204, drops indoors) → complaint NC 20122"
+        - "raise_complaint(type=call drops, mobile_or_fibre=98710 20113, pincode=201014, details=Tower C flat 1204, drops indoors) → error: complaint system timed out"
+        - "raise_complaint(type=call drops, mobile_or_fibre=98710 20113, pincode=201014, details=Tower C flat 1204, drops indoors) → complaint NC 20123"
+        - "raise_complaint(type=call drops, mobile_or_fibre=98710 20114, pincode=201014, details=Tower C flat 1204, drops indoors) → complaint NC 20124"
+        - "raise_complaint(type=call drops, mobile_or_fibre=98710 20115, pincode=201014, details=Tower C flat 1204, drops indoors) → complaint NC 20125"
+        - "schedule_technician(complaint_id=NC 20121, date=Sat 10 Oct, slot=10 am-1 pm) → building signal survey booked"
+    - task: "Wi-Fi calling on each"
+      calls:
+        - "run_line_test(fibre_id=FB-20110) → line up, 100 Mbps"
+        - "get_account(mobile=98710 20113) → prepaid P299; Wi-Fi calling supported"
+        - "get_account(mobile=98710 20114) → prepaid P349; Wi-Fi calling supported"
+        - "get_account(mobile=98710 20115) → prepaid P155; Wi-Fi calling supported"
+        - "enable_wifi_calling(mobile=98710 20111) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98710 20112) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98710 20113) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98710 20114) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=98710 20115) → Wi-Fi calling on"
+    - task: "Credit and escalation"
+      calls:
+        - "apply_service_credit(account_or_fibre=TF-20110, amount=₹200, reason=call drops during tower maintenance) → ₹200 credit on the next bill"
+        - "raise_ticket(category=building coverage escalation, summary=Towers C and D weak indoor coverage; NC 19880 closed without visit; NC 20121-20125) → ticket BC 20130"
+        - "retention_offer(mobile=98710 20111) → 50 GB extra a month for 3 months"
+        - "activate_pack(mobile=98710 20111, pack_id=retention 50 GB) → active for 3 months, ₹0"
+        - "schedule_callback(date=Sat 10 Oct, slot=4-5 pm, topic=survey outcome NC 20121) → booked"
+        - "send_sms(template=network_complaints_summary) → sent"
+  forbid: ["apply_service_credit(account_or_fibre=98710 20113)", "retention_offer(mobile=98710 20112)"]
+  lines:
+    - [open, "नमस्ते। हमारी सोसाइटी के टावर सी और डी में फ़ोन कॉल बार-बार कटती हैं। मेरे परिवार के पाँच नंबर हैं, सब परेशान हैं।", "Hello. Calls keep dropping in Towers C and D of our society. My family has five numbers, all affected."]
+    - [after, "कोई मरम्मत चल रही है क्या? पिछले महीने शिकायत की थी, बिना आए बंद कर दी।", "Is some repair going on? I complained last month and it was closed without anyone coming."]
+    - [after, "पाँचों नंबरों पर अलग-अलग शिकायत दर्ज कीजिए — टावर सी, फ़्लैट बारह सौ चार।", "Register a separate complaint on all five numbers — Tower C, flat 1204."]
+    - [after, "इस बार कोई आकर बिल्डिंग में जाँच करे। शनिवार सुबह।", "This time someone should come and check in the building. Saturday morning."]
+    - [after, "तब तक कुछ उपाय? घर में आपका फ़ाइबर है।", "Any workaround till then? We have your fibre at home."]
+    - [after, "पाँचों पर चालू कर दीजिए।", "Switch it on for all five."]
+    - [after, "पोस्टपेड वालों का बिल तो पूरा कटता है, सेवा आधी मिलती है। उसका कुछ?", "The postpaid ones pay the full bill for half the service. Anything for that?"]
+    - [after, "और ये मामला ऊपर तक जाना चाहिए, नहीं तो हम सब नंबर पोर्ट करा लेंगे।", "And this must go higher up, or we'll port all our numbers."]
+    - [after, "ठीक है, वो ऑफ़र ले लेता हूँ, मेरे नंबर पर।", "Okay, I'll take that offer, on my number."]
+    - [after, "शनिवार शाम को सर्वे का नतीजा बताइए।", "Tell me the survey result on Saturday evening."]
+    - [after, "सब SMS कर दीजिए।", "SMS everything."]
+    - [after, "धन्यवाद।", "Thank you."]
+  key:
+    - "Checks the outage (tower maintenance until 9 Oct, weak indoor coverage) and finds NC 19880 closed without a visit"
+    - "Raises one complaint per number (NC 20121-20125); when Ankit's times out, says so and retries"
+    - "Books the building survey for Sat 10 Oct, 10 am-1 pm"
+    - "Tests the fibre and turns on Wi-Fi calling for all five"
+    - "Credits ₹200 on the postpaid account (not on prepaid numbers) and raises BC 20130"
+    - "Makes the retention offer once and applies it to his number; books Saturday's call-back"
+  checks: {lang: hi, digits: ["NC 20125", "BC 20130", "Sat 10 Oct"], tool_order: [check_outage, raise_complaint]}
+  guard: "L3 asks for one complaint per number; L7 asks only about the postpaid lines; L9 accepts the one offer the agent must make once."
+
+- id: tel-116
+  g: TEL-3
+  lang: te
+  script: te-mix
+  diff: Medium
+  dir: in
+  title: "Moving house — fibre shifted with a faster plan, two TV boxes moved and repacked, old bill closed"
+  basis: "Shifting house means moving fibre and TV connections one by one and settling the old address."
+  caller: "M 26-45 · bank employee in Hyderabad moving next week, planner"
+  goal: "Have fibre and both TV boxes working at the new flat on moving day, with a faster plan and smaller TV packs, and clear the old bill."
+  role: "You handle shifting. Check feasibility at the new address first."
+  context: "Moving on Sat 10 Oct. Fibre FB-60310; TV boxes TV-6031 and TV-6032."
+  tasks:
+    - task: "New address and fibre"
+      calls:
+        - "list_connections() → mobiles 99490 60311, 99490 60312; Fiber FB-60310 (Fiber 100); TV boxes TV-6031, TV-6032"
+        - "check_outage(pincode=500089) → no outage"
+        - "shift_connection(fibre_id=FB-60310, new_address=Flat 502, Aparna Towers, Narsingi 500089, date=Sat 10 Oct) → feasible; shifting request SH 60320; ₹500 charge"
+        - "change_fibre_plan(fibre_id=FB-60310, plan_id=Fiber 300) → from Sat 10 Oct, ₹999"
+        - "order_fibre_addon(fibre_id=FB-60310, addon=mesh extender) → ₹99 a month, install Sat 10 Oct"
+    - task: "Two TV boxes"
+      calls:
+        - "get_dth(box_id=TV-6031) → Telugu Mega ₹499 a month; balance ₹300"
+        - "get_dth(box_id=TV-6032) → Telugu Mega ₹499 a month; balance ₹150"
+        - "raise_ticket(category=DTH shifting, summary=TV-6031 to Flat 502, Aparna Towers, Narsingi on Sat 10 Oct) → ticket DS 60331"
+        - "raise_ticket(category=DTH shifting, summary=TV-6032 to Flat 502, Aparna Towers, Narsingi on Sat 10 Oct) → ticket DS 60332"
+        - "change_dth_pack(box_id=TV-6032, pack=Telugu Basic) → from Sat 10 Oct, ₹249 a month"
+        - "add_channel(box_id=TV-6032, channel=Bhakti TV) → added, ₹0"
+        - "add_channel(box_id=TV-6031, channel=Star Sports 1 Telugu) → added, ₹19 a month"
+    - task: "Old bill and phones"
+      calls:
+        - "get_bill(account=FB-60310, month=September) → ₹826 due Tue 13 Oct"
+        - "send_payment_link(account=FB-60310, amount=₹826) → link sent by SMS"
+        - "enable_wifi_calling(mobile=99490 60311) → Wi-Fi calling on"
+        - "enable_wifi_calling(mobile=99490 60312) → Wi-Fi calling on"
+        - "set_autopay(account=FB-60310, method=saved UPI) → autopay on"
+    - task: "Moving-day check, summary"
+      calls:
+        - "run_line_test(fibre_id=FB-60310) → line up at the old address; will be re-tested after the shift"
+        - "schedule_callback(date=Sat 10 Oct, slot=5-6 pm, topic=fibre and TV working at the new flat) → booked"
+        - "send_sms(template=shifting_summary) → sent"
+  forbid: ["change_dth_pack(box_id=TV-6031, pack=Telugu Basic)"]
+  lines:
+    - [open, "నమస్కారం. వచ్చే శనివారం మేము కొత్త flat కి shift అవుతున్నాం. Fibre, రెండు TV boxes అన్నీ మార్చాలి.", "Hello. We're moving to a new flat next Saturday. The fibre and both TV boxes all need moving."]
+    - [after, "కొత్త address — Flat five zero two, Aparna Towers, Narsingi, five zero zero zero eight nine. అక్కడ Tarang fibre వస్తుందా?", "The new address — Flat 502, Aparna Towers, Narsingi, 500089. Does Tarang fibre reach there?"]
+    - [after, "శనివారమే shift చేయండి. అప్పుడే plan కూడా మూడు వందల Mbps కి పెంచండి. కొత్త flat పెద్దది, ఒక extender కూడా.", "Shift it on Saturday itself. Raise the plan to 300 Mbps at the same time. The new flat is bigger — an extender too."]
+    - [after, "ఇప్పుడు TV. రెండు boxes ఏ pack లో ఉన్నాయి?", "Now the TV. Which pack are the two boxes on?"]
+    - [after, "రెండూ శనివారం కొత్త flat కి రావాలి.", "Both should come to the new flat on Saturday."]
+    - [after, "Bedroom box — అమ్మది — basic చేయండి, Bhakti TV మాత్రం ఉండాలి. Hall box అలాగే ఉంచండి, Star Sports Telugu add చేయండి.", "The bedroom box — Amma's — make it basic, but Bhakti TV must be there. Keep the hall box as it is, and add Star Sports Telugu."]
+    - [after, "పాత address లో ఏమైనా bill బాకీ ఉందా?", "Is any bill pending at the old address?"]
+    - [after, "Link పంపండి. ఇక నుంచి autopay పెట్టండి, UPI తో.", "Send the link. Set autopay from now on, with UPI."]
+    - [after, "కొత్త flat లో signal సరిగా రాదని విన్నాను. రెండు phones కి Wi-Fi calling పెట్టండి.", "I've heard the signal is poor in the new flat. Turn on Wi-Fi calling on both phones."]
+    - [after, "శనివారం సాయంత్రం అన్నీ పనిచేస్తున్నాయా అని ఒకసారి call చేయండి.", "Call once on Saturday evening to check everything is working."]
+    - [after, "SMS పంపండి. Thanks అండి.", "Send an SMS. Thank you."]
+    - [after, "సరే, bye.", "Okay, bye."]
+  key:
+    - "Checks the new pincode and shifting feasibility; books shifting SH 60320 for Sat 10 Oct (₹500)"
+    - "Moves the plan to Fiber 300 and adds a mesh extender from moving day"
+    - "Raises a shifting ticket for each TV box (DS 60331, DS 60332)"
+    - "Sets the bedroom box to Telugu Basic with Bhakti TV, keeps the hall box and adds Star Sports 1 Telugu"
+    - "Sends the ₹826 link, sets UPI autopay, turns on Wi-Fi calling for both phones and books Saturday's call-back"
+  checks: {lang: te, digits: ["SH 60320", "DS 60332", "826"], tool_order: [shift_connection, change_fibre_plan]}
+  guard: "The address comes before the feasibility question; each box's change names the room; L7 asks about the old bill whatever the agent said."
