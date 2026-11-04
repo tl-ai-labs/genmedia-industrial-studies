@@ -3,574 +3,788 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GenMedia blind panel</title>
+<title>GenMedia Blind Human Panel</title>
+<!--
+  The blind panel's own page, served by `python -m runner.cli serve`.
+  2026-11-04 (Sai): the same pages and look as the studies site's blind panel
+  (ai-sdlc-multi-model-orchestration: views/BlindPanelLanding.tsx,
+  views/BlindPanel.tsx), so a laptop session looks like the site:
+    #/              the common landing page, a door per media type
+    #/<media>       that media's landing page, one Start button
+    #/<media>/review  the review
+  `?lane=<media>` (the old address) opens that media's review; `?reviewer=`
+  fills in the name. Results stay on the site (they name the models).
+  Same server calls as before: api/config, items.json, api/votes, api/vote.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Devanagari:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&family=Noto+Sans+Telugu:wght@400;500&family=Noto+Sans+Bengali:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #17181c; --ink-2: #4b4f58; --dim: #8a8f9a; --line: #e6e8ec; --line-2: #d5d8de;
-    --bg: #f4f5f7; --card: #ffffff; --well: #f8f9fb;
-    --accent: #1f5081; --accent-soft: #e6eef7;
-    --ok: #178a5b; --ok-soft: #e4f5ec; --warn: #b3261e;
-    --shadow: 0 1px 2px rgba(20, 24, 40, .05), 0 6px 20px rgba(20, 24, 40, .06);
-    --shadow-lift: 0 2px 4px rgba(20, 24, 40, .06), 0 14px 34px rgba(20, 24, 40, .10);
-    --r: 14px; --ease: cubic-bezier(.2, .7, .2, 1);
+    /* The site's tokens (dashboard/tailwind.config.cjs). */
+    --ink: #0A0A0A; --body: #1F1F1F; --muted-text: #6B6B6B; --muted: #f5f5f5; --line: #e5e5e5;
+    --brand-50: #FFF6F7; --brand-100: #F9D2D6; --brand-200: #F2A6AD; --brand-300: #EC7882;
+    --brand-500: #E00917; --brand-600: #C50714; --brand-700: #A50611;
+    --sky-50: #f0f9ff; --sky-100: #e0f2fe; --sky-200: #bae6fd; --sky-500: #0ea5e9; --sky-700: #0369a1; --sky-900: #0c4a6e;
+    --violet-50: #f5f3ff; --violet-100: #ede9fe; --violet-200: #ddd6fe; --violet-500: #8b5cf6; --violet-800: #5b21b6;
+    --amber-50: #fffbeb; --amber-100: #fef3c7; --amber-200: #fde68a; --amber-500: #f59e0b;
+    --emerald-50: #ecfdf5; --emerald-100: #d1fae5; --emerald-400: #34d399; --emerald-600: #059669; --emerald-700: #047857;
+    --rose-50: #fff1f2; --rose-600: #e11d48; --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-600: #475569; --slate-700: #334155;
+    --shadow-card: 0 1px 2px 0 rgba(15,23,42,.04), 0 1px 3px 0 rgba(15,23,42,.06);
+    --shadow-pop: 0 12px 32px -8px rgba(15,23,42,.18);
+    --display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --indic: "IBM Plex Sans", "IBM Plex Sans Devanagari", "Noto Sans Tamil", "Noto Sans Telugu", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
+    --bar: 56px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-         -webkit-font-smoothing: antialiased; }
-  button { font: inherit; color: inherit; }
+  body { margin: 0; background: #fff; color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  h1, h2, h3, p { margin: 0; }
+  [hidden] { display: none !important; }
 
-  /* ---------- header ---------- */
-  header { position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,.86);
-           -webkit-backdrop-filter: saturate(160%) blur(10px); backdrop-filter: saturate(160%) blur(10px);
-           border-bottom: 1px solid var(--line); }
-  .bar { max-width: 1240px; margin: 0 auto; padding: 12px 22px; display: flex; flex-wrap: wrap;
-         gap: 10px 22px; align-items: center; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 15px; letter-spacing: -.01em; }
-  .brand .mark { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #1f5081, #3b7bc0);
-                 display: grid; place-items: center; color: #fff; font-size: 14px; }
-  .tabs { display: flex; gap: 4px; padding: 3px; background: var(--well); border: 1px solid var(--line); border-radius: 999px; }
-  .tab { border: 0; background: transparent; padding: 6px 14px; border-radius: 999px; cursor: pointer;
-         color: var(--ink-2); display: flex; align-items: center; gap: 8px; transition: background .25s var(--ease), color .25s, transform .2s; }
-  .tab:hover { color: var(--ink); }
-  .tab:active { transform: scale(.97); }
-  .tab[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(20,24,40,.10); font-weight: 600; }
-  .tab .n { font-size: 11.5px; padding: 2px 7px; border-radius: 999px; background: var(--line); color: var(--ink-2);
-            font-variant-numeric: tabular-nums; transition: background .3s, color .3s; }
-  .tab[aria-selected="true"] .n { background: var(--accent-soft); color: var(--accent); }
-  .tab.complete .n { background: var(--ok-soft); color: var(--ok); }
-  .spacer { flex: 1; }
-  .ind { display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 13px; }
-  .ind[hidden] { display: none; }
-  .ind select { font: inherit; font-size: 13px; padding: 6px 30px 6px 12px; border-radius: 999px; border: 1px solid var(--line);
-                background: var(--well) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236b6f78' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center;
-                color: var(--ink); -webkit-appearance: none; appearance: none; cursor: pointer; transition: border-color .2s, box-shadow .2s; }
-  .ind select:hover { border-color: var(--line-2); }
-  .ind select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .chip { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent);
-          font-size: 12px; font-weight: 600; letter-spacing: .01em; }
-  .who { color: var(--dim); font-size: 13px; display: flex; align-items: center; gap: 8px; }
-  .who b { color: var(--ink); font-weight: 600; }
-  .who button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 3px 10px;
-                font-size: 12px; cursor: pointer; color: var(--ink-2); transition: border-color .2s, color .2s; }
-  .who button:hover { border-color: var(--line-2); color: var(--ink); }
-  .progress { height: 3px; background: transparent; }
-  .progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #3b7bc0);
-                transition: width .5s var(--ease); border-radius: 0 3px 3px 0; }
+  /* Type, as the site's styles.css. */
+  .h1 { font: 600 clamp(1.75rem, 1vw + 1.25rem, 2.25rem)/1.1 var(--display); letter-spacing: -.025em; color: var(--ink); }
+  .h2 { font: 600 1.5rem/1.2 var(--display); letter-spacing: -.02em; color: var(--ink); }
+  .h3 { font: 600 1.125rem/1.3 var(--display); letter-spacing: -.015em; color: var(--ink); }
+  .h4 { font: 600 1rem/1.35 var(--display); letter-spacing: -.01em; color: var(--ink); }
+  .text-body { font-size: .9375rem; line-height: 1.55; color: var(--body); }
+  .muted { color: var(--muted-text); }
+  .small { font-size: .875rem; }
+  .xs { font-size: .75rem; }
+  .label { font: 500 .6875rem/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted-text); }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font: 500 .71875rem/1.4 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--brand-700); }
+  .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand-500); animation: tl-pulse 2.4s infinite; }
+  @keyframes tl-pulse { 0% { box-shadow: 0 0 0 0 rgba(224,9,23,.5); } 70% { box-shadow: 0 0 0 7px rgba(224,9,23,0); } 100% { box-shadow: 0 0 0 0 rgba(224,9,23,0); } }
+  .indic { font-family: var(--indic); }
 
-  /* ---------- stage ---------- */
-  main { max-width: 1240px; margin: 0 auto; padding: 22px 22px 90px; }
-  .stage { transition: opacity .28s var(--ease), transform .32s var(--ease); }
-  .stage.enter { animation: rise .42s var(--ease) both; }
-  .stage.leave { opacity: 0; transform: translateX(-28px) scale(.99); pointer-events: none; }
-  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  /* Surfaces and controls. */
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 1.125rem; box-shadow: var(--shadow-card); }
+  .card-pad { padding: 1.5rem; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: .5rem .875rem; border-radius: .5rem;
+         font-size: .875rem; font-weight: 500; transition: background-color .15s, border-color .15s, color .15s, opacity .15s; }
+  .btn:disabled { opacity: .5; }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-primary:hover { background: var(--slate-700); }
+  .btn-secondary { background: #fff; color: var(--slate-700); border: 1px solid var(--line); }
+  .btn-secondary:hover { background: var(--muted); }
+  .btn-ghost { color: var(--slate-600); }
+  .btn-ghost:hover { background: var(--muted); }
+  .btn-sm { padding: .25rem .625rem; font-size: .75rem; border-radius: .375rem; }
+  .btn-wide { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .input { width: 100%; padding: .5rem .75rem; font: inherit; font-size: .875rem; color: var(--ink); background: var(--muted);
+           border: 1px solid var(--slate-300); border-radius: .5rem; transition: background-color .15s, border-color .15s, box-shadow .15s; }
+  .input::placeholder { color: var(--muted-text); }
+  .input:hover { background: #fff; border-color: var(--slate-400); }
+  .input:focus { outline: none; background: #fff; border-color: var(--brand-600); box-shadow: 0 0 0 2px rgba(224,9,23,.3); }
+  .lnk { font-size: .875rem; font-weight: 500; color: var(--muted-text); }
+  .lnk:hover { color: var(--ink); }
+  .lnk-brand { font-weight: 500; color: var(--brand-600); }
+  .lnk-brand:hover { color: var(--brand-700); }
 
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow); }
+  /* Site bar. */
+  .site { position: sticky; top: 0; z-index: 30; height: var(--bar); background: #0A0E16; color: #EBEEF3; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .site .wrap6 { height: 100%; display: flex; align-items: center; gap: 14px; }
+  .site .mark { display: inline-flex; align-items: center; gap: 10px; font: 600 1rem/1 var(--display); color: #fff; text-decoration: none; letter-spacing: -.01em; }
+  .site .mark i { width: 10px; height: 10px; border-radius: 2px; background: var(--brand-500); }
+  .site .sep { width: 1px; height: 22px; background: rgba(255,255,255,.18); }
+  .site .name { font-size: .875rem; color: rgba(235,238,243,.8); }
+  .wrap { max-width: 64rem; margin: 0 auto; padding: 0 1.25rem; }
+  .wrap6 { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; width: 100%; }
+  @media (min-width: 640px) { .wrap, .wrap6 { padding: 0 2rem; } }
 
-  /* ---------- gate ---------- */
-  .gate { max-width: 540px; margin: 8vh auto 0; padding: 30px 32px; }
-  .gate h2 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.02em; }
-  .gate p { color: var(--ink-2); margin: 10px 0; }
-  .gate .how { display: grid; gap: 10px; margin: 16px 0 20px; }
-  .gate .how div { display: flex; gap: 12px; align-items: flex-start; color: var(--ink-2); font-size: 14px; }
-  .gate .how span { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; background: var(--well); border: 1px solid var(--line);
-                    display: grid; place-items: center; font-size: 15px; }
-  .gate input { width: 100%; padding: 12px 14px; font: inherit; border: 1px solid var(--line-2); border-radius: 10px;
-                outline: none; transition: border-color .2s, box-shadow .2s; }
-  .gate input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-  .primary { background: var(--accent); color: #fff; border: 0; padding: 12px 18px; border-radius: 10px; font-weight: 600;
-             cursor: pointer; transition: transform .15s var(--ease), box-shadow .2s, filter .2s; box-shadow: 0 4px 14px rgba(31,80,129,.25); }
-  .primary:hover { filter: brightness(1.06); box-shadow: 0 6px 18px rgba(31,80,129,.32); transform: translateY(-1px); }
-  .primary:active { transform: translateY(0) scale(.98); }
-  .gate .primary { margin-top: 14px; width: 100%; }
+  /* Landing (BlindPanelLanding.tsx). */
+  .strip { background: #0A0E16; color: #EBEEF3; padding: 28px 0; }
+  .strip .grid { display: grid; gap: 1.5rem; }
+  @media (min-width: 768px) { .strip .grid { grid-template-columns: 1fr 320px; align-items: center; } }
+  .strip .h1 { color: #fff; margin-top: .5rem; }
+  .strip .intro { margin-top: .5rem; max-width: 42rem; font-size: 15px; line-height: 1.65; color: rgba(255,255,255,.75); }
+  .namebox { border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.05); border-radius: .5rem; padding: 1rem; }
+  .namebox .label { color: rgba(255,255,255,.6); }
+  .namebox .who { margin-top: .25rem; font-size: 1.125rem; font-weight: 600; color: #fff; }
+  .namebox .hint { margin-top: .375rem; display: block; font-size: .75rem; color: rgba(255,255,255,.6); }
+  .namebox .hint.err { color: #fda4af; }
+  .namebox .change { margin-top: .25rem; font-size: .875rem; font-weight: 500; color: var(--brand-300); }
+  .namebox .change:hover { color: #fff; }
+  .namebox .input { margin-top: .375rem; }
+  .data { padding: 40px 0; }
+  .data .wrap > * + * { margin-top: 2.5rem; }
+  .steps { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: .75rem; }
+  @media (min-width: 640px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, 1fr); } }
+  .num { display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%;
+         background: var(--brand-500); color: #fff; font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .steps .h4 { margin-top: .75rem; }
+  .steps p { margin-top: .25rem; font-size: .875rem; color: var(--body); }
+  .doors { margin-top: 1rem; display: grid; gap: 1rem; }
+  @media (min-width: 768px) { .doors { grid-template-columns: repeat(2, 1fr); } }
+  .door { display: flex; flex-direction: column; }
+  .door .btn { margin-top: 1rem; align-self: flex-start; }
+  .ready { margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+  @media (min-width: 640px) { .ready { flex-direction: row; align-items: center; } }
+  .ready > div { flex: 1; }
+  .fair { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: 1rem 2rem; }
+  @media (min-width: 640px) { .fair { grid-template-columns: repeat(2, 1fr); } }
+  .fair li { display: flex; gap: .75rem; }
+  .tick { flex: none; margin-top: .25rem; width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--emerald-50); color: var(--emerald-700);
+          display: flex; align-items: center; justify-content: center; font-size: .75rem; }
+  .fair b { color: var(--ink); font-weight: 600; }
+  .fair p { margin-top: .125rem; font-size: .875rem; color: var(--body); }
 
-  /* ---------- item ---------- */
-  .meta { display: flex; gap: 8px 16px; align-items: baseline; flex-wrap: wrap; color: var(--dim); font-size: 13px; }
-  .meta .pos { font-weight: 650; color: var(--ink); font-size: 14px; font-variant-numeric: tabular-nums; }
-  .meta .title { color: var(--ink-2); }
-  .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin-top: 16px; font-weight: 600; }
-  .brief { margin: 8px 0 0; padding: 14px 16px; background: var(--well); border: 1px solid var(--line); border-left: 3px solid var(--accent);
-           border-radius: 10px; white-space: pre-wrap; font-size: 15.5px; line-height: 1.55; color: var(--ink); }
-  .inputs { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-  .inputs figure { margin: 0; }
-  .inputs figcaption { font-size: 12px; color: var(--dim); margin-top: 4px; }
-  .inputs img, .inputs video { max-height: 170px; max-width: 300px; border-radius: 10px; border: 1px solid var(--line); display: block; }
-  .inputs audio { width: 300px; }
+  /* Review (BlindPanel.tsx). */
+  .review { display: flex; flex-direction: column; min-height: calc(100dvh - var(--bar));
+            background: linear-gradient(to bottom right, var(--sky-50), #fff, var(--rose-50)); }
+  .rhead { position: sticky; top: var(--bar); z-index: 20; border-bottom: 1px solid var(--sky-100); background: rgba(255,255,255,.95);
+           -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .rhead .wrap6 { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding-top: .625rem; padding-bottom: .625rem; }
+  .pill { border-radius: 999px; border: 1px solid var(--sky-200); background: var(--sky-50); padding: .125rem .625rem; font-size: .875rem; font-weight: 500;
+          color: var(--sky-900); font-variant-numeric: tabular-nums; }
+  .rhead .who { margin-left: auto; font-size: .875rem; color: var(--muted-text); }
+  .rhead .who b { font-weight: 500; color: var(--ink); }
+  .rhead .who button { margin-left: .375rem; }
+  .rbody { flex: 1; display: flex; flex-direction: column; gap: .75rem; padding-top: 1rem; padding-bottom: 1rem; }
+  .task { align-self: flex-start; border-radius: 999px; border: 1px solid var(--sky-200); background: var(--sky-50); padding: .25rem .875rem;
+          font-size: 15px; font-weight: 500; color: var(--sky-900); }
+  .block { display: flex; flex-direction: column; border-radius: .875rem; border: 1px solid; background: #fff; padding: .875rem; box-shadow: var(--shadow-card); }
+  .block.sky { border-color: var(--sky-100); } .block.violet { border-color: var(--violet-100); } .block.amber { border-color: var(--amber-100); }
+  .block-head { display: flex; align-items: center; gap: .5rem; }
+  .badge { display: flex; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; color: #fff;
+           font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .sky .badge { background: var(--sky-500); } .violet .badge { background: var(--violet-500); } .amber .badge { background: var(--amber-500); }
+  .block-head .aside { margin-left: auto; }
+  .block-body { margin-top: .625rem; }
+  .two { display: grid; gap: .75rem; }
+  .prompt-grid { display: grid; gap: 1rem; }
+  @media (min-width: 768px) { .two, .prompt-grid.with-inputs { grid-template-columns: 1fr 1fr; } .prompt-grid { align-items: start; } }
+  .brief { min-width: 0; font-size: 15px; line-height: 1.65; color: var(--body); white-space: pre-line; font-family: var(--indic); }
+  .inputs { display: grid; gap: .5rem; }
+  .inputs.many { grid-template-columns: 1fr 1fr; }
+  .inputs figure { margin: 0; min-width: 0; }
+  .inbox { display: flex; align-items: center; justify-content: center; border-radius: .5rem; background: var(--sky-50); height: clamp(160px, 26vh, 280px); }
+  .inputs.more .inbox { height: clamp(90px, 13vh, 140px); }
+  figcaption { margin-top: .25rem; font-size: .75rem; color: var(--muted-text); }
+  .side { display: flex; flex-direction: column; border-radius: .875rem; border: 1px solid var(--violet-100); background: var(--violet-50); padding: .75rem;
+          transition: opacity .15s, background-color .15s, border-color .15s, box-shadow .15s; }
+  .side.mine { border-color: var(--emerald-400); background: var(--emerald-50); box-shadow: 0 0 0 2px var(--emerald-100); }
+  .side.dimmed { opacity: .6; }
+  .stage { display: flex; align-items: center; justify-content: center; border-radius: .5rem; background: #fff; height: 45vh; }
+  .stage.audio { height: auto; padding: 1rem 0; }
+  .frames { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 6px; height: 45vh; overflow: hidden; border-radius: .5rem; background: #fff; padding: 6px; }
+  @media (min-width: 1024px) { .frames { grid-template-columns: repeat(3, 1fr); } }
+  .frames figure { margin: 0; display: flex; flex-direction: column; min-height: 0; }
+  .frames .fbox { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .frames figcaption { margin-top: 2px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .media-img { width: 100%; height: 100%; object-fit: contain; border-radius: .375rem; cursor: zoom-in; }
+  .media-video { width: 100%; height: 100%; object-fit: contain; border-radius: .375rem; }
+  .media-audio { width: 100%; max-width: 420px; }
+  .pick { margin-top: .75rem; width: 100%; border: 1px solid var(--violet-200); background: #fff; color: var(--violet-800); }
+  .pick:hover { background: var(--violet-100); }
+  .pick.mine { border-color: transparent; background: var(--emerald-600); color: #fff; }
+  .pick.mine:hover { background: var(--emerald-700); }
+  .obs { min-height: 3.25rem; resize: vertical; border-color: var(--amber-200) !important; background: rgba(255,251,235,.4) !important; }
+  .obs:focus { background: #fff !important; }
+  .rfoot { position: sticky; bottom: 0; z-index: 20; border-top: 1px solid var(--sky-100); background: #fff; box-shadow: 0 -2px 8px rgba(15,23,42,.06); }
+  .rfoot .wrap6 { display: flex; align-items: center; gap: .75rem; padding-top: .75rem; padding-bottom: .75rem; }
+  .rfoot .mid { flex: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .25rem 1rem; text-align: center; font-size: .875rem; }
+  .status-ok { font-weight: 500; color: var(--emerald-600); } .status-err { font-weight: 500; color: var(--rose-600); }
+  .prev { border: 1px solid var(--sky-200); background: #fff; color: var(--sky-700); }
+  .prev:hover { background: var(--sky-50); }
+  .next { border: 1px solid var(--brand-200); background: var(--brand-50); color: var(--brand-700); }
+  .next:hover { background: var(--brand-100); }
+  .next.ready { border-color: transparent; background: var(--brand-500); color: #fff; box-shadow: var(--shadow-card); }
+  .next.ready:hover { background: var(--brand-600); }
+  .brandbtn { background: var(--brand-500); color: #fff; } .brandbtn:hover { background: var(--brand-600); }
+  .note-card { margin: 0 auto; max-width: 36rem; border-radius: 1.125rem; border: 1px solid var(--line); background: #fff; padding: 3rem 1.5rem; text-align: center; box-shadow: var(--shadow-card); }
+  .note-card .big { font-size: 2.25rem; }
+  .note-card .h2 { margin-top: .75rem; }
+  .note-card p { margin-top: .5rem; }
+  .note-card .acts { margin-top: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+  .state { padding: 3rem 1rem; text-align: center; color: var(--muted-text); }
+  .state.err { color: var(--rose-600); }
 
-  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
-  @media (max-width: 780px) { .pair { grid-template-columns: 1fr; } }
-  .side { position: relative; border: 2px solid var(--line); border-radius: var(--r); padding: 12px; background: var(--card);
-          transition: border-color .3s var(--ease), box-shadow .3s var(--ease), transform .35s var(--ease), opacity .35s var(--ease); }
-  .side:hover { border-color: var(--line-2); box-shadow: var(--shadow); }
-  .side h3 { margin: 0 0 10px; font-size: 12px; color: var(--dim); font-weight: 650; text-transform: uppercase; letter-spacing: .08em;
-             display: flex; align-items: center; gap: 8px; }
-  .side h3 kbd { font: 11px/1 ui-monospace, Menlo, monospace; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
-  .mediabox { display: flex; justify-content: center; align-items: center; min-height: 160px; background: #0f1115; border-radius: 10px; overflow: hidden; }
-  .mediabox.audio { background: var(--well); min-height: 0; padding: 14px; border: 1px solid var(--line); }
-  .side img { max-width: 100%; max-height: 66vh; display: block; cursor: zoom-in; transition: transform .35s var(--ease); }
-  .side img.zoom { max-height: none; cursor: zoom-out; }
-  .side video { max-width: 100%; max-height: 66vh; display: block; }
-  .side audio { width: 100%; }
+  /* Who is reviewing (ReviewerGate.tsx), as a card rather than a modal. */
+  .gate { margin: 3rem auto; max-width: 28rem; }
+  .gate form > * + * { margin-top: 1rem; }
+  .gate .acts { display: flex; justify-content: flex-end; gap: .5rem; }
 
-  .thumb { margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
-           padding: 13px 16px; border-radius: 12px; border: 1.5px solid var(--line-2); background: var(--card); cursor: pointer;
-           font-weight: 600; font-size: 15px; color: var(--ink);
-           transition: transform .18s var(--ease), border-color .2s, background .25s, box-shadow .25s, color .2s; }
-  .thumb .ico { font-size: 20px; line-height: 1; display: inline-block; transition: transform .25s var(--ease); }
-  .thumb:hover { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(23,138,91,.16); }
-  .thumb:hover .ico { transform: rotate(-12deg) scale(1.15); }
-  .thumb:active { transform: translateY(0) scale(.98); }
-
-  .side.picked { border-color: var(--ok); box-shadow: 0 0 0 4px var(--ok-soft), var(--shadow-lift); transform: translateY(-3px); }
-  .side.picked .thumb { border-color: var(--ok); background: var(--ok); color: #fff; }
-  .side.picked .thumb .ico { animation: pop .55s var(--ease); }
-  .side.dimmed { opacity: .45; transform: scale(.985); }
-  @keyframes pop { 0% { transform: scale(1); } 35% { transform: scale(1.45) rotate(-14deg); } 70% { transform: scale(.95); } 100% { transform: scale(1); } }
-  .side.picked::after { content: "✓"; position: absolute; top: -12px; right: 14px; width: 26px; height: 26px; border-radius: 50%;
-                        background: var(--ok); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 700;
-                        animation: pop .5s var(--ease); box-shadow: 0 2px 8px rgba(23,138,91,.35); }
-
-  .tools { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 16px; }
-  .ghost { padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--card); color: var(--ink-2);
-           cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: border-color .2s, color .2s, background .2s, transform .15s; }
-  .ghost:hover { border-color: var(--ink-2); color: var(--ink); background: var(--well); }
-  .ghost:active { transform: scale(.98); }
-  .ghost kbd { font: 11px/1 ui-monospace, Menlo, monospace; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
-
-  .nav { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
-  .nav button.step { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; cursor: pointer;
-                     color: var(--ink-2); transition: border-color .2s, color .2s, transform .15s; }
-  .nav button.step:hover { color: var(--ink); border-color: var(--line-2); }
-  .nav button.step:disabled { opacity: .35; cursor: default; }
-  .dots { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); cursor: pointer; border: 0; padding: 0;
-         transition: background .3s, transform .25s var(--ease), box-shadow .25s; }
-  .dot:hover { transform: scale(1.35); }
-  .dot.done { background: var(--ok); }
-  .dot.here { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent); transform: scale(1.15); }
-
-  .reasonbox { margin-top: 18px; }
-  .reasonbox textarea { display: block; width: 100%; min-height: 58px; resize: vertical; margin-top: 6px; padding: 10px 12px;
-                        border: 1px solid var(--line-2); border-radius: 10px; background: var(--well); color: var(--ink); font: inherit; }
-  .reasonbox textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .reasonbox .ghost { margin-top: 8px; }
-
-  .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
-           background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 13.5px; box-shadow: var(--shadow-lift);
-           transition: opacity .28s var(--ease), transform .32s var(--ease); z-index: 9; }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
-  .toast.err { background: var(--warn); }
-
-  .done-card { text-align: center; padding: 56px 24px; }
-  .done-card .big { font-size: 46px; animation: pop .7s var(--ease); display: inline-block; }
-  .done-card h2 { margin: 10px 0 6px; font-size: 22px; letter-spacing: -.02em; }
-  .done-card p { color: var(--ink-2); }
-  .done-card .primary { margin: 6px 6px 0; width: auto; }
+  /* Full-screen gallery (Lightbox). */
+  .lightbox { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; padding: 1rem;
+              background: rgba(0,0,0,.85); cursor: zoom-out; }
+  .lightbox img { max-height: 94vh; max-width: 96vw; border-radius: .375rem; box-shadow: var(--shadow-pop); }
+  .lb-btn { position: absolute; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.1);
+            color: #fff; line-height: 1; }
+  .lb-btn:hover { background: rgba(255,255,255,.25); }
+  .lb-close { top: 1rem; right: 1rem; width: 2.25rem; height: 2.25rem; font-size: 1.25rem; }
+  .lb-prev, .lb-next { top: 50%; transform: translateY(-50%); width: 2.75rem; height: 2.75rem; font-size: 1.5rem; }
+  .lb-prev { left: .75rem; } .lb-next { right: .75rem; }
+  .lb-cap { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); border-radius: 999px; background: rgba(255,255,255,.1);
+            padding: .375rem .875rem; font-size: .875rem; font-weight: 500; color: #fff; cursor: default; }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; }
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   }
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="brand"><span class="mark">👍</span>GenMedia blind panel</div>
-    <nav class="tabs" id="tabs" role="tablist"></nav>
-    <label class="ind" id="indbox" hidden>Industry <select id="ind"></select></label>
-    <span class="spacer"></span>
-    <span class="who" id="who"></span>
-  </div>
-  <div class="progress"><i id="progress"></i></div>
-</header>
+<header class="site"><div class="wrap6"><a class="mark" href="#/"><i></i>GenMedia</a><span class="sep"></span><span class="name">Blind Human Panel</span></div></header>
 <main id="main"></main>
-<div class="toast" id="toast"></div>
 
 <script>
 (function () {
   'use strict';
-  var state = { items: [], lanes: [], lane: null, industry: 'all', reviewer: null, voted: {}, picks: {}, order: [], pos: 0, busy: false, keys: null, mediaBase: 'media' };
-  var main = document.getElementById('main');
-  window.__panel = state;   // read-only debugging handle; holds no model names
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var LANE_ICON = { image: '🖼️', video: '🎬', voice: '🎧' };
 
-  // --- deterministic per-reviewer randomness ---------------------------
-  // FNV-1a over a string. Same reviewer + same item = same left/right every
-  // time they open the page; a different reviewer gets a different order.
-  function fnv(s) {
-    var h = 0x811c9dc5;
-    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
-    return h >>> 0;
-  }
+  // ── What each media type asks of a reviewer (lib/blindPanelReport.ts) ──
+  var MEDIA = {
+    image: { label: 'Image', common: true, verb: 'Look at both pictures', tip: 'Click a picture to see it full screen.',
+             title: 'Image review: which picture is better?', task: 'Look at both pictures and pick the better one.',
+             intro: 'Two AI models were given the same prompt. You look at both pictures, without knowing which model made which, and pick the better one.',
+             hint: ['sharp detail', 'missed part of the prompt'] },
+    voice: { label: 'Voice', common: true, verb: 'Listen to both clips', tip: 'Headphones help. Clips are in English, Hindi, Hinglish and Telugu.',
+             title: 'Voice review: which clip sounds better?', task: 'Listen to both audios and pick the better one.',
+             intro: 'Two AI voices read the same text. You listen to both, without knowing which model made which, and pick the better one.',
+             hint: ['clear pronunciation', 'rushed the numbers'] },
+    video: { label: 'Video', common: false, verb: 'Watch both videos', tip: 'Use “Play both from the start” to compare them in step.',
+             title: 'Video review: which video is better?', task: 'Watch both videos and pick the better one.',
+             intro: 'Two AI models were given the same prompt. You see or hear both results side by side, without knowing which model made which, and pick the better one.',
+             hint: ['smooth motion', 'flickers at the end'] }
+  };
+  var ROUND = 20;            // pairs per round; no totals are ever shown
+  var OBS_MAX = 240;         // per box; the two travel as one reason of at most 500
+  var NAME_RE = /^[A-Za-z0-9 ._@+-]{1,64}$/;   // the server's REVIEWER_RE
+
+  var S = { items: null, lanes: [], mediaBase: 'media', reviewer: null, picks: null, err: null };
+  var main = document.getElementById('main');
+  window.__panel = S;        // read-only debugging handle; holds no model names
+
+  // ── Order and sides (lib/panelOrder.ts): FNV-1a flip, mulberry32 order ──
+  function fnv(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
   function mulberry(seed) {
-    return function () {
-      seed = (seed + 0x6D2B79F5) >>> 0;
-      var t = seed;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+    var s = seed;
+    return function () { s = (s + 0x6d2b79f5) >>> 0; var t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   }
   function shuffled(list, seed) {
     var a = list.slice(), rnd = mulberry(seed);
     for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
     return a;
   }
-  function sides(item) {
-    // item.pair is already in opaque-id order (no model order). Flip per reviewer.
-    var flip = fnv(who() + '|' + item.id) & 1;
-    return flip ? [item.pair[1], item.pair[0]] : [item.pair[0], item.pair[1]];
+  function sidesFor(seed, item) { return (fnv(seed + '|' + item.id) & 1) ? [item.pair[1], item.pair[0]] : [item.pair[0], item.pair[1]]; }
+  function orderFor(seed, lane, items) { return shuffled(items, fnv(seed + '|' + lane)); }
+  function nextOpen(order, from, voted) {
+    for (var k = 1; k <= order.length; k++) { var j = (from + k) % order.length; if (!voted(order[j].id)) return j; }
+    return -1;
   }
 
-  // --- storage / api ------------------------------------------------------
-  // Identity = a name (2026-09-11, Sai: name is enough). It is what the
-  // server keys a reviewer's earlier picks on and what seeds the left/right
-  // flip. Remembered here; a `?reviewer=` on the URL wins, because the
-  // studies console asks for the name when its card is opened and passes it
-  // in, so a reviewer identifies themselves once, in one place.
-  function validName(v) { return /^[A-Za-z0-9 ._@+-]{1,64}$/.test(v); }
-  function who() { return state.reviewer || ''; }
-  function saveIdentity(r) { try { localStorage.setItem('panel.reviewer', r || ''); } catch (e) {} }
-  function loadIdentity() {
-    var id = { reviewer: null };
-    try { id.reviewer = localStorage.getItem('panel.reviewer') || null; } catch (e) {}
-    try {
-      var q = new URLSearchParams(window.location.search);
-      var n = (q.get('reviewer') || q.get('name') || '').trim();
-      if (validName(n)) { id.reviewer = n; saveIdentity(n); }
-    } catch (e) {}
-    return id;
+  // ── Observations: one per output, one reason field (lib/observations.ts) ──
+  function joinObs(chosen, other) {
+    var c = (chosen || '').trim(), o = (other || '').trim();
+    return [c && 'Chosen: ' + c, o && 'Other: ' + o].filter(Boolean).join('\n');
   }
+  function splitObs(reason) {
+    var t = (reason || '').trim();
+    if (!t) return { chosen: '', other: '' };
+    var at = t.indexOf('\nOther: ');
+    if (t.indexOf('Chosen: ') === 0) return at < 0 ? { chosen: t.slice(8).trim(), other: '' } : { chosen: t.slice(8, at).trim(), other: t.slice(at + 8).trim() };
+    if (t.indexOf('Other: ') === 0) return { chosen: '', other: t.slice(7).trim() };
+    return { chosen: t, other: '' };
+  }
+
+  // ── Small helpers ──
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function url(file) { return S.mediaBase + '/' + encodeURIComponent(file); }
   function api(path, opts) {
     return fetch(path, opts).then(function (r) {
-      return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
+      return r.json().then(function (j) { if (!r.ok || (j && j.error)) throw new Error((j && j.error) || r.status); return j; });
     });
   }
+  function reduced() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  function loadName() { try { return localStorage.getItem('panel.reviewer') || null; } catch (e) { return null; } }
+  function saveName(n) { try { if (n) localStorage.setItem('panel.reviewer', n); else localStorage.removeItem('panel.reviewer'); } catch (e) {} }
+  function setReviewer(n) { S.reviewer = n; S.picks = null; saveName(n); }
+  function hasLane(l) { return S.lanes.indexOf(l) >= 0 && !!MEDIA[l]; }
 
-  // --- tiny dom helper ------------------------------------------------------
-  function el(tag, attrs, children) {
-    var e = document.createElement(tag);
-    for (var k in (attrs || {})) {
-      if (k === 'class') e.className = attrs[k];
-      else if (k === 'text') e.textContent = attrs[k];
-      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
-      else e.setAttribute(k, attrs[k]);
+  // ── Routing: #/  #/<media>  #/<media>/review ──
+  function route() {
+    var seg = (location.hash || '').replace(/^#\/?/, '').split('/').filter(Boolean);
+    if (seg[0] && hasLane(seg[0])) return { lane: seg[0], view: seg[1] === 'review' ? 'review' : 'landing' };
+    return { lane: 'all', view: 'landing' };
+  }
+  function go(hash) { if (location.hash === hash) render(); else location.hash = hash; window.scrollTo(0, 0); }
+  window.addEventListener('hashchange', function () { render(); });
+
+  var R = null;              // the review on screen, if any
+  function render() {
+    closeGallery();
+    R = null;
+    if (S.err) { main.innerHTML = '<div class="wrap"><p class="state err">' + esc(S.err) + '</p></div>'; return; }
+    if (!S.items) { main.innerHTML = '<div class="wrap"><p class="state">Loading the panel…</p></div>'; return; }
+    var r = route();
+    if (r.view === 'review') { if (S.reviewer) review(r.lane); else gate(r.lane); }
+    else landing(r.lane);
+  }
+
+  // ── Landing pages (BlindPanelLanding.tsx) ──
+  function steps(lane) {
+    var look = lane === 'all' ? 'Look at or listen to both' : MEDIA[lane].verb;
+    var prompt = lane === 'voice' ? 'The text both AI models were asked to read aloud, and how to say it.'
+      : lane === 'all' ? 'The instruction both AI models were given. For voice, it is the text they were asked to read aloud, and how.'
+      : 'The instruction both AI models were given, with any picture supplied alongside it.';
+    return [
+      { t: lane === 'voice' ? 'Read the text' : 'Read the prompt', b: prompt },
+      { t: look, b: 'Two results of that same prompt, one on the left and one on the right.' },
+      { t: 'Pick the better one', b: 'Click “Left is better” or “Right is better”, add your observations if you like, then press Next. Go with your own judgement: does it do what was asked, and does it ' + (lane === 'voice' ? 'sound' : lane === 'image' ? 'look' : 'look or sound') + ' good?' },
+      { t: 'Do a round, then decide', b: 'After ' + ROUND + ' pairs, picked at random, you choose whether to carry on, and from then on you can stop whenever you like. Every answer is saved as you go.' }
+    ];
+  }
+  var FAIR = [
+    { t: 'Model names are hidden', b: 'Nothing on the page says which model made which result.' },
+    { t: 'The order is random', b: 'The pairs come in a shuffled order, different for every reviewer.' },
+    { t: 'Left and right are random', b: 'Each pair is placed left or right at random, so the same model is not always on the same side. Judge what you see and hear, not the position.' },
+    { t: 'Your answers are saved', b: 'They are kept under your name. Come back any time, on any device, with the same name, and you only get pairs you have not answered yet. Go back to a pair to change your answer.' }
+  ];
+
+  function landing(lane) {
+    var m = lane === 'all' ? null : MEDIA[lane];
+    // Totals are never shown; a media type with nothing to review has no door.
+    var doors = S.lanes.filter(function (l) { return MEDIA[l] && MEDIA[l].common; });
+    if (!doors.length) doors = S.lanes.filter(function (l) { return MEDIA[l]; });
+    var title = m ? m.title : 'Which AI result is better? You decide.';
+    var intro = m ? m.intro : 'Two AI models were given the same prompt. You see or hear both results side by side, without knowing which model made which, and pick the better one.';
+    var nameBox = S.reviewer
+      ? '<div class="label">Reviewing as</div><div class="who">' + esc(S.reviewer) + '</div><button class="change" data-act="unname">Not you? Change name</button>'
+      : '<label><span class="label">Your name</span><input id="name" class="input" autocomplete="name" placeholder="e.g. Priya Sharma">' +
+        '<span id="namehint" class="hint">Used only to save your answers, so you can pick up where you left off.</span></label>';
+    var start = lane === 'all'
+      ? '<div class="doors">' + doors.map(function (d) {
+          return '<div class="card card-pad door"><h3 class="h3">' + MEDIA[d].label + ' review</h3><p class="small" style="margin-top:.25rem">' + MEDIA[d].verb +
+            ', then pick the better one.</p><p class="small muted" style="margin-top:.25rem">' + MEDIA[d].tip + '</p>' +
+            '<button class="btn btn-primary" data-start="' + d + '">Start ' + MEDIA[d].label.toLowerCase() + ' review ›</button></div>';
+        }).join('') + '</div>'
+      : '<div class="card card-pad ready"><div><p>' + m.verb + ', then pick the better one.</p><p class="small muted" style="margin-top:.25rem">' + m.tip +
+        ' You start with a round of ' + ROUND + ' pairs; after that, stop whenever you like and come back later.</p></div>' +
+        '<button class="btn btn-primary btn-wide" data-start="' + lane + '">Start the review ›</button></div>';
+    main.innerHTML =
+      '<section class="strip"><div class="wrap grid"><div>' +
+        '<div class="eyebrow">GenMedia · Blind review' + (m ? ' · ' + m.label : '') + '</div>' +
+        '<h1 class="h1">' + esc(title) + '</h1>' +
+        '<p class="intro">' + esc(intro) + ' Each pair takes under a minute; a round is ' + ROUND + ' pairs.</p>' +
+      '</div><div class="namebox">' + nameBox + '</div></div></section>' +
+      '<section class="data"><div class="wrap">' +
+        '<div><h2 class="h3">What you will do</h2><ol class="steps">' + steps(lane).map(function (s, i) {
+          return '<li class="card card-pad"><div class="num">' + (i + 1) + '</div><h3 class="h4">' + esc(s.t) + '</h3><p>' + esc(s.b) + '</p></li>';
+        }).join('') + '</ol></div>' +
+        '<div><h2 class="h3">' + (lane === 'all' ? 'Start a review' : 'Ready?') + '</h2>' + start + '</div>' +
+        '<div><h2 class="h3">Fair by design</h2><ul class="fair">' + FAIR.map(function (f) {
+          return '<li><span class="tick" aria-hidden="true">✓</span><div><b>' + esc(f.t) + '</b><p>' + esc(f.b) + '</p></div></li>';
+        }).join('') + '</ul></div>' +
+      '</div></section>';
+
+    var input = document.getElementById('name');
+    function begin(l) {
+      if (S.reviewer) { go('#/' + l + '/review'); return; }
+      var n = (input.value || '').trim();
+      if (!NAME_RE.test(n)) {
+        var h = document.getElementById('namehint');
+        h.textContent = 'Please enter your name first (letters, numbers and spaces).'; h.className = 'hint err';
+        input.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+        input.focus({ preventScroll: true });
+        return;
+      }
+      setReviewer(n);
+      go('#/' + l + '/review');
     }
-    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
-    return e;
-  }
-  var toastTimer;
-  function toast(msg, err) {
-    var t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.className = 'toast'; }, err ? 3200 : 1400);
-  }
-  function swap(build) {
-    // leave -> replace -> enter. Reduced motion skips straight to the new view.
-    var old = main.firstElementChild;
-    function place() {
-      main.innerHTML = '';
-      var next = build();
-      next.classList.add('stage', 'enter');
-      main.appendChild(next);
-      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    if (input) {
+      input.addEventListener('input', function () { var h = document.getElementById('namehint'); h.textContent = 'Used only to save your answers, so you can pick up where you left off.'; h.className = 'hint'; });
+      input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && lane !== 'all') begin(lane); });
     }
-    if (!old || reduced) { place(); return; }
-    old.classList.add('leave');
-    setTimeout(place, 240);
+    main.querySelectorAll('[data-start]').forEach(function (b) { b.addEventListener('click', function () { begin(b.getAttribute('data-start')); }); });
+    var un = main.querySelector('[data-act="unname"]');
+    if (un) un.addEventListener('click', function () { setReviewer(null); render(); });
   }
 
-  // --- gate --------------------------------------------------------------
-  function renderGate() {
-    state.keys = null;
-    swap(function () {
-      var input = el('input', { placeholder: 'Your name', autocomplete: 'name', value: state.reviewer || '' });
-      function start() {
-        var v = input.value.trim();
-        if (!validName(v)) { input.focus(); toast('Just letters, numbers and spaces please', true); return; }
-        state.reviewer = v; saveIdentity(v); boot();
-      }
-      input.addEventListener('keydown', function (e) { if (e.key === 'Enter') start(); });
-      var card = el('div', { class: 'card gate' }, [
-        el('h2', { text: 'Which one did it better?' }),
-        el('p', { text: 'Each item shows two results made from the same brief. The model names are hidden and the order is random.' }),
-        el('div', { class: 'how' }, [
-          el('div', {}, [el('span', { text: '👍' }), 'Tap the thumbs-up under the result that answers the brief better.']),
-          el('div', {}, [el('span', { text: '🏷️' }), 'Use the industry menu to review only the scenarios from your field, or take a lane end to end.']),
-          el('div', {}, [el('span', { text: '⌨️' }), 'Keyboard: ← left is better, → right is better.'])
-        ]),
-        el('p', { text: 'Your name is stored with each answer. Come back with the same name and what you already chose is shown again.' }),
-        input,
-        el('button', { class: 'primary', text: 'Start reviewing', onclick: start })
-      ]);
-      setTimeout(function () { input.focus(); }, 350);
-      return card;
+  // ── Who is reviewing, when a review is opened without a name ──
+  function gate(lane) {
+    main.innerHTML = '<div class="wrap"><div class="card card-pad gate"><form>' +
+      '<div><h2 class="h3">Who is reviewing?</h2><p class="small muted" style="margin-top:.25rem">Your name is stored with each answer, so what you chose is shown again when you come back.</p></div>' +
+      '<label style="display:block"><span class="small" style="font-weight:500">Name</span><input id="gname" class="input" style="margin-top:.25rem" autocomplete="name" placeholder="Your name">' +
+      '<span id="gerr" class="xs" style="display:block;margin-top:.25rem;color:var(--rose-600)" hidden>Letters, numbers and spaces only, up to 64 characters.</span></label>' +
+      '<div class="acts"><button type="button" class="btn btn-secondary btn-sm" data-act="cancel">Cancel</button><button type="submit" class="btn btn-primary btn-sm">Start reviewing</button></div>' +
+      '</form></div></div>';
+    var f = main.querySelector('form'), inp = document.getElementById('gname');
+    inp.focus();
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var n = inp.value.trim();
+      if (!NAME_RE.test(n)) { document.getElementById('gerr').hidden = false; return; }
+      setReviewer(n); render();
     });
+    main.querySelector('[data-act="cancel"]').addEventListener('click', function () { go('#/' + lane); });
   }
 
-  // --- header ------------------------------------------------------------
-  function laneAll(lane) { return state.items.filter(function (i) { return i.lane === lane; }); }
-  function laneItems(lane) {
-    return laneAll(lane).filter(function (i) { return state.industry === 'all' || (i.industry || 'Other') === state.industry; });
-  }
-  function industriesOf(lane) {
-    var seen = {};
-    laneAll(lane).forEach(function (i) { seen[i.industry || 'Other'] = true; });
-    return Object.keys(seen).sort();
-  }
-  function renderIndustry() {
-    var box = document.getElementById('indbox'), sel = document.getElementById('ind');
-    var list = state.lane ? industriesOf(state.lane) : [];
-    box.hidden = !(state.reviewer && list.length > 1);
-    sel.innerHTML = '';
-    sel.appendChild(el('option', { value: 'all', text: 'All industries (' + laneAll(state.lane || '').length + ')' }));
-    list.forEach(function (ind) {
-      var n = laneAll(state.lane).filter(function (i) { return (i.industry || 'Other') === ind; }).length;
-      sel.appendChild(el('option', { value: ind, text: ind + ' (' + n + ')' }));
-    });
-    if (list.indexOf(state.industry) < 0) state.industry = 'all';
-    sel.value = state.industry;
-  }
-  document.getElementById('ind').addEventListener('change', function (e) {
-    state.industry = e.target.value;
-    setLane(state.lane);
-  });
-  function laneDone(lane) { return laneItems(lane).filter(function (i) { return state.voted[i.id]; }).length; }
+  // ── The review (BlindPanel.tsx) ──
+  function review(lane) {
+    var m = MEDIA[lane];
+    // A fresh shuffle on every visit: the seed is the name plus a random token.
+    var seed = S.reviewer + '|' + Math.random().toString(36).slice(2);
+    var V = R = { lane: lane, m: m, seed: seed, order: [], pos: 0, view: 'item', fresh: 0, roundsAsked: 0, busy: false,
+                  notes: {}, stored: {}, noteTimer: null, players: [] };
+    main.innerHTML = '<div class="review"><div class="rhead"><div class="wrap6">' +
+      '<button class="lnk" data-act="home">‹ Instructions</button><h1 class="h3">' + m.label + ' review</h1>' +
+      '<span class="pill" id="batch" hidden></span>' +
+      '<span class="who">Reviewing as <b>' + esc(S.reviewer) + '</b><button class="lnk-brand" data-act="who">change</button></span>' +
+      '</div></div><div class="wrap6 rbody" id="rbody"><p class="state">Loading the panel…</p></div><div id="rfoot" class="rfoot" hidden></div></div>';
+    main.querySelector('[data-act="home"]').addEventListener('click', function () { leave(function () { go('#/' + lane); }); });
+    main.querySelector('[data-act="who"]').addEventListener('click', function () { setReviewer(null); go('#/' + lane); });
 
-  function renderTabs() {
-    var tabs = document.getElementById('tabs');
-    tabs.innerHTML = '';
-    state.lanes.forEach(function (lane) {
-      var all = laneAll(lane), n = all.length;
-      var done = all.filter(function (i) { return state.voted[i.id]; }).length;
-      var b = el('button', { class: 'tab' + (done === n && n ? ' complete' : ''), role: 'tab',
-                             'aria-selected': String(lane === state.lane),
-                             onclick: function () {
-                               if (!state.reviewer) { toast('Enter your name first'); renderGate(); return; }
-                               if (lane !== state.lane) setLane(lane);
-                             } },
-        [(LANE_ICON[lane] || '') + ' ' + lane.charAt(0).toUpperCase() + lane.slice(1), el('span', { class: 'n', text: done + '/' + n })]);
-      tabs.appendChild(b);
-    });
-    var who = document.getElementById('who');
-    who.innerHTML = '';
-    if (state.reviewer) {
-      who.appendChild(el('span', {}, ['Reviewing as ', el('b', { text: state.reviewer })]));
-      who.appendChild(el('button', { text: 'change', onclick: function () { state.reviewer = null; saveIdentity(''); renderGate(); renderTabs(); } }));
-    }
-    var p = document.getElementById('progress');
-    var n = state.lane ? laneItems(state.lane).length : 0;
-    p.style.width = n ? (100 * laneDone(state.lane) / n) + '%' : '0%';
-    renderIndustry();
-  }
-
-  function setLane(lane) {
-    state.lane = lane;
-    var items = laneItems(lane);
-    state.order = shuffled(items, fnv(who() + '|' + lane));
-    var first = state.order.findIndex(function (i) { return !state.voted[i.id]; });
-    state.pos = first < 0 ? 0 : first;
-    renderTabs();
-    if (first < 0 && items.length) renderDone(); else renderItem();
-  }
-
-  // --- item --------------------------------------------------------------
-  function mediaEl(kind, src) {
-    if (kind === 'image') {
-      var img = el('img', { src: src, alt: '', draggable: 'false' });
-      img.addEventListener('click', function () { img.classList.toggle('zoom'); });
-      return img;
-    }
-    if (kind === 'video') return el('video', { src: src, controls: '', playsinline: '', preload: 'metadata', loop: '' });
-    return el('audio', { src: src, controls: '', preload: 'none' });
-  }
-
-  function renderItem() {
-    var items = state.order;
-    if (!items.length) { swap(function () { return el('div', { class: 'card done-card', text: 'Nothing to review in this lane.' }); }); return; }
-    var item = items[state.pos];
-    var lr = sides(item);
-    var already = state.voted[item.id];
-    // What this person chose before, by MEDIA id - so it lights the right
-    // side whichever way the pair is flipped today - and the reason they gave.
-    var prior = state.picks[item.id] || null;
-    var remaining = items.filter(function (i) { return !state.voted[i.id]; }).length;
-
-    swap(function () {
-      var card = el('div', { class: 'card' });
-      card.appendChild(el('div', { class: 'meta' }, [
-        el('span', { class: 'pos', text: 'Item ' + (state.pos + 1) + ' of ' + items.length }),
-        el('span', { class: 'title', text: item.title || item.scenario_id }),
-        item.industry ? el('span', { class: 'chip', text: item.industry }) : null,
-        el('span', { text: remaining ? '· ' + remaining + ' left' + (state.industry === 'all' ? ' in this lane' : ' in ' + state.industry) : '· all done here' }),
-        already ? el('span', { text: '· already answered — your choice is shown; pick again to change it' }) : null
-      ]));
-      card.appendChild(el('div', { class: 'label', text: item.kind === 'audio' ? 'The script both were asked to read' : 'The brief both were given' }));
-      card.appendChild(el('p', { class: 'brief', text: item.brief || '(no brief recorded)' }));
-      if (item.inputs && item.inputs.length) {
-        card.appendChild(el('div', { class: 'label', text: 'Supplied with the brief' }));
-        var row = el('div', { class: 'inputs' });
-        item.inputs.forEach(function (inp) {
-          row.appendChild(el('figure', {}, [mediaEl(inp.kind, state.mediaBase + '/' + inp.media), el('figcaption', { text: inp.label })]));
-        });
-        card.appendChild(row);
-      }
-
-      var pair = el('div', { class: 'pair' });
-      var sideEls = [], players = [];
-      ['Left', 'Right'].forEach(function (name, idx) {
-        var m = mediaEl(item.kind, state.mediaBase + '/' + lr[idx]);
-        players.push(m);
-        var box = el('div', { class: 'mediabox' + (item.kind === 'audio' ? ' audio' : '') }, [m]);
-        var thumb = el('button', { class: 'thumb', onclick: function () { vote(idx === 0 ? 'left' : 'right'); } },
-                       [el('span', { class: 'ico', text: '👍' }), name + ' is better']);
-        var side = el('div', { class: 'side' }, [
-          el('h3', {}, [name, el('kbd', { text: idx === 0 ? '←' : '→' })]), box, thumb]);
-        sideEls.push(side);
-        pair.appendChild(side);
-      });
-      card.appendChild(pair);
-      if (prior && prior.media) {
-        sideEls.forEach(function (s, i) {
-          var mine = lr[i] === prior.media;
-          s.classList.toggle('picked', mine);
-          s.classList.toggle('dimmed', !mine);
-        });
-      }
-
-      // Optional reason. Sent with the thumbs-up; on an item already
-      // answered, 'Save reason' re-posts the same pick with the new text
-      // (a vote is append-only; the last one per item counts).
-      var reason = el('textarea', { class: 'reason', rows: '2', maxlength: '500',
-                                    placeholder: 'Why? A word on what decided it — optional' });
-      if (prior && prior.reason) reason.value = prior.reason;
-      var reasonBox = el('div', { class: 'reasonbox' }, [el('div', { class: 'label', text: 'Reason (optional)' }), reason]);
-      if (prior && prior.media) {
-        reasonBox.appendChild(el('button', { class: 'ghost', text: 'Save reason',
-                                            onclick: function () { vote(lr[0] === prior.media ? 'left' : 'right', true); } }));
-      }
-      card.appendChild(reasonBox);
-
-      var tools = el('div', { class: 'tools' });
-      if (item.kind === 'video') {
-        tools.appendChild(el('button', { class: 'ghost', onclick: function () {
-          players.forEach(function (v) { v.currentTime = 0; v.play(); }); } }, ['▶ Play both from the start']));
-      }
-      if (tools.childNodes.length) card.appendChild(tools);
-
-      var nav = el('div', { class: 'nav' });
-      var prev = el('button', { class: 'step', text: '‹ Previous', onclick: function () { go(state.pos - 1); } });
-      var next = el('button', { class: 'step', text: 'Next ›', onclick: function () { go(state.pos + 1); } });
-      if (state.pos === 0) prev.disabled = true;
-      if (state.pos === items.length - 1) next.disabled = true;
-      var dots = el('div', { class: 'dots' });
-      items.forEach(function (it, i) {
-        dots.appendChild(el('button', { class: 'dot' + (state.voted[it.id] ? ' done' : '') + (i === state.pos ? ' here' : ''),
-                                        title: 'Item ' + (i + 1), onclick: function () { go(i); } }));
-      });
-      nav.appendChild(prev); nav.appendChild(dots); nav.appendChild(next);
-      card.appendChild(nav);
-
-      function vote(pick, stay) {
-        if (state.busy) return;
-        state.busy = true;
-        var why = reason.value.trim();
-        // Show the choice immediately; the server confirms it a moment later.
-        sideEls.forEach(function (s, i) {
-          var mine = (pick === 'left' && i === 0) || (pick === 'right' && i === 1);
-          s.classList.toggle('picked', mine);
-          s.classList.toggle('dimmed', !mine);
-        });
-        api('api/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ reviewer: state.reviewer, item: item.id, left: lr[0], right: lr[1], pick: pick, reason: why }) })
-          .then(function () {
-            state.voted[item.id] = true;
-            state.picks[item.id] = { pick: pick, media: lr[pick === 'left' ? 0 : 1], reason: why || null };
-            prior = state.picks[item.id];
-            renderTabs();
-            if (stay) { state.busy = false; toast(why ? 'Reason saved 👍' : 'Saved 👍'); return; }
-            toast('Saved 👍');
-            var nextIdx = -1;
-            for (var k = 1; k <= items.length; k++) { var j = (state.pos + k) % items.length; if (!state.voted[items[j].id]) { nextIdx = j; break; } }
-            setTimeout(function () {
-              state.busy = false;
-              if (nextIdx < 0) renderDone(); else { state.pos = nextIdx; renderItem(); }
-            }, reduced ? 0 : 520);
-          })
-          .catch(function (e) {
-            state.busy = false;
-            sideEls.forEach(function (s) { s.classList.remove('picked', 'dimmed'); });
-            toast('Not saved: ' + e.message, true);
-          });
-      }
-      function go(i) { if (i < 0 || i >= items.length || state.busy) return; state.pos = i; renderItem(); }
-
-      // Capture phase, so a focused <video>/<audio> does not turn the arrow
-      // keys into seeks before the vote fires. The players keep their mouse
-      // controls; the arrow keys belong to voting.
-      state.keys = function (e) {
-        if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
-        if (e.key === 'ArrowLeft' && !e.shiftKey) { e.preventDefault(); vote('left'); }
-        else if (e.key === 'ArrowRight' && !e.shiftKey) { e.preventDefault(); vote('right'); }
-        else if (e.key === 'ArrowLeft' && e.shiftKey) { e.preventDefault(); go(state.pos - 1); }
-        else if (e.key === 'ArrowRight' && e.shiftKey) { e.preventDefault(); go(state.pos + 1); }
-      };
-      return card;
-    });
-  }
-
-  function renderDone() {
-    state.keys = null;
-    swap(function () {
-      var others = state.lanes.filter(function (l) {
-        return l !== state.lane && state.items.some(function (i) { return i.lane === l && !state.voted[i.id]; });
-      });
-      var moreHere = state.industry !== 'all' && laneAll(state.lane).some(function (i) { return !state.voted[i.id]; });
-      var card = el('div', { class: 'card done-card' }, [
-        el('div', { class: 'big', text: others.length ? '🎉' : '🙏' }),
-        el('h2', { text: (state.industry === 'all' ? 'This lane is complete.' : state.industry + ' is complete in this lane.') + ' Thank you.' }),
-        el('p', { text: others.length ? 'There is more to review in ' + others.join(' and ') + '.' : 'You have reviewed everything. You can close this page.' })
-      ]);
-      if (moreHere) card.appendChild(el('button', { class: 'primary', text: 'Review other industries in ' + state.lane, onclick: function () { state.industry = 'all'; setLane(state.lane); } }));
-      others.forEach(function (l) { card.appendChild(el('button', { class: 'primary', text: 'Review ' + (LANE_ICON[l] || '') + ' ' + l, onclick: function () { setLane(l); } })); });
-      return card;
-    });
-  }
-  window.addEventListener('keydown', function (e) { if (state.keys) state.keys(e); }, true);
-
-  // --- boot --------------------------------------------------------------
-  function boot() {
-    renderTabs();
-    api('api/votes?reviewer=' + encodeURIComponent(state.reviewer)).then(function (j) {
-      state.voted = {};
-      j.items.forEach(function (id) { state.voted[id] = true; });
-      state.picks = j.picks || {};
-      // `?lane=video` (the console embeds one lane per tab) wins over the
-      // first lane with anything left to review.
-      var wanted = null;
-      try { wanted = new URLSearchParams(window.location.search).get('lane'); } catch (e) {}
-      var firstOpen = state.lanes.find(function (l) { return state.items.some(function (i) { return i.lane === l && !state.voted[i.id]; }); });
-      setLane(state.lanes.indexOf(wanted) >= 0 ? wanted : (firstOpen || state.lanes[0]));
+    var picksReady = S.picks ? Promise.resolve(S.picks)
+      : api('api/votes?reviewer=' + encodeURIComponent(S.reviewer)).then(function (j) { S.picks = j.picks || {}; return S.picks; });
+    picksReady.then(function () {
+      if (R !== V) return;
+      var all = S.items.filter(function (i) { return i.lane === lane; });
+      V.order = orderFor(seed, lane, all);
+      var first = V.order.findIndex(function (i) { return !S.picks[i.id]; });
+      V.pos = first < 0 ? 0 : first;
+      V.view = first < 0 && V.order.length ? 'done' : 'item';
+      paint();
     }).catch(function (e) {
-      swap(function () { return el('div', { class: 'card', text: 'The panel server is not reachable (' + e.message + '). Open this page through `python -m runner.cli serve`, not as a file.' }); });
+      if (R !== V) return;
+      document.getElementById('rbody').innerHTML = '<p class="state err">The panel server is not reachable (' + esc(e.message) + '). Open this page through `python -m runner.cli serve`, not as a file.</p>';
     });
   }
 
+  function voted(id) { return !!(S.picks && S.picks[id]); }
+  function cur() { return R && R.order[R.pos] || null; }
+
+  function say(text, isErr) {
+    if (!R) return;
+    var el = document.getElementById('status');
+    if (!el) return;
+    el.className = isErr ? 'status-err' : 'status-ok';
+    el.setAttribute('role', 'status');
+    el.textContent = text;
+    clearTimeout(R.noteTimer);
+    R.noteTimer = setTimeout(function () { if (R) paintStatus(); }, isErr ? 3200 : 1400);
+  }
+
+  function paintStatus() {
+    var el = document.getElementById('status'), it = cur();
+    if (!el || !it) return;
+    el.className = 'muted';
+    el.removeAttribute('role');
+    el.textContent = S.picks[it.id] ? 'Saved. Add observations if you like, then Next' : 'Pick the better one';
+  }
+
+  // Where the reviewer is inside the current round: never a total.
+  function paintBatch() {
+    var b = document.getElementById('batch'), it = cur();
+    if (!b) return;
+    var on = R.view === 'item' && !!it;
+    b.hidden = !on;
+    if (!on) return;
+    var picked = !!S.picks[it.id];
+    var done = Math.min(ROUND, Math.max(0, R.fresh - R.roundsAsked * ROUND));
+    var at = Math.min(ROUND, Math.max(1, done + (picked ? 0 : 1)));
+    b.textContent = at + ' / ' + ROUND;
+    b.setAttribute('aria-label', 'Pair ' + at + ' of ' + ROUND + ' in this batch');
+  }
+
+  function paint() {
+    var body = document.getElementById('rbody'), foot = document.getElementById('rfoot');
+    if (!body) return;
+    closeGallery();
+    R.players = [];
+    paintBatch();
+    if (R.view === 'checkpoint') {
+      foot.innerHTML = ''; foot.hidden = true;
+      body.innerHTML = noteCard('🙌', 'That’s ' + R.fresh + ' done. Thank you!', 'Every answer is already saved. Would you like to carry on with ' + ROUND + ' more?',
+        '<button class="btn brandbtn btn-wide" data-act="carry">Yes, continue</button><button class="btn btn-secondary btn-wide" data-act="stop">No, stop here</button>');
+      on(body, 'carry', function () { R.view = 'item'; paint(); });
+      on(body, 'stop', function () { R.view = 'stopped'; paint(); });
+      return;
+    }
+    if (R.view === 'stopped') {
+      foot.innerHTML = ''; foot.hidden = true;
+      body.innerHTML = noteCard('🙏', 'Thank you for reviewing.', 'All your answers are saved. You can close this page, or come back any time with the same name to carry on with new pairs.',
+        '<button class="btn btn-secondary btn-wide" data-act="keep">Actually, keep going</button><button class="btn btn-ghost" data-act="home2">‹ Back to the instructions</button>');
+      on(body, 'keep', function () { R.view = 'item'; paint(); });
+      on(body, 'home2', function () { go('#/' + R.lane); });
+      return;
+    }
+    var it = cur();
+    if (R.view === 'done' || !it) {
+      foot.innerHTML = ''; foot.hidden = true;
+      var others = S.lanes.filter(function (l) { return l !== R.lane && MEDIA[l] && MEDIA[l].common && S.items.some(function (i) { return i.lane === l && !voted(i.id); }); });
+      body.innerHTML = '<div class="card card-pad" style="text-align:center;padding-top:3.5rem;padding-bottom:3.5rem"><div style="font-size:2.25rem">' + (others.length ? '🎉' : '🙏') + '</div>' +
+        '<h2 class="h2" style="margin-top:.75rem">This review is complete. Thank you.</h2><p class="text-body" style="margin-top:.25rem">' +
+        (others.length ? 'There is more to review in ' + others.map(function (l) { return MEDIA[l].label; }).join(' and ') + '.' : 'You have reviewed everything. You can close this page.') + '</p>' +
+        '<div style="margin-top:1.25rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem">' +
+        others.map(function (l) { return '<button class="btn btn-secondary" data-lane="' + l + '">Start ' + MEDIA[l].label.toLowerCase() + ' review</button>'; }).join('') +
+        '<button class="btn btn-ghost" data-act="home2">‹ Back to the instructions</button></div></div>';
+      body.querySelectorAll('[data-lane]').forEach(function (b) { b.addEventListener('click', function () { go('#/' + b.getAttribute('data-lane') + '/review'); }); });
+      on(body, 'home2', function () { go('#/' + R.lane); });
+      return;
+    }
+
+    var lr = sidesFor(R.seed, it), prior = S.picks[it.id] || null;
+    // Observations follow the pair, keyed by media id so a changed pick keeps each note with its output.
+    var o = splitObs(prior && prior.reason);
+    R.notes = {};
+    if (prior && prior.media) { R.notes[prior.media] = o.chosen; R.notes[prior.media === lr[0] ? lr[1] : lr[0]] = o.other; }
+    var kind = it.kind;
+    var imgsIn = it.inputs.filter(function (i) { return i.kind === 'image'; });
+
+    var inputs = it.inputs.length ? '<div class="inputs' + (it.inputs.length > 1 ? ' many' : '') + (it.inputs.length > 2 ? ' more' : '') + '">' +
+      it.inputs.map(function (inp, k) {
+        return '<figure><div class="inbox">' + mediaHtml(inp.kind, inp.media, 'data-in="' + k + '"') + '</div><figcaption>' + esc(inp.label) +
+          (inp.kind === 'image' && it.inputs.length === 1 ? ' · click to enlarge' : '') + '</figcaption></figure>';
+      }).join('') + '</div>' : '';
+
+    var aside2 = kind === 'video' ? '<button class="btn btn-ghost btn-sm" data-act="playboth">▶ Play both from the start</button>'
+      : kind === 'image' ? '<span class="xs muted">Click a picture to enlarge it</span>' : '';
+
+    var sides = lr.map(function (media, idx) {
+      var frames = it.frames && it.frames[media];
+      var stage = frames
+        ? '<div class="frames">' + frames.map(function (f, k) {
+            return '<figure><div class="fbox">' + mediaHtml('image', f.media, 'data-frame="' + idx + ':' + k + '"') + '</div><figcaption>' + esc(f.label) + '</figcaption></figure>';
+          }).join('') + '</div>'
+        : '<div class="stage' + (kind === 'audio' ? ' audio' : '') + '">' + mediaHtml(kind, media, 'data-side="' + idx + '"') + '</div>';
+      return '<div class="side" data-sidebox="' + idx + '">' + stage +
+        '<button class="btn pick" data-pick="' + idx + '"></button></div>';
+    }).join('');
+
+    var obs = lr.map(function (media, idx) {
+      return '<label style="display:block"><textarea class="input obs" rows="2" maxlength="' + OBS_MAX + '" data-obs="' + idx + '" aria-label="Observations on the ' +
+        (idx === 0 ? 'left' : 'right') + ' output" placeholder="What stood out? e.g. ' + R.m.hint[idx] + '"></textarea></label>';
+    }).join('');
+
+    body.innerHTML =
+      '<p class="task">' + R.m.task + '</p>' +
+      block(1, 'sky', R.lane === 'voice' ? 'The text to read' : 'The prompt', '',
+        '<div class="prompt-grid' + (it.inputs.length ? ' with-inputs' : '') + '"><p class="brief">' + esc(it.brief || '(no text recorded)') + '</p>' + inputs + '</div>') +
+      block(2, 'violet', 'Model outputs', aside2, '<div class="two">' + sides + '</div>') +
+      block(3, 'amber', 'Your observations', '<span class="xs muted">Optional</span>', '<div class="two">' + obs + '</div>');
+
+    foot.hidden = false;
+    foot.innerHTML = '<div class="wrap6">' +
+      '<button class="btn prev btn-wide" data-act="prev">‹ Previous</button>' +
+      '<div class="mid"><span id="status" class="muted"></span>' +
+      (R.fresh >= ROUND ? '<button class="lnk-brand" data-act="pause">Stop for now</button>' : '') + '</div>' +
+      '<button class="btn next btn-wide" data-act="next">Next ›</button></div>';
+
+    // Wire up.
+    body.querySelectorAll('textarea[data-obs]').forEach(function (ta) {
+      var media = lr[+ta.getAttribute('data-obs')];
+      ta.value = R.notes[media] || '';
+      ta.addEventListener('input', function () { R.notes[media] = ta.value; });
+      ta.addEventListener('blur', function () { if (!R.busy) saveReason(); });
+    });
+    body.querySelectorAll('[data-pick]').forEach(function (b) { b.addEventListener('click', function () { vote(+b.getAttribute('data-pick') === 0 ? 'left' : 'right'); }); });
+    body.querySelectorAll('[data-in]').forEach(function (img) {
+      img.addEventListener('click', function () {
+        var inp = it.inputs[+img.getAttribute('data-in')];
+        openGallery(imgsIn.map(function (i) { return { src: url(i.media), label: i.label }; }), Math.max(imgsIn.indexOf(inp), 0));
+      });
+    });
+    body.querySelectorAll('[data-frame]').forEach(function (img) {
+      img.addEventListener('click', function () {
+        var p = img.getAttribute('data-frame').split(':'), fr = it.frames[lr[+p[0]]];
+        openGallery(fr.map(function (f) { return { src: url(f.media), label: f.label }; }), +p[1]);
+      });
+    });
+    body.querySelectorAll('[data-side]').forEach(function (elm) {
+      var idx = +elm.getAttribute('data-side');
+      if (elm.tagName === 'IMG') elm.addEventListener('click', function () { openGallery([{ src: url(lr[0]), label: '' }, { src: url(lr[1]), label: '' }], idx); });
+      else R.players[idx] = elm;
+    });
+    on(body, 'playboth', function () { R.players.forEach(function (p) { if (p) { p.currentTime = 0; p.play(); } }); });
+    on(foot, 'prev', function () { goTo(R.pos - 1); });
+    on(foot, 'next', function () { next(); });
+    on(foot, 'pause', function () { saveReason().then(function (ok) { if (ok && R) { R.view = 'stopped'; paint(); } }); });
+    paintPick();
+    window.scrollTo(0, 0);
+  }
+
+  // A pick lights its side without redrawing the page, so a playing clip keeps playing.
+  function paintPick() {
+    var it = cur(); if (!it) return;
+    var lr = sidesFor(R.seed, it), prior = S.picks[it.id] || null;
+    var side = prior && prior.media === lr[0] ? 0 : prior && prior.media === lr[1] ? 1 : -1;
+    document.querySelectorAll('[data-sidebox]').forEach(function (box) {
+      var idx = +box.getAttribute('data-sidebox'), mine = side === idx;
+      box.classList.toggle('mine', mine);
+      box.classList.toggle('dimmed', side >= 0 && !mine);
+      var b = box.querySelector('[data-pick]');
+      b.classList.toggle('mine', mine);
+      b.textContent = (mine ? '✓ ' : '👍 ') + (idx === 0 ? 'Left' : 'Right') + ' is better';
+      b.disabled = R.busy;
+    });
+    var nx = document.querySelector('[data-act="next"]'), pv = document.querySelector('[data-act="prev"]');
+    if (nx) { nx.classList.toggle('ready', side >= 0); nx.disabled = R.busy; }
+    if (pv) pv.disabled = R.pos === 0 || R.busy;
+    paintBatch();
+    paintStatus();
+  }
+
+  function block(n, tone, title, aside, inner) {
+    return '<section class="block ' + tone + '"><div class="block-head"><span class="badge" aria-hidden="true">' + n + '</span><h2 class="h4">' + title + '</h2>' +
+      (aside ? '<div class="aside">' + aside + '</div>' : '') + '</div><div class="block-body">' + inner + '</div></section>';
+  }
+  function mediaHtml(kind, file, attr) {
+    var src = esc(url(file));
+    if (kind === 'image') return '<img class="media-img" src="' + src + '" alt="" draggable="false" title="Click to view full screen" ' + attr + '>';
+    if (kind === 'video') return '<video class="media-video" src="' + src + '" controls playsinline preload="metadata" loop ' + attr + '></video>';
+    return '<audio class="media-audio" src="' + src + '" controls preload="none" ' + attr + '></audio>';
+  }
+  function noteCard(icon, title, text, acts) {
+    return '<div class="note-card"><div class="big">' + icon + '</div><h2 class="h2">' + esc(title) + '</h2><p class="text-body">' + esc(text) + '</p><div class="acts">' + acts + '</div></div>';
+  }
+  function on(root, act, fn) { var b = root.querySelector('[data-act="' + act + '"]'); if (b) b.addEventListener('click', fn); }
+  function setBusy(v) { R.busy = v; paintPick(); }
+
+  function reasonFor(it, pickedMedia) {
+    var lr = sidesFor(R.seed, it), other = pickedMedia === lr[0] ? lr[1] : lr[0];
+    return joinObs(R.notes[pickedMedia], R.notes[other]);
+  }
+
+  // Posts a pick and the observations typed so far; resolves false when it did not save.
+  function save(pick) {
+    var it = cur(), lr = sidesFor(R.seed, it), media = pick === 'left' ? lr[0] : lr[1];
+    var why = reasonFor(it, media), before = R.stored[it.id], V = R;
+    R.stored[it.id] = why;
+    return api('api/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                             body: JSON.stringify({ reviewer: S.reviewer, item: it.id, left: lr[0], right: lr[1], pick: pick, reason: why }) })
+      .then(function () {
+        if (!S.picks[it.id]) V.fresh++;
+        S.picks[it.id] = { media: media, reason: why || null };
+        return true;
+      })
+      .catch(function (e) {
+        if (before === undefined) delete V.stored[it.id]; else V.stored[it.id] = before;
+        say('Not saved: ' + e.message, true);
+        return false;
+      });
+  }
+
+  // Picking a side saves it and stays on the pair, so observations can follow.
+  function vote(pick) {
+    if (!R || R.busy || !cur()) return;
+    setBusy(true);
+    save(pick).then(function (ok) { if (!R) return; setBusy(false); if (ok) say('Saved 👍'); });
+  }
+
+  // Saves observations edited after the pick; resolves true when there was nothing to save or it saved.
+  function saveReason() {
+    var it = cur();
+    if (!R || !it) return Promise.resolve(true);
+    var prior = S.picks[it.id];
+    if (!prior || !prior.media) return Promise.resolve(true);
+    var have = R.stored[it.id] !== undefined ? R.stored[it.id] : (prior.reason || '');
+    if (reasonFor(it, prior.media) === have) return Promise.resolve(true);
+    var lr = sidesFor(R.seed, it);
+    return save(prior.media === lr[0] ? 'left' : 'right').then(function (ok) { if (ok) say('Observations saved 👍'); return ok; });
+  }
+
+  function leave(then) { if (!R || R.busy) { then(); return; } saveReason().then(function () { then(); }); }
+
+  function goTo(i) {
+    if (!R || i < 0 || i >= R.order.length || R.busy) return;
+    setBusy(true);
+    saveReason().then(function (ok) { if (!R) return; R.busy = false; if (ok) { R.pos = i; R.view = 'item'; paint(); } else paintPick(); });
+  }
+
+  // Next: the next pair not yet answered; after each round of new answers, ask first.
+  function next() {
+    if (!R || R.busy) return;
+    setBusy(true);
+    saveReason().then(function (ok) {
+      if (!R) return;
+      R.busy = false;
+      if (!ok) { paintPick(); return; }
+      var target = nextOpen(R.order, R.pos, voted);
+      if (target < 0 || (target === R.pos && voted(R.order[R.pos].id))) { R.view = 'done'; paint(); return; }
+      R.pos = target === R.pos ? Math.min(R.pos + 1, R.order.length - 1) : target;
+      var rounds = Math.floor(R.fresh / ROUND);
+      if (rounds > R.roundsAsked) { R.roundsAsked = rounds; R.view = 'checkpoint'; } else R.view = 'item';
+      paint();
+    });
+  }
+
+  // Shift+arrows move between pairs; bare arrows do nothing (voting is clicks only).
+  window.addEventListener('keydown', function (e) {
+    if (G || !R || R.view !== 'item') return;
+    var t = e.target;
+    if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+    if (e.key === 'ArrowLeft' && e.shiftKey) { e.preventDefault(); goTo(R.pos - 1); }
+    else if (e.key === 'ArrowRight' && e.shiftKey) { e.preventDefault(); next(); }
+  }, true);
+
+  // One clip at a time: when a voice clip starts, the other pauses.
+  document.addEventListener('play', function (e) {
+    if (!(e.target instanceof HTMLAudioElement)) return;
+    document.querySelectorAll('audio').forEach(function (a) { if (a !== e.target && !a.paused) a.pause(); });
+  }, true);
+
+  // ── Full-screen gallery: ←/→ step through, Escape or a click outside closes ──
+  var G = null;
+  function openGallery(items, index) {
+    closeGallery();
+    var cur = index;
+    var box = document.createElement('div');
+    box.className = 'lightbox';
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Image preview');
+    function draw() {
+      var it = items[cur];
+      box.innerHTML = '<img src="' + esc(it.src) + '" alt="' + esc(it.label) + '" draggable="false">' +
+        '<button class="lb-btn lb-close" aria-label="Close">×</button>' +
+        (items.length > 1 ? '<button class="lb-btn lb-prev" aria-label="Previous image">‹</button><button class="lb-btn lb-next" aria-label="Next image">›</button>' +
+          '<div class="lb-cap">' + (it.label ? esc(it.label) + ' · ' : '') + (cur + 1) + ' / ' + items.length + '</div>' : '');
+      var p = box.querySelector('.lb-prev'), n = box.querySelector('.lb-next'), c = box.querySelector('.lb-cap');
+      if (p) p.addEventListener('click', function (e) { e.stopPropagation(); step(-1); });
+      if (n) n.addEventListener('click', function (e) { e.stopPropagation(); step(1); });
+      if (c) c.addEventListener('click', function (e) { e.stopPropagation(); });
+    }
+    function step(d) { cur = (cur + d + items.length) % items.length; draw(); }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.stopPropagation(); closeGallery(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); step(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); step(1); }
+    }
+    box.addEventListener('click', closeGallery);
+    window.addEventListener('keydown', onKey, true);
+    var overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.body.appendChild(box);
+    draw();
+    G = function () { window.removeEventListener('keydown', onKey, true); document.body.style.overflow = overflow; box.remove(); };
+  }
+  function closeGallery() { if (G) { var g = G; G = null; g(); } }
+
+  // ── Boot ──
+  try {
+    var q = new URLSearchParams(location.search);
+    var n = (q.get('reviewer') || q.get('name') || '').trim();
+    S.reviewer = NAME_RE.test(n) ? n : loadName();
+    if (NAME_RE.test(n)) saveName(n);
+    var wanted = q.get('lane');
+  } catch (e) { S.reviewer = loadName(); }
+  render();
   // Where the media lives is the server's to say (PANEL_MEDIA_BASE): its own
   // dist/media on a laptop, the studies console's files when hosted.
   fetch('api/config', { cache: 'no-store' }).then(function (r) { return r.json(); })
-    .then(function (c) { if (c && c.media_base) state.mediaBase = String(c.media_base).replace(/\/$/, ''); })
+    .then(function (c) { if (c && c.media_base) S.mediaBase = String(c.media_base).replace(/\/$/, ''); })
     .catch(function () {})
-    .then(function () { return fetch('items.json', { cache: 'no-store' }); }).then(function (r) { return r.json(); }).then(function (j) {
-    state.items = j.items; state.lanes = j.lanes;
-    state.reviewer = loadIdentity().reviewer;
-    if (state.reviewer) boot(); else { renderGate(); renderTabs(); }
-  }).catch(function () {
-    main.appendChild(el('div', { class: 'card', text: 'items.json not found — run the exporter first.' }));
-  });
+    .then(function () { return fetch('items.json', { cache: 'no-store' }); })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (j) {
+      S.items = j.items || []; S.lanes = (j.lanes || []).filter(function (l) { return MEDIA[l]; });
+      // `?lane=<media>` (the old address, one lane per page) opens that media's review.
+      if (!location.hash && wanted && hasLane(wanted)) { location.replace('#/' + wanted + '/review'); return; }
+      render();
+    })
+    .catch(function () { S.err = 'items.json not found: run the exporter first (python -m runner.cli export).'; render(); });
 })();
 </script>
 </body>

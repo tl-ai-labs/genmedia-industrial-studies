@@ -110,7 +110,7 @@ def test_static_is_served_and_private_is_not(served, tmp_path):
     with urllib.request.urlopen(served["base"] + "/items.json") as r:
         assert r.status == 200 and r.headers["Cache-Control"] == "no-store"
     with urllib.request.urlopen(served["base"] + "/") as r:
-        assert b"GenMedia blind panel" in r.read()
+        assert b"GenMedia Blind Human Panel" in r.read()
     for path in ("/private/key.json", "/../private/key.json", "/key.json", "/votes.jsonl"):
         with pytest.raises(urllib.error.HTTPError) as e:
             urllib.request.urlopen(served["base"] + path)
@@ -199,7 +199,8 @@ def test_results_name_the_models_and_keep_the_last_vote_per_reviewer(served):
     assert st == 200 and body["total"] == 2 and len(body["votes"]) == 2
     mine = next(v for v in body["votes"] if v["reviewer"] == "r1")
     media = served["key"]["items"][a["id"]]["media"]
-    assert set(mine) == {"ts", "reviewer", "lane", "scenario_id", "picked", "over", "reason"}
+    assert set(mine) == {"ts", "reviewer", "lane", "run_id", "scenario_id", "picked", "over", "reason"}
+    assert mine["run_id"] == served["key"]["items"][a["id"]]["run_id"]          # a dated round is told apart by it
     assert mine["picked"] == media[a["pair"][1]] and mine["over"] == media[a["pair"][0]]
     assert mine["reason"] == "changed my mind" and mine["scenario_id"] == a["scenario_id"]
     tie = next(v for v in body["votes"] if v["reviewer"] == "r2")

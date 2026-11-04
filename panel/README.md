@@ -134,20 +134,24 @@ disagreement in bold rather than smoothing it.
 
 - Export from the run(s) the report used, serve on a machine the reviewers
   can reach (LAN or a tunnel), send the URL — or point them at the studies
-  console's `/unpublish/genmedia-blind-panel`, which renders this same
-  panel itself against this server (CORS is on for that). Reviewers give
-  a name once (or arrive with `?reviewer=`); the page starts them at the first
-  item they have not answered, and an item they HAVE answered shows the
-  side they chose and the reason they gave, so a return visit — any day,
-  any device, same email — picks up where it left off. An optional reason
-  box sits under the pair; on an answered item "Save reason" re-posts the
-  same pick with the new text.
-- Keys: `←` left is better, `→` right is better, `shift+←/→` to move without
-  voting.
-- **Industry**: every item carries the primary industry from its lane's
-  `configs/industry_map.yaml` (voice: the dashboard's own label). The
-  header menu filters the current lane to one industry, so a reviewer can
-  cover just their field; lane counts and progress stay per lane.
+  site's `/unpublished/genmedia-study/meta/blind-panel`, which renders the
+  same panel against this server (CORS is on for that).
+- **The page is the site's** (2026-11-04): `site/index.html` has the same
+  pages, copy and look as the site's blind panel (`views/BlindPanelLanding.tsx`,
+  `views/BlindPanel.tsx`), so a laptop session looks like the site:
+  `#/` the common landing page (a door per media type; video has none),
+  `#/<media>` that media's landing page, `#/<media>/review` the review.
+  `?lane=<media>`, the old address, opens that media's review, and
+  `?reviewer=` fills in the name. A reviewer gives a name once; pairs come
+  in a fresh shuffle each visit, sides flipped per pair, and only pairs they
+  have not answered. No totals: the header shows the place in the current
+  round of 20 ("k / 20"), and after each 20 new answers Next asks whether to
+  carry on. Picking a side saves it and stays on the pair; two optional
+  observation boxes (one per output) travel as one reason, "Chosen: …" /
+  "Other: …", and save on leaving a box or on Next. A set shows each side's
+  frames; a click opens a full-screen gallery. Results stay on the site
+  (they name the models).
+- Keys: `shift+←/→` move between pairs. Voting is clicks only.
 - Video and voice previews come from the run folder as the lane wrote them:
   the video lane's `previews/` (ffmpeg re-encodes, ~0.5 MB) are preferred
   over the 2–7 MB originals when present — run the lane's report with
@@ -208,6 +212,36 @@ master copy and the committed `panel/votes.jsonl` is a snapshot: pull with
 **Pointing the console at it.** In the Vercel project set
 `VITE_PANEL_URL=https://<service>-<hash>-uc.a.run.app` (Production) and
 redeploy the console; the value is baked in at build time.
+
+## Adding a dated round (a later run, its own pages)
+
+A later run of one lane is reviewed as a **dated round** on the studies site,
+at `…/blind-panel/<media>/<date>` (landing, `/review`, `/results`), apart from
+that lane's own pairs (the site's `lib/blindPanelReport.ts`,
+`BLIND_PANEL_ROUNDS`). For an image run:
+
+```bash
+cd ../image
+python tools/export_panel_round.py --run runs/<run-id> --date <YYYY-MM-DD> \
+    --out <site>/dashboard/public/reports/genmedia-blind-panel/<date> \
+    --key ../panel/private/key-<date>.json
+```
+
+The public half (`items.json` + `media/`) is committed in the site; the key
+stays here, under `private/`. The hosted server takes the round's votes only
+once its key has the round's items, so merge rather than replace it — **not**
+`--sync`, which would put this laptop's own `private/key.json` over the live
+one:
+
+```bash
+gcloud storage cp gs://<bucket>/private/key.json live-key.json
+.venv/bin/python -m runner.cli merge-key --base live-key.json --add private/key-<date>.json --out merged-key.json
+gcloud storage cp merged-key.json gs://<bucket>/private/key.json   # the server re-reads a changed key
+```
+
+`/api/results` names each vote's `run_id` (2026-11-04), which is how the site
+tells a round's votes apart; a server deployed before that does not, and the
+site falls back to the round's scenario ids.
 
 ## Storing votes in a Google Sheet (the no-server alternative)
 
