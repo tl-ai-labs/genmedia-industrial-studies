@@ -163,12 +163,23 @@ the votes on a disk that outlives a restart. `deploy/cloud-run.sh` does both
 (Sai, 2026-09-11: "gcloud is best, we already have the billing"):
 
 ```bash
-gcloud auth login                       # an account on ai-studies-console
+gcloud auth login                       # an account on temp-genmedia-study
 deploy/cloud-run.sh                     # first time / after a code change: bucket + image + service
-deploy/cloud-run.sh --sync              # after a re-export: items.json + key up, no rebuild
+deploy/cloud-run.sh --sync              # after a re-export: items.json + key up, no rebuild (replaces the live key)
 deploy/cloud-run.sh --votes             # hosted votes.jsonl down, to compare and commit
 deploy/cloud-run.sh --url               # the URL the console needs as VITE_PANEL_URL
 ```
+
+The live panel is in the GCP project **`temp-genmedia-study`** (the script's
+default; `PANEL_GCP_PROJECT` overrides it), so its bucket is
+`gs://genmedia-panel-temp-genmedia-study`. It was deployed there because
+`ai-studies-console` is blocked for the study team.
+
+A code change redeploys without touching the bucket's data: the script copies
+items.json and the key up only into a bucket that has no key yet. `--sync`
+replaces the live key with this laptop's `private/key.json`, after copying the
+live one to `private/key.before-sync-<time>.json` in the bucket; that drops any
+dated round merged in since (below), so add rounds with `merge-key` instead.
 
 What it makes, all in `us-central1`, all inside Google's always-free tier at
 this scale:
