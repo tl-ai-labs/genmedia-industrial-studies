@@ -158,7 +158,9 @@ GOOGLE_BLOCK_REASONS = {
     "IMAGE_SAFETY": "Candidates blocked due to unsafe image generation content.",
 }
 DIFF_RANK = {("v2", "Straightforward"): 0, ("v2", "Moderate"): 1, ("v3", "Moderate"): 1.5,
-             ("v2", "High"): 2, ("v3", "Hard"): 2.5, ("v3", "Extreme"): 3}
+             ("v2", "High"): 2, ("v3", "Hard"): 2.5, ("v3", "Extreme"): 3,
+             # the November scenarios (bank "new") were written on one scale, v2's words below Hard
+             ("new", "Moderate"): 1, ("new", "High"): 2, ("new", "Hard"): 2.5}
 # rubric category names as the bank writes them (scenario-bank/v3/image.json rubric[].name);
 # a criterion the bank does not name is shown with spaces, as the site does
 CRITERIA = {"set_consistency": "Set consistency", "reference_fidelity": "Reference fidelity",
@@ -668,10 +670,11 @@ def dims_meta(scens: list[dict], internal: bool) -> list[dict]:
         vals = present(key)
         return [v for v in order if v in vals] + sorted(vals - set(order))
 
-    # difficulty words differ by bank; a word both banks use gets its bank named
+    # difficulty words differ by bank; a word two banks rank differently gets its bank named
     by_word: dict = {}
     for s in scens:
-        by_word.setdefault(s["v"]["difficulty"], set()).add(s["bankKey"])
+        w = s["v"]["difficulty"]
+        by_word.setdefault(w, set()).add(DIFF_RANK.get((s["bankKey"], w), s["bankKey"]))
     for s in scens:
         w = s["v"]["difficulty"]
         if len(by_word.get(w, ())) > 1:
