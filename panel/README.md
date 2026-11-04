@@ -134,20 +134,24 @@ disagreement in bold rather than smoothing it.
 
 - Export from the run(s) the report used, serve on a machine the reviewers
   can reach (LAN or a tunnel), send the URL — or point them at the studies
-  console's `/unpublish/genmedia-blind-panel`, which renders this same
-  panel itself against this server (CORS is on for that). Reviewers give
-  a name once (or arrive with `?reviewer=`); the page starts them at the first
-  item they have not answered, and an item they HAVE answered shows the
-  side they chose and the reason they gave, so a return visit — any day,
-  any device, same email — picks up where it left off. An optional reason
-  box sits under the pair; on an answered item "Save reason" re-posts the
-  same pick with the new text.
-- Keys: `←` left is better, `→` right is better, `shift+←/→` to move without
-  voting.
-- **Industry**: every item carries the primary industry from its lane's
-  `configs/industry_map.yaml` (voice: the dashboard's own label). The
-  header menu filters the current lane to one industry, so a reviewer can
-  cover just their field; lane counts and progress stay per lane.
+  site's `/unpublished/genmedia-study/meta/blind-panel`, which renders the
+  same panel against this server (CORS is on for that).
+- **The page is the site's** (2026-11-04): `site/index.html` has the same
+  pages, copy and look as the site's blind panel (`views/BlindPanelLanding.tsx`,
+  `views/BlindPanel.tsx`), so a laptop session looks like the site:
+  `#/` the common landing page (a door per media type; video has none),
+  `#/<media>` that media's landing page, `#/<media>/review` the review.
+  `?lane=<media>`, the old address, opens that media's review, and
+  `?reviewer=` fills in the name. A reviewer gives a name once; pairs come
+  in a fresh shuffle each visit, sides flipped per pair, and only pairs they
+  have not answered. No totals: the header shows the place in the current
+  round of 20 ("k / 20"), and after each 20 new answers Next asks whether to
+  carry on. Picking a side saves it and stays on the pair; two optional
+  observation boxes (one per output) travel as one reason, "Chosen: …" /
+  "Other: …", and save on leaving a box or on Next. A set shows each side's
+  frames; a click opens a full-screen gallery. Results stay on the site
+  (they name the models).
+- Keys: `shift+←/→` move between pairs. Voting is clicks only.
 - Video and voice previews come from the run folder as the lane wrote them:
   the video lane's `previews/` (ffmpeg re-encodes, ~0.5 MB) are preferred
   over the 2–7 MB originals when present — run the lane's report with

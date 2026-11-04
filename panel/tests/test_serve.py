@@ -110,7 +110,7 @@ def test_static_is_served_and_private_is_not(served, tmp_path):
     with urllib.request.urlopen(served["base"] + "/items.json") as r:
         assert r.status == 200 and r.headers["Cache-Control"] == "no-store"
     with urllib.request.urlopen(served["base"] + "/") as r:
-        assert b"GenMedia blind panel" in r.read()
+        assert b"GenMedia Blind Human Panel" in r.read()
     for path in ("/private/key.json", "/../private/key.json", "/key.json", "/votes.jsonl"):
         with pytest.raises(urllib.error.HTTPError) as e:
             urllib.request.urlopen(served["base"] + path)
